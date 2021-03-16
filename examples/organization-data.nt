@@ -1,0 +1,9 @@
+<http://example.org/sample/organization/data/001> <http://example.org/sample/organization/_comments> "Auto generated from organization.yaml by jsonldcontextgen.py version: 0.1.1\nGeneration date: 2020-12-08 16:50\nSchema: organization\n\nid: http://example.org/sample/organization\ndescription: \nlicense: \n" .
+<http://example.org/sample/organization/data/001> <http://example.org/sample/organization/has_boss> <http://example.org/sample/organization/data/002> .
+<http://example.org/sample/organization/data/001> <http://example.org/sample/organization/name> "ACME big company limited"^^<xsd:string> .
+<http://example.org/sample/organization/data/002> <http://example.org/sample/organization/age_in_years> "35"^^<xsd:int> .
+<http://example.org/sample/organization/data/002> <http://example.org/sample/organization/first_name> "Mark"^^<xsd:string> .
+<http://example.org/sample/organization/data/002> <http://example.org/sample/organization/has_employees> <http://example.org/sample/organization/data/003> .
+<http://example.org/sample/organization/data/002> <http://example.org/sample/organization/last_name> "Zuckerberg"^^<xsd:string> .
+<http://example.org/sample/organization/data/003> <http://example.org/sample/organization/first_name> "Sean"^^<xsd:string> .
+<http://example.org/sample/organization/data/003> <http://example.org/sample/organization/last_name> "Connery"^^<xsd:string> .

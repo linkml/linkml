@@ -1,0 +1,11 @@
+id: http://schema.org/example/loaderror1
+name: loaderror1
+description: Unknown slot domain
+
+types:
+  string:
+    base: str
+
+slots:
+  s1:
+    domain: foo

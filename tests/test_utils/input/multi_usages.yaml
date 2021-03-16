@@ -1,0 +1,44 @@
+id: http://example.org/multi_usages
+name: multi_usages
+
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+    linkml: https://w3id.org/linkml/
+
+default_range: string
+
+imports:
+  linkml:types
+
+slots:
+    s1:
+      description: A muti-valued string name 's1', no alias,  domain of 'root_class'
+      range: string
+      multivalued: true
+
+
+classes:
+  root_class:
+    slots:
+      - s1
+
+  child_class1:
+    is_a: root_class
+    slot_usage:
+      s1:
+        description: A muti-valued boolean named 'child_class1_s1', alias 's1' is_a 's1'
+        range: boolean
+
+  child_class2:
+    is_a: child_class1
+    slot_usage:
+      s1:
+        description: A muti-valued integer named 'child_class2_s1', alias 's1', is_a 'child_class1_s1'
+        range: integer
+
+  child_class3:
+    is_a: child_class2
+    slot_usage:
+      s1:
+        description: A single-valued integer named 'child_class3_s1', alias 's1' is_a 'child_class_2_s1'
+        multivalued: false

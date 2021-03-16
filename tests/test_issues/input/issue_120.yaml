@@ -1,0 +1,36 @@
+id: http://example.org/sample/example1
+
+prefixes:
+    foaf: http://xmlns.com/foaf/0.1/
+    samp: http://example.org/model/
+    xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: samp
+
+default_curi_maps:
+    - semweb_context
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+#default_range: string
+
+classes:
+
+  student:
+    slots:
+      - name
+      - courses
+
+  course:
+    slots:
+      - name
+
+slots:
+  name:
+    description: Any name
+  courses:
+    range: course
+    inlined: true

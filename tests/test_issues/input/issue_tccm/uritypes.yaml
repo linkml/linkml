@@ -1,0 +1,65 @@
+id: https://hotecosystem.org/tccm
+name: tccm
+description: Terminology Core Common Model Data Types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: v1.2
+
+prefixes:
+  tccm: https://hotecosystem.org/tccm/
+
+default_prefix: tccm
+default_range: string
+
+imports:
+  - datatypes
+
+types:
+
+  PersistentURI:
+    typeof: URIorCurie
+    description: >-
+      A Universal Resource Identifier (URI) that persists across service instances. PersistentURIs have enduring
+      reference and meaning.
+
+  LocalURI:
+    typeof: URIorCurie
+    description: >-
+      A URI or handle whose scope is local to the implementing service. LocalURI cannot be used as a permanent
+      identifier in a message or a data record.
+
+  ChangeSetURI:
+    typeof: PersistentURI
+    description: >-
+      The unique identifier of a set of change instructions that can potentially transform the contents of a TCCM
+      service instance from one state to another.
+
+  DocumentURI:
+    typeof: PersistentURI
+    description: >-
+      A reference to a “work” in the bibliographic sense. It is not necessary that a Document URI be directly or
+      indirectly resolvable to a digital resource - it may simply be the name of a book, publication, or other
+      abstraction.
+
+  ExternalURI:
+    typeof: PersistentURI
+    description: >-
+      A URI that names a unique resource. CTS2 implementations should never assume that ExternalURI is resolvable
+      via an http: GET operation - ExternalURIs should always be passed as parameters to service implementations
+      to get the sanctioned equivalent in a given service context.
+
+  ServiceURI:
+    typeof: LocalURI
+    description: >-
+      The URI or CURIE of a service implementation
+
+  RenderingURI:
+    typeof: LocalURI
+    description: >-
+      A URI or handle that is directly readable by a specific instance of a TCCM service implementation. RenderingURI
+      must resolve to Changeable CTS2 element.
+
+  DirectoryURI:
+    typeof: LocalURI
+    description: >-
+      The unique name of a query that when executed results in a list of resources that, in the context of a given
+      service, satisfy the query.

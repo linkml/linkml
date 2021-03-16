@@ -1,0 +1,37 @@
+id: http://example.org/import_test_3
+title: Module 2 for import test
+name: import_test_3
+
+prefixes:
+  base: http://example.org/
+  test3: http://example.org/import_test_3#
+
+default_prefix: test3
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+imports:
+  - base:import_test_4
+
+
+subsets:
+  subset_3:
+
+types:
+  s3:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+slots:
+  slot_3:
+    domain: class_3
+    range: string
+
+
+classes:
+  class_3:
+    slots:
+      - slot_3

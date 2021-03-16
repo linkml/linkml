@@ -1,0 +1,28 @@
+{
+  "@context": [
+    "termci_namespaces.context.jsonld",
+    {
+      "@vocab": "https://hotecosystem.org/termci/",
+      "type": "@type",
+      "system": {
+        "@type": "@id",
+        "@id": "termci:system",
+        "@container": "@set",
+        "@context": "ConceptSystem.context.jsonld"
+      }
+    }
+  ],
+  "@omitGraph": true,
+  "@type": "termci:Package",
+  "system": {
+    "@embed": "@always",
+    "contents": {
+      "defined_in": {
+        "@embed": "@never"
+      },
+      "narrower_than": {
+        "@embed": "@never"
+      }
+    }
+  }
+}

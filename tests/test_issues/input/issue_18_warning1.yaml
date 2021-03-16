@@ -1,0 +1,53 @@
+id: http://example.org/tests/issue18
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    slots:
+      - s1
+
+  c2:
+    slots:
+      - s1
+      - s2
+
+  c3:
+    slots:
+      - s3
+
+  c4:
+    slots:
+      - s6
+
+slots:
+  s1:
+    description: range s2, domain_of [c1, c2] inverse s2
+    inverse: s2
+
+  s2:
+    description: range s1, domain_of [c2] inverse s1
+
+  s3:
+    description: range c2, domain_of [c3] inverse s4
+    range: c2
+    inverse: s4
+
+  s4:
+    description: domain c4, range c3, inverse s3
+    domain: c4
+
+  s5:
+    description: domain c3, range c2, inverse s6
+    domain: c3
+    range: c2
+    inverse: s6
+
+  s6:
+    description: range c3, domain_of [c4], inverse s5
+
+

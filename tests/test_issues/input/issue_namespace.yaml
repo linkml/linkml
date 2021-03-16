@@ -1,0 +1,70 @@
+id: https://w3id.org/biolink/biolink-model
+name: Biolink_Model
+description: Entity and association taxonomy and datamodel for life-sciences data
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  biolink: https://w3id.org/biolink/vocab/
+  linkml: https://w3id.org/linkml/
+  OBAN: http://purl.org/oban/
+  SIO: http://semanticscience.org/resource/SIO_
+  wgs: http://www.w3.org/2003/01/geo/wgs84_pos
+  qud: http://qudt.org/1.1/schema/qudt#
+  skos: http://www.w3.org/2004/02/skos/core#
+  UMLSSG: https://uts-ws.nlm.nih.gov/rest/semantic-network/semantic-network/current/GROUP/
+  UMLSST: https://uts-ws.nlm.nih.gov/rest/semantic-network/semantic-network/current/STY/
+  UMLSSC: https://uts-ws.nlm.nih.gov/rest/semantic-network/semantic-network/current/TUI/
+
+default_prefix: biolink
+default_range: string
+
+default_curi_maps:
+  - obo_context
+  - monarch_context
+  - idot_context
+  - semweb_context
+
+emit_prefixes:
+  - rdf
+  - rdfs
+  - xsd
+  - skos
+  - OIO
+  - BIOGRID
+
+
+imports:
+  - linkml:types
+
+types:
+  identifier type:
+    base: ElementIdentifier
+    uri: xsd:anyURI
+    description: >-
+      A string that is intended to uniquely identify a thing
+      May be URI in full or compact (CURIE) form
+
+
+slots:
+  id:
+    identifier: true
+    domain: named thing
+    range: identifier type
+    required: true
+
+  name:
+    domain: named thing
+    range: string
+    required: true
+
+
+classes:
+  named thing:
+    description: "a databased entity or concept/class"
+    slots:
+      - id
+      - name
+
+  anatomical entity:
+    is_a: named thing
+    subclass_of: UBERON:0001062

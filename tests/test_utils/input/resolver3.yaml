@@ -1,0 +1,54 @@
+id: "http://example.org/yaml4"
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+   string:
+      base: str
+      uri: xsd:string
+
+subsets:
+  subset1:
+    description: Test
+
+  subset 2:
+    description: Another test
+
+slots:
+  s1:
+    domain: c1
+    range: c2
+    description: >-
+        this is s1
+        it is good
+    notes:
+        - "Pay attention here"
+        - >-
+            Something might be happening
+
+    comments:
+        - "I'm a little comment"
+
+    examples:
+        - value: >-
+                test: foo
+          description: "an example"
+        - value: 17
+
+    in_subset:
+        - subset1
+        - subset 2
+
+    see_also:
+        - http://example.org/e1
+        - ex:e2
+
+
+    required: false
+    inlined: false
+
+classes:
+    c1:
+    c2:
+        is_a: c1

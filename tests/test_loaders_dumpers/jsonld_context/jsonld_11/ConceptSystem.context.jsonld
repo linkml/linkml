@@ -1,0 +1,31 @@
+{
+  "@context": {
+    "@import": "termci_namespaces.context.jsonld",
+    "@id": "skos:ConceptScheme",
+    "@context": {
+      "prefix": {
+        "@id": "sh:prefix"
+      },
+      "namespace": "@id",
+      "description": {
+        "@id": "dc:description"
+      },
+      "reference": {
+        "@id": "skos:seeAlso",
+        "@container": "@set"
+      },
+      "root_concept": {
+        "@type": "@id",
+        "@id": "skos:hasTopConcept",
+        "@container": "@set",
+        "@context": "ConceptReference.context.jsonld"
+      },
+      "contents": {
+        "@type": "@id",
+        "@id": "skos:hasConcept",
+        "@container": "@set",
+        "@context": "ConceptReference.context.jsonld"
+      }
+    }
+  }
+}

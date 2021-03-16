@@ -1,0 +1,44 @@
+id: "http://example.org/orphanusage"
+title: Base for orphan slot test
+name: orphanusage
+description: Test to make sure that slot_usage without base works
+
+prefixes:
+  meta: https://w3id.org/linkml/meta/
+  skos: http://www.w3.org/2004/02/skos/core#
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: meta
+default_range: string
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+  uri:
+    uri: xsd:anyURI
+    base: URI
+    repr: str
+    description: a complete URI
+
+slots:
+  id:
+    domain: thing
+    range: uri
+    identifier: true
+
+classes:
+  thing:
+
+  drug_thing:
+    is_a: thing
+    description: A generic class
+    slot_usage:
+      drug:
+        range: uri
+        required: true
+        multivalued: true
+
+  happy_drug_thing:
+    is_a: drug_thing

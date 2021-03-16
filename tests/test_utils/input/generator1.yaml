@@ -1,0 +1,112 @@
+id: "http://example.org/generator1"
+title: Generator Test
+name: generator1
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+subsets:
+  ss2:
+    description: Desc ss2
+
+  ss1:
+    description: Desc ss1
+
+types:
+  t2:
+    description: Type t2
+    base: int
+    uri: xsd:integer
+
+  t1:
+    description: Type t1
+    base: str
+    uri: xsd:string
+
+default_range: t1
+
+slots:
+  slot1:
+    description: Slot s1
+    range: t1
+
+  slot2:
+    description: Slot s2
+    range: c2
+
+  mixin slot 1:
+    range: t1
+
+  mixin slot 2:
+    range: t1
+
+  mixin slot 3:
+    range: t1
+
+  applyto slot 1:
+    range: c1
+
+  applyto slot 2:
+    range: t2
+
+classes:
+  c1:
+    description: |
+      Inherited: None
+      Direct: slot 1, slot 2
+      Mixin: mixin slot 1, mixin slot 2, mixin slot 3
+    slots:
+      - slot1
+      - slot2
+    mixins:
+      - mixin1
+      - mixin2
+
+  c2:
+    description: |
+      Inherited: slot 2, mixin slot 1, mixin slot 2, mixin slot 3
+      Direct: c2_slot 1
+      Apply to: applyto slot 1, apply to slot 2
+    is_a: c1
+    slot_usage:
+      slot1:
+        description: Redef of slot1
+        range: t2
+
+  c3:
+    description: |
+      Inherited: slot 2, mixin slot 1, mixin slot 2, mixin slot 3
+      Direct: slot 1, c3_applyto2
+    is_a: c2
+    slot_usage:
+      applyto slot 2:
+        description: Redef of applyto slot 2
+      slot1:
+        description: second redef of slot 1
+        range: c2
+
+  c4:
+    description: strictly injected via applyto1
+
+  mixin1:
+    description: Mixin m1
+    mixin: true
+    slots:
+      - mixin slot 1
+      - mixin slot 2
+
+  mixin2:
+    description: Mixin m2
+    mixin: true
+    slots:
+      - mixin slot 3
+
+  applyto1:
+    description: |
+      Direct: applyto slot1, applyto slot2
+    apply_to:
+      - c2
+      - c4
+    slots:
+      - applyto slot 1
+      - applyto slot 2

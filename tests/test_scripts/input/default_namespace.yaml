@@ -1,0 +1,19 @@
+id: http://example.org/tests/namespace
+name: namespace
+
+prefixes:
+  test: http://example.org/test/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_range: string
+
+slots:
+  s1:
+
+classes:
+  c1:
+    slots:
+      - s1

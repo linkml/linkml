@@ -1,0 +1,21 @@
+id: http://example.org/tests/issue18
+
+description: Error condition where inverse slot is not coupled with a domain
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    slots:
+      - s1
+
+
+slots:
+  s1:
+    inverse: s2
+
+  s2:

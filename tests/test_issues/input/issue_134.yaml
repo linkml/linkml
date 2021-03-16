@@ -1,0 +1,40 @@
+id: http://example.org/sample/example1
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+classes:
+  d1:
+    is_a: c
+    slots:
+      - has c
+  d2:
+    is_a: c
+  c:
+    is_a: b
+    slots:
+      - has b
+  b:
+      is_a: a
+      slots:
+        - has a
+  a:
+    slots:
+      - id
+  e:
+    is_a: d1
+
+slots:
+  id:
+    identifier: true
+  has a:
+    range: a
+  has b:
+    range: b
+  has c:
+    range: c
+
+
+

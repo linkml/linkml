@@ -1,0 +1,139 @@
+id: http://example.org/test/ownalltest
+name: ownalltest
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+  t1:
+    base: int
+    uri: xsd:integer
+
+  t2:
+    typeof: t1
+
+  t3:
+    typeof: t2
+
+  t4:
+    base: Bool
+    uri: xsd:bool
+
+  t5:
+    typeof: t4
+
+  t7:
+    base: datetime.time
+    uri: xsd:dateTime
+
+slots:
+    s1:
+      range: t1
+      identifier: true
+
+    s2:
+      range: c1
+
+    s3:
+      range: t3
+
+    s4:
+      range: t4
+
+    s5:
+      range: t5
+
+    s6:
+      range: c4
+
+    s7:
+      range: t7
+
+    s8:
+      range: c6
+
+classes:
+    c1:
+      slots:
+        - s1
+        - s3
+      description: |
+        own_slots = s1, s3
+        all = s1, s3
+
+    c2:
+      is_a: c1
+      slots:
+        - s2
+      mixins:
+        - m1
+      description: |
+        own_slots = s2, s4
+        all_slots = s1, s2, s3, s4
+
+    c3:
+      is_a: c2
+      mixins:
+        - m2
+      description: |
+        own_slots = s5, s6
+        all = s1, s2, s3, s4, s5, s6
+
+    c4:
+      is_a: c3
+      slot_usage:
+        s1:
+        s5:
+        s6:
+      description: |
+        own_slots = c4_s1, c4_s5, c4_s6
+        all = c4_s1, c4_s5, c4_s6, s_2, s3, s4
+
+    c5:
+      is_a: c4
+      slot_usage:
+        s1:
+        s6:
+          range: string
+      description: |
+        own_slots = c5_s1
+        all = c4_s5, c4_s6, c5_s1, s2, s3, s4
+
+    c6:
+      description: |
+        own_slots = s7, s8
+        all = s7, s8
+      slots:
+        - s7
+        - s8
+
+    m1:
+      mixin: true
+      description: |
+        own_slots = s4
+      slots:
+        - s4
+
+    m2:
+      mixin: true
+      description: |
+        own_slots = s5, s6
+        all_slots = s5, s6
+      slots:
+        - s5
+
+    at1:
+      slots:
+        - s6
+      apply_to:
+        - c3
+        - m2
+        - c5
+      description: |
+        own_slots = s6
+        all_slots = s6
+

@@ -1,0 +1,32 @@
+################################################################################
+# This requirements file has been automatically generated from `Pipfile` with
+# `pipenv-to-requirements`
+#
+#
+# This has been done to maintain backward compatibility with tools and services
+# that do not support `Pipfile` yet.
+#
+# Do NOT edit it directly, use `pipenv install [-d]` to modify `Pipfile` and
+# `Pipfile.lock` and then regenerate `requirements*.txt`.
+################################################################################
+
+argparse>=1.4.0
+click~=7.0
+graphviz>=0.10.1
+hbreader
+isodate>=0.6.0
+jsonasobj>=1.2.1
+jsonschema>=3.0.1
+parse
+prefixcommons>=0.1.7
+prologterms>=0.0.6
+pyjsg>=0.11.6
+pyld
+pyshex>=0.7.20
+pyshexc>=0.8.3
+pyyaml~=5.1
+rdflib-jsonld>=0.5.0
+rdflib-pyld-compat
+rdflib>=5.0.0
+requests>=2.22
+watchdog>=0.9.0

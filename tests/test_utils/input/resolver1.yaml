@@ -1,0 +1,26 @@
+id: "http://example.org/yaml2"
+
+default_range: t1
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  t1:
+    uri: xsd:string
+    base: str
+
+  t2:
+    uri: xsd:int
+    base: int
+
+slots:
+  s1:
+    domain: c1
+
+  s2:
+    domain: c1
+    range: t2
+
+classes:
+  c1:

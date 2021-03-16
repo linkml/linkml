@@ -1,0 +1,29 @@
+id: http://example.org/test/enumeration/error6
+name: error6
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  basic:
+    description: Basic enum
+    permissible_values:
+      1:
+      2:
+      3:
+
+classes:
+  class_error_1:
+    description: Enums can't be marked as inlined
+    attributes:
+      slot_1:
+        range: basic
+        inlined: true

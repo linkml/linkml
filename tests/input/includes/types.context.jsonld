@@ -1,0 +1,10 @@
+{
+   "_comments": "Auto generated from ... by jsonldcontextgen.py version: 0.1.1\nGeneration date: \nSchema: types\n\nid: https://w3id.org/linkml/types\ndescription: Shared type definitions for the core biolink mode and metamodel\nlicense: https://creativecommons.org/publicdomain/zero/1.0/\n",
+   "@context": {
+      "type": "@type",
+      "metatype": "https://w3id.org/linkml/type/",
+      "shex": "http://www.w3.org/ns/shex#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/type/"
+   }
+}

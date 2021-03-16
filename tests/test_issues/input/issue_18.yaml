@@ -1,0 +1,49 @@
+id: http://example.org/tests/issue18
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    slots:
+      - c1s1
+      - c1s2
+
+  c2:
+    slots:
+      - c2s1
+      - c2s1
+
+  c3:
+    slots:
+      - c3s1
+
+  c4:
+
+
+slots:
+  c1s1:
+    description: Slot with implicit range
+    inverse: c2s1
+
+  c2s1:
+    description: Slot whose domain, range and inverse comes entirely from c1s1
+
+  c1s2:
+    description: Slot with explicit domain_of and range
+    range: c2
+    inverse: c2s2
+
+  c2s2:
+    description: Second slot with explicit domain_of and range
+    range: c1
+
+  c3s1:
+    inverse: c4s1
+    range: c4
+
+  c4s1:
+    description: c4 gets injected as the domain

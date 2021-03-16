@@ -1,0 +1,29 @@
+id: "http://example.org/importLevel2"
+title: Level 2 for import test
+name: Import_Level_2_Test
+
+prefixes:
+  l2: http://example.org/l2/
+
+default_prefix: l2
+default_range: string
+
+imports:
+  - import_test_l1
+
+
+slots:
+  l2_slot1:
+    range: string
+
+  l2_slot2:
+    range: int
+
+
+classes:
+  l2_class:
+    is_a: l1_class
+    slots:
+      - l2_slot1
+      - l2_slot2
+

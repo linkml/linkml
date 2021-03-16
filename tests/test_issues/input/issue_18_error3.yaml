@@ -1,0 +1,22 @@
+id: http://example.org/tests/issue18
+
+description: Situation where the domain of the inverse slot is not declared.
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    slots:
+      - s1
+
+  c2:
+
+slots:
+  s1:
+    inverse: s2
+
+  s2:

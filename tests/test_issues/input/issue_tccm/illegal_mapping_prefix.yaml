@@ -1,0 +1,56 @@
+id: https://hotecosystem.org/tccm/mappingissue
+name: mappingissue
+title: Illegal Mapping
+comments:
+  - >-
+    mappings are not inherited.  The following model should produce:
+
+    s1: DO:c1000
+    s1: T1:c7000
+    c1_s2: MI:c3000
+    c1_s1: FA:c4000
+    c2_s2: SO:c5000
+    c1: RE:c2000
+    c2: LA:c6000
+
+    All of the above mappings should result in Undefined prefix errors
+
+prefixes:
+  tccm: https://hotecosystem.org/tccm/
+
+default_prefix: tccm
+default_range: string
+
+imports:
+  - datatypes
+
+slots:
+  s1:
+    mappings:
+      - DO:c1000
+
+  s2:
+    is_a: s1
+    mappings:
+      - TI:c7000
+
+classes:
+  c1:
+    mappings:
+      - RE:c2000
+    slot_usage:
+      s2:
+        mappings:
+          - MI:c3000
+  c2:
+    is_a: c1
+    slot_usage:
+      s1:
+        mappings:
+          - FA:c4000
+      s2:
+        mappings:
+          - SO:c5000
+    mappings:
+      - LA:c6000
+

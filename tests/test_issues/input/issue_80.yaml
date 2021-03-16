@@ -1,0 +1,39 @@
+id: http://example.org/issues/80
+name: Issue_80_test_case
+description: Example identifier
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  model: https://w3id.org/biolink/
+  biolink: https://w3id.org/biolink/vocab/
+  linkml: https://w3id.org/linkml/
+  ex: http://example.org/
+
+default_prefix: biolink
+default_range: string
+
+imports:
+  - linkml:types
+
+slots:
+  id:
+    # The unique identifier of an object.  Must be a URI or Curie
+    identifier: True
+    range: objectidentifier
+
+  name:
+    # The name of the person
+    required: True
+
+  age:
+    range: integer
+
+
+classes:
+    person:
+        description: A person, living or dead
+        class_uri: ex:PERSON
+        slots:
+            - id
+            - name
+            - age

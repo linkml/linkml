@@ -1,0 +1,363 @@
+id: http://examples.org/linkml/test/lists_and_keys
+name: lists_and_keys
+description: python generation for variants of lists and keys
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  lists_and_keys: http://examples.org/linkml/test/lists_and_keys
+
+default_prefix: lists_and_keys
+default_range: string
+
+imports:
+  - python_complex_ranges
+
+classes:
+  #
+  # Non-keyed classes
+  OptionalOneElementRange:
+    description: Range is a optional class that contains one non-key/non-identifier element
+    attributes:
+      v1:
+        range: OneElementClass
+
+  RequiredOneElementRange:
+    description: Range is a required class that contains one non-key/non-identifier element
+    attributes:
+      v1:
+        range: OneElementClass
+        required: true
+
+  OptionalOneElementRangeList:
+    description: Range is a optional list of a class that contain one non-key/non-identifier element
+    attributes:
+      v1:
+        range: OneElementClass
+        multivalued: true
+
+  RequiredOneElementRangeList:
+    description: Range is a required list of a class that contain one non-key/non-identifier element
+    is_a: OptionalOneElementRangeList
+    slot_usage:
+      v1:
+        required: true
+
+  RequiredTwoElementRangeList:
+    description: Range is a required list of a class that contain two non-key/non-identifier elements
+    slot_usage:
+      v1:
+        range: TwoElementClass
+        multivalued: true
+        required: true
+
+  RequiredThreeElementRangeList:
+    description: Range is a required list of a class that contain two non-key/non-identifier elements
+    attributes:
+      v1:
+        range: ThreeElementClass
+        required: true
+        multivalued: true
+
+  OptionalKeyedOneElementRange:
+    description: Range is a optional class that contains one key element
+    attributes:
+      v1:
+        range: KeyedOneElementClass
+
+  OptionalKeyedOneElementRangeList:
+    description: Range is a optional list of a class that contains one key element
+    attributes:
+      v1:
+        range: KeyedOneElementClass
+        multivalued: true
+
+  OptionalIdentifiedOneElementRange:
+    description: Range is a optional class that contains one identifier element
+    attributes:
+      v1:
+        range: IdentifiedOneElementClass
+
+  OptionalIdentifiedOneElementRangeList:
+    description: Range is a optional list of a class that contains one identifier element
+    attributes:
+      v1:
+        range: IdentifiedOneElementClass
+        multivalued: true
+
+  OptionalKeyedTwoElementRange:
+    description: Range is a optional class that contains one key and one regular element
+    attributes:
+      v1:
+        range: KeyedTwoElementClass
+
+  OptionalKeyedTwoElementRangeList:
+    description: Range is a optional list of a class that contains one key and one regular element
+    attributes:
+      v1:
+        range: KeyedTwoElementClass
+        multivalued: true
+
+  OptionalKeyedThreeElementRange:
+    description: Range is a optional class that contains one key and two regular elements
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+
+  OptionalKeyedThreeElementRangeList:
+    description: Range is a optional list of a class that contains one key and two regular elements
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        multivalued: true
+
+  RequiredIdentifiedThreeElementRange:
+    description: Range is a required class that contains one identifier and two regular elements
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        required: true
+
+  RequiredIdentifiedThreeElementRangeList:
+    description: Range is a optional list of a class that contains one identifier and two regular elements
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        multivalued: true
+        required: true
+
+
+  RequiredKeyedThreeElementRangeList:
+    description: Range is a optional list of a class that contains one key and two regular elements
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        multivalued: true
+        required: true
+
+#  InlinedV1Mixin:
+#    description: Mixin that declares v1 as inlined
+#    notes:
+#      - TODO: figure out whether this approach is even legal
+#    slot_usage:
+#      v1:
+#        inlined: true
+#        required: true
+
+  RequiredInlinedOneElementRange:
+    description: Range is a required inlined class that contains one non-key/non-identifier element
+    is_a: RequiredOneElementRange
+    slot_usage:
+      v1:
+        inlined: true
+
+  RequiredInlinedOneElementRangeList:
+    description: Range is a required inlined list of a class that contains one non-key/non-identifier element
+    is_a: RequiredOneElementRangeList
+    slot_usage:
+      v1:
+        inlined: true
+
+
+  RequiredInlinedTwoElementRangeList:
+    description: Range is a required inlined list of a class that contains two non-key/non-identifier elements
+    is_a: RequiredTwoElementRangeList
+    slot_usage:
+      v1:
+        inlined: true
+
+  RequiredInlinedThreeElementRangeList:
+    description: Range is a required inlined list of a class that contains two non-key/non-identifier elements
+    is_a: RequiredThreeElementRangeList
+    slot_usage:
+      v1:
+        inlined: true
+
+  RequiredInlinedKeyedOneElementRange:
+    description: Range is an inlined required class that contains one key element
+    is_a: OptionalKeyedOneElementRange
+    slot_usage:
+      v1:
+        inlined: true
+        required: true
+
+  RequiredInlinedKeyedOneElementRangeList:
+    description: Range is an inlined required list of a class that contains one key element
+    is_a: OptionalKeyedOneElementRangeList
+    slot_usage:
+      v1:
+        inlined: true
+        required: true
+
+  RequiredInlinedKeyedTwoElementRange:
+    description: Range is an inlined required class that contains one key element and one non-key
+    is_a: OptionalKeyedTwoElementRange
+    slot_usage:
+      v1:
+        inlined: true
+        required: true
+
+  RequiredInlinedKeyedTwoElementRangeList:
+    description: Range is an inlined required list of a class that contains one key element and  one non-key
+    is_a: OptionalKeyedTwoElementRangeList
+    slot_usage:
+      v1:
+        inlined: true
+        required: true
+
+  RequiredInlinedKeyedThreeElementRange:
+    description: Range is an inlined required class that contains one key element and two non-keys
+    is_a: OptionalKeyedThreeElementRange
+    slot_usage:
+      v1:
+        inlined: true
+        required: true
+
+  RequiredInlinedKeyedThreeElementRangeList:
+    description: Range is an inlined required list of a class that contains one key element and two non-keys
+    is_a: OptionalKeyedThreeElementRangeList
+    slot_usage:
+      v1:
+        inlined: true
+        required: true
+
+  RequiredInlinedIdentifiedOneElementRangeList:
+    description: Range is an inlined required list of a class that contains one identified element
+    attributes:
+      v1:
+        range: IdentifiedOneElementClass
+        inlined: true
+        required: true
+        multivalued: true
+
+  EntryList:
+    attributes:
+      entries:
+        range: KeyedTwoElementClass
+        inlined: true
+        multivalued: true
+
+  # =============================
+  # Specific for documentation
+  # =============================
+  OptionalThreeElementRange:
+    description: Case 1.1(o) -- single values optional slot - range has no keys or identifiers
+    attributes:
+      v1:
+        range: ThreeElementClass
+
+  RequiredThreeElementRange:
+    description: Case 1.1(r) -- single values optional slot - range has no keys or identifiers
+    attributes:
+      v1:
+        range: ThreeElementClass
+        required: true
+
+  OptionalIdentifiedThreeElementRange:
+    description: Case 1.2(o) -- single values optional slot - range has an identifier
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+
+  RequiredKeyedThreeElementRange:
+    description: Case 1.2(r) -- single values optional slot - range has a key
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        required: true
+
+  OptionalInlinedKeyedThreeElementRange:
+    description: Case 1.3(o) -- single values optional slot - range has an identifier
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        inlined: true
+
+  RequiredInlinedIdentifiedThreeElementRange:
+    description: Case 1.3(r) -- single values optional slot - range has a key
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        required: true
+        inlined: true
+
+  OptionalInlinedAsListKeyedThreeElementRange:
+    description: Case 1.4(o) -- single values optional slot - range has an identifier
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        inlined_as_list: true
+
+  RequiredInlinedAsListIdentifiedThreeElementRange:
+    description: Case 1.4(r) -- single values optional slot - range has a key
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        required: true
+        inlined_as_list: true
+
+  OptionalMultivaluedThreeElementRange:
+    description: Case 2.1(o) -- multivalued optional slot - range has no key or identifier
+    attributes:
+      v1:
+        range: ThreeElementClass
+        multivalued: true
+
+  RequiredMultivaluedThreeElementRange:
+    description: Case 2.1(r) -- multivalued optional slot - range has no key or identifier
+    attributes:
+      v1:
+        range: ThreeElementClass
+        multivalued: true
+        required: true
+
+  OptionalMultivaluedKeyedThreeElementRange:
+    description: Case 2.2(o) -- multivalued optional slot - range has a key
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        multivalued: true
+
+  RequiredMultivaluedIdentifiedThreeElementRange:
+    description: Case 2.2(r) -- multivalued required slot - range has an identifier
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        multivalued: true
+        required: true
+
+  OptionalMultivaluedInlinedListIdentifiedThreeElementRange:
+    description: 2.3(o) Range is an optional identified three element class that is represented as an inlined list
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        multivalued: true
+        inlined_as_list: true
+
+
+  RequiredMultivaluedInlinedListKeyedThreeElementRangeList:
+    description: 2.3(r) Range is a required keyed three element class that is represented as an inlined list
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        multivalued: true
+        inlined_as_list: true
+        required: true
+
+  OptionalMultivaluedInlinedIdentifiedThreeElementRangeList:
+    description: 2.4(o) Range is an optional identified three element class that is represented as an inlined dictionary
+    attributes:
+      v1:
+        range: IdentifiedThreeElementClass
+        multivalued: true
+        inlined: true
+
+
+  RequiredMultivaluedInlinedKeyedThreeElementRange:
+    description: 2.4(r) Range is a required keyed three element class that is represented as an inlined dictionary
+    attributes:
+      v1:
+        range: KeyedThreeElementClass
+        multivalued: true
+        inlined: true
+        required: true

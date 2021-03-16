@@ -1,0 +1,19 @@
+id: https://example.com/schema
+
+prefixes:
+  dct:  http://purl.org/dc/terms/
+  metat:  https://w3id.org/linkml/
+
+emit_prefixes:
+  - dct
+
+imports: [metat:types]
+default_range: string
+
+slots:
+  dct:created: {range: datetime}  # slot_uri: "dct:created"
+
+classes:
+  Company:
+    slots:
+    - dct:created

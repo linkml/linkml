@@ -1,0 +1,79 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+# meta/ --> docs
+RewriteRule ^meta\/(.*)$ docs
+
+RewriteRule ^type\/(.*)$ docs/types
+
+# mapping/ --> docs/mappings
+RewriteRule ^mapping\/(.*)$ docs/mappings
+
+# extension/ --> docs/extensions
+RewriteRule ^extension\/(.*)$ docs/extensions
+
+# annotation/ --> docs/annotations
+RewriteRule ^annotation\/(.*)$ docs/annotations
+
+# types --> includes/types
+RewriteRule ^types(\/?)$ includes/types
+
+# mappings --> includes/mappings
+RewriteRule ^mappings(\/?)$ includes/mappings
+
+# extensions --> includes/extensions
+RewriteRule ^extensions(\/?)$ includes/extensions
+
+# annotations --> includes/annotations
+RewriteRule ^annotations(\/?)$ includes/annotations
+
+# types.sfx --> includes/types.sfx
+RewriteRule ^(types\.)(.+)$ includes/types.$2
+
+# mappings.sfx --> includes/mappings.sfx
+RewriteRule ^(mappings\.)(.+)$ includes/mappings.$2
+
+# extensions.sfx --> includes/extensions.sfx
+RewriteRule ^(extensions\.)(.+)$ includes/extensions.$2
+
+# annotations.sfx --> includes/annotations.sfx
+RewriteRule ^(annotations\.)(.+)$ includes/annotations.$2
+
+
+# Poor man's conneg
+# ------------------------------------
+RewriteCond %{HTTP_ACCEPT} ^text/turtle
+RewriteRule ^(.*/)([^./]+)$ $1$2.ttl [L]
+
+RewriteCond %{HTTP_ACCEPT} ^text/turtle
+RewriteRule ^(meta)$ meta.ttl [L]
+
+RewriteCond %{HTTP_ACCEPT} ^text/yaml
+RewriteRule ^(.*/)([^./]+)$ $1$2.yaml [L]
+
+RewriteCond %{HTTP_ACCEPT} ^text/yaml
+RewriteRule ^(meta)$ meta.yaml [L]
+
+RewriteCond %{HTTP_ACCEPT} ^application/json
+RewriteRule ^(.*/)([^./]+)$ $1$2.jsonld [L]
+
+RewriteCond %{HTTP_ACCEPT} ^application/json
+RewriteRule ^(meta)$ meta.jsonld [L]
+
+RewriteCond %{HTTP_ACCEPT} ^text/shex
+RewriteRule ^(.*/)([^./]+)$ $1$2.shex [L]
+
+RewriteCond %{HTTP_ACCEPT} ^text/shex
+RewriteRule ^(meta)$ meta.shex [L]
+
+# RewriteCond %{HTTP_ACCEPT} ^text/html
+# RewriteRule ^(.*/)[^./]+)$ $1$2.html [L]
+
+# RewriteCond %{HTTP_ACCEPT} ^text/html
+# RewriteRule ^(meta)$ meta.html [L]
+
+
+# Rewrite Base URL
+RewriteRule ^(.*)$ https://linkml.github.io/linkml/$1 [R=302]
+
+

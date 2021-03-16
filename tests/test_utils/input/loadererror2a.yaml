@@ -1,0 +1,18 @@
+id: http://schema.org/example/loaderror1
+name: loaderror1
+description: Optional key slot
+
+types:
+  string:
+    base: str
+    uri: http://example.org/string
+
+slots:
+  s1:
+    domain: c1
+    range: string
+    key: true
+    required: false
+
+classes:
+  c1:

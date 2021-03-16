@@ -1,0 +1,11 @@
+id: http://schema.org/example/loadertest1
+name: loadertest1
+description: No default slot type defined
+
+
+default_prefix: foo
+default_range: string
+
+types:
+  string:
+    base: str

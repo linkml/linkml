@@ -1,0 +1,18 @@
+id: http://example.org/tests/curiecase
+name: curiecase
+
+
+prefixes:
+  aBC: http://example.org/abc#
+
+classes:
+  c1:
+    class_uri: abc:c1
+
+
+  c2:
+    class_uri: ABC:t2
+
+  c3:
+    class_uri: aBc:t3
+

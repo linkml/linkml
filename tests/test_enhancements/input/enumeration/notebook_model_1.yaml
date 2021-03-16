@@ -1,0 +1,33 @@
+id: http://example.org/test/simple
+name: simple
+description: Very simple enumeration
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  play: http://example.org/test/play/
+
+default_range: string
+default_prefix: play
+
+imports:
+  - linkml:types
+
+
+enums:
+  OpenEnum:
+    description: Baseline enumeration -- simple code/value pairs, where the value (description) is optional
+    permissible_values:
+      a: top
+      b: middle
+      c: bottom
+      d:
+
+classes:
+    PositionalRecord:
+        attributes:
+            id:
+                range: string
+                identifier: true
+            position:
+                range: OpenEnum
+                required: true

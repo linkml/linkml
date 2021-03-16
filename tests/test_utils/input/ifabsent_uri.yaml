@@ -1,0 +1,27 @@
+id: http://example.org/tests/ifabsent
+name: ifabsent
+
+prefixes:
+  test: http://example.org/tests/ifabsent/
+  skos: http://www.w3.org/2004/02/skos/core#
+  linkml: https://w3id.org/linkml/
+
+emit_prefixes:
+  - skos
+
+imports:
+  - linkml:types
+
+
+slots:
+  s1:
+    ifabsent: uri(http://www.w3.org/2004/02/skos/core#label)
+
+  s2:
+    ifabsent: uri(skos:definition)
+
+classes:
+  c1:
+    slots:
+      - s1
+      - s2

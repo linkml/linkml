@@ -1,0 +1,12 @@
+#+ description: report all elements and their types
+
+prefix : <https://w3id.org/linkml/meta/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?scheme  ?ElementClass ?element ?def
+WHERE {
+  ?ElementClass :is_a* :Element .
+  ?element a ?ElementClass .
+  ?element skos:inScheme ?scheme
+  OPTIONAL { ?element skos:definition ?def }
+}

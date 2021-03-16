@@ -1,0 +1,36 @@
+id: http://example.org/import_test_1
+title: Base for import test
+name: import_test_1
+
+prefixes:
+  base: http://example.org/
+  test: http://example.org/import_test_1#
+
+default_prefix: test
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+imports:
+  - http://example.org/import_test_2
+  - base:import_test_2
+  - loc/imp3
+  - types
+
+types:
+  s1:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+slots:
+  slot_1:
+    domain: class_1
+    range: string
+
+
+classes:
+  class_1:
+    slots:
+      - slot_1

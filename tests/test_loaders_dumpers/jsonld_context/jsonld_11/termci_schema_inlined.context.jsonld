@@ -1,0 +1,114 @@
+{
+  "@context": [
+    {
+      "type": "@type",
+      "linkml": "https://w3id.org/linkml/",
+      "dc": "http://purl.org/dc/elements/1.1/",
+      "sct": "http://snomed.info/id/",
+      "sh": "http://www.w3.org/ns/shacl#",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "termci": "https://hotecosystem.org/termci/",
+      "obo": "https://purl.obolibrary.org/obo/",
+      "ncit": {
+        "@id": "http://purl.obolibrary.org/obo/NCI_",
+        "@prefix": true
+      }
+    },
+    {
+      "@vocab": "https://hotecosystem.org/termci/",
+      "system": {
+        "@type": "@id",
+        "@id": "termci:system",
+        "@container": "@set",
+        "@context": {
+          "@id": "skos:ConceptScheme",
+          "@context": {
+            "prefix": {
+              "@id": "sh:prefix"
+            },
+            "namespace": "@id",
+            "description": {
+              "@id": "dc:description"
+            },
+            "reference": {
+              "@id": "skos:seeAlso"
+            },
+            "root_concept": {
+              "@type": "@id",
+              "@id": "skos:hasTopConcept",
+              "@container": "@set",
+              "@context": {
+                "uri": "@id",
+                "code": {
+                  "@id": "skos:notation"
+                },
+                "designation": {
+                  "@id": "skos:prefLabel"
+                },
+                "definition": {
+                  "@id": "skos:definition"
+                },
+                "reference": {
+                  "@id": "skos:seeAlso",
+                  "@container": "@set"
+                },
+                "defined_in": {
+                  "@type": "@id",
+                  "@id": "skos:inScheme"
+                },
+                "narrower_than": {
+                  "@type": "@id",
+                  "@id": "skos:broader",
+                  "@container": "@set"
+                }
+              }
+            },
+            "contents": {
+              "@type": "@id",
+              "@id": "skos:hasConcept",
+              "@container": "@set",
+              "@context": {
+                "uri": "@id",
+                "code": {
+                  "@id": "skos:notation"
+                },
+                "designation": {
+                  "@id": "skos:prefLabel"
+                },
+                "definition": {
+                  "@id": "skos:definition"
+                },
+                "reference": {
+                  "@id": "skos:seeAlso",
+                  "@container": "@set"
+                },
+                "defined_in": {
+                  "@type": "@id",
+                  "@id": "skos:inScheme"
+                },
+                "narrower_than": {
+                  "@type": "@id",
+                  "@id": "skos:broader",
+                  "@container": "@set"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "@omitGraph": true,
+  "@type": "termci:Package",
+  "system": {
+    "@embed": "@always",
+    "contents": {
+      "defined_in": {
+        "@embed": "@never"
+      },
+      "narrower_than": {
+        "@embed": "@never"
+      }
+    }
+  }
+}

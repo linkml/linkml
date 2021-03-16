@@ -1,0 +1,26 @@
+id: https://example.com/test62
+
+prefixes:
+  meta:  https://w3id.org/linkml/
+
+imports: [meta:types]
+default_range: string
+
+types:
+  iri type:
+    typeof: uriorcurie
+    description: >-
+      An IRI
+
+slots:
+  category:
+    domain: named thing
+    range: iri type
+    multivalued: true
+    required: true
+    slot_uri: rdfs:subClassOf
+
+classes:
+  named thing:
+    slots:
+      - category

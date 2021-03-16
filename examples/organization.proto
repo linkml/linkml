@@ -1,0 +1,26 @@
+// A person
+message Employee
+ {
+  id String = 1
+  optional firstName String = 2
+  lastName String = 3
+  repeated aliases String = 4
+  optional ageInYears YearCount = 5
+ }
+// An employee who manages others
+message Manager
+ {
+  id String = 1
+  optional firstName String = 2
+  lastName String = 3
+  repeated aliases String = 4
+  optional ageInYears YearCount = 5
+  repeated hasEmployees Employee = 6
+ }
+message Organization
+ {
+  id String = 1
+  optional name String = 2
+  optional hasBoss Manager = 3
+ }
+

@@ -1,0 +1,34 @@
+id: http://example.org/tests/issue167b
+name: annotations_test
+
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:annotations
+
+default_prefix: ex
+
+default_curi_maps:
+    - semweb_context
+
+classes:
+  my class:
+    description: >-
+      Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the
+      SKOS namespace
+
+    annotations:
+      SKOS:prefLabel: a label
+      altLabel: some other label
+
+  my class 2:
+    description: ->
+      This form of annotations is a tag/value format, which allows annotations to be annotated.  Note, however, that
+      the annotation source is NOT a CURIE, rather just a string.
+    annotations:
+      - tag: prefLabel
+        value: a preferred label
+        annotations:
+          source: PMID:12345

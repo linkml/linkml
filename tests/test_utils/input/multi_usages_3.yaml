@@ -1,0 +1,31 @@
+id: http://example.org/multi_usages_3
+name: multi_usages_3
+
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+    linkml: https://w3id.org/linkml/
+
+default_range: string
+
+imports:
+  linkml:types
+
+slots:
+    s1:
+      range: string
+      alias: value
+
+
+
+classes:
+  root_class:
+    slots:
+      - s1
+
+  child_class1:
+    is_a: root_class
+    slot_usage:
+      s1:
+        range: boolean
+        alias: foo
+

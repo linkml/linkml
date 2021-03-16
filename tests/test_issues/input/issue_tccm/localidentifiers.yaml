@@ -1,0 +1,51 @@
+id: https://hotecosystem.org/tccm/localidentifiers
+name: localidentifiers
+title: TCCM Local Identifiers Model
+description: >-
+  This sub clause lists the specific types of local identifiers that are used within the TCCM specification. Instances 
+  of each type of local identifier must be unique within the context of the service instance. As an example, “SCT” might
+  uniquely name the SNOMED-CT code system within the context of one service, while another service might use “SMD-CT.” 
+  As a consequence, local identifiers can never be used in interchanges between services - URIs must be used instead. 
+  Note, also, that it is okay to have the same local identifier for different types of resource. As an example, the 
+  identifier “SCT” could be a CodeSystemName for the SNOMED-CT code system and a ValueSetName for the “
+  Standardized Category Terms” value set.
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  tccm: https://hotecosystem.org/tccm/
+
+default_prefix: tccm
+default_range: string
+
+imports:
+  - datatypes
+
+types:
+  CodeSystemName:
+    typeof: LocalIdentifier
+    description: A local identifier for a CodeSystem.
+
+  CodeSystemVersionName:
+    typeof: LocalIdentifier
+    description: A local identifier for a CodeSystemVersion.
+
+  ConceptDomainName:
+    typeof: LocalIdentifier
+    description: A local identifier for a ConceptDomain.
+
+  MapName:
+    typeof: LocalIdentifier
+    description: A local identifier for a Map.
+        
+  MapVersionName:
+    typeof: LocalIdentifier
+    description: A local identifier for a MapVersion.
+        
+  ValueSetName:
+    typeof: LocalIdentifier
+    description: A local identifier for a ValueSet.
+        
+  VersionTagName:
+    typeof: LocalIdentifier
+    description: A local identifier for a VersionTag.
+  

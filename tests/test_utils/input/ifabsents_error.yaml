@@ -1,0 +1,19 @@
+id: http://example.org/tests/ifabsent
+name: ifabsent
+
+prefixes:
+  test: http://example.org/test/
+  skos: http://www.w3.org/2004/02/skos/core#
+
+imports:
+  - ../../../includes/types
+
+
+slots:
+  s1:
+    ifabsent: truey
+
+classes:
+  c1:
+    slots:
+      - s1

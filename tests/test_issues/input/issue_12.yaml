@@ -1,0 +1,36 @@
+id: http://example.org/tests/types
+name: types
+
+prefixes:
+  metatype: https://w3id.org/linkml/types/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+
+default_range: string
+default_prefix: metatype
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+
+slots:
+
+  has phenotype:
+      domain: biological entity
+      range: phenotypic feature
+
+  required thing:
+    range: phenotypic feature
+
+
+classes:
+  biological entity:
+    slots:
+      - required thing
+
+  phenotypic feature:
+
+
+

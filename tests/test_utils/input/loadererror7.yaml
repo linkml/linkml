@@ -1,0 +1,29 @@
+id: http://example.org/example/loaderror7
+name: loaderror7
+description: Class c2 has two keys
+
+default_range: string
+
+types:
+  string:
+    base: str
+    uri: http://example.com/string
+
+slots:
+  key1:
+    key: true
+
+  key2:
+    key: true
+
+classes:
+  c1:
+    slots:
+      - key1
+
+  c2:
+    is_a: c1
+    slots:
+      - key2
+
+

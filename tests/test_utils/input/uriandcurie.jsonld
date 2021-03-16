@@ -1,0 +1,20 @@
+{
+   "_comments": "Auto generated from ... by jsonldcontextgen.py version: 0.1.1\nGeneration date: \nSchema: uriandcurie\n\nid: http://example.org/test/uriandcurie\ndescription: \nlicense: \n",
+   "@context": {
+      "type": "@type",
+      "m": "http://example.org/test/uriandcurie",
+      "shex": "http://www.w3.org/ns/shex#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "http://example.org/test/uriandcurie",
+      "hasCurie": {
+         "@type": "@id"
+      },
+      "hasURI": {
+         "@type": "@id"
+      },
+      "id": "@id",
+      "id2": {
+         "@type": "@id"
+      }
+   }
+}

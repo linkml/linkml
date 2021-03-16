@@ -1,0 +1,5 @@
+schema1:
+  id: "http://example.org/schema1"
+
+  slots:
+    s1

@@ -1,0 +1,29 @@
+id: http://example.org/test/pattern_1
+name: pattern_1
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  pattern: http://example.org/test/pattern_1/
+
+default_range: string
+default_prefix: pattern
+
+imports:
+  - linkml:types
+
+slots:
+  device:
+    range: string
+    pattern: "^/dev/[^/]+(/[^/]+)*$"
+
+  label:
+    range: string
+    pattern: "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
+    identifier: true
+
+
+classes:
+  DiskDevice:
+    slots:
+      - device
+      - label

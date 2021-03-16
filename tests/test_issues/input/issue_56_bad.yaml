@@ -1,0 +1,37 @@
+id: http://example.com
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+classes:
+    c1:
+      slots:
+        - id
+
+    c2:
+      is_a: c1
+      slots:
+        - s1
+
+    c3:
+      is_a: c1
+      slots:
+        - s2
+
+
+slots:
+    id:
+      description: a identifier
+      identifier: true
+
+    s1:
+      domain: c1
+
+    s2:
+      domain: c2
+

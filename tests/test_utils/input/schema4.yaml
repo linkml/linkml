@@ -1,0 +1,16 @@
+schema4:
+  id: "http://example.org/schema4"
+  title: Load Raw Schema Test
+
+  types:
+    string:
+      base: str
+
+schema5:
+  id: "http://example.org/schema5"
+  title: A second raw test
+
+  description: A schema to be merged
+  types:
+    integer:
+      base: int

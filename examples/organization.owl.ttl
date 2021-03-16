@@ -1,0 +1,157 @@
+@prefix meta: <https://w3id.org/linkml/meta/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/sample/organization> a owl:Ontology ;
+    rdfs:label "organization" ;
+    meta:generation_date "2020-11-12 14:18" ;
+    meta:metamodel_version "1.6.0" ;
+    meta:source_file "organization.yaml" ;
+    meta:source_file_date "Tue Sep 15 11:28:55 2020" ;
+    meta:source_file_size 1227 .
+
+<http://example.org/sample/organization/Organization> a owl:Class,
+        meta:ClassDefinition ;
+    rdfs:label "organization" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onClass <http://example.org/sample/organization/String> ;
+            owl:onProperty <http://example.org/sample/organization/id> ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <http://example.org/sample/organization/String> ;
+            owl:onProperty <http://example.org/sample/organization/name> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <http://example.org/sample/organization/Manager> ;
+            owl:onProperty <http://example.org/sample/organization/has_boss> ] .
+
+meta:SubsetDefinition a owl:Class ;
+    rdfs:label "subset_definition" ;
+    skos:definition "the name and description of a subset" .
+
+meta:employee_last_name a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "employee_last name" ;
+    rdfs:domain <http://example.org/sample/organization/Employee> ;
+    rdfs:range <http://example.org/sample/organization/String> ;
+    rdfs:subPropertyOf <http://example.org/sample/organization/last_name> .
+
+<http://example.org/sample/organization/age_in_years> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "age in years" ;
+    rdfs:range <http://example.org/sample/organization/YearCount> ;
+    skos:definition "The age of a person if living or age of death if not" .
+
+<http://example.org/sample/organization/aliases> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "aliases" ;
+    rdfs:range <http://example.org/sample/organization/String> ;
+    rdfs:subPropertyOf <http://example.org/sample/organization/name> ;
+    skos:definition "An alternative name" .
+
+<http://example.org/sample/organization/first_name> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "first name" ;
+    rdfs:range <http://example.org/sample/organization/String> ;
+    rdfs:subPropertyOf <http://example.org/sample/organization/name> ;
+    skos:definition "The first name of a person" ;
+    meta:examples "Example(value='fred', description=None)" .
+
+<http://example.org/sample/organization/has_boss> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "has boss" ;
+    rdfs:range <http://example.org/sample/organization/Manager> .
+
+<http://example.org/sample/organization/has_employees> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "has employees" ;
+    rdfs:range <http://example.org/sample/organization/Employee> .
+
+<http://example.org/sample/organization/Manager> a owl:Class,
+        meta:ClassDefinition ;
+    rdfs:label "manager" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <http://example.org/sample/organization/Employee> ;
+            owl:onProperty <http://example.org/sample/organization/has_employees> ],
+        <http://example.org/sample/organization/Employee> ;
+    skos:definition "An employee who manages others" .
+
+<http://example.org/sample/organization/YearCount> a owl:Class,
+        meta:TypeDefinition ;
+    rdfs:label "yearCount" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange <http://example.org/UNKNOWN/xsd/int> ;
+            owl:onProperty meta:topValue ;
+            owl:qualifiedCardinality 1 ] .
+
+<http://example.org/sample/organization/id> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "id" ;
+    rdfs:range <http://example.org/sample/organization/String> ;
+    skos:definition "Unique identifier of a person" .
+
+<http://example.org/sample/organization/last_name> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "last name" ;
+    rdfs:range <http://example.org/sample/organization/String> ;
+    rdfs:subPropertyOf <http://example.org/sample/organization/name> ;
+    skos:definition "The last name of a person" .
+
+meta:TypeDefinition a owl:Class ;
+    rdfs:label "type_definition" ;
+    skos:definition "A data type definition." .
+
+meta:topValue a owl:DatatypeProperty ;
+    rdfs:label "value" .
+
+meta:ClassDefinition a owl:Class ;
+    rdfs:label "class_definition" ;
+    skos:definition "the definition of a class or interface" .
+
+<http://example.org/sample/organization/Employee> a owl:Class,
+        meta:ClassDefinition ;
+    rdfs:label "employee" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <http://example.org/sample/organization/YearCount> ;
+            owl:onProperty <http://example.org/sample/organization/age_in_years> ],
+        [ a owl:Restriction ;
+            owl:onClass <http://example.org/sample/organization/String> ;
+            owl:onProperty <http://example.org/sample/organization/last_name> ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:onClass <http://example.org/sample/organization/String> ;
+            owl:onProperty <http://example.org/sample/organization/id> ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <http://example.org/sample/organization/String> ;
+            owl:onProperty <http://example.org/sample/organization/aliases> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <http://example.org/sample/organization/String> ;
+            owl:onProperty <http://example.org/sample/organization/first_name> ] ;
+    skos:definition "A person" .
+
+<http://example.org/sample/organization/name> a owl:ObjectProperty,
+        meta:SlotDefinition ;
+    rdfs:label "name" ;
+    rdfs:range <http://example.org/sample/organization/String> ;
+    skos:definition "human readable name" .
+
+meta:SlotDefinition a owl:Class ;
+    rdfs:label "slot_definition" ;
+    skos:definition "the definition of a property or a slot" .
+
+<http://example.org/sample/organization/String> a owl:Class,
+        meta:TypeDefinition ;
+    rdfs:label "string" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange <http://example.org/UNKNOWN/xsd/string> ;
+            owl:onProperty meta:topValue ;
+            owl:qualifiedCardinality 1 ] .
+
+
+

@@ -1,0 +1,28 @@
+id: http://example.org/tests/issue18
+
+description: Error test where inverse slot is not symmetric
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    slots:
+      - s1
+
+  c2:
+    slots:
+      - s2
+
+
+slots:
+  s1:
+    inverse: s2
+
+  s2:
+    inverse: s3
+
+  s3:

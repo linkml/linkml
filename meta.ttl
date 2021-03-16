@@ -1,0 +1,2338 @@
+@prefix : <https://w3id.org/linkml/meta/> .
+@prefix OIO: <http://www.geneontology.org/formats/oboInOwl#> .
+@prefix bibo: <http://purl.org/ontology/bibo/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix meta: <https://w3id.org/linkml/meta/> .
+@prefix metatype: <https://w3id.org/linkml/meta/types/> .
+@prefix oslc: <http://open-services.net/ns/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+meta:metamodel a meta:SchemaDefinition ;
+    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    dcterms:title "Biolink Schema Metamodel" ;
+    pav:version "1.7.0" ;
+    skos:definition "A metamodel for defining biolink related schemas" ;
+    meta:classes meta:AltDescription,
+        meta:Annotatable,
+        meta:Annotation,
+        meta:ClassDefinition,
+        meta:Definition,
+        meta:Element,
+        meta:EnumDefinition,
+        meta:Example,
+        meta:Extensible,
+        meta:Extension,
+        meta:LocalName,
+        meta:PermissibleValue,
+        meta:Prefix,
+        meta:SchemaDefinition,
+        meta:SlotDefinition,
+        meta:SubsetDefinition,
+        meta:TypeDefinition ;
+    meta:default_curi_maps "semweb_context" ;
+    meta:default_prefix "meta" ;
+    meta:default_range meta:string ;
+    meta:emit_prefixes "IAO",
+        "OIO",
+        "linkml",
+        "dcterms",
+        "meta",
+        "owl",
+        "pav",
+        "rdf",
+        "rdfs",
+        "skos",
+        "xsd" ;
+    meta:enums meta:pv_formula_options ;
+    meta:generation_date "2021-01-18 15:18"^^xsd:dateTime ;
+    meta:id linkml:meta ;
+    meta:imports linkml:annotations,
+        linkml:extensions,
+        linkml:mappings,
+        linkml:types ;
+    meta:metamodel_version "1.7.0" ;
+    meta:prefixes [ meta:prefix_prefix "bibo" ;
+            meta:prefix_reference bibo: ],
+        [ meta:prefix_prefix "meta" ;
+            meta:prefix_reference meta: ],
+        [ meta:prefix_prefix "schema" ;
+            meta:prefix_reference schema: ],
+        [ meta:prefix_prefix "skos" ;
+            meta:prefix_reference skos: ],
+        [ meta:prefix_prefix "linkml" ;
+            meta:prefix_reference linkml: ],
+        [ meta:prefix_prefix "pav" ;
+            meta:prefix_reference pav: ],
+        [ meta:prefix_prefix "OIO" ;
+            meta:prefix_reference OIO: ],
+        [ meta:prefix_prefix "oslc" ;
+            meta:prefix_reference oslc: ] ;
+    meta:slots meta:abstract,
+        meta:alias,
+        meta:aliases,
+        meta:alt_description_source,
+        meta:alt_description_text,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:apply_to,
+        meta:attributes,
+        meta:base,
+        meta:broad_mappings,
+        meta:class_definition_apply_to,
+        meta:class_definition_is_a,
+        meta:class_definition_mixins,
+        meta:class_uri,
+        meta:classes,
+        meta:close_mappings,
+        meta:code_set,
+        meta:code_set_tag,
+        meta:code_set_version,
+        meta:comments,
+        meta:created_by,
+        meta:created_on,
+        meta:default_curi_maps,
+        meta:default_prefix,
+        meta:default_range,
+        meta:defining_slots,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:domain,
+        meta:domain_of,
+        meta:emit_prefixes,
+        meta:enums,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extension_tag,
+        meta:extension_value,
+        meta:extensions,
+        meta:from_schema,
+        meta:generation_date,
+        meta:id,
+        meta:id_prefixes,
+        meta:identifier,
+        meta:ifabsent,
+        meta:imported_from,
+        meta:imports,
+        meta:in_subset,
+        meta:inherited,
+        meta:inlined,
+        meta:inlined_as_list,
+        meta:inverse,
+        meta:is_a,
+        meta:is_class_field,
+        meta:is_usage_slot,
+        meta:key,
+        meta:last_updated_on,
+        meta:license,
+        meta:local_name_source,
+        meta:local_name_value,
+        meta:local_names,
+        meta:mappings,
+        meta:maximum_value,
+        meta:meaning,
+        meta:metamodel_version,
+        meta:minimum_value,
+        meta:mixin,
+        meta:mixins,
+        meta:modified_by,
+        meta:multivalued,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:owner,
+        meta:pattern,
+        meta:permissible_value_is_a,
+        meta:permissible_value_mixins,
+        meta:permissible_values,
+        meta:prefix_prefix,
+        meta:prefix_reference,
+        meta:prefixes,
+        meta:pv_formula,
+        meta:range,
+        meta:readonly,
+        meta:related_mappings,
+        meta:repr,
+        meta:required,
+        meta:role,
+        meta:schema_definition_name,
+        meta:see_also,
+        meta:singular_name,
+        meta:slot_definition_apply_to,
+        meta:slot_definition_is_a,
+        meta:slot_definition_mixins,
+        meta:slot_definitions,
+        meta:slot_uri,
+        meta:slot_usage,
+        meta:slots,
+        meta:source_file,
+        meta:source_file_date,
+        meta:source_file_size,
+        meta:status,
+        meta:string_serialization,
+        meta:subclass_of,
+        meta:subproperty_of,
+        meta:subsets,
+        meta:symmetric,
+        meta:text,
+        meta:title,
+        meta:todos,
+        meta:tree_root,
+        meta:type_uri,
+        meta:typeof,
+        meta:types,
+        meta:union_of,
+        meta:usage_slot_name,
+        meta:value,
+        meta:value_description,
+        meta:values_from,
+        meta:version ;
+    meta:source_file "meta.yaml" ;
+    meta:source_file_date "Tue Jan  5 15:40:35 2021"^^xsd:dateTime ;
+    meta:source_file_size 32547 ;
+    meta:subsets meta:owl ;
+    meta:types meta:boolean,
+        meta:date,
+        meta:datetime,
+        meta:decimal,
+        meta:double,
+        meta:float,
+        meta:integer,
+        meta:ncname,
+        meta:nodeidentifier,
+        meta:objectidentifier,
+        meta:string,
+        meta:time,
+        meta:uri,
+        meta:uriorcurie .
+
+meta:CODE skos:definition "The permissible values are the set of possible codes in the code set" .
+
+meta:CURIE skos:definition "The permissible values are the set of CURIES in the code set" .
+
+meta:FHIR_CODING skos:definition "The permissible values are the set of FHIR coding elements derived from the code set" .
+
+meta:URI skos:definition "The permissible values are the set of code URIs in the code set" .
+
+meta:date a meta:TypeDefinition ;
+    skos:definition "a date (year, month and day) in an idealized calendar" ;
+    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:inScheme linkml:types ;
+    meta:base "XSDDate" ;
+    meta:definition_uri metatype:Date ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri xsd:date .
+
+meta:decimal a meta:TypeDefinition ;
+    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    skos:inScheme linkml:types ;
+    meta:base "Decimal" ;
+    meta:definition_uri metatype:Decimal ;
+    meta:imported_from "linkml:types" ;
+    meta:uri xsd:decimal .
+
+meta:double a meta:TypeDefinition ;
+    skos:definition "A real number that conforms to the xsd:double specification" ;
+    skos:inScheme linkml:types ;
+    meta:base "float" ;
+    meta:definition_uri metatype:Double ;
+    meta:imported_from "linkml:types" ;
+    meta:uri xsd:double .
+
+meta:float a meta:TypeDefinition ;
+    skos:definition "A real number that conforms to the xsd:float specification" ;
+    skos:inScheme linkml:types ;
+    meta:base "float" ;
+    meta:definition_uri metatype:Float ;
+    meta:imported_from "linkml:types" ;
+    meta:uri xsd:float .
+
+meta:nodeidentifier a meta:TypeDefinition ;
+    skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
+    skos:inScheme linkml:types ;
+    meta:base "NodeIdentifier" ;
+    meta:definition_uri metatype:Nodeidentifier ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri shex:nonLiteral .
+
+meta:objectidentifier a meta:TypeDefinition ;
+    skos:definition "A URI or CURIE that represents an object in the model." ;
+    skos:inScheme linkml:types ;
+    skos:note "Used for inheritence and type checking" ;
+    meta:base "ElementIdentifier" ;
+    meta:definition_uri metatype:Objectidentifier ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri shex:iri .
+
+meta:time a meta:TypeDefinition ;
+    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
+    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:inScheme linkml:types ;
+    meta:base "XSDTime" ;
+    meta:definition_uri metatype:Time ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri xsd:dateTime .
+
+meta:class_definition_apply_to a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "apply_to" ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:is_a meta:apply_to ;
+    meta:is_usage_slot true ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:slot_uri meta:apply_to ;
+    meta:usage_slot_name "apply_to" .
+
+meta:class_definition_is_a a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "is_a" ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:is_a meta:is_a ;
+    meta:is_usage_slot true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:slot_uri meta:is_a ;
+    meta:usage_slot_name "is_a" .
+
+meta:class_definition_mixins a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "mixins" ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:is_a meta:mixins ;
+    meta:is_usage_slot true ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:slot_uri meta:mixins ;
+    meta:usage_slot_name "mixins" .
+
+meta:permissible_value_is_a a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "is_a" ;
+    meta:domain meta:PermissibleValue ;
+    meta:domain_of meta:PermissibleValue ;
+    meta:is_a meta:is_a ;
+    meta:is_usage_slot true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:PermissibleValue ;
+    meta:slot_uri meta:is_a ;
+    meta:usage_slot_name "is_a" .
+
+meta:permissible_value_mixins a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "mixins" ;
+    meta:domain meta:PermissibleValue ;
+    meta:domain_of meta:PermissibleValue ;
+    meta:is_a meta:mixins ;
+    meta:is_usage_slot true ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:PermissibleValue ;
+    meta:slot_uri meta:mixins ;
+    meta:usage_slot_name "mixins" .
+
+meta:pv_formula_options skos:definition "The formula used to generate the set of permissible values from the code_set values" ;
+    skos:editorialNote "{'Q1': 'Do we need a CURIEorURIE entry?'}",
+        "{'Q2': 'Who defines the namespaces for the CURIE form?'}" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:PvFormulaOptions ;
+    meta:permissible_values meta:CODE,
+        meta:CURIE,
+        meta:FHIR_CODING,
+        meta:URI .
+
+meta:schema_definition_name a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "name" ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:identifier true ;
+    meta:is_a meta:name ;
+    meta:is_usage_slot true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:ncname ;
+    meta:required true ;
+    meta:slot_uri meta:name ;
+    meta:usage_slot_name "name" .
+
+meta:slot_definition_apply_to a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "apply_to" ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:is_a meta:apply_to ;
+    meta:is_usage_slot true ;
+    meta:multivalued true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:apply_to ;
+    meta:usage_slot_name "apply_to" .
+
+meta:slot_definition_is_a a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "is_a" ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:is_a meta:is_a ;
+    meta:is_usage_slot true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:is_a ;
+    meta:usage_slot_name "is_a" .
+
+meta:slot_definition_mixins a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:alias "mixins" ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:is_a meta:mixins ;
+    meta:is_usage_slot true ;
+    meta:multivalued true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:mixins ;
+    meta:usage_slot_name "mixins" .
+
+meta:alt_description_source a meta:SlotDefinition ;
+    skos:definition "the source of an attributed description" ;
+    skos:inScheme linkml:meta ;
+    meta:alias "source" ;
+    meta:definition_uri meta:alt_description_source ;
+    meta:domain meta:AltDescription ;
+    meta:domain_of meta:AltDescription ;
+    meta:key true ;
+    meta:owner meta:AltDescription ;
+    meta:range meta:string ;
+    meta:required true ;
+    meta:slot_uri meta:source .
+
+meta:alt_description_text a meta:SlotDefinition ;
+    skos:definition "text of an attributed description" ;
+    skos:inScheme linkml:meta ;
+    meta:alias "description" ;
+    meta:definition_uri meta:alt_description_text ;
+    meta:domain meta:AltDescription ;
+    meta:domain_of meta:AltDescription ;
+    meta:owner meta:AltDescription ;
+    meta:range meta:string ;
+    meta:required true ;
+    meta:slot_uri meta:description .
+
+meta:inverse a meta:SlotDefinition ;
+    skos:definition "indicates that any instance of d s r implies that there is also an instance of r s' d" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation owl:inverseOf ;
+    meta:definition_uri meta:inverse ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri owl:inverseOf .
+
+meta:license a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "license for the schema" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation dcterms:license ;
+    meta:definition_uri meta:license ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri dcterms:license .
+
+meta:local_name_value a meta:SlotDefinition ;
+    skos:definition "a name assigned to an element in a given ontology" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:altLabel ;
+    meta:definition_uri meta:local_name_value ;
+    meta:domain meta:LocalName ;
+    meta:domain_of meta:LocalName ;
+    meta:owner meta:LocalName ;
+    meta:range meta:string ;
+    meta:required true ;
+    meta:slot_uri skos:altLabel .
+
+meta:singular_name a meta:SlotDefinition ;
+    skos:definition "a name that is used in the singular form" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:altLabel ;
+    meta:definition_uri meta:singular_name ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri skos:altLabel .
+
+meta:slot_definitions a meta:SlotDefinition ;
+    skos:definition "slot definitions" ;
+    skos:inScheme linkml:meta ;
+    meta:alias "slots" ;
+    meta:definition_uri meta:slot_definitions ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:slots .
+
+meta:subclass_of a meta:SlotDefinition ;
+    skos:definition "rdfs:subClassOf to be emitted in OWL generation" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation rdfs:subClassOf ;
+    meta:definition_uri meta:subclass_of ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri rdfs:subClassOf .
+
+meta:subproperty_of a meta:SlotDefinition ;
+    skos:definition "Ontology property which this slot is a subproperty of" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation rdfs:subPropertyOf ;
+    meta:definition_uri meta:subproperty_of ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri rdfs:subPropertyOf .
+
+meta:title a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "the official title of the schema" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation dcterms:title ;
+    meta:definition_uri meta:title ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri dcterms:title .
+
+meta:type_uri a meta:SlotDefinition ;
+    skos:definition "The uri that defines the possible values for the type definition" ;
+    skos:inScheme linkml:meta ;
+    skos:note "every root type must have a type uri",
+        "uri is typically drawn from the set of URI's defined in OWL (https://www.w3.org/TR/2012/REC-owl2-syntax-20121211/#Datatype_Maps)" ;
+    meta:alias "uri" ;
+    meta:definition_uri meta:type_uri ;
+    meta:domain meta:TypeDefinition ;
+    meta:domain_of meta:TypeDefinition ;
+    meta:inherited true ;
+    meta:owner meta:TypeDefinition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:uri .
+
+meta:value_description a meta:SlotDefinition ;
+    skos:definition "description of what the value is doing" ;
+    skos:inScheme linkml:meta ;
+    meta:alias "description" ;
+    meta:definition_uri meta:value_description ;
+    meta:domain meta:Example ;
+    meta:domain_of meta:Example ;
+    meta:owner meta:Example ;
+    meta:range meta:string ;
+    meta:slot_uri meta:description .
+
+meta:version a meta:SlotDefinition ;
+    skos:definition "particular version of schema" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation pav:version,
+        schema:schemaVersion ;
+    meta:definition_uri meta:version ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri pav:version .
+
+meta:alias a meta:SlotDefinition ;
+    skos:definition "the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name." ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:alias ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:alias .
+
+meta:attributes a meta:SlotDefinition ;
+    skos:definition "Inline definition of slots" ;
+    skos:inScheme linkml:meta ;
+    skos:note "attributes are an alternative way of defining new slots.  An attribute adds a slot to the global space in the form <class_name>__<slot_name> (lower case, double underscores).  Attributes can be specialized via slot_usage." ;
+    meta:definition_uri meta:attributes ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:attributes .
+
+meta:base a meta:SlotDefinition ;
+    skos:definition "python base type that implements this type definition" ;
+    skos:inScheme linkml:meta ;
+    skos:note "every root type must have a base",
+        "the base is inherited by child types but may be overriden.  Base compatibility is not checked." ;
+    meta:definition_uri meta:base ;
+    meta:domain meta:TypeDefinition ;
+    meta:domain_of meta:TypeDefinition ;
+    meta:inherited true ;
+    meta:owner meta:TypeDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:base .
+
+meta:class_uri a meta:SlotDefinition ;
+    skos:definition "URI of the class in an RDF environment" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:class_uri ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:ifabsent "class_curie" ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:class_uri .
+
+meta:classes a meta:SlotDefinition ;
+    skos:definition "class definitions" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:classes ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:slot_uri meta:classes .
+
+meta:code_set a meta:SlotDefinition ;
+    skos:definition "the identifier of an enumeration code set." ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:code_set ;
+    meta:domain meta:EnumDefinition ;
+    meta:domain_of meta:EnumDefinition ;
+    meta:owner meta:EnumDefinition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:code_set ;
+    meta:todos "this should be able to connect to an existing code set from TCCM" .
+
+meta:code_set_tag a meta:SlotDefinition ;
+    skos:definition "the version tag of the enumeration code set" ;
+    skos:inScheme linkml:meta ;
+    skos:note "enum_definition cannot have both a code_set_tag and a code_set_version" ;
+    meta:definition_uri meta:code_set_tag ;
+    meta:domain meta:EnumDefinition ;
+    meta:domain_of meta:EnumDefinition ;
+    meta:owner meta:EnumDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:code_set_tag .
+
+meta:code_set_version a meta:SlotDefinition ;
+    skos:definition "the version identifier of the enumeration code set" ;
+    skos:inScheme linkml:meta ;
+    skos:note "we assume that version identifiers lexically sort in temporal order. Recommend semver when possible" ;
+    meta:definition_uri meta:code_set_version ;
+    meta:domain meta:EnumDefinition ;
+    meta:domain_of meta:EnumDefinition ;
+    meta:owner meta:EnumDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:code_set_version .
+
+meta:default_curi_maps a meta:SlotDefinition ;
+    skos:definition "ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:default_curi_maps ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:default_curi_maps .
+
+meta:default_prefix a meta:SlotDefinition ;
+    skos:definition "default and base prefix -- used for ':' identifiers, @base and @vocab" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:default_prefix ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:ifabsent "default_ns" ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:default_prefix .
+
+meta:default_range a meta:SlotDefinition ;
+    skos:definition "default slot range to be used if range element is omitted from a slot definition" ;
+    skos:editorialNote "restricted to type definitions for the time being.  Could be broadened if required" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:default_range ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:TypeDefinition ;
+    meta:slot_uri meta:default_range .
+
+meta:defining_slots a meta:SlotDefinition ;
+    skos:definition "The combination of is a plus defining slots form a genus-differentia definition, or the set of necessary and sufficient conditions that can be transformed into an OWL equivalence axiom" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:defining_slots ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:inherited true ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:defining_slots .
+
+meta:domain a meta:SlotDefinition ;
+    skos:definition """defines the type of the subject of the slot.  Given the following slot definition
+  S1:
+    domain: C1
+    range:  C2
+the declaration
+  X:
+    S1: Y
+
+implicitly asserts that X is an instance of C1
+""" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:domain ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:slot_uri meta:domain .
+
+meta:domain_of a meta:SlotDefinition ;
+    skos:definition "the class(es) that reference the slot in a \"slots\" or \"slot_usage\" context" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:domain_of ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:multivalued true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:readonly "filled in by the loader" ;
+    meta:slot_uri meta:domain_of .
+
+meta:emit_prefixes a meta:SlotDefinition ;
+    skos:definition "a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models." ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:emit_prefixes ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:ncname ;
+    meta:slot_uri meta:emit_prefixes .
+
+meta:enums a meta:SlotDefinition ;
+    skos:definition "enumerated ranges" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:enums ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:EnumDefinition ;
+    meta:slot_uri meta:enums .
+
+meta:extension_tag a meta:SlotDefinition ;
+    skos:definition "a tag associated with an extension" ;
+    skos:inScheme linkml:extensions ;
+    meta:alias "tag" ;
+    meta:definition_uri meta:extension_tag ;
+    meta:domain meta:Extension ;
+    meta:domain_of meta:Extension ;
+    meta:imported_from "linkml:extensions" ;
+    meta:owner meta:Extension ;
+    meta:range meta:uriorcurie ;
+    meta:required true ;
+    meta:slot_uri meta:tag .
+
+meta:extension_value a meta:SlotDefinition ;
+    skos:definition "the actual annotation" ;
+    skos:inScheme linkml:extensions ;
+    meta:alias "value" ;
+    meta:definition_uri meta:extension_value ;
+    meta:domain meta:Extension ;
+    meta:domain_of meta:Extension ;
+    meta:imported_from "linkml:extensions" ;
+    meta:owner meta:Extension ;
+    meta:range meta:string ;
+    meta:required true ;
+    meta:slot_uri meta:value .
+
+meta:generation_date a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "date and time that the schema was loaded/generated" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:generation_date ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:datetime ;
+    meta:readonly "supplied by the schema loader" ;
+    meta:slot_uri meta:generation_date .
+
+meta:id a meta:SlotDefinition ;
+    skos:definition "The official schema URI" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:id ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:uri ;
+    meta:required true ;
+    meta:slot_uri meta:id .
+
+meta:identifier a meta:SlotDefinition ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Identifier> ;
+    skos:altLabel "ID",
+        "UID",
+        "code",
+        "primary key" ;
+    skos:definition "True means that the key slot(s) uniquely identify the container. There can be at most one identifier or key per container" ;
+    skos:inScheme linkml:meta ;
+    skos:note "a given domain can have at most one identifier",
+        "a key slot is automatically required.  Identifiers cannot be optional",
+        "identifier is inherited",
+        "identifiers and keys are mutually exclusive.  A given domain cannot have both" ;
+    meta:definition_uri meta:identifier ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:identifier .
+
+meta:ifabsent a meta:SlotDefinition ;
+    skos:definition """function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:
+  * [Tt]rue -- boolean True
+  * [Ff]alse -- boolean False
+  * int(value) -- integer value
+  * str(value) -- string value
+  * default_range -- schema default range
+  * bnode -- blank node identifier
+  * slot_uri -- URI for the slot
+  * class_curie -- CURIE for the containing class
+  * class_uri -- URI for the containing class""" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:ifabsent ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:ifabsent .
+
+meta:imports a meta:SlotDefinition ;
+    skos:definition "other schemas that are included in this schema" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:imports ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:imports .
+
+meta:inherited a meta:SlotDefinition ;
+    skos:definition "true means that the *value* of a slot is inherited by subclasses" ;
+    skos:inScheme linkml:meta ;
+    skos:note "Inherited applies to slot values.  Parent *slots* are always inherited by subclasses" ;
+    meta:definition_uri meta:inherited ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:inherited .
+
+meta:inlined a meta:SlotDefinition ;
+    skos:definition "True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere." ;
+    skos:inScheme linkml:meta ;
+    skos:note "classes without keys or identifiers are necessarily inlined as lists" ;
+    meta:definition_uri meta:inlined ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:inlined .
+
+meta:inlined_as_list a meta:SlotDefinition ;
+    skos:definition "True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance." ;
+    skos:inScheme linkml:meta ;
+    skos:note """A keyed or identified class with one additional slot can be input in a third form, a dictionary whose key
+is the key or identifier and whose value is the one additional element.  This form is still stored according
+to the inlined_as_list setting.""",
+        """The default loader will accept either list or dictionary form as input.  This parameter controls internal
+representation and output.""" ;
+    meta:definition_uri meta:inlined_as_list ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:inlined_as_list .
+
+meta:integer a meta:TypeDefinition ;
+    skos:definition "An integer" ;
+    skos:inScheme linkml:types ;
+    meta:base "int" ;
+    meta:definition_uri metatype:Integer ;
+    meta:imported_from "linkml:types" ;
+    meta:uri xsd:integer .
+
+meta:is_class_field a meta:SlotDefinition ;
+    skos:definition "indicates that any instance, i,  the domain of this slot will include an assert of i s range" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:is_class_field ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:is_class_field .
+
+meta:is_usage_slot a meta:SlotDefinition ;
+    skos:definition "True means that this slot was defined in a slot_usage situation" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:is_usage_slot ;
+    meta:deprecated "Replaced by usage_slot_name" ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:readonly "filled in by the loader" ;
+    meta:slot_uri meta:is_usage_slot .
+
+meta:key a meta:SlotDefinition ;
+    skos:definition "True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier" ;
+    skos:inScheme linkml:meta ;
+    skos:note "a given domain can have at most one key slot (restriction to be removed in the future)",
+        "a key slot is automatically required.  Keys cannot be optional",
+        "identifiers and keys are mutually exclusive.  A given domain cannot have bot",
+        "key is inherited" ;
+    meta:definition_uri meta:key ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:key .
+
+meta:local_name_source a meta:SlotDefinition ;
+    skos:definition "the ncname of the source of the name" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:local_name_source ;
+    meta:domain meta:LocalName ;
+    meta:domain_of meta:LocalName ;
+    meta:key true ;
+    meta:owner meta:LocalName ;
+    meta:range meta:ncname ;
+    meta:required true ;
+    meta:slot_uri meta:local_name_source .
+
+meta:maximum_value a meta:SlotDefinition ;
+    skos:definition "for slots with ranges of type number, the value must be equal to or lowe than this" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:maximum_value ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:integer ;
+    meta:slot_uri meta:maximum_value .
+
+meta:meaning a meta:SlotDefinition ;
+    skos:definition "the value meaning (in the 11179 sense) of a permissible value" ;
+    skos:editorialNote "we may want to change the range of this (and other) elements in the model to an entitydescription type construct" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:meaning ;
+    meta:domain meta:PermissibleValue ;
+    meta:domain_of meta:PermissibleValue ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:meaning .
+
+meta:metamodel_version a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "Version of the metamodel used to load the schema" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:metamodel_version ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:readonly "supplied by the schema loader" ;
+    meta:slot_uri meta:metamodel_version .
+
+meta:minimum_value a meta:SlotDefinition ;
+    skos:definition "for slots with ranges of type number, the value must be equal to or higher than this" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:minimum_value ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:integer ;
+    meta:slot_uri meta:minimum_value .
+
+meta:multivalued a meta:SlotDefinition ;
+    skos:definition "true means that slot can have more than one value" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:multivalued ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:multivalued .
+
+meta:owner a meta:SlotDefinition ;
+    skos:definition "the \"owner\" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:owner ;
+    meta:deprecated "Will be replaced by domain_of and eventually removed" ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:Definition ;
+    meta:readonly "filled in by loader -- either class domain or slot domain" ;
+    meta:slot_uri meta:owner .
+
+meta:pattern a meta:SlotDefinition ;
+    skos:definition "the string value of the slot must conform to this regular expression" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:pattern ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:pattern .
+
+meta:permissible_values a meta:SlotDefinition ;
+    skos:definition "A list of possible values for a slot range" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:permissible_values ;
+    meta:domain meta:EnumDefinition ;
+    meta:domain_of meta:EnumDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:EnumDefinition ;
+    meta:range meta:PermissibleValue ;
+    meta:slot_uri meta:permissible_values .
+
+meta:prefix_prefix a meta:SlotDefinition ;
+    skos:definition "the nsname (sans ':' for a given prefix)" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:prefix_prefix ;
+    meta:domain meta:Prefix ;
+    meta:domain_of meta:Prefix ;
+    meta:key true ;
+    meta:owner meta:Prefix ;
+    meta:range meta:ncname ;
+    meta:required true ;
+    meta:slot_uri meta:prefix_prefix .
+
+meta:prefix_reference a meta:SlotDefinition ;
+    skos:definition "A URI associated with a given prefix" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:prefix_reference ;
+    meta:domain meta:Prefix ;
+    meta:domain_of meta:Prefix ;
+    meta:owner meta:Prefix ;
+    meta:range meta:uri ;
+    meta:required true ;
+    meta:slot_uri meta:prefix_reference .
+
+meta:prefixes a meta:SlotDefinition ;
+    skos:definition "prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:prefixes ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:Prefix ;
+    meta:slot_uri meta:prefixes .
+
+meta:pv_formula a meta:SlotDefinition ;
+    skos:definition "Defines the specific formula to be used to generate the permissible values." ;
+    skos:inScheme linkml:meta ;
+    skos:note "code_set must be supplied for this to be valid",
+        "you cannot have BOTH the permissible_values and permissible_value_formula tag" ;
+    meta:definition_uri meta:pv_formula ;
+    meta:domain meta:EnumDefinition ;
+    meta:domain_of meta:EnumDefinition ;
+    meta:owner meta:EnumDefinition ;
+    meta:range meta:pv_formula_options ;
+    meta:slot_uri meta:pv_formula .
+
+meta:range a meta:SlotDefinition ;
+    skos:definition """defines the type of the object of the slot.  Given the following slot definition
+  S1:
+    domain: C1
+    range:  C2
+the declaration
+  X:
+    S1: Y
+
+implicitly asserts Y is an instance of C2
+""" ;
+    skos:inScheme linkml:meta ;
+    skos:note "range is underspecified, as not all elements can appear as the range of a slot." ;
+    meta:definition_uri meta:range ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:ifabsent "default_range" ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:Element ;
+    meta:slot_uri meta:range .
+
+meta:readonly a meta:SlotDefinition ;
+    skos:definition "If present, slot is read only.  Text explains why" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:readonly ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:readonly .
+
+meta:repr a meta:SlotDefinition ;
+    skos:definition "the name of the python object that implements this type definition" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:repr ;
+    meta:domain meta:TypeDefinition ;
+    meta:domain_of meta:TypeDefinition ;
+    meta:inherited true ;
+    meta:owner meta:TypeDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:repr .
+
+meta:required a meta:SlotDefinition ;
+    skos:definition "true means that the slot must be present in the loaded definition" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:required ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:required .
+
+meta:role a meta:SlotDefinition ;
+    skos:definition "the role played by the slot range" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:role ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:inherited true ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:role .
+
+meta:slot_uri a meta:SlotDefinition ;
+    skos:definition "predicate of this slot for semantic web application" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:slot_uri ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:ifabsent "slot_curie" ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:slot_uri .
+
+meta:slot_usage a meta:SlotDefinition ;
+    skos:definition "the redefinition of a slot in the context of the containing class definition." ;
+    skos:inScheme linkml:meta ;
+    skos:note "Many slots may be re-used across different classes, but the meaning of the slot may be refined by context. For example, a generic association model may use slots subject/predicate/object with generic semantics and minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may specify both local naming (e.g. subject=disease) and local constraints" ;
+    meta:definition_uri meta:slot_usage ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:slot_usage .
+
+meta:source_file a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "name, uri or description of the source of the schema" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:source_file ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:string ;
+    meta:readonly "suppplied by the schema loader" ;
+    meta:slot_uri meta:source_file .
+
+meta:source_file_date a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "modification date of the source of the schema" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:source_file_date ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:datetime ;
+    meta:readonly "supplied by the loader" ;
+    meta:slot_uri meta:source_file_date .
+
+meta:source_file_size a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "size in bytes of the source of the schema" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:source_file_size ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:integer ;
+    meta:readonly "supplied by the schema loader" ;
+    meta:slot_uri meta:source_file_size .
+
+meta:string_serialization a meta:SlotDefinition ;
+    rdfs:seeAlso <https://github.com/linkml/issues/128> ;
+    skos:definition """Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
+We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
+Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects
+For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm""" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:string_serialization ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:slot_uri meta:string_serialization .
+
+meta:subsets a meta:SlotDefinition ;
+    skos:definition "list of subsets referenced in this model" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:subsets ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:SubsetDefinition ;
+    meta:slot_uri meta:subsets .
+
+meta:symmetric a meta:SlotDefinition ;
+    skos:definition "True means that any instance of  d s r implies that there is also an instance of r s d" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:symmetric ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:symmetric .
+
+meta:text a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:text ;
+    meta:domain meta:PermissibleValue ;
+    meta:domain_of meta:PermissibleValue ;
+    meta:identifier true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:required true ;
+    meta:slot_uri meta:text .
+
+meta:tree_root a meta:SlotDefinition ;
+    skos:definition "indicator that this is the root class in tree structures" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:tree_root ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:tree_root .
+
+meta:typeof a meta:SlotDefinition ;
+    skos:definition "Names a parent type" ;
+    skos:inScheme linkml:meta ;
+    skos:note "the target type definition of the typeof slot is referred to as the \"parent type\"",
+        "the type definition containing the typeof slot is referred to as the \"child type\"",
+        "type definitions without a typeof slot are referred to as a \"root type\"" ;
+    meta:definition_uri meta:typeof ;
+    meta:domain meta:TypeDefinition ;
+    meta:domain_of meta:TypeDefinition ;
+    meta:owner meta:TypeDefinition ;
+    meta:range meta:TypeDefinition ;
+    meta:slot_uri meta:typeof .
+
+meta:types a meta:SlotDefinition ;
+    skos:definition "data types used in the model" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:types ;
+    meta:domain meta:SchemaDefinition ;
+    meta:domain_of meta:SchemaDefinition ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:SchemaDefinition ;
+    meta:range meta:TypeDefinition ;
+    meta:slot_uri meta:types .
+
+meta:union_of a meta:SlotDefinition ;
+    skos:definition "indicates that the domain class consists exactly of the members of the classes in the range" ;
+    skos:editorialNote "this only applies in the OWL generation" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:union_of ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:ClassDefinition ;
+    meta:slot_uri meta:union_of .
+
+meta:usage_slot_name a meta:SlotDefinition ;
+    skos:definition "The name of the slot referenced in the slot_usage" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:usage_slot_name ;
+    meta:domain meta:SlotDefinition ;
+    meta:domain_of meta:SlotDefinition ;
+    meta:owner meta:SlotDefinition ;
+    meta:range meta:string ;
+    meta:readonly "filled in by the loader" ;
+    meta:slot_uri meta:usage_slot_name .
+
+meta:value a meta:SlotDefinition ;
+    skos:definition "example value" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:example ;
+    meta:definition_uri meta:value ;
+    meta:domain meta:Example ;
+    meta:domain_of meta:Example ;
+    meta:owner meta:Example ;
+    meta:range meta:string ;
+    meta:slot_uri skos:example .
+
+meta:datetime a meta:TypeDefinition ;
+    skos:definition "The combination of a date and time" ;
+    skos:inScheme linkml:types ;
+    meta:base "XSDDateTime" ;
+    meta:definition_uri metatype:Datetime ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri xsd:dateTime .
+
+meta:slots a meta:SlotDefinition ;
+    skos:definition "list of slot names that are applicable to a class" ;
+    skos:inScheme linkml:meta ;
+    skos:note "This defines the set of slots that are allowed to be used for a given class. The final list of slots for a class is the combination of the parent (is a) slots, mixins slots, apply to slots minus the slot usage entries. Formally," ;
+    meta:definition_uri meta:slots ;
+    meta:domain meta:ClassDefinition ;
+    meta:domain_of meta:ClassDefinition ;
+    meta:multivalued true ;
+    meta:owner meta:ClassDefinition ;
+    meta:range meta:SlotDefinition ;
+    meta:slot_uri meta:slots .
+
+meta:uri a meta:TypeDefinition ;
+    skos:definition "a complete URI" ;
+    skos:inScheme linkml:types ;
+    meta:base "URI" ;
+    meta:definition_uri metatype:Uri ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri xsd:anyURI .
+
+meta:Annotation a meta:ClassDefinition ;
+    skos:definition "a tag/value pair with the semantics of OWL Annotation" ;
+    skos:inScheme linkml:annotations ;
+    meta:class_uri meta:Annotation ;
+    meta:definition_uri meta:Annotation ;
+    meta:imported_from "linkml:annotations" ;
+    meta:is_a meta:Extension ;
+    meta:mixins meta:Annotatable ;
+    meta:slots meta:annotations,
+        meta:extension_tag,
+        meta:extension_value,
+        meta:extensions .
+
+meta:SubsetDefinition a meta:ClassDefinition ;
+    skos:definition "the name and description of a subset" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:SubsetDefinition ;
+    meta:definition_uri meta:SubsetDefinition ;
+    meta:is_a meta:Element ;
+    meta:slots meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:broad_mappings,
+        meta:close_mappings,
+        meta:comments,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:in_subset,
+        meta:local_names,
+        meta:mappings,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:related_mappings,
+        meta:see_also,
+        meta:todos .
+
+meta:abstract a meta:SlotDefinition ;
+    skos:definition "an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated." ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:abstract ;
+    meta:domain meta:Definition ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:Definition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:abstract .
+
+meta:created_by a meta:SlotDefinition ;
+    skos:definition "agent that created the element" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation pav:createdBy ;
+    meta:definition_uri meta:created_by ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:created_by ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri pav:createdBy .
+
+meta:created_on a meta:SlotDefinition ;
+    skos:definition "time at which the element was created" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation pav:createdOn ;
+    meta:definition_uri meta:created_on ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:created_on ;
+    meta:range meta:datetime ;
+    meta:slot_uri pav:createdOn .
+
+meta:last_updated_on a meta:SlotDefinition ;
+    skos:definition "time at which the element was last updated" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation pav:lastUpdatedOn ;
+    meta:definition_uri meta:last_updated_on ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:last_updated_on ;
+    meta:range meta:datetime ;
+    meta:slot_uri pav:lastUpdatedOn .
+
+meta:mixin a meta:SlotDefinition ;
+    skos:definition "this slot or class can only be used as a mixin -- equivalent to abstract" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:mixin ;
+    meta:domain meta:Definition ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:Definition ;
+    meta:range meta:boolean ;
+    meta:slot_uri meta:mixin .
+
+meta:modified_by a meta:SlotDefinition ;
+    skos:definition "agent that modified the element" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation oslc:modifiedBy ;
+    meta:definition_uri meta:modified_by ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:modified_by ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri oslc:modifiedBy .
+
+meta:ncname a meta:TypeDefinition ;
+    skos:definition "Prefix part of CURIE" ;
+    skos:inScheme linkml:types ;
+    meta:base "NCName" ;
+    meta:definition_uri metatype:Ncname ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri xsd:string .
+
+meta:status a meta:SlotDefinition ;
+    skos:definition "status of the element" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation bibo:status ;
+    meta:definition_uri meta:status ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Definition ;
+    meta:examples [ a meta:Example ;
+            skos:example "bibo:draft" ] ;
+    meta:owner meta:status ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri bibo:status .
+
+meta:values_from a meta:SlotDefinition ;
+    skos:definition "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:values_from ;
+    meta:domain meta:Definition ;
+    meta:domain_of meta:Definition ;
+    meta:multivalued true ;
+    meta:owner meta:Definition ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:values_from .
+
+meta:Annotatable a meta:ClassDefinition ;
+    skos:definition "mixin for classes that support annotations" ;
+    skos:inScheme linkml:annotations ;
+    meta:class_uri meta:Annotatable ;
+    meta:definition_uri meta:Annotatable ;
+    meta:imported_from "linkml:annotations" ;
+    meta:mixin true ;
+    meta:slots meta:annotations .
+
+meta:Extensible a meta:ClassDefinition ;
+    skos:definition "mixin for classes that support extension" ;
+    skos:inScheme linkml:extensions ;
+    meta:class_uri meta:Extensible ;
+    meta:definition_uri meta:Extensible ;
+    meta:imported_from "linkml:extensions" ;
+    meta:mixin true ;
+    meta:slots meta:extensions .
+
+meta:apply_to a meta:SlotDefinition ;
+    skos:definition "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class." ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:apply_to ;
+    meta:domain meta:Definition ;
+    meta:domain_of meta:Definition ;
+    meta:multivalued true ;
+    meta:owner meta:Definition ;
+    meta:range meta:Definition ;
+    meta:slot_uri meta:apply_to .
+
+meta:AltDescription a meta:ClassDefinition ;
+    skos:definition "an attributed description" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:AltDescription ;
+    meta:definition_uri meta:AltDescription ;
+    meta:slots meta:alt_description_source,
+        meta:alt_description_text .
+
+meta:LocalName a meta:ClassDefinition ;
+    skos:definition "an attributed label" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:LocalName ;
+    meta:definition_uri meta:LocalName ;
+    meta:slots meta:local_name_source,
+        meta:local_name_value .
+
+meta:Prefix a meta:ClassDefinition ;
+    skos:definition "prefix URI tuple" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:Prefix ;
+    meta:definition_uri meta:Prefix ;
+    meta:slots meta:prefix_prefix,
+        meta:prefix_reference .
+
+meta:aliases a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:altLabel ;
+    meta:definition_uri meta:aliases ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:string ;
+    meta:slot_uri skos:altLabel .
+
+meta:broad_mappings a meta:SlotDefinition ;
+    skos:definition "A list of terms from different schemas or terminology systems that have broader meaning." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:broadMatch ;
+    meta:definition_uri meta:broad_mappings ;
+    meta:domain_of meta:Element ;
+    meta:imported_from "linkml:mappings" ;
+    meta:is_a meta:mappings ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri skos:broadMatch .
+
+meta:close_mappings a meta:SlotDefinition ;
+    skos:definition "A list of terms from different schemas or terminology systems that have close meaning." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:closeMatch ;
+    meta:definition_uri meta:close_mappings ;
+    meta:domain_of meta:Element ;
+    meta:imported_from "linkml:mappings" ;
+    meta:is_a meta:mappings ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri skos:closeMatch .
+
+meta:exact_mappings a meta:SlotDefinition ;
+    skos:definition "A list of terms from different schemas or terminology systems that have identical meaning." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:exactMatch ;
+    meta:definition_uri meta:exact_mappings ;
+    meta:domain_of meta:Element ;
+    meta:imported_from "linkml:mappings" ;
+    meta:is_a meta:mappings ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri skos:exactMatch .
+
+meta:is_a a meta:SlotDefinition ;
+    skos:definition "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded" ;
+    skos:inScheme linkml:meta ;
+    meta:abstract true ;
+    meta:definition_uri meta:is_a ;
+    meta:domain meta:Definition ;
+    meta:domain_of meta:Definition ;
+    meta:owner meta:Definition ;
+    meta:range meta:Definition ;
+    meta:slot_uri meta:is_a .
+
+meta:mixins a meta:SlotDefinition ;
+    skos:definition "List of definitions to be mixed in. Targets may be any definition of the same type" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:mixins ;
+    meta:domain meta:Definition ;
+    meta:domain_of meta:Definition ;
+    meta:multivalued true ;
+    meta:owner meta:Definition ;
+    meta:range meta:Definition ;
+    meta:slot_uri meta:mixins .
+
+meta:narrow_mappings a meta:SlotDefinition ;
+    skos:definition "A list of terms from different schemas or terminology systems that have narrower meaning." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:narrowMatch ;
+    meta:definition_uri meta:narrow_mappings ;
+    meta:domain_of meta:Element ;
+    meta:imported_from "linkml:mappings" ;
+    meta:is_a meta:mappings ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri skos:narrowMatch .
+
+meta:related_mappings a meta:SlotDefinition ;
+    skos:definition "A list of terms from different schemas or terminology systems that have related meaning." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:relatedMatch ;
+    meta:definition_uri meta:related_mappings ;
+    meta:domain_of meta:Element ;
+    meta:imported_from "linkml:mappings" ;
+    meta:is_a meta:mappings ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri skos:relatedMatch .
+
+meta:Example a meta:ClassDefinition ;
+    skos:definition "usage example and description" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:Example ;
+    meta:definition_uri meta:Example ;
+    meta:slots meta:value,
+        meta:value_description .
+
+meta:comments a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "notes and comments about an element intended for external consumption" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:note ;
+    meta:definition_uri meta:comments ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:slot_uri skos:note .
+
+meta:definition_uri a meta:SlotDefinition ;
+    skos:definition "the \"native\" URI of the element" ;
+    skos:inScheme linkml:meta ;
+    skos:note "Formed by combining the default_prefix with the mangled element" ;
+    meta:definition_uri meta:definition_uri ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:readonly "filled in by the schema loader" ;
+    meta:slot_uri meta:definition_uri .
+
+meta:from_schema a meta:SlotDefinition ;
+    skos:definition "id of the schema that defined the element" ;
+    skos:editorialNote "A stronger model would be range schema_definition, but this doesn't address the import model" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:inScheme ;
+    meta:definition_uri meta:from_schema ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:uri ;
+    meta:readonly "supplied by the schema loader" ;
+    meta:slot_uri skos:inScheme .
+
+meta:id_prefixes a meta:SlotDefinition ;
+    skos:definition "the identifier of this class or slot must begin with one of the URIs referenced by this prefix" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:id_prefixes ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:ncname ;
+    meta:slot_uri meta:id_prefixes .
+
+meta:in_subset a meta:SlotDefinition ;
+    skos:definition "used to indicate membership of a term in a defined subset of biolink terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation OIO:inSubset ;
+    meta:definition_uri meta:in_subset ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:SubsetDefinition ;
+    meta:slot_uri OIO:inSubset .
+
+meta:local_names a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:local_names ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:LocalName ;
+    meta:slot_uri meta:local_names .
+
+meta:name a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element_name> ;
+    skos:definition "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class." ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation schema:name,
+        rdfs:label ;
+    meta:definition_uri meta:name ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element ;
+    meta:identifier true ;
+    meta:owner meta:Element ;
+    meta:range meta:string ;
+    meta:required true ;
+    meta:slot_uri rdfs:label .
+
+meta:notes a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "editorial notes about an element intended for internal consumption" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:editorialNote ;
+    meta:definition_uri meta:notes ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:slot_uri skos:editorialNote .
+
+meta:see_also a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "a reference" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation rdfs:seeAlso ;
+    meta:definition_uri meta:see_also ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri rdfs:seeAlso .
+
+meta:Extension a meta:ClassDefinition ;
+    skos:definition "a tag/value pair used to add non-model information to an entry" ;
+    skos:inScheme linkml:extensions ;
+    meta:class_uri meta:Extension ;
+    meta:definition_uri meta:Extension ;
+    meta:imported_from "linkml:extensions" ;
+    meta:slots meta:extension_tag,
+        meta:extension_value,
+        meta:extensions .
+
+meta:alt_descriptions a meta:SlotDefinition ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:alt_descriptions ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:AltDescription ;
+    meta:slot_uri meta:alt_descriptions .
+
+meta:deprecated a meta:SlotDefinition ;
+    skos:definition "Description of why and when this element will no longer be used" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:deprecated ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:slot_uri meta:deprecated .
+
+meta:deprecated_element_has_exact_replacement a meta:SlotDefinition ;
+    skos:definition "When an element is deprecated, it can be automatically replaced by this uri or curie" ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation <http://purl.obolibrary.org/obo/IAO_0100001> ;
+    meta:definition_uri meta:deprecated_element_has_exact_replacement ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:imported_from "linkml:mappings" ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:deprecated_element_has_exact_replacement .
+
+meta:deprecated_element_has_possible_replacement a meta:SlotDefinition ;
+    skos:definition "When an element is deprecated, it can be potentially replaced by this uri or curie" ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation OIO:consider ;
+    meta:definition_uri meta:deprecated_element_has_possible_replacement ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:imported_from "linkml:mappings" ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri meta:deprecated_element_has_possible_replacement .
+
+meta:examples a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "example usages of an element" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:examples ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:Example ;
+    meta:slot_uri meta:examples .
+
+meta:imported_from a meta:SlotDefinition ;
+    skos:definition "the imports entry that this element was derived from.  Empty means primary source" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:imported_from ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:readonly "supplied by the schema loader" ;
+    meta:slot_uri meta:imported_from .
+
+meta:todos a meta:SlotDefinition ;
+    skos:definition "Outstanding issue that needs resolution" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:todos ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:multivalued true ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:slot_uri meta:todos .
+
+meta:description a meta:SlotDefinition ;
+    OIO:inSubset meta:owl ;
+    skos:definition "a description of the element's purpose and use" ;
+    skos:inScheme linkml:meta ;
+    skos:mappingRelation skos:definition ;
+    meta:definition_uri meta:description ;
+    meta:domain meta:Element ;
+    meta:domain_of meta:Element,
+        meta:PermissibleValue ;
+    meta:owner meta:PermissibleValue ;
+    meta:range meta:string ;
+    meta:slot_uri skos:definition .
+
+meta:annotations a meta:SlotDefinition ;
+    skos:definition "a collection of tag/text tuples with the semantics of OWL Annotation" ;
+    skos:inScheme linkml:annotations ;
+    meta:definition_uri meta:annotations ;
+    meta:domain meta:Annotatable ;
+    meta:domain_of meta:Annotatable,
+        meta:Annotation ;
+    meta:imported_from "linkml:annotations" ;
+    meta:inlined true ;
+    meta:is_a meta:extensions ;
+    meta:multivalued true ;
+    meta:owner meta:Annotation ;
+    meta:range meta:Annotation ;
+    meta:slot_uri meta:annotations .
+
+meta:boolean a meta:TypeDefinition ;
+    skos:definition "A binary (true or false) value" ;
+    skos:inScheme linkml:types ;
+    meta:base "Bool" ;
+    meta:definition_uri metatype:Boolean ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "bool" ;
+    meta:uri xsd:boolean .
+
+meta:owl a meta:SubsetDefinition ;
+    skos:definition "Set of slots that appear in the OWL representation of a model" ;
+    skos:inScheme linkml:meta ;
+    meta:definition_uri meta:Owl .
+
+meta:mappings a meta:SlotDefinition ;
+    skos:definition "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:mappingRelation ;
+    meta:definition_uri meta:mappings ;
+    meta:domain_of meta:Element ;
+    meta:imported_from "linkml:mappings" ;
+    meta:multivalued true ;
+    meta:owner meta:Element ;
+    meta:range meta:uriorcurie ;
+    meta:slot_uri skos:mappingRelation .
+
+meta:extensions a meta:SlotDefinition ;
+    skos:definition "a tag/text tuple attached to an arbitrary element" ;
+    skos:inScheme linkml:extensions ;
+    meta:definition_uri meta:extensions ;
+    meta:domain meta:Extensible ;
+    meta:domain_of meta:Extensible,
+        meta:Extension ;
+    meta:imported_from "linkml:extensions" ;
+    meta:inlined true ;
+    meta:multivalued true ;
+    meta:owner meta:Extensible ;
+    meta:range meta:Extension ;
+    meta:slot_uri meta:extensions .
+
+meta:EnumDefinition a meta:ClassDefinition ;
+    skos:definition "List of values that constrain the range of a slot" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:EnumDefinition ;
+    meta:definition_uri meta:EnumDefinition ;
+    meta:is_a meta:Element ;
+    meta:slots meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:broad_mappings,
+        meta:close_mappings,
+        meta:code_set,
+        meta:code_set_tag,
+        meta:code_set_version,
+        meta:comments,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:in_subset,
+        meta:local_names,
+        meta:mappings,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:permissible_values,
+        meta:pv_formula,
+        meta:related_mappings,
+        meta:see_also,
+        meta:todos .
+
+meta:uriorcurie a meta:TypeDefinition ;
+    skos:definition "a URI or a CURIE" ;
+    skos:inScheme linkml:types ;
+    meta:base "URIorCURIE" ;
+    meta:definition_uri metatype:Uriorcurie ;
+    meta:imported_from "linkml:types" ;
+    meta:repr "str" ;
+    meta:uri xsd:anyURI .
+
+meta:Definition a meta:ClassDefinition ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element_definition> ;
+    skos:definition "base class for definitions" ;
+    skos:inScheme linkml:meta ;
+    meta:abstract true ;
+    meta:class_uri meta:Definition ;
+    meta:definition_uri meta:Definition ;
+    meta:is_a meta:Element ;
+    meta:slots meta:abstract,
+        meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:apply_to,
+        meta:broad_mappings,
+        meta:close_mappings,
+        meta:comments,
+        meta:created_by,
+        meta:created_on,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:in_subset,
+        meta:is_a,
+        meta:last_updated_on,
+        meta:local_names,
+        meta:mappings,
+        meta:mixin,
+        meta:mixins,
+        meta:modified_by,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:related_mappings,
+        meta:see_also,
+        meta:status,
+        meta:todos,
+        meta:values_from .
+
+meta:TypeDefinition a meta:ClassDefinition ;
+    skos:definition "A data type definition." ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:TypeDefinition ;
+    meta:definition_uri meta:TypeDefinition ;
+    meta:is_a meta:Element ;
+    meta:slots meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:base,
+        meta:broad_mappings,
+        meta:close_mappings,
+        meta:comments,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:in_subset,
+        meta:local_names,
+        meta:mappings,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:related_mappings,
+        meta:repr,
+        meta:see_also,
+        meta:todos,
+        meta:type_uri,
+        meta:typeof .
+
+meta:string a meta:TypeDefinition ;
+    skos:definition "A character string" ;
+    skos:inScheme linkml:types ;
+    meta:base "str" ;
+    meta:definition_uri metatype:String ;
+    meta:imported_from "linkml:types" ;
+    meta:uri xsd:string .
+
+meta:PermissibleValue a meta:ClassDefinition ;
+    skos:definition "a permissible value, accompanied by intended text and an optional mapping to a concept URI" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:PermissibleValue ;
+    meta:definition_uri meta:PermissibleValue ;
+    meta:mixins meta:Annotatable,
+        meta:Extensible ;
+    meta:slots meta:alt_descriptions,
+        meta:annotations,
+        meta:comments,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:imported_from,
+        meta:in_subset,
+        meta:meaning,
+        meta:notes,
+        meta:permissible_value_is_a,
+        meta:permissible_value_mixins,
+        meta:see_also,
+        meta:text,
+        meta:todos .
+
+meta:ClassDefinition a meta:ClassDefinition ;
+    skos:altLabel "record",
+        "table",
+        "template" ;
+    skos:definition "the definition of a class or interface" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:ClassDefinition ;
+    meta:definition_uri meta:ClassDefinition ;
+    meta:is_a meta:Definition ;
+    meta:slots meta:abstract,
+        meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:attributes,
+        meta:broad_mappings,
+        meta:class_definition_apply_to,
+        meta:class_definition_is_a,
+        meta:class_definition_mixins,
+        meta:class_uri,
+        meta:close_mappings,
+        meta:comments,
+        meta:created_by,
+        meta:created_on,
+        meta:defining_slots,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:in_subset,
+        meta:last_updated_on,
+        meta:local_names,
+        meta:mappings,
+        meta:mixin,
+        meta:modified_by,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:related_mappings,
+        meta:see_also,
+        meta:slot_usage,
+        meta:slots,
+        meta:status,
+        meta:subclass_of,
+        meta:todos,
+        meta:tree_root,
+        meta:union_of,
+        meta:values_from .
+
+meta:Element a meta:ClassDefinition ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element> ;
+    skos:definition "a named element in the model" ;
+    skos:inScheme linkml:meta ;
+    meta:abstract true ;
+    meta:class_uri meta:Element ;
+    meta:definition_uri meta:Element ;
+    meta:mixins meta:Annotatable,
+        meta:Extensible ;
+    meta:slots meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:broad_mappings,
+        meta:close_mappings,
+        meta:comments,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:in_subset,
+        meta:local_names,
+        meta:mappings,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:related_mappings,
+        meta:see_also,
+        meta:todos .
+
+meta:SchemaDefinition a meta:ClassDefinition ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_dictionary> ;
+    skos:altLabel "data dictionary" ;
+    skos:definition "a collection of subset, type, slot and class definitions" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:SchemaDefinition ;
+    meta:definition_uri meta:SchemaDefinition ;
+    meta:is_a meta:Element ;
+    meta:slots meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:broad_mappings,
+        meta:classes,
+        meta:close_mappings,
+        meta:comments,
+        meta:default_curi_maps,
+        meta:default_prefix,
+        meta:default_range,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:emit_prefixes,
+        meta:enums,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:generation_date,
+        meta:id,
+        meta:id_prefixes,
+        meta:imported_from,
+        meta:imports,
+        meta:in_subset,
+        meta:license,
+        meta:local_names,
+        meta:mappings,
+        meta:metamodel_version,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:prefixes,
+        meta:related_mappings,
+        meta:schema_definition_name,
+        meta:see_also,
+        meta:slot_definitions,
+        meta:source_file,
+        meta:source_file_date,
+        meta:source_file_size,
+        meta:subsets,
+        meta:title,
+        meta:todos,
+        meta:types,
+        meta:version .
+
+meta:SlotDefinition a meta:ClassDefinition ;
+    skos:altLabel "attribute",
+        "field",
+        "property",
+        "slot" ;
+    skos:definition "the definition of a property or a slot" ;
+    skos:inScheme linkml:meta ;
+    meta:class_uri meta:SlotDefinition ;
+    meta:definition_uri meta:SlotDefinition ;
+    meta:is_a meta:Definition ;
+    meta:slots meta:abstract,
+        meta:alias,
+        meta:aliases,
+        meta:alt_descriptions,
+        meta:annotations,
+        meta:broad_mappings,
+        meta:close_mappings,
+        meta:comments,
+        meta:created_by,
+        meta:created_on,
+        meta:definition_uri,
+        meta:deprecated,
+        meta:deprecated_element_has_exact_replacement,
+        meta:deprecated_element_has_possible_replacement,
+        meta:description,
+        meta:domain,
+        meta:domain_of,
+        meta:exact_mappings,
+        meta:examples,
+        meta:extensions,
+        meta:from_schema,
+        meta:id_prefixes,
+        meta:identifier,
+        meta:ifabsent,
+        meta:imported_from,
+        meta:in_subset,
+        meta:inherited,
+        meta:inlined,
+        meta:inlined_as_list,
+        meta:inverse,
+        meta:is_class_field,
+        meta:is_usage_slot,
+        meta:key,
+        meta:last_updated_on,
+        meta:local_names,
+        meta:mappings,
+        meta:maximum_value,
+        meta:minimum_value,
+        meta:mixin,
+        meta:modified_by,
+        meta:multivalued,
+        meta:name,
+        meta:narrow_mappings,
+        meta:notes,
+        meta:owner,
+        meta:pattern,
+        meta:range,
+        meta:readonly,
+        meta:related_mappings,
+        meta:required,
+        meta:role,
+        meta:see_also,
+        meta:singular_name,
+        meta:slot_definition_apply_to,
+        meta:slot_definition_is_a,
+        meta:slot_definition_mixins,
+        meta:slot_uri,
+        meta:status,
+        meta:string_serialization,
+        meta:subproperty_of,
+        meta:symmetric,
+        meta:todos,
+        meta:usage_slot_name,
+        meta:values_from .
+
+

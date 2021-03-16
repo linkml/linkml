@@ -1,0 +1,22 @@
+id: http://example.org/example/loadererror11
+name: loadererror11
+description: reference to an undefined subset
+
+default_range: string
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+subsets:
+  ss1:
+    description: a legitimate subset
+
+classes:
+  c1:
+    in_subset: sss1       # error - extra 's'

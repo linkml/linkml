@@ -1,0 +1,40 @@
+BASE <http://example.org/sample/organization/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd1: <http://example.org/UNKNOWN/xsd/>
+
+
+<YearCount> xsd1:int
+
+<String> xsd1:string
+
+<Employee>  (
+    CLOSED {
+       (  $<Employee_tes> (  <first_name> @<String> ? ;
+             <last_name> @<String> ;
+             <aliases> @<String> * ;
+             <age_in_years> @<YearCount> ?
+          ) ;
+          rdf:type [ <Employee> ]
+       )
+    } OR @<Manager>
+)
+
+<Manager> CLOSED {
+    (  $<Manager_tes> (  &<Employee_tes> ;
+          rdf:type [ <Employee> ] ? ;
+          <has_employees> @<Employee> *
+       ) ;
+       rdf:type [ <Manager> ]
+    )
+}
+
+<Organization> CLOSED {
+    (  $<Organization_tes> (  <name> @<String> ? ;
+          <has_boss> @<Manager> ?
+       ) ;
+       rdf:type [ <Organization> ]
+    )
+}
+
+
+

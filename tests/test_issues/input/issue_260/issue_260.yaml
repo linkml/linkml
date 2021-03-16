@@ -1,0 +1,18 @@
+id: http://example.org/tests/issue_260
+name: issue_260
+description: Test relative imports
+
+imports:
+  - issue_260a
+  - ../issue_260/issue_260b
+  - ./issue_260c
+
+classes:
+  c2601:
+    is_a: C260a
+
+  c2602:
+    is_a: C260b
+
+  c2603:
+    is_a: C260c

@@ -1,0 +1,6 @@
+id: https://hotecosystem.org/tccm/datatype
+name: datatypes
+
+alt_descriptions:
+  - source: https://www.omg.org/spec/UML/2.3/Infrastructure/PDF
+    description: a type whose instances are identified only by their value

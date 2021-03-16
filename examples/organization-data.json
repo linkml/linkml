@@ -1,0 +1,16 @@
+{"id": "ORGDATA:001",
+ "name": "ACME big company limited",
+ "has_boss" : {
+     "id" : "ORGDATA:002",
+     "first_name" : "Mark",
+     "last_name": "Zuckerberg",
+     "age_in_years": 35,
+     "has_employees": [
+         {
+             "id": "ORGDATA:003",
+             "first_name": "Sean",
+             "last_name": "Connery"
+         }
+     ]
+ }
+}

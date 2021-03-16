@@ -1,0 +1,11 @@
+id: http://example.org/tests/issue_260b
+name: issue_260b
+description: Another small file to be imported
+
+imports:
+  - issue_260a
+
+classes:
+  C260b:
+    is_a: C260a
+

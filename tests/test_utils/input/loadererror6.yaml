@@ -1,0 +1,26 @@
+id: http://example.org/example/loaderror6
+name: loaderror6
+
+default_range: string
+
+types:
+  string:
+    base: str
+    uri: http://example.com/string
+
+slots:
+  key1:
+    domain: c1
+    key: true
+
+  key2:
+    domain: c1
+    key: true
+
+classes:
+  c1:
+    slots:
+      - key1
+      - key2
+
+

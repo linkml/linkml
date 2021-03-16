@@ -1,0 +1,23 @@
+id: http://example.org
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports: [linkml:types]
+default_range: string
+
+classes:
+  c:
+    slots:
+      - s
+      - t
+      - as_str
+      - as_str2
+
+slots:
+  s: {}
+  t: {}
+  as_str:
+    string_serialization: "s:{s} t:{t}"
+  as_str2:
+    string_serialization: "t:{t} s:{s}"

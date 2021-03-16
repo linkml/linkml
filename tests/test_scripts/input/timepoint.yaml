@@ -1,0 +1,37 @@
+id: http://example.org/tests/timepoint
+name: timepoint
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_range: string
+
+
+types:
+  time type:
+    typeof: time
+    description: A time object represents a (local) time of day, independent of any particular day
+
+
+slots:
+  k:
+    domain: geographic location
+    identifier: true
+
+  timepoint:
+    domain: geographic location at time
+    range: time type
+
+
+classes:
+  geographic location:
+    slots:
+      - k
+
+  geographic location at time:
+    is_a: geographic location
+    slots:
+      - timepoint

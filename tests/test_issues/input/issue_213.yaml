@@ -1,0 +1,21 @@
+id: t
+
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 0.0.1
+
+prefixes:
+  t: http://w3id.org/t
+  linkml: https://w3id.org/linkml/
+
+default_prefix: t
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  a:
+    slot_usage:
+      my slot:
+        description: >-
+          my slot

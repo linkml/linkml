@@ -1,0 +1,43 @@
+id: https://example.org/keyid
+name: keyid
+title: Explicit key identifier test
+description: >-
+  YAML dictionaries should allow explicit keys or identifiers as long as they match the dictionary key
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  keyid: https://example.org/keyid/
+
+default_prefix: keyid
+default_range: string
+
+imports:
+  - datatypes
+
+types:
+  string:
+    name: string
+    uri: xsd:string
+    base: str
+    description: A character string
+    in_subset:
+      - subset1
+
+slots:
+  slot1:
+    name: slot1
+    range: string
+    in_subset:
+      - subset1
+
+classes:
+  class1:
+    name: class1
+    slots:
+      - slot1
+    in_subset:
+      - subset1
+
+subsets:
+  subset1:
+    name: subset1

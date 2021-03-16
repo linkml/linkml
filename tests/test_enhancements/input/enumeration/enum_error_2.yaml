@@ -1,0 +1,20 @@
+id: http://example.org/test/enumeration/error2
+name: error2
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  error2:
+    description: Error - cannot have both a version and a tag
+    code_set: HPO:mustard
+    code_set_tag: production
+    code_set_version: 0.17.3

@@ -1,0 +1,18 @@
+id: http://example.org/test/enumeration/error1
+name: error1
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  error1:
+    description: Error - cannot have a version without a code set
+    code_set_version: 0.17.3

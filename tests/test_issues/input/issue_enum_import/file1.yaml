@@ -1,0 +1,21 @@
+id: https://hotecosystem.org/tccm/directories_and_lists
+name: directories_and_lists
+title: TCCM Directory and List Model
+
+
+prefixes:
+    tccm: https://hotecosystem.org/tccm/
+
+classes:
+  Directory:
+    attributes:
+      complete:
+        range: CompleteDirectory
+        required: true
+
+
+enums:
+  CompleteDirectory:
+    permissible_values:
+      COMPLETE: The Directory contains all of the qualifying entries
+      PARTIAL: The directory contains only a partial listing of the qualifying entries.

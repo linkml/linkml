@@ -1,0 +1,50 @@
+id: http://clinicalprofiles.org/biolink/extension
+name: ClinicalProfile_Biolink_Model_extensions
+description: Biolink model extensions for the ClinicalProfile knowledge graphs
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  model: https://w3id.org/biolink/
+  biolink: https://w3id.org/biolink/vocab/
+  linkml: https://w3id.org/linkml/
+
+default_prefix: biolink
+default_range: string
+
+imports:
+  - model:biolink-model
+
+emit_prefixes:
+  - OIO
+
+slots:
+  has active ingredient:
+    domain: medicine
+    range: drug
+    multivalued: true
+
+classes:
+  laboratory result:
+    description:  The result of a clinical laboratory test performed on a patient
+    is_a: phenomenon
+
+  laboratory test:
+    description: The definition and description of a clinical laboratory test
+    is_a: procedure
+
+  medication:
+    description: Medication that has been prescribed and (ostensibly) taken
+    is_a: clinical intervention
+
+  medicine:
+    description: Description of the contents of a medication
+    is_a: chemical substance
+    slots:
+      - has active ingredient
+
+# procedure is already defined, although one might context its definition
+
+  diagnosis:
+    description: An assertion of a disease or disorder
+    is_a:
+

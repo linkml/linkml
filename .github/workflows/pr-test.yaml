@@ -1,0 +1,29 @@
+name: unittests
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build-pipenv:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install pipenv
+      uses: dschep/install-pipenv-action@v1
+    - name: Install dependencies
+      run: pipenv install --dev
+
+    - name: Test with unittest
+      run: pipenv run python -m unittest discover -p 'test_*.py'

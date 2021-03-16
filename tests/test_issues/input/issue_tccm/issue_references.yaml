@@ -1,0 +1,157 @@
+id: https://hotecosystem.org/tccm/resourcedescription
+name: resourcedescription
+title: Resource Description model
+license: https://creativecommons.org/publicdomain/zero/1.0/
+description: >-
+  ResourceDescription represents the shared characteristics common to both abstract and resource version descriptions.
+  ResourceDescription is an abstract type and, as such, cannot be directly created. Resource descriptions are
+  Changeable, meaning that they have identity and can be created, updated, and deleted.
+
+prefixes:
+  tccm: https://hotecosystem.org/tccm/
+  linkml: https://w3id.org/linkml/
+
+default_prefix: tccm
+default_range: string
+
+imports:
+  - datatypes
+  - uritypes
+  - references
+  - linkml:extensions
+  - linkml:annotations
+
+
+classes:
+  ResourceDescription:
+    description: >-
+      ResourceDescription represents the shared characteristics common to both abstract and resource version
+      descriptions. ResourceDescription is an abstract type and, as such, cannot be directly created. Resource
+      descriptions are Changeable, meaning that they have identity and can be created, updated, and deleted.
+    mixins:
+      - extensible
+      - annotatable
+    abstract: true
+    slot_usage:
+      about:
+        description: >-
+          The (or a) definitive URI that represents the resource being described. Note that this is NOT the URI of the
+          resource description in the TCCM or other format, but of the resource itself. As an example, the about URI
+          for the Wine ontology would be “http://www.w3.org/TR/2003/PR-owl-guide-2003 1209/wine#.” The NCI Thesaurus
+          has, among others, the about URI of http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#. HL7 uses ISO Object
+          Identifiers (OIDs) to label resources so, from the HL7 perspective, the about URI of the NCI Thesaurus would
+          be “urn:oid:2.16.840. 1.113883.3.26.1.1”
+        range: ExternalURI
+        required: true
+      resourceID:
+        description: >-
+          A local identifier that uniquely names the resource within the context of the describedResourceType and
+          implementing service. As an example, this might be “SCT” for the SNOMED-CT code system, “SCT-2010AA” for a
+          SNOMED-CT code system version.
+        range: LocalIdentifier
+        required: true
+      formalName:
+        description: The formal or officially assigned name of this resource, if any.
+        range: string
+      keyword:
+        description: Additional identifiers that are used to index and locate the resource.
+        range: string
+        multivalued: true
+      resourceSynopsis:
+        description: A textual summary of the resource - what it is, what it is for, etc.
+        range: string
+      additionalDocumentation:
+        description: A reference to a document that provide additional information about the resource.
+        range: PersistentURI
+        multivalued: true
+      rights:
+        description: Copyright and IP information. Note that rights applies to the source resource, not the CTS2 rendering.
+        range: string
+      alternateID:
+        description: >-
+          An alternative identifier that uniquely names this resource in other environments as contexts.
+          As an example, if a resource had both an ISO Object Identifier and a DNS name, the DNS name might be assigned
+          as the entryID of the resource by one service while the ISO OID would be recorded as an alternateURI using
+          the “urn:oid” prefix. Note that alternateIds can be added or removed during resource updates.
+
+  SourceAndNotation:
+    description: Format and notation that some or all the releases (versions) of this resource are published in
+    slot_usage:
+      sourceAndNotationDescription:
+        description: >-
+          A textual description of where the specified resource version was derived from. This parameter
+          must be supplied if a reasonable PersistentURI for the source document is not available.
+          range: string
+      sourceDocument:
+        description: >-
+          A persistentURI that references the document from which the resource version was derived. This URI may be
+          resolvable to a digital resource or may be the name of a book, publication, or other external document.
+        range: PersistentURI
+      sourceLanguage:
+        description: >-
+          The formal language, if any, that the source for the resource version is expressed in. Examples include
+          Common Logic, OWL, OWL-DL, CLAML26, etc.
+        range: OntologyLanguageReference
+      sourceDocumentSyntax:
+        description: >-
+          The syntax of the source of the resource version, if known. Examples might include rdf/xml, Turtle,
+          Manchester Syntax, CSV, etc.
+        range: OntologySyntaxReference
+
+
+  AbstractResourceDescription:
+    is_a: ResourceDescription
+    abstract: true
+    description: The description of the characteristics of a resource that are independent of the resource content.
+    slot_usage:
+      releaseDocumentation:
+        description: Documentation about the frequency and nature of releases (version) of this resource.
+        range: string
+      releaseFormat:
+        description: A format and notation that the releases (versions) of this resource are published in.
+        range: SourceAndNotation
+        multivalued: true
+
+
+  ResourceVersionDescription:
+    is_a: ResourceDescription
+    abstract: true
+    description: >-
+      Information about the source, format, release date, version identifier, etc. of a specific version of an
+      abstract resource.
+    slot_usage:
+      documentURI:
+        description:
+          A URI that identifies the specific version, language, and notation of the about resource. This URI needs to
+          be constructed in such a way that, if necessary, it will be possible to differentiate resource versions that
+          were loaded from different document syntaxes. As an example, if an image of a wine ontology was loaded from
+          a resource that was in Manchester Syntax, it should be given a different URI than the image loaded from the
+          RDF/XML syntax. The reasoning behind this is, even in cases where different syntaxes are 100% compatible
+          the transformation into the TCCM model may not be identical.
+        range: DocumentURI
+      sourceAndNotation:
+        description: >-
+          A description of where the (or a) source of the version may be found, what format and language it is
+          available in, etc.
+        range: SourceAndNotation
+      predecessor:
+        description: >-
+          A reference to the name and URI version of the resource from which this current version is derived - the
+          version of the resource that immediately preceded it.
+        range: NameAndMeaningReference
+      officialResourceVersionID:
+        description: >-
+          An official label or identifier that was assigned to this version by its publisher
+        range: string
+      officialReleaseDate:
+        description: >-
+          The date that this version of the resource officially became available.
+        range: DateAndTime
+      officialActivationDate:
+        description: >-
+          The date that this version of the resource is stated by its publishers to go into effect.
+        range: DateAndTime
+
+
+
+

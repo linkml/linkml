@@ -1,0 +1,54 @@
+id: http://example.org/tests/issue167
+name: extensions_test
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+    extensions:
+      - tag: http://example.org/c1
+        value: test1
+      - tag: EX:foo1
+        value: bar1
+
+  integer:
+    base: int
+    uri: xsd:int
+
+subsets:
+  random:
+    description: A random subset
+    extensions:
+      http://example.org/c2: test2
+      EX:foo2: bar2
+
+classes:
+  c1:
+    tree_root: true
+    slots:
+      - sa
+      - sb
+    extensions:
+      - tag: http://example.org/c3
+        value: test3
+      - tag: EX:foo3
+        value: bar3
+
+  c2:
+    slots:
+      - sb
+
+slots:
+  sa:
+  sb:
+    range: integer
+    extensions:
+      - tag: http://example.org/c4
+        value: test4
+        extensions:
+          - tag: http://semantics.r.us/c1
+            value: 143
+

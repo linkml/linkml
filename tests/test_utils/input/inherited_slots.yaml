@@ -1,0 +1,47 @@
+id: "http://example.org/inheritedslots"
+title: Base for import test
+name: inheritedslots
+description: A test to make sure that "same as" appears as a slot in named thing
+
+prefixes:
+  meta: https://w3id.org/linkml/meta/
+  skos: http://www.w3.org/2004/02/skos/core#
+  OIO: http://www.geneontology.org/formats/oboInOwl#
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: meta
+default_range: string
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+  uri:
+    uri: xsd:anyURI
+    base: URI
+    repr: str
+    description: a complete URI
+
+slots:
+  id:
+    identifier: true
+    range: uri
+
+  related to:
+    description: A relationship that is asserted between two named things
+    range: named thing
+    multivalued: true
+
+  same as:
+    is_a: related to
+    description: holds between two entities that are considered equivalent to each other
+
+
+classes:
+  named thing:
+    description: "a databased entity or concept/class"
+    slots:
+      - id
+      - related to
+      - same as

@@ -1,0 +1,69 @@
+id: https://hotecosystem.org/tccm/datatype
+name: datatypes
+title: Axiomatic data types
+description: >-
+  Ths module identifies the core data types that are used in the TCCM. The term “data type” refers to
+  “a type whose instances are identified only by their value".
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+    tccm: https://hotecosystem.org/tccm/
+
+default_prefix: tccm
+
+imports:
+  - prefixes
+
+types:
+
+  DateAndTime:
+    uri: xsd:dateTime
+    repr: str
+    base: XSDDateTime
+    description: >-
+      Represents an “Instant” as defined in the OWL Time Specification . Implementations must be able to support
+      temporal units of second, minute, hour, day, month, and year, and be able to represent and compare instances
+      represented in any of these units. DateAndTime can only provide a partial ordering and, as a consequence, i
+      s never used as an index, unique identifier, or to sequence data or events.
+
+  NaturalNumber:
+    uri: xsd:nonNegativeInteger
+    base: int
+    description: A non-negative integer (N). NatrualNumber is used exclusively for representing quantities.
+
+  LocalIdentifier:
+    typeof: string
+    description: >-
+      An identifier that uniquely references a class, individual, property, or other resource within the context of a
+      specific TCCM service implementation. LocalIdentifier syntax must match the PNAME
+      production as defined in the SPARQL Query Specification . LocalIdentifiers may begin with leading digits,
+      where XML Local Identifiers and NameSpaceIdentifiers may not.
+
+  NamespaceIdentifier:
+    uri: xsd:NMTOKEN
+    base: NCName
+    description: >-
+      An identifier that uniquely references the scoping namespace of an Entity (class, role, or individual)
+      within the context of a TCCM service. NameSpaceIdentifier syntax must match the PNAME NS production as defined
+      in the SPARQL Query Specification - meaning that it must begin with an alphabetic character
+
+  URI:
+    uri: xsd:anyURI
+    base: URI
+    repr: str
+    description: >-
+      A Universal Resource Identifier (URI) as defined in IETF RFC 3986. TCCM implementations are encouraged to
+      consider implementing this data type using the IRI (RFC3987) specification
+
+  CURIE:
+    uri: xsd:anyURI
+    base: Curie
+
+  URIorCurie:
+    uri: xsd:anyURI
+    base: URIorCURIE
+    repr: str
+    description: a URI or a CURIE
+
+
+

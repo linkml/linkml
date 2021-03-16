@@ -1,0 +1,38 @@
+id: http://example.org/example/uri_tests
+name: uri_tests
+
+imports:
+  - linkml:types
+
+prefixes:
+  meta: https://w3id.org/linkml/meta/
+  skos: http://www.w3.org/2004/02/skos/core#
+  OIO: http://www.geneontology.org/formats/oboInOwl#
+  linkml: https://w3id.org/linkml/
+
+default_prefix: meta
+
+slots:
+  sd:
+    domain: c1
+    range: string
+
+  su:
+    domain: c1
+    range: string
+    slot_uri: http://example.org/slot/su
+
+  sc:
+    domain: c1
+    range: string
+    slot_uri: skos:prefLabel
+
+
+classes:
+  c1:
+
+  cc:
+    class_uri: skos:Concept
+
+  cu:
+    class_uri: http://example.org/class/cu

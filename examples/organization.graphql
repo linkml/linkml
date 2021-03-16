@@ -1,0 +1,27 @@
+type Employee
+  {
+    id: String!
+    firstName: String
+    lastName: String!
+    aliases: [String]
+    ageInYears: YearCount
+  }
+
+type Manager
+  {
+    id: String!
+    firstName: String
+    lastName: String!
+    aliases: [String]
+    ageInYears: YearCount
+    hasEmployees: [Employee]
+  }
+
+type Organization
+  {
+    id: String!
+    name: String
+    hasBoss: Manager
+  }
+
+

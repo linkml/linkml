@@ -1,0 +1,227 @@
+id: https://microbiomedata/schema
+name: nmdc_schema
+description: >-
+  Schema for NMDC. Alpha. Currently focuses on samples
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  nmdc: https://microbiomedata/meta/
+  wgs: http://www.w3.org/2003/01/geo/wgs84_pos
+  qud: http://qudt.org/1.1/schema/qudt#
+  linkml: https://w3id.org/linkml/
+
+default_prefix: nmdc
+default_range: string
+
+default_curi_maps:
+  - obo_context
+  - idot_context
+
+emit_prefixes:
+  - rdf
+  - rdfs
+  - xsd
+  - skos
+
+imports:
+  - linkml:types
+
+classes:
+
+  biosample:
+    aliases: ['sample', 'material sample']
+    description: >-
+      A material sample. May be environmental (encompassing many organisms) or isolate or tissue
+    slots:
+      - id
+      - name
+      - annotations
+      - alternate identifiers
+    slot_usage:
+      id:
+        description: >-
+          The primary identifier for the sample
+      name:
+        description: >-
+          A human readable name or description of the sample
+      alternate identifiers:
+        description: >-
+          The same sample may have distinct identifiers in different databases (e.g. GOLD and EMSL)
+  ## TODO
+  biosample processing:
+    description: >-
+      A process that takes one or more biosamples as inputs and generates one or more as output
+    slots:
+      - input
+      - output
+
+  ## TODO: provenance on an annotation; some will be directly entered by a submitter;
+  ## others will be done post-submission by a curator; others will be done automatically (e.g. by text mining)
+  ## or by automatic enrichment methods (e.g. calling ORNL-Identify using geolocation)
+  annotation:
+    description: >-
+      An annotation on a sample. This is essentially a key value pair
+    slots:
+      - has characteristic
+      - has raw value
+      - has normalized value
+
+  characteristic:
+    aliases: ['field', 'property', 'template field', 'key']
+    description: >-
+      A characteristic of a biosample. Examples: depth, habitat, material, ...
+      For NMDC, characteristics SHOULD be mapped to fields within a MIxS template
+    slots:
+      - id
+      - name
+      - description
+      - alternate identifiers
+
+  normalized value:
+    description: >-
+      The value that was specified for an annotation in parsed/normalized form. This could be a range of different types
+
+  quantity value:
+    is_a: normalized value
+    description: >-
+      A simple quantity, e.g. 2cm
+    slots:
+      - has unit
+      - has numeric value
+
+  controlled term value:
+    is_a: normalized value
+    description: >-
+      A controlled term or class from an ontology
+    slots:
+      - instance of
+
+  geolocation value:
+    is_a: normalized value
+    description: >-
+      A normalized value for a location on the earth's surface
+    slots:
+      - latitude
+      - longitude
+
+  unit:
+    id_prefixes:
+      - UO
+    mappings:
+      - qud:Unit
+      - UO:0000000
+
+  ontology class:
+    slots:
+      - id
+      - name
+
+slots:
+
+  id:
+    identifier: true
+    description: >-
+      A unique identifier for a thing.
+      Must be either a CURIE shorthand for a URI or a complete URI
+    range: identifier type
+    required: true
+
+  name:
+    description: >-
+      A human readable label for an entity
+
+  description:
+    range: string
+    description: >-
+      a human-readable description of a thing
+    slot_uri: dcterms:description
+
+  has characteristic:
+    description: >-
+      Links an annotation to the field/characteristic
+    multivalued: false
+    domain: annotation
+    range: characteristic
+
+  instance of:
+    range: ontology class
+
+  has raw value:
+    description: >-
+      The value that was specified for an annotation in raw form, i.e. a string. E.g. "2 cm" or "2-4 cm"
+    multivalued: false
+    required: true
+    domain: annotation
+    range: string
+
+  has normalized value:
+    description: >-
+      Connects an annotation to the normalized/parsed raw value
+    multivalued: false
+    domain: annotation
+    range: normalized value
+
+  has unit:
+    description: >-
+      connects a quantity value to a unit
+    range: unit
+    multivalued: false
+    mappings:
+      - qud:unit
+
+  has numeric value:
+    description: >-
+      connects a quantity value to a number
+    range: double
+    multivalued: false
+    mappings:
+      - qud:quantityValue
+
+  alternate identifiers:
+    aliases: ['mappings', 'alt ids', 'xrefs']
+    description: >-
+      Non-primary identifiers
+    multivalued: true
+    range: identifier type
+    required: false
+
+  annotations:
+    description: >-
+      Zero to many annotations on a sample
+    multivalued: true
+    domain: biosample
+    range: annotation
+
+  latitude:
+    range: float
+    description: >-
+      latitude
+    slot_uri: wgs:lat
+
+  longitude:
+    range: float
+    description: >-
+      longitude
+    slot_uri: wgs:long
+
+  input:
+    range: biosample
+    multivalued: true
+    description: >-
+      An input biosample to a processing step
+
+  output:
+    range: biosample
+    multivalued: true
+    description: >-
+      An output biosample to a processing step
+
+types:
+
+  identifier type:
+    base: ElementIdentifier
+    uri: xsd:anyURI
+    description: >-
+      A string that is intended to uniquely identify a thing
+      May be URI in full or compact (CURIE) form
+

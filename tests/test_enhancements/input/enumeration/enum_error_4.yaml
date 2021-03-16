@@ -1,0 +1,18 @@
+id: http://example.org/test/enumeration/error4
+name: error4
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  error4:
+    description: Error - cannot have a formula without a code set
+    pv_formula: CODE

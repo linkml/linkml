@@ -1,0 +1,21 @@
+id: http://example.org/tests/issue344
+name: annotations_test
+
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+
+default_prefix: ex
+
+default_curi_maps:
+    - obo_context
+
+classes:
+  my class:
+    description: >-
+      A simple class
+    exact_mappings:
+      - PCO:12345
+      - PATO:12345
+    narrow_mappings:
+      - GO:12345

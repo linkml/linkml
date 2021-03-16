@@ -1,0 +1,11 @@
+id: http://schema.org/example/loadertest1
+name: loadertest1
+description: No default slot type defined
+
+
+slots:
+  s1:
+    domain: c1
+
+classes:
+  c1:

@@ -1,0 +1,11 @@
+id: https://example.com/test112
+
+prefixes:
+  meta:  https://w3id.org/linkml/
+
+imports: [meta:types]
+
+slots:
+
+classes:
+  EmptyClass:

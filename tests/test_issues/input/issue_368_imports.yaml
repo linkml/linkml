@@ -1,0 +1,10 @@
+id: https://microbiomedata/schema/mixs
+
+classes:
+  parent_class: {}
+
+enums:
+  sample_enum:
+    permissible_values:
+      pva: PVA description
+      pvb: PVB description

@@ -1,0 +1,94 @@
+id: http://examples.org/linkml/test/complex_ranges
+name: complex_ranges
+description: sample complex ranges
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  complex_ranges: http://examples.org/linkml/test/complex_ranges
+
+default_prefix: complex_ranges
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  OneElementClass:
+    description: A class with a single non-key integer as a value
+    attributes:
+      value:
+        range: integer
+
+  TwoElementClass:
+    description: A class with a two non-key strings as a values
+    attributes:
+      value1:
+        range: string
+      value2:
+        range: string
+
+  ThreeElementClass:
+    description: A class with three non-key doubles as values
+    attributes:
+      value1:
+        range: double
+      value2:
+        range: double
+      value3:
+        range: double
+
+  KeyedOneElementClass:
+    description: A keyed class with one element
+    attributes:
+      name:
+        range: string
+        key: true
+
+  KeyedTwoElementClass:
+    description: A keyed class with an additional integer
+    attributes:
+      name:
+        range: string
+        key: true
+      value:
+        range: integer
+
+  KeyedThreeElementClass:
+    description: A keyed class with an additional integer and date
+    attributes:
+      name:
+        range: string
+        key: true
+      value:
+        range: integer
+      modifier:
+        range: date
+
+  IdentifiedOneElementClass:
+    description: A identified class with one element
+    attributes:
+      name:
+        range: string
+        identifier: true
+
+  IdentifiedTwoElementClass:
+    description: A identified class with an additional integer
+    attributes:
+      name:
+        range: string
+        identifier: true
+      value:
+        range: integer
+
+  IdentifiedThreeElementClass:
+    description: A identified class with an additional integer and date
+    attributes:
+      name:
+        range: string
+        identifier: true
+      value:
+        range: integer
+      modifier:
+        range: date
+

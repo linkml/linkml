@@ -1,0 +1,18 @@
+id: https://example.org/importer
+name: importer
+description: >-
+  Test of local import with an identifier
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+    ex: https://example.org/importee/
+
+default_prefix: ex
+
+imports:
+  - importee
+
+classes:
+  child:
+    is_a: base
+

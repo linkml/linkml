@@ -1,0 +1,21 @@
+id: http://example.org/test/enumeration/error5
+name: error5
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  error5:
+    description: Error - cannot have both a formula and permissible values
+    code_set: CLUE:mustard
+    pv_formula: CODE
+    permissible_values:
+      v1: Test Value

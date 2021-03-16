@@ -1,0 +1,24 @@
+#TODO
+#+ description: report all unknown slots
+
+prefix : <https://w3id.org/linkml/meta/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?s ?p ?o ?cls ?scheme
+WHERE {
+  ?s ?p ?o .
+  {
+    {?s rdf:type ?cls }
+    UNION
+    {?s ?typePred ?cls .
+     ?typePred (:is_a|:mixin)* ?typePredInf .
+     ?typePredInf :slot_uri rdf:type
+    }
+  }
+  ?cls a :ClassDefinition .
+  ?cls skos:inScheme ?scheme
+
+  FILTER( NOT EXISTS { ?p a :SlotDefinition} )
+  FILTER( !isBlank(?s) )
+}

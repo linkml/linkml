@@ -1,0 +1,14 @@
+id: http://example.org/test/test_uriorcurie
+name: test_uriorcurie
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: linkml
+
+slots:
+  s1:
+    subproperty_of: homologous to

@@ -1,0 +1,20 @@
+id: http://example.org/issue_58
+name: issue 58
+
+prefixes:
+  linkml: https://example.org/issue_58#
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+slots:
+  a_slot:
+    range: string
+
+
+classes:
+  a_class:
+    slots:
+      a_slot

@@ -1,0 +1,35 @@
+id: http://example.org/test/enumeration/error1
+name: error1
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  test1:
+    description: Enumeration w/ name same as a class name
+    permissible_values:
+      v1:
+
+  test2:
+    description: Second enum w/ name same as a class name
+    permissible_values:
+      v1:
+
+
+classes:
+  test1:
+    description: Class w/ name same as enum name
+
+  test2:
+    description: A second error
+
+  test3:
+    description: safe

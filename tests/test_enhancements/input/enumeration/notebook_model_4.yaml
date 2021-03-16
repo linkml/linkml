@@ -1,0 +1,48 @@
+id: http://example.org/test/simple
+name: simple
+description: Very simple enumeration
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  play: http://example.org/test/play/
+  SCT: http://snomed.info/id/
+  CS: http://ontologies-r.us/codesystem/
+
+default_range: string
+default_prefix: play
+
+imports:
+  - linkml:types
+
+enums:
+  Colors:
+    description: Color values, mapped to SNOMED CT
+    code_set: CS:SCT
+    permissible_values:
+      1:
+        description: Red
+        meaning: SCT:371240000
+      2:
+        description: Yellow
+        meaning: SCT:371244009
+      3:
+        meaning: SCT:405738005
+      4:
+        description: Muted
+        meaning: SCT:abcde
+        notes:
+            - Note that CURIEs are not validated if a code_set is not specified
+      9:
+        description: Muddy
+        notes:
+            - "There isn't a SCT map for this term"
+
+classes:
+    FavoriteColor:
+        attributes:
+            id:
+                range: string
+                identifier: true
+            position:
+                range: Colors
+                required: true

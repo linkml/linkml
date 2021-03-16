@@ -1,0 +1,11 @@
+prefix : <https://w3id.org/linkml/meta/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?scheme  ?p ?range
+WHERE {
+  ?p a :SlotDefinition .
+  ?p (:is_a|:mixin)* ?pAnc .
+  ?p :range ?rangeDirect .
+  ?rangeDirect (:is_a|:mixin)* ?range .
+  ?p skos:inScheme ?scheme
+}

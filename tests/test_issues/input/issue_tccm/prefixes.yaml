@@ -1,0 +1,15 @@
+id: https://hotecosystem.org/tccm/prefixes
+name: prefixes
+title: TCCM URI Prefixes
+description: URI Prefixes used in the TCCM Model
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+    tccm: https://hotecosystem.org/tccm/
+    xsd: http://www.w3.org/2001/XMLSchema#
+    linkml: https://w3id.org/linkml/
+
+default_prefix: tccm
+
+imports:
+  - linkml:types

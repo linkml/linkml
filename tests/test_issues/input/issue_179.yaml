@@ -1,0 +1,67 @@
+id: http://example.org/sample/example1
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+classes:
+  metric result:
+    description: >-
+      Result of executing a metric on a KS
+    slots:
+      - evaluated using
+      - has source
+      - has status
+      - description
+    mixins:
+      - has messages class
+
+  metric result child:
+    is_a: metric result
+    mixins:
+      - has messages child
+
+    slots:
+      - result child slot
+
+  has messages class:
+    slots:
+      - has messages
+
+  has messages child:
+    is_a: has messages class
+    slots:
+      - has child messages
+
+  problem:
+    description: >-
+      An object representing an error or problem encountered
+    slots:
+      - description
+
+  download problem:
+    is_a: problem
+    description: >-
+      A problem in downloading a knowledge source
+    slots:
+      - has source
+
+slots:
+  evaluated using:
+
+  has source:
+
+  has status:
+
+  description:
+
+  has messages:
+
+  has child messages:
+
+  result child slot:
+    domain: problem
+
+  lone slot joe:
+    domain: metric result

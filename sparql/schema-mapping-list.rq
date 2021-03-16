@@ -1,0 +1,11 @@
+#+ description: report all mappings and their types
+
+prefix : <https://w3id.org/linkml/meta/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?scheme ?element ?predicate ?mapped_to
+WHERE {
+  ?element ?predicate ?mapped_to .
+  VALUES ?predicate {skos:exactMatch skos:narrowMatch skos:broadMatch skos:relatedMatch skos:closeMatch skos:mappingRelation} .
+  ?element skos:inScheme ?scheme
+}

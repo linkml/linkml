@@ -1,0 +1,63 @@
+id: https://example.com/test14
+
+prefixes:
+  meta:  https://w3id.org/linkml/
+
+imports: [meta:types]
+default_range: string
+
+classes:
+  named thing:
+    slots:
+      - id
+      - name
+      - subject
+      - object
+
+  mixin_owner:
+    is_a: named thing
+    defining_slots:
+      - subject
+      - object
+    mixins:
+      - mixin_class
+    slot_usage:
+      subject:
+        range: subject_range_1
+
+  subject_range_1:
+    is_a: named thing
+
+  object_range_1:
+    is_a: named thing
+
+  mixin_class:
+    abstract: true
+    slot_usage:
+      object:
+        range: object_range_1
+    slots:
+      - sex qualifier
+
+slots:
+  id:
+    identifier: true
+    domain: named thing
+    range: string
+    required: true
+
+  name:
+    domain: named thing
+    range: string
+    required: true
+
+  subject:
+    required: true
+    range: named thing
+
+  object:
+    required: true
+    range: named thing
+
+  sex qualifier:
+    range: named thing

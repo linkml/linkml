@@ -1,0 +1,281 @@
+{
+   "name": "import_test_1",
+   "id": "http://example.org/import_test_1",
+   "title": "Base for import test",
+   "imports": [
+      "http://example.org/import_test_2",
+      "base:import_test_2",
+      "loc/imp3",
+      "types",
+      "base:import_test_4"
+   ],
+   "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "prefixes": [
+      {
+         "prefix_prefix": "base",
+         "prefix_reference": "http://example.org/"
+      },
+      {
+         "prefix_prefix": "test",
+         "prefix_reference": "http://example.org/import_test_1#"
+      }
+   ],
+   "default_curi_maps": [
+      "semweb_context"
+   ],
+   "default_prefix": "test",
+   "default_range": "string",
+   "subsets": [
+      {
+         "name": "subset_2",
+         "definition_uri": "test2:Subset2",
+         "from_schema": "http://example.org/import_test_2"
+      },
+      {
+         "name": "subset_3",
+         "definition_uri": "test3:Subset3",
+         "from_schema": "http://example.org/import_test_3"
+      },
+      {
+         "name": "subset_4",
+         "definition_uri": "test4:Subset4",
+         "from_schema": "http://example.org/import_test_4"
+      }
+   ],
+   "types": [
+      {
+         "name": "s1",
+         "definition_uri": "test:S1",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_1",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "s2",
+         "definition_uri": "test2:S2",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_2",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "s3",
+         "definition_uri": "test3:S3",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_3",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "string",
+         "definition_uri": "metatype:String",
+         "description": "A character string",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "integer",
+         "definition_uri": "metatype:Integer",
+         "description": "An integer",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "int",
+         "uri": "xsd:integer"
+      },
+      {
+         "name": "boolean",
+         "definition_uri": "metatype:Boolean",
+         "description": "A binary (true or false) value",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "Bool",
+         "uri": "xsd:boolean"
+      },
+      {
+         "name": "float",
+         "definition_uri": "metatype:Float",
+         "description": "A real number that conforms to the xsd:float specification",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "float",
+         "uri": "xsd:float"
+      },
+      {
+         "name": "double",
+         "definition_uri": "metatype:Double",
+         "description": "A real number that conforms to the xsd:double specification",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "float",
+         "uri": "xsd:double"
+      },
+      {
+         "name": "time",
+         "definition_uri": "metatype:Time",
+         "description": "A time object represents a (local) time of day, independent of any particular day",
+         "notes": [
+            "URI is dateTime because OWL reasoners don't work with straight date or time"
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "XSDTime",
+         "uri": "xsd:dateTime",
+         "repr": "str"
+      },
+      {
+         "name": "date",
+         "definition_uri": "metatype:Date",
+         "description": "a date (year, month and day) in an idealized calendar",
+         "notes": [
+            "URI is dateTime because OWL reasoners don't work with straight date or time"
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "XSDDate",
+         "uri": "xsd:date",
+         "repr": "str"
+      },
+      {
+         "name": "datetime",
+         "definition_uri": "metatype:Datetime",
+         "description": "The combination of a date and time",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "XSDDateTime",
+         "uri": "xsd:dateTime",
+         "repr": "str"
+      },
+      {
+         "name": "uriorcurie",
+         "definition_uri": "metatype:Uriorcurie",
+         "description": "a URI or a CURIE",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "URIorCURIE",
+         "uri": "xsd:anyURI",
+         "repr": "str"
+      },
+      {
+         "name": "uri",
+         "definition_uri": "metatype:Uri",
+         "description": "a complete URI",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "URI",
+         "uri": "xsd:anyURI",
+         "repr": "str"
+      },
+      {
+         "name": "ncname",
+         "definition_uri": "metatype:Ncname",
+         "description": "Prefix part of CURIE",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "NCName",
+         "uri": "xsd:string",
+         "repr": "str"
+      },
+      {
+         "name": "objectidentifier",
+         "definition_uri": "metatype:Objectidentifier",
+         "description": "A URI or CURIE that represents an object in the model.",
+         "comments": [
+            "Used for inheritence and type checking"
+         ],
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "ElementIdentifier",
+         "uri": "shex:iri",
+         "repr": "str"
+      },
+      {
+         "name": "nodeidentifier",
+         "definition_uri": "metatype:Nodeidentifier",
+         "description": "A URI, CURIE or BNODE that represents a node in a model.",
+         "from_schema": "https://w3id.org/linkml/types",
+         "base": "NodeIdentifier",
+         "uri": "shex:nonLiteral",
+         "repr": "str"
+      },
+      {
+         "name": "s4",
+         "definition_uri": "test4:S4",
+         "description": "A character string",
+         "from_schema": "http://example.org/import_test_4",
+         "base": "str",
+         "uri": "xsd:string"
+      }
+   ],
+   "slots": [
+      {
+         "name": "slot_1",
+         "definition_uri": "test:slot_1",
+         "from_schema": "http://example.org/import_test_1",
+         "domain": "class_1",
+         "range": "string",
+         "slot_uri": "test:slot_1",
+         "owner": "class_1"
+      },
+      {
+         "name": "slot_2",
+         "definition_uri": "test2:slot_2",
+         "from_schema": "http://example.org/import_test_2",
+         "domain": "class_2",
+         "range": "string",
+         "slot_uri": "test2:slot_2",
+         "owner": "class_2"
+      },
+      {
+         "name": "slot_3",
+         "definition_uri": "test3:slot_3",
+         "from_schema": "http://example.org/import_test_3",
+         "domain": "class_3",
+         "range": "string",
+         "slot_uri": "test3:slot_3",
+         "owner": "class_3"
+      },
+      {
+         "name": "slot_4",
+         "definition_uri": "test4:slot_4",
+         "from_schema": "http://example.org/import_test_4",
+         "domain": "class_4",
+         "range": "string",
+         "slot_uri": "test4:slot_4",
+         "owner": "class_4"
+      }
+   ],
+   "classes": [
+      {
+         "name": "class_1",
+         "definition_uri": "test:Class1",
+         "from_schema": "http://example.org/import_test_1",
+         "slots": [
+            "slot_1"
+         ],
+         "class_uri": "test:Class1"
+      },
+      {
+         "name": "class_2",
+         "definition_uri": "test2:Class2",
+         "from_schema": "http://example.org/import_test_2",
+         "slots": [
+            "slot_2"
+         ],
+         "class_uri": "test2:Class2"
+      },
+      {
+         "name": "class_3",
+         "definition_uri": "test3:Class3",
+         "from_schema": "http://example.org/import_test_3",
+         "slots": [
+            "slot_3"
+         ],
+         "class_uri": "test3:Class3"
+      },
+      {
+         "name": "class_4",
+         "definition_uri": "test4:Class4",
+         "from_schema": "http://example.org/import_test_4",
+         "slots": [
+            "slot_4"
+         ],
+         "class_uri": "test4:Class4"
+      }
+   ],
+   "metamodel_version": "1.4.4",
+   "source_file": "import_test_1.yaml",
+   "source_file_date": "Tue Jun  9 11:37:13 2020",
+   "source_file_size": 532,
+   "generation_date": "2020-06-23 14:51"
+}

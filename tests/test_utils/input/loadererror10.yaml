@@ -1,0 +1,14 @@
+id: http://example.org/example/loaderror10
+name: loaderror10
+description: slot_usage both a id and a key
+
+default_range: string
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+
+types:
+  string:
+    base: str
+

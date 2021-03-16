@@ -1,0 +1,45 @@
+id: https://hotecosystem.org/tccm/entityreference
+name: entityreference
+title: EntityReference model
+license: https://creativecommons.org/publicdomain/zero/1.0/
+description: >-
+  TCCM differentiates between a simple resource reference, such as a code system, code system version, value set, etc.
+  and a reference to an Entity - a class, predicate, or individual. Simple resource references are identified by a
+  single URI. Entity references, however, are subdivided into two parts - a scoping namespace and a name that is unique
+  within the context of the namespace.
+
+  This model defines three building blocks that are used for referencing entities throughout the specification.
+  The first form, URIAndEntityName provides the URI and local name by which the entity is known within the context of the service. An optional href may also be supplied that resolves to the EntityDescription that is contextually appropriate.
+  The second form, EntityReference, supplies the uri and name but also includes a list of code system versions that make one or more assertions about (or using) the referenced entity. There will be at most one version of any given code system in this list, the choice of which will depend on the context of the query.
+  The third form, EntityExpression, is a description of an Entity in an external language and syntax such as RDF/ OWL, Manchester OWL, or SNOMED CT Compositional Grammar.
+
+
+prefixes:
+  tccm: https://hotecosystem.org/tccm/
+
+default_prefix: tccm
+default_range: string
+
+imports:
+  - datatypes
+  - uritypes
+
+
+classes:
+  EntityReference:
+    description: The URI, namespace/name (if known) and a list of code systems that make assertions about the entity.
+    slot_usage:
+      about:
+        description: The external, permanant URI by which this entity is known.
+        range: PersistentURI
+        required: true
+      name:
+        description: The namespace and name by which this entity is known within the context of the service implementation
+        range: string
+      designation:
+        description: A block of text that describes the intended meaning or purpose of the entity
+        range: string
+      href:
+        description: A reference to the "official" description of the entity in the context of the defining code system
+        range: RenderingURI
+

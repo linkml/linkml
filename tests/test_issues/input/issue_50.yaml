@@ -1,0 +1,48 @@
+id: http://example.com
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+classes:
+
+    test class 1:
+      slots:
+        - id
+        - optional_mixin_slot
+        - required_mixin_slot
+
+    test class 2:
+      slots:
+        - id
+        - optional_mixin_slot
+        - required_mixin_slot
+
+    test class 3:
+      slots:
+        - id
+
+
+slots:
+    id:
+      description: a identifier
+      identifier: true
+
+    optional_mixin_slot:
+      required: false
+
+    required_mixin_slot:
+      required: true
+
+    optional_domain_slot:
+      domain: test class 3
+      required: false
+
+    required_domain_slot:
+      domain: test class 3
+      required: true
+

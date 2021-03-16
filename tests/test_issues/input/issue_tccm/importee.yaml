@@ -1,0 +1,34 @@
+id: https://example.org/importee
+name: importee
+description: >-
+  A minimal element to import
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+    ex: https://example.org/importee/
+    xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: ex
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+
+slots:
+  id:
+    range: string
+    key: true
+
+  value:
+    range: string
+    required: true
+
+
+classes:
+  base:
+    slots:
+      - id
+      - value

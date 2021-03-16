@@ -1,0 +1,23 @@
+id: https://issue_test/106/schema
+name: test_106
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+slots:
+  s1:
+
+  s2:
+
+
+classes:
+  c1:
+     slots:
+        - s1
+        - s2
+  c2:
+    slots:
+        - s1

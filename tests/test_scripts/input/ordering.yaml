@@ -1,0 +1,72 @@
+id: "https://example.org/inheritedid"
+name: test_inherited_id
+description: Test
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+default_prefix: linkml
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+  uri:
+    uri: xsd:anyURI
+    base: URI
+    repr: str
+    description: a complete URI
+
+
+  identifier type:
+    typeof: string
+    description: >-
+      A string that is intended to uniquely identify a thing
+      May be URI in full or compact (CURIE) form
+
+  label type:
+    typeof: string
+    description: >-
+      A string that provides a human-readable name for a thing
+
+slots:
+  id:
+    identifier: true
+    domain: named thing
+    range: identifier type
+
+  name:
+    aliases: ['label', 'display name']
+    domain: named thing
+    range: label type
+
+
+classes:
+
+  attribute:
+    mixins:
+      - ontology class
+    description: A property or characteristic of an entity
+
+  ## ------
+  ## THINGS
+  ## ------
+
+  biological sex:
+    is_a: attribute
+
+  ontology class:
+    is_a: named thing
+    description: "a concept or class in an ontology, vocabulary or thesaurus"
+
+  named thing:
+    description: "a databased entity or concept/class"
+    slots:
+      - id
+      - name

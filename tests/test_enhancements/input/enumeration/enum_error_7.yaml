@@ -1,0 +1,19 @@
+id: http://example.org/test/enumeration/error7
+name: error7
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  error7:
+    description: Error -- unknown formula
+    code_set: CLUE:mustard
+    pv_formula: LABEL

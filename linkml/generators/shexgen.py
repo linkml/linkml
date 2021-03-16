@@ -1,0 +1,175 @@
+"""Generate ShEx definition of a model
+
+"""
+import os
+from typing import Union, TextIO, Optional, List
+
+import click
+from ShExJSG import ShExC
+from ShExJSG.SchemaWithContext import Schema
+from ShExJSG.ShExJ import Shape, IRIREF, EachOf, TripleConstraint, NodeConstraint, ShapeOr
+from jsonasobj import as_json
+from rdflib import Graph, OWL, RDF, Namespace, XSD
+
+from linkml import METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE
+from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition, SlotDefinitionName, ElementName, \
+    TypeDefinition, EnumDefinition
+from includes.types import SHEX
+from linkml.utils.formatutils import camelcase, sfx
+from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.metamodelcore import URIorCURIE
+
+
+class ShExGenerator(Generator):
+    generatorname = os.path.basename(__file__)
+    generatorversion = "0.0.2"
+    valid_formats = ['shex', 'json', 'rdf']
+    visit_all_class_slots = False
+
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **args) -> None:
+        super().__init__(schema, **args)
+        self.shex: Schema = Schema()                # ShEx Schema being generated
+        self.shapes = []
+        self.shape: Optional[Shape] = None                    # Current shape being defined
+        self.list_shapes: List[IRIREF] = []         # Shapes that have been defined as lists
+
+        if METAMODEL_NAMESPACE_NAME not in self.namespaces:
+            self.namespaces[METAMODEL_NAMESPACE_NAME] = METAMODEL_NAMESPACE
+        self.meta = Namespace(self.namespaces.join(self.namespaces[METAMODEL_NAMESPACE_NAME], ''))  # URI for the metamodel
+        self.base = Namespace(self.namespaces.join(self.namespaces._base, ''))    # Base URI for what is being modeled
+
+    def visit_schema(self, **_):
+        # Adjust the schema context to include the base model URI
+        context = self.shex['@context']
+        self.shex['@context'] = [context, {'@base': self.namespaces._base}]
+        # Emit all of the type definitions
+        for typ in self.schema.types.values():
+            model_uri = self._class_or_type_uri(typ)
+            if typ.uri:
+                typ_type_uri = self.namespaces.uri_for(typ.uri)
+                if typ_type_uri in (XSD.anyURI, SHEX.iri):
+                    self.shapes.append(NodeConstraint(id=model_uri, nodeKind="iri"))
+                elif typ_type_uri == SHEX.nonLiteral:
+                    self.shapes.append(NodeConstraint(id=model_uri, nodeKind="nonliteral"))
+                else:
+                    self.shapes.append(NodeConstraint(id=model_uri, datatype=self.namespaces.uri_for(typ.uri)))
+            else:
+                typeof_uri = self._class_or_type_uri(typ.typeof)
+                self.shapes.append(Shape(id=model_uri, expression=typeof_uri))
+
+    def visit_class(self, cls: ClassDefinition) -> bool:
+        self.shape = Shape()
+
+        # Start with all the parent classes, mixins and appytos
+        struct_ref_list = [cls.is_a] if cls.is_a else []
+        struct_ref_list += cls.mixins
+        if cls.name in self.synopsis.applytorefs:
+            for applier in self.synopsis.applytorefs[cls.name].classrefs:
+                struct_ref_list.append(applier)
+        for sr in struct_ref_list:
+            self._add_constraint(self._class_or_type_uri(sr, '_tes'))
+            self._add_constraint(self._type_arc(self.schema.classes[sr].class_uri, opt=True))
+        return True
+
+    def end_class(self, cls: ClassDefinition) -> None:
+        # On entry self.shape contains all of the triple expressions that define the body of the shape
+
+        # Finish off the shape definition itself
+
+        # If there is nothing yet, we're at the very root of things.  Add in a final catch-all for any additional
+        # type arcs.  NOTE: Here is where you can sink other things as well if you want to ignore categories of things
+        if self.shape.expression is None:
+            self._add_constraint(TripleConstraint(predicate=RDF.type, min=0, max=-1))
+        self.shape.expression.id = self._class_or_type_uri(cls, '_tes')
+        self.shape.expression = EachOf(expressions=[self.shape.expression,
+                                                    self._type_arc(cls.class_uri,
+                                                                   not bool(self.class_identifier(cls)))])
+        self.shape.closed = not (cls.abstract or cls.mixin)
+
+        # If this class has subtypes, define the class as the union of its subtypes and itself (if not abstract)
+        if cls.name in self.synopsis.isarefs:
+            childrenExprs = []
+            for child_classname in sorted(list(self.synopsis.isarefs[cls.name].classrefs)):
+                childrenExprs.append(self._class_or_type_uri(child_classname))
+            if not (cls.mixin or cls.abstract) or len(childrenExprs) == 1:
+                childrenExprs.insert(0, self.shape)
+                self.shapes.append(ShapeOr(id=self._class_or_type_uri(cls), shapeExprs=childrenExprs))
+            else:
+                self.shapes.append(ShapeOr(id=self._class_or_type_uri(cls), shapeExprs=childrenExprs))
+                self.shape.id = self._class_or_type_uri(cls, "_struct")
+                self.shapes.append(self.shape)
+        else:
+            self.shape.id = self._class_or_type_uri(cls)
+            self.shapes.append(self.shape)
+
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: SlotDefinitionName, slot: SlotDefinition) \
+            -> None:
+        if not (slot.identifier or slot.abstract or slot.mixin):
+            constraint = TripleConstraint()
+            self._add_constraint(constraint)
+            constraint.predicate = self.namespaces.uri_for(slot.slot_uri)
+            constraint.min = int(bool(slot.required))
+            constraint.max = 1 if not slot.multivalued else -1
+            constraint.valueExpr = self._class_or_type_uri(slot.range)
+
+    def end_schema(self, output: Optional[str] = None, **_) -> None:
+        self.shex.shapes = self.shapes if self.shapes else [Shape()]
+        shex = as_json(self.shex)
+        if self.format == 'rdf':
+            g = Graph()
+            g.parse(data=shex, format="json-ld")
+            g.bind('owl', OWL)
+            shex = g.serialize(format='turtle').decode()
+        elif self.format == 'shex':
+            g = Graph()
+            self.namespaces.load_graph(g)
+            shex = str(ShExC(self.shex, base=sfx(self.namespaces._base), namespaces=g))
+        if output:
+            with open(output, 'w') as outf:
+                outf.write(shex)
+        else:
+            print(shex)
+
+    def _class_or_type_uri(self, item: Union[TypeDefinition, ClassDefinition, ElementName],
+                           suffix: Optional[str] = '') -> URIorCURIE:
+        # TODO: enums - figure this out
+        if isinstance(item, (TypeDefinition, ClassDefinition, EnumDefinition)):
+            cls_or_type = item
+        else:
+            cls_or_type = self.class_or_type_for(item)
+        return self.namespaces.uri_for(
+            self.namespaces.uri_or_curie_for(self.schema_defaults[cls_or_type.from_schema],
+                                             camelcase(cls_or_type.name) + suffix))
+
+    def _slot_uri(self, name: str, suffix: Optional[str] = '') -> URIorCURIE:
+        slot = self.schema.slots[name]
+        return self.namespaces.uri_for(
+            self.namespaces.uri_or_curie_for(self.schema_defaults[slot.from_schema], camelcase(name) + suffix))
+
+    def _add_constraint(self, constraint) -> None:
+        # No constraints
+        if not self.shape.expression:
+            self.shape.expression = constraint
+        # One constraint
+        elif not isinstance(self.shape.expression, EachOf):
+            self.shape.expression = EachOf(expressions=[self.shape.expression, constraint])
+        # Two or more constraints
+        else:
+            self.shape.expression.expressions.append(constraint)
+
+    def _type_arc(self, target: URIorCURIE, opt: bool = False) -> TripleConstraint:
+        return TripleConstraint(predicate=RDF.type,
+                                valueExpr=NodeConstraint(values=[IRIREF(self.namespaces.uri_for(target))]),
+                                min=0 if opt else 1)
+
+
+@shared_arguments(ShExGenerator)
+@click.command()
+@click.option("-o", "--output", help="Output file name")
+def cli(yamlfile, **args):
+    """ Generate a ShEx Schema for a  biolink model """
+    print(ShExGenerator(yamlfile, **args).serialize(**args))
+
+
+if __name__ == '__main__':
+    cli()

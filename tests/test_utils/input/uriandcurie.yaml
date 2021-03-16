@@ -1,0 +1,81 @@
+id: http://example.org/test/uriandcurie
+name: uriandcurie
+
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+    m: http://example.org/test/uriandcurie
+    shex: http://www.w3.org/ns/shex#
+
+default_prefix: m
+default_range: string
+
+types:
+    string:
+      uri: xsd:string
+      base: str
+      description: A character string
+
+    uriorcurie:
+      uri: xsd:anyURI
+      base: URIorCURIE
+      repr: str
+      description: a URI or a CURIE
+
+    uri:
+      uri: xsd:anyURI
+      base: URI
+      repr: str
+      description: a complete URI
+
+    curie:
+      uri: xsd:anyURI
+      base: Curie
+      repr: str
+      description: a CURIE
+
+    ncname:
+      uri: xsd:string
+      base: NCName
+      repr: str
+      description: Prefix part of CURIE
+
+    objectidentifier:
+      uri: shex:iri
+      base: ElementIdentifier
+      repr: str
+      description: A URI or CURIE that represents an object in the model.
+      comments:
+        - Used for inheritence and type checking
+
+    nodeidentifier:
+      uri: shex:nonliteral
+      base: NodeIdentifier
+      repr: str
+      description: A URI, CURIE or BNODE that represents a node in a model.
+
+
+slots:
+  id:
+    identifier: true
+    range: objectidentifier
+
+  hasCurie:
+    range: curie
+
+  hasURI:
+    range: uri
+
+  hasNcName:
+    range: ncname
+
+  id2:
+    range: nodeidentifier
+
+classes:
+  c1:
+    slots:
+      - id
+      - hasCurie
+      - hasURI
+      - hasNcName
+      - id2

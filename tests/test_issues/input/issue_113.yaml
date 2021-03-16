@@ -1,0 +1,26 @@
+id: https://microbiomedata/schema
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+classes:
+
+  named thing: {}
+
+  test class:
+    slots:
+      - test attribute 1
+      - test attribute 2
+
+slots:
+
+  attribute:
+    domain: named thing
+
+  test attribute 1:
+    is_a: attribute
+
+  test attribute 2: {}

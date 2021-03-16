@@ -1,0 +1,19 @@
+id: https://microbiomedata/schema
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+  - issue_121_imports
+
+classes:
+
+  biosample:
+    slots:
+      - depth
+    slot_usage:
+      depth:
+        required: false
+
+slots: {}

@@ -1,0 +1,16 @@
+{
+   "_comments": "Auto generated from ... by jsonldcontextgen.py version: 0.1.1\nGeneration date: \nSchema: extensions\n\nid: https://w3id.org/linkml/extensions\ndescription: Extension mixin\nlicense: https://creativecommons.org/publicdomain/zero/1.0/\n",
+   "@context": {
+      "type": "@type",
+      "linkml": "https://w3id.org/linkml/",
+      "meta": "https://w3id.org/linkml/meta/",
+      "@vocab": "https://w3id.org/linkml/meta/",
+      "tag": {
+         "@type": "@id"
+      },
+      "extensions": {
+         "@type": "@id"
+      },
+      "@base": "https://w3id.org/linkml/"
+   }
+}

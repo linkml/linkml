@@ -1,0 +1,220 @@
+id: https://hotecosystem.org/tccm/ValueSets
+name: ValueSets
+title: TCCM Value Sets
+description: Terminology Core Common Model Value Sets
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  tccm: https://hotecosystem.org/tccm/
+
+default_prefix: tccm
+default_range: string
+
+imports:
+  - datatypes
+
+types:
+  ValueSet:
+    typeof: URIorCurie
+    description: A URI that can be indirectly resolved to a set of entity descriptions
+
+  ASSOCIATION:
+    typeof: ValueSet
+    description: >-
+      A formal “semantic” assertion about a named entity, in the form of subject, predicate, and object including any
+      provenance, qualifiers, or internal BNODEs.
+  
+  BINDING_QUALIFIER:
+    typeof: ValueSet
+    description: >-
+      An assertion about the semantics of a concept domain / value set binding. This model element exists specifically
+      to address section 2.4.2.23 of the HL7 SFM14, which needs a qualifier that indicates whether the binding is
+      “overall,” “minimal,” or “maximum.”
+
+      The TCCM specification does not formally define the semantics of the various possible BINDING_QUALIFIER elements:
+      it is up to specific implementations and service clients to interpret the meaning of the specific binding
+      qualifiers that may be represented in references of this type.
+
+  CASE_SIGNIFICANCE:
+    typeof: ValueSet
+    description: >-
+      Identifies the significance of case in a term or designation.
+
+  CODE_SYSTEM_CATEGORY:
+    typeof: ValueSet
+    description: >-
+      The general category of a code system (flat list, subject heading system, taxonomy, thesaurus, classification,
+      terminology, description logic ontology, first order predicate logic, etc.) (same as
+      KnowledgeRepresentationParadigm: OMV 5.8).
+
+  CODE_SYSTEM:
+    typeof: ValueSet
+    description: >-
+      A collection of metadata about the provenance, use, and distribution of a code system or ontology.
+
+  CODE_SYSTEM_VERSION:
+    typeof: ValueSet
+    description: >-
+      A collection of metadata about content and distribution format of a particular version or release of a code system.
+
+  CONCEPT_DOMAIN:
+    typeof: ValueSet
+    description: >-
+      The description of the conceptual domain of a field in a message, column in a database, field on a form, etc.
+      Equivalent to the ISO 11179-3 “Data Element Concept.”
+
+  CONTEXT:
+    typeof: ValueSet
+    description: >-
+      External and environmental factors that serve to discriminate among multiple possible selections. While it is
+      assumed that the specific contexts referenced by CONTEXT are represented by entity descriptions contained in
+      some ontology or coding scheme, the CTS2 specification does not recommend any targets. Note, however, the TCCM
+      context is intended to represent the notion of “jurisdictional domain” or “realm” as described in the HL7 CTS2 SFM .
+
+  DESIGNATION_FIDELITY:
+    typeof: ValueSet
+    description: >-
+      Identifies how well a particular designation represents the intended meaning of the referenced entity. TCCM
+      implementations may consider using the SKOS16 semantic relations to represent this relationship.
+
+  DESIGNATION_TYPE:
+    typeof: ValueSet
+    description: >-
+      The particular form or type of a given designation: can be “short name,” “long name,” “abbreviation,” “eponym.”
+
+  FORMALITY_LEVEL:
+    typeof: ValueSet
+    description: >-
+      The level of formality of an ontology (OMV 5.9).
+
+  FORMAT:
+    typeof: ValueSet
+    description: >-
+      A particular way that information is encoded for storage in a computer file
+
+  LANGUAGE:
+    typeof: ValueSet
+    description: >-
+      A spoken or written language intended for human consumption.
+
+  MATCH_ALGORITHM:
+    typeof: ValueSet
+    description: >-
+      A predicate that determines whether an entity resource qualities for membership in a set based on supplied
+      matching criteria.
+
+  MAP:
+    typeof: ValueSet
+    description: >-
+      A set of rules that associate a set of entity references from one domain into those in another.
+
+  MAP_CORRELATION:
+    typeof: ValueSet
+    description: >-
+      An assertion about the strength or significance of a specific rule in a Map.
+
+  MAP_VERSION:
+    typeof: ValueSet
+    description: >-
+      The state of a Map at a given point in time.
+
+  MODEL_ATTRIBUTE:
+    typeof: ValueSet
+    description: >-
+      An attribute defined in CTS2 information model.
+
+  NAMESPACE:
+    typeof: ValueSet
+    description: >-
+      A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but different meanings.
+
+  ONTOLOGY_ENGINEERING_METHODOLOGY:
+    typeof: ValueSet
+    description: >-
+      Information about the ontology engineering methodology (OMV 5.4) (sic).
+
+  ONTOLOGY_ENGINEERING_TOOL:
+    typeof: ValueSet
+    description: >-
+      A tool used to create the ontology (OMV 5.5).
+
+  ONTOLOGY_DOMAIN:
+    typeof: ValueSet
+    description: >-
+      While the domain can refer to any topic ontology it is advised to use one of the established general purpose
+      topic hierarchy like DMOZ or domain specific topic like ACM for the computer science domain. Only this way it can
+      be ensured that meaningful information about the relation of the domains of two separate ontologies can be
+      deduced (OMV 5.1 1)(sic).
+
+  ONTOLOGY_LANGUAGE:
+    typeof: ValueSet
+    description: >-
+      Information about the language in which the ontology is implemented (OMV 5.7).
+
+  ONTOLOGY_SYNTAX:
+    typeof: ValueSet
+    description: >-
+      Information about the syntax used by an ontology (OMV 5.6).
+
+  ONTOLOGY_TASK:
+    typeof: ValueSet
+    description: >-
+      Information about the task the ontology was intended to be used for (OMV 5.10).
+
+  ONTOLOGY_TYPE:
+    typeof: ValueSet
+    description: >-
+      Categorizes ontologies (OMV 5.2).
+
+  PREDICATE:
+    typeof: ValueSet
+    description: >-
+      A property or relation between entities.
+
+  REASONING_ALGORITHM:
+    typeof: ValueSet
+    description: >-
+      A set of formal rules that allow the deduction of additional assertions from a
+      supplied list of axioms.
+
+  RESOURCE TYPE:
+    typeof: ValueSet
+    description: >-
+      A class of which a referencing resource is an instance of.
+
+  ROLE:
+    typeof: ValueSet
+    description: >-
+      A role that a SOURCE can play in the construction or dissemination of a terminological resource.
+
+  SOURCE:
+    typeof: ValueSet
+    description: >-
+      An individual, organization, or bibliographic reference.
+
+  STATEMENT:
+    typeof: ValueSet
+    description: >-
+      An atomic assertion about a CTS2 resource.
+
+  STATUS:
+    typeof: ValueSet
+    description: >-
+      The state of a resource or other entry in an external workflow.
+
+  VALUE_SET:
+    typeof: ValueSet
+    description: >-
+      A set of entity references.
+
+  VALUE_SET_DEFINITION:
+    typeof: ValueSet
+    description: >-
+      A set of rules that can be applied to specified versions or one or more code systems to yield a set of entity
+      references.
+
+  VERSION_TAG:
+    typeof: ValueSet
+    description: >-
+      An identifier that can be assigned to resource versions by a service implementation to identify their state
+      in the service workflow. Examples might include “development,” “test,” “production,” etc.

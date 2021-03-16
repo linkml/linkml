@@ -1,0 +1,26 @@
+id: "http://example.org/importBase"
+title: Base for import test
+name: Import_Base_Test
+
+prefixes:
+  base: http://example.org/b/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: base
+default_range: string
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+slots:
+  base_slot:
+    range: string
+
+
+classes:
+  base_class:
+    slots:
+      - base_slot
+

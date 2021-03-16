@@ -1,0 +1,19 @@
+prefix : <https://w3id.org/linkml/meta/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?i ?requiredProperty ?type ?slotDef
+WHERE {
+  {
+   { ?i rdf:type ?type }
+   UNION
+   { ?typeProperty (:is_a|:mixin)*/:slot_uri rdf:type .
+     ?i ?typeProperty ?type }
+  }
+  ?type (:is_a|:mixin)*/:slots ?slotDef .
+  FILTER( ?slotDef != :name )   ## TODO - check why this is not injected into the schema
+  ?slotDef :slot_uri ?requiredProperty .
+  ?slotDef :required true .
+  FILTER( NOT EXISTS {?i ?requiredProperty ?v} )
+  FILTER( NOT EXISTS {?slotDef :identifier true} )  ## identifier is used as the IRI of ?i, no separate property
+}

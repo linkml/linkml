@@ -1,0 +1,34 @@
+id: http://example.org/test/evidence
+name: evidence
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  evidence:
+    description: Permissible values for CLUE evidence fragments
+    code_set: CLUE:fragment_vd
+    permissible_values:
+      IEA: Colonel Mustard in the Ballroom
+      ISS:
+        description: Mrs. Peacock with the Dagger
+        meaning: CLUE:1173
+
+
+classes:
+  evidencer:
+    attributes:
+      name:
+        range: string
+        identifier: true
+      code:
+        range: evidence
+        required: true

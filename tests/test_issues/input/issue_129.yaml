@@ -1,0 +1,56 @@
+id: http://example.org/sample/types
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+types:
+  yearCount:
+    base: int
+    uri: xsd:int
+
+classes:
+  c:
+    slots:
+      - id
+      - age in years
+      - scores
+      - has prop
+      - has d
+      - has ds
+      - children
+      - parent
+  d:
+    slots:
+      - id
+
+
+slots:
+
+  id:
+    identifier: true
+
+  scores:
+    range: float
+    multivalued: true
+  has prop:
+    range: boolean
+  age in years:
+    range: yearCount
+  has d:
+    range: d
+    multivalued: false
+    inlined: true
+  has ds:
+    range: d
+    multivalued: true
+    inlined: true
+  children:
+    range: c
+    multivalued: true
+  parent:
+    range: c
+    multivalued: false
+

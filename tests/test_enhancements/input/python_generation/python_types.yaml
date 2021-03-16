@@ -1,0 +1,314 @@
+id: http://examples.org/linkml/test/ptypes
+name: ptypes
+description: Test of python types generation
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ptypes: http://examples.org/linkml/ptypes
+
+default_prefix: ptypes
+default_range: string
+
+imports:
+  - linkml:types
+
+subsets:
+
+types:
+  InheritedType:
+    typeof: integer
+
+  InheritedType2:
+    typeof: uriorcurie
+
+  InheritedType3:
+    typeof: InheritedType2
+
+slots:
+
+classes:
+  Strings:
+    description: various permutations of the string type
+    attributes:
+      opt_string:
+        range: string
+      mand_string:
+        range: string
+        required: true
+      opt_multi_string:
+        range: string
+        multivalued: true
+      mand_multi_string:
+        range: string
+        multivalued: true
+        required: true
+
+  InheritedStrings1:
+    description: Inherited class with no changes from base
+    is_a: Strings
+
+  InheritedStrings2:
+    description: Inherited class with base change
+    is_a: Strings
+    attributes:
+      req_second_string:
+        range: string
+
+  Integers:
+    description: various permutations of the integer type
+    attributes:
+      opt_integer:
+        range: integer
+      mand_integer:
+        range: integer
+        required: true
+      opt_multi_integer:
+        range: integer
+        multivalued: true
+      mand_multi_integer:
+        range: integer
+        multivalued: true
+        required: true
+
+  Booleans:
+    description: various permutations of the boolean type
+    attributes:
+      opt_boolean:
+        range: boolean
+      mand_boolean:
+        range: boolean
+        required: true
+      opt_multi_boolean:
+        range: boolean
+        multivalued: true
+      mand_multi_boolean:
+        range: boolean
+        multivalued: true
+        required: true
+
+  Floats:
+    description: various permutations of the float type
+    attributes:
+      opt_float:
+        range: float
+      mand_float:
+        range: float
+        required: true
+      opt_multi_float:
+        range: float
+        multivalued: true
+      mand_multi_float:
+        range: float
+        multivalued: true
+        required: true
+
+  Doubles:
+    description: various permutations of the double type
+    attributes:
+      opt_double:
+        range: double
+      mand_double:
+        range: double
+        required: true
+      opt_multi_double:
+        range: double
+        multivalued: true
+      mand_multi_double:
+        range: double
+        multivalued: true
+        required: true
+
+  Times:
+    description: various permutations of the time type
+    attributes:
+      opt_time:
+        range: time
+      mand_time:
+        range: time
+        required: true
+      opt_multi_time:
+        range: time
+        multivalued: true
+      mand_multi_time:
+        range: time
+        multivalued: true
+        required: true
+
+  Dates:
+    description: various permutations of the date type
+    attributes:
+      opt_date:
+        range: date
+      mand_date:
+        range: date
+        required: true
+      opt_multi_date:
+        range: date
+        multivalued: true
+      mand_multi_date:
+        range: date
+        multivalued: true
+        required: true
+
+  DateTimes:
+    description: various permutations of the datetime type
+    attributes:
+      opt_datetime:
+        range: datetime
+      mand_datetime:
+        range: datetime
+        required: true
+      opt_multi_datetime:
+        range: datetime
+        multivalued: true
+      mand_multi_datetime:
+        range: datetime
+        multivalued: true
+        required: true
+
+  URIorCURIEs:
+    description: various permutations of the uriorcurie type
+    attributes:
+      opt_uriorcurie:
+        range: uriorcurie
+      mand_uriorcurie:
+        range: uriorcurie
+        required: true
+      opt_multi_uriorcurie:
+        range: uriorcurie
+        multivalued: true
+      mand_multi_uriorcurie:
+        range: uriorcurie
+        multivalued: true
+        required: true
+
+  URIs:
+    description: various permutations of the uri type
+    attributes:
+      opt_uri:
+        range: uri
+      mand_uri:
+        range: uri
+        required: true
+      opt_multi_uri:
+        range: uri
+        multivalued: true
+      mand_multi_uri:
+        range: uri
+        multivalued: true
+        required: true
+
+  NCNames:
+    description: various permutations of the ncname type
+    attributes:
+      opt_ncname:
+        range: ncname
+      mand_ncname:
+        range: ncname
+        required: true
+      opt_multi_ncname:
+        range: ncname
+        multivalued: true
+      mand_multi_ncname:
+        range: ncname
+        multivalued: true
+        required: true
+
+  ObjectIdentifiers:
+    description: various permutations of the objectidentifier type
+    attributes:
+      opt_objectidentifier:
+        range: objectidentifier
+      mand_objectidentifier:
+        range: objectidentifier
+        required: true
+      opt_multi_objectidentifier:
+        range: objectidentifier
+        multivalued: true
+      mand_multi_objectidentifier:
+        range: objectidentifier
+        multivalued: true
+        required: true
+
+  NodeIdentifiers:
+    description: various permutations of the nodeidentifier type
+    attributes:
+      opt_nodeidentifier:
+        range: nodeidentifier
+      mand_nodeidentifier:
+        range: nodeidentifier
+        required: true
+      opt_multi_nodeidentifier:
+        range: nodeidentifier
+        multivalued: true
+      mand_multi_nodeidentifier:
+        range: nodeidentifier
+        multivalued: true
+        required: true
+
+  InheritedTypes:
+    description: various permutations of a typeof referencing a builtin
+    attributes:
+      opt_InheritedType:
+        range: InheritedType
+      mand_InheritedType:
+        range: InheritedType
+        required: true
+      opt_multi_InheritedType:
+        range: InheritedType
+        multivalued: true
+      mand_multi_InheritedType:
+        range: InheritedType
+        multivalued: true
+        required: true
+
+  InheritedType2s:
+    description: various permutations of a typeof referencing a metamodelcore type
+    attributes:
+      opt_InheritedType2:
+        range: InheritedType2
+      mand_InheritedType2:
+        range: InheritedType2
+        required: true
+      opt_multi_InheritedType2:
+        range: InheritedType2
+        multivalued: true
+      mand_multi_InheritedType2:
+        range: InheritedType2
+        multivalued: true
+        required: true
+
+  InheritedType3s:
+    description: various permutations of a typeof referencing another defined type
+    attributes:
+      opt_InheritedType3:
+        range: InheritedType3
+      mand_InheritedType3:
+        range: InheritedType3
+        required: true
+      opt_multi_InheritedType3:
+        range: InheritedType3
+        multivalued: true
+      mand_multi_InheritedType3:
+        range: InheritedType3
+        multivalued: true
+        required: true
+
+  KeyedElement:
+    description: keyed  example
+    attributes:
+      name:
+        range: string
+        key: true
+      value:
+        range: string
+
+  IdentifiedElement:
+    description: identifier example
+    attributes:
+      id:
+        range: uriorcurie
+        identifier: true
+      value:
+        range: string

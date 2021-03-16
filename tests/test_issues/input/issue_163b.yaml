@@ -1,0 +1,61 @@
+id: http://example.org/sample/example1
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+default_range: string
+
+imports:
+  - linkml:types
+subsets:
+  mysubset: {}
+
+types:
+  unitcode:
+    base: str
+    uri: xsd:string
+
+classes:
+  d1:
+    is_a: c
+    slots:
+      - has c
+  d2:
+    is_a: c
+  c:
+    is_a: b
+    slots:
+      - has b
+  b:
+      is_a: a
+      slots:
+        - has a
+  a:
+    in_subset:
+      - mysubset
+    slots:
+      - id
+      - name
+      - len
+      - unit
+  e:
+    is_a: d1
+
+slots:
+  id:
+    identifier: true
+  name:
+    range: string
+  len:
+    range: integer
+  unit:
+    range: unitcode
+  has a:
+    range: a
+  has b:
+    range: b
+  has c:
+    range: c
+
+
+

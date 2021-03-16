@@ -1,0 +1,18 @@
+id: http://example.org/test/enumeration/error3
+name: error3
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+enums:
+  error3:
+    description: Error - cannot have a tag without a code set
+    code_set_tag: 0.17.3

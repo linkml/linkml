@@ -1,0 +1,18 @@
+id: http://example.org/tests/issue_260a
+name: issue_260a
+description: Small file to be imported
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+slots:
+  id:
+    range: string
+
+classes:
+  C260a:
+    slots:
+      - id

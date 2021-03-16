@@ -1,0 +1,33 @@
+id: "http://example.org/importLevel1"
+title: Level 1 for import test
+name: Import_Level_1_Test
+
+prefixes:
+  l1: http://example.org/l1/
+
+default_prefix: l1
+default_range: string
+
+imports:
+  - import_test_base
+
+
+types:
+  int:
+    uri: xsd:integer
+    base: int
+
+slots:
+  l1_slot1:
+    range: string
+
+  l1_slot2:
+    range: int
+
+
+classes:
+  l1_class:
+    slots:
+      - l1_slot1
+      - l1_slot2
+

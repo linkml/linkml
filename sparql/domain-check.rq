@@ -1,0 +1,5 @@
+SELECT
+WHERE
+ ?cls meta:domain ?domain .
+ ?i (rdf:type)/(meta:is_a)* ?cls .
+ 

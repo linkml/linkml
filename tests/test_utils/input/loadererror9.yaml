@@ -1,0 +1,26 @@
+id: http://example.org/example/loaderror9
+name: loaderror9
+description: slot_usage both a id and a key
+
+default_range: string
+
+types:
+  string:
+    base: str
+    uri: http://example.com/string
+
+slots:
+  key1:
+    key: true
+
+
+classes:
+  c1:
+    slots:
+      - key1
+
+  c2:
+    is_a: c1
+    slot_usage:
+      key1:
+        identifier: true

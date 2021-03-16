@@ -1,0 +1,20 @@
+id: https://microbiomedata/schema
+name: bms
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+  - issue_368_imports
+
+classes:
+
+  SampleClass:
+    is_a: parent_class
+    slots:
+      - slot_1
+
+slots:
+  slot_1:
+    range: sample_enum

@@ -1,0 +1,29 @@
+id: http://example.org/issue355/
+name: issue355
+
+imports:
+  - linkml:types
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  sct: http://snomed.info/id/
+
+
+default_prefix: sct
+default_range: string
+
+classes:
+  container:
+    attributes:
+      entry:
+        range: containee
+        multivalued: true
+        inlined: true
+
+  containee:
+    attributes:
+      id:
+        range: uriorcurie
+        identifier: true
+      value:
+        range: string

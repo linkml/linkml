@@ -1,0 +1,20 @@
+id: http://schema.org/example/loadertest1
+name: loadertest1
+description: Default slot domain
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_range: string
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+slots:
+  s1:
+    domain: c1
+
+classes:
+  c1:

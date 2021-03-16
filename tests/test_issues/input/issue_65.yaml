@@ -1,0 +1,22 @@
+id: https://example.com/test65
+
+prefixes:
+  meta:  https://w3id.org/linkml/
+
+imports: [meta:types]
+default_range: string
+
+
+slots:
+  subject:
+    domain: named thing
+
+classes:
+  named thing:
+    slots:
+      - subject
+
+  child of named thing:
+    is_a: named thing
+    slot_usage:
+      subject:

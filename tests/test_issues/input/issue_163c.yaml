@@ -1,0 +1,34 @@
+id: http://example.org/sample/example163c
+
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+
+classes:
+  c1:
+    slots:
+      - s1
+
+  c2:
+    slots:
+      - s2
+
+# We have two different slots w/ different behaviors, both of which we want to shorten to "source"
+# See:  [../../meta.yaml#698]() as an example
+slots:
+  s1:
+    description: This is a slot used in one context whose range is a description
+    alias: source
+    range: string
+
+  s2:
+    description: A second slot which wishes to be called "source", but is a URI
+    alias: source
+    range: uriorcurie

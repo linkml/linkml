@@ -1,0 +1,19 @@
+id: http://example.org/tests/issue18
+
+description: Error test where inverse slot does not exist
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    slots:
+      - s1
+
+
+slots:
+  s1:
+    inverse: s2

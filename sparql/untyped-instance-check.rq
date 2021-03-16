@@ -1,0 +1,17 @@
+#+ description: report all elements and their types
+
+prefix : <https://w3id.org/linkml/meta/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?i
+WHERE {
+  ?i ?p ?o .
+  FILTER( NOT EXISTS { ?i rdf:type ?t} ) .
+  FILTER( NOT EXISTS {
+     ?i ?typePref ?t .
+     ?typePred :is_a* ?typePredInf .
+     ?typePrefInf :slot_uri rdf:type
+     } ) .
+  FILTER( !isBlank(?i) )
+}

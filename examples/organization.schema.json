@@ -1,0 +1,118 @@
+{
+   "$id": "http://example.org/sample/organization",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {
+      "Employee": {
+         "additionalProperties": false,
+         "description": "A person",
+         "properties": {
+            "age_in_years": {
+               "description": "The age of a person if living or age of death if not",
+               "type": "integer"
+            },
+            "aliases": {
+               "description": "An alternative name",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "first_name": {
+               "description": "The first name of a person",
+               "type": "string"
+            },
+            "id": {
+               "description": "Unique identifier of a person",
+               "type": "string"
+            },
+            "last_name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id",
+            "last_name"
+         ],
+         "title": "Employee",
+         "type": "object"
+      },
+      "Manager": {
+         "additionalProperties": false,
+         "description": "An employee who manages others",
+         "properties": {
+            "age_in_years": {
+               "description": "The age of a person if living or age of death if not",
+               "type": "integer"
+            },
+            "aliases": {
+               "description": "An alternative name",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "first_name": {
+               "description": "The first name of a person",
+               "type": "string"
+            },
+            "has_employees": {
+               "items": {
+                  "$ref": "#/definitions/Employee"
+               },
+               "type": "array"
+            },
+            "id": {
+               "description": "Unique identifier of a person",
+               "type": "string"
+            },
+            "last_name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id",
+            "last_name"
+         ],
+         "title": "Manager",
+         "type": "object"
+      },
+      "Organization": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "has_boss": {
+               "$ref": "#/definitions/Manager"
+            },
+            "id": {
+               "description": "Unique identifier of a person",
+               "type": "string"
+            },
+            "name": {
+               "description": "human readable name",
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Organization",
+         "type": "object"
+      }
+   },
+   "properties": {
+      "has_boss": {
+         "$ref": "#/definitions/Manager"
+      },
+      "id": {
+         "description": "Unique identifier of a person",
+         "type": "string"
+      },
+      "name": {
+         "description": "human readable name",
+         "type": "string"
+      }
+   },
+   "title": "organization",
+   "type": "object"
+}
+

@@ -1,0 +1,30 @@
+id: http://example.org/tests/curietest
+name: curietest
+
+prefixes:
+  p1: http://example.org/prefixes/a/b/
+  p2: http://example.org/prefixes/a/b/c/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  t1:
+    uri: p1:c/suffix1
+    base: str
+
+  t2:
+    uri: p2:suffix2
+    base: str
+
+  t3:
+    uri: http://example.org/prefixes/a/b/c/suffix3
+    base: str
+
+classes:
+  c1:
+    class_uri: p1:/c/c1
+
+  c2:
+    class_uri: p2:/c2
+
+  c3:
+    class_uri: http://example.org/prefixes/a/b/c/c3

@@ -1,0 +1,48 @@
+id: http://example.org/test/enumeration/warn1
+name: warn1
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://example.org/clue/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+subsets:
+  a random name:
+    description: a subset
+
+  a subset:
+    description: yasubset
+
+slots:
+  a random name:
+    description: a slot
+
+  a slot:
+    description: yaslot
+
+enums:
+  test1:
+    description: An ok enumeration
+    permissible_values:
+      v1:
+
+  a random name:
+    description: Enum that overlaps w/ both subsets and slots
+    permissible_values:
+      v1:
+
+  a subset:
+    description: Enum that overlaps w/ a subset
+    permissible_values:
+      v1:
+
+  a slot:
+    description: Enum that overlaps w/ a slot
+    permissible_values:
+      v1:

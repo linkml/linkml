@@ -1,0 +1,22 @@
+id: http://example.org/tests/types
+name: types
+
+prefixes:
+  metatype: https://w3id.org/linkml/types/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+  boolean:
+    uri: xsd:boolean
+    base: Bool
+
+  boolean type:
+    typeof: boolean
+
+  string type:
+    typeof: string

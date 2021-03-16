@@ -1,0 +1,17 @@
+id: https://issue_test/107/schema
+name: schema
+
+default_curi_maps:
+    - semweb_context
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+prefixes:
+  ICD-9: http://test.org/prefix/ICD9
+
+emit_prefixes:
+    - ICD-9
