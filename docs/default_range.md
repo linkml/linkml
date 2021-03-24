@@ -4,7 +4,7 @@
 
 default slot range to be used if range element is omitted from a slot definition
 
-URI: [meta:default_range](https://w3id.org/linkml/meta/default_range)
+URI: [linkml:default_range](https://w3id.org/linkml/default_range)
 
 
 ## Domain and Range

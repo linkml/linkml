@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:permissible_value_is_a](https://w3id.org/linkml/meta/permissible_value_is_a)
+URI: [linkml:permissible_value_is_a](https://w3id.org/linkml/permissible_value_is_a)
 
 
 ## Domain and Range

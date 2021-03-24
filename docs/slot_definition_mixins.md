@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:slot_definition_mixins](https://w3id.org/linkml/meta/slot_definition_mixins)
+URI: [linkml:slot_definition_mixins](https://w3id.org/linkml/slot_definition_mixins)
 
 
 ## Domain and Range

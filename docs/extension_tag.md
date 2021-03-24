@@ -4,7 +4,7 @@
 
 a tag associated with an extension
 
-URI: [meta:extension_tag](https://w3id.org/linkml/meta/extension_tag)
+URI: [linkml:extension_tag](https://w3id.org/linkml/extension_tag)
 
 
 ## Domain and Range

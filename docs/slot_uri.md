@@ -4,7 +4,7 @@
 
 predicate of this slot for semantic web application
 
-URI: [meta:slot_uri](https://w3id.org/linkml/meta/slot_uri)
+URI: [linkml:slot_uri](https://w3id.org/linkml/slot_uri)
 
 
 ## Domain and Range

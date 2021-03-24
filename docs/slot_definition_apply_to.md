@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:slot_definition_apply_to](https://w3id.org/linkml/meta/slot_definition_apply_to)
+URI: [linkml:slot_definition_apply_to](https://w3id.org/linkml/slot_definition_apply_to)
 
 
 ## Domain and Range

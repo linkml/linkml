@@ -4,7 +4,7 @@
 
 status of the element
 
-URI: [meta:status](https://w3id.org/linkml/meta/status)
+URI: [linkml:status](https://w3id.org/linkml/status)
 
 
 ## Domain and Range

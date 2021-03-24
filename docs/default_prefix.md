@@ -4,7 +4,7 @@
 
 default and base prefix -- used for ':' identifiers, @base and @vocab
 
-URI: [meta:default_prefix](https://w3id.org/linkml/meta/default_prefix)
+URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
 
 
 ## Domain and Range

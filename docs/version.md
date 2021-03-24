@@ -4,7 +4,7 @@
 
 particular version of schema
 
-URI: [meta:version](https://w3id.org/linkml/meta/version)
+URI: [linkml:version](https://w3id.org/linkml/version)
 
 
 ## Domain and Range

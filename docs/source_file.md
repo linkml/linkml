@@ -4,7 +4,7 @@
 
 name, uri or description of the source of the schema
 
-URI: [meta:source_file](https://w3id.org/linkml/meta/source_file)
+URI: [linkml:source_file](https://w3id.org/linkml/source_file)
 
 
 ## Domain and Range

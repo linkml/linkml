@@ -4,7 +4,7 @@
 
 The uri that defines the possible values for the type definition
 
-URI: [meta:type_uri](https://w3id.org/linkml/meta/type_uri)
+URI: [linkml:type_uri](https://w3id.org/linkml/type_uri)
 
 
 ## Domain and Range

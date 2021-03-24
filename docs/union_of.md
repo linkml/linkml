@@ -4,7 +4,7 @@
 
 indicates that the domain class consists exactly of the members of the classes in the range
 
-URI: [meta:union_of](https://w3id.org/linkml/meta/union_of)
+URI: [linkml:union_of](https://w3id.org/linkml/union_of)
 
 
 ## Domain and Range

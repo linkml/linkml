@@ -4,7 +4,7 @@
 
 a name that is used in the singular form
 
-URI: [meta:singular_name](https://w3id.org/linkml/meta/singular_name)
+URI: [linkml:singular_name](https://w3id.org/linkml/singular_name)
 
 
 ## Domain and Range

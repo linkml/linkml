@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:class_definition_is_a](https://w3id.org/linkml/meta/class_definition_is_a)
+URI: [linkml:class_definition_is_a](https://w3id.org/linkml/class_definition_is_a)
 
 
 ## Domain and Range

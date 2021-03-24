@@ -4,7 +4,7 @@
 
 A URI or CURIE that represents an object in the model.
 
-URI: [metatype:Objectidentifier](https://w3id.org/linkml/meta/types/Objectidentifier)
+URI: [linkml:Objectidentifier](https://w3id.org/linkml/Objectidentifier)
 
 |  |  |  |
 | --- | --- | --- |

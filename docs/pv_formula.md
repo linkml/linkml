@@ -4,7 +4,7 @@
 
 Defines the specific formula to be used to generate the permissible values.
 
-URI: [meta:pv_formula](https://w3id.org/linkml/meta/pv_formula)
+URI: [linkml:pv_formula](https://w3id.org/linkml/pv_formula)
 
 
 ## Domain and Range

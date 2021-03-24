@@ -4,7 +4,7 @@
 
 a permissible value, accompanied by intended text and an optional mapping to a concept URI
 
-URI: [meta:PermissibleValue](https://w3id.org/linkml/meta/PermissibleValue)
+URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 
 ![img](images/PermissibleValue.svg)
@@ -55,7 +55,7 @@ URI: [meta:PermissibleValue](https://w3id.org/linkml/meta/PermissibleValue)
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * range: [String](types/String.md)
  * [in_subset](in_subset.md)  <sub>0..*</sub>
-     * Description: used to indicate membership of a term in a defined subset of biolink terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * range: [SubsetDefinition](SubsetDefinition.md)
  * [meaning](meaning.md)  <sub>OPT</sub>
      * Description: the value meaning (in the 11179 sense) of a permissible value

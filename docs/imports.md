@@ -4,7 +4,7 @@
 
 other schemas that are included in this schema
 
-URI: [meta:imports](https://w3id.org/linkml/meta/imports)
+URI: [linkml:imports](https://w3id.org/linkml/imports)
 
 
 ## Domain and Range

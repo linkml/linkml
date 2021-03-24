@@ -4,7 +4,7 @@
 
 an attributed description
 
-URI: [meta:AltDescription](https://w3id.org/linkml/meta/AltDescription)
+URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
 
 
 ![img](images/AltDescription.svg)

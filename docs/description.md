@@ -4,7 +4,7 @@
 
 a description of the element's purpose and use
 
-URI: [meta:description](https://w3id.org/linkml/meta/description)
+URI: [linkml:description](https://w3id.org/linkml/description)
 
 
 ## Domain and Range

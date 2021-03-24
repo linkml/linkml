@@ -4,7 +4,7 @@
 
 A list of terms from different schemas or terminology systems that have broader meaning.
 
-URI: [meta:broad_mappings](https://w3id.org/linkml/meta/broad_mappings)
+URI: [linkml:broad_mappings](https://w3id.org/linkml/broad_mappings)
 
 
 ## Domain and Range

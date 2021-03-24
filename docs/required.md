@@ -4,7 +4,7 @@
 
 true means that the slot must be present in the loaded definition
 
-URI: [meta:required](https://w3id.org/linkml/meta/required)
+URI: [linkml:required](https://w3id.org/linkml/required)
 
 
 ## Domain and Range

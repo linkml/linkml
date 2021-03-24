@@ -4,7 +4,7 @@
 
 the version identifier of the enumeration code set
 
-URI: [meta:code_set_version](https://w3id.org/linkml/meta/code_set_version)
+URI: [linkml:code_set_version](https://w3id.org/linkml/code_set_version)
 
 
 ## Domain and Range

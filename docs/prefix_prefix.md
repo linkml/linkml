@@ -4,7 +4,7 @@
 
 the nsname (sans ':' for a given prefix)
 
-URI: [meta:prefix_prefix](https://w3id.org/linkml/meta/prefix_prefix)
+URI: [linkml:prefix_prefix](https://w3id.org/linkml/prefix_prefix)
 
 
 ## Domain and Range

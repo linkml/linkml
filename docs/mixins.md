@@ -4,7 +4,7 @@
 
 List of definitions to be mixed in. Targets may be any definition of the same type
 
-URI: [meta:mixins](https://w3id.org/linkml/meta/mixins)
+URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 data types used in the model
 
-URI: [meta:types](https://w3id.org/linkml/meta/types)
+URI: [linkml:types](https://w3id.org/linkml/types)
 
 
 ## Domain and Range

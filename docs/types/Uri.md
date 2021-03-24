@@ -4,7 +4,7 @@
 
 a complete URI
 
-URI: [metatype:Uri](https://w3id.org/linkml/meta/types/Uri)
+URI: [linkml:Uri](https://w3id.org/linkml/Uri)
 
 |  |  |  |
 | --- | --- | --- |

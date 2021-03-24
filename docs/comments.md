@@ -4,7 +4,7 @@
 
 notes and comments about an element intended for external consumption
 
-URI: [meta:comments](https://w3id.org/linkml/meta/comments)
+URI: [linkml:comments](https://w3id.org/linkml/comments)
 
 
 ## Domain and Range

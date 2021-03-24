@@ -4,7 +4,7 @@
 
 the imports entry that this element was derived from.  Empty means primary source
 
-URI: [meta:imported_from](https://w3id.org/linkml/meta/imported_from)
+URI: [linkml:imported_from](https://w3id.org/linkml/imported_from)
 
 
 ## Domain and Range

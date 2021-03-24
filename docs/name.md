@@ -4,7 +4,7 @@
 
 the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
 
-URI: [meta:name](https://w3id.org/linkml/meta/name)
+URI: [linkml:name](https://w3id.org/linkml/name)
 
 
 ## Domain and Range

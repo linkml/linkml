@@ -4,7 +4,7 @@
 
 agent that modified the element
 
-URI: [meta:modified_by](https://w3id.org/linkml/meta/modified_by)
+URI: [linkml:modified_by](https://w3id.org/linkml/modified_by)
 
 
 ## Domain and Range

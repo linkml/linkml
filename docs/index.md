@@ -1,8 +1,8 @@
 
-# Metamodel schema
+# Meta schema
 
 
-A metamodel for defining biolink related schemas
+A metamodel for defining linked open data schemas
 
 
 ### Classes
@@ -75,7 +75,7 @@ A metamodel for defining biolink related schemas
  * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:
  * [imported_from](imported_from.md) - the imports entry that this element was derived from.  Empty means primary source
  * [imports](imports.md) - other schemas that are included in this schema
- * [in_subset](in_subset.md) - used to indicate membership of a term in a defined subset of biolink terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+ * [in_subset](in_subset.md) - used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
  * [inherited](inherited.md) - true means that the *value* of a slot is inherited by subclasses
  * [inlined](inlined.md) - True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
  * [inlined_as_list](inlined_as_list.md) - True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.

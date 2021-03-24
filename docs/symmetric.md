@@ -4,7 +4,7 @@
 
 True means that any instance of  d s r implies that there is also an instance of r s d
 
-URI: [meta:symmetric](https://w3id.org/linkml/meta/symmetric)
+URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 
 
 ## Domain and Range

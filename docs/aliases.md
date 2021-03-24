@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:aliases](https://w3id.org/linkml/meta/aliases)
+URI: [linkml:aliases](https://w3id.org/linkml/aliases)
 
 
 ## Domain and Range

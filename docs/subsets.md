@@ -4,7 +4,7 @@
 
 list of subsets referenced in this model
 
-URI: [meta:subsets](https://w3id.org/linkml/meta/subsets)
+URI: [linkml:subsets](https://w3id.org/linkml/subsets)
 
 
 ## Domain and Range

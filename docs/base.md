@@ -4,7 +4,7 @@
 
 python base type that implements this type definition
 
-URI: [meta:base](https://w3id.org/linkml/meta/base)
+URI: [linkml:base](https://w3id.org/linkml/base)
 
 
 ## Domain and Range

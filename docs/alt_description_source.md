@@ -4,7 +4,7 @@
 
 the source of an attributed description
 
-URI: [meta:alt_description_source](https://w3id.org/linkml/meta/alt_description_source)
+URI: [linkml:alt_description_source](https://w3id.org/linkml/alt_description_source)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 When an element is deprecated, it can be automatically replaced by this uri or curie
 
-URI: [meta:deprecated_element_has_exact_replacement](https://w3id.org/linkml/meta/deprecated_element_has_exact_replacement)
+URI: [linkml:deprecated_element_has_exact_replacement](https://w3id.org/linkml/deprecated_element_has_exact_replacement)
 
 
 ## Domain and Range

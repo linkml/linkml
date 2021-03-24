@@ -4,7 +4,7 @@
 
 the "native" URI of the element
 
-URI: [meta:definition_uri](https://w3id.org/linkml/meta/definition_uri)
+URI: [linkml:definition_uri](https://w3id.org/linkml/definition_uri)
 
 
 ## Domain and Range

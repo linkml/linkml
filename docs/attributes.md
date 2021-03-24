@@ -4,7 +4,7 @@
 
 Inline definition of slots
 
-URI: [meta:attributes](https://w3id.org/linkml/meta/attributes)
+URI: [linkml:attributes](https://w3id.org/linkml/attributes)
 
 
 ## Domain and Range

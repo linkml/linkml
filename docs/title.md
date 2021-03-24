@@ -4,7 +4,7 @@
 
 the official title of the schema
 
-URI: [meta:title](https://w3id.org/linkml/meta/title)
+URI: [linkml:title](https://w3id.org/linkml/title)
 
 
 ## Domain and Range

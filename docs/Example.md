@@ -4,7 +4,7 @@
 
 usage example and description
 
-URI: [meta:Example](https://w3id.org/linkml/meta/Example)
+URI: [linkml:Example](https://w3id.org/linkml/Example)
 
 
 ![img](images/Example.svg)

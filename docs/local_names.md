@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:local_names](https://w3id.org/linkml/meta/local_names)
+URI: [linkml:local_names](https://w3id.org/linkml/local_names)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:alt_descriptions](https://w3id.org/linkml/meta/alt_descriptions)
+URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
 
 
 ## Domain and Range

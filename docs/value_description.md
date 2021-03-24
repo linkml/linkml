@@ -4,7 +4,7 @@
 
 description of what the value is doing
 
-URI: [meta:value_description](https://w3id.org/linkml/meta/value_description)
+URI: [linkml:value_description](https://w3id.org/linkml/value_description)
 
 
 ## Domain and Range

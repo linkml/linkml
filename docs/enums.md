@@ -4,7 +4,7 @@
 
 enumerated ranges
 
-URI: [meta:enums](https://w3id.org/linkml/meta/enums)
+URI: [linkml:enums](https://w3id.org/linkml/enums)
 
 
 ## Domain and Range

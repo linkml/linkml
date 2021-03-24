@@ -4,7 +4,7 @@
 
 the redefinition of a slot in the context of the containing class definition.
 
-URI: [meta:slot_usage](https://w3id.org/linkml/meta/slot_usage)
+URI: [linkml:slot_usage](https://w3id.org/linkml/slot_usage)
 
 
 ## Domain and Range

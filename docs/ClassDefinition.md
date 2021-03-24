@@ -4,7 +4,7 @@
 
 the definition of a class or interface
 
-URI: [meta:ClassDefinition](https://w3id.org/linkml/meta/ClassDefinition)
+URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
 
 
 ![img](images/ClassDefinition.svg)
@@ -117,7 +117,7 @@ URI: [meta:ClassDefinition](https://w3id.org/linkml/meta/ClassDefinition)
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * range: [String](types/String.md)
  * [in_subset](in_subset.md)  <sub>0..*</sub>
-     * Description: used to indicate membership of a term in a defined subset of biolink terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * range: [SubsetDefinition](SubsetDefinition.md)
  * [last_updated_on](last_updated_on.md)  <sub>OPT</sub>
      * Description: time at which the element was last updated

@@ -4,7 +4,7 @@
 
 A URI associated with a given prefix
 
-URI: [meta:prefix_reference](https://w3id.org/linkml/meta/prefix_reference)
+URI: [linkml:prefix_reference](https://w3id.org/linkml/prefix_reference)
 
 
 ## Domain and Range

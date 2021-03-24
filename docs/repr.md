@@ -4,7 +4,7 @@
 
 the name of the python object that implements this type definition
 
-URI: [meta:repr](https://w3id.org/linkml/meta/repr)
+URI: [linkml:repr](https://w3id.org/linkml/repr)
 
 
 ## Domain and Range

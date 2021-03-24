@@ -4,7 +4,7 @@
 
 indicates that any instance, i,  the domain of this slot will include an assert of i s range
 
-URI: [meta:is_class_field](https://w3id.org/linkml/meta/is_class_field)
+URI: [linkml:is_class_field](https://w3id.org/linkml/is_class_field)
 
 
 ## Domain and Range

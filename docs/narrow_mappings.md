@@ -4,7 +4,7 @@
 
 A list of terms from different schemas or terminology systems that have narrower meaning.
 
-URI: [meta:narrow_mappings](https://w3id.org/linkml/meta/narrow_mappings)
+URI: [linkml:narrow_mappings](https://w3id.org/linkml/narrow_mappings)
 
 
 ## Domain and Range

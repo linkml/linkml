@@ -4,7 +4,7 @@
 
 indicator that this is the root class in tree structures
 
-URI: [meta:tree_root](https://w3id.org/linkml/meta/tree_root)
+URI: [linkml:tree_root](https://w3id.org/linkml/tree_root)
 
 
 ## Domain and Range

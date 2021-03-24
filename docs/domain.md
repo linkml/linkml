@@ -12,7 +12,7 @@ the declaration
 
 implicitly asserts that X is an instance of C1
 
-URI: [meta:domain](https://w3id.org/linkml/meta/domain)
+URI: [linkml:domain](https://w3id.org/linkml/domain)
 
 
 ## Domain and Range

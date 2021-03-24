@@ -4,7 +4,7 @@
 
 base class for definitions
 
-URI: [meta:Definition](https://w3id.org/linkml/meta/Definition)
+URI: [linkml:Definition](https://w3id.org/linkml/Definition)
 
 
 ![img](images/Definition.svg)
@@ -114,7 +114,7 @@ URI: [meta:Definition](https://w3id.org/linkml/meta/Definition)
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * range: [String](types/String.md)
  * [in_subset](in_subset.md)  <sub>0..*</sub>
-     * Description: used to indicate membership of a term in a defined subset of biolink terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * range: [SubsetDefinition](SubsetDefinition.md)
  * [local_names](local_names.md)  <sub>0..*</sub>
      * range: [LocalName](LocalName.md)

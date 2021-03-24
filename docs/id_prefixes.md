@@ -4,7 +4,7 @@
 
 the identifier of this class or slot must begin with one of the URIs referenced by this prefix
 
-URI: [meta:id_prefixes](https://w3id.org/linkml/meta/id_prefixes)
+URI: [linkml:id_prefixes](https://w3id.org/linkml/id_prefixes)
 
 
 ## Domain and Range

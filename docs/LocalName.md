@@ -4,7 +4,7 @@
 
 an attributed label
 
-URI: [meta:LocalName](https://w3id.org/linkml/meta/LocalName)
+URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)
 
 
 ![img](images/LocalName.svg)

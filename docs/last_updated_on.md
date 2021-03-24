@@ -4,7 +4,7 @@
 
 time at which the element was last updated
 
-URI: [meta:last_updated_on](https://w3id.org/linkml/meta/last_updated_on)
+URI: [linkml:last_updated_on](https://w3id.org/linkml/last_updated_on)
 
 
 ## Domain and Range

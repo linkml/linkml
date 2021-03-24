@@ -4,7 +4,7 @@
 
 A list of terms from different schemas or terminology systems that have close meaning.
 
-URI: [meta:close_mappings](https://w3id.org/linkml/meta/close_mappings)
+URI: [linkml:close_mappings](https://w3id.org/linkml/close_mappings)
 
 
 ## Domain and Range

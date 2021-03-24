@@ -4,7 +4,7 @@
 
 the identifier of an enumeration code set.
 
-URI: [meta:code_set](https://w3id.org/linkml/meta/code_set)
+URI: [linkml:code_set](https://w3id.org/linkml/code_set)
 
 
 ## Domain and Range

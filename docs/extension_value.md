@@ -4,7 +4,7 @@
 
 the actual annotation
 
-URI: [meta:extension_value](https://w3id.org/linkml/meta/extension_value)
+URI: [linkml:extension_value](https://w3id.org/linkml/extension_value)
 
 
 ## Domain and Range

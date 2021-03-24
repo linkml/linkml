@@ -4,7 +4,7 @@
 
 A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
 
-URI: [meta:mappings](https://w3id.org/linkml/meta/mappings)
+URI: [linkml:mappings](https://w3id.org/linkml/mappings)
 
 
 ## Domain and Range

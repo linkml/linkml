@@ -4,7 +4,7 @@
 
 A list of terms from different schemas or terminology systems that have related meaning.
 
-URI: [meta:related_mappings](https://w3id.org/linkml/meta/related_mappings)
+URI: [linkml:related_mappings](https://w3id.org/linkml/related_mappings)
 
 
 ## Domain and Range

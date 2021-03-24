@@ -4,7 +4,7 @@
 
 example usages of an element
 
-URI: [meta:examples](https://w3id.org/linkml/meta/examples)
+URI: [linkml:examples](https://w3id.org/linkml/examples)
 
 
 ## Domain and Range

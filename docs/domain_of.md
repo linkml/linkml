@@ -4,7 +4,7 @@
 
 the class(es) that reference the slot in a "slots" or "slot_usage" context
 
-URI: [meta:domain_of](https://w3id.org/linkml/meta/domain_of)
+URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
 
 
 ## Domain and Range

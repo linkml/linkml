@@ -4,7 +4,7 @@
 
 true means that the *value* of a slot is inherited by subclasses
 
-URI: [meta:inherited](https://w3id.org/linkml/meta/inherited)
+URI: [linkml:inherited](https://w3id.org/linkml/inherited)
 
 
 ## Domain and Range

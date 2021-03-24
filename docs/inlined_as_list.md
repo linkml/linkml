@@ -4,7 +4,7 @@
 
 True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
 
-URI: [meta:inlined_as_list](https://w3id.org/linkml/meta/inlined_as_list)
+URI: [linkml:inlined_as_list](https://w3id.org/linkml/inlined_as_list)
 
 
 ## Domain and Range

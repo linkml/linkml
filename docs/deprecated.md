@@ -4,7 +4,7 @@
 
 Description of why and when this element will no longer be used
 
-URI: [meta:deprecated](https://w3id.org/linkml/meta/deprecated)
+URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
 
 
 ## Domain and Range

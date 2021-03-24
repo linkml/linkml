@@ -4,7 +4,7 @@
 
 A list of possible values for a slot range
 
-URI: [meta:permissible_values](https://w3id.org/linkml/meta/permissible_values)
+URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 
 
 ## Domain and Range

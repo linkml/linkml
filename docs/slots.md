@@ -4,7 +4,7 @@
 
 list of slot names that are applicable to a class
 
-URI: [meta:slots](https://w3id.org/linkml/meta/slots)
+URI: [linkml:slots](https://w3id.org/linkml/slots)
 
 
 ## Domain and Range

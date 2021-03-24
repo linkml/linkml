@@ -4,7 +4,7 @@
 
 a tag/value pair with the semantics of OWL Annotation
 
-URI: [meta:Annotation](https://w3id.org/linkml/meta/Annotation)
+URI: [linkml:Annotation](https://w3id.org/linkml/Annotation)
 
 
 ![img](images/Annotation.svg)

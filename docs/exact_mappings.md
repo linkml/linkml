@@ -4,7 +4,7 @@
 
 A list of terms from different schemas or terminology systems that have identical meaning.
 
-URI: [meta:exact_mappings](https://w3id.org/linkml/meta/exact_mappings)
+URI: [linkml:exact_mappings](https://w3id.org/linkml/exact_mappings)
 
 
 ## Domain and Range

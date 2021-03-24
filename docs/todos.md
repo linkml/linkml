@@ -4,7 +4,7 @@
 
 Outstanding issue that needs resolution
 
-URI: [meta:todos](https://w3id.org/linkml/meta/todos)
+URI: [linkml:todos](https://w3id.org/linkml/todos)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 The official schema URI
 
-URI: [meta:id](https://w3id.org/linkml/meta/id)
+URI: [linkml:id](https://w3id.org/linkml/id)
 
 
 ## Domain and Range

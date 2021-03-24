@@ -4,7 +4,7 @@
 
 mixin for classes that support annotations
 
-URI: [meta:Annotatable](https://w3id.org/linkml/meta/Annotatable)
+URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)
 
 
 ![img](images/Annotatable.svg)

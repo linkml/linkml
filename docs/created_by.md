@@ -4,7 +4,7 @@
 
 agent that created the element
 
-URI: [meta:created_by](https://w3id.org/linkml/meta/created_by)
+URI: [linkml:created_by](https://w3id.org/linkml/created_by)
 
 
 ## Domain and Range

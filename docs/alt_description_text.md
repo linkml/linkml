@@ -4,7 +4,7 @@
 
 text of an attributed description
 
-URI: [meta:alt_description_text](https://w3id.org/linkml/meta/alt_description_text)
+URI: [linkml:alt_description_text](https://w3id.org/linkml/alt_description_text)
 
 
 ## Domain and Range

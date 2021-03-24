@@ -4,7 +4,7 @@
 
 Names a parent type
 
-URI: [meta:typeof](https://w3id.org/linkml/meta/typeof)
+URI: [linkml:typeof](https://w3id.org/linkml/typeof)
 
 
 ## Domain and Range

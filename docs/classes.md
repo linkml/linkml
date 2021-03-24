@@ -4,7 +4,7 @@
 
 class definitions
 
-URI: [meta:classes](https://w3id.org/linkml/meta/classes)
+URI: [linkml:classes](https://w3id.org/linkml/classes)
 
 
 ## Domain and Range

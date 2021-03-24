@@ -4,7 +4,7 @@
 
 URI of the class in an RDF environment
 
-URI: [meta:class_uri](https://w3id.org/linkml/meta/class_uri)
+URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
 
 
 ## Domain and Range

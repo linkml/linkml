@@ -4,7 +4,7 @@
 
 the value meaning (in the 11179 sense) of a permissible value
 
-URI: [meta:meaning](https://w3id.org/linkml/meta/meaning)
+URI: [linkml:meaning](https://w3id.org/linkml/meaning)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 example value
 
-URI: [meta:value](https://w3id.org/linkml/meta/value)
+URI: [linkml:value](https://w3id.org/linkml/value)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 a reference
 
-URI: [meta:see_also](https://w3id.org/linkml/meta/see_also)
+URI: [linkml:see_also](https://w3id.org/linkml/see_also)
 
 
 ## Domain and Range

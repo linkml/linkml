@@ -4,7 +4,7 @@
 
 rdfs:subClassOf to be emitted in OWL generation
 
-URI: [meta:subclass_of](https://w3id.org/linkml/meta/subclass_of)
+URI: [linkml:subclass_of](https://w3id.org/linkml/subclass_of)
 
 
 ## Domain and Range

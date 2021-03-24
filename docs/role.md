@@ -4,7 +4,7 @@
 
 the role played by the slot range
 
-URI: [meta:role](https://w3id.org/linkml/meta/role)
+URI: [linkml:role](https://w3id.org/linkml/role)
 
 
 ## Domain and Range

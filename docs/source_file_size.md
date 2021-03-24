@@ -4,7 +4,7 @@
 
 size in bytes of the source of the schema
 
-URI: [meta:source_file_size](https://w3id.org/linkml/meta/source_file_size)
+URI: [linkml:source_file_size](https://w3id.org/linkml/source_file_size)
 
 
 ## Domain and Range

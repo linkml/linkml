@@ -4,7 +4,7 @@
 
 true means that slot can have more than one value
 
-URI: [meta:multivalued](https://w3id.org/linkml/meta/multivalued)
+URI: [linkml:multivalued](https://w3id.org/linkml/multivalued)
 
 
 ## Domain and Range

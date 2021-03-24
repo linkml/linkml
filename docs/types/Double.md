@@ -4,7 +4,7 @@
 
 A real number that conforms to the xsd:double specification
 
-URI: [metatype:Double](https://w3id.org/linkml/meta/types/Double)
+URI: [linkml:Double](https://w3id.org/linkml/Double)
 
 |  |  |  |
 | --- | --- | --- |

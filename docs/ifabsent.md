@@ -13,7 +13,7 @@ function that provides a default value for the slot.  Possible values for this s
   * class_curie -- CURIE for the containing class
   * class_uri -- URI for the containing class
 
-URI: [meta:ifabsent](https://w3id.org/linkml/meta/ifabsent)
+URI: [linkml:ifabsent](https://w3id.org/linkml/ifabsent)
 
 
 ## Domain and Range

@@ -4,7 +4,7 @@
 
 a tag/text tuple attached to an arbitrary element
 
-URI: [meta:extensions](https://w3id.org/linkml/meta/extensions)
+URI: [linkml:extensions](https://w3id.org/linkml/extensions)
 
 
 ## Domain and Range

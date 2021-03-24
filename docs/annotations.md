@@ -4,7 +4,7 @@
 
 a collection of tag/text tuples with the semantics of OWL Annotation
 
-URI: [meta:annotations](https://w3id.org/linkml/meta/annotations)
+URI: [linkml:annotations](https://w3id.org/linkml/annotations)
 
 
 ## Domain and Range

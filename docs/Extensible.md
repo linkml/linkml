@@ -4,7 +4,7 @@
 
 mixin for classes that support extension
 
-URI: [meta:Extensible](https://w3id.org/linkml/meta/Extensible)
+URI: [linkml:Extensible](https://w3id.org/linkml/Extensible)
 
 
 ![img](images/Extensible.svg)

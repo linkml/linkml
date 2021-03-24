@@ -4,7 +4,7 @@
 
 True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier
 
-URI: [meta:key](https://w3id.org/linkml/meta/key)
+URI: [linkml:key](https://w3id.org/linkml/key)
 
 
 ## Domain and Range

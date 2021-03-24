@@ -4,7 +4,7 @@
 
 a tag/value pair used to add non-model information to an entry
 
-URI: [meta:Extension](https://w3id.org/linkml/meta/Extension)
+URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
 
 ![img](images/Extension.svg)

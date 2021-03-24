@@ -4,7 +4,7 @@
 
 this slot or class can only be used as a mixin -- equivalent to abstract
 
-URI: [meta:mixin](https://w3id.org/linkml/meta/mixin)
+URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 
 
 ## Domain and Range

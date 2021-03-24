@@ -4,7 +4,7 @@
 
 Version of the metamodel used to load the schema
 
-URI: [meta:metamodel_version](https://w3id.org/linkml/meta/metamodel_version)
+URI: [linkml:metamodel_version](https://w3id.org/linkml/metamodel_version)
 
 
 ## Domain and Range

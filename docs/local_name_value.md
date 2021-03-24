@@ -4,7 +4,7 @@
 
 a name assigned to an element in a given ontology
 
-URI: [meta:local_name_value](https://w3id.org/linkml/meta/local_name_value)
+URI: [linkml:local_name_value](https://w3id.org/linkml/local_name_value)
 
 
 ## Domain and Range

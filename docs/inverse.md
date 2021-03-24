@@ -4,7 +4,7 @@
 
 indicates that any instance of d s r implies that there is also an instance of r s' d
 
-URI: [meta:inverse](https://w3id.org/linkml/meta/inverse)
+URI: [linkml:inverse](https://w3id.org/linkml/inverse)
 
 
 ## Domain and Range

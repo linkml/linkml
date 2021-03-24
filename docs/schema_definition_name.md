@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:schema_definition_name](https://w3id.org/linkml/meta/schema_definition_name)
+URI: [linkml:schema_definition_name](https://w3id.org/linkml/schema_definition_name)
 
 
 ## Domain and Range

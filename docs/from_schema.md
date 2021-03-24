@@ -4,7 +4,7 @@
 
 id of the schema that defined the element
 
-URI: [meta:from_schema](https://w3id.org/linkml/meta/from_schema)
+URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
 
 
 ## Domain and Range

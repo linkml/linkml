@@ -4,7 +4,7 @@
 
 a URI or a CURIE
 
-URI: [metatype:Uriorcurie](https://w3id.org/linkml/meta/types/Uriorcurie)
+URI: [linkml:Uriorcurie](https://w3id.org/linkml/Uriorcurie)
 
 |  |  |  |
 | --- | --- | --- |

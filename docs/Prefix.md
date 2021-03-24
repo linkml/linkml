@@ -4,7 +4,7 @@
 
 prefix URI tuple
 
-URI: [meta:Prefix](https://w3id.org/linkml/meta/Prefix)
+URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
 
 
 ![img](images/Prefix.svg)

@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:text](https://w3id.org/linkml/meta/text)
+URI: [linkml:text](https://w3id.org/linkml/text)
 
 
 ## Domain and Range

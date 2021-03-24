@@ -12,7 +12,7 @@ the declaration
 
 implicitly asserts Y is an instance of C2
 
-URI: [meta:range](https://w3id.org/linkml/meta/range)
+URI: [linkml:range](https://w3id.org/linkml/range)
 
 
 ## Domain and Range

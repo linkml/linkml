@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:class_definition_mixins](https://w3id.org/linkml/meta/class_definition_mixins)
+URI: [linkml:class_definition_mixins](https://w3id.org/linkml/class_definition_mixins)
 
 
 ## Domain and Range

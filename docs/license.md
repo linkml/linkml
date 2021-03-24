@@ -4,7 +4,7 @@
 
 license for the schema
 
-URI: [meta:license](https://w3id.org/linkml/meta/license)
+URI: [linkml:license](https://w3id.org/linkml/license)
 
 
 ## Domain and Range

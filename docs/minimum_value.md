@@ -4,7 +4,7 @@
 
 for slots with ranges of type number, the value must be equal to or higher than this
 
-URI: [meta:minimum_value](https://w3id.org/linkml/meta/minimum_value)
+URI: [linkml:minimum_value](https://w3id.org/linkml/minimum_value)
 
 
 ## Domain and Range

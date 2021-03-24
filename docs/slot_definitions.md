@@ -4,7 +4,7 @@
 
 slot definitions
 
-URI: [meta:slot_definitions](https://w3id.org/linkml/meta/slot_definitions)
+URI: [linkml:slot_definitions](https://w3id.org/linkml/slot_definitions)
 
 
 ## Domain and Range

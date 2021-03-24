@@ -4,7 +4,7 @@
 
 date and time that the schema was loaded/generated
 
-URI: [meta:generation_date](https://w3id.org/linkml/meta/generation_date)
+URI: [linkml:generation_date](https://w3id.org/linkml/generation_date)
 
 
 ## Domain and Range

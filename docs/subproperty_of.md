@@ -4,7 +4,7 @@
 
 Ontology property which this slot is a subproperty of
 
-URI: [meta:subproperty_of](https://w3id.org/linkml/meta/subproperty_of)
+URI: [linkml:subproperty_of](https://w3id.org/linkml/subproperty_of)
 
 
 ## Domain and Range

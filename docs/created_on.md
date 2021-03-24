@@ -4,7 +4,7 @@
 
 time at which the element was created
 
-URI: [meta:created_on](https://w3id.org/linkml/meta/created_on)
+URI: [linkml:created_on](https://w3id.org/linkml/created_on)
 
 
 ## Domain and Range

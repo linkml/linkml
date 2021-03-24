@@ -4,7 +4,7 @@
 
 
 
-URI: [meta:class_definition_apply_to](https://w3id.org/linkml/meta/class_definition_apply_to)
+URI: [linkml:class_definition_apply_to](https://w3id.org/linkml/class_definition_apply_to)
 
 
 ## Domain and Range

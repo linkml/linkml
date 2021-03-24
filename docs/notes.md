@@ -4,7 +4,7 @@
 
 editorial notes about an element intended for internal consumption
 
-URI: [meta:notes](https://w3id.org/linkml/meta/notes)
+URI: [linkml:notes](https://w3id.org/linkml/notes)
 
 
 ## Domain and Range
