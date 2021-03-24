@@ -1,0 +1,8 @@
+@prefix : <https://w3id.org/biolink/vocab/> .
+@prefix biolink: <https://w3id.org/biolink/vocab/> .
+@prefix ex: <http://example.org/> .
+
+<http://example.org/person/17> a ex:PERSON ;
+    biolink:age "43"^^<xsd:integer> ;
+    biolink:name "Fred Jones" .
+

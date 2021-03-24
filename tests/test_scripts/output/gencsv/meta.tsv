@@ -1,0 +1,19 @@
+id	mappings	description
+alt_description		an attributed description
+annotatable		mixin for classes that support annotations
+annotation		a tag/value pair with the semantics of OWL Annotation
+class_definition		the definition of a class or interface
+definition		base class for definitions
+element		a named element in the model
+enum_definition		List of values that constrain the range of a slot
+example		usage example and description
+extensible		mixin for classes that support extension
+extension		a tag/value pair used to add non-model information to an entry
+local_name		an attributed label
+permissible_value		a permissible value, accompanied by intended text and an optional mapping to a concept URI
+prefix		prefix URI tuple
+schema_definition		a collection of subset, type, slot and class definitions
+slot_definition		the definition of a property or a slot
+subset_definition		the name and description of a subset
+type_definition		A data type definition.
+

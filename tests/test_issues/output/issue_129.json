@@ -1,0 +1,101 @@
+{
+   "$id": "http://example.org/sample/types",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {
+      "C": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "age_in_years": {
+               "type": "integer"
+            },
+            "children": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "has_d": {
+               "$ref": "#/definitions/D"
+            },
+            "has_ds": {
+               "items": {
+                  "$ref": "#/definitions/D"
+               },
+               "type": "array"
+            },
+            "has_prop": {
+               "type": "boolean"
+            },
+            "id": {
+               "type": "string"
+            },
+            "parent": {
+               "type": "string"
+            },
+            "scores": {
+               "items": {
+                  "type": "number"
+               },
+               "type": "array"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "C",
+         "type": "object"
+      },
+      "D": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "D",
+         "type": "object"
+      }
+   },
+   "properties": {
+      "age_in_years": {
+         "type": "integer"
+      },
+      "children": {
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "has_d": {
+         "$ref": "#/definitions/D"
+      },
+      "has_ds": {
+         "items": {
+            "$ref": "#/definitions/D"
+         },
+         "type": "array"
+      },
+      "has_prop": {
+         "type": "boolean"
+      },
+      "id": {
+         "type": "string"
+      },
+      "parent": {
+         "type": "string"
+      },
+      "scores": {
+         "items": {
+            "type": "number"
+         },
+         "type": "array"
+      }
+   },
+   "title": "types",
+   "type": "object"
+}

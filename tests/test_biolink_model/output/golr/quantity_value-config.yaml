@@ -1,0 +1,14 @@
+id: quantity_value
+schema_generating: true
+description: A value of an attribute that is quantitative and measurable, expressed
+  as a combination of a unit and a numeric value
+display_name: quantity value
+document_category: quantity value
+weight: 20
+fields:
+- id: has_unit
+  description: connects a quantity value to a unit
+  display_name: has unit
+- id: has_numeric_value
+  description: connects a quantity value to a number
+  display_name: has numeric value

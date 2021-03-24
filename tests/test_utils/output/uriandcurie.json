@@ -1,0 +1,188 @@
+{
+  "name": "uriandcurie",
+  "id": "http://example.org/test/uriandcurie",
+  "prefixes": [
+    {
+      "prefix_prefix": "xsd",
+      "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix_prefix": "m",
+      "prefix_reference": "http://example.org/test/uriandcurie"
+    },
+    {
+      "prefix_prefix": "shex",
+      "prefix_reference": "http://www.w3.org/ns/shex#"
+    }
+  ],
+  "default_prefix": "m",
+  "default_range": "string",
+  "types": [
+    {
+      "name": "string",
+      "definition_uri": "http://example.org/test/uriandcurieString",
+      "description": "A character string",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uriorcurie",
+      "definition_uri": "http://example.org/test/uriandcurieUriorcurie",
+      "description": "a URI or a CURIE",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "URIorCURIE",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "uri",
+      "definition_uri": "http://example.org/test/uriandcurieUri",
+      "description": "a complete URI",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "URI",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "curie",
+      "definition_uri": "http://example.org/test/uriandcurieCurie",
+      "description": "a CURIE",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "Curie",
+      "uri": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "ncname",
+      "definition_uri": "http://example.org/test/uriandcurieNcname",
+      "description": "Prefix part of CURIE",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "NCName",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "objectidentifier",
+      "definition_uri": "http://example.org/test/uriandcurieObjectidentifier",
+      "description": "A URI or CURIE that represents an object in the model.",
+      "comments": [
+        "Used for inheritence and type checking"
+      ],
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "ElementIdentifier",
+      "uri": "http://www.w3.org/ns/shex#iri",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "nodeidentifier",
+      "definition_uri": "http://example.org/test/uriandcurieNodeidentifier",
+      "description": "A URI, CURIE or BNODE that represents a node in a model.",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "base": "NodeIdentifier",
+      "uri": "http://www.w3.org/ns/shex#nonliteral",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    }
+  ],
+  "slots": [
+    {
+      "name": "id",
+      "definition_uri": "http://example.org/test/uriandcurieid",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "range": "objectidentifier",
+      "slot_uri": "http://example.org/test/uriandcurieid",
+      "required": true,
+      "identifier": true,
+      "owner": "C1",
+      "domain_of": [
+        "C1"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hasCurie",
+      "definition_uri": "http://example.org/test/uriandcuriehasCurie",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "range": "curie",
+      "slot_uri": "http://example.org/test/uriandcuriehasCurie",
+      "owner": "C1",
+      "domain_of": [
+        "C1"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hasURI",
+      "definition_uri": "http://example.org/test/uriandcuriehasURI",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "range": "uri",
+      "slot_uri": "http://example.org/test/uriandcuriehasURI",
+      "owner": "C1",
+      "domain_of": [
+        "C1"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "hasNcName",
+      "definition_uri": "http://example.org/test/uriandcuriehasNcName",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "range": "ncname",
+      "slot_uri": "http://example.org/test/uriandcuriehasNcName",
+      "owner": "C1",
+      "domain_of": [
+        "C1"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "id2",
+      "definition_uri": "http://example.org/test/uriandcurieid2",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "range": "nodeidentifier",
+      "slot_uri": "http://example.org/test/uriandcurieid2",
+      "owner": "C1",
+      "domain_of": [
+        "C1"
+      ],
+      "@type": "SlotDefinition"
+    }
+  ],
+  "classes": [
+    {
+      "name": "C1",
+      "definition_uri": "http://example.org/test/uriandcurieC1",
+      "from_schema": "http://example.org/test/uriandcurie",
+      "slots": [
+        "id",
+        "hasCurie",
+        "hasURI",
+        "hasNcName",
+        "id2"
+      ],
+      "class_uri": "http://example.org/test/uriandcurieC1",
+      "@type": "ClassDefinition"
+    }
+  ],
+  "metamodel_version": "1.7.0",
+  "source_file": "uriandcurie.yaml",
+  "source_file_date": "Wed Mar 24 16:43:50 2021",
+  "source_file_size": 1427,
+  "generation_date": "2021-03-24 16:49",
+  "@type": "SchemaDefinition",
+  "@context": [
+    [
+      "https://w3id.org/linkml/meta.context.jsonld"
+    ],
+    {
+      "@base": "http://example.org/test/uriandcurie"
+    }
+  ]
+}

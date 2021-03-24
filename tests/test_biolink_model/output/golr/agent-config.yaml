@@ -1,0 +1,59 @@
+id: agent
+schema_generating: true
+description: person, group, organization or project that provides a piece of information
+  (i.e. a knowledge association)
+display_name: agent
+document_category: agent
+weight: 20
+fields:
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: type
+  display_name: type
+- id: description
+  description: a human-readable description of an entity
+  display_name: description
+- id: source
+  description: a lightweight analog to the association class 'has provider' slot,
+    which is the string name, or the authoritative (i.e. database) namespace, designating
+    the origin of the entity to which the slot belongs.
+  display_name: source
+- id: provided_by
+  description: connects an association to the agent (person, organization or group)
+    that provided it
+  display_name: provided by
+  cardinality: multi
+- id: has_attribute
+  description: connects any entity to an attribute
+  display_name: has attribute
+  cardinality: multi
+- id: category
+  display_name: named thing_category
+  cardinality: multi
+- id: affiliation
+  description: a professional relationship between one provider (often a person) within
+    another provider (often an organization). Target provider identity should be specified
+    by a CURIE. Providers may have multiple affiliations.
+  display_name: affiliation
+  cardinality: multi
+- id: address
+  description: the particulars of the place where someone or an organization is situated.  For
+    now, this slot is a simple text "blob" containing all relevant details of the
+    given location for fitness of purpose. For the moment, this "address" can include
+    other contact details such as email and phone number(?).
+  display_name: address
+- id: id
+  description: Different classes of agents have distinct preferred identifiers. For
+    publishers, use the ISBN publisher code. See https://grp.isbn-international.org/
+    for publisher code lookups. For editors, authors and  individual providers, use
+    the individual's ORCID if available; Otherwise, a ScopusID, ResearchID or Google
+    Scholar ID ('GSID') may be used if the author ORCID is unknown. Institutional
+    agents could be identified by an International Standard Name Identifier ('ISNI')
+    code.
+  display_name: agent_id
+- id: name
+  description: it is recommended that an author's 'name' property be formatted as
+    "surname, firstname initial."
+  display_name: agent_name

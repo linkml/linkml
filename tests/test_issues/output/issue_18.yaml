@@ -1,0 +1,110 @@
+name: issue18
+id: http://example.org/tests/issue18
+default_prefix: http://example.org/tests/issue18/
+default_range: string
+types:
+  string:
+    name: string
+    definition_uri: http://example.org/tests/issue18/String
+    from_schema: http://example.org/tests/issue18
+    base: str
+    uri: xsd:string
+slots:
+  c1s1:
+    name: c1s1
+    definition_uri: http://example.org/tests/issue18/c1s1
+    description: Slot with implicit range
+    from_schema: http://example.org/tests/issue18
+    range: c2
+    slot_uri: http://example.org/tests/issue18/c1s1
+    owner: c1
+    domain_of:
+    - c1
+    inverse: c2s1
+  c2s1:
+    name: c2s1
+    definition_uri: http://example.org/tests/issue18/c2s1
+    description: Slot whose domain, range and inverse comes entirely from c1s1
+    from_schema: http://example.org/tests/issue18
+    range: c1
+    slot_uri: http://example.org/tests/issue18/c2s1
+    owner: c2
+    domain_of:
+    - c2
+    inverse: c1s1
+  c1s2:
+    name: c1s2
+    definition_uri: http://example.org/tests/issue18/c1s2
+    description: Slot with explicit domain_of and range
+    from_schema: http://example.org/tests/issue18
+    range: c2
+    slot_uri: http://example.org/tests/issue18/c1s2
+    inlined: true
+    owner: c1
+    domain_of:
+    - c1
+    inverse: c2s2
+  c2s2:
+    name: c2s2
+    definition_uri: http://example.org/tests/issue18/c2s2
+    description: Second slot with explicit domain_of and range
+    from_schema: http://example.org/tests/issue18
+    domain: c2
+    range: c1
+    slot_uri: http://example.org/tests/issue18/c2s2
+    inlined: true
+    inverse: c1s2
+  c3s1:
+    name: c3s1
+    definition_uri: http://example.org/tests/issue18/c3s1
+    from_schema: http://example.org/tests/issue18
+    range: c4
+    slot_uri: http://example.org/tests/issue18/c3s1
+    inlined: true
+    owner: c3
+    domain_of:
+    - c3
+    inverse: c4s1
+  c4s1:
+    name: c4s1
+    definition_uri: http://example.org/tests/issue18/c4s1
+    description: c4 gets injected as the domain
+    from_schema: http://example.org/tests/issue18
+    domain: c4
+    range: c3
+    slot_uri: http://example.org/tests/issue18/c4s1
+    inverse: c3s1
+classes:
+  c1:
+    name: c1
+    definition_uri: http://example.org/tests/issue18/C1
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - c1s1
+    - c1s2
+    class_uri: http://example.org/tests/issue18/C1
+  c2:
+    name: c2
+    definition_uri: http://example.org/tests/issue18/C2
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - c2s1
+    - c2s1
+    class_uri: http://example.org/tests/issue18/C2
+  c3:
+    name: c3
+    definition_uri: http://example.org/tests/issue18/C3
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - c3s1
+    class_uri: http://example.org/tests/issue18/C3
+  c4:
+    name: c4
+    definition_uri: http://example.org/tests/issue18/C4
+    from_schema: http://example.org/tests/issue18
+    class_uri: http://example.org/tests/issue18/C4
+metamodel_version: 1.7.0
+source_file: issue_18.yaml
+source_file_date: Wed Mar 24 16:43:50 2021
+source_file_size: 671
+generation_date: 2021-03-24 16:47

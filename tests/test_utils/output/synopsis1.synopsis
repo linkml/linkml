@@ -1,0 +1,29 @@
+
+Classes: 0
+	Referenced by: 0 classes, 0 slots, 0 types, 0 enums 
+	Root: 0
+	Leaf: 0
+	Standalone: 0
+	Declared mixin: 0
+	Undeclared mixin: 0
+	Abstract: 0
+
+Slots: 1
+	Referenced by: 0 classes, 0 slots, 0 types, 0 enums 
+	Root: 1
+	Leaf: 0
+	Standalone: 0
+	Declared mixin: 0
+	Undeclared mixin: 0
+	Abstract: 0
+	Domain unspecified: 1
+	Ranges:
+		Type:
+			string: 1
+		Class:
+
+Types: 1
+	Referenced by: 0 classes, 1 slots, 0 types, 0 enums 
+	Bases:
+		str:
+			string

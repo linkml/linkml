@@ -1,0 +1,35 @@
+name: issue177
+id: http://example.org/tests/issue177
+default_prefix: http://example.org/tests/issue177/
+default_range: string
+types:
+  string:
+    name: string
+    definition_uri: http://example.org/tests/issue177/String
+    from_schema: http://example.org/tests/issue177
+    base: str
+    uri: xsd:string
+classes:
+  c1:
+    name: c1
+    definition_uri: http://example.org/tests/issue177/C1
+    from_schema: http://example.org/tests/issue177
+    class_uri: http://example.org/tests/issue177/C1
+    tree_root: true
+  c2:
+    name: c2
+    definition_uri: http://example.org/tests/issue177/C2
+    from_schema: http://example.org/tests/issue177
+    class_uri: http://example.org/tests/issue177/C2
+    tree_root: true
+  c3:
+    name: c3
+    definition_uri: http://example.org/tests/issue177/C3
+    from_schema: http://example.org/tests/issue177
+    class_uri: http://example.org/tests/issue177/C3
+    tree_root: true
+metamodel_version: 1.7.0
+source_file: issue_177_error.yaml
+source_file_date: Wed Mar 24 16:43:50 2021
+source_file_size: 180
+generation_date: 2021-03-24 16:47

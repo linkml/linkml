@@ -1,0 +1,38 @@
+{
+   "$id": "http://example.org/sample/example1",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {
+      "Course": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "name": {
+               "description": "Any name",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "Course",
+         "type": "object"
+      },
+      "Student": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "courses": {
+               "$ref": "#/definitions/Course"
+            },
+            "name": {
+               "description": "Any name",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "Student",
+         "type": "object"
+      }
+   },
+   "properties": {},
+   "title": "example1",
+   "type": "object"
+}

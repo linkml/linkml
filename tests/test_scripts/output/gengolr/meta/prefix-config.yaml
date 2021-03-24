@@ -1,0 +1,13 @@
+id: prefix
+schema_generating: true
+description: prefix URI tuple
+display_name: prefix
+document_category: prefix
+weight: 20
+fields:
+- id: prefix_prefix
+  description: the nsname (sans ':' for a given prefix)
+  display_name: prefix_prefix
+- id: prefix_reference
+  description: A URI associated with a given prefix
+  display_name: prefix_reference

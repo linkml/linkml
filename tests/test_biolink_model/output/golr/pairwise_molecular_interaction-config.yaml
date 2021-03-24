@@ -1,0 +1,64 @@
+id: pairwise_molecular_interaction
+schema_generating: true
+description: An interaction at the molecular level between two physical entities
+display_name: pairwise molecular interaction
+document_category: pairwise molecular interaction
+weight: 20
+fields:
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: name
+  description: A human-readable name for an attribute or entity.
+  display_name: name
+- id: description
+  description: a human-readable description of an entity
+  display_name: description
+- id: source
+  description: a lightweight analog to the association class 'has provider' slot,
+    which is the string name, or the authoritative (i.e. database) namespace, designating
+    the origin of the entity to which the slot belongs.
+  display_name: source
+- id: provided_by
+  description: connects an association to the agent (person, organization or group)
+    that provided it
+  display_name: provided by
+  cardinality: multi
+- id: has_attribute
+  description: connects any entity to an attribute
+  display_name: has attribute
+  cardinality: multi
+- id: negated
+  description: if set to true, then the association is negated i.e. is not true
+  display_name: negated
+- id: qualifiers
+  description: connects an association to qualifiers that modify or qualify the meaning
+    of that association
+  display_name: qualifiers
+  cardinality: multi
+- id: publications
+  description: connects an association to publications supporting the association
+  display_name: publications
+  cardinality: multi
+- id: type
+  description: rdf:type of biolink:Association should be fixed at rdf:Statement
+  display_name: association_type
+- id: category
+  display_name: association_category
+  cardinality: multi
+- id: interacting_molecules_category
+  display_name: interacting molecules category
+- id: subject
+  display_name: pairwise molecular interaction_subject
+- id: id
+  description: identifier for the interaction. This may come from an interaction database
+    such as IMEX.
+  display_name: pairwise molecular interaction_id
+- id: predicate
+  display_name: pairwise molecular interaction_predicate
+- id: relation
+  description: interaction relationship type
+  display_name: pairwise molecular interaction_relation
+- id: object
+  display_name: pairwise molecular interaction_object

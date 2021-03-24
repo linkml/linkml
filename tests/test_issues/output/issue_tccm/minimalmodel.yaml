@@ -1,0 +1,6 @@
+name: prefixes
+id: https://hotecosystem.org/tccm/prefixes
+default_prefix: https://hotecosystem.org/tccm/prefixes/
+default_range: string
+metamodel_version: 1.7.0
+source_file: minimalmodel.yaml

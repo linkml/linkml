@@ -1,0 +1,11 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+
+<https://hotecosystem.org/tccm/prefixes/prefixes> a linkml:SchemaDefinition ;
+    linkml:default_prefix "https://hotecosystem.org/tccm/prefixes/" ;
+    linkml:default_range <https://hotecosystem.org/tccm/prefixes/string> ;
+    linkml:id <https://hotecosystem.org/tccm/prefixes> ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:source_file "minimalmodel.yaml" .
+
+

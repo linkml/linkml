@@ -1,0 +1,24 @@
+Usage: gen-yaml [OPTIONS] YAMLFILE
+
+  Validate input and produce fully resolved yaml equivalent
+
+Options:
+  -v, --validateonly / -g, --generate
+                                  Just validate / generate output (default:
+                                  generate)
+
+  -f, --format [yaml]             Output format (default=yaml)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

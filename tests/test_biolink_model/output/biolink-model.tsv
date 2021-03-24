@@ -1,0 +1,252 @@
+id	mappings	description
+activity		An activity is something that occurs over a period of time and acts upon or with entities; it may include consuming, processing, transforming, modifying, relocating, using, or generating entities.
+activity_and_behavior		Activity or behavior of any independent integral living, organization or mechanical actor in the world
+administrative_entity		
+agent		person, group, organization or project that provides a piece of information (i.e. a knowledge association)
+anatomical_entity		A subcellular location, cell type or gross anatomical part
+anatomical_entity_to_anatomical_entity_association		
+anatomical_entity_to_anatomical_entity_ontogenic_association		A relationship between two anatomical entities where the relationship is ontogenic, i.e. the two entities are related by development. A number of different relationship types can be used to specify the precise nature of the relationship.
+anatomical_entity_to_anatomical_entity_part_of_association		A relationship between two anatomical entities where the relationship is mereological, i.e the two entities are related by parthood. This includes relationships between cellular components and cells, between cells and tissues, tissues and whole organisms
+annotation		Biolink Model root class for entity annotations.
+article		
+association		A typed association between two entities, supported by evidence
+attribute		A property or characteristic of an entity. For example, an apple may have properties such as color, shape, age, crispiness. An environmental sample may have attributes such as depth, lat, long, material.
+behavior		
+behavior_to_behavioral_feature_association		An association between an aggregate behavior and a behavioral feature manifested by the individual exhibited or has exhibited the behavior.
+behavioral_exposure		A behavioral exposure is a factor relating to behavior impacting an individual.
+behavioral_feature		A phenotypic feature which is behavioral in nature.
+behavioral_outcome		An outcome resulting from an exposure event which is the manifestation of human behavior.
+biological_entity		
+biological_process		One or more causally connected executions of molecular functions
+biological_process_or_activity		Either an individual molecular activity, or a collection of causally connected molecular activities in a biological system.
+biological_sex		
+biotic_exposure		An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).
+book		This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
+book_chapter		
+carbohydrate		
+case		An individual (human) organism that has a patient role in some clinical context.
+case_to_entity_association_mixin		An abstract association for use where the case is the subject
+case_to_phenotypic_feature_association		An association between a case (e.g. individual patient) and a phenotypic feature in which the individual has or has had the phenotype.
+cell		
+cell_line		
+cell_line_as_a_model_of_disease_association		
+cell_line_to_disease_or_phenotypic_feature_association		An relationship between a cell line and a disease or a phenotype, where the cell line is derived from an individual with that disease or phenotype.
+cell_line_to_entity_association_mixin		An relationship between a cell line and another entity
+cellular_component		A location in or around a cell
+chemical_exposure		A chemical exposure is an intake of a particular chemical substance, other than a drug.
+chemical_substance		May be a chemical entity or a formulation with a chemical entity as active ingredient, or a complex material with multiple chemical entities as part
+chemical_to_chemical_association		A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal edges, e.g. one chemical converted to another.
+chemical_to_chemical_derivation_association		"A causal relationship between two chemical entities, where the subject represents the upstream entity and the object represents the downstream. For any such association there is an implicit reaction:
+  IF
+  R has-input C1 AND
+  R has-output C2 AND
+  R enabled-by P AND
+  R type Reaction
+  THEN
+  C1 derives-into C2 <<catalyst qualifier P>>"
+chemical_to_disease_or_phenotypic_feature_association		An interaction between a chemical entity and a phenotype or disease, where the presence of the chemical gives rise to or exacerbates the phenotype.
+chemical_to_entity_association_mixin		An interaction between a chemical entity and another entity
+chemical_to_gene_association		An interaction between a chemical entity and a gene or gene product.
+chemical_to_pathway_association		An interaction between a chemical entity and a biological process or pathway.
+clinical_attribute		Attributes relating to a clinical manifestation
+clinical_course		The course a disease typically takes from its onset, progression in time, and eventual resolution or death of the affected individual
+clinical_entity		Any entity or process that exists in the clinical domain and outside the biological realm. Diseases are placed under biological entities
+clinical_finding		this category is currently considered broad enough to tag clinical lab measurements and other biological attributes taken as 'clinical traits' with some statistical score, for example, a p value in genetic associations.
+clinical_intervention		
+clinical_measurement		A clinical measurement is a special kind of attribute which results from a laboratory observation from a subject individual or sample. Measurements can be connected to their subject by the 'has attribute' slot.
+clinical_modifier		Used to characterize and specify the phenotypic abnormalities defined in the phenotypic abnormality sub-ontology, with respect to severity, laterality, and other aspects
+clinical_trial		
+coding_sequence		
+cohort		A group of people banded together or treated as a group who share common characteristics. A cohort 'study' is a particular form of longitudinal study that samples a cohort, performing a cross-section at intervals through time.
+complex_chemical_exposure		A complex chemical exposure is an intake of a chemical mixture (e.g. gasoline), other than a drug.
+confidence_level		Level of confidence in a statement
+contributor_association		Any association between an entity (such as a publication) and various agents that contribute to its realisation
+dataset		an item that refers to a collection of data from a data source.
+dataset_distribution		an item that holds distribution level information about a dataset.
+dataset_summary		an item that holds summary level information about a dataset.
+dataset_version		an item that holds version level information about a dataset.
+death		
+device		A thing made or adapted for a particular purpose, especially a piece of mechanical or electronic equipment
+disease		
+disease_or_phenotypic_feature		Either one of a disease or an individual phenotypic feature. Some knowledge resources such as Monarch treat these as distinct, others such as MESH conflate.
+disease_or_phenotypic_feature_association_to_location_association		
+disease_or_phenotypic_feature_exposure		A disease or phenotypic feature state, when viewed as an exposure, represents an precondition, leading to or influencing an outcome, e.g. HIV predisposing an individual to infections; a relative deficiency of skin pigmentation predisposing an individual to skin cancer.
+disease_or_phenotypic_feature_outcome		Physiological outcomes resulting from an exposure event which is the manifestation of a disease or other characteristic phenotype.
+disease_or_phenotypic_feature_to_entity_association_mixin		
+disease_or_phenotypic_feature_to_location_association		An association between either a disease or a phenotypic feature and an anatomical entity, where the disease/feature manifests in that site.
+disease_to_entity_association_mixin		
+disease_to_exposure_event_association		An association between an exposure event and a disease.
+disease_to_phenotypic_feature_association		An association between a disease and a phenotypic feature in which the phenotypic feature is associated with the disease in some way.
+drug		A substance intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease
+drug_exposure		A drug exposure is an intake of a particular drug.
+drug_to_entity_association_mixin		An interaction between a drug and another entity
+drug_to_gene_association		An interaction between a drug and a gene or gene product.
+drug_to_gene_interaction_exposure		drug to gene interaction exposure is a drug exposure is where the interactions of the drug with specific genes are known to constitute an 'exposure' to the organism, leading to or influencing an outcome.
+entity		Root Biolink Model class for all things and informational relationships, real or imagined.
+entity_to_disease_association_mixin		mixin class for any association whose object (target node) is a disease
+entity_to_disease_or_phenotypic_feature_association_mixin		
+entity_to_exposure_event_association_mixin		An association between some entity and an exposure event.
+entity_to_feature_or_disease_qualifiers_mixin		Qualifiers for entity to disease or phenotype associations.
+entity_to_outcome_association_mixin		An association between some entity and an outcome
+entity_to_phenotypic_feature_association_mixin		
+environmental_exposure		A environmental exposure is a factor relating to abiotic processes in the environment including sunlight (UV-B), atmospheric (heat, cold, general pollution) and water-born contaminants.
+environmental_feature		
+environmental_food_contaminant		
+environmental_process		
+epidemiological_outcome		An epidemiological outcome, such as societal disease burden, resulting from an exposure event.
+evidence_type		Class of evidence that supports an association
+exon		A region of the transcript sequence within a gene which is not removed from the primary RNA transcript by RNA splicing.
+exon_to_transcript_relationship		A transcript is formed from multiple exons
+exposure_event		A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
+exposure_event_to_entity_association_mixin		An association between some exposure event and some entity.
+exposure_event_to_outcome_association		An association between an exposure event and an outcome.
+exposure_event_to_phenotypic_feature_association		Any association between an environment and a phenotypic feature, where being in the environment influences the phenotype.
+food		A substance consumed by a living organism as a source of nutrition
+food_additive		
+food_component		
+frequency_qualifier_mixin		Qualifier for frequency type associations
+frequency_quantifier		
+functional_association		An association between a macromolecular machine mixin (gene, gene product or complex of gene products) and either a molecular activity, a biological process or a cellular location in which a function is executed.
+gene		A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A gene locus may include regulatory regions, transcribed regions and/or other functional sequence regions.
+gene_as_a_model_of_disease_association		
+gene_expression_mixin		Observed gene expression intensity, context (site, stage) and associated phenotypic status within which the expression occurs.
+gene_family		any grouping of multiple genes or gene products related by common descent
+gene_grouping_mixin		any grouping of multiple genes or gene products
+gene_has_variant_that_contributes_to_disease_association		
+gene_ontology_class		an ontology class that describes a functional aspect of a gene, gene prodoct or complex
+gene_or_gene_product		A union of gene loci or gene products. Frequently an identifier for one will be used as proxy for another
+gene_product_isoform_mixin		This is an abstract class that can be mixed in with different kinds of gene products to indicate that the gene product is intended to represent a specific isoform rather than a canonical or reference or generic product. The designation of canonical or reference may be arbitrary, or it may represent the superclass of all isoforms.
+gene_product_mixin		The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules.
+gene_regulatory_relationship		A regulatory relationship between two genes
+gene_to_disease_association		
+gene_to_entity_association_mixin		
+gene_to_expression_site_association		An association between a gene and an expression site, possibly qualified by stage/timing info.
+gene_to_gene_association		abstract parent class for different kinds of gene-gene or gene product to gene product relationships. Includes homology and interaction.
+gene_to_gene_coexpression_association		Indicates that two genes are co-expressed, generally under the same conditions.
+gene_to_gene_homology_association		A homology association between two genes. May be orthology (in which case the species of subject and object should differ) or paralogy (in which case the species may be the same)
+gene_to_gene_product_relationship		A gene is transcribed and potentially translated to a gene product
+gene_to_go_term_association		
+gene_to_phenotypic_feature_association		
+genome		A genome is the sum of genetic material within a cell or virion.
+genomic_background_exposure		A genomic background exposure is where an individual's specific genomic background of genes, sequence variants or other pre-existing genomic conditions constitute a kind of 'exposure' to the organism, leading to or influencing an outcome.
+genomic_entity		an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
+genomic_sequence_localization		A relationship between a sequence feature and a genomic entity it is localized to. The reference entity may be a chromosome, chromosome region or information entity such as a contig.
+genotype		An information content entity that describes a genome by specifying the total variation in genomic sequence and/or gene expression, relative to some established background
+genotype_as_a_model_of_disease_association		
+genotype_to_disease_association		
+genotype_to_entity_association_mixin		
+genotype_to_gene_association		Any association between a genotype and a gene. The genotype have have multiple variants in that gene or a single one. There is no assumption of cardinality
+genotype_to_genotype_part_association		Any association between one genotype and a genotypic entity that is a sub-component of it
+genotype_to_phenotypic_feature_association		Any association between one genotype and a phenotypic feature, where having the genotype confers the phenotype, either in isolation or through environment
+genotype_to_variant_association		Any association between a genotype and a sequence variant.
+genotypic_sex		An attribute corresponding to the genotypic sex of the individual, based upon genotypic composition of sex chromosomes.
+geographic_exposure		A geographic exposure is a factor relating to geographic proximity to some impactful entity.
+geographic_location		a location that can be described in lat/long coordinates
+geographic_location_at_time		a location that can be described in lat/long coordinates, for a particular time
+gross_anatomical_structure		
+haplotype		A set of zero or more Alleles on a single instance of a Sequence[VMC]
+hospitalization		
+hospitalization_outcome		An outcome resulting from an exposure event which is the increased manifestation of acute (e.g. emergency room visit) or chronic (inpatient) hospitalization.
+individual_organism		An instance of an organism. For example, Richard Nixon, Charles Darwin, my pet cat. Example ID: ORCID:0000-0002-5355-2576
+information_content_entity		a piece of information that typically describes some topic of discourse or is used as support.
+inheritance		The pattern or 'mode' in which a particular genetic trait or disorder is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive, etc.
+life_stage		A stage of development or growth of an organism, including post-natal adult stages
+macromolecular_complex_mixin		A stable assembly of two or more macromolecules, i.e. proteins, nucleic acids, carbohydrates or lipids, in which at least one component is a protein and the constituent parts function together.
+macromolecular_machine_mixin		A union of gene locus, gene product, and macromolecular complex mixin. These are the basic units of function in a cell. They either carry out individual biological activities, or they encode molecules which do this.
+macromolecular_machine_to_biological_process_association		A functional association between a macromolecular machine (gene, gene product or complex) and a biological process or pathway (as represented in the GO biological process branch), where the entity carries out some part of the process, regulates it, or acts upstream of it.
+macromolecular_machine_to_cellular_component_association		A functional association between a macromolecular machine (gene, gene product or complex) and a cellular component (as represented in the GO cellular component branch), where the entity carries out its function in the cellular component.
+macromolecular_machine_to_entity_association_mixin		an association which has a macromolecular machine mixin as a subject
+macromolecular_machine_to_molecular_activity_association		A functional association between a macromolecular machine (gene, gene product or complex) and a molecular activity (as represented in the GO molecular function branch), where the entity carries out the activity, or contributes to its execution.
+macronutrient		
+material_sample		A sample is a limited quantity of something (e.g. an individual or set of individuals from a population, or a portion of a substance) to be used for testing, analysis, inspection, investigation, demonstration, or trial use. [SIO]
+material_sample_derivation_association		An association between a material sample and the material entity from which it is derived.
+material_sample_to_disease_or_phenotypic_feature_association		An association between a material sample and a disease or phenotype.
+material_sample_to_entity_association_mixin		An association between a material sample and something.
+metabolite		Any intermediate or product resulting from metabolism. Includes primary and secondary metabolites.
+micronutrient		
+microRNA		
+mixture		The physical combination of two or more molecular entities in which the identities are retained and are mixed in the form of solutions, suspensions and colloids.
+model_to_disease_association_mixin		This mixin is used for any association class for which the subject (source node) plays the role of a 'model', in that it recapitulates some features of the disease in a way that is useful for studying the disease outside a patient carrying the disease
+molecular_activity		An execution of a molecular function carried out by a gene product or macromolecular complex.
+molecular_entity		"A gene, gene product, small molecule or macromolecule (including protein complex)"""
+molecular_entity_to_entity_association_mixin		An interaction between a molecular entity and another entity
+mortality_outcome		An outcome of death from resulting from an exposure event.
+named_thing		a databased entity or concept/class
+noncoding_RNA_product		
+nutrient		
+occurrent		A processual entity.
+onset		The age group in which (disease) symptom manifestations appear
+ontology_class		a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.
+organism_attribute		describes a characteristic of an organismal entity.
+organism_taxon		A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or subspecies.
+organism_taxon_to_entity_association		An association between an organism taxon and another entity
+organism_taxon_to_environment_association		
+organism_taxon_to_organism_taxon_association		A relationship between two organism taxon nodes
+organism_taxon_to_organism_taxon_interaction		An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and parasitism), or it may be non-symbiotic. Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens
+organism_taxon_to_organism_taxon_specialization		A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo
+organismal_entity		A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding molecular entities
+organismal_entity_as_a_model_of_disease_association		
+outcome		An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.
+pairwise_gene_to_gene_interaction		An interaction between two genes or two gene products. May be physical (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein interaction) or directed (e.g. phosphorylation)
+pairwise_molecular_interaction		An interaction at the molecular level between two physical entities
+pathognomonicity_quantifier		A relationship quantifier between a variant or symptom and a disease, which is high when the presence of the feature implies the existence of the disease
+pathological_anatomical_exposure		An abnormal anatomical structure, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. thrombosis leading to an ischemic disease outcome.
+pathological_anatomical_outcome		An outcome resulting from an exposure event which is the manifestation of an abnormal anatomical structure.
+pathological_anatomical_structure		An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.
+pathological_entity_mixin		A pathological (abnormal) structure or process.
+pathological_process		A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.
+pathological_process_exposure		A pathological process, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. autoimmunity leading to disease.
+pathological_process_outcome		An outcome resulting from an exposure event which is the manifestation of a pathological process.
+pathway		
+phenomenon		a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question
+phenotypic_feature		
+phenotypic_quality		A property of a phenotype
+phenotypic_sex		An attribute corresponding to the phenotypic sex of the individual, based upon the reproductive organs present.
+physical_entity		An entity that has material reality (a.k.a. physical essence).
+physical_essence		Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.
+physical_essence_or_occurrent		Either a physical or processual entity.
+physiological_process		
+planetary_entity		Any entity or process that exists at the level of the whole planet
+population_of_individual_organisms		A collection of individuals from the same taxonomic class distinguished by one or more characteristics.  Characteristics can include, but are not limited to, shared geographic location, genetics, phenotypes [Alliance for Genome Resources]
+population_to_population_association		An association between a two populations
+procedure		A series of actions conducted in a certain order or manner
+processed_material		A chemical substance (often a mixture) processed for consumption for nutritional, medical or technical use.
+protein		A gene product that is composed of a chain of amino acid sequences and is produced by ribosome-mediated translation of mRNA
+protein_isoform		Represents a protein that is a specific isoform of the canonical or reference protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/
+publication		Any published piece of information. Can refer to a whole publication, its encompassing publication (i.e. journal or book) or to a part of a publication, if of significant knowledge scope (e.g. a figure, figure legend, or section highlighted by NLP). The scope is intended to be general and include information published on the web, as well as printed materials, either directly or in one of the Publication Biolink category subclasses.
+quantity_value		A value of an attribute that is quantitative and measurable, expressed as a combination of a unit and a numeric value
+reagent_targeted_gene		A gene altered in its expression level in the context of some experiment as a result of being targeted by gene-knockdown reagent(s) such as a morpholino or RNAi.
+relationship_quantifier		
+relationship_type		An OWL property used as an edge label
+RNA_product		
+RNA_product_isoform		Represents a protein that is a specific isoform of the canonical or reference RNA
+sensitivity_quantifier		
+sequence_association		An association between a sequence feature and a genomic entity it is localized to.
+sequence_feature_relationship		For example, a particular exon is part of a particular transcript or gene
+sequence_variant		An allele that varies in its sequence from what is considered the reference allele at that locus.
+sequence_variant_modulates_treatment_association		An association between a sequence variant and a treatment or health intervention. The treatment object itself encompasses both the disease and the drug used.
+serial		This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
+severity_value		describes the severity of a phenotypic feature or disease
+siRNA		A small RNA molecule that is the product of a longer exogenous or endogenous dsRNA, which is either a bimolecular duplex or very long hairpin, processed (via the Dicer pathway) such that numerous siRNAs accumulate from both strands of the dsRNA. SRNAs trigger the cleavage of their target molecules.
+snv		SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist
+socioeconomic_attribute		Attributes relating to a socioeconomic manifestation
+socioeconomic_exposure		A socioeconomic exposure is a factor relating to social and financial status of an affected individual (e.g. poverty).
+socioeconomic_outcome		An general social or economic outcome, such as healthcare costs, utilization, etc., resulting from an exposure event
+specificity_quantifier		
+study_population		A group of people banded together or treated as a group as participants in a research study.
+subject_of_investigation		An entity that has the role of being studied in an investigation, study, or experiment
+taxonomic_rank		A descriptor for the rank within a taxonomic classification. Example instance: TAXRANK:0000017 (kingdom)
+thing_with_taxon		A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes
+transcript		An RNA synthesized on a DNA or RNA template by an RNA polymerase.
+transcript_to_gene_relationship		A gene is a collection of transcripts
+treatment		A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices and/or procedures
+unclassified_ontology_class		this is used for nodes that are taken from an ontology but are not typed using an existing biolink class
+variant_as_a_model_of_disease_association		
+variant_to_disease_association		
+variant_to_entity_association_mixin		
+variant_to_gene_association		An association between a variant and a gene, where the variant has a genetic association with the gene (i.e. is in linkage disequilibrium)
+variant_to_gene_expression_association		An association between a variant and expression of a gene (i.e. e-QTL)
+variant_to_phenotypic_feature_association		
+variant_to_population_association		An association between a variant and a population, where the variant has particular frequency in the population
+vitamin		
+zygosity		

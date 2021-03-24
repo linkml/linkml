@@ -1,0 +1,183 @@
+id: class_definition
+schema_generating: true
+description: the definition of a class or interface
+display_name: class_definition
+document_category: class_definition
+weight: 20
+fields:
+- id: name
+  description: the unique name of the element within the context of the schema.  Name
+    is combined with the default prefix to form the globally unique subject of the
+    target class.
+  display_name: name
+- id: id_prefixes
+  description: the identifier of this class or slot must begin with one of the URIs
+    referenced by this prefix
+  display_name: id_prefixes
+  cardinality: multi
+- id: definition_uri
+  description: the "native" URI of the element
+  display_name: definition_uri
+- id: aliases
+  display_name: aliases
+  cardinality: multi
+- id: local_names
+  display_name: local_names
+  cardinality: multi
+- id: mappings
+  description: A list of terms from different schemas or terminology systems that
+    have comparable meaning. These may include terms that are precisely equivalent,
+    broader or narrower in meaning, or otherwise semantically related but not equivalent
+    from a strict ontological perspective.
+  display_name: mappings
+  cardinality: multi
+- id: description
+  description: a description of the element's purpose and use
+  display_name: description
+- id: alt_descriptions
+  display_name: alt_descriptions
+  cardinality: multi
+- id: deprecated
+  description: Description of why and when this element will no longer be used
+  display_name: deprecated
+- id: todos
+  description: Outstanding issue that needs resolution
+  display_name: todos
+  cardinality: multi
+- id: notes
+  description: editorial notes about an element intended for internal consumption
+  display_name: notes
+  cardinality: multi
+- id: comments
+  description: notes and comments about an element intended for external consumption
+  display_name: comments
+  cardinality: multi
+- id: examples
+  description: example usages of an element
+  display_name: examples
+  cardinality: multi
+- id: in_subset
+  description: used to indicate membership of a term in a defined subset of terms
+    used for a particular domain or application (e.g. the translator_minimal subset
+    holding the minimal set of predicates used in a translator knowledge graph)
+  display_name: in_subset
+  cardinality: multi
+- id: from_schema
+  description: id of the schema that defined the element
+  display_name: from_schema
+- id: imported_from
+  description: the imports entry that this element was derived from.  Empty means
+    primary source
+  display_name: imported_from
+- id: see_also
+  description: a reference
+  display_name: see_also
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: deprecated_element_has_exact_replacement
+  description: When an element is deprecated, it can be automatically replaced by
+    this uri or curie
+  display_name: deprecated element has exact replacement
+- id: deprecated_element_has_possible_replacement
+  description: When an element is deprecated, it can be potentially replaced by this
+    uri or curie
+  display_name: deprecated element has possible replacement
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
+  cardinality: multi
+- id: abstract
+  description: an abstract class is a high level class or slot that is typically used
+    to group common slots together and cannot be directly instantiated.
+  display_name: abstract
+- id: mixin
+  description: this slot or class can only be used as a mixin -- equivalent to abstract
+  display_name: mixin
+- id: values_from
+  description: the identifier of a "value set" -- a set of identifiers that form the
+    possible values for the range of a slot
+  display_name: values_from
+  cardinality: multi
+- id: created_by
+  description: agent that created the element
+  display_name: created_by
+- id: created_on
+  description: time at which the element was created
+  display_name: created_on
+- id: last_updated_on
+  description: time at which the element was last updated
+  display_name: last_updated_on
+- id: modified_by
+  description: agent that modified the element
+  display_name: modified_by
+- id: status
+  description: status of the element
+  display_name: status
+- id: slots
+  description: list of slot names that are applicable to a class
+  display_name: slots
+  cardinality: multi
+- id: slot_usage
+  description: the redefinition of a slot in the context of the containing class definition.
+  display_name: slot_usage
+  cardinality: multi
+- id: attributes
+  description: Inline definition of slots
+  display_name: attributes
+  cardinality: multi
+- id: class_uri
+  description: URI of the class in an RDF environment
+  display_name: class_uri
+- id: subclass_of
+  description: rdfs:subClassOf to be emitted in OWL generation
+  display_name: subclass_of
+- id: union_of
+  description: indicates that the domain class consists exactly of the members of
+    the classes in the range
+  display_name: union_of
+  cardinality: multi
+- id: defining_slots
+  description: The combination of is a plus defining slots form a genus-differentia
+    definition, or the set of necessary and sufficient conditions that can be transformed
+    into an OWL equivalence axiom
+  display_name: defining_slots
+  cardinality: multi
+- id: tree_root
+  description: indicator that this is the root class in tree structures
+  display_name: tree_root
+- id: is_a
+  display_name: class_definition_is_a
+- id: mixins
+  display_name: class_definition_mixins
+  cardinality: multi
+- id: apply_to
+  display_name: class_definition_apply_to
+  cardinality: multi

@@ -1,0 +1,79 @@
+{
+   "name": "schema1",
+   "id": "http://example.org/schema1",
+   "prefixes": [
+      {
+         "prefix_prefix": "xsd",
+         "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+      }
+   ],
+   "default_prefix": "http://example.org/schema1/",
+   "default_range": "t1",
+   "subsets": [
+      {
+         "name": "s1",
+         "definition_uri": "http://example.org/schema1/S1",
+         "from_schema": "http://example.org/schema1"
+      },
+      {
+         "name": "s2",
+         "definition_uri": "http://example.org/schema2/S2",
+         "from_schema": "http://example.org/schema2"
+      }
+   ],
+   "types": [
+      {
+         "name": "t1",
+         "definition_uri": "http://example.org/schema1/T1",
+         "from_schema": "http://example.org/schema1",
+         "base": "str",
+         "uri": "xsd:string"
+      },
+      {
+         "name": "t2",
+         "definition_uri": "http://example.org/schema2/T2",
+         "from_schema": "http://example.org/schema2",
+         "base": "Bool",
+         "uri": "xsd:boolean"
+      }
+   ],
+   "slots": [
+      {
+         "name": "s1",
+         "definition_uri": "http://example.org/schema1/s1",
+         "from_schema": "http://example.org/schema1",
+         "domain": "c1",
+         "range": "t1",
+         "slot_uri": "http://example.org/schema1/s1",
+         "owner": "s1"
+      },
+      {
+         "name": "s2",
+         "definition_uri": "http://example.org/schema2/s2",
+         "from_schema": "http://example.org/schema2",
+         "domain": "c2",
+         "range": "t1",
+         "slot_uri": "http://example.org/schema2/s2",
+         "owner": "s2"
+      }
+   ],
+   "classes": [
+      {
+         "name": "c1",
+         "definition_uri": "http://example.org/schema1/C1",
+         "from_schema": "http://example.org/schema1",
+         "class_uri": "http://example.org/schema1/C1"
+      },
+      {
+         "name": "c2",
+         "definition_uri": "http://example.org/schema2/C2",
+         "from_schema": "http://example.org/schema2",
+         "class_uri": "http://example.org/schema2/C2"
+      }
+   ],
+   "metamodel_version": "1.7.0",
+   "source_file": "merge1.yaml",
+   "source_file_date": "Wed Mar 24 16:43:50 2021",
+   "source_file_size": 485,
+   "generation_date": "2021-03-24 16:49"
+}

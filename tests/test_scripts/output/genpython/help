@@ -1,0 +1,24 @@
+Usage: gen-python [OPTIONS] YAMLFILE
+
+  Generate python classes to represent a biolink model
+
+Options:
+  --head / --no-head              Emit metadata heading
+  --genmeta / --no-genmeta        Generating metamodel
+  --classvars / --no-classvars    Generate CLASSVAR info
+  --slots / --no-slots            Generate Slot information
+  -f, --format [py]               Output format (default=py)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

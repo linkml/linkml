@@ -1,0 +1,17 @@
+{
+   "_comments": "Auto generated from issue_80.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-03-24 16:47\n    Schema: Issue_80_test_case\n    \n    id: http://example.org/issues/80\n    description: Example identifier\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "biolink": "https://w3id.org/biolink/vocab/",
+      "ex": "http://example.org/",
+      "linkml": "https://w3id.org/linkml/",
+      "model": "https://w3id.org/biolink/",
+      "@vocab": "https://w3id.org/biolink/vocab/",
+      "age": {
+         "@type": "xsd:integer"
+      },
+      "id": "@id",
+      "Person": {
+         "@id": "ex:PERSON"
+      }
+   }
+}

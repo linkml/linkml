@@ -1,0 +1,36 @@
+
+Classes: 2
+	Referenced by: 2 classes, 2 slots, 0 types, 0 enums 
+	Root: 2
+	Leaf: 2
+	Standalone: 2
+	Declared mixin: 0
+	Undeclared mixin: 2
+		c1
+		c2
+	Abstract: 0
+
+Slots: 2
+	Referenced by: 0 classes, 0 slots, 0 types, 0 enums 
+	Root: 2
+	Leaf: 0
+	Standalone: 2
+	Declared mixin: 0
+	Undeclared mixin: 0
+	Abstract: 0
+	* Unowned slots: s1, s2
+	Not in domain: 2
+		slot.name: slot.domain
+		---------  -----------
+		"s1": "c1"
+		"s2": "c2"
+	Ranges:
+		Type:
+			string: 2
+		Class:
+
+Types: 1
+	Referenced by: 0 classes, 2 slots, 0 types, 0 enums 
+	Bases:
+		str:
+			string

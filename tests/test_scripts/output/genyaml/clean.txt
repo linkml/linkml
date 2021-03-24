@@ -1,0 +1,55 @@
+
+Classes: 2
+	Referenced by: 1 classes, 2 slots, 0 types, 0 enums 
+	Root: 1
+	Leaf: 1
+	Standalone: 2
+	Declared mixin: 0
+	Undeclared mixin: 0
+	Abstract: 0
+
+Slots: 2
+	Referenced by: 2 classes, 0 slots, 0 types, 0 enums 
+	Root: 2
+	Leaf: 2
+	Standalone: 3
+	Declared mixin: 0
+	Undeclared mixin: 0
+	Abstract: 0
+	Ranges:
+		Type:
+			string: 1
+			time type: 1
+		Class:
+
+Types: 15
+	Referenced by: 0 classes, 2 slots, 1 types, 0 enums 
+	Bases:
+		Bool:
+			boolean
+		Decimal:
+			decimal
+		ElementIdentifier:
+			objectidentifier
+		NCName:
+			ncname
+		NodeIdentifier:
+			nodeidentifier
+		URI:
+			uri
+		URIorCURIE:
+			uriorcurie
+		XSDDate:
+			date
+		XSDDateTime:
+			datetime
+		XSDTime:
+			time:
+				time type
+		float:
+			double
+			float
+		int:
+			integer
+		str:
+			string

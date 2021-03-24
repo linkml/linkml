@@ -1,0 +1,21 @@
+Usage: gen-golr-views [OPTIONS] YAMLFILE
+
+  Generate GOLR representation of a biolink model
+
+Options:
+  -d, --dir TEXT                  Output directory
+  -f, --format [golr]             Output format (default=golr)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

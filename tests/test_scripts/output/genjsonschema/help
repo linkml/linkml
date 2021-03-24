@@ -1,0 +1,28 @@
+Usage: gen-json-schema [OPTIONS] YAMLFILE
+
+  Generate JSON Schema representation of a biolink model
+
+Options:
+  -i, --inline                    Generate references to types rather than
+                                  inlining them. Note that declaring a slot as
+                                  inlined: true will always inline the class
+
+  -t, --top-class TEXT            Top level class; slots of this class will
+                                  become top level properties in the json-
+                                  schema
+
+  -f, --format [json]             Output format (default=json)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

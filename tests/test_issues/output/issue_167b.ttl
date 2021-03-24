@@ -1,0 +1,299 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/annotations_test> a linkml:SchemaDefinition ;
+    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    linkml:classes <http://example.org/Annotatable>,
+        <http://example.org/Annotation>,
+        <http://example.org/Extensible>,
+        <http://example.org/Extension>,
+        <http://example.org/MyClass>,
+        <http://example.org/MyClass2> ;
+    linkml:default_curi_maps "semweb_context" ;
+    linkml:default_prefix "ex" ;
+    linkml:default_range <http://example.org/string> ;
+    linkml:emit_prefixes "linkml" ;
+    linkml:generation_date "2021-03-24 16:47"^^xsd:dateTime ;
+    linkml:id <http://example.org/tests/issue167b> ;
+    linkml:imports linkml:annotations,
+        linkml:extensions,
+        linkml:types ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:prefixes [ linkml:prefix_prefix "ex" ;
+            linkml:prefix_reference <http://example.org/> ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ] ;
+    linkml:slots <http://example.org/annotations>,
+        <http://example.org/extension_tag>,
+        <http://example.org/extension_value>,
+        <http://example.org/extensions> ;
+    linkml:source_file "issue_167b.yaml" ;
+    linkml:source_file_date "Wed Mar 24 16:43:50 2021"^^xsd:dateTime ;
+    linkml:source_file_size 818 ;
+    linkml:types <http://example.org/boolean>,
+        <http://example.org/date>,
+        <http://example.org/datetime>,
+        <http://example.org/decimal>,
+        <http://example.org/double>,
+        <http://example.org/float>,
+        <http://example.org/integer>,
+        <http://example.org/ncname>,
+        <http://example.org/nodeidentifier>,
+        <http://example.org/objectidentifier>,
+        <http://example.org/string>,
+        <http://example.org/time>,
+        <http://example.org/uri>,
+        <http://example.org/uriorcurie> .
+
+<http://example.org/boolean> a linkml:TypeDefinition ;
+    skos:definition "A binary (true or false) value" ;
+    skos:inScheme linkml:types ;
+    linkml:base "Bool" ;
+    linkml:definition_uri linkml:Boolean ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "bool" ;
+    linkml:uri xsd:boolean .
+
+<http://example.org/date> a linkml:TypeDefinition ;
+    skos:definition "a date (year, month and day) in an idealized calendar" ;
+    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:inScheme linkml:types ;
+    linkml:base "XSDDate" ;
+    linkml:definition_uri linkml:Date ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:date .
+
+<http://example.org/datetime> a linkml:TypeDefinition ;
+    skos:definition "The combination of a date and time" ;
+    skos:inScheme linkml:types ;
+    linkml:base "XSDDateTime" ;
+    linkml:definition_uri linkml:Datetime ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:dateTime .
+
+<http://example.org/decimal> a linkml:TypeDefinition ;
+    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    skos:inScheme linkml:types ;
+    linkml:base "Decimal" ;
+    linkml:definition_uri linkml:Decimal ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:decimal .
+
+<http://example.org/double> a linkml:TypeDefinition ;
+    skos:definition "A real number that conforms to the xsd:double specification" ;
+    skos:inScheme linkml:types ;
+    linkml:base "float" ;
+    linkml:definition_uri linkml:Double ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:double .
+
+<http://example.org/float> a linkml:TypeDefinition ;
+    skos:definition "A real number that conforms to the xsd:float specification" ;
+    skos:inScheme linkml:types ;
+    linkml:base "float" ;
+    linkml:definition_uri linkml:Float ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:float .
+
+<http://example.org/integer> a linkml:TypeDefinition ;
+    skos:definition "An integer" ;
+    skos:inScheme linkml:types ;
+    linkml:base "int" ;
+    linkml:definition_uri linkml:Integer ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:integer .
+
+<http://example.org/ncname> a linkml:TypeDefinition ;
+    skos:definition "Prefix part of CURIE" ;
+    skos:inScheme linkml:types ;
+    linkml:base "NCName" ;
+    linkml:definition_uri linkml:Ncname ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:string .
+
+<http://example.org/nodeidentifier> a linkml:TypeDefinition ;
+    skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
+    skos:inScheme linkml:types ;
+    linkml:base "NodeIdentifier" ;
+    linkml:definition_uri linkml:Nodeidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:nonLiteral .
+
+<http://example.org/objectidentifier> a linkml:TypeDefinition ;
+    skos:definition "A URI or CURIE that represents an object in the model." ;
+    skos:inScheme linkml:types ;
+    skos:note "Used for inheritence and type checking" ;
+    linkml:base "ElementIdentifier" ;
+    linkml:definition_uri linkml:Objectidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:iri .
+
+<http://example.org/time> a linkml:TypeDefinition ;
+    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
+    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:inScheme linkml:types ;
+    linkml:base "XSDTime" ;
+    linkml:definition_uri linkml:Time ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:dateTime .
+
+<http://example.org/uri> a linkml:TypeDefinition ;
+    skos:definition "a complete URI" ;
+    skos:inScheme linkml:types ;
+    linkml:base "URI" ;
+    linkml:definition_uri linkml:Uri ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
+
+<http://example.org/uriorcurie> a linkml:TypeDefinition ;
+    skos:definition "a URI or a CURIE" ;
+    skos:inScheme linkml:types ;
+    linkml:base "URIorCURIE" ;
+    linkml:definition_uri linkml:Uriorcurie ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
+
+<http://example.org/MyClass> a linkml:ClassDefinition ;
+    skos:definition "Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace" ;
+    skos:inScheme <http://example.org/tests/issue167b> ;
+    linkml:annotations [ a linkml:Annotation ;
+            skos:example "some other label" ;
+            linkml:tag <http://example.org/altLabel> ],
+        [ a linkml:Annotation ;
+            skos:example "a label" ;
+            linkml:tag skos:prefLabel ] ;
+    linkml:class_uri <http://example.org/MyClass> ;
+    linkml:definition_uri <http://example.org/MyClass> .
+
+<http://example.org/MyClass2> a linkml:ClassDefinition ;
+    skos:definition "-> This form of annotations is a tag/value format, which allows annotations to be annotated.  Note, however, that the annotation source is NOT a CURIE, rather just a string." ;
+    skos:inScheme <http://example.org/tests/issue167b> ;
+    linkml:annotations [ a linkml:Annotation ;
+            skos:example "{'source': 'PMID:12345'}" ;
+            linkml:tag <http://example.org/annotations> ],
+        [ a linkml:Annotation ;
+            skos:example "prefLabel" ;
+            linkml:tag <http://example.org/tag> ],
+        [ a linkml:Annotation ;
+            skos:example "a preferred label" ;
+            linkml:tag <http://example.org/value> ] ;
+    linkml:class_uri <http://example.org/MyClass2> ;
+    linkml:definition_uri <http://example.org/MyClass2> .
+
+<http://example.org/extension_tag> a linkml:SlotDefinition ;
+    skos:definition "a tag associated with an extension" ;
+    skos:inScheme linkml:extensions ;
+    linkml:alias "tag" ;
+    linkml:definition_uri linkml:extension_tag ;
+    linkml:domain <http://example.org/Extension> ;
+    linkml:domain_of <http://example.org/Extension> ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:owner <http://example.org/Extension> ;
+    linkml:range <http://example.org/uriorcurie> ;
+    linkml:required true ;
+    linkml:slot_uri linkml:tag .
+
+<http://example.org/extension_value> a linkml:SlotDefinition ;
+    skos:definition "the actual annotation" ;
+    skos:inScheme linkml:extensions ;
+    linkml:alias "value" ;
+    linkml:definition_uri linkml:extension_value ;
+    linkml:domain <http://example.org/Extension> ;
+    linkml:domain_of <http://example.org/Extension> ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:owner <http://example.org/Extension> ;
+    linkml:range <http://example.org/string> ;
+    linkml:required true ;
+    linkml:slot_uri linkml:value .
+
+<http://example.org/string> a linkml:TypeDefinition ;
+    skos:definition "A character string" ;
+    skos:inScheme linkml:types ;
+    linkml:base "str" ;
+    linkml:definition_uri linkml:String ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:string .
+
+<http://example.org/Annotatable> a linkml:ClassDefinition ;
+    skos:definition "mixin for classes that support annotations" ;
+    skos:inScheme linkml:annotations ;
+    linkml:class_uri linkml:Annotatable ;
+    linkml:definition_uri linkml:Annotatable ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:mixin true ;
+    linkml:slots <http://example.org/annotations> .
+
+<http://example.org/Annotation> a linkml:ClassDefinition ;
+    skos:definition "a tag/value pair with the semantics of OWL Annotation" ;
+    skos:inScheme linkml:annotations ;
+    linkml:class_uri linkml:Annotation ;
+    linkml:definition_uri linkml:Annotation ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:is_a <http://example.org/Extension> ;
+    linkml:mixins <http://example.org/Annotatable> ;
+    linkml:slots <http://example.org/annotations>,
+        <http://example.org/extension_tag>,
+        <http://example.org/extension_value>,
+        <http://example.org/extensions> .
+
+<http://example.org/Extensible> a linkml:ClassDefinition ;
+    skos:definition "mixin for classes that support extension" ;
+    skos:inScheme linkml:extensions ;
+    linkml:class_uri linkml:Extensible ;
+    linkml:definition_uri linkml:Extensible ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:mixin true ;
+    linkml:slots <http://example.org/extensions> .
+
+<http://example.org/annotations> a linkml:SlotDefinition ;
+    skos:definition "a collection of tag/text tuples with the semantics of OWL Annotation" ;
+    skos:inScheme linkml:annotations ;
+    linkml:definition_uri linkml:annotations ;
+    linkml:domain <http://example.org/Annotatable> ;
+    linkml:domain_of <http://example.org/Annotatable>,
+        <http://example.org/Annotation> ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:inlined true ;
+    linkml:is_a <http://example.org/extensions> ;
+    linkml:multivalued true ;
+    linkml:owner <http://example.org/Annotation> ;
+    linkml:range <http://example.org/Annotation> ;
+    linkml:slot_uri linkml:annotations .
+
+<http://example.org/extensions> a linkml:SlotDefinition ;
+    skos:definition "a tag/text tuple attached to an arbitrary element" ;
+    skos:inScheme linkml:extensions ;
+    linkml:definition_uri linkml:extensions ;
+    linkml:domain <http://example.org/Extensible> ;
+    linkml:domain_of <http://example.org/Extensible>,
+        <http://example.org/Extension> ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:inlined true ;
+    linkml:multivalued true ;
+    linkml:owner <http://example.org/Extensible> ;
+    linkml:range <http://example.org/Extension> ;
+    linkml:slot_uri linkml:extensions .
+
+<http://example.org/Extension> a linkml:ClassDefinition ;
+    skos:definition "a tag/value pair used to add non-model information to an entry" ;
+    skos:inScheme linkml:extensions ;
+    linkml:class_uri linkml:Extension ;
+    linkml:definition_uri linkml:Extension ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:slots <http://example.org/extension_tag>,
+        <http://example.org/extension_value>,
+        <http://example.org/extensions> .
+
+

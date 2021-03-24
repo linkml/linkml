@@ -1,0 +1,17 @@
+id: biotic_exposure
+schema_generating: true
+description: An external biotic exposure is an intake of (sometimes pathological)
+  biological organisms (including viruses).
+display_name: biotic exposure
+document_category: biotic exposure
+weight: 20
+fields:
+- id: has_taxonomic_rank
+  display_name: organism taxon_has taxonomic rank
+- id: subclass_of
+  description: subclass of holds between two taxa, e.g. human subclass of mammal
+  display_name: organism taxon_subclass of
+  cardinality: multi
+- id: timepoint
+  description: a point in time
+  display_name: timepoint

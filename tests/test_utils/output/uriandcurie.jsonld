@@ -1,0 +1,22 @@
+{
+   "_comments": "Auto generated from uriandcurie.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-03-24 16:49\n    Schema: uriandcurie\n    \n    id: http://example.org/test/uriandcurie\n    description: \n    license: \n    ",
+   "@context": {
+      "m": {
+         "@id": "http://example.org/test/uriandcurie",
+         "@prefix": true
+      },
+      "shex": "http://www.w3.org/ns/shex#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "http://example.org/test/uriandcurie",
+      "hasCurie": {
+         "@type": "@id"
+      },
+      "hasURI": {
+         "@type": "@id"
+      },
+      "id": "@id",
+      "id2": {
+         "@type": "@id"
+      }
+   }
+}

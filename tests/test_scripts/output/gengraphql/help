@@ -1,0 +1,20 @@
+Usage: gen-graphql [OPTIONS] YAMLFILE
+
+  Generate graphql representation of a biolink model
+
+Options:
+  -f, --format [graphql]          Output format (default=graphql)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

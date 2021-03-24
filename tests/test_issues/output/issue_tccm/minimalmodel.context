@@ -1,0 +1,6 @@
+{
+   "@context": {
+      "prefixes": "https://hotecosystem.org/tccm/prefixes/",
+      "@vocab": "https://hotecosystem.org/tccm/prefixes/"
+   }
+}

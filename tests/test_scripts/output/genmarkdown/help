@@ -1,0 +1,24 @@
+Usage: gen-markdown [OPTIONS] YAMLFILE
+
+  Generate markdown documentation of a biolink model
+
+Options:
+  -d, --dir TEXT                  Output directory
+  -c, --classes TEXT              Class(es) to emit
+  -i, --img                       Download YUML images to 'image' directory
+  --noimages                      Do not (re-)generate images
+  -f, --format [md]               Output format (default=md)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

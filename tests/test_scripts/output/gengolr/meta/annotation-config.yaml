@@ -1,0 +1,21 @@
+id: annotation
+schema_generating: true
+description: a tag/value pair with the semantics of OWL Annotation
+display_name: annotation
+document_category: annotation
+weight: 20
+fields:
+- id: tag
+  description: a tag associated with an extension
+  display_name: extension_tag
+- id: value
+  description: the actual annotation
+  display_name: extension_value
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
+  cardinality: multi

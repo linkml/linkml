@@ -1,0 +1,10 @@
+@prefix : <http://example.org/test/uriandcurie> .
+@prefix ex: <http://example.org/test/inst#> .
+@prefix ns1: <http://example.org/test/> .
+
+ex:obj1 a ns1:uriandcurieC1 ;
+    ns1:uriandcuriehasCurie ex:curie ;
+    ns1:uriandcuriehasNcName "A123" ;
+    ns1:uriandcuriehasURI ns1:uri ;
+    ns1:uriandcurieid2 ex:id2 .
+

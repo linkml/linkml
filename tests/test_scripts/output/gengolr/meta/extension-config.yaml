@@ -1,0 +1,17 @@
+id: extension
+schema_generating: true
+description: a tag/value pair used to add non-model information to an entry
+display_name: extension
+document_category: extension
+weight: 20
+fields:
+- id: tag
+  description: a tag associated with an extension
+  display_name: extension_tag
+- id: value
+  description: the actual annotation
+  display_name: extension_value
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi

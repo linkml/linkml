@@ -1,0 +1,43 @@
+{
+   "$id": "http://example.org/tests/issue177",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {
+      "C1": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "sa": {
+               "type": "string"
+            },
+            "sb": {
+               "type": "integer"
+            }
+         },
+         "required": [],
+         "title": "C1",
+         "type": "object"
+      },
+      "C2": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "sb": {
+               "type": "integer"
+            }
+         },
+         "required": [],
+         "title": "C2",
+         "type": "object"
+      }
+   },
+   "properties": {
+      "sa": {
+         "type": "string"
+      },
+      "sb": {
+         "type": "integer"
+      }
+   },
+   "title": "issue177",
+   "type": "object"
+}

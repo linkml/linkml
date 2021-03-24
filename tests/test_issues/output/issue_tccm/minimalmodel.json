@@ -1,0 +1,8 @@
+{
+   "$id": "https://hotecosystem.org/tccm/prefixes",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {},
+   "properties": {},
+   "title": "prefixes",
+   "type": "object"
+}

@@ -1,0 +1,21 @@
+Usage: gen-namespace [OPTIONS] YAMLFILE
+
+  Generate a namespace manager for all of the prefixes represented in a
+  biolink model
+
+Options:
+  -f, --format [py]               Output format (default=py)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

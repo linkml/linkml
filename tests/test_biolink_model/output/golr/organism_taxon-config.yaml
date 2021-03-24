@@ -1,0 +1,15 @@
+id: organism_taxon
+schema_generating: true
+description: 'A classification of a set of organisms. Example instances: NCBITaxon:9606
+  (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or
+  subspecies.'
+display_name: organism taxon
+document_category: organism taxon
+weight: 20
+fields:
+- id: has_taxonomic_rank
+  display_name: organism taxon_has taxonomic rank
+- id: subclass_of
+  description: subclass of holds between two taxa, e.g. human subclass of mammal
+  display_name: organism taxon_subclass of
+  cardinality: multi

@@ -1,0 +1,17 @@
+{
+   "_comments": "Auto generated from annotations.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-03-24 16:46\n    Schema: annotations\n    \n    id: https://w3id.org/linkml/annotations\n    description: Annotations mixin\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "linkml": "https://w3id.org/linkml/",
+      "@vocab": "https://w3id.org/linkml/",
+      "annotations": {
+         "@type": "@id"
+      },
+      "tag": {
+         "@type": "@id"
+      },
+      "extensions": {
+         "@type": "@id"
+      },
+      "@base": "https://w3id.org/linkml/"
+   }
+}

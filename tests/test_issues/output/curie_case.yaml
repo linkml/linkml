@@ -1,0 +1,35 @@
+name: curiecase
+id: http://example.org/tests/curiecase
+prefixes:
+  aBC:
+    prefix_prefix: aBC
+    prefix_reference: http://example.org/abc#
+default_prefix: http://example.org/tests/curiecase/
+default_range: string
+classes:
+  c1:
+    name: c1
+    definition_uri: http://example.org/tests/curiecase/C1
+    mappings:
+    - abc:c1
+    from_schema: http://example.org/tests/curiecase
+    class_uri: abc:c1
+  c2:
+    name: c2
+    definition_uri: http://example.org/tests/curiecase/C2
+    mappings:
+    - ABC:t2
+    from_schema: http://example.org/tests/curiecase
+    class_uri: ABC:t2
+  c3:
+    name: c3
+    definition_uri: http://example.org/tests/curiecase/C3
+    mappings:
+    - aBc:t3
+    from_schema: http://example.org/tests/curiecase
+    class_uri: aBc:t3
+metamodel_version: 1.7.0
+source_file: curie_case.yaml
+source_file_date: Wed Mar 24 16:43:50 2021
+source_file_size: 196
+generation_date: 2021-03-24 16:47

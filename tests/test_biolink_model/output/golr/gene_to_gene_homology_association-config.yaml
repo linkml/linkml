@@ -1,0 +1,73 @@
+id: gene_to_gene_homology_association
+schema_generating: true
+description: A homology association between two genes. May be orthology (in which
+  case the species of subject and object should differ) or paralogy (in which case
+  the species may be the same)
+display_name: gene to gene homology association
+document_category: gene to gene homology association
+weight: 20
+fields:
+- id: id
+  description: A unique identifier for an entity. Must be either a CURIE shorthand
+    for a URI or a complete URI
+  display_name: id
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: name
+  description: A human-readable name for an attribute or entity.
+  display_name: name
+- id: description
+  description: a human-readable description of an entity
+  display_name: description
+- id: source
+  description: a lightweight analog to the association class 'has provider' slot,
+    which is the string name, or the authoritative (i.e. database) namespace, designating
+    the origin of the entity to which the slot belongs.
+  display_name: source
+- id: provided_by
+  description: connects an association to the agent (person, organization or group)
+    that provided it
+  display_name: provided by
+  cardinality: multi
+- id: has_attribute
+  description: connects any entity to an attribute
+  display_name: has attribute
+  cardinality: multi
+- id: relation
+  description: The relation which describes an association between a subject and an
+    object in a more granular manner. Usually this is a term from Relation Ontology,
+    but it can be any edge CURIE.
+  display_name: relation
+- id: negated
+  description: if set to true, then the association is negated i.e. is not true
+  display_name: negated
+- id: qualifiers
+  description: connects an association to qualifiers that modify or qualify the meaning
+    of that association
+  display_name: qualifiers
+  cardinality: multi
+- id: publications
+  description: connects an association to publications supporting the association
+  display_name: publications
+  cardinality: multi
+- id: type
+  description: rdf:type of biolink:Association should be fixed at rdf:Statement
+  display_name: association_type
+- id: category
+  display_name: association_category
+  cardinality: multi
+- id: subject
+  description: the subject gene in the association. If the relation is symmetric,
+    subject vs object is arbitrary. We allow a gene product to stand as a proxy for
+    the gene or vice versa.
+  display_name: gene to gene association_subject
+- id: object
+  description: the object gene in the association. If the relation is symmetric, subject
+    vs object is arbitrary. We allow a gene product to stand as a proxy for the gene
+    or vice versa.
+  display_name: gene to gene association_object
+- id: predicate
+  description: homology relationship type
+  display_name: gene to gene homology association_predicate

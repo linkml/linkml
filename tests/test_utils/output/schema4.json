@@ -1,0 +1,14 @@
+{
+   "string": {
+      "name": "string",
+      "definition_uri": "http://example.org/schema4/String",
+      "from_schema": "http://example.org/schema4",
+      "base": "str"
+   },
+   "integer": {
+      "name": "integer",
+      "definition_uri": "http://example.org/schema5/Integer",
+      "from_schema": "http://example.org/schema5",
+      "base": "int"
+   }
+}

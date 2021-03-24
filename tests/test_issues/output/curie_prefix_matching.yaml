@@ -1,0 +1,60 @@
+name: curietest
+id: http://example.org/tests/curietest
+prefixes:
+  p1:
+    prefix_prefix: p1
+    prefix_reference: http://example.org/prefixes/a/b/
+  p2:
+    prefix_prefix: p2
+    prefix_reference: http://example.org/prefixes/a/b/c/
+  xsd:
+    prefix_prefix: xsd
+    prefix_reference: http://www.w3.org/2001/XMLSchema#
+default_prefix: http://example.org/tests/curietest/
+default_range: string
+types:
+  t1:
+    name: t1
+    definition_uri: http://example.org/tests/curietest/T1
+    from_schema: http://example.org/tests/curietest
+    base: str
+    uri: p1:c/suffix1
+  t2:
+    name: t2
+    definition_uri: http://example.org/tests/curietest/T2
+    from_schema: http://example.org/tests/curietest
+    base: str
+    uri: p2:suffix2
+  t3:
+    name: t3
+    definition_uri: http://example.org/tests/curietest/T3
+    from_schema: http://example.org/tests/curietest
+    base: str
+    uri: http://example.org/prefixes/a/b/c/suffix3
+classes:
+  c1:
+    name: c1
+    definition_uri: http://example.org/tests/curietest/C1
+    mappings:
+    - p1:/c/c1
+    from_schema: http://example.org/tests/curietest
+    class_uri: p1:/c/c1
+  c2:
+    name: c2
+    definition_uri: http://example.org/tests/curietest/C2
+    mappings:
+    - p2:/c2
+    from_schema: http://example.org/tests/curietest
+    class_uri: p2:/c2
+  c3:
+    name: c3
+    definition_uri: http://example.org/tests/curietest/C3
+    mappings:
+    - http://example.org/prefixes/a/b/c/c3
+    from_schema: http://example.org/tests/curietest
+    class_uri: http://example.org/prefixes/a/b/c/c3
+metamodel_version: 1.7.0
+source_file: curie_prefix_matching.yaml
+source_file_date: Wed Mar 24 16:43:50 2021
+source_file_size: 478
+generation_date: 2021-03-24 16:47

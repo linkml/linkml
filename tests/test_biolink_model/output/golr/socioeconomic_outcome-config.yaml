@@ -1,0 +1,56 @@
+id: socioeconomic_outcome
+schema_generating: true
+description: An general social or economic outcome, such as healthcare costs, utilization,
+  etc., resulting from an exposure event
+display_name: socioeconomic outcome
+document_category: socioeconomic outcome
+weight: 20
+fields:
+- id: id
+  description: A unique identifier for an entity. Must be either a CURIE shorthand
+    for a URI or a complete URI
+  display_name: id
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: type
+  display_name: type
+- id: name
+  description: A human-readable name for an attribute or entity.
+  display_name: name
+- id: description
+  description: a human-readable description of an entity
+  display_name: description
+- id: source
+  description: a lightweight analog to the association class 'has provider' slot,
+    which is the string name, or the authoritative (i.e. database) namespace, designating
+    the origin of the entity to which the slot belongs.
+  display_name: source
+- id: provided_by
+  description: connects an association to the agent (person, organization or group)
+    that provided it
+  display_name: provided by
+  cardinality: multi
+- id: has_attribute
+  description: connects any entity to an attribute
+  display_name: has attribute
+  cardinality: multi
+- id: category
+  display_name: named thing_category
+  cardinality: multi
+- id: has_input
+  description: holds between a process and a continuant, where the continuant is an
+    input into the process
+  display_name: has input
+  cardinality: multi
+- id: has_output
+  description: holds between a process and a continuant, where the continuant is an
+    output of the process
+  display_name: has output
+  cardinality: multi
+- id: enabled_by
+  description: holds between a process and a physical entity, where the physical entity
+    executes the process
+  display_name: enabled by
+  cardinality: multi

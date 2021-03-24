@@ -1,0 +1,39 @@
+{
+   "name": "s1",
+   "definition_uri": "http://example.org/yaml4/s1",
+   "local_names": {},
+   "description": "this is s1 it is good",
+   "alt_descriptions": {},
+   "notes": [
+      "Pay attention here",
+      "Something might be happening"
+   ],
+   "comments": [
+      "I'm a little comment"
+   ],
+   "examples": [
+      {
+         "value": "test: foo",
+         "description": "an example"
+      },
+      {
+         "value": "17",
+         "description": null
+      }
+   ],
+   "in_subset": [
+      "subset1",
+      "subset 2"
+   ],
+   "from_schema": "http://example.org/yaml4",
+   "see_also": [
+      "http://example.org/e1",
+      "ex:e2"
+   ],
+   "domain": "c1",
+   "range": "c2",
+   "slot_uri": "http://example.org/yaml4/s1",
+   "required": false,
+   "inlined": true,
+   "owner": "s1"
+}

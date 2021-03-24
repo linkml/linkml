@@ -1,0 +1,316 @@
+BASE <https://w3id.org/linkml/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX oslc: <http://open-services.net/ns/core#>
+PREFIX bibo: <http://purl.org/ontology/bibo/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+
+
+<String> xsd:string
+
+<Integer> xsd:integer
+
+<Boolean> xsd:boolean
+
+<Float> xsd:float
+
+<Double> xsd:double
+
+<Decimal> xsd:decimal
+
+<Time> xsd:dateTime
+
+<Date> xsd:date
+
+<Datetime> xsd:dateTime
+
+<Uriorcurie> IRI
+
+<Uri> IRI
+
+<Ncname> xsd:string
+
+<Objectidentifier> IRI
+
+<Nodeidentifier> NONLITERAL
+
+<AltDescription> CLOSED {
+    (  $<AltDescription_tes> (  <source> @<String> ;
+          <description> @<String>
+       ) ;
+       rdf:type [ <AltDescription> ]
+    )
+}
+
+<Annotatable> {
+    (  $<Annotatable_tes> <annotations> @<Annotation> * ;
+       rdf:type [ <Annotatable> ] ?
+    )
+}
+
+<Annotation> CLOSED {
+    (  $<Annotation_tes> (  &<Extension_tes> ;
+          rdf:type [ <Extension> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <Annotation> ] ?
+    )
+}
+
+<ClassDefinition> CLOSED {
+    (  $<ClassDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          <slots> @<SlotDefinition> * ;
+          <slot_usage> @<SlotDefinition> * ;
+          <attributes> @<SlotDefinition> * ;
+          <class_uri> @<Uriorcurie> ? ;
+          rdfs:subClassOf @<Uriorcurie> ? ;
+          <union_of> @<ClassDefinition> * ;
+          <defining_slots> @<SlotDefinition> * ;
+          <tree_root> @<Boolean> ? ;
+          <is_a> @<ClassDefinition> ? ;
+          <mixins> @<ClassDefinition> * ;
+          <apply_to> @<ClassDefinition> *
+       ) ;
+       rdf:type [ <ClassDefinition> ]
+    )
+}
+
+<Definition>  (
+    @<ClassDefinition> OR @<SlotDefinition>
+)
+
+<Definition_struct> {
+    (  $<Definition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          <abstract> @<Boolean> ? ;
+          <mixin> @<Boolean> ? ;
+          <mixins> @<Definition> * ;
+          <apply_to> @<Definition> * ;
+          <values_from> @<Uriorcurie> * ;
+          pav:createdBy @<Uriorcurie> ? ;
+          pav:createdOn @<Datetime> ? ;
+          pav:lastUpdatedOn @<Datetime> ? ;
+          oslc:modifiedBy @<Uriorcurie> ? ;
+          bibo:status @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <Definition> ]
+    )
+}
+
+<Element>  (
+    @<Definition> OR @<EnumDefinition> OR @<SchemaDefinition> OR @<SubsetDefinition> OR @<TypeDefinition>
+)
+
+<Element_struct> {
+    (  $<Element_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          <id_prefixes> @<Ncname> * ;
+          <definition_uri> @<Uriorcurie> ? ;
+          skos:altLabel @<String> * ;
+          <local_names> @<LocalName> * ;
+          skos:mappingRelation @<Uriorcurie> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <Element> ]
+    )
+}
+
+<EnumDefinition> CLOSED {
+    (  $<EnumDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          <code_set> @<Uriorcurie> ? ;
+          <code_set_tag> @<String> ? ;
+          <code_set_version> @<String> ? ;
+          <pv_formula> @<PvFormulaOptions> ? ;
+          <permissible_values> @<PermissibleValue> *
+       ) ;
+       rdf:type [ <EnumDefinition> ]
+    )
+}
+
+<Example> CLOSED {
+    (  $<Example_tes> (  skos:example @<String> ? ;
+          <description> @<String> ?
+       ) ;
+       rdf:type [ <Example> ] ?
+    )
+}
+
+<Extensible> {
+    (  $<Extensible_tes> <extensions> @<Extension> * ;
+       rdf:type [ <Extensible> ] ?
+    )
+}
+
+<Extension>  (
+    CLOSED {
+       (  $<Extension_tes> (  <tag> @<Uriorcurie> ;
+             <value> @<String> ;
+             <extensions> @<Extension> *
+          ) ;
+          rdf:type [ <Extension> ] ?
+       )
+    } OR @<Annotation>
+)
+
+<LocalName> CLOSED {
+    (  $<LocalName_tes> (  <local_name_source> @<Ncname> ;
+          skos:altLabel @<String>
+       ) ;
+       rdf:type [ <LocalName> ]
+    )
+}
+
+<PermissibleValue> CLOSED {
+    (  $<PermissibleValue_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          skos:definition @<String> ? ;
+          <meaning> @<Uriorcurie> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <is_a> @<PermissibleValue> ? ;
+          <mixins> @<PermissibleValue> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <PermissibleValue> ]
+    )
+}
+
+<Prefix> CLOSED {
+    (  $<Prefix_tes> (  <prefix_prefix> @<Ncname> ;
+          <prefix_reference> @<Uri>
+       ) ;
+       rdf:type [ <Prefix> ]
+    )
+}
+
+<SchemaDefinition> CLOSED {
+    (  $<SchemaDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          <id> @<Uri> ;
+          dcterms:title @<String> ? ;
+          pav:version @<String> ? ;
+          <imports> @<Uriorcurie> * ;
+          dcterms:license @<String> ? ;
+          <prefixes> @<Prefix> * ;
+          <emit_prefixes> @<Ncname> * ;
+          <default_curi_maps> @<String> * ;
+          <default_prefix> @<String> ? ;
+          <default_range> @<TypeDefinition> ? ;
+          <subsets> @<SubsetDefinition> * ;
+          <types> @<TypeDefinition> * ;
+          <enums> @<EnumDefinition> * ;
+          <slots> @<SlotDefinition> * ;
+          <classes> @<ClassDefinition> * ;
+          <metamodel_version> @<String> ? ;
+          <source_file> @<String> ? ;
+          <source_file_date> @<Datetime> ? ;
+          <source_file_size> @<Integer> ? ;
+          <generation_date> @<Datetime> ?
+       ) ;
+       rdf:type [ <SchemaDefinition> ]
+    )
+}
+
+<SlotDefinition> CLOSED {
+    (  $<SlotDefinition_tes> (  &<Definition_tes> ;
+          rdf:type [ <Definition> ] ? ;
+          skos:altLabel @<String> ? ;
+          <domain> @<ClassDefinition> ? ;
+          <range> @<Element> ? ;
+          <slot_uri> @<Uriorcurie> ? ;
+          <multivalued> @<Boolean> ? ;
+          <inherited> @<Boolean> ? ;
+          <readonly> @<String> ? ;
+          <ifabsent> @<String> ? ;
+          <required> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
+          <key> @<Boolean> ? ;
+          <identifier> @<Boolean> ? ;
+          <alias> @<String> ? ;
+          <owner> @<Definition> ? ;
+          <domain_of> @<ClassDefinition> * ;
+          rdfs:subPropertyOf @<SlotDefinition> ? ;
+          <symmetric> @<Boolean> ? ;
+          owl:inverseOf @<SlotDefinition> ? ;
+          <is_class_field> @<Boolean> ? ;
+          <role> @<String> ? ;
+          <is_usage_slot> @<Boolean> ? ;
+          <usage_slot_name> @<String> ? ;
+          <minimum_value> @<Integer> ? ;
+          <maximum_value> @<Integer> ? ;
+          <pattern> @<String> ? ;
+          <string_serialization> @<String> ? ;
+          <is_a> @<SlotDefinition> ? ;
+          <mixins> @<SlotDefinition> * ;
+          <apply_to> @<SlotDefinition> *
+       ) ;
+       rdf:type [ <SlotDefinition> ]
+    )
+}
+
+<SubsetDefinition> CLOSED {
+    (  $<SubsetDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ?
+       ) ;
+       rdf:type [ <SubsetDefinition> ]
+    )
+}
+
+<TypeDefinition> CLOSED {
+    (  $<TypeDefinition_tes> (  &<Element_tes> ;
+          rdf:type [ <Element> ] ? ;
+          <typeof> @<TypeDefinition> ? ;
+          <base> @<String> ? ;
+          <uri> @<Uriorcurie> ? ;
+          <repr> @<String> ?
+       ) ;
+       rdf:type [ <TypeDefinition> ]
+    )
+}
+
+
+

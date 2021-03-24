@@ -1,0 +1,84 @@
+id: book
+schema_generating: true
+description: This class may rarely be instantiated except if use cases of a given
+  knowledge graph support its utility.
+display_name: book
+document_category: book
+weight: 20
+fields:
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: description
+  description: a human-readable description of an entity
+  display_name: description
+- id: source
+  description: a lightweight analog to the association class 'has provider' slot,
+    which is the string name, or the authoritative (i.e. database) namespace, designating
+    the origin of the entity to which the slot belongs.
+  display_name: source
+- id: provided_by
+  description: connects an association to the agent (person, organization or group)
+    that provided it
+  display_name: provided by
+  cardinality: multi
+- id: has_attribute
+  description: connects any entity to an attribute
+  display_name: has attribute
+  cardinality: multi
+- id: category
+  display_name: named thing_category
+  cardinality: multi
+- id: license
+  display_name: license
+- id: rights
+  display_name: rights
+- id: format
+  display_name: format
+- id: creation_date
+  description: date on which an entity was created. This can be applied to nodes or
+    edges
+  display_name: creation date
+- id: authors
+  description: connects an publication to the list of authors who contributed to the
+    publication. This property should be a comma-delimited list of author names. It
+    is recommended that an author's name be formatted as "surname, firstname initial.".   Note
+    that this property is a node annotation expressing the citation list of authorship
+    which might typically otherwise be more completely documented in biolink:PublicationToProviderAssociation
+    defined edges which point to full details about an author and possibly, some qualifiers
+    which clarify the specific status of a given author in the publication.
+  display_name: authors
+  cardinality: multi
+- id: pages
+  description: When a 2-tuple of page numbers are provided, they represent the start
+    and end page of the publication within its parent publication context. For books,
+    this may be set to the total number of pages of the book.
+  display_name: publication_pages
+  cardinality: multi
+- id: summary
+  description: executive  summary of a publication
+  display_name: summary
+- id: keywords
+  description: keywords tagging a publication
+  display_name: keywords
+  cardinality: multi
+- id: mesh_terms
+  description: mesh terms tagging a publication
+  display_name: mesh terms
+  cardinality: multi
+- id: xref
+  description: Alternate CURIEs for a thing
+  display_name: xref
+  cardinality: multi
+- id: name
+  description: the 'title' of the publication is generally recorded in the 'name'
+    property (inherited from NamedThing). The field name 'title' is now also tagged
+    as an acceptable alias for the node property 'name' (just in case).
+  display_name: publication_name
+- id: id
+  description: Books should have industry-standard identifier such as from ISBN.
+  display_name: book_id
+- id: type
+  description: Should generally be set to an ontology class defined term for 'book'.
+  display_name: book_type

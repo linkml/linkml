@@ -1,0 +1,32 @@
+id: clinical_attribute
+schema_generating: true
+description: Attributes relating to a clinical manifestation
+display_name: clinical attribute
+document_category: clinical attribute
+weight: 20
+fields:
+- id: name
+  description: The human-readable 'attribute name' can be set to a string which reflects
+    its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation
+    or it can default to the name associated with the 'has attribute type' slot ontology
+    term.
+  display_name: attribute_name
+- id: has_attribute_type
+  description: connects an attribute to a class that describes it
+  display_name: has attribute type
+- id: has_quantitative_value
+  description: connects an attribute to a value
+  display_name: has quantitative value
+  cardinality: multi
+- id: has_qualitative_value
+  description: connects an attribute to a value
+  display_name: has qualitative value
+- id: iri
+  description: An IRI for an entity. This is determined by the id using expansion
+    rules.
+  display_name: iri
+- id: source
+  description: a lightweight analog to the association class 'has provider' slot,
+    which is the string name, or the authoritative (i.e. database) namespace, designating
+    the origin of the entity to which the slot belongs.
+  display_name: source

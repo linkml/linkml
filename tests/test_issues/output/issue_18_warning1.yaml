@@ -1,0 +1,114 @@
+name: issue18
+id: http://example.org/tests/issue18
+default_prefix: http://example.org/tests/issue18/
+default_range: string
+types:
+  string:
+    name: string
+    definition_uri: http://example.org/tests/issue18/String
+    from_schema: http://example.org/tests/issue18
+    base: str
+    uri: xsd:string
+slots:
+  s1:
+    name: s1
+    definition_uri: http://example.org/tests/issue18/s1
+    description: range s2, domain_of [c1, c2] inverse s2
+    from_schema: http://example.org/tests/issue18
+    range: c2
+    slot_uri: http://example.org/tests/issue18/s1
+    owner: c2
+    domain_of:
+    - c1
+    - c2
+    inverse: s2
+  s2:
+    name: s2
+    definition_uri: http://example.org/tests/issue18/s2
+    description: range s1, domain_of [c2] inverse s1
+    from_schema: http://example.org/tests/issue18
+    range: c1
+    slot_uri: http://example.org/tests/issue18/s2
+    owner: c2
+    domain_of:
+    - c2
+    inverse: s1
+  s3:
+    name: s3
+    definition_uri: http://example.org/tests/issue18/s3
+    description: range c2, domain_of [c3] inverse s4
+    from_schema: http://example.org/tests/issue18
+    range: c2
+    slot_uri: http://example.org/tests/issue18/s3
+    inlined: true
+    owner: c3
+    domain_of:
+    - c3
+    inverse: s4
+  s4:
+    name: s4
+    definition_uri: http://example.org/tests/issue18/s4
+    description: domain c4, range c3, inverse s3
+    from_schema: http://example.org/tests/issue18
+    domain: c4
+    range: c3
+    slot_uri: http://example.org/tests/issue18/s4
+    owner: s4
+    inverse: s3
+  s5:
+    name: s5
+    definition_uri: http://example.org/tests/issue18/s5
+    description: domain c3, range c2, inverse s6
+    from_schema: http://example.org/tests/issue18
+    domain: c3
+    range: c2
+    slot_uri: http://example.org/tests/issue18/s5
+    inlined: true
+    owner: s5
+    inverse: s6
+  s6:
+    name: s6
+    definition_uri: http://example.org/tests/issue18/s6
+    description: range c3, domain_of [c4], inverse s5
+    from_schema: http://example.org/tests/issue18
+    range: c3
+    slot_uri: http://example.org/tests/issue18/s6
+    owner: c4
+    domain_of:
+    - c4
+    inverse: s5
+classes:
+  c1:
+    name: c1
+    definition_uri: http://example.org/tests/issue18/C1
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - s1
+    class_uri: http://example.org/tests/issue18/C1
+  c2:
+    name: c2
+    definition_uri: http://example.org/tests/issue18/C2
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - s1
+    - s2
+    class_uri: http://example.org/tests/issue18/C2
+  c3:
+    name: c3
+    definition_uri: http://example.org/tests/issue18/C3
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - s3
+    class_uri: http://example.org/tests/issue18/C3
+  c4:
+    name: c4
+    definition_uri: http://example.org/tests/issue18/C4
+    from_schema: http://example.org/tests/issue18
+    slots:
+    - s6
+    class_uri: http://example.org/tests/issue18/C4
+metamodel_version: 1.7.0
+source_file: issue_18_warning1.yaml
+source_file_date: Wed Mar 24 16:43:50 2021
+source_file_size: 698
+generation_date: 2021-03-24 16:47
