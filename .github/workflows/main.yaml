@@ -71,7 +71,8 @@ jobs:
 
     - name: Create new docs
       run: pipenv run python -c "from linkml.generators.markdowngen import MarkdownGenerator;
-            MarkdownGenerator('meta.yaml').serialize(directory='docs', image_dir='images')"
+            from linkml import LOCAL_METAMODEL_YAML_FILE;
+            MarkdownGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(directory='docs', image_dir='images')"
 
     - name: Commit changes and push
       run: |
