@@ -7,6 +7,9 @@ from rdflib import Graph
 from yaml.constructor import ConstructorError
 
 from linkml.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
+from biolinkml.utils.yamlutils import TypedNode as LMLTypedNode
+
+from linkml.utils.migration_temp import is_YAMLROOT
 
 
 class YAMLMark(yaml.error.Mark):
@@ -103,7 +106,7 @@ class YAMLRoot(JsonObj):
             # A list of dictionaries
             #   [ {key_name: v11, slot_2: v12, ..., slot_n:v1n}, {key_name: v21, slot_2: v22, ..., slot_n:v2n}, ...]
             for raw_slot_entry in raw_slot:
-                if not isinstance(raw_slot_entry, (dict, YAMLRoot)):
+                if not isinstance(raw_slot_entry, (dict, YAMLRoot)) and not is_YAMLROOT(raw_slot_entry):
                     raise ValueError(f"Slot: {slot_name} - unrecognized element: {raw_slot_entry}")
                 if keyed and key_name in raw_slot_entry:
                         value = raw_slot_entry if isinstance(raw_slot_entry, slot_type) else \
@@ -121,9 +124,9 @@ class YAMLRoot(JsonObj):
             #    {key_1: {[key_name: v11], slot_2: v12, ... slot_n: v1n}, key_2: {...}}   or
             #    {v11: v12, v21: v22, ...}
             for key, value in raw_slot.items():
-                if not isinstance(value, (dict, YAMLRoot)):
+                if not isinstance(value, (dict, YAMLRoot)) and not is_YAMLROOT(value):
                     cook_a_slot(slot_type(key, value))
-                elif isinstance(value, YAMLRoot):
+                elif isinstance(value, YAMLRoot) or is_YAMLROOT(value):
                     vk = getattr(value, key_name, None)
                     if vk is None or vk == key:
                         setattr(value, key_name, key)
@@ -196,8 +199,8 @@ def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None) -> J
 
 class TypedNode:
     def __init__(self, v: Union[Any, "TypedNode"]):
-        self._s = v._s if isinstance(v, TypedNode) else None
-        self._len = v._len if isinstance(v, TypedNode) else None
+        self._s = v._s if isinstance(v, (TypedNode, LMLTypedNode)) else None
+        self._len = v._len if isinstance(v, (TypedNode, LMLTypedNode)) else None
         super().__init__()
 
     def add_node(self, node):
@@ -219,7 +222,7 @@ class extended_str(str, TypedNode):
     def concat(self, *items) -> "extended_str":
         rval = extended_str(str(self) + ''.join([str(item) for item in items]))
         for item in items[::-1]:
-            if isinstance(item, TypedNode):
+            if isinstance(item, (TypedNode, LMLTypedNode)):
                 rval._s = item._s
                 rval._len = item._len
                 break

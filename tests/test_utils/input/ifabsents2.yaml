@@ -8,8 +8,11 @@ prefixes:
 default_prefix: test
 
 
-imports:
-  - ../../../includes/types
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
 
 
 slots:

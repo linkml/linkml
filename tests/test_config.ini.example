@@ -33,4 +33,4 @@ DEFAULT_MISMATCH_ACTION: MismatchAction.Report
 # Use local import map.  If True, tests/input/local_import_map.json is used to create the test files.  Note that this
 #  will result in local path names being recorded in jsonld files.  This should always be set to False before generating
 #  the final output
-USE_LOCAL_IMPORT_MAP = False
+USE_LOCAL_IMPORT_MAP = True

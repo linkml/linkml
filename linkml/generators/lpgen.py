@@ -4,7 +4,7 @@ from typing import Union, TextIO
 import click
 from prologterms import Term, TermGenerator, PrologRenderer, SExpressionRenderer
 
-from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition
+from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 from linkml.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 

@@ -11,7 +11,7 @@ import sys
 import re
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml.utils.slot import Slot
 from linkml.utils.metamodelcore import empty_list, empty_dict, bnode

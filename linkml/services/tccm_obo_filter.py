@@ -4,7 +4,7 @@ from typing import Iterator, Optional, Union, Callable
 
 from rdflib import Graph, URIRef, Namespace, RDFS, BNode, Literal, XSD, SKOS
 
-from linkml.meta import RDF, OWL
+from linkml_model.meta import RDF, OWL
 
 # Namespaces pulled from the TCCM module
 #

@@ -15,9 +15,9 @@ if __name__ == '__main__':
 from tests import SKIP_REWRITE_RULES, SKIP_REWRITE_RULES_REASON
 
 W3ID_SERVER = "https://w3id.org/"
-# DEFAULT_SERVER = W3ID_SERVER
-DEFAULT_SERVER = "http://localhost:8091/"
-SKIP_REWRITE_RULES = False
+DEFAULT_SERVER = W3ID_SERVER
+# DEFAULT_SERVER = "http://localhost:8091/"
+# SKIP_REWRITE_RULES = False
 
 # Taken from Firefox network.http.accept.default
 default_header = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"

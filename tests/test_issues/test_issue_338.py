@@ -1,5 +1,6 @@
 import unittest
 
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.schemaloader import SchemaLoader
 from tests.test_issues.environment import env
 from tests.test_biolink_model.environment import env as env2
@@ -8,7 +9,7 @@ from tests.test_biolink_model.environment import env as env2
 class SchemaLoaderMonotonicityTest(unittest.TestCase):
     def test_biolink(self):
         """ SchemaLoader should be monotonic - metamodel test """
-        biolink_schema = SchemaLoader(env.root_input_path('meta.yaml')).resolve()
+        biolink_schema = SchemaLoader(LOCAL_METAMODEL_YAML_FILE).resolve()
         biolink_schema_2 = SchemaLoader(biolink_schema).resolve()
         self.assertEqual(biolink_schema, biolink_schema_2)
 

@@ -4,7 +4,7 @@ from typing import Dict, Optional, Union, cast, List
 
 from rdflib import URIRef
 
-from linkml.meta import SchemaDefinition, Element, SlotDefinition, ClassDefinition, TypeDefinition, \
+from linkml_model.meta import SchemaDefinition, Element, SlotDefinition, ClassDefinition, TypeDefinition, \
     SlotDefinitionName, TypeDefinitionName, EnumDefinition
 from linkml.utils.formatutils import camelcase, underscore
 from linkml.utils.namespaces import Namespaces

@@ -2,6 +2,7 @@ import unittest
 
 import click
 
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators import yamlgen
 from tests.test_scripts.environment import env
 from tests.utils.clicktestcase import ClickTestCase
@@ -19,7 +20,7 @@ class GenYUMLTestCase(ClickTestCase):
 
     def test_emit_yaml(self):
         """ Test emitting a YAML file """
-        self.do_test([env.root_input_path('meta.yaml'),"--importmap", self.env.import_map, '-g'], 'meta.yaml',
+        self.do_test([LOCAL_METAMODEL_YAML_FILE, "--importmap", self.env.import_map, '-g'], 'meta.yaml',
                      add_yaml=False, filtr=yaml_filter)
 
     def test_validate_yaml(self):

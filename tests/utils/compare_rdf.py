@@ -6,12 +6,12 @@ from typing import Union, Optional
 from rdflib import Graph, RDF, Namespace
 from rdflib.compare import to_isomorphic, IsomorphicGraph, graph_diff
 
-from linkml.meta import BIOLINKML, META
+from linkml_model.meta import LINKML
 
 # TODO: Find out why test_issue_namespace is emitting generation_date in the TYPE namespace
 from tests import SKIP_RDF_COMPARE, SKIP_RDF_COMPARE_REASON
 
-TYPE = Namespace(BIOLINKML['meta/types/'])
+TYPE = LINKML
 
 
 def to_graph(inp: Union[Graph, str], fmt: Optional[str] = "turtle") -> Graph:
@@ -56,7 +56,7 @@ def compare_rdf(expected: Union[Graph, str], actual: Union[Graph, str], fmt: Opt
         for s in g.subjects(RDF.type, RDF.List):
             g.remove((s, RDF.type, RDF.List))
         for t in g:
-            if t[1] in (META.generation_date, META.source_file_date, META.source_file_size,
+            if t[1] in (LINKML.generation_date, LINKML.source_file_date, LINKML.source_file_size,
                         TYPE.generation_date, TYPE.source_file_date, TYPE.source_file_size):
                 g.remove(t)
         g_iso = to_isomorphic(g)

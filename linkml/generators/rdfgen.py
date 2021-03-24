@@ -14,7 +14,7 @@ from rdflib.plugin import plugins as rdflib_plugins, Parser as rdflib_Parser
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.jsonldgen import JSONLDGenerator
-from linkml.meta import SchemaDefinition
+from linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -40,7 +40,7 @@ class RDFGenerator(Generator):
         jsonld_str = gen.serialize(context=context)
 
         graph = Graph()
-        graph.parse(data=jsonld_str, format="json-ld", base=self.namespaces._base, prefix=True)
+        graph.parse(data=jsonld_str, format="json-ld", base=str(self.namespaces._base), prefix=True)
         if output:
             with open(output, 'w') as outf:
                 outf.write(self._data(graph))

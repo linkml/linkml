@@ -2,6 +2,7 @@ import unittest
 from contextlib import redirect_stdout
 from io import StringIO
 
+from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators.rdfgen import cli
 from tests import CLIExitException
 from tests.test_issues.environment import env
@@ -16,7 +17,7 @@ class RDFGenDefaultTest(TestEnvironmentTestCase):
         output = StringIO()
         try:
             with redirect_stdout(output):
-                cli([env.root_input_path('meta.yaml')])
+                cli([LOCAL_METAMODEL_YAML_FILE])
         except CLIExitException as e:
             self.assertEqual(0, e.code)
 

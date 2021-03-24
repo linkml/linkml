@@ -33,7 +33,8 @@ class GeneratorTestCase(TestEnvironmentTestCase):
                               serialize_args: Optional[dict] = None,
                               filtr: Optional[Callable[[str], str]] = None,
                               comparator: Callable[[str, str], str] = None,
-                              output_name: Optional[str] = None) -> None:
+                              output_name: Optional[str] = None,
+                              yaml_file: Optional[str] = None) -> None:
         """ Invoke generator specified in gen
 
         :param env: Input environment
@@ -46,6 +47,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         :param filtr: Filter to remove metadata specific info from the output.  Default: identity
         :param comparator: Comparison method to use.  Default: GeneratorTestCase._default_comparator
         :param output_name: If present, output base is output name instead of model_name.
+        :param yaml_file: File to use for input instead of env.input_path
         """
         if serialize_args is None:
             serialize_args = {}
@@ -56,7 +58,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         if self.env.import_map is not None and 'importmap' not in generator_args:
             generator_args['importmap'] = self.env.import_map
         generator_args['log_level'] = DEFAULT_LOG_LEVEL
-        yaml_file = self.env.input_path(subdir or '', self.model_name + '.yaml')
+        yaml_file = yaml_file or self.env.input_path(subdir or '', self.model_name + '.yaml')
 
         self.env.generate_single_file([subdir or '', (output_name or self.model_name) + '.' + suffix],
                                       lambda: gen(yaml_file, **generator_args).serialize(**serialize_args),
@@ -67,7 +69,8 @@ class GeneratorTestCase(TestEnvironmentTestCase):
                             gen: type(Generator), *,
                             subdir: Optional[str] = None,
                             generator_args: Optional[dict] = None,
-                            serialize_args: Optional[dict] = None) -> None:
+                            serialize_args: Optional[dict] = None,
+                            input_file: Optional[str] = None) -> None:
         """
         Generate an output directory using the appropriate command and then compare the target with the source
         :param dirname: name of output directory (e.g. gengraphviz)
@@ -75,6 +78,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         :param subdir: subdirectory within output directory (for includes processing)
         :param generator_args: arguments to the generator constructor
         :param serialize_args: arguments to the generator serializer
+        :param input_file: File to use instead of self.model_name if present
         """
         if serialize_args is None:
             serialize_args = {}
@@ -87,7 +91,7 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         if self.env.import_map is not None and 'importmap' not in generator_args:
             generator_args['importmap'] = self.env.import_map
         generator_args['log_level'] = DEFAULT_LOG_LEVEL
-        yaml_file = self.env.input_path(subdir, self.model_name + '.yaml')
+        yaml_file = input_file or self.env.input_path(subdir, self.model_name + '.yaml')
 
         def call_generator(outdir: str) -> None:
             generator_args['directory'] = outdir

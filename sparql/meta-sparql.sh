@@ -16,6 +16,6 @@ SCRIPT="$0"
 SDIR="$(dirname $SCRIPT)"
 DIR="$SDIR/.."
 ARG_I=$([ $input ] && echo "-i $input" || echo  )
-robot merge -i $DIR/meta.ttl -i $schema $ARG_I query -P $DIR/context.jsonld -f tsv  --query $query $OUT
+robot merge -i $DIR/meta.ttl -i $schema $ARG_I query -P $DIR/meta.context.jsonld -f tsv  --query $query $OUT
 cat $OUT
 rm $OUT

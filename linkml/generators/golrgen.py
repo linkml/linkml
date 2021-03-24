@@ -13,7 +13,7 @@ import click
 from dataclasses import dataclass
 
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition
+from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 from linkml.utils.metamodelcore import empty_list
 from linkml.utils.formatutils import underscore
 from linkml.utils.yamlutils import YAMLRoot, as_yaml

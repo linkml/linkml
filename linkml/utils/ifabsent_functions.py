@@ -1,7 +1,7 @@
 import re
 from typing import Callable, Optional, Text, List, Tuple, Match
 
-from linkml.meta import ClassDefinition, SlotDefinition
+from linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml.utils.formatutils import sfx
 from linkml.utils.schemaloader import SchemaLoader
 

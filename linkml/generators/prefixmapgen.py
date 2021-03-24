@@ -10,7 +10,7 @@ import click
 from jsonasobj import JsonObj, as_json
 from rdflib import XSD
 
-from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element
+from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element
 from linkml.utils.formatutils import camelcase, underscore, be
 from linkml.utils.generator import Generator, shared_arguments
 from includes.types import SHEX

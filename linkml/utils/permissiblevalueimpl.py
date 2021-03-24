@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional, ClassVar, List, Union
 
 from rdflib import URIRef
 
-from linkml.meta import PermissibleValue, EnumDefinition, PvFormulaOptions
+from linkml_model.meta import PermissibleValue, EnumDefinition, PvFormulaOptions
 from linkml.utils.curienamespace import CurieNamespace
 from linkml.utils.metamodelcore import URIorCURIE, empty_list
 from linkml.utils.uritypes_from_tccm import RenderingURI

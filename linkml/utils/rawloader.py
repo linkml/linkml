@@ -10,7 +10,7 @@ from urllib.request import Request, urlopen
 
 import yaml
 
-from linkml.meta import SchemaDefinition, metamodel_version
+from linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml.utils.mergeutils import merge_schemas, set_from_schema
 from linkml.utils.namespaces import Namespaces
 from linkml.utils.yamlutils import DupCheckYamlLoader, YAMLMark, TypedNode

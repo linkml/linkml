@@ -9,24 +9,24 @@ class JSONContextTestCase(unittest.TestCase):
         """ Test no context in the argument"""
         self.assertIn('''"@context": [
     [
-      "https://w3id.org/linkml/context.jsonld"
+      "https://w3id.org/linkml/meta.context.jsonld"
     ],''', JSONLDGenerator(env.input_path('issue_332.yaml')).serialize())
 
     def test_context_2(self):
         """ Test a single context argument """
         self.assertIn('''"@context": [
     [
-      "http://some.org/nice/context.jsonld"
-    ],''', JSONLDGenerator(env.input_path('issue_332.yaml')).serialize(context="http://some.org/nice/context.jsonld"))
+      "http://some.org/nice/meta.context.jsonld"
+    ],''', JSONLDGenerator(env.input_path('issue_332.yaml')).serialize(context="http://some.org/nice/meta.context.jsonld"))
 
     def test_context_3(self):
         """ Test multi context arguments """
         self.assertIn('''"@context": [
     [
-      "http://some.org/nice/context.jsonld",
-      "http://that.org/context.jsonld"
+      "http://some.org/nice/meta.context.jsonld",
+      "http://that.org/meta.context.jsonld"
     ],''', JSONLDGenerator(env.input_path('issue_332.yaml')).
-              serialize(context=["http://some.org/nice/context.jsonld", "http://that.org/context.jsonld"]))
+              serialize(context=["http://some.org/nice/meta.context.jsonld", "http://that.org/meta.context.jsonld"]))
 
 
 if __name__ == '__main__':

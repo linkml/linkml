@@ -5,12 +5,13 @@ from collections import OrderedDict
 from typing import Union, TextIO, Optional, Set, List, cast, Dict, Mapping, Tuple, Iterator
 from urllib.parse import urlparse
 
-from linkml.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
+from linkml_model.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
     ClassDefinitionName, TypeDefinitionName, TypeDefinition, ElementName, EnumDefinition, EnumDefinitionName
 from linkml.utils.context_utils import parse_import_map
 from linkml.utils.formatutils import underscore, camelcase, sfx, lcamelcase, mangled_attribute_name
 from linkml.utils.mergeutils import merge_schemas, merge_slots, merge_classes, slot_usage_name
 from linkml.utils.metamodelcore import Bool
+from linkml.utils.migration_temp import is_TypedNode
 from linkml.utils.namespaces import Namespaces
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
@@ -757,18 +758,18 @@ class SchemaLoader:
 
     @staticmethod
     def raise_value_errors(error: str, loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]]) -> None:
-        if loc_str is None or not isinstance(loc_str, (TypedNode, list)):
+        if loc_str is None or not isinstance(loc_str, (TypedNode, list)) or is_TypedNode(loc_str):
             raise ValueError(error)
-        elif isinstance(loc_str, TypedNode):
+        elif isinstance(loc_str, TypedNode) or is_TypedNode(loc_str):
             raise ValueError(f'{TypedNode.yaml_loc(loc_str)} {error}')
         else:
             locs = '\n'.join(TypedNode.loc(e) for e in loc_str)
             raise ValueError(f'{locs} {error}')
 
     def logger_warning(self, warning: str, loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]]) -> None:
-        if loc_str is None or not isinstance(loc_str, (TypedNode, list)):
+        if loc_str is None or not isinstance(loc_str, (TypedNode, list)) or is_TypedNode(loc_str):
             self.logger.warning(warning)
-        elif isinstance(loc_str, TypedNode):
+        elif isinstance(loc_str, TypedNode) or is_TypedNode(loc_str):
             self.logger.warning(f'{warning}\n\t{TypedNode.yaml_loc(loc_str)}')
         else:
             locs = '\n\t'.join(TypedNode.loc(e) for e in loc_str)

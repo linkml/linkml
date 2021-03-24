@@ -6,7 +6,7 @@ from pprint import pprint
 from typing import Union, TextIO, cast
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition, TypeDefinition, SubsetDefinition, \
+from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, TypeDefinition, SubsetDefinition, \
     ElementName, SlotDefinitionName, ClassDefinitionName, TypeDefinitionName, Element
 from linkml.utils.generator import Generator
 from linkml.utils.typereferences import References

@@ -7,7 +7,7 @@ from typing.io import TextIO
 
 import click
 
-from linkml.meta import SchemaDefinition
+from linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.yamlutils import as_yaml
 

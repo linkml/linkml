@@ -11,7 +11,7 @@ json_2 = '{ "foo": 17, "@context": { "ex": "http://example.org/test3/", "ex2": {
 context_output = """{
    "@context": [
       "file://local.jsonld",
-      "https://w3id.org/linkml/context.jsonld",
+      "https://w3id.org/linkml/meta.context.jsonld",
       {
          "ex": "http://example.org/test/",
          "ex2": "http://example.org/test2/"
@@ -42,7 +42,7 @@ class ContextUtilsTestCase(unittest.TestCase):
         self.assertEqual(JsonObj(ex='http://example.org/test3/', ex2=JsonObj(**{'@id': 'http://example.org/test4/'})),
                          merge_contexts([json_2])['@context'])
         self.assertEqual([f'file://local.jsonld',
-                          'https://w3id.org/linkml/context.jsonld',
+                          'https://w3id.org/linkml/meta.context.jsonld',
                           JsonObj(ex='http://example.org/test/', ex2='http://example.org/test2/'),
                           JsonObj(ex='http://example.org/test3/', ex2=JsonObj(**{'@id': 'http://example.org/test4/'}))],
                          merge_contexts(["local.jsonld", METAMODEL_CONTEXT_URI, json_1, json_2])['@context'])
@@ -64,7 +64,7 @@ class ContextUtilsTestCase(unittest.TestCase):
         self.assertEqual(loads(f'{{"@context": {{"@base": "{META_BASE_URI}"}}}}'), merge_contexts(base=META_BASE_URI))
         self.assertEqual(loads("""
 {"@context": [
-      "https://w3id.org/linkml/context.jsonld",
+      "https://w3id.org/linkml/meta.context.jsonld",
       {
          "ex": "http://example.org/test/",
          "ex2": "http://example.org/test2/"

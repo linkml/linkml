@@ -12,7 +12,7 @@ import re
 from parse import parse
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml.meta import EnumDefinition, PermissibleValue
+from linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml.utils.slot import Slot
 from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int

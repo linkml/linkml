@@ -4,7 +4,7 @@ from rdflib import Graph, Namespace
 
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.rdfgen import RDFGenerator
-from linkml.meta import META
+from linkml_model.meta import LINKML
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 
@@ -25,7 +25,7 @@ class Issue381TestCase(TestEnvironmentTestCase):
     def test_non_url_pv(self):
         g = Graph()
         g.parse(data=RDFGenerator(schema).serialize(), format="ttl")
-        self.assertEqual('https://example.org/test/a%20b', str(g.value(NS.test_enum, META.permissible_values)))
+        self.assertEqual('https://example.org/test/a%20b', str(g.value(NS.test_enum, LINKML.permissible_values)))
 
 
 if __name__ == '__main__':

@@ -8,11 +8,13 @@ import click
 from jsonasobj import as_json
 
 from linkml import METAMODEL_CONTEXT_URI
-from linkml.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
+from linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
     ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition
 from linkml.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.yamlutils import YAMLRoot
+from linkml_model import YAMLRoot
+
+from linkml.utils.migration_temp import is_YAMLROOT
 
 
 class JSONLDGenerator(Generator):
@@ -27,8 +29,8 @@ class JSONLDGenerator(Generator):
         return node
 
     def _visit(self, node: Any) -> Optional[Any]:
-        if isinstance(node, (YAMLRoot, dict)):
-            if isinstance(node, YAMLRoot):
+        if isinstance(node, (YAMLRoot, dict)) or is_YAMLROOT(node):
+            if isinstance(node, YAMLRoot) or is_YAMLROOT(node):
                 node = self._add_type(node)
             for k, v in list(node.items()):
                 if v:
@@ -103,6 +105,11 @@ class JSONLDGenerator(Generator):
             context = list(context)
         for imp in list(self.loaded.values())[1:]:
             context.append(imp[0] + ".context.jsonld")
+
+        # Absolute file paths have to have a prefix
+        for ci in range(0, len(context)):
+            if context[ci].startswith('/'):           # TODO: how do we deal with absolute DOS paths?
+                context[ci] = 'file://' + context[ci]
 
         json_obj["@context"] = [context[0] if len(context) == 1 and not base_prefix else context]
         if base_prefix:

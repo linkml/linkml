@@ -3,17 +3,17 @@ title: Base for import test
 name: base
 
 prefixes:
-  meta: https://w3id.org/linkml/meta/
+  linkml: https://w3id.org/linkml/
   skos: http://www.w3.org/2004/02/skos/core#
   OIO: http://www.geneontology.org/formats/oboInOwl#
 
-default_prefix: meta
+default_prefix: linkml
 
 default_curi_maps:
     - semweb_context
 
 emit_prefixes:
-  - meta
+  - linkml
   - rdf
   - rdfs
   - skos
@@ -22,7 +22,7 @@ emit_prefixes:
   - pav
 
 imports:
-  - ../../../includes/types
+  - linkml:types
 
 types:
   extended:

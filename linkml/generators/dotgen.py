@@ -7,7 +7,7 @@ from typing import TextIO, Union, List, Optional
 import click
 from graphviz import Digraph, FORMATS
 
-from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition
+from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 from linkml.utils.formatutils import underscore
 from linkml.utils.generator import Generator, shared_arguments
 

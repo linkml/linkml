@@ -4,7 +4,7 @@ from typing import List
 
 from pyshex.shex_evaluator import EvaluationResult
 
-from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
+from linkml import LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
@@ -27,11 +27,10 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
     #     """ Generate a copy of mappyings.py """
     #     self.single_file_generator('py', PythonGenerator, subdir='includes', filtr=metadata_filter,
     #                                comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path('mappings.py')))
-
     @unittest.skipIf(SKIP_MARKDOWN_VALIDATION, SKIP_MARKDOWN_VALIDATION_REASON)
     def test_mappings_markdown(self):
         """ Generate documentation for the meta_mappings  """
-        self.directory_generator('meta_mappings_docs', MarkdownGenerator, subdir='includes')
+        self.directory_generator('meta_mappings_docs', MarkdownGenerator, input_file=LOCAL_MAPPINGS_YAML_FILE)
 
     @staticmethod
     def _evaluate_shex_results(results: List[EvaluationResult]) -> bool:
@@ -64,11 +63,13 @@ class MappingsGeneratorTestCase(GeneratorTestCase):
         self.assertTrue(os.path.exists(context_file))
 
         # Generate context and use it to create the RDF
-        self.single_file_generator('context.jsonld', ContextGenerator, filtr=ldcontext_metadata_filter, subdir='includes')
+        self.single_file_generator(LOCAL_METAMODEL_LDCONTEXT_FILE, ContextGenerator, filtr=ldcontext_metadata_filter,
+                                   subdir='includes')
 
         # Generate a copy of the JSON representation of the model
         context_loc = json_file
         context_args = {"context": ['file://' + LOCAL_METAMODEL_LDCONTEXT_FILE, 'file://' + context_loc]}
+        msg = ''
         msg += self.single_file_generator('json', JSONLDGenerator,  serialize_args=context_args,
                                          filtr=json_metadata_context_filter, fail_if_expected_missing=False)
 

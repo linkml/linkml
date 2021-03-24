@@ -94,18 +94,18 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
 
         self.single_file_generator('context.jsonld', ContextGenerator, filtr=filtr)
         # Generate a second copy with native identifiers
-        self.single_file_generator('context.native.jsonld', ContextGenerator, generator_args=dict(useuris=False),
+        self.single_file_generator('model.context.jsonld', ContextGenerator, generator_args=dict(useuris=False),
                                    filtr=filtr)
 
     def test_biolink_json_schema(self):
         """ Test the jsonld context generator for the biolink model """
-        self.single_file_generator('json.schema', JsonSchemaGenerator)
+        self.single_file_generator('schema.json', JsonSchemaGenerator)
 
     def test_biolink_owl_schema(self):
         """ Test the owl schema generator for the biolink model """
-        self.single_file_generator('owl', OwlSchemaGenerator, comparator=compare_rdf)
+        self.single_file_generator('owl.ttl', OwlSchemaGenerator, comparator=compare_rdf)
         # Generate a second copy with native identifiers
-        self.single_file_generator('native.owl', OwlSchemaGenerator, generator_args=dict(useuris=False),
+        self.single_file_generator('model.owl.ttl', OwlSchemaGenerator, generator_args=dict(useuris=False),
                                    comparator=compare_rdf)
 
     def test_biolink_proto(self):
@@ -138,7 +138,7 @@ class CurrentBiolinkModelTestCase(GeneratorTestCase):
     def test_biolink_rdf(self):
         """ Test the rdf generator for the biolink model """
         self.single_file_generator('ttl', RDFGenerator, serialize_args=dict(
-            context=["https://w3id.org/linkml/context.jsonld"]), comparator=compare_rdf)
+            context=["https://w3id.org/linkml/meta.context.jsonld"]), comparator=compare_rdf)
 
         # Validate the RDF against the Biolink ShEx
         if SKIP_SHEX_VALIDATION:

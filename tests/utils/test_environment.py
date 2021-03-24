@@ -11,8 +11,10 @@ from io import StringIO
 from pathlib import Path
 from typing import Optional, Callable, Union, List
 
-from linkml import TYPES_FILE_NAME, LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE, \
-    MAPPING_FILE_NAME, LOCAL_MAPPING_YAML_FILE
+from linkml_model import linkml_files
+from linkml_model.linkml_files import Source, Format
+
+from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE, LOCAL_MAPPINGS_YAML_FILE
 from tests.utils.dirutils import are_dir_trees_equal
 from tests.utils.mismatchlog import MismatchLog
 
@@ -21,8 +23,11 @@ def no_click_exit(_self, code=0):
     from tests import CLIExitException
     raise CLIExitException(code)
 
+
+# This import has to occur here
 import click
 click.core.Context.exit = no_click_exit
+
 
 class MismatchAction(Enum):
     Ignore = 0
@@ -45,9 +50,9 @@ class TestEnvironment:
         parent = Path(self.cwd).parts[-2]
         if parent.startswith('test'):
             parent_env = import_module('..environment', __package__)
-            self.meta_yaml = parent_env.env.meta_yaml
-            self.types_yaml = parent_env.env.types_yaml
-            self.mapping_yaml = parent_env.env.mapping_yaml
+            self.meta_yaml = linkml_files.LOCAL_PATH_FOR(Source.META, Format.YAML)
+            self.types_yaml = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
+            self.mapping_yaml = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.YAML)
             self.import_map = parent_env.env.import_map
             self.mismatch_action = parent_env.env.mismatch_action
             self.root_input_path = parent_env.env.root_input_path
@@ -55,14 +60,9 @@ class TestEnvironment:
             self.root_temp_file_path = parent_env.env.root_temp_file_path
             self._log = parent_env.env._log
         else:
-            self.meta_yaml = self.input_path('meta.yaml')
-            self._check_changed(self.meta_yaml, LOCAL_METAMODEL_YAML_FILE)
-
-            self.types_yaml = self.input_path('includes', TYPES_FILE_NAME)
-            self._check_changed(self.types_yaml, LOCAL_TYPES_YAML_FILE)
-
-            self.mapping_yaml = self.input_path('includes', MAPPING_FILE_NAME)
-            self._check_changed(self.mapping_yaml, LOCAL_MAPPING_YAML_FILE)
+            self.meta_yaml = LOCAL_METAMODEL_YAML_FILE
+            self.types_yaml = LOCAL_TYPES_YAML_FILE
+            self.mapping_yaml = LOCAL_MAPPINGS_YAML_FILE
 
             from tests import USE_LOCAL_IMPORT_MAP
             self.import_map = self.input_path('local_import_map.json') if USE_LOCAL_IMPORT_MAP else None
@@ -86,7 +86,6 @@ class TestEnvironment:
             )
             TestEnvironment.import_map_warning_emitted = True
 
-
     def clear_log(self) -> None:
         """ Clear the output log """
         self._log = MismatchLog()
@@ -105,7 +104,7 @@ class TestEnvironment:
         self.make_temp_dir(*dir_path, clear=False)
         return os.path.join(self.tempdir, *[p for p in path if p])
 
-    def temp_file_path(self, *path: str, is_dir:bool = False) -> str:
+    def temp_file_path(self, *path: str, is_dir: bool = False) -> str:
         """ Create the directories down to the path fragments in path.  If is_dir is True, create and clear the
          innermost directory
         """
@@ -130,7 +129,7 @@ class TestEnvironment:
         """ Return the current state of the log file """
         return '\n\n'.join([str(e) for e in self._log.entries])
 
-    def make_temp_dir(self, *paths: str, clear: bool=True) -> str:
+    def make_temp_dir(self, *paths: str, clear: bool = True) -> str:
         """ Create and initialize a list of paths """
         full_path = self.tempdir
         TestEnvironment.make_testing_directory(full_path)
@@ -304,4 +303,3 @@ class TestEnvironmentTestCase(unittest.TestCase):
             yield logger
         finally:
             logger.result = logstream.getvalue()
-

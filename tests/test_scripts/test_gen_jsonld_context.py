@@ -18,7 +18,7 @@ class GenContextTestCase(ClickTestCase):
 
     def test_meta(self):
         self.maxDiff = None
-        self.do_test([], 'context.jsonld', filtr=ldcontext_metadata_filter)
+        self.do_test([], 'meta.context.jsonld', filtr=ldcontext_metadata_filter)
         self.do_test('--metauris', 'meta_contextn.jsonld', filtr=ldcontext_metadata_filter)
         self.do_test('-f xsv', 'meta_error', expected_error=click.exceptions.BadParameter)
         self.do_test('--niggles', 'meta2_error', expected_error=click.exceptions.NoSuchOption)

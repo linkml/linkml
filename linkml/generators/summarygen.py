@@ -8,7 +8,7 @@ from typing import Union, TextIO, Optional
 
 import click
 
-from linkml.meta import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml.utils.formatutils import camelcase
 from linkml.utils.generator import Generator, shared_arguments
 

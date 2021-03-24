@@ -163,7 +163,7 @@
   "generation_date": "Friday Sep 27 12:00:00 2003",
   "type": "SchemaDefinition",
   "@context": [
-    "https://w3id.org/linkml/context.jsonld",
+    "https://w3id.org/linkml/meta.context.jsonld",
     {
       "@base": "http://example.org/test/uriandcurie"
     }

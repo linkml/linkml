@@ -24,12 +24,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install pipenv-to-requirements
         pipenv_to_requirements
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
+        # NOTE: pipenv_to_requirements doesn't handle github requirements, so requirements.txt is wrong when it comes
+        #       to pyld.  We have to use pipenv for the time being
+        #        pip install -r requirements.txt
+        #        pip install -r requirements-dev.txt
+        pipenv install --dev
 
     - name: Test with unittest
       run: |
-        python -m unittest discover -p 'test_*.py'
+        pipenv run python -m unittest discover -p 'test_*.py'
 
     - name: Check in requirements.txt and requirements-dev.txt
       run: |
@@ -67,7 +70,7 @@ jobs:
       run: rm -fr docs/*
 
     - name: Create new docs
-      run: python -c "from linkml.generators.markdowngen import MarkdownGenerator;
+      run: pipenv run python -c "from linkml.generators.markdowngen import MarkdownGenerator;
             MarkdownGenerator('meta.yaml').serialize(directory='docs', image_dir='images')"
 
     - name: Commit changes and push

@@ -1,7 +1,7 @@
 import unittest
 from typing import Optional
 
-from linkml.meta import SchemaDefinition
+from linkml_model.meta import SchemaDefinition
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.yamlutils import as_yaml
 from tests.utils.filters import yaml_filter

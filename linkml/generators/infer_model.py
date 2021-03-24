@@ -14,7 +14,7 @@ import yaml
 import csv
 import time
 
-from linkml.meta import SchemaDefinition
+from linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.yamlutils import as_yaml
 from dateutil.parser import parse

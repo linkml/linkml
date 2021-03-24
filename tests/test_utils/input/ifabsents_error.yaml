@@ -5,8 +5,11 @@ prefixes:
   test: http://example.org/test/
   skos: http://www.w3.org/2004/02/skos/core#
 
-imports:
-  - ../../../includes/types
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
 
 
 slots:

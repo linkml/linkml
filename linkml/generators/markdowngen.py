@@ -6,7 +6,7 @@ from typing import Union, TextIO, Optional, Set, List, Any, Callable, Dict
 import click
 
 from linkml.generators.yumlgen import YumlGenerator
-from linkml.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
+from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
     TypeDefinition
 from linkml.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments
