@@ -27,13 +27,6 @@ jobs:
         rm -fr dist
         python setup.py bdist_wheel sdist
 
-    - name: Publish distribution 📦 to Test PyPI
-      uses: pypa/gh-action-pypi-publish@v1.2.2
-      with:
-        user: __token__
-        password: ${{ secrets.test_pypi_password }}
-        repository_url: https://test.pypi.org/legacy/
-
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@v1.2.2
       with:
