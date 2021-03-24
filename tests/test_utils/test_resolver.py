@@ -30,7 +30,6 @@ class ResolverTestCase(unittest.TestCase):
         if not os.path.exists(outfile):
             with open(outfile, 'w') as f:
                 f.write(as_json(JsonObj(**x)))
-                self.fail(f"File {outfile} created - rerun test")
         with open(outfile) as f:
             expected = as_dict(load(f))
 

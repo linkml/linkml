@@ -3,7 +3,7 @@ from typing import List
 
 from pyshex.shex_evaluator import EvaluationResult
 
-from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
@@ -56,7 +56,7 @@ class MetaModelTestCase(GeneratorTestCase):
 
         # Make a fresh copy of the RDF and validate it as well
         self.single_file_generator('ttl', RDFGenerator,
-                                   serialize_args={"context": env.expected_path('context.jsonld')},
+                                   serialize_args={"context": LOCAL_METAMODEL_LDCONTEXT_FILE},
                                    comparator=compare_rdf, yaml_file=LOCAL_METAMODEL_YAML_FILE)
 
         # Validate the RDF against the Biolink ShEx

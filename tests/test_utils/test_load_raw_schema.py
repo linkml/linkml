@@ -58,7 +58,6 @@ class RawLoaderTestCase(unittest.TestCase):
             if not os.path.exists(output):
                 with open(output, 'w') as f:
                     f.write(as_json(JsonObj(**{k: as_dict(loads(as_json(v))) for k, v in s.types.items()})))
-                    self.fail(f"File {output} created - rerun test")
 
             with open(output) as f:
                 expected = as_dict(load(f))
