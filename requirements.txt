@@ -17,6 +17,7 @@ hbreader
 isodate>=0.6.0
 jsonasobj>=1.2.1
 jsonschema>=3.0.1
+linkml-model==0.0.3
 parse
 prefixcommons>=0.1.7
 prologterms>=0.0.6
