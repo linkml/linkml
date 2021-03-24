@@ -1,5 +1,5 @@
 [![Pyversions](https://img.shields.io/pypi/pyversions/linkml.svg)](https://pypi.python.org/pypi/linkml)
-![](https://github.com/linkml/workflows/Build/badge.svg)
+![](https://github.com/linkml/linkml/workflows/Build/badge.svg)
 [![PyPi](https://img.shields.io/pypi/v/linkml.svg)](https://pypi.python.org/pypi/linkml)
 
 
