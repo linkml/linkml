@@ -2,7 +2,7 @@ name: unittests
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
 
