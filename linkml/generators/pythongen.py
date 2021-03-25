@@ -116,10 +116,7 @@ from dataclasses import dataclass
 from linkml.utils.slot import Slot
 from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-if sys.version_info < (3, 7, 6):
-    from linkml.utils.dataclass_extensions_375 import dataclasses_init_fn_with_kwargs
-else:
-    from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml.utils.formatutils import camelcase, underscore, sfx
 {handlerimport}
 from rdflib import Namespace, URIRef
@@ -173,7 +170,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             def add_entry(innerself, path: Union[str, URIRef], name: str) -> None:
                 path = str(self.namespaces.uri_for(path) if ':' in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
-                    innerself.v.setdefault('linkml_model', set()).add(name)
+                    innerself.v.setdefault('linkml_model.' + path[len(linkml_files.LINKML_NAMESPACE):], set()).add(name)
                 elif path == linkml.BIOLINK_MODEL_URI:
                     innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(name)
                 elif '://' in path:
@@ -882,7 +879,7 @@ class {enum_name}(EnumDefinitionImpl):
 @click.option("--slots/--no-slots", default=True, help="Generate Slot information")
 def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
     """ Generate python classes to represent a biolink model """
-    print(PythonGenerator(yamlfile, emit_metadata=head, gen_meta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))
+    print(PythonGenerator(yamlfile, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))
 
 
 if __name__ == '__main__':

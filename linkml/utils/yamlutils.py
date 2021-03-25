@@ -7,9 +7,6 @@ from rdflib import Graph
 from yaml.constructor import ConstructorError
 
 from linkml.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
-from biolinkml.utils.yamlutils import TypedNode as LMLTypedNode
-
-from linkml.utils.migration_temp import is_YAMLROOT
 
 
 class YAMLMark(yaml.error.Mark):
@@ -106,14 +103,14 @@ class YAMLRoot(JsonObj):
             # A list of dictionaries
             #   [ {key_name: v11, slot_2: v12, ..., slot_n:v1n}, {key_name: v21, slot_2: v22, ..., slot_n:v2n}, ...]
             for raw_slot_entry in raw_slot:
-                if not isinstance(raw_slot_entry, (dict, YAMLRoot)) and not is_YAMLROOT(raw_slot_entry):
+                if not isinstance(raw_slot_entry, (dict, YAMLRoot)):
                     raise ValueError(f"Slot: {slot_name} - unrecognized element: {raw_slot_entry}")
                 if keyed and key_name in raw_slot_entry:
-                        value = raw_slot_entry if isinstance(raw_slot_entry, slot_type) else \
-                                slot_type(**raw_slot_entry) if isinstance(raw_slot_entry, dict) else\
-                                slot_type(**raw_slot_entry.__dict__)
-                        key = getattr(value, key_name)
-                        cook_a_slot(value)
+                    value = raw_slot_entry if isinstance(raw_slot_entry, slot_type) else \
+                            slot_type(**raw_slot_entry) if isinstance(raw_slot_entry, dict) else\
+                            slot_type(**raw_slot_entry.__dict__)
+                    key = getattr(value, key_name)
+                    cook_a_slot(value)
                 else:
                     for k, v in raw_slot_entry.items():
                         key = k
@@ -124,9 +121,9 @@ class YAMLRoot(JsonObj):
             #    {key_1: {[key_name: v11], slot_2: v12, ... slot_n: v1n}, key_2: {...}}   or
             #    {v11: v12, v21: v22, ...}
             for key, value in raw_slot.items():
-                if not isinstance(value, (dict, YAMLRoot)) and not is_YAMLROOT(value):
+                if not isinstance(value, (dict, YAMLRoot)):
                     cook_a_slot(slot_type(key, value))
-                elif isinstance(value, YAMLRoot) or is_YAMLROOT(value):
+                elif isinstance(value, YAMLRoot):
                     vk = getattr(value, key_name, None)
                     if vk is None or vk == key:
                         setattr(value, key_name, key)
@@ -168,7 +165,7 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
     return dumper.represent_data(rval)
 
 
-def from_yaml(data: str, cls: YAMLRoot) -> YAMLRoot:
+def from_yaml(data: str, cls: Type[YAMLRoot]) -> YAMLRoot:
     return cls(**yaml.load(data, DupCheckYamlLoader))
 
 
@@ -193,14 +190,15 @@ def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None) -> J
     rval['@type'] = element.__class__.__name__
     context_element = merge_contexts(contexts)
     if context_element:
-        rval['@context'] = context_element['@context']
+        inner_context = context_element['@context']
+        rval['@context'] = inner_context if isinstance(inner_context, JsonObj) else JsonObj(inner_context)
     return rval
 
 
 class TypedNode:
     def __init__(self, v: Union[Any, "TypedNode"]):
-        self._s = v._s if isinstance(v, (TypedNode, LMLTypedNode)) else None
-        self._len = v._len if isinstance(v, (TypedNode, LMLTypedNode)) else None
+        self._s = v._s if isinstance(v, TypedNode) else None
+        self._len = v._len if isinstance(v, TypedNode) else None
         super().__init__()
 
     def add_node(self, node):
@@ -211,18 +209,18 @@ class TypedNode:
     def loc(self) -> str:
         return f'File "{self._s.name}", line {self._s.line + 1}, col {self._s.column + 1}' if self._s else ''
 
-
     @staticmethod
     def yaml_loc(loc_str: Optional[Union["TypedNode", str]] = None) -> str:
         """ Return the yaml file and location of loc_str if it exists """
-        return '' if loc_str is None or not hasattr(loc_str, "loc" or not callable(loc_str.loc)) else (loc_str.loc() + ": ")
+        return '' if loc_str is None or not hasattr(loc_str, "loc" or not callable(loc_str.loc)) else\
+            (loc_str.loc() + ": ")
 
 
 class extended_str(str, TypedNode):
     def concat(self, *items) -> "extended_str":
         rval = extended_str(str(self) + ''.join([str(item) for item in items]))
         for item in items[::-1]:
-            if isinstance(item, (TypedNode, LMLTypedNode)):
+            if isinstance(item, TypedNode):
                 rval._s = item._s
                 rval._len = item._len
                 break
@@ -252,11 +250,9 @@ class DupCheckYamlLoader(yaml.loader.SafeLoader):
 
     def get_mark(self):
         if self.stream is None:
-            return YAMLMark(self.name, self.index, self.line, self.column,
-                    self.buffer, self.pointer)
+            return YAMLMark(self.name, self.index, self.line, self.column, self.buffer, self.pointer)
         else:
-            return YAMLMark(self.name, self.index, self.line, self.column,
-                    None, None)
+            return YAMLMark(self.name, self.index, self.line, self.column, None, None)
 
     def construct_yaml_int(self, node):
         """ Scalar constructor that returns the node information as the value """
@@ -276,9 +272,7 @@ class DupCheckYamlLoader(yaml.loader.SafeLoader):
 
         """
         if not isinstance(node, yaml.MappingNode):
-            raise ConstructorError(None, None,
-                    "expected a mapping node, but found %s" % node.id,
-                    node.start_mark)
+            raise ConstructorError(None, None, "expected a mapping node, but found %s" % node.id, node.start_mark)
         mapping = {}
         for key_node, value_node in node.value:
             key = loader.construct_object(key_node, deep=deep)
@@ -322,5 +316,3 @@ def as_rdf(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None) -> Graph:
     graph = Graph()
     graph.parse(data=as_json(jsonld), format="json-ld", prefix=True)
     return graph
-
-

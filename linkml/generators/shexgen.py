@@ -14,7 +14,7 @@ from rdflib import Graph, OWL, RDF, Namespace, XSD
 from linkml import METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, SlotDefinitionName, ElementName, \
     TypeDefinition, EnumDefinition
-from includes.types import SHEX
+from linkml_model.types import SHEX
 from linkml.utils.formatutils import camelcase, sfx
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.metamodelcore import URIorCURIE

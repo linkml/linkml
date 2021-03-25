@@ -14,6 +14,7 @@ ipykernel = "*"
 
 [packages]
 click = "~=7.0"
+python-dateutil = "*"
 graphviz = ">=0.10.1"
 jsonasobj = ">=1.2.1"
 jsonschema = ">=3.0.1"
@@ -34,4 +35,5 @@ pyld = { git = "https://github.com/hsolbrig/pyld"}
 rdflib-pyld-compat = "*"
 hbreader = "*"
 # NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
-linkml_model = "==0.0.3"
+# linkml_model = {editable = true, path = "/Users/solbrig/git/linkml/linkml-model"}
+linkml_mode = "0.0.5"

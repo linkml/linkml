@@ -13,7 +13,7 @@ from rdflib import XSD
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element
 from linkml.utils.formatutils import camelcase, underscore, be
 from linkml.utils.generator import Generator, shared_arguments
-from includes.types import SHEX
+from linkml_model.types import SHEX
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 

@@ -1,6 +1,6 @@
 from typing import Any
 
-from biolinkml.utils.yamlutils import YAMLRoot as BLYAMLRoot, TypedNode as BLTypedNode
+from linkml.utils.yamlutils import YAMLRoot as BLYAMLRoot, TypedNode as BLTypedNode
 
 
 def is_YAMLROOT(node: Any) -> bool:

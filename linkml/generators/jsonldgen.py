@@ -12,7 +12,7 @@ from linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefin
     ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition
 from linkml.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_model import YAMLRoot
+from linkml.utils.yamlutils import YAMLRoot
 
 from linkml.utils.migration_temp import is_YAMLROOT
 
