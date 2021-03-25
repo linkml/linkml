@@ -36,4 +36,4 @@ rdflib-pyld-compat = "*"
 hbreader = "*"
 # NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
 # linkml_model = {editable = true, path = "/Users/solbrig/git/linkml/linkml-model"}
-linkml_mode = "0.0.5"
+linkml_model = "0.0.5"
