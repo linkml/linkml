@@ -7,17 +7,14 @@ on:
 jobs:
   unittests-n-commits:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.8
 
     - name: Install dependencies
       run: |
@@ -26,9 +23,9 @@ jobs:
         pipenv_to_requirements
         # NOTE: pipenv_to_requirements doesn't handle github requirements, so requirements.txt is wrong when it comes
         #       to pyld.  We have to use pipenv for the time being
-        #        pip install -r requirements.txt
-        #        pip install -r requirements-dev.txt
-        pipenv install --dev
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        # pipenv install --dev
 
     - name: Test with unittest
       run: |
