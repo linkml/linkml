@@ -20,9 +20,9 @@ jobs:
     - name: Install pipenv
       uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
-      pip install linkml-model
-      pip install git+https://github.com/hsolbrig/pyld
-      run: pipenv install --dev
+      run: pip install linkml-model
+       pip install "git+https://github.com/hsolbrig/pyld"
+       pipenv install --dev
 
     - name: Test with unittest
       run: pipenv run python -m unittest discover -p 'test_*.py'
