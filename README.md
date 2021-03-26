@@ -3,27 +3,27 @@
 [![PyPi](https://img.shields.io/pypi/v/linkml.svg)](https://pypi.python.org/pypi/linkml)
 
 
-[Binder Link](https://mybinder.org/v2/gh/linkml/master?filepath=notebooks)
+## [Binder Link](https://mybinder.org/v2/gh/linkml/linkml/main?filepath=notebooks)
 
-# linkml - biolink modeling language
+# LinkML - <u>Link</u>ed data <u>M</u>odeling <u>L</u>anguage
 
-linkml is a general purpose modeling language following object-oriented and ontological principles. Models are authored in YAML. A variety of artefacts can be generated from the model, including ShEx, JSON-Schema, OWL, Python dataclasses, UML diagrams, Markdown pages for deployment in a GitHub pages site, and more.
+LinkML is a general purpose modeling language following object-oriented and ontological principles. Models can be created in YAML, JSON or RDF. A variety of artefacts can be generated from the model, including ShEx, JSON-Schema, OWL, Python dataclasses, UML diagrams, Markdown pages for deployment in a GitHub pages site, and more.
 
-linkml is used for development of the [BioLink Model](https://biolink.github.io/biolink-model), but the framework is general purpose and can be used for any kind of modeling.
+LinkML is used for development of the [BioLink Model](https://linkml.github.io/biolink-model), but the framework is general purpose and can be used for any kind of modeling.
 
-This documentation is best seen via the [linkml site](https://biolink.github.io/linkml/) but can also be viewed via the GitHub repository
+This documentation is best seen via the [linkml site](https://linkml.github.io/linkml/) but can also be viewed via the GitHub repository
 
 Quickstart docs:
 
- * Browse the model (linkml is self-describing): [https://biolink.github.io/linkml/docs](https://biolink.github.io/linkml/docs)
-    * [class definition](https://biolink.github.io/linkml/docs/ClassDefinition) Class definitions
-    * [slot definition](https://biolink.github.io/linkml/docs/SlotDefinition) Class properties
-    * [type definition](https://biolink.github.io/linkml/docs/TypeDefinition) Data types
-    * [schema definition](https://biolink.github.io/linkml/docs/SchemaDefinition) Schema definition
+ * Browse the model (linkml is self-describing): [https://linkml.github.io/linkml/docs](https://linkml.github.io/linkml/docs)
+    * [class definition](https://linkml.github.io/linkml/docs/ClassDefinition) Class definitions
+    * [slot definition](https://linkml.github.io/linkml/docs/SlotDefinition) Class properties
+    * [type definition](https://linkml.github.io/linkml/docs/TypeDefinition) Data types
+    * [schema definition](https://linkml.github.io/linkml/docs/SchemaDefinition) Schema definition
 
 Further details about the general design of BiolinkML are in the [Biolink Modeling Language Specification](SPECIFICATION.md).
 
-For an example, see the [Jupyter notebook example](https://nbviewer.jupyter.org/github/linkml/blob/master/notebooks/examples.ipynb)
+For an example, see the [Jupyter notebook example](https://nbviewer.jupyter.org/github/linkml/blob/main/notebooks/examples.ipynb)
 
 ## Installation
 
@@ -35,10 +35,10 @@ This project uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) to ins
 
 ## Language Features
 
- * polymorphism/inheritance, see [is_a](https://biolink.github.io/linkml/docs/is_a)
- * [abstract](https://biolink.github.io/linkml/docs/abstract) and [mixin](https://biolink.github.io/linkml/docs/mixin) classes
- * control JSON-LD mappings to URIs via [prefixes](https://biolink.github.io/linkml/docs/prefixes) declarations
- * ability to refine meaning of a slot in the context of a particular class via [slot usage](https://biolink.github.io/linkml/docs/slot_usage)
+ * polymorphism/inheritance, see [is_a](https://linkml.github.io/linkml/docs/is_a)
+ * [abstract](https://linkml.github.io/linkml/docs/abstract) and [mixin](https://linkml.github.io/linkml/docs/mixin) classes
+ * control JSON-LD mappings to URIs via [prefixes](https://linkml.github.io/linkml/docs/prefixes) declarations
+ * ability to refine meaning of a slot in the context of a particular class via [slot usage](https://linkml.github.io/linkml/docs/slot_usage)
 
 
 ## Examples
@@ -302,7 +302,7 @@ model. These can be used in a static site, e.g. via GitHub pages.
 
 ## Specification
 
-See the [specification](https://biolink.github.io/linkml/SPECIFICATION).
+See the [specification](https://linkml.github.io/linkml/SPECIFICATION).
 
 Also see the [semantics](semantics) folder for an experimental specification in terms of FOL.
 

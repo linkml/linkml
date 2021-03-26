@@ -8,7 +8,7 @@ Editors note: add comments using HTML syntax, such as this one.
 
 ## Introduction (Informative)
 
-This document defines the [linkml](https://biolink.github.io/linkml/) syntax and language.
+This document defines the [linkml](https://linkml.github.io/linkml/) syntax and language.
 
 A Biolinkml (blml) schema is a formal computable description of how
 entities within a data model are inter-related. While blml arose in
@@ -21,11 +21,11 @@ YAML document can be translated to other representations.
 
 The 3 core modeling elements in blml are *types*, *classes*, and *slots*:
 
- - **[types](https://biolink.github.io/linkml/docs/TypeDefinition)** correspond to primitive datatypes, such as integers, strings, URIs
- - **[classes](https://biolink.github.io/linkml/docs/ClassDefinition)** are categories for data instances
- - **[slots](https://biolink.github.io/linkml/docs/SlotDefinition)** categorize the linkages instances can have to other instances, or to type instances
+ - **[types](https://linkml.github.io/linkml/docs/TypeDefinition)** correspond to primitive datatypes, such as integers, strings, URIs
+ - **[classes](https://linkml.github.io/linkml/docs/ClassDefinition)** are categories for data instances
+ - **[slots](https://linkml.github.io/linkml/docs/SlotDefinition)** categorize the linkages instances can have to other instances, or to type instances
 
-A [schema](https://biolink.github.io/linkml/docs/SchemaDefinition) is a collection of these elements.
+A [schema](https://linkml.github.io/linkml/docs/SchemaDefinition) is a collection of these elements.
 
 The blml also defines basic mechanisms for model element inheritance: **is_a**, **mixin** and **abstract** 
 properties for both classes and slots, plus a **typeof** property for types. In addition, the 
@@ -46,7 +46,7 @@ that is they are designed to help the reader understand the concepts
 presented in the normative elements.
 
 blml is also described by its [own schema](meta.yaml), which is also
-Normative. The schema can also be viewed on [this site](https://biolink.github.io/linkml/docs).
+Normative. The schema can also be viewed on [this site](https://linkml.github.io/linkml/docs).
 
 The documentation in this specification _must_ be consistent with the
 yaml representation.
