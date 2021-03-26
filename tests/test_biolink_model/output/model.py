@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-24 16:47
+# Generation date: 2021-03-26 14:20
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -16,16 +16,13 @@ from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 from linkml.utils.slot import Slot
 from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-if sys.version_info < (3, 7, 6):
-    from linkml.utils.dataclass_extensions_375 import dataclasses_init_fn_with_kwargs
-else:
-    from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml.utils.formatutils import camelcase, underscore, sfx
 from linkml.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml.utils.curienamespace import CurieNamespace
 from linkml.utils.metamodelcore import Bool, URIorCURIE, XSDDate, XSDTime
-from linkml_model import Boolean, Date, Double, Float, Integer, String, Time, Uriorcurie
+from linkml_model.types import Boolean, Date, Double, Float, Integer, String, Time, Uriorcurie
 
 metamodel_version = "1.7.0"
 

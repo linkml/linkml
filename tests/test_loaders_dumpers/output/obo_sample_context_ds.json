@@ -31,5 +31,5 @@
     }
   ],
   "@type": "Package",
-  "@context": "https://raw.githubusercontent.com/HOT-Ecosystem/TermCI-model/main/test_loaders_dumpers/jsonld_context/jsonld_11/termci_schema_inlined.context.jsonld"
+  "@context": {}
 }
