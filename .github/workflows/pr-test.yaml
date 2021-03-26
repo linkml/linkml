@@ -1,4 +1,4 @@
-name: unittests
+name: Pull request unit tests
 
 on:
   pull_request:
@@ -20,6 +20,8 @@ jobs:
     - name: Install pipenv
       uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
+      pip install linkml-model
+      pip install git+https://github.com/hsolbrig/pyld
       run: pipenv install --dev
 
     - name: Test with unittest
