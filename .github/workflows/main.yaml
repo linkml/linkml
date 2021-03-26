@@ -30,7 +30,8 @@ jobs:
 
     - name: Test with unittest
       run: |
-        pipenv run python -m unittest discover -p 'test_*.py'
+        # pipenv run python -m unittest discover -p 'test_*.py'
+        python -m unittest discover -p 'test_*.py'
 
     - name: Check in requirements.txt and requirements-dev.txt
       run: |
