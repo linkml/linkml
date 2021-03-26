@@ -2,8 +2,6 @@ import json
 import os
 from typing import List, Optional, Union
 
-from loaders import LD_11_DIR
-
 
 def flatten_dict(ctxt: str, base: str, seen: Optional[List[str]] = None) -> dict:
 
