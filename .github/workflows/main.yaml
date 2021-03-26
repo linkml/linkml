@@ -70,7 +70,8 @@ jobs:
       run: rm -fr docs/*
 
     - name: Create new docs
-      run: pipenv run python -c "from linkml.generators.markdowngen import MarkdownGenerator;
+      # NOTE: re-add "pipenv run" when we switch back to pipenv
+      run: python -c "from linkml.generators.markdowngen import MarkdownGenerator;
             from linkml import LOCAL_METAMODEL_YAML_FILE;
             MarkdownGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(directory='docs', image_dir='images')"
 
