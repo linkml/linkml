@@ -23,6 +23,7 @@ jobs:
         pipenv_to_requirements
         # NOTE: pipenv_to_requirements doesn't handle github requirements, so requirements.txt is wrong when it comes
         #       to pyld.  We have to use pipenv for the time being
+        pip install linkml-model
         pip install -r requirements.txt
         pip install -r requirements-dev.txt
         # pipenv install --dev
