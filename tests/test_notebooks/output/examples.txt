@@ -29,10 +29,10 @@ metamodel_version = "1.7.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-EX = CurieNamespace('ex', 'http://example.org/model/')
 FOAF = CurieNamespace('foaf', 'http://xmlns.com/foaf/0.1/')
+SAMP = CurieNamespace('samp', 'http://example.org/model/')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
-DEFAULT_ = EX
+DEFAULT_ = SAMP
 
 
 # Types
@@ -40,21 +40,21 @@ class String(str):
     type_class_uri = XSD.string
     type_class_curie = "xsd:string"
     type_name = "string"
-    type_model_uri = EX.String
+    type_model_uri = SAMP.String
 
 
 class Int(int):
     type_class_uri = XSD.integer
     type_class_curie = "xsd:integer"
     type_name = "int"
-    type_model_uri = EX.Int
+    type_model_uri = SAMP.Int
 
 
 class Boolean(Bool):
     type_class_uri = XSD.boolean
     type_class_curie = "xsd:boolean"
     type_name = "boolean"
-    type_model_uri = EX.Boolean
+    type_model_uri = SAMP.Boolean
 
 
 # Class references
@@ -73,10 +73,10 @@ class Person(YAMLRoot):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Person
-    class_class_curie: ClassVar[str] = "ex:Person"
+    class_class_uri: ClassVar[URIRef] = SAMP.Person
+    class_class_curie: ClassVar[str] = "samp:Person"
     class_name: ClassVar[str] = "person"
-    class_model_uri: ClassVar[URIRef] = EX.Person
+    class_model_uri: ClassVar[URIRef] = SAMP.Person
 
     id: Union[str, PersonId] = None
     last_name: str = None
@@ -124,10 +124,10 @@ class FriendlyPerson(Person):
     """
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.FriendlyPerson
-    class_class_curie: ClassVar[str] = "ex:FriendlyPerson"
+    class_class_uri: ClassVar[URIRef] = SAMP.FriendlyPerson
+    class_class_curie: ClassVar[str] = "samp:FriendlyPerson"
     class_name: ClassVar[str] = "friendly_person"
-    class_model_uri: ClassVar[URIRef] = EX.FriendlyPerson
+    class_model_uri: ClassVar[URIRef] = SAMP.FriendlyPerson
 
     id: Union[str, FriendlyPersonId] = None
     last_name: str = None
@@ -157,26 +157,26 @@ class FriendlyPerson(Person):
 class slots:
     pass
 
-slots.id = Slot(uri=EX.id, name="id", curie=EX.curie('id'),
-                   model_uri=EX.id, domain=None, range=URIRef)
+slots.id = Slot(uri=SAMP.id, name="id", curie=SAMP.curie('id'),
+                   model_uri=SAMP.id, domain=None, range=URIRef)
 
 slots.first_name = Slot(uri=FOAF.firstName, name="first name", curie=FOAF.curie('firstName'),
-                   model_uri=EX.first_name, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=SAMP.first_name, domain=None, range=Optional[Union[str, List[str]]])
 
 slots.last_name = Slot(uri=FOAF.lastName, name="last name", curie=FOAF.curie('lastName'),
-                   model_uri=EX.last_name, domain=None, range=str)
+                   model_uri=SAMP.last_name, domain=None, range=str)
 
-slots.living = Slot(uri=EX.living, name="living", curie=EX.curie('living'),
-                   model_uri=EX.living, domain=None, range=Optional[Bool])
+slots.living = Slot(uri=SAMP.living, name="living", curie=SAMP.curie('living'),
+                   model_uri=SAMP.living, domain=None, range=Optional[Bool])
 
 slots.age = Slot(uri=FOAF.age, name="age", curie=FOAF.curie('age'),
-                   model_uri=EX.age, domain=None, range=Optional[int])
+                   model_uri=SAMP.age, domain=None, range=Optional[int])
 
 slots.knows = Slot(uri=FOAF.knows, name="knows", curie=FOAF.curie('knows'),
-                   model_uri=EX.knows, domain=None, range=Optional[Union[Union[str, PersonId], List[Union[str, PersonId]]]])
+                   model_uri=SAMP.knows, domain=None, range=Optional[Union[Union[str, PersonId], List[Union[str, PersonId]]]])
 
-slots.friendly_person_knows = Slot(uri=EX.knows, name="friendly_person_knows", curie=EX.curie('knows'),
-                   model_uri=EX.friendly_person_knows, domain=FriendlyPerson, range=Union[Union[str, PersonId], List[Union[str, PersonId]]])
+slots.friendly_person_knows = Slot(uri=SAMP.knows, name="friendly_person_knows", curie=SAMP.curie('knows'),
+                   model_uri=SAMP.friendly_person_knows, domain=FriendlyPerson, range=Union[Union[str, PersonId], List[Union[str, PersonId]]])
 <img src="http://yuml.me/diagram/nofunky;dir:TB/class/[Person]<knows 0..*- [Person|id:string;first_name:string *;last_name:string;age:int %3F;living:boolean %3F],[FriendlyPerson|id(i):string;first_name(i):string *;last_name(i):string;age(i):int %3F;living(i):boolean %3F]- knows 1..*>[Person],[Person]^-[FriendlyPerson],[FriendlyPerson]"/>
 
 -----
@@ -185,8 +185,8 @@ http://yuml.me/diagram/nofunky;dir:TB/class/[Person]<knows 0..*- [Person|id:stri
 {
    "_comments": "Auto generated from None by jsonldcontextgen.py version: 0.1.1\n    Generation date:",
    "@context": {
-      "ex": "http://example.org/model/",
       "foaf": "http://xmlns.com/foaf/0.1/",
+      "samp": "http://example.org/model/",
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "http://example.org/model/",
       "age": {
@@ -207,7 +207,7 @@ http://yuml.me/diagram/nofunky;dir:TB/class/[Person]<knows 0..*- [Person|id:stri
       "living": {
          "@type": "xsd:boolean"
       },
-      "@base": "http://example.org/context/"
+      "@base": "http://example.org/people/"
    }
 }
 BASE <http://example.org/model/>
@@ -257,8 +257,8 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
    "age": 43,
    "@type": "Person",
    "@context": {
-      "ex": "http://example.org/model/",
       "foaf": "http://xmlns.com/foaf/0.1/",
+      "samp": "http://example.org/model/",
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "http://example.org/model/",
       "age": {
@@ -279,19 +279,19 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
       "living": {
          "@type": "xsd:boolean"
       },
-      "@base": "http://example.org/context/"
+      "@base": "http://example.org/people/"
    }
 }
 @prefix : <http://example.org/model/> .
-@prefix ex: <http://example.org/model/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix samp: <http://example.org/model/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/context/42> a ex:Person ;
+<http://example.org/people/42> a samp:Person ;
     foaf:age 43 ;
     foaf:firstName "Bob",
         "Joe" ;
     foaf:lastName "smith" .
 
 
-  Shape: http://example.org/sample/example1/Person not found in Schema
+Focus: http://example.org/context/42 not in graph
