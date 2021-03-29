@@ -5,7 +5,7 @@ from linkml_model import linkml_files
 from linkml_model.linkml_files import Source, Format
 from rdflib.plugins.serializers.turtle import TurtleSerializer
 
-assert sys.version_info > (3, 7, 5), f"LinkML requires python 3.7.6 or later to run.  Current version: {sys.version_info}"
+assert sys.version_info > (3, 7, 0), f"LinkML requires python 3.7.1 or later to run.  Current version: {sys.version_info}"
 
 MODULE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
