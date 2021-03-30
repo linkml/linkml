@@ -78,6 +78,41 @@ class OwlSchemaGenerator(Generator):
                     self.graph.add((uri, SKOS.exactMatch, m_uri))
                 else:
                     logging.warning(f'No URI for {m}')
+        if e.exact_mappings is not None:
+            for m in e.exact_mappings:
+                m_uri = self.namespaces.uri_for(m)
+                if m_uri is not None:
+                    self.graph.add((uri, SKOS.exactMatch, m_uri))
+                else:
+                    logging.warning(f'No URI for {m}')
+        if e.close_mappings is not None:
+            for m in e.close_mappings:
+                m_uri = self.namespaces.uri_for(m)
+                if m_uri is not None:
+                    self.graph.add((uri, SKOS.closeMatch, m_uri))
+                else:
+                    logging.warning(f'No URI for {m}')
+        if e.narrow_mappings is not None:
+            for m in e.narrow_mappings:
+                m_uri = self.namespaces.uri_for(m)
+                if m_uri is not None:
+                    self.graph.add((uri, SKOS.narrowMatch, m_uri))
+                else:
+                    logging.warning(f'No URI for {m}')
+        if e.broad_mappings is not None:
+            for m in e.broad_mappings:
+                m_uri = self.namespaces.uri_for(m)
+                if m_uri is not None:
+                    self.graph.add((uri, SKOS.broadMatch, m_uri))
+                else:
+                    logging.warning(f'No URI for {m}')
+        if e.related_mappings is not None:
+            for m in e.related_mappings:
+                m_uri = self.namespaces.uri_for(m)
+                if m_uri is not None:
+                    self.graph.add((uri, SKOS.relatedMatch, m_uri))
+                else:
+                    logging.warning(f'No URI for {m}')
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         cls_uri = self._class_uri(cls.name)
