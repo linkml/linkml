@@ -38,6 +38,7 @@ jobs:
         python -m unittest discover -p 'test_*.py'
 
     - name: Check in requirements.txt and requirements-dev.txt
+      if: ${{ matrix.python-version }} == '3.8'
       run: |
         git add requirements*.txt
         if [[ ! -z $(git status -s requirements*.txt) ]]
@@ -49,6 +50,7 @@ jobs:
         fi
 
     - name: Check in test outputs
+      if: ${{ matrix.python-version }} == '3.8'
       run: |
         find tests -name output -exec git add --force {} \;
         if [[ ! -z $(git status -s tests) ]]
@@ -60,6 +62,7 @@ jobs:
         fi
 
     - name: Check in updated notebooks
+      if: ${{ matrix.python-version }} == '3.8'
       run: |
         if [[ ! -z $(git status -s notebooks) ]]
         then
@@ -70,15 +73,18 @@ jobs:
         fi
 
     - name: Remove old docs
+      if: ${{ matrix.python-version }} == '3.8'
       run: rm -fr docs/*
 
     - name: Create new docs
+      if: ${{ matrix.python-version }} == '3.8'
       # NOTE: re-add "pipenv run" when we switch back to pipenv
       run: python -c "from linkml.generators.markdowngen import MarkdownGenerator;
             from linkml import LOCAL_METAMODEL_YAML_FILE;
             MarkdownGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(directory='docs', image_dir='images')"
 
     - name: Commit changes and push
+      if: ${{ matrix.python-version }} == '3.8'
       run: |
         git add docs
         if [[ ! -z $(git status -s docs) ]]
