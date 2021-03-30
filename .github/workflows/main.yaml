@@ -38,7 +38,7 @@ jobs:
         python -m unittest discover -p 'test_*.py'
 
     - name: Check in requirements.txt and requirements-dev.txt
-      if: ${{ matrix.python-version }} == '3.8'
+      if: ${{ matrix.python-version == '3.8' }}
       run: |
         git add requirements*.txt
         if [[ ! -z $(git status -s requirements*.txt) ]]
@@ -50,7 +50,7 @@ jobs:
         fi
 
     - name: Check in test outputs
-      if: ${{ matrix.python-version }} == '3.8'
+      if: ${{ matrix.python-version == '3.8' }}
       run: |
         find tests -name output -exec git add --force {} \;
         if [[ ! -z $(git status -s tests) ]]
@@ -62,7 +62,7 @@ jobs:
         fi
 
     - name: Check in updated notebooks
-      if: ${{ matrix.python-version }} == '3.8'
+      if: ${{ matrix.python-version == '3.8' }}
       run: |
         if [[ ! -z $(git status -s notebooks) ]]
         then
