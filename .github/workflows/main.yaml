@@ -71,15 +71,3 @@ jobs:
           git commit -m 'Automated adding updated notebooks' notebooks
           git push
         fi
-
-    - name: Commit changes and push
-      if: ${{ matrix.python-version }} == '3.8'
-      run: |
-        git add docs
-        if [[ ! -z $(git status -s docs) ]]
-        then
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m 'Automated update to docs with GitHub Actions' docs
-          git push
-        fi
