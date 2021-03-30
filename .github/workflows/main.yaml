@@ -72,17 +72,6 @@ jobs:
           git push
         fi
 
-    - name: Remove old docs
-      if: ${{ matrix.python-version }} == '3.8'
-      run: rm -fr docs/*
-
-    - name: Create new docs
-      if: ${{ matrix.python-version }} == '3.8'
-      # NOTE: re-add "pipenv run" when we switch back to pipenv
-      run: python -c "from linkml.generators.markdowngen import MarkdownGenerator;
-            from linkml import LOCAL_METAMODEL_YAML_FILE;
-            MarkdownGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(directory='docs', image_dir='images')"
-
     - name: Commit changes and push
       if: ${{ matrix.python-version }} == '3.8'
       run: |
