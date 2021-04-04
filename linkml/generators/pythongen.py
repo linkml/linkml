@@ -422,7 +422,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         Generate a class variable declaration for the supplied slot.  Note: the can_be_positional attribute works,
         but it makes tag/value lists unduly complex, as you can't load them with tag=..., value=... -- you HAVE
         to load positionally. We currently ignore this parameter, meaning that we have a tag/value option for
-        any BiolinkML element
+        any LinkML element
 
         :param cls: Owning class
         :param slot: slot definition
@@ -446,7 +446,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,
         but it makes tag/value lists unduly complex, as you can't load them with tag=..., value=... -- you HAVE
         to load positionally. We currently ignore this parameter, meaning that we have a tag/value option for
-        any BiolinkML element
+        any LinkML element
 
         :param slot: slot to generate type for
         :param cls: containing class -- used to render key slots correctly.  If absent, slot is an add-in
@@ -878,7 +878,7 @@ class {enum_name}(EnumDefinitionImpl):
 @click.option("--classvars/--no-classvars", default=True, help="Generate CLASSVAR info")
 @click.option("--slots/--no-slots", default=True, help="Generate Slot information")
 def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
-    """ Generate python classes to represent a biolink model """
+    """ Generate python classes to represent a LinkML model """
     print(PythonGenerator(yamlfile, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))
 
 
