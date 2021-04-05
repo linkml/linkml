@@ -113,7 +113,9 @@ class ClickTestCase(TestEnvironmentTestCase):
 
         if add_yaml and (not arg_list or arg_list[0] != '--help'):
             arg_list.insert(0, self.env.meta_yaml)
-            arg_list += ["--importmap", self.env.import_map, "--log_level", DEFAULT_LOG_LEVEL_TEXT]
+            arg_list += ["--importmap", self.env.import_map]
+            if '--log_level' not in arg_list:
+                arg_list += ["--log_level", DEFAULT_LOG_LEVEL_TEXT]
 
         target = os.path.join(self.testdir, testFileOrDirectory)
         self.temp_file_path(self.testdir, is_dir=True)

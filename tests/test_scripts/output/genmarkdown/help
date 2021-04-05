@@ -7,6 +7,8 @@ Options:
   -c, --classes TEXT              Class(es) to emit
   -i, --img                       Download YUML images to 'image' directory
   --noimages                      Do not (re-)generate images
+  --notypesdir                    Do not create a separate types directory
+  --warnonexist                   Warn if output file already exists
   -f, --format [md]               Output format (default=md)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
