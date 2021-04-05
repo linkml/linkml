@@ -20,12 +20,13 @@ class MarkdownGenerator(Generator):
     valid_formats = ["md"]
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], no_types_dir: bool = False, warn_on_exist:bool = False, **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.directory: Optional[str] = None
         self.image_directory: Optional[str] = None
-        self.types_directory: Optional[str] = None
         self.noimages: bool = False
+        self.no_types_dir = no_types_dir
+        self.warn_on_exist = warn_on_exist
         self.gen_classes: Optional[Set[ClassDefinitionName]] = None
         self.gen_classes_neighborhood: Optional[References] = None
         self.BASE = None
@@ -49,10 +50,10 @@ class MarkdownGenerator(Generator):
             if not noimages:
                 os.makedirs(self.image_directory, exist_ok=True)
         self.noimages = noimages
-        self.types_directory = os.path.join(directory, 'types')
-        os.makedirs(self.types_directory, exist_ok=True)
+        if not self.no_types_dir:
+            os.makedirs(os.path.join(directory, 'types'), exist_ok=True)
 
-        with open(os.path.join(directory, 'index.md'), 'w') as ixfile:
+        with open(self.exist_warning(directory, 'index.md'), 'w') as ixfile:
             with redirect_stdout(ixfile):
                 self.frontmatter(f"{self.schema.name.title()} schema")
                 self.para(be(self.schema.description))
@@ -89,7 +90,8 @@ class MarkdownGenerator(Generator):
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.gen_classes and cls.name not in self.gen_classes:
             return False
-        with open(self.dir_path(cls), 'w') as clsfile:
+
+        with open(self.exist_warning(self.dir_path(cls)), 'w') as clsfile:
             with redirect_stdout(clsfile):
                 class_curi = self.namespaces.uri_or_curie_for(self.namespaces._base, camelcase(cls.name))
                 class_uri = self.namespaces.uri_for(class_curi)
@@ -175,7 +177,7 @@ class MarkdownGenerator(Generator):
         return False
 
     def visit_type(self, typ: TypeDefinition) -> None:
-        with open(self.dir_path(typ), 'w') as typefile:
+        with open(self.exist_warning(self.dir_path(typ)), 'w') as typefile:
             with redirect_stdout(typefile):
                 type_uri = typ.definition_uri
                 type_curie = self.namespaces.curie_for(type_uri)
@@ -191,7 +193,7 @@ class MarkdownGenerator(Generator):
                 self.element_properties(typ)
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        with open(self.dir_path(slot), 'w') as slotfile:
+        with open(self.exist_warning(self.dir_path(slot)), 'w') as slotfile:
             with redirect_stdout(slotfile):
                 slot_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(slot.name))
                 slot_uri = self.namespaces.uri_for(slot_curie)
@@ -296,7 +298,7 @@ class MarkdownGenerator(Generator):
         filename = self.formatted_element_name(obj) if isinstance(obj, ClassDefinition) \
             else underscore(obj.name) if isinstance(obj, SlotDefinition) \
             else camelcase(obj.name)
-        subdir = '/types' if isinstance(obj, TypeDefinition) else ''
+        subdir = '/types' if isinstance(obj, TypeDefinition) and not self.no_types_dir else ''
         return f'{self.directory}{subdir}/{filename}.md'
 
     def mappings(self, obj: [SlotDefinition, ClassDefinition]) -> None:
@@ -438,7 +440,7 @@ class MarkdownGenerator(Generator):
             link_ref = underscore(obj.name)
         elif isinstance(obj, TypeDefinition):
             link_name = camelcase(obj.name)
-            link_ref = f"types/{link_name}"
+            link_ref = f"types/{link_name}" if not self.no_types_dir else f"{link_name}"
         elif isinstance(obj, ClassDefinition):
             link_name = camelcase(obj.name)
             link_ref = camelcase(link_name)
@@ -482,6 +484,13 @@ class MarkdownGenerator(Generator):
     def xlink(self, id_: str) -> str:
         return f'[{id_}]({self.id_to_url(id_)})'
 
+    def exist_warning(self, *fpath: str) -> str:
+        """ Create a file name out of fpath and check whether it already exists """
+        fname = os.path.join(*fpath)
+        if self.warn_on_exist and os.path.exists(fname):
+            self.logger.warning(f"File {fname} already exists")
+        return fname
+
 
     @staticmethod
     def id_to_url(id_: str) -> str:
@@ -498,16 +507,18 @@ class MarkdownGenerator(Generator):
                 uri = base+frag
         return uri
 
-
 @shared_arguments(MarkdownGenerator)
 @click.command()
 @click.option("--dir", "-d", help="Output directory")
 @click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
 @click.option("--img", "-i",  is_flag=True, help="Download YUML images to 'image' directory")
 @click.option("--noimages", is_flag=True, help="Do not (re-)generate images")
-def cli(yamlfile, dir, img, **kwargs):
+@click.option("--notypesdir", is_flag=True, help="Do not create a separate types directory")
+@click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
+def cli(yamlfile, dir, img, notypesdir, warnonexist, **kwargs):
     """ Generate markdown documentation of a biolink model """
-    MarkdownGenerator(yamlfile, **kwargs).serialize(directory=dir, image_dir=img, **kwargs)
+    MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)\
+        .serialize(directory=dir, image_dir=img, **kwargs)
 
 
 if __name__ == '__main__':
