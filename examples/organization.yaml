@@ -11,6 +11,7 @@ types:
 
 prefixes:
   ORGDATA: http://example.org/sample/organization/data/
+  xsd: http://www.w3.org/2001/XMLSchema#
     
 classes:
 
