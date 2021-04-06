@@ -1,6 +1,6 @@
 Usage: gen-python [OPTIONS] YAMLFILE
 
-  Generate python classes to represent a biolink model
+  Generate python classes to represent a LinkML model
 
 Options:
   --head / --no-head              Emit metadata heading
