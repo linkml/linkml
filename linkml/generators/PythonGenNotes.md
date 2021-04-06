@@ -1,11 +1,11 @@
 # Notes on the python generator
-## Code generation for BiolinkML slots
+## Code generation for LinkML slots
 The generation of slot entries in class definitions is split into two parts:
 1) The declaration of the slot type
 2) The `__post_init__` processing transforms several allowable input forms into single, consistent internal representation.
 
 The elements that control the python for slot generation include
-* Whether `range` references an instance of a BiolinkML `type` or a BiolinkML `class`
+* Whether `range` references an instance of a LinkML `type` or a LinkML `class`
 * If the slot range is a `class`:
     * Whether the class has a key (`key: <type>`), an identifier (`identifier: <type>`), or neither
     * _If_ the class has a `key` or `identifier`, whether the instances are inlined as a dictionary (`inlined: true`), 
@@ -17,8 +17,8 @@ The elements that control the python for slot generation include
 * The `default` value (not covered in this document)
 
 These various situations are described more detail below:
-### 1) Slot range is a BiolinkML `type` definition
-BiolinkML type definitions can take one of three forms:
+### 1) Slot range is a LinkML `type` definition
+LinkML type definitions can take one of three forms:
 1) Builtin python type
     ```yaml
     types:
@@ -120,7 +120,7 @@ the builtin type `int`.  Four class variables are included in the generation:
 * `type_class_uri` - the URIRef for the type itself
 * `type_class_curie` - the string CURIE representation of the type
 * `type_name` - the non-mangled name assigned to the type in the original definition
-* `type_model_uri` - the URIRef of the type definition in the default BiolinkML namespace
+* `type_model_uri` - the URIRef of the type definition in the default LinkML namespace
 
 The python then emits a class definition for the `Integers` classe, where we have defined four slot type permutations:
 
@@ -148,7 +148,7 @@ The python then emits a class definition for the `Integers` classe, where we hav
     
         `mand_multi_integer: Union[int, List[int]] = None` 
     
-    * Check that the value is present.  _Note:_ BiolinkML treats an empty list as the same as an absent value.
+    * Check that the value is present.  _Note:_ LinkML treats an empty list as the same as an absent value.
      
         ```
             if self.mand_multi_integer is None:
@@ -372,20 +372,20 @@ class InheritedTypes(YAMLRoot):
 The Python patterns for each of the inherited types (Inherited from basic (e.g. `int`), inherited from metamodelcore.py
 (e.g. `uriorcurie`) or from another type are identical to those generated above for `XSDDate`
 
-### 2) Slot range is a BiolinkML `class` definition
-The previous section described the Python that was generated for slot ranges that reference BiolinkML **Type** definitions.
-This section addresses the second use case, where the slot range references another BiolinkML **Class**.  Classes are
+### 2) Slot range is a LinkML `class` definition
+The previous section described the Python that was generated for slot ranges that reference LinkML **Type** definitions.
+This section addresses the second use case, where the slot range references another LinkML **Class**.  Classes are
 a more complex example, because, as opposed to types, classes can either be represented by _value_ or, if they have been 
 declared to have unique identifiers, by _reference_.  In addition, classes that are represented by value can either be
 represented as lists of values or dictionaries. 
 
-The following attributes control how the python is generated for a BiolinkML `class` definition:
+The following attributes control how the python is generated for a LinkML `class` definition:
 * The slot `abstract` setting
 * The slot `required` setting
 * The slot `multivalued` setting
 * Whether a class includes a slot identified as a "key" (`"key": true`), an "identifier" (`"identifier": true`) or 
 neither.  Note that at the moment, a class may have at most one key or identifier slot.  Two keys, two identifiers or
-a key and an identifier are all considered errors.  It is anticipated that a future version of BiolinkML will allow
+a key and an identifier are all considered errors.  It is anticipated that a future version of LinkML will allow
 multiple key slots, directly implementing the notion of a "compound key".
 * The slot `inlined` and `inlined_as_list` properties
 * The slot `ifabsent` attribute
@@ -511,7 +511,7 @@ The code:
 3) coerces the list of zero or more items into a list of `OneElementClass` instances
 
 In the final case, we've attempted to show both a) what a required inline list looks like and b) show that the target
-type is irrelevant as long as it is a BiolinkML `Class` and has no `key` or `identifier` slots
+type is irrelevant as long as it is a LinkML `Class` and has no `key` or `identifier` slots
  
 
 ```python
@@ -542,7 +542,7 @@ The structural differences between the above class and its predecessor are:
 
 
 ### Keyed or Identified Classes
-When the range of a slot is a BiolinkML class that has a `key` or an `identifier`, additional options 
+When the range of a slot is a LinkML class that has a `key` or an `identifier`, additional options 
 present themselves:
 1) Should elements be represented inline or as references?
 2) If inline, should the elements be represented as lists or as dictionaries, whose key is the `key` or `identifier`
@@ -636,7 +636,7 @@ class IdentifiedThreeElementClass(YAMLRoot):
         super().__post_init__(**kwargs)
 ```
 
-We can now begin with the following BiolinkML class definitions:
+We can now begin with the following LinkML class definitions:
 ```yaml
   OptionalKeyedThreeElementRange:
     description: Range is a optional class that contains one key and two regular elements
@@ -693,7 +693,7 @@ take one of:
 The key is recorded in the class.  Note that the Python code, as it exists today, does NOT check that there actually
 `exists` an instance of `KeyedThreeElementClass` with the name in `v1` and, as such, there is _currently_ no way to
 get directly from an instance of the class, `OptionalKeyedThreeElementRange` to an instance of `KeyedThreeElementClass`.
-This check and capability may be added to a later version of the BiolinkML tooling. The second example, below, shows
+This check and capability may be added to a later version of the LinkML tooling. The second example, below, shows
 an optional _list_
 
 ```python

@@ -21,9 +21,10 @@ Quickstart docs:
     * [type definition](https://linkml.github.io/linkml/docs/TypeDefinition) Data types
     * [schema definition](https://linkml.github.io/linkml/docs/SchemaDefinition) Schema definition
 
-Further details about the general design of BiolinkML are in the [Biolink Modeling Language Specification](SPECIFICATION.md).
+Further details about the general design of LinkML are in the [LinkML Modeling Language Specification](SPECIFICATION.md).
 
 For an example, see the [Jupyter notebook example](https://nbviewer.jupyter.org/github/linkml/blob/main/notebooks/examples.ipynb)
+
 
 ## Installation
 
@@ -380,9 +381,17 @@ If the Pypi release failed, make fixes, [delete the GitHub release](https://help
 
 ## Additional Documentation
 
- * [BiolinkML for environmental and omics metadata](https://docs.google.com/presentation/d/1xK__vZdv0jHtOu0eOTzGUJeDt9YMVOGR1jxIXTtdXDM/edit?usp=sharing)
+ * [LinkML for environmental and omics metadata](https://docs.google.com/presentation/d/1xK__vZdv0jHtOu0eOTzGUJeDt9YMVOGR1jxIXTtdXDM/edit?usp=sharing)
+
+## History
+
+This framework used to be called BiolinkML. LinkML replaces BiolinkML.
+
+For assistance in migration, see [Migration.md](Migration.md)
 
 ## Example Projects
+
+Note: this list will be replaced by the [linkml registry](https://github.com/linkml/linkml-registry)
 
  * [Biolink Model](https://github.com/biolink/biolink-model) -- this was the original linkml project
  * [National Microbiome Data Collaborative](https://github.com/microbiomedata/nmdc-metadata)

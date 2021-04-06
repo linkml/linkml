@@ -1,4 +1,4 @@
-# linkml specification (DRAFT)
+# LinkML specification (DRAFT)
 
 <!--
 
@@ -10,8 +10,8 @@ Editors note: add comments using HTML syntax, such as this one.
 
 This document defines the [linkml](https://linkml.github.io/linkml/) syntax and language.
 
-A Biolinkml (blml) schema is a formal computable description of how
-entities within a data model are inter-related. While blml arose in
+A LinkML schema is a formal computable description of how
+entities within a data model are inter-related. While LinkML arose in
 response to a need in life-sciences domain modeling to define the
 Biolink Model, it is completely domain-neutral, and can be used to
 model pet stores, etc.
@@ -19,7 +19,7 @@ model pet stores, etc.
 The primary representation of a schema is via a YAML document. This
 YAML document can be translated to other representations.
 
-The 3 core modeling elements in blml are *types*, *classes*, and *slots*:
+The 3 core modeling elements in LinkML are *types*, *classes*, and *slots*:
 
  - **[types](https://linkml.github.io/linkml/docs/TypeDefinition)** correspond to primitive datatypes, such as integers, strings, URIs
  - **[classes](https://linkml.github.io/linkml/docs/ClassDefinition)** are categories for data instances
@@ -27,13 +27,13 @@ The 3 core modeling elements in blml are *types*, *classes*, and *slots*:
 
 A [schema](https://linkml.github.io/linkml/docs/SchemaDefinition) is a collection of these elements.
 
-The blml also defines basic mechanisms for model element inheritance: **is_a**, **mixin** and **abstract** 
+The LinkML also defines basic mechanisms for model element inheritance: **is_a**, **mixin** and **abstract** 
 properties for both classes and slots, plus a **typeof** property for types. In addition, the 
 **subclass_of** property can anchor a class to the semantics of an ontology term in an external 
 3rd party (but model-designated) ontology. Semantic constraints to 'internal' model slot or class 
 hierarchies are similarly constrained by **domain**, **range** and  **subproperty_of** properties.
  
-blml is intended to be used in a variety of modeling contexts: JSON
+LinkML is intended to be used in a variety of modeling contexts: JSON
 documents, RDF graphs, RDF* graphs and property graphs, as well as
 tabular data. Converters exist for these different representations.
 
@@ -45,14 +45,14 @@ requirements. Informative elements are those that are descriptive,
 that is they are designed to help the reader understand the concepts
 presented in the normative elements.
 
-blml is also described by its [own schema](meta.yaml), which is also
+LinkML is also described by its [own schema](meta.yaml), which is also
 Normative. The schema can also be viewed on [this site](https://linkml.github.io/linkml/docs).
 
 The documentation in this specification _must_ be consistent with the
 yaml representation.
 
 The italicized keywords _must_, _must not_, _should_, _should not_,
-and _may_ are used to specify normative features blml documents
+and _may_ are used to specify normative features LinkML documents
 and tools, and are interpreted as specified in RFC 211.
 
 ## Domain (Normative)
@@ -75,13 +75,13 @@ Subject = IRI | BlankNode | Literal
 
 ### Notes (informative)
 
-The primary domain of linkml is an RDF graph, but blml schemas may
+The primary domain of linkml is an RDF graph, but LinkML schemas may
 be used for JSON documents, Property Graphs, UML object graphs, and
 tabular/relational data.
 
 ## Schema Representation (Informative)
 
-The normative representation of a blml [schema](https://w3id.org/linkml/meta/SchemaDefinition) is as a YAML document.
+The normative representation of a LinkML [schema](https://w3id.org/linkml/meta/SchemaDefinition) is as a YAML document.
 
 The document includes dictionaries of schema **elements**. Each
 dictionary is indexed by the element **name**. Dictionaries _may_ be
@@ -100,7 +100,7 @@ The structure of the document
 
 Example (Informative):
 
-This example illustrates broadly structure of a blml schema. Ellipses indicate information omitted for brevity
+This example illustrates broadly structure of a LinkML schema. Ellipses indicate information omitted for brevity
 
 ```yaml
 id: https://example.org/example-schema
@@ -220,7 +220,7 @@ TODO
 
 ### Metadata elements (Normative)
 
-As mentioned in the [Introduction](#introduction-Informative), semantic inheritance within a model is specified by several BiolinkML reserved properties:
+As mentioned in the [Introduction](#introduction-Informative), semantic inheritance within a model is specified by several LinkML reserved properties:
 - **is_a:**
 - **abstract:**
 - **mixin:**
@@ -273,7 +273,7 @@ We define function `ancestors*(s)` which is the transitive close of the union of
 
 ### Classes and Class Slots (Normative)
 
-In Biolink, as in the [Web Ontology Language OWL class](https://www.w3.org/TR/owl-guide/), is a classification of individuals into groups 
+In LinkML, as in the [Web Ontology Language OWL class](https://www.w3.org/TR/owl-guide/), is a classification of individuals into groups 
 which share common characteristics. If an individual is a member of a class, it tells a machine reader that it falls under the 
 semantic classification given by the class.
 

@@ -52,7 +52,7 @@ def load(source: Union[str, TextIO, Graph], base_dir: Optional[str], target_clas
         else:
             data_as_dict = data
         typ = data_as_dict.pop('@type', None)
-        # TODO: remove this when we get the Biolinkml issue fixed
+        # TODO: remove this when we get the linkml issue fixed
         if not typ:
             typ = data_as_dict.pop('type', None)
         if typ and typ != target_class.class_name:

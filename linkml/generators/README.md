@@ -1,4 +1,4 @@
-# BiolinkML representation generators
+# LinkML representation generators
 
 | command line | module | Generator name | function | help file |
 | -----------  | ------ | -------------  | -------- | --------- |
