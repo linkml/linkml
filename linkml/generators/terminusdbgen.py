@@ -75,6 +75,8 @@ class TerminusdbGenerator(Generator):
         )
         if cls.is_a:
             self.clswq.parent(camelcase(cls.is_a))
+        if cls.abstract:
+            self.clswq.abstract()
         return True
 
     def end_class(self, cls: ClassDefinition) -> None:
