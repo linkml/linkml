@@ -77,6 +77,13 @@ class TerminusdbGenerator(Generator):
             self.clswq.parent(camelcase(cls.is_a))
         if cls.abstract:
             self.clswq.abstract()
+        if cls.broad_mappings:
+            if any(
+                str(self.namespaces.uri_for(m))
+                == "http://terminusdb.com/schema/system#Document"
+                for m in cls.broad_mappings
+            ):
+                self.clswq.parent("Document")
         return True
 
     def end_class(self, cls: ClassDefinition) -> None:
