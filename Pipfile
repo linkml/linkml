@@ -31,9 +31,11 @@ prologterms = ">=0.0.6"
 watchdog = ">=0.9.0"
 isodate = ">=0.6.0"
 parse = "*"
-pyld = { git = "https://github.com/hsolbrig/pyld"}
+pyld = {git = "https://github.com/hsolbrig/pyld"}
 rdflib-pyld-compat = "*"
 hbreader = "*"
 # NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
 #linkml_model = {editable = true, path = "/Users/solbrig/git/linkml/linkml-model"}
 linkml_model = ">=0.0.10"
+sqlaclhemy = "*"
+sqlalchemy = "*"

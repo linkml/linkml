@@ -19,8 +19,7 @@ class IssueSQLGenTestCase(TestEnvironmentTestCase):
 
     def test_sqlddlgen(self):
         PATH = env.input_path('issue_288.yaml')
-        YAMLGenerator(PATH)
-        ddl = SQLDDLGenerator(PATH).serialize()
+        ddl = SQLDDLGenerator(PATH, dialect='mssql+pyodbc').serialize()
         with open(env.input_path('issue_288.sql'), "w") as io:
             io.write(ddl)
         print(ddl)
