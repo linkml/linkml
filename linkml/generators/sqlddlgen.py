@@ -148,3 +148,6 @@ SQL-Alchemy dialect, e.g. sqlite, mysql+odbc
 def cli(yamlfile, **args):
     """ Generate SQL DDL representation """
     print(SQLDDLGenerator(yamlfile, **args).serialize(**args))
+
+if __name__ == '__main__':
+    cli()
