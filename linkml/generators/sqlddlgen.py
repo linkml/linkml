@@ -27,6 +27,7 @@ class SQLDDLGenerator(Generator):
     visit_all_class_slots: bool = True
     use_inherits: bool = False  ## postgresql supports inheritance
     dialect: str
+    inject_primary_keys: bool = True
 
     # we maintain our own structure before feeding to sqlalchemy
     # https://stackoverflow.com/questions/52045695/sqlalchemy-remove-column-from-table-definition
@@ -37,6 +38,9 @@ class SQLDDLGenerator(Generator):
         self.relative_slot_num = 0
         self.dialect = dialect
 
+    def _is_hidden(self, cls: ClassDefinition) -> bool:
+        if cls.mixin or cls.abstract or not cls.slots:
+            return False
 
     def end_schema(self, **kwargs) -> None:
         engine = create_mock_engine(
@@ -46,12 +50,13 @@ class SQLDDLGenerator(Generator):
         schema_metadata = MetaData()
         for t,colmap in self.columns.items():
             cols = colmap.values()
-            Table(t, schema_metadata,
-                  *cols)
+            if len(cols) > 0:
+                Table(t, schema_metadata,
+                    *cols)
         schema_metadata.create_all(engine)
 
     def visit_class(self, cls: ClassDefinition) -> bool:
-        if cls.mixin or cls.abstract or not cls.slots:
+        if self._is_hidden(cls):
             return False
         if cls.description:
             None ## TODO
@@ -77,7 +82,11 @@ class SQLDDLGenerator(Generator):
             linktable_name = f'{tname}_to_{slotname}'
             pk = self._get_primary_key(cls)
             if pk is None:
-                raise Exception(f'Cannot have multivalued on cols with no PK: {tname}')
+                if self.inject_primary_keys:
+                    pk = 'id'
+                    self.columns[camelcase(cls.name)][pk] = Column(pk, Text(), primary_key=True)
+                else:
+                    raise Exception(f'Cannot have multivalued on cols with no PK: {tname} . {slotname}')
             ref = f'ref_{tname}'
             linkrange = None
             if isinstance(slot_range, ForeignKey):
@@ -108,7 +117,11 @@ class SQLDDLGenerator(Generator):
                         logging.error(f"Multiple pks for {range}: {pk} AND {s}")
                     pk = s.alias if s.alias is not None else s.name
             if pk is not None:
-                return ForeignKey(f'{camelcase(range)}.{pk}')
+                if self._is_hidden(rc):
+                    logging.error(f"Creating non-FK ref for {slot.name} {pk}")
+                    return Text()
+                else:
+                    return ForeignKey(f'{camelcase(range)}.{pk}')
         if range in self.schema.types:
             range = self.schema.types[range].base
 
