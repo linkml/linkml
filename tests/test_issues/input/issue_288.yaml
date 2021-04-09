@@ -1,0 +1,74 @@
+id: http://example.org/sample/sql
+
+prefixes:
+  ex: http://example.org/
+  biolinkml: https://w3id.org/biolink/biolinkml/
+
+imports:
+  - biolinkml:types
+
+default_prefix: ex
+
+subsets:
+  mysubset: {}
+
+types:
+  unitcode:
+    base: str
+    uri: xsd:string
+
+classes:
+  person:
+    mixins:
+      - has aliases
+    slots:
+      - id
+      - name
+      - status
+    slot_usage:
+      name:
+        required: true
+      id:
+        pattern: "^\\S+$"
+      status:
+        range:
+          person_status
+
+
+  employee:
+    is_a: person
+    attributes:
+      start date:
+        range: date
+      is current: boolean
+
+  organization:
+    mixins:
+      - has aliases
+    slot_usage:
+      has employees:
+        range: employee
+        multivalued: true
+
+  has aliases:
+    mixin: true
+    slots:
+      - aliases
+
+slots:
+  id:
+    identifier: true
+  name:
+    range: string
+  aliases:
+    multivalued: true
+  employees:
+    multivalued: true
+
+  status:
+
+enums:
+  person_status:
+    permissible_values:
+      alive: is the person alive
+      deceased: is the person deceased
