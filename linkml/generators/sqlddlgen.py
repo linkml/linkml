@@ -39,10 +39,10 @@ class SQLDDLGenerator(Generator):
 
 
     def end_schema(self, **kwargs) -> None:
-        engine = create_engine(
+        engine = create_mock_engine(
             f'{self.dialect}://./MyDb',
             strategy='mock',
-            executor= lambda sql, *multiparams, **params: print (sql))
+            executor= lambda sql, *multiparams, **params: print(f'{str(sql).rstrip()};'))
         schema_metadata = MetaData()
         for t,colmap in self.columns.items():
             cols = colmap.values()
@@ -88,11 +88,11 @@ class SQLDDLGenerator(Generator):
             if slot.singular_name is not None:
                 linktable_slot = underscore(slot.singular_name)
             self.columns[linktable_name] = {
-                linktable_slot: Column(linktable_slot, linkrange),
-                ref: Column(ref, ForeignKey(f'{tname}.{pk}'))
+                linktable_slot: Column(linktable_slot, linkrange, nullable=False),
+                ref: Column(ref, ForeignKey(f'{tname}.{pk}'), nullable=False)
             }
         is_pk = slot.identifier
-        col = Column(slotname, slot_range, primary_key=is_pk)
+        col = Column(slotname, slot_range, primary_key=is_pk, nullable=not slot.required)
         self.columns[tname][slotname] = col
 
     def get_sql_range(self, slot: SlotDefinition) -> str:
