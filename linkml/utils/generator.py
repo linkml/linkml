@@ -117,6 +117,9 @@ class Generator(metaclass=abc.ABCMeta):
             for tn, typ in (sorted(self.schema.types.items(), key=lambda s: s[0].lower()) if self.visits_are_sorted
                             else self.schema.types.items()):
                 self.visit_type(typ)
+            for enum in (sorted(self.schema.enums.values(), key=lambda e: e.name.lower()) if self.visits_are_sorted
+                        else self.schema.enums.values()):
+                        self.visit_enum(enum)
             for sn, slot in (sorted(self.schema.slots.items(), key=lambda c: c[0].lower()) if self.visits_are_sorted
                              else self.schema.slots.items()):
                 self.visit_slot(self.aliased_slot_name(slot), slot)
@@ -187,6 +190,13 @@ class Generator(metaclass=abc.ABCMeta):
         """ Visited once for every subset definition in the schema
 
         #param subset: Subset definition
+        """
+        ...
+
+    def visit_enum(self, enum: EnumDefinition) -> None:
+        """ Visited once for every enum definition in the schema
+
+        @param enum: Enum definition
         """
         ...
 
