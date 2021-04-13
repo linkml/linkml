@@ -229,7 +229,7 @@ class MarkdownGenerator(Generator):
     def visit_enum(self, enum: EnumDefinition) -> None:
         with open(self.exist_warning(self.dir_path(enum)), 'w') as enumfile:
             with redirect_stdout(enumfile):
-                enum_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, camelcase(enum.name))
+                enum_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(enum.name))
                 enum_uri = self.namespaces.uri_for(enum_curie)
                 self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
                 self.element_properties(enum)
