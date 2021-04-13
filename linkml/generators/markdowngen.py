@@ -20,11 +20,12 @@ class MarkdownGenerator(Generator):
     valid_formats = ["md"]
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], no_types_dir: bool = False, warn_on_exist:bool = False, **kwargs) -> None:
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], no_types_dir: bool = False, noyuml: bool = False, warn_on_exist:bool = False, **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.directory: Optional[str] = None
         self.image_directory: Optional[str] = None
         self.noimages: bool = False
+        self.noyuml = noyuml
         self.no_types_dir = no_types_dir
         self.warn_on_exist = warn_on_exist
         self.gen_classes: Optional[Set[ClassDefinitionName]] = None
@@ -97,16 +98,17 @@ class MarkdownGenerator(Generator):
                 class_uri = self.namespaces.uri_for(class_curi)
                 self.element_header(cls, cls.name, class_curi, class_uri)
                 print()
-                if self.image_directory:
-                    yg = YumlGenerator(self)
-                    yg.serialize(classes=[cls.name], directory=self.image_directory, load_image=not self.noimages)
-                    img_url = os.path.join('images', os.path.basename(yg.output_file_name))
-                else:
-                    yg = YumlGenerator(self)
-                    img_url = yg.serialize(classes=[cls.name])\
-                        .replace('?', '%3F').replace(' ', '%20').replace('|', '&#124;')
+                if not self.noyuml:
+                    if self.image_directory:
+                        yg = YumlGenerator(self)
+                        yg.serialize(classes=[cls.name], directory=self.image_directory, load_image=not self.noimages)
+                        img_url = os.path.join('images', os.path.basename(yg.output_file_name))
+                    else:
+                        yg = YumlGenerator(self)
+                        img_url = yg.serialize(classes=[cls.name])\
+                            .replace('?', '%3F').replace(' ', '%20').replace('|', '&#124;')
 
-                print(f'![img]({img_url})')
+                    print(f'![img]({img_url})')
                 self.mappings(cls)
 
                 if cls.id_prefixes:
@@ -513,6 +515,7 @@ class MarkdownGenerator(Generator):
 @click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
 @click.option("--img", "-i",  is_flag=True, help="Download YUML images to 'image' directory")
 @click.option("--noimages", is_flag=True, help="Do not (re-)generate images")
+@click.option("--noyuml", is_flag=True, help="Do not add yUML figures to pages")
 @click.option("--notypesdir", is_flag=True, help="Do not create a separate types directory")
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
 def cli(yamlfile, dir, img, notypesdir, warnonexist, **kwargs):
