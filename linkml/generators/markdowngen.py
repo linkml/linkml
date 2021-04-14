@@ -266,6 +266,16 @@ class MarkdownGenerator(Generator):
                 for entry in entries[1:]:
                     print(f"|  | | {formatter(entry)} |")
 
+        def enum_list(title: str,obj:EnumDefinition) -> None:
+            # This data is from the enum provided in the YAML
+            self.header(2, title)
+            for item, item_info in obj.permissible_values.items():
+                print(f'{item}: ')
+                for k in item_info:
+                    if item_info[k] is not None and len(item_info[k]) > 0:
+                        print(f'{k}: {item_info[k]} ')
+                print('-------------')
+
         attributes = StringIO()
         with redirect_stdout(attributes):
             prop_list('Aliases', obj.aliases)
@@ -290,7 +300,9 @@ class MarkdownGenerator(Generator):
             #       - related mappings
             #       - deprecated element has exact replacement
             #       - deprecated element has possible replacement
-            #prop_list('Permissible Values', obj.permissible_values)
+            if type(obj) == EnumDefinition:
+                enum_list('Permissible Values', obj)
+                
         if attributes.getvalue():
             self.header(2, 'Other properties')
             print("|  |  |  |")
