@@ -11,17 +11,19 @@ types:
 
 prefixes:
   ORGDATA: http://example.org/sample/organization/data/
+  xsd: http://www.w3.org/2001/XMLSchema#
     
 classes:
 
   organization:
+    description: An entity comprised of blah blah
     slots:
       - id
       - name
       - has boss
       
   employee:
-    description: A person
+    description: A person employed by an organization
     slots:
       - id
       - first name

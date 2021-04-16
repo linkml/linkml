@@ -52,9 +52,9 @@ is not owned by a class.  To complete our model above we add:
 We can now get from **:Class 1** to *ownedAttribute* **:prop 1** to *association* **:assoc1** 
 to *navigableOwnedEnd* **:prop2**.  **:Class 2**, however, is not "aware" of any attributes at all.
 
-## BiolinkML Model Equivalent
-The following diagram shows how slots (attributes) are represented in the BiolinkML model:
-![BiolinkML Slot](images/Slot.png)
+## LinkML Model Equivalent
+The following diagram shows how slots (attributes) are represented in the LinkML model:
+![LinkML Slot](images/Slot.png)
 
 N.B. This is a *metamodel*, akin to the UML metamodels above.
 

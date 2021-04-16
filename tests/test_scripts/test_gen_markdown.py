@@ -26,6 +26,10 @@ class GenMarkdownTestCase(ClickTestCase):
         self.do_test(f'-c example -i ', 'issue2', is_directory=True)
         self._exists('issue2', 'images', 'Example.svg')
 
+    def test_no_types(self):
+        """ Test the no types directory setting """
+        self.do_test(f'--notypesdir --warnonexist --log_level WARNING', 'meta_no_types', is_directory=True)
+
     @unittest.expectedFailure
     def test_issue_2_excerpt(self):
         # This was a part of the unit tests for a while.  We have NO idea why we thought that markdown should NOT

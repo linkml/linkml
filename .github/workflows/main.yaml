@@ -7,14 +7,17 @@ on:
 jobs:
   unittests-n-commits:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7.1, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
@@ -35,6 +38,7 @@ jobs:
         python -m unittest discover -p 'test_*.py'
 
     - name: Check in requirements.txt and requirements-dev.txt
+      if: ${{ matrix.python-version == '3.8' }}
       run: |
         git add requirements*.txt
         if [[ ! -z $(git status -s requirements*.txt) ]]
@@ -46,6 +50,7 @@ jobs:
         fi
 
     - name: Check in test outputs
+      if: ${{ matrix.python-version == '3.8' }}
       run: |
         find tests -name output -exec git add --force {} \;
         if [[ ! -z $(git status -s tests) ]]
@@ -57,31 +62,12 @@ jobs:
         fi
 
     - name: Check in updated notebooks
+      if: ${{ matrix.python-version == '3.8' }}
       run: |
         if [[ ! -z $(git status -s notebooks) ]]
         then
         git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m 'Automated adding updated notebooks' notebooks
-          git push
-        fi
-
-    - name: Remove old docs
-      run: rm -fr docs/*
-
-    - name: Create new docs
-      # NOTE: re-add "pipenv run" when we switch back to pipenv
-      run: python -c "from linkml.generators.markdowngen import MarkdownGenerator;
-            from linkml import LOCAL_METAMODEL_YAML_FILE;
-            MarkdownGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(directory='docs', image_dir='images')"
-
-    - name: Commit changes and push
-      run: |
-        git add docs
-        if [[ ! -z $(git status -s docs) ]]
-        then
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m 'Automated update to docs with GitHub Actions' docs
           git push
         fi

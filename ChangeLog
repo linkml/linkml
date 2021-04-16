@@ -1,8 +1,42 @@
 CHANGES
 =======
 
-v0.0.2
+* Automated adding outputs from tests
+* Fix typos
+* Automated adding outputs from tests
+* Add some basic migration instructions
+* Remove extraneous import
+
+v0.0.5
 ------
 
+* Automated adding outputs from tests
+* Fix bug in docs generator
+* Automated adding outputs from tests
+* Force install of modified pyld
+* Documentation changes
+* Update main.yaml
+* Update main.yaml
+* revert to non-checked setup
+* Loosen model requirements
+* Typo in a Pipfile
+* Final transition -- the biolinkml cord should be completely cut
+
+v0.0.4
+------
+
+* Update pypi-publish.yaml
+
+v0.0.3
+------
+
+* Automated update to docs with GitHub Actions
+* Fix markdown generation
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Fix actions test failures
+* master --> main in workflow
+* Tweaks to trigger the first workflow
+* v0.0.2 drop
 * First successful build
 * First roll-over from biolinkml.  Does not pass tests yet
