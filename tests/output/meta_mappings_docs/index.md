@@ -22,6 +22,9 @@ LinkML model for mappings
      * [narrow mappings](narrow_mappings.md) - A list of terms from different schemas or terminology systems that have narrower meaning.
      * [related mappings](related_mappings.md) - A list of terms from different schemas or terminology systems that have related meaning.
 
+### Enums
+
+
 ### Types
 
 

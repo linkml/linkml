@@ -14,6 +14,9 @@
 ### Slots
 
 
+### Enums
+
+
 ### Types
 
 

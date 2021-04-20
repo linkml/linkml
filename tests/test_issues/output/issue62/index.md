@@ -16,6 +16,9 @@
 
  * [category](category.md)
 
+### Enums
+
+
 ### Types
 
 

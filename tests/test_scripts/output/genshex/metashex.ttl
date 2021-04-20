@@ -856,39 +856,7 @@
     shex:datatype xsd:string .
 
 [] a shex:Schema ;
-    shex:shapes <https://w3id.org/linkml/AltDescription>,
-        <https://w3id.org/linkml/Annotatable>,
-        <https://w3id.org/linkml/Annotation>,
-        <https://w3id.org/linkml/Boolean>,
-        <https://w3id.org/linkml/ClassDefinition>,
-        <https://w3id.org/linkml/Date>,
-        <https://w3id.org/linkml/Datetime>,
-        <https://w3id.org/linkml/Decimal>,
-        <https://w3id.org/linkml/Definition>,
-        <https://w3id.org/linkml/Definition_struct>,
-        <https://w3id.org/linkml/Double>,
-        <https://w3id.org/linkml/Element>,
-        <https://w3id.org/linkml/Element_struct>,
-        <https://w3id.org/linkml/EnumDefinition>,
-        <https://w3id.org/linkml/Example>,
-        <https://w3id.org/linkml/Extensible>,
-        <https://w3id.org/linkml/Extension>,
-        <https://w3id.org/linkml/Float>,
-        <https://w3id.org/linkml/Integer>,
-        <https://w3id.org/linkml/LocalName>,
-        <https://w3id.org/linkml/Ncname>,
-        <https://w3id.org/linkml/Nodeidentifier>,
-        <https://w3id.org/linkml/Objectidentifier>,
-        <https://w3id.org/linkml/PermissibleValue>,
-        <https://w3id.org/linkml/Prefix>,
-        <https://w3id.org/linkml/SchemaDefinition>,
-        <https://w3id.org/linkml/SlotDefinition>,
-        <https://w3id.org/linkml/String>,
-        <https://w3id.org/linkml/SubsetDefinition>,
-        <https://w3id.org/linkml/Time>,
-        <https://w3id.org/linkml/TypeDefinition>,
-        <https://w3id.org/linkml/Uri>,
-        <https://w3id.org/linkml/Uriorcurie> .
+    shex:shapes ( <https://w3id.org/linkml/String> <https://w3id.org/linkml/Integer> <https://w3id.org/linkml/Boolean> <https://w3id.org/linkml/Float> <https://w3id.org/linkml/Double> <https://w3id.org/linkml/Decimal> <https://w3id.org/linkml/Time> <https://w3id.org/linkml/Date> <https://w3id.org/linkml/Datetime> <https://w3id.org/linkml/Uriorcurie> <https://w3id.org/linkml/Uri> <https://w3id.org/linkml/Ncname> <https://w3id.org/linkml/Objectidentifier> <https://w3id.org/linkml/Nodeidentifier> <https://w3id.org/linkml/AltDescription> <https://w3id.org/linkml/Annotatable> <https://w3id.org/linkml/Annotation> <https://w3id.org/linkml/ClassDefinition> <https://w3id.org/linkml/Definition> <https://w3id.org/linkml/Definition_struct> <https://w3id.org/linkml/Element> <https://w3id.org/linkml/Element_struct> <https://w3id.org/linkml/EnumDefinition> <https://w3id.org/linkml/Example> <https://w3id.org/linkml/Extensible> <https://w3id.org/linkml/Extension> <https://w3id.org/linkml/LocalName> <https://w3id.org/linkml/PermissibleValue> <https://w3id.org/linkml/Prefix> <https://w3id.org/linkml/SchemaDefinition> <https://w3id.org/linkml/SlotDefinition> <https://w3id.org/linkml/SubsetDefinition> <https://w3id.org/linkml/TypeDefinition> ) .
 
 
 

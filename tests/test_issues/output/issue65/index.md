@@ -18,6 +18,9 @@
  * [subject](subject.md)
      * [child of named thing➞subject](child_of_named_thing_subject.md)
 
+### Enums
+
+
 ### Types
 
 

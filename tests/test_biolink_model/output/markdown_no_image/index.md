@@ -751,6 +751,9 @@ Entity and association taxonomy and datamodel for life-sciences data
          * [book➞type](book_type.md) - Should generally be set to an ontology class defined term for 'book'.
          * [serial➞type](serial_type.md) - Should generally be set to an ontology class defined term for 'serial' or 'journal'.
 
+### Enums
+
+
 ### Types
 
 

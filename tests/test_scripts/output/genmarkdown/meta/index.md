@@ -153,6 +153,10 @@ A metamodel for defining linked open data schemas
  * [values_from](values_from.md) - the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
  * [version](version.md) - particular version of schema
 
+### Enums
+
+ * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values
+
 ### Types
 
 
