@@ -7,7 +7,7 @@ import click
 
 from linkml.generators.yumlgen import YumlGenerator
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
-    TypeDefinition
+    TypeDefinition, EnumDefinition
 from linkml.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
@@ -72,6 +72,10 @@ class MarkdownGenerator(Generator):
                 for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
                     if not slot.is_a and self.is_secondary_ref(slot.name):
                         self.pred_hier(slot)
+
+                self.header(3, 'Enums')
+                for enu in sorted(self.schema.enums.values(), key=lambda e: e.name):
+                    self.enum_hier(enu)
 
                 self.header(3, 'Types')
                 self.header(4, 'Built in')
@@ -222,6 +226,14 @@ class MarkdownGenerator(Generator):
                         self.bullet(f' reifies: {self.slot_link(slot.subproperty_of) if slot.subproperty_of in self.schema.slots else slot.subproperty_of}')
                 self.element_properties(slot)
 
+    def visit_enum(self, enum: EnumDefinition) -> None:
+        with open(self.exist_warning(self.dir_path(enum)), 'w') as enumfile:
+            with redirect_stdout(enumfile):
+                enum_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(enum.name))
+                enum_uri = self.namespaces.uri_for(enum_curie)
+                self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
+                self.element_properties(enum)
+
     def element_header(self, obj: Element, name: str, curie: str, uri: str) -> None:
         simple_name = curie.split(':', 1)[1]
         if isinstance(obj, TypeDefinition):
@@ -230,6 +242,8 @@ class MarkdownGenerator(Generator):
             obj_type = 'Class'
         elif isinstance(obj, SlotDefinition):
             obj_type = 'Slot'
+        elif isinstance(obj, EnumDefinition):
+            obj_type = 'Enum'
         else:
             obj_type = 'Class'
         self.header(1, f"{obj_type}: {simple_name}" + (f" _(deprecated)_" if obj.deprecated else ""))
@@ -251,6 +265,22 @@ class MarkdownGenerator(Generator):
                 print(f"| **{title}:** | | {formatter(entries[0])} |")
                 for entry in entries[1:]:
                     print(f"|  | | {formatter(entry)} |")
+
+        def enum_list(title: str,obj:EnumDefinition) -> None:
+            # This data is from the enum provided in the YAML
+            self.header(2, title)
+            print(f"| Text | Meaning |")
+            print("| :--- | --------: |")
+            for item, item_info in obj.permissible_values.items():
+                line = ''
+                for k in item_info:
+                    if item_info[k] is not None and len(item_info[k]) > 0:
+                        if item_info[k] == item:
+                            line = '| '+ item_info[k] + ' | '
+                        else:
+                            line += item_info[k] + ' |'
+                            print(line)
+                            line = ''
 
         attributes = StringIO()
         with redirect_stdout(attributes):
@@ -276,6 +306,9 @@ class MarkdownGenerator(Generator):
             #       - related mappings
             #       - deprecated element has exact replacement
             #       - deprecated element has possible replacement
+            if type(obj) == EnumDefinition:
+                enum_list('Permissible Values', obj)
+                
         if attributes.getvalue():
             self.header(2, 'Other properties')
             print("|  |  |  |")
@@ -293,6 +326,12 @@ class MarkdownGenerator(Generator):
         if slot.name in sorted(self.synopsis.isarefs):
             for child in sorted(self.synopsis.isarefs[slot.name].slotrefs):
                 self.pred_hier(self.schema.slots[child], level+1)
+
+    def enum_hier(self, enum: EnumDefinition, level=0) -> None:
+        self.bullet(self.enum_link(enum, use_desc=True), level)
+        if enum.name in sorted(self.synopsis.isarefs):
+            for child in sorted(self.synopsis.isarefs[enum.name].classrefs):
+                self.enum_hier(self.schema.enums[child], level+1)
 
     def dir_path(self, obj: Union[ClassDefinition, SlotDefinition, TypeDefinition]) -> str:
         filename = self.formatted_element_name(obj) if isinstance(obj, ClassDefinition) \
@@ -480,6 +519,11 @@ class MarkdownGenerator(Generator):
             return ''
         else:
             return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
+
+    def enum_link(self, ref:Optional[Union[str, EnumDefinition]], *, after_link: str = None, use_desc: bool=False,
+             add_subset: bool=True) -> str:
+             return self._link(self.schema.enums[ref] if isinstance(ref, str) else ref, after_link=after_link,
+                             use_desc=use_desc, add_subset=add_subset)
 
     def xlink(self, id_: str) -> str:
         return f'[{id_}]({self.id_to_url(id_)})'
