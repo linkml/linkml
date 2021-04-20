@@ -281,6 +281,8 @@ class MarkdownGenerator(Generator):
                             line += item_info[k] + ' |'
                             print(line)
                             line = ''
+                    else:
+                        print('| '+ k + ' | ---- |')
 
         attributes = StringIO()
         with redirect_stdout(attributes):
@@ -506,7 +508,7 @@ class MarkdownGenerator(Generator):
         return self._link(self.schema.classes[ref] if isinstance(ref, str) else ref, after_link=after_link,
                          use_desc=use_desc, add_subset=add_subset)
 
-    def class_type_link(self, ref: Optional[Union[str, ClassDefinition, TypeDefinition]], *, after_link: str = None,
+    def class_type_link(self, ref: Optional[Union[str, ClassDefinition, TypeDefinition, EnumDefinition]], *, after_link: str = None,
                         use_desc: bool=False, add_subset: bool=True) -> str:
         if isinstance(ref, ClassDefinition):
             return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
@@ -515,8 +517,7 @@ class MarkdownGenerator(Generator):
         elif ref in self.schema.classes:
             return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif ref in self.schema.enums:
-            # TODO: enums - fill this in
-            return ''
+            return self.enum_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         else:
             return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
 
