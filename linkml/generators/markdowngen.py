@@ -269,12 +269,18 @@ class MarkdownGenerator(Generator):
         def enum_list(title: str,obj:EnumDefinition) -> None:
             # This data is from the enum provided in the YAML
             self.header(2, title)
+            print(f"| Text | Meaning |")
+            print("| :--- | --------: |")
             for item, item_info in obj.permissible_values.items():
-                print(f'{item}: ')
+                line = ''
                 for k in item_info:
                     if item_info[k] is not None and len(item_info[k]) > 0:
-                        print(f'{k}: {item_info[k]} ')
-                print('-------------')
+                        if item_info[k] == item:
+                            line = '| '+ item_info[k] + ' | '
+                        else:
+                            line += item_info[k] + ' |'
+                            print(line)
+                            line = ''
 
         attributes = StringIO()
         with redirect_stdout(attributes):
