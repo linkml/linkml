@@ -69,6 +69,7 @@ slots:
     range: yearCount
 
   has employees:
+    singular_name: has employee
     range: employee
     multivalued: true
     inlined: true
