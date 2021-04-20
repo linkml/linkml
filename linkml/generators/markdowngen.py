@@ -514,6 +514,8 @@ class MarkdownGenerator(Generator):
             return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif isinstance(ref, TypeDefinition):
             return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
+        elif isinstance(ref, EnumDefinition):
+            return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif ref in self.schema.classes:
             return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif ref in self.schema.enums:
