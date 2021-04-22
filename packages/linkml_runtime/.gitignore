@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Specific to this project
+temp/
+output/
+
+# Test config
+tests/test_config.ini
+
+# Don't lock
+Pipfile.lock
