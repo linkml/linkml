@@ -1,9 +1,9 @@
 
 """ Metadata filters for test cases -- various tools to remove metadata from output """
 import re
-from json import dumps
+from json import loads
 
-from jsonasobj import loads, as_json
+from jsonasobj import as_json
 
 
 def ldcontext_metadata_filter(s: str) -> str:

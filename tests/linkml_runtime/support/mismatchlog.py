@@ -3,7 +3,7 @@ import sys
 from dataclasses import dataclass
 from typing import Optional, List
 
-base_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..', '..'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
 class MismatchLog:

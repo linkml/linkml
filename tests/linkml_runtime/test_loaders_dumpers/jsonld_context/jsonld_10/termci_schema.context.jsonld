@@ -1,7 +1,5 @@
 {
-   "_comments": "Auto generated from termci_schema.yaml by jsonldcontextgen.py version: 0.1.1\nGeneration date: 2021-02-12 11:24\nSchema: termci_schema\n\nid: https://w3id.org/termci_schema\ndescription: Terminology Code Index model\nlicense: https://creativecommons.org/publicdomain/zero/1.0/\n",
-   "@context": {
-      "type": "@type",
+    "@context": {
       "linkml": "https://w3id.org/linkml/",
       "dc": "http://purl.org/dc/elements/1.1/",
       "sct": "http://snomed.info/id/",
@@ -14,7 +12,8 @@
       },
       "uri": "@id",
       "contents": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "skos:hasConcept"
       },
       "defined_in": {
          "@type": "@id",
@@ -35,7 +34,9 @@
          "@id": "skos:broader"
       },
       "system": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "termci:system",
+         "@container": "@set"
       },
       "prefix": {
          "@id": "sh:prefix"
@@ -54,6 +55,7 @@
       "ConceptSystem": {
          "@id": "skos:ConceptScheme"
       }
-   }
+   },
+   "@type": "Package"
 }
 

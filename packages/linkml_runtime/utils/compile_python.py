@@ -23,6 +23,8 @@ def compile_python(text_or_fn: str, package_path: str = None) -> ModuleType:
     @return: Compiled module
     """
     python_txt = file_text(text_or_fn)
+    if package_path is None and python_txt != text_or_fn:
+        package_path = text_or_fn
     spec = compile(python_txt, 'test', 'exec')
     module = ModuleType('test')
     if package_path:

@@ -1,0 +1,23 @@
+{
+   "@context": {
+      "bms": "https://microbiomedata/schema/",
+      "linkml": "https://w3id.org/linkml/",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "@vocab": "https://microbiomedata/schema/",
+      "slot_1": {
+         "@context": {
+            "@vocab": null,
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         },
+         "@id": "https://microbiomedata/schema/slot_1"
+      },
+      "ParentClass": {
+         "@id": "https://microbiomedata/schema/mixs/ParentClass"
+      },
+      "SampleClass": {
+         "@id": "https://microbiomedata/schema/SampleClass"
+      }
+   }
+}

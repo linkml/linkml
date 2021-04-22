@@ -2,7 +2,7 @@ from copy import copy
 from typing import Union, Any, List, Optional, Type, Callable
 
 import yaml
-from jsonasobj import JsonObj, as_json
+from jsonasobj import JsonObj, as_json, ExtendedNamespace
 from rdflib import Graph
 from yaml.constructor import ConstructorError
 
@@ -19,11 +19,12 @@ class YAMLMark(yaml.error.Mark):
         return where
 
 
-class YAMLRoot(JsonObj):
+class YAMLRoot(ExtendedNamespace):
 
     """
     The root object for all python YAML representations
     """
+
     def __post_init__(self, **kwargs):
         if kwargs:
             messages: List[str] = []

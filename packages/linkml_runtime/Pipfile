@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+hbreader = "*"
+pyld = { git = "https://github.com/hsolbrig/pyld"}
+jsonasobj = { git = "https://github.com/hsolbrig/jsonasobj"}
+pyyaml = ">=5.1"
+rdflib = "*"
+rdflib-pyld-compat = "*"
+rdflib-jsonld = "*"
+click = "*"
+prefixcommons = "*"
+shexjsg = "*"
+
+[dev-packages]
+requests = "*"

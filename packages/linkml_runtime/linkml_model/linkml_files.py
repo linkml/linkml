@@ -84,7 +84,7 @@ def _build_path(source: Source, fmt: Format) -> str:
 
 
 def _build_loc(base: str, source: Source, fmt: Format) -> str:
-    return f"{base}{_build_path(source, fmt)}"
+    return f"{base}{_build_path(source, fmt)}".replace('blob/', '')
 
 
 def URL_FOR(source: Source, fmt: Format) -> str:
@@ -134,3 +134,110 @@ def GITHUB_PATH_FOR(source: Source,
         return tag_to_commit(release)
 
 
+class ModelFile:
+    class ModelLoc:
+        def __init__(self, model: Source, fmt: Format) -> str:
+            self._model = model
+            self._format = fmt
+
+        def __str__(self):
+            return f"{self._model.value}.{self._format.value}"
+
+        def __repr__(self):
+            return str(self)
+
+        @property
+        def url(self) -> str:
+            return URL_FOR(self._model, self._format)
+
+        @property
+        def file(self) -> str:
+            return LOCAL_PATH_FOR(self._model, self._format)
+
+        def github_loc(self, tag: Optional[str] = None, branch: Optional[str] = None, release: ReleaseTag = None) -> str:
+            if not tag and not branch and not release:
+                return GITHUB_IO_PATH_FOR(self._model, self._format)
+            if tag:
+                return GITHUB_PATH_FOR(self._model, self._format, tag, branch or "main")
+            else:
+                return GITHUB_PATH_FOR(self._model, self._format, release or ReleaseTag.CURRENT, branch or "main")
+
+    def __init__(self, model: Source) -> None:
+        self._model = model
+
+    def __str__(self):
+        return self._model.value
+
+    def __repr__(self):
+        return str(self)
+
+    @property
+    def yaml(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.YAML)
+
+    @property
+    def graphql(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.GRAPHQL)
+
+    @property
+    def html(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.HTML)
+
+    @property
+    def json(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.JSON)
+
+    @property
+    def jsonld(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.JSONLD)
+
+    @property
+    def jsonschema(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.JSON_SCHEMA)
+
+    @property
+    def model_jsonld(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.NATIVE_JSONLD)
+
+    @property
+    def model_rdf(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.NATIVE_RDF)
+
+    @property
+    def model_shexc(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.NATIVE_SHEXC)
+
+    @property
+    def model_shexj(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.NATIVE_SHEXJ)
+
+    @property
+    def owl(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.OWL)
+
+    @property
+    def python(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.PYTHON)
+
+    @property
+    def rdf(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.RDF)
+
+    @property
+    def shexc(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.SHEXC)
+
+    @property
+    def shexj(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.SHEXJ)
+
+    @property
+    def yaml(self) -> ModelLoc:
+        return ModelFile.ModelLoc(self._model, Format.YAML)
+
+
+meta = ModelFile(Source.META)
+types = ModelFile(Source.TYPES)
+annotations = ModelFile(Source.ANNOTATIONS)
+extensions = ModelFile(Source.EXTENSIONS)
+mappings = ModelFile(Source.MAPPINGS)

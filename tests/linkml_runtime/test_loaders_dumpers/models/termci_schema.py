@@ -1,5 +1,5 @@
 # Auto generated from termci_schema.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-02-12 11:22
+# Generation date: 2021-04-22 12:19
 # Schema: termci_schema
 #
 # id: https://w3id.org/termci_schema
@@ -11,21 +11,17 @@ import sys
 import re
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-if sys.version_info < (3, 7, 6):
-    from linkml_runtime.utils.dataclass_extensions_375 import dataclasses_init_fn_with_kwargs
-else:
-    from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import URI, URIorCURIE
-from linkml_model.types import String, Uri, Uriorcurie
+from linkml_runtime.linkml_model.types import String, Uri, Uriorcurie
 
 metamodel_version = "1.7.0"
 
@@ -33,8 +29,8 @@ metamodel_version = "1.7.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-BIOLINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 DC = CurieNamespace('dc', 'http://purl.org/dc/elements/1.1/')
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 SCT = CurieNamespace('sct', 'http://snomed.info/id/')
 SH = CurieNamespace('sh', 'http://www.w3.org/ns/shacl#')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
@@ -157,7 +153,7 @@ class ConceptSystem(YAMLRoot):
 
         if self.contents is None:
             self.contents = []
-        if not isinstance(self.contents, (list)):
+        if not isinstance(self.contents, (list, dict)):
             self.contents = [self.contents]
         self._normalize_inlined_slot(slot_name="contents", slot_type=ConceptReference, key_name="uri", inlined_as_list=True, keyed=True)
 
@@ -181,7 +177,7 @@ class Package(YAMLRoot):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.system is None:
             self.system = []
-        if not isinstance(self.system, (list)):
+        if not isinstance(self.system, (list, dict)):
             self.system = [self.system]
         self._normalize_inlined_slot(slot_name="system", slot_type=ConceptSystem, key_name="namespace", inlined_as_list=True, keyed=True)
 
@@ -192,44 +188,4 @@ class Package(YAMLRoot):
 
 
 # Slots
-class slots:
-    pass
 
-slots.code = Slot(uri=SKOS.notation, name="code", curie=SKOS.curie('notation'),
-                   model_uri=TERMCI.code, domain=None, range=str)
-
-slots.designation = Slot(uri=SKOS.prefLabel, name="designation", curie=SKOS.curie('prefLabel'),
-                   model_uri=TERMCI.designation, domain=None, range=Optional[str])
-
-slots.definition = Slot(uri=SKOS.definition, name="definition", curie=SKOS.curie('definition'),
-                   model_uri=TERMCI.definition, domain=None, range=Optional[str])
-
-slots.reference = Slot(uri=SKOS.seeAlso, name="reference", curie=SKOS.curie('seeAlso'),
-                   model_uri=TERMCI.reference, domain=None, range=Optional[Union[Union[str, URI], List[Union[str, URI]]]])
-
-slots.defined_in = Slot(uri=SKOS.inScheme, name="defined_in", curie=SKOS.curie('inScheme'),
-                   model_uri=TERMCI.defined_in, domain=None, range=Union[str, ConceptSystemNamespace])
-
-slots.narrower_than = Slot(uri=SKOS.broader, name="narrower_than", curie=SKOS.curie('broader'),
-                   model_uri=TERMCI.narrower_than, domain=None, range=Optional[Union[Union[str, ConceptReferenceUri], List[Union[str, ConceptReferenceUri]]]])
-
-slots.prefix = Slot(uri=SH.prefix, name="prefix", curie=SH.curie('prefix'),
-                   model_uri=TERMCI.prefix, domain=None, range=str)
-
-slots.namespace = Slot(uri=SH.namespace, name="namespace", curie=SH.curie('namespace'),
-                   model_uri=TERMCI.namespace, domain=None, range=URIRef)
-
-slots.root_concept = Slot(uri=SKOS.hasTopConcept, name="root_concept", curie=SKOS.curie('hasTopConcept'),
-                   model_uri=TERMCI.root_concept, domain=None, range=Optional[Union[Union[str, ConceptReferenceUri], List[Union[str, ConceptReferenceUri]]]])
-
-slots.description = Slot(uri=DC.description, name="description", curie=DC.curie('description'),
-                   model_uri=TERMCI.description, domain=None, range=Optional[str])
-
-slots.concept_uri = Slot(uri=TERMCI.uri, name="concept_uri", curie=TERMCI.curie('uri'),
-                   model_uri=TERMCI.concept_uri, domain=None, range=URIRef)
-
-slots.contents = Slot(uri=TERMCI.contents, name="contents", curie=TERMCI.curie('contents'),
-                   model_uri=TERMCI.contents, domain=None, range=Optional[Union[Dict[Union[str, ConceptReferenceUri], Union[dict, ConceptReference]], List[Union[dict, ConceptReference]]]])
-
-slots.package__system = Slot(uri=TERMCI.system, name="package__system", curie=TERMCI.curie('system'),
-                   model_uri=TERMCI.package__system, domain=None, range=Optional[Union[Dict[Union[str, ConceptSystemNamespace], Union[dict, ConceptSystem]], List[Union[dict, ConceptSystem]]]])

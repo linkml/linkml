@@ -23,7 +23,6 @@ OBO = Namespace("http://purl.obolibrary.org/obo/")
 NCIT = Namespace("http://purl.obolibrary.org/obo/ncit#")
 TERMCI = Namespace("https://hotecosystem.org/termci/")
 SHACL = Namespace("http://www.w3.org/ns/shacl#")
-NCIT = Namespace("http://purl.obolibrary.org/obo/NCI_")
 
 CONTEXT_SVR = f"http://localhost:{HTTP_TEST_PORT}/"
 CONTEXT_SSL_SVR = f'https://localhost:{HTTPS_TEST_PORT}/'

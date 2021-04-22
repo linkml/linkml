@@ -1,8 +1,6 @@
 import re
 from typing import List
 
-from pyshex.shex_evaluator import EvaluationResult
-
 ws_pattern = re.compile(r'\s+')
 us_pattern = re.compile(r'_+')
 
@@ -83,15 +81,3 @@ def wrapped_annotation(txt: str) -> str:
         else:
             rval.append(line)
     return '\n\t'.join(rval)
-
-
-def shex_results_as_string(rslts: EvaluationResult) -> str:
-    """ Pretty print ShEx Evaluation result """
-    # TODO: Add this method to ShEx itself
-    rval = [f"Evalutating: {str(rslts.focus)} against {str(rslts.start)}"]
-    if rslts.result:
-        rval.append("Result: CONFORMS")
-    else:
-        rval.append("Result: NonConforming")
-    rval += rslts.reason.split('\n')
-    return '\n'.join(rval)

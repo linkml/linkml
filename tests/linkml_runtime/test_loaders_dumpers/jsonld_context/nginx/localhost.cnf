@@ -1,8 +1,0 @@
-[req]
-distinguished_name = context_server
-prompt = no
-
-[context_server]
-C = US
-ST = Minnesota
-CN = localhost

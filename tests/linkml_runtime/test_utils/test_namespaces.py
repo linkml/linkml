@@ -28,8 +28,9 @@ class NamespacesTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             ns["123"] = "http://example.org/foo/"
 
-        with self.assertRaises(KeyError):
+        with self.assertRaises(KeyError) as e:
             ns.FOO
+        self.assertEqual("'foo'", str(e.exception), "Unknown namespace should raise a KeyError with a lower case entry")
 
         ns._default = ns['meta']
         ns._default = ns['meta']

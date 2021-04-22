@@ -35,6 +35,5 @@ class FormatUtilsTestCase(unittest.TestCase):
 	hope. """, wrapped_annotation(text))
 
 
-
 if __name__ == '__main__':
     unittest.main()

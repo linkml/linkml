@@ -24,7 +24,7 @@ def make_and_clear_directory(dirbase: str) -> None:
 def file_text(txt_or_fname: str) -> str:
     """
     Determine whether text_or_fname is a file name or a string and, if a file name, read it
-    :param text_or_fname:
+    :param txt_or_fname:
     :return:
     """
     if len(txt_or_fname) > 4 and '\n' not in txt_or_fname:
@@ -81,7 +81,7 @@ def are_dir_trees_equal(dir1: str, dir2: str) -> Optional[str]:
     @return: None if directories match, else summary of differences
    """
     def has_local_diffs(dc: dircmp) -> bool:
-        return dc.diff_files or dc.funny_files or dc.left_only or dc.right_only
+        return bool(dc.diff_files or dc.funny_files or dc.left_only or dc.right_only)
 
     def has_diffs(dc: dircmp) -> bool:
         return has_local_diffs(dc) or any(has_diffs(sd) for sd in dc.subdirs.values())

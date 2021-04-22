@@ -5,9 +5,10 @@ from typing import cast
 from rdflib import Namespace, SKOS, Literal
 
 from linkml_runtime.dumpers import yaml_dumper, json_dumper, rdf_dumper
+from linkml_runtime.utils.yamlutils import as_json_object
 from tests.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR, HTTP_TEST_PORT, HTTPS_TEST_PORT, \
     GITHUB_LD10_CONTEXT, GITHUB_LD11_CONTEXT
-from tests.test_loaders_dumpers.ldtestcase import LDTestCase
+from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.termci_schema import ConceptReference, ConceptSystem, Package
 from tests.support.clicktestcase import ClickTestCase
 
@@ -15,12 +16,13 @@ OBO = Namespace("http://purl.obolibrary.org/obo/")
 NCIT = Namespace("http://purl.obolibrary.org/obo/NCI_")
 
 
-class DumpersTestCase(LDTestCase):
+class DumpersTestCase(LoaderDumperTestCase):
+    pass
 
     @classmethod
     def setUpClass(cls) -> None:
         """ Generate a small sample TermCI instance for testing purposes """
-        LDTestCase.setUpClass()
+        LoaderDumperTestCase.setUpClass()
         e1 = ConceptReference(OBO.NCI_C147796, code="C147796", defined_in=OBO,
                               designation="TSCYC - Being Frightened of Men",
                               definition="Trauma Symptom Checklist for Young Children (TSCYC) Please indicate how often"
@@ -45,7 +47,7 @@ class DumpersTestCase(LDTestCase):
         # TODO: Same as test_yaml_dumper
         self.dump_test('obo_sample.json', lambda out_fname: json_dumper.dump(self.test_package, out_fname))
 
-        obo_json_obj = cast(Package, json_dumper.as_json_object(self.test_package))
+        obo_json_obj = cast(Package, as_json_object(self.test_package))
         self.assertEqual(OBO, obo_json_obj.system[0].namespace)
         self.assertEqual('C147796', obo_json_obj.system[0].contents[0].code)
 
@@ -57,7 +59,7 @@ class DumpersTestCase(LDTestCase):
                         lambda: json_dumper.dumps(self.test_package,
                                                   GITHUB_LD11_CONTEXT + 'termci_schema_inlined.context.jsonld'))
 
-    @unittest.skip("This needs an enhanced (https://github.com/hsolbrig/pyld) version of pyld")
+    @unittest.skipIf(False, "This needs an enhanced (https://github.com/hsolbrig/pyld) version of pyld")
     def test_rdf_dumper(self):
         """ Test the rdf dumper """
         contexts = os.path.join(LD_11_DIR, 'termci_schema_inlined.context.jsonld')
@@ -74,10 +76,9 @@ class DumpersTestCase(LDTestCase):
 
         # Build a vanilla jsonld image for subsequent testing
         fname = 'obo_sample.jsonld'
-        dumped_fname = 'obo_sample_d.jsonld'   # Dump_test appends the "_d"
         self.dump_test(fname, lambda out_file: rdf_dumper.dump(self.test_package, out_file, contexts, fmt='json-ld'),
                        comparator=lambda e, a: ClickTestCase.rdf_comparator(e, a, fmt='json-ld'))
-        with open(self.env.expected_path(dumped_fname)) as f:
+        with open(self.env.expected_path('dump', fname)) as f:
             txt = f.read()
         with open(self.env.input_path('obo_sample.jsonld'), 'w') as f:
             f.write(txt)

@@ -11,9 +11,6 @@ from io import StringIO
 from pathlib import Path
 from typing import Optional, Callable, Union, List
 
-from linkml_model import linkml_files
-from linkml_model.linkml_files import Source, Format
-
 from tests.support.dirutils import are_dir_trees_equal
 from tests.support.mismatchlog import MismatchLog
 
@@ -47,9 +44,6 @@ class TestEnvironment:
 
         # Get the parent's directory name.  If it is a test directory, borrow from its environment
         parent = Path(self.cwd).parts[-2]
-        self.meta_yaml = linkml_files.LOCAL_PATH_FOR(Source.META, Format.YAML)
-        self.types_yaml = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
-        self.mapping_yaml = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.YAML)
         if parent.startswith('test'):
             parent_env = import_module('..environment', __package__)
             self.import_map = parent_env.env.import_map

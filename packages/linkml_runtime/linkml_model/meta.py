@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-25 11:34
+# Generation date: 2021-04-05 18:10
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -21,9 +21,9 @@ from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
-from linkml_model.annotations import Annotation
-from linkml_model.extensions import Extension
-from linkml_model.types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
+from linkml_runtime.linkml_model.annotations import Annotation
+from linkml_runtime.linkml_model.extensions import Extension
+from linkml_runtime.linkml_model.types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
 
 metamodel_version = "1.7.0"
 

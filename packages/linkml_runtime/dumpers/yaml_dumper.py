@@ -1,13 +1,11 @@
 import yaml
+
+from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
-def dump(element: YAMLRoot, to_file: str) -> None:
-    """ Emit element to to_file """
-    with open(to_file, 'w') as outf:
-        outf.write(dumps(element))
+class YAMLDumper(Dumper):
 
-
-def dumps(element: YAMLRoot) -> str:
-    """ Return element formatted as a YAML string """
-    return yaml.dump(element, Dumper=yaml.SafeDumper, sort_keys=False)
+    def dumps(self, element: YAMLRoot, **kwargs) -> str:
+        """ Return element formatted as a YAML string """
+        return yaml.dump(element, Dumper=yaml.SafeDumper, sort_keys=False, **kwargs)

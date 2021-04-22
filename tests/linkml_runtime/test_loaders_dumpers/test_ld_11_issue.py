@@ -85,7 +85,7 @@ class PYLDTestCase(unittest.TestCase):
         return json.dumps(json_obj, indent='  ')
 
 
-    @unittest.skip("uri will load as namespace until JSONLD 1.1 is working")
+    @unittest.skipIf(True, "uri will load as namespace until JSONLD 1.1 is working")
     def test_rdf_frame(self):
         options = dict(expandContext=context, base=str(TERMCI))
 

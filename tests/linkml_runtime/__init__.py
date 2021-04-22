@@ -31,6 +31,16 @@ DEFAULT_MISMATCH_ACTION = eval(test_settings.get('DEFAULT_MISMATCH_ACTION', 'Mis
 #  the final output
 USE_LOCAL_IMPORT_MAP = test_settings.getboolean('USE_LOCAL_IMPORT_MAP', False)
 
+
+# There are lots of warnings emitted by the generators. Default logging level
+DEFAULT_LOG_LEVEL = eval(test_settings.get('DEFAULT_LOG_LEVEL', 'logging.ERROR'))
+DEFAULT_LOG_LEVEL_TEXT = test_settings.get('DEFAULT_LOG_LEVEL_TEXT', 'ERROR')
+
+
+# Skip RDF comparison, as it takes a lot of time
+SKIP_RDF_COMPARE = test_settings.getboolean('SKIP_RDF_COMPARE', False)
+SKIP_RDF_COMPARE_REASON = test_settings.get('SKIP_RDF_COMPARE_REASON', 'tests/__init__.py RDF output not checked SKIP_RDF_COMPARE is True')
+
 # Exception for use in script testing.  Global to prevent redefinition
 class CLIExitException(Exception):
     def __init__(self, code: int) -> None:

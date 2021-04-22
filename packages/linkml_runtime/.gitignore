@@ -137,3 +137,6 @@ tests/test_config.ini
 
 # Don't lock
 Pipfile.lock
+
+# No Pycharm
+.idea/

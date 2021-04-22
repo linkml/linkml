@@ -4,10 +4,9 @@ import unittest
 from typing import Union, List, Optional, Callable
 from warnings import warn
 
-from tests import DEFAULT_LOG_LEVEL_TEXT
-from tests.utils.dirutils import make_and_clear_directory
-from tests.utils.compare_rdf import compare_rdf
-from tests.utils.test_environment import TestEnvironmentTestCase, TestEnvironment
+from tests.support.dirutils import make_and_clear_directory
+from tests.support.compare_rdf import compare_rdf
+from tests.support.test_environment import TestEnvironmentTestCase, TestEnvironment
 
 
 class ClickTestCase(TestEnvironmentTestCase):
@@ -47,20 +46,20 @@ class ClickTestCase(TestEnvironmentTestCase):
         return compare_rdf(expected_data, actual_data, "n3")
 
     @staticmethod
-    def rdf_comparator(expected_data: str, actual_data: str, fmt: Optional[str]='turtle') -> str:
+    def rdf_comparator(expected_data: str, actual_data: str, fmt: Optional[str] = 'turtle') -> str:
         """ compare expected_data to actual_data using basic RDF comparator method """
         return compare_rdf(expected_data, actual_data, fmt=fmt)
 
     @staticmethod
-    def always_pass_comparator(self, expected_data: str, new_data: str) -> Optional[str]:
+    def always_pass_comparator(expected_data: str, new_data: str) -> Optional[str]:
         """
         No-op comparator -- everyone passes!
+
         :param expected_data:
         :param new_data:
         :return:
         """
         return None
-
 
     @staticmethod
     def closein_comparison(expected_txt: str, actual_txt: str) -> None:
@@ -102,7 +101,8 @@ class ClickTestCase(TestEnvironmentTestCase):
         @param expected_error: If present, we expect this error
         @param filtr: Filter to remove date and app specific information from text. Only used for single file generation
         @param is_directory: True means output is to a directory
-        @param add_yaml: True means add the default meta.yaml file.  False means both yaml and importmap are pre-supplied
+        @param add_yaml: True means add the default meta.yaml file.  False means both yaml and importmap
+        are pre-supplied
         @param comparator: If present, use this method for comparison
         """
         assert testFileOrDirectory
@@ -112,8 +112,9 @@ class ClickTestCase(TestEnvironmentTestCase):
             warn("filtr and comparator parameters aren't implemented for directory generation")
 
         if add_yaml and (not arg_list or arg_list[0] != '--help'):
-            arg_list.insert(0, self.env.meta_yaml)
-            arg_list += ["--importmap", self.env.import_map, "--log_level", DEFAULT_LOG_LEVEL_TEXT]
+            raise NotImplementedError("This is an artifact from elsewhere")
+            # arg_list.insert(0, self.env.meta_yaml)
+            # arg_list += ["--importmap", self.env.import_map, "--log_level", DEFAULT_LOG_LEVEL_TEXT]
 
         target = os.path.join(self.testdir, testFileOrDirectory)
         self.temp_file_path(self.testdir, is_dir=True)
@@ -136,7 +137,6 @@ class ClickTestCase(TestEnvironmentTestCase):
             return
         else:
             do_gen()
-
 
     @classmethod
     def temp_directory(cls, base: str) -> str:
