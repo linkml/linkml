@@ -6,7 +6,7 @@ from typing import Union, Optional
 from rdflib import Graph, RDF
 from rdflib.compare import to_isomorphic, IsomorphicGraph, graph_diff
 
-from linkml_model.meta import LINKML
+from linkml_runtime.linkml_model.meta import LINKML
 # TODO: Find out why test_issue_namespace is emitting generation_date in the TYPE namespace
 from tests import SKIP_RDF_COMPARE, SKIP_RDF_COMPARE_REASON
 

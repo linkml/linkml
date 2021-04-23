@@ -5,8 +5,8 @@ name = "pypi"
 
 [packages]
 hbreader = "*"
-pyld = { git = "https://github.com/hsolbrig/pyld"}
-jsonasobj = { git = "https://github.com/hsolbrig/jsonasobj"}
+pyld = { git = "https://github.com/hsolbrig/pyld" }
+jsonasobj = ">=2.0.1"
 pyyaml = ">=5.1"
 rdflib = "*"
 rdflib-pyld-compat = "*"

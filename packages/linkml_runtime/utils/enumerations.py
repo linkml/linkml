@@ -19,7 +19,7 @@ class EnumDefinitionMeta(type):
         cls.__dict__[key] = value
 
     def __setattr__(self, key, value):
-        from linkml_model.meta import PermissibleValue
+        from linkml_runtime.linkml_model.meta import PermissibleValue
         if self._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
             print(f"Validating {value.meaning} against {self._defn.code_set}")
         super().__setattr__(key, value)
@@ -32,7 +32,7 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     _defn: "EnumDefinition" = None         # Overridden by implementation
 
     def __init__(self, code: Union[str, Curie, "PermissibleValue"]) -> None:
-        from linkml_model.meta import PermissibleValue
+        from linkml_runtime.linkml_model.meta import PermissibleValue
         if isinstance(code, PermissibleValue):
             key = code.text
         elif isinstance(code, Curie):

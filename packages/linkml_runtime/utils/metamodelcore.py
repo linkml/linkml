@@ -14,7 +14,6 @@ from rdflib.term import Identifier as rdflib_Identifier
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.strictness import is_strict
 
-
 # Reference Decimal to make sure it stays in the imports
 _z = Decimal(1)
 

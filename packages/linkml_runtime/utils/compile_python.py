@@ -1,4 +1,6 @@
 import os
+import sys
+from logging import warning
 from types import ModuleType
 
 
@@ -29,7 +31,13 @@ def compile_python(text_or_fn: str, package_path: str = None) -> ModuleType:
     module = ModuleType('test')
     if package_path:
         # We have to calculate the path to expected path relative to the current working directory
-        path_from_tests_parent = os.path.relpath(package_path, os.path.join(os.getcwd(), '..'))
+        for path in sys.path:
+            if package_path.startswith(path):
+                path_from_tests_parent = os.path.relpath(package_path, path)
+                break
+        else:
+            warning(f"There is no established path to {package_path} - compile_python may or may not work")
+            path_from_tests_parent = os.path.relpath(package_path, os.path.join(os.getcwd(), '..'))
         module.__package__ = os.path.dirname(os.path.relpath(path_from_tests_parent, os.getcwd())).replace('/', '.')
     exec(spec, module.__dict__)
     return module
