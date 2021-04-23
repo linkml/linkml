@@ -1,0 +1,22 @@
+system:
+- namespace: http://purl.obolibrary.org/obo/
+  prefix: OBO
+  contents:
+  - uri: http://purl.obolibrary.org/obo/NCI_C147796
+    code: C147796
+    defined_in: http://purl.obolibrary.org/obo/
+    designation: TSCYC - Being Frightened of Men
+    definition: 'Trauma Symptom Checklist for Young Children (TSCYC) Please indicate
+      how often the child has done, felt, or experienced each of the following things
+      in the last month: Being frightened of men.'
+    reference:
+    - http://purl.obolibrary.org/obo/NCI_C147796
+    narrower_than:
+    - http://purl.obolibrary.org/obo/NCI_C147557
+  - uri: http://purl.obolibrary.org/obo/NCI_C147557
+    code: C147557
+    defined_in: http://purl.obolibrary.org/obo/
+    designation: TSCYC Questionnaire Question
+    definition: A question associated with the TSCYC questionnaire.
+    narrower_than:
+    - http://purl.obolibrary.org/obo/NCI_C91102
