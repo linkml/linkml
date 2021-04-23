@@ -1,16 +1,9 @@
-import os
 import unittest
 
-from rdflib import URIRef, Graph
-from rdflib.namespace import OWL, RDFS, RDF
-
-from linkml.generators.flattener import Flattener
 from linkml.generators.sqlddlgen import SQLDDLGenerator
-from linkml.generators.yamlgen import YAMLGenerator
-from linkml.generators.yamlgen import YAMLGenerator
-#from linkml.utils.sqlutils import SqlTransformer
-from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
+# from linkml.utils.sqlutils import SqlTransformer
+from tests.utils.test_environment import TestEnvironmentTestCase
 
 
 class IssueSQLGenTestCase(TestEnvironmentTestCase):

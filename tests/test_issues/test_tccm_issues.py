@@ -60,7 +60,7 @@ class TCCMTestCase(TestEnvironmentTestCase):
 
         env.make_testing_directory(env.expected_path('issue_tccm'))
         for generator in Generator.__subclasses__():
-            if not generator.__module__.startswith('linkml.generators'):
+            if not generator.__module__.startswith('linkml.generators') or generator.__name__ == 'SQLDDLGenerator':
                 pass
             elif not generator.directory_output:
                 env.generate_single_file(['issue_tccm', 'minimalmodel.' + generator.valid_formats[0]],
