@@ -12,8 +12,7 @@
 
 click
 hbreader
-jsonasobj
-linkml-model
+jsonasobj>=2.0.1
 prefixcommons
 pyld
 pyyaml>=5.1
