@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+v0.1.0
+------
+
+* Automatically generated requirements.txt and requirements-dev.txt
+* Should be in good enough shape to be used in the <app>-model package
 * Checkpoint
 * Update ignore
 * checkpoint
