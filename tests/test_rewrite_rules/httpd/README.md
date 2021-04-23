@@ -8,10 +8,10 @@ follows:
 | meta[.sfx] | src/meta.[sfx] | Access to LinkML metamodel w/ connet | http
 | includes/types[.sfx] | includes/types[.sfx] | Language types (and other includes) (.sfx set by conneg if not already specified -- .ttl, .yaml, .owl, .shex, ...) | http://w3id.org/linkml/includes/types --> http://linkml.github.io/linkml/includes/types.yaml (Accept: text/yaml) |
 | | | | http://w3id.org/linkml/includes/types --> http://linkml.github.io/linkml/includes/types (Accept: text/html) |
-| type/[TYPE][.sfx]  | types/[TYPE] | Access to metamodel type definitions w/ conneg | http://w3id.org/linkml/type/Bool --> http://linkml.github.io/linkml/docs/types/Bool |
+| type/[TYPE][.sfx]  | types/[TYPE] | Access to metamodel type definitions w/ conneg | http://w3id.org/linkml/type/Bool --> http://linkml.github.io/linkml-model/docs/types/Bool |
 | meta[.sfx] | meta[.sfx] | Access to linkml meta models w/ conneg | http://w3id.org/linkml/meta --> http://linkml.github.io/linkml/meta.yaml (Accept: application/yaml) |
 | | | |  http://w3id.org/linkml/meta.owl --> http://linkml.github.io/linkml/meta.owl (*What SHOULD we use for conneg for OWL/TTL?*) |
-| meta/[X][.sfx] | docs/[X][.sfx] | Access to metamodel class and slot definitions w/ conneg | http://w3id.org/linkml/meta/Definition --> http://linkml.github.io/linkml/docs/Definition.jsonld (Accept: application/json) |
+| meta/[X][.sfx] | docs/[X][.sfx] | Access to metamodel class and slot definitions w/ conneg | http://w3id.org/linkml/meta/Definition --> http://linkml.github.io/linkml-model/docs/Definition.jsonld (Accept: application/json) |
 | context.jsonld | context.jsonld | metamodel context.jsonld for converting json instances to RDF | http://w3id.org/linkml/context.jsonld --> http://linkml.github.io/linkml/context.jsonld |
 
 ## Testing the rewrite rules

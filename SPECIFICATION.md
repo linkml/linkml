@@ -21,11 +21,11 @@ YAML document can be translated to other representations.
 
 The 3 core modeling elements in LinkML are *types*, *classes*, and *slots*:
 
- - **[types](https://linkml.github.io/linkml/docs/TypeDefinition)** correspond to primitive datatypes, such as integers, strings, URIs
- - **[classes](https://linkml.github.io/linkml/docs/ClassDefinition)** are categories for data instances
- - **[slots](https://linkml.github.io/linkml/docs/SlotDefinition)** categorize the linkages instances can have to other instances, or to type instances
+ - **[types](https://linkml.github.io/linkml-model/docs/TypeDefinition)** correspond to primitive datatypes, such as integers, strings, URIs
+ - **[classes](https://linkml.github.io/linkml-model/docs/ClassDefinition)** are categories for data instances
+ - **[slots](https://linkml.github.io/linkml-model/docs/SlotDefinition)** categorize the linkages instances can have to other instances, or to type instances
 
-A [schema](https://linkml.github.io/linkml/docs/SchemaDefinition) is a collection of these elements.
+A [schema](https://linkml.github.io/linkml-model/docs/SchemaDefinition) is a collection of these elements.
 
 The LinkML also defines basic mechanisms for model element inheritance: **is_a**, **mixin** and **abstract** 
 properties for both classes and slots, plus a **typeof** property for types. In addition, the 
@@ -45,8 +45,8 @@ requirements. Informative elements are those that are descriptive,
 that is they are designed to help the reader understand the concepts
 presented in the normative elements.
 
-LinkML is also described by its [own schema](meta.yaml), which is also
-Normative. The schema can also be viewed on [this site](https://linkml.github.io/linkml/docs).
+blml is also described by its [own schema](meta.yaml), which is also
+Normative. The schema can also be viewed on [this site](https://linkml.github.io/linkml-model/docs).
 
 The documentation in this specification _must_ be consistent with the
 yaml representation.

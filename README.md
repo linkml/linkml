@@ -15,15 +15,15 @@ This documentation is best seen via the [linkml site](https://linkml.github.io/l
 
 Quickstart docs:
 
- * Browse the model (linkml is self-describing): [https://linkml.github.io/linkml/docs](https://linkml.github.io/linkml/docs)
-    * [class definition](https://linkml.github.io/linkml/docs/ClassDefinition) Class definitions
-    * [slot definition](https://linkml.github.io/linkml/docs/SlotDefinition) Class properties
-    * [type definition](https://linkml.github.io/linkml/docs/TypeDefinition) Data types
-    * [schema definition](https://linkml.github.io/linkml/docs/SchemaDefinition) Schema definition
+ * Browse the model (linkml is self-describing): [https://linkml.github.io/linkml-model/docs](https://linkml.github.io/linkml-model/docs)
+    * [class definition](https://linkml.github.io/linkml-model/docs/ClassDefinition) Class definitions
+    * [slot definition](https://linkml.github.io/linkml-model/docs/SlotDefinition) Class properties
+    * [type definition](https://linkml.github.io/linkml-model/docs/TypeDefinition) Data types
+    * [schema definition](https://linkml.github.io/linkml-model/docs/SchemaDefinition) Schema definition
 
 Further details about the general design of LinkML are in the [LinkML Modeling Language Specification](SPECIFICATION.md).
 
-For an example, see the [Jupyter notebook example](https://nbviewer.jupyter.org/github/linkml/blob/main/notebooks/examples.ipynb)
+For an example, see the [Jupyter notebook example](https://nbviewer.jupyter.org/github/linkml-model/blob/main/notebooks/examples.ipynb)
 
 
 ## Installation
@@ -36,10 +36,10 @@ This project uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) to ins
 
 ## Language Features
 
- * polymorphism/inheritance, see [is_a](https://linkml.github.io/linkml/docs/is_a)
- * [abstract](https://linkml.github.io/linkml/docs/abstract) and [mixin](https://linkml.github.io/linkml/docs/mixin) classes
- * control JSON-LD mappings to URIs via [prefixes](https://linkml.github.io/linkml/docs/prefixes) declarations
- * ability to refine meaning of a slot in the context of a particular class via [slot usage](https://linkml.github.io/linkml/docs/slot_usage)
+ * polymorphism/inheritance, see [is_a](https://linkml.github.io/linkml-model/docs/is_a)
+ * [abstract](https://linkml.github.io/linkml-model/docs/abstract) and [mixin](https://linkml.github.io/linkml-model/docs/mixin) classes
+ * control JSON-LD mappings to URIs via [prefixes](https://linkml.github.io/linkml-model/docs/prefixes) declarations
+ * ability to refine meaning of a slot in the context of a particular class via [slot usage](https://linkml.github.io/linkml-model/docs/slot_usage)
 
 
 ## Examples
@@ -153,7 +153,7 @@ Output: [examples/organization.context.jsonld](examples/organization.context.jso
 
 You can control this via [prefixes](https://w3id.org/linkml/meta/prefixes) declarations and [default_curi_maps](https://w3id.org/linkml/meta/default_curi_maps).
 
-Any JSON that conforms to the derived JSON-Schema (see above) can be converted to RDF using this context. See the [Jupyter notebook example](https://nbviewer.jupyter.org/github/linkml/blob/master/notebooks/examples.ipynb) for an example.
+Any JSON that conforms to the derived JSON-Schema (see above) can be converted to RDF using this context. See the [Jupyter notebook example]() for an example.
 
 You can also combine a JSON instance file with a JSON-LD context using simple code or a tool like [jq](https://stackoverflow.com/questions/19529688/how-to-merge-2-json-objects-from-2-files-using-jq)
 
