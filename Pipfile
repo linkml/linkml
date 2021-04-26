@@ -38,4 +38,3 @@ hbreader = "*"
 #linkml_model = {editable = true, path = "/Users/solbrig/git/linkml/linkml-model"}
 linkml_model = ">=0.0.10"
 sqlalchemy = "*"
-jsonasobj = "*"
