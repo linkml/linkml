@@ -12,7 +12,7 @@
 
 click
 hbreader
-jsonasobj>=2.0.1
+jsonasobj==2.0.2dev1
 prefixcommons
 pyld
 pyyaml>=5.1
