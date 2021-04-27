@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 hbreader = "*"
 pyld = { git = "https://github.com/hsolbrig/pyld" }
-jsonasobj = ">=2.0.1"
+jsonasobj = "==2.0.2dev1"
 pyyaml = ">=5.1"
 rdflib = "*"
 rdflib-pyld-compat = "*"
@@ -17,3 +17,6 @@ shexjsg = "*"
 
 [dev-packages]
 requests = "*"
+
+[pipenv]
+allow_prereleases = true
