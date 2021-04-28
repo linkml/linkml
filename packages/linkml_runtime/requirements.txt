@@ -12,11 +12,12 @@
 
 click
 hbreader
-jsonasobj==2.0.2dev1
+jsonasobj>=2.0.2dev4
 prefixcommons
 pyld
 pyyaml>=5.1
 rdflib
 rdflib-jsonld
 rdflib-pyld-compat
+requests
 shexjsg
