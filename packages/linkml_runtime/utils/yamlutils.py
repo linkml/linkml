@@ -1,13 +1,15 @@
 from copy import copy
-from typing import Union, Any, List, Optional, Type, Callable
+from json import JSONDecoder
+from typing import Union, Any, List, Optional, Type, Callable, Dict
 
 import yaml
-from jsonasobj import JsonObj, as_json, ExtendedNamespace
+from jsonasobj import JsonObj, as_json, ExtendedNamespace, as_dict, JsonObjTypes, JsonTypes, items
 from rdflib import Graph
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
 
+YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 
 class YAMLMark(yaml.error.Mark):
     def __str__(self):
@@ -43,7 +45,7 @@ class YAMLRoot(ExtendedNamespace):
         :return: Serialized version of obj
         """
 
-        if isinstance(obj, JsonObj):
+        if isinstance(obj, YAMLRoot):
             rval = dict()
             for k, v in (filtr(obj.__dict__) if filtr else obj.__dict__).items():
                 is_classvar = k.startswith("type_") and hasattr(type(obj), k)
@@ -71,7 +73,7 @@ class YAMLRoot(ExtendedNamespace):
                         rval[k] = v
             return rval
         else:
-            return super()._default(obj)
+            return obj._default(obj) if hasattr(obj, '_default') and callable(obj._default) else JSONDecoder().decode(obj)
 
     def _normalize_inlined_slot(self, slot_name: str, slot_type: Type, key_name: Optional[str],
                                 inlined_as_list: Optional[bool], keyed: bool) -> None:
@@ -87,6 +89,8 @@ class YAMLRoot(ExtendedNamespace):
         @param keyed: True means each identifier must be unique
         """
         raw_slot: Union[list, dict] = self[slot_name]
+        if isinstance(raw_slot, JsonObj):
+            raw_slot = as_dict(raw_slot)
         cooked_slot = list() if inlined_as_list else dict()
         key_list = list()
 
@@ -145,6 +149,24 @@ class YAMLRoot(ExtendedNamespace):
         else:
             raise ValueError(f"Slot: {slot_name} must be a dictionary or a list")
         self[slot_name] = cooked_slot
+
+    @staticmethod
+    def _as_list(value: List[JsonObjTypes]) -> List[JsonTypes]:
+        """ Return a json array as a list
+
+        :param value: array
+        :return: array with JsonObj instances removed
+        """
+        return [e._as_dict if isinstance(e, YAMLRoot) else e for e in value]
+
+    @property
+    def _as_dict(self) -> Dict[str, JsonTypes]:
+        """ Convert a JsonObj into a straight dictionary
+
+        :return: dictionary that cooresponds to the json object
+        """
+        return {k: v._as_dict if isinstance(v, YAMLRoot) else self._as_list(v) if isinstance(v, list) else v
+                for k, v in items(self)}
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):

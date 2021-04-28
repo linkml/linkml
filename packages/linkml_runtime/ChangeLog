@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+* Switch to a better behaved jsonasobj
+
+v0.1.1
+------
+
+* Automated adding outputs from tests
+* v0.1.0 tag
+
 v0.1.0
 ------
 

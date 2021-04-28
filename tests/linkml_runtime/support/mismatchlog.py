@@ -15,11 +15,11 @@ class MismatchLog:
     difference_text - the details on the difference.  Used for RDF and other non-ascii files
     """
     class MismatchLogEntry:
-        @dataclass
         class StackFrame:
-            filename: str
-            method: str
-            line: int
+            def __init__(self, filename: str, method: str, line: int) -> None:
+                self.filename = filename
+                self.method = method
+                self.line = line
 
             def __str__(self):
                 return f'File "{self.filename}", line {self.line} in {self.method} '
