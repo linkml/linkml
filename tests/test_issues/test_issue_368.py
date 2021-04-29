@@ -7,7 +7,8 @@ from linkml.generators.pythongen import PythonGenerator
 from tests.test_issues.environment import env
 from tests.test_loaders_dumpers.ldtestcase import LDTestCase
 from tests.utils.filters import ldcontext_metadata_filter
-from tests.utils.python_comparator import compare_python, compile_python
+from tests.utils.python_comparator import compare_python
+from linkml_runtime.utils import compile_python
 
 
 @unittest.skip("Need to get the correct pyld installed for this to rune")

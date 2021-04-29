@@ -6,7 +6,8 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from tests.test_enhancements.environment import env
 from tests.utils.filters import yaml_filter
-from tests.utils.python_comparator import compare_python, compile_python
+from tests.utils.python_comparator import compare_python
+from linkml_runtime.utils import compile_python
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 

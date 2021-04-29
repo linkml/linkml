@@ -13,7 +13,8 @@ from tests.utils.filters import ldcontext_metadata_filter, metadata_filter, json
 
 
 from tests.utils.generatortestcase import GeneratorTestCase
-from tests.utils.python_comparator import compare_python, compile_python
+from tests.utils.python_comparator import compare_python
+from linkml_runtime.utils import compile_python
 from tests.utils.compare_rdf import compare_rdf
 
 
