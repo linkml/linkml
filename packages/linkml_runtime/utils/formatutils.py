@@ -81,3 +81,14 @@ def wrapped_annotation(txt: str) -> str:
         else:
             rval.append(line)
     return '\n\t'.join(rval)
+
+def shex_results_as_string(rslts) -> str:
+    """ Pretty print ShEx Evaluation result """
+    # TODO: Add this method to ShEx itself
+    rval = [f"Evalutating: {str(rslts.focus)} against {str(rslts.start)}"]
+    if rslts.result:
+        rval.append("Result: CONFORMS")
+    else:
+        rval.append("Result: NonConforming")
+    rval += rslts.reason.split('\n')
+    return '\n'.join(rval)
