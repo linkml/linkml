@@ -8,7 +8,7 @@ hbreader = "*"
 # Note: pyld needs requests package to access contexts
 requests = "*"
 pyld = { git = "https://github.com/hsolbrig/pyld" }
-jsonasobj = ">=2.0.2dev4"
+jsonasobj = {  git = "https://github.com/hsolbrig/jsonasobj" }
 pyyaml = ">=5.1"
 rdflib = "*"
 rdflib-pyld-compat = "*"

@@ -21,7 +21,7 @@ class YAMLMark(yaml.error.Mark):
         return where
 
 
-class YAMLRoot(ExtendedNamespace):
+class YAMLRoot(JsonObj):
 
     """
     The root object for all python YAML representations
@@ -108,7 +108,7 @@ class YAMLRoot(ExtendedNamespace):
             # A list of dictionaries
             #   [ {key_name: v11, slot_2: v12, ..., slot_n:v1n}, {key_name: v21, slot_2: v22, ..., slot_n:v2n}, ...]
             for raw_slot_entry in raw_slot:
-                if not isinstance(raw_slot_entry, (dict, YAMLRoot)):
+                if not isinstance(raw_slot_entry, (dict, JsonObj)):
                     raise ValueError(f"Slot: {slot_name} - unrecognized element: {raw_slot_entry}")
                 if keyed and key_name in raw_slot_entry:
                     value = raw_slot_entry if isinstance(raw_slot_entry, slot_type) else \
@@ -117,16 +117,17 @@ class YAMLRoot(ExtendedNamespace):
                     key = getattr(value, key_name)
                     cook_a_slot(value)
                 else:
-                    for k, v in raw_slot_entry.items():
+                    for k, v in items(raw_slot_entry):
                         key = k
-                        cook_a_slot(slot_type(k, v))
+                        slot_v = slot_type(k, **as_dict(v)) if isinstance(v, JsonObj) else slot_type(k, v)
+                        cook_a_slot(slot_v)
         elif isinstance(raw_slot, dict):
             # A dictionary
             # One of:
             #    {key_1: {[key_name: v11], slot_2: v12, ... slot_n: v1n}, key_2: {...}}   or
             #    {v11: v12, v21: v22, ...}
             for key, value in raw_slot.items():
-                if not isinstance(value, (dict, YAMLRoot)):
+                if not isinstance(value, (dict, JsonObj)):
                     cook_a_slot(slot_type(key, value))
                 elif isinstance(value, YAMLRoot):
                     vk = getattr(value, key_name, None)
@@ -149,24 +150,6 @@ class YAMLRoot(ExtendedNamespace):
         else:
             raise ValueError(f"Slot: {slot_name} must be a dictionary or a list")
         self[slot_name] = cooked_slot
-
-    @staticmethod
-    def _as_list(value: List[JsonObjTypes]) -> List[JsonTypes]:
-        """ Return a json array as a list
-
-        :param value: array
-        :return: array with JsonObj instances removed
-        """
-        return [e._as_dict if isinstance(e, YAMLRoot) else e for e in value]
-
-    @property
-    def _as_dict(self) -> Dict[str, JsonTypes]:
-        """ Convert a JsonObj into a straight dictionary
-
-        :return: dictionary that cooresponds to the json object
-        """
-        return {k: v._as_dict if isinstance(v, YAMLRoot) else self._as_list(v) if isinstance(v, list) else v
-                for k, v in items(self)}
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
