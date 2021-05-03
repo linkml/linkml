@@ -86,9 +86,17 @@ class YAMLRoot(JsonObj):
             return obj._default(obj) if hasattr(obj, '_default') and callable(obj._default) else\
                 JSONDecoder().decode(obj)
 
+    def _normalize_inlined_as_list(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool) -> None:
+        self._normalize_inlined(slot_name, slot_type, key_name, keyed, True)
+
     def _normalize_inlined_as_dict(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool) -> None:
+        self._normalize_inlined(slot_name, slot_type, key_name, keyed, False)
+
+    def _normalize_inlined(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool, is_list: bool) \
+            -> None:
         raw_slot: Union[list, dict, JsonObj] = self[slot_name]
-        cooked_slot = dict()
+        cooked_slot = list() if is_list else dict()
+        cooked_keys = set()
 
         def order_up(key: Any, cooked_entry: YAMLRoot) -> None:
             """ A cooked entry is ready to be added to the return slot """
@@ -96,9 +104,13 @@ class YAMLRoot(JsonObj):
                 raise ValueError(
                     f"Slot: {loc(slot_name)} - attribute {loc(key_name)} " \
                     f"value ({loc(cooked_entry[key_name])}) does not match key ({loc(key)})")
-            if keyed and key in cooked_slot:
+            if keyed and key in cooked_keys:
                 raise ValueError(f"{loc(key)}: duplicate key")
-            cooked_slot[key] = cooked_entry
+            cooked_keys.add(key)
+            if is_list:
+                cooked_slot.append(cooked_entry)
+            else:
+                cooked_slot[key] = cooked_entry
 
         def loc(s):
             loc_str = TypedNode.yaml_loc(s) if isinstance(s, TypedNode) else ''

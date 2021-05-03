@@ -934,7 +934,7 @@ class PermissibleValue(YAMLRoot):
         if self.meaning is not None and not isinstance(self.meaning, URIorCURIE):
             self.meaning = URIorCURIE(self.meaning)
 
-        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source",  keyed=True)
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
