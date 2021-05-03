@@ -64,7 +64,6 @@ class InlinedAsDictTestcase(unittest.TestCase):
         self.assertEqual("E(ev={'v11': EInst(s1='v11', s2='v12', s3=None), "
                          "'v21': EInst(s1='v21', s2='v22', s3='v23')})", str(v), "List of dictionaries")
 
-        # Form 7
 
     def test_dict_variations(self):
         """ Test various forms of inlined as dict entries """
@@ -90,9 +89,6 @@ class InlinedAsDictTestcase(unittest.TestCase):
                          str(v), "Single entry dictionary")
         v = E({"s1": "k1", "s2": "v12"})
         self.assertEqual("E(ev={'k1': EInst(s1='k1', s2='v12', s3=None)})", str(v), "Single entry dictionary")
-        print(str(v))
-
-
 
 
 if __name__ == '__main__':
