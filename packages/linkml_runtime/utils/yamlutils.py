@@ -1,15 +1,17 @@
 from copy import copy
+from dataclasses import dataclass
 from json import JSONDecoder
 from typing import Union, Any, List, Optional, Type, Callable, Dict
 
 import yaml
-from jsonasobj import JsonObj, as_json, ExtendedNamespace, as_dict, JsonObjTypes, JsonTypes, items
+from jsonasobj import JsonObj, as_json, as_dict, JsonObjTypes, items
 from rdflib import Graph
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
+
 
 class YAMLMark(yaml.error.Mark):
     def __str__(self):
@@ -20,16 +22,24 @@ class YAMLMark(yaml.error.Mark):
             where += ":\n"+snippet
         return where
 
-
 class YAMLRoot(JsonObj):
-
     """
     The root object for all python YAML representations
     """
+    def __init__(self, *args, **kwargs):
+        """
+        Override dataclass initializer
+        @param args:
+        @param kwargs:
+        """
+        super().__init__(*args, **kwargs)
 
-    def __post_init__(self, **kwargs):
-        if kwargs:
+    def __post_init__(self, *args: List[str],  **kwargs):
+        if args or kwargs:
             messages: List[str] = []
+            for v in args:
+                v = repr(v)[:40].replace('\n', '\\n')
+                messages.append(f"Unknown positional argument: {v}")
             for k in kwargs.keys():
                 v = repr(kwargs[k])[:40].replace('\n', '\\n')
                 messages.append(f"{TypedNode.yaml_loc(k)} Unknown argument: {k} = {v}")
@@ -73,7 +83,91 @@ class YAMLRoot(JsonObj):
                         rval[k] = v
             return rval
         else:
-            return obj._default(obj) if hasattr(obj, '_default') and callable(obj._default) else JSONDecoder().decode(obj)
+            return obj._default(obj) if hasattr(obj, '_default') and callable(obj._default) else\
+                JSONDecoder().decode(obj)
+
+    def _normalize_inlined_as_dict(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool) -> None:
+        raw_slot: Union[list, dict, JsonObj] = self[slot_name]
+        cooked_slot = dict()
+
+        def order_up(key: Any, cooked_entry: YAMLRoot) -> None:
+            """ A cooked entry is ready to be added to the return slot """
+            if cooked_entry[key_name] != key:
+                raise ValueError(
+                    f"Slot: {loc(slot_name)} - attribute {loc(key_name)} " \
+                    f"value ({loc(cooked_entry[key_name])}) does not match key ({loc(key)})")
+            if keyed and key in cooked_slot:
+                raise ValueError(f"{loc(key)}: duplicate key")
+            cooked_slot[key] = cooked_entry
+
+        def loc(s):
+            loc_str = TypedNode.yaml_loc(s) if isinstance(s, TypedNode) else ''
+            if loc_str == ': ':
+                loc_str = ''
+            return loc_str + str(s)
+
+        def form_1(entries: Dict[Any, Optional[Union[dict, JsonObj]]]) -> None:
+            """ A dictionary of key:dict entries where key is the identifier and dict is an instance of slot_type """
+            for key, raw_obj in items(entries):
+                if raw_obj is None:
+                    raw_obj = {}
+                if key_name not in raw_obj:
+                    raw_obj = copy(raw_obj)
+                    raw_obj[key_name] = key
+                if not issubclass(type(raw_obj), slot_type):
+                    order_up(key, slot_type(**as_dict(raw_obj)))
+                else:
+                    order_up(key, raw_obj)
+
+        # TODO: Make an external function extract a root JSON list
+        if isinstance(raw_slot, JsonObj):
+            raw_slot = raw_slot._hide_list()
+
+        if isinstance(raw_slot, list):
+            # We have a list of entries
+            for list_entry in raw_slot:
+                if isinstance(list_entry, (dict, JsonObj)):
+                    # list_entry is either a key:dict, key_name:value or **kwargs
+                    if len(list_entry) == 1:
+                        # key:dict or key_name:key
+                        for lek, lev in items(list_entry):
+                            if lek == key_name and not isinstance(lev, (list, dict, JsonObj)):
+                                # key_name:value
+                                order_up(list_entry[lek], slot_type(list_entry))
+                                break   # Not strictly necessary, but
+                            elif not isinstance(lev, (list, dict, JsonObj)):
+                                # key: value --> slot_type(key, value)
+                                order_up(lek, slot_type(lek, lev))
+                            else:
+                                form_1(list_entry)
+                    else:
+                        # **kwargs
+                        cooked_obj = slot_type(**as_dict(list_entry))
+                        order_up(cooked_obj[key_name], cooked_obj)
+                elif isinstance(list_entry, list):
+                    # *args
+                    cooked_obj = slot_type(*list_entry)
+                    order_up(cooked_obj[key_name], cooked_obj)
+                else:
+                    # lone key [key1: , key2: ... }
+                    order_up(list_entry, slot_type(**{key_name: list_entry}))
+        else:
+            # We have a dictionary
+            if key_name in raw_slot and not isinstance(raw_slot[key_name], (list, dict, JsonObj)):
+                # Vanilla dictionary - {key: v11, s12: v12, ...}
+                order_up(raw_slot[key_name], slot_type(**as_dict(raw_slot)))
+            else:
+                # We have either {key1: {obj1}, key2: {obj2}...} or {key1:, key2:, ...}
+                for k, v in items(raw_slot):
+                    if v is None:
+                        v = dict()
+                    if isinstance(v, (dict, JsonObj)):
+                        form_1({k: v})
+                    elif not isinstance(v, list):
+                        order_up(k, slot_type(*[k, v]))
+                    else:
+                        raise ValueError(f"Unrecognized entry: {loc(k)}: {str(v)}")
+        self[slot_name] = cooked_slot
 
     def _normalize_inlined_slot(self, slot_name: str, slot_type: Type, key_name: Optional[str],
                                 inlined_as_list: Optional[bool], keyed: bool) -> None:
@@ -88,9 +182,7 @@ class YAMLRoot(JsonObj):
         @param inlined_as_list: True means represent as a list, false or None as a dictionary
         @param keyed: True means each identifier must be unique
         """
-        raw_slot: Union[list, dict] = self[slot_name]
-        if isinstance(raw_slot, JsonObj):
-            raw_slot = as_dict(raw_slot)
+        raw_slot: Union[list, dict, JsonObj] = self[slot_name]
         cooked_slot = list() if inlined_as_list else dict()
         key_list = list()
 
@@ -119,17 +211,25 @@ class YAMLRoot(JsonObj):
                 else:
                     for k, v in items(raw_slot_entry):
                         key = k
-                        slot_v = slot_type(k, **as_dict(v)) if isinstance(v, JsonObj) else slot_type(k, v)
+                        slot_v = slot_type(k, **as_dict(v)) if isinstance(v, (dict, JsonObj)) else slot_type(k, v)
                         cook_a_slot(slot_v)
-        elif isinstance(raw_slot, dict):
-            # A dictionary
+        elif isinstance(raw_slot, (dict, JsonObj)):
+            # A dictionary or equivalent.  The generated code makes sure that we never get an inlined_as_list in this
+            # format.
+            #
             # One of:
-            #    {key_1: {[key_name: v11], slot_2: v12, ... slot_n: v1n}, key_2: {...}}   or
-            #    {v11: v12, v21: v22, ...}
-            for key, value in raw_slot.items():
+            #    1) A simple dictionary -- in this case, our job is to lift the key:
+            #       {key: k1, [slot_2: v12, ... slot_n: v1n]} --> {k1: {key: k1, [slot_2: v12, ... slot_n: v1n]}}
+            #       {key: k2, [slot_2: v22, ... slot_n: v2n]} --> {k2: {key: k2, [slot_2: v22, ... slot_n: v2n]}}
+            #    2) A dictionary already in the output form above:
+            #       {k: {key: k, [slot_2: v2, ... slot_n: vn]}}
+            #       Our only task above is to make sure that k == k1
+            #    3) A key/value pair, where value is NOT a valid instance of the target object
+            #       {k: value} --> {k: {key: k, slot_2: value}}
+            for key, value in items(raw_slot):
                 if not isinstance(value, (dict, JsonObj)):
                     cook_a_slot(slot_type(key, value))
-                elif isinstance(value, YAMLRoot):
+                elif isinstance(value, JsonObj):
                     vk = getattr(value, key_name, None)
                     if vk is None or vk == key:
                         setattr(value, key_name, key)
