@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Temporarily fix linkml\_model references
 * Revised form of inlined\_as\_list now operational
 * Add two new test files
 * \_normalize\_inlined\_as\_dict is now working

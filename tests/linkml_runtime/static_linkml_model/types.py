@@ -1,5 +1,5 @@
 # Auto generated from types.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-04-05 18:10
+# Generation date: 2021-04-29 21:27
 # Schema: types
 #
 # id: https://w3id.org/linkml/types
@@ -9,6 +9,7 @@
 import dataclasses
 import sys
 import re
+from jsonasobj import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 

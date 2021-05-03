@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Optional, Union
 
-from rdflib import Namespace
+from rdflib import Namespace, URIRef
 
 
 class CurieNamespace(Namespace):
-    def __new__(cls, prefix: str, value):
+    def __new__(cls, prefix: str, value: Union[str, URIRef]):
+        value = str(value)
         try:
             rt = str.__new__(cls, value)
         except UnicodeDecodeError:

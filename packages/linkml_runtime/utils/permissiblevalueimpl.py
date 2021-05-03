@@ -3,10 +3,8 @@ from typing import Dict, Any, Optional, ClassVar, List, Union
 
 from rdflib import URIRef
 
-from linkml_runtime.linkml_model.meta import PermissibleValue, EnumDefinition, PvFormulaOptions
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import URIorCURIE, empty_list, URI
-# from linkml_runtime.utils.uritypes_from_tccm import RenderingURI
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
 
 RenderingURI = URI

@@ -19,8 +19,8 @@ class EnumDefinitionMeta(type):
         cls.__dict__[key] = value
 
     def __setattr__(self, key, value):
-        from linkml_runtime.linkml_model.meta import PermissibleValue
-        if self._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
+        value_is_pv = "PermissibleValue" in [c.__name__ for c in type(value).mro()]
+        if self._defn.code_set and value_is_pv and value.meaning:
             print(f"Validating {value.meaning} against {self._defn.code_set}")
         super().__setattr__(key, value)
 
@@ -29,11 +29,15 @@ class EnumDefinitionMeta(type):
 
 
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
-    _defn: "EnumDefinition" = None         # Overridden by implementation
+    _defn: YAMLRoot = None         # Overridden by implementation - Must be EnumDefinition
 
-    def __init__(self, code: Union[str, Curie, "PermissibleValue"]) -> None:
-        from linkml_runtime.linkml_model.meta import PermissibleValue
-        if isinstance(code, PermissibleValue):
+    def __init__(self, code: Union[str, Curie, YAMLRoot]) -> None:
+        """
+        @param code: A permissible value or something that can be morphed into a PV
+        """
+        code_is_pv = "PermissibleValue" in [c.__name__ for c in type(code).mro()]
+        # if isinstance(code, PermissibleValue):
+        if code_is_pv:
             key = code.text
         elif isinstance(code, Curie):
             key = str(code)
@@ -47,7 +51,7 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
                 self._code = code
         elif key not in self.__class__:
             raise ValueError(f"Unknown {self.__class__.__name__} enumeration code: {key}")
-        elif isinstance(code, PermissibleValue):
+        elif code_is_pv:
             if getattr(self, 'code', None):
                 if self._code != code:
                     raise ValueError(f"Enumeration: {self.__class__.__name__} - "
@@ -57,10 +61,10 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         else:
             self._code = self.__class__[key]
 
-    def _lookup(self, key: str) -> Optional["PermissibleValue"]:
+    def _lookup(self, key: str) -> Optional[YAMLRoot]:
         """
         Hook to look up key in the appropriate code system
-        @param key: URI or string in Curie form (TBD)
+        @param key: URI or string in Curie form (TBD) or a PermissibleValue
         @return: Permissible value rendering if key is valid
         """
         return None

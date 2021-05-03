@@ -21,7 +21,6 @@ from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import URI, URIorCURIE
-from linkml_runtime.linkml_model.types import String, Uri, Uriorcurie
 
 metamodel_version = "1.7.0"
 

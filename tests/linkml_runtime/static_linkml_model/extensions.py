@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-04-05 18:10
+# Generation date: 2021-04-29 21:27
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -9,6 +9,7 @@
 import dataclasses
 import sys
 import re
+from jsonasobj import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -21,7 +22,7 @@ from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import URIorCURIE
-from linkml_runtime.linkml_model.types import String, Uriorcurie
+from tests.static_linkml_model.types import String, Uriorcurie
 
 metamodel_version = "1.7.0"
 
