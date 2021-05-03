@@ -1,6 +1,27 @@
 CHANGES
 =======
 
+* Revised form of inlined\_as\_list now operational
+* Add two new test files
+* \_normalize\_inlined\_as\_dict is now working
+* Automatically generated requirements.txt and requirements-dev.txt
+* Tweaks to recognize that JsonObj's are actually dicts but can't claim to be an instance of them
+
+v0.1.4
+------
+
+* Re-add shex\_results\_as\_string to formatutils.py
+
+v0.1.3
+------
+
+* Automatically generated requirements.txt and requirements-dev.txt
+* Py 3.7 compatibility
+
+v0.1.2
+------
+
+* Automatically generated requirements.txt and requirements-dev.txt
 * Switch to a better behaved jsonasobj
 
 v0.1.1
