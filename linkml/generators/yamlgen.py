@@ -2,8 +2,7 @@
 
 """
 import os
-from typing import Union
-from typing.io import TextIO
+from typing import Union, TextIO
 
 import click
 

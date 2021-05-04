@@ -1,6 +1,67 @@
 CHANGES
 =======
 
+* Switch to new runtime
+* remove extraneous test artifact
+* Alpha transition to linkml-runtime -- all duplicate code removed
+* compile\_python migration
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Update Pipfile
+* Lock down to jsonasobj 1.3.1
+* Update Pipfile
+* Update Pipfile
+* Automated adding outputs from tests
+* testing singular name
+* enum info => formatted markdown table
+* fixes doc paths
+* Automated adding outputs from tests
+* Update pypi-publish.yaml
+* Update pypi-publish.yaml
+* added permissible values into markdown file #120
+* camelcase -> underscore for name
+* generates markdown for enums in yaml: issue #120
+* Adding --noyuml option to markdowngen fixes #166
+* Automated adding outputs from tests
+* Handling edge cases
+* fixed cli
+* Fixed typo
+* using mock generator; adding script
+* first pass
+* first pass with sql alchemy; see #79
+* ensure terminus:Document via broad\_mappings
+* now with abstract classes :sparkles:
+* initial stab; works for nmdc.yaml!
+* fix no-prefix warning
+* Automated adding outputs from tests
+
+v0.0.7
+------
+
+* Automated adding outputs from tests
+* Add two parameters to markdowngen
+* changing BiolinkML -> LinkML where appropriate
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* Update examples notebook
+
+v0.0.6
+------
+
+* Automated adding outputs from tests
+* Update conditional evaluation
+* Automated adding outputs from tests
+* Remove docs commit from workflow
+* Automated adding outputs from tests
+* Remove section that generates docs director
+* Remove generated docs directory
+* Automated adding outputs from tests
+* Remove pycache directory
+* Temporary fix for build
+* Add granular mappings from the model when generating OWL
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Add support for python 3.7.1 - 3.7.5
 * Automated adding outputs from tests
 * Fix typos
 * Automated adding outputs from tests

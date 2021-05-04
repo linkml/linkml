@@ -12,7 +12,7 @@ jsonasobj = {  git = "https://github.com/hsolbrig/jsonasobj" }
 jsonschema = ">=3.0.1"
 prefixcommons = ">=0.1.7"
 rdflib-jsonld = ">=0.5.0"
-rdflib = ">=5.0.0"
+rdflib = "~=5.0.0"
 requests = ">=2.22"
 pyjsg = ">=0.11.6"
 pyyaml = "~=5.1"
@@ -28,7 +28,7 @@ rdflib-pyld-compat = "*"
 hbreader = "*"
 # NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
 linkml_model = { git = "https://github.com/linkml/linkml-model@runtime_split" }
-linkml_runtime = ">=0.1.5"
+linkml_runtime = "~=1.0.0"
 sqlalchemy = "*"
 
 [dev-packages]

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Set
+from typing import Set, cast
 
 from linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, SubsetDefinitionName, \
     ElementName, EnumDefinitionName

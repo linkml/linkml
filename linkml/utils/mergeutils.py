@@ -111,6 +111,7 @@ def merge_slots(target: Union[SlotDefinition, TypeDefinition], source: Union[Slo
                 setattr(target, k, deepcopy(v))
             else:
                 setattr(target, k, None)
+    target.__post_init__()
 
 
 def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinition) -> SlotDefinitionName:
