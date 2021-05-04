@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Redirect the old \`\_normalize\_inlined\` function to the new code
 * Update readme to have badges
 * Remove all dependencies on linkml\_model with the exception of the unit tests
 * Temporarily fix linkml\_model references

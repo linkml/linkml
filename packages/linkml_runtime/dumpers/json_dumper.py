@@ -1,5 +1,6 @@
 import json
 from typing import Dict
+from jsonasobj import items, JsonObj, as_dict
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
@@ -48,4 +49,5 @@ class JSONDumper(Dumper):
         :param obj:
         :return: copy of dictionary with empty lists/dicts and Nones removed
         """
-        return {k: v for k, v in obj.__dict__.items() if not (v is None or v == [] or v == {})}
+        return {k: as_dict(v) if isinstance(v, JsonObj) else v
+                for k, v in items(obj) if not (v is None or v == [] or v == {})}

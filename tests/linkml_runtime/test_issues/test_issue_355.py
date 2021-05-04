@@ -1,40 +1,101 @@
-import unittest
+# Auto generated from issue_355.yaml by pythongen.py version: 0.9.0
+# Generation date: 2021-05-04 11:04
+# Schema: issue355
+#
+# id: http://example.org/issue355/
+# description:
+# license: https://creativecommons.org/publicdomain/zero/1.0/
 
-from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
-from tests.test_issues.environment import env
-from tests.test_issues.input.issue_355 import Container, Containee
+import dataclasses
+import sys
+import re
+from jsonasobj import JsonObj
+from typing import Optional, List, Union, Dict, ClassVar, Any
+from dataclasses import dataclass
 
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from rdflib import Namespace, URIRef
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.metamodelcore import URIorCURIE
 
-class ContainedObjectTestCase(unittest.TestCase):
-    env = env
+metamodel_version = "1.7.0"
 
-    def test_contained_constructor(self):
-        """ Make sure the containee remains intact (test of YAMLRoot load section)"""
-        c = Container(Containee('11111', "Glaubner's disease"))
-        self.assertEqual('''entry:
-  '11111':
-    id: '11111'
-    value: Glaubner's disease''', as_yaml(c).strip())
+# Overwrite dataclasses _init_fn to add **kwargs in __init__
+dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
-        c = Container({'22222': dict(id='22222', value='Phrenooscopy')})
-        self.assertEqual('''entry:
-  '22222':
-    id: '22222'
-    value: Phrenooscopy''', as_yaml(c).strip())
-        alt_object = YAMLRoot()
-        alt_object.id = '33333'
-        alt_object.value = 'test'
-        c = Container(alt_object)
-        self.assertEqual('''entry:
-  '33333':
-    id: '33333'
-    value: test''', as_yaml(c).strip())
-        c = Container([dict(id='44444', value="Gracken's curse")])
-        self.assertEqual('''entry:
-  '44444':
-    id: '44444'
-    value: Gracken's curse''', as_yaml(c).strip())
+# Namespaces
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCT = CurieNamespace('sct', 'http://snomed.info/id/')
+DEFAULT_ = SCT
 
 
-if __name__ == '__main__':
-    unittest.main()
+# Types
+
+# Class references
+class ContaineeId(URIorCURIE):
+    pass
+
+
+@dataclass
+class Container(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = SCT.Container
+    class_class_curie: ClassVar[str] = "sct:Container"
+    class_name: ClassVar[str] = "container"
+    class_model_uri: ClassVar[URIRef] = SCT.Container
+
+    entry: Optional[Union[Dict[Union[str, ContaineeId], Union[dict, "Containee"]], List[Union[dict, "Containee"]]]] = empty_dict()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if not isinstance(self.entry, (list, dict, JsonObj)):
+            self.entry = [self.entry]
+        self._normalize_inlined_as_dict(slot_name="entry", slot_type=Containee, key_name="id", keyed=True)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class Containee(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = SCT.Containee
+    class_class_curie: ClassVar[str] = "sct:Containee"
+    class_name: ClassVar[str] = "containee"
+    class_model_uri: ClassVar[URIRef] = SCT.Containee
+
+    id: Union[str, ContaineeId] = None
+    value: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.id is None:
+            raise ValueError("id must be supplied")
+        if not isinstance(self.id, ContaineeId):
+            self.id = ContaineeId(self.id)
+
+        if self.value is not None and not isinstance(self.value, str):
+            self.value = str(self.value)
+
+        super().__post_init__(**kwargs)
+
+
+# Enumerations
+
+
+# Slots
+class slots:
+    pass
+
+slots.container__entry = Slot(uri=SCT.entry, name="container__entry", curie=SCT.curie('entry'),
+                   model_uri=SCT.container__entry, domain=None, range=Optional[Union[Dict[Union[str, ContaineeId], Union[dict, Containee]], List[Union[dict, Containee]]]])
+
+slots.containee__id = Slot(uri=SCT.id, name="containee__id", curie=SCT.curie('id'),
+                   model_uri=SCT.containee__id, domain=None, range=URIRef)
+
+slots.containee__value = Slot(uri=SCT.value, name="containee__value", curie=SCT.curie('value'),
+                   model_uri=SCT.containee__value, domain=None, range=Optional[str])
