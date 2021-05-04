@@ -94,6 +94,18 @@ class YAMLRoot(JsonObj):
 
     def _normalize_inlined(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool, is_list: bool) \
             -> None:
+        """
+         __post_init__ function for a list of inlined keyed or identified classes.
+
+        The input to this is either a list or dictionary of dictionaries.  In the list case, every key entry
+        in the list must be unique.  In the dictionary case, the key may or may not be repeated in the dictionary
+        element. The internal storage structure is a dictionary of dictionaries.
+        @param slot_name: Name of the slot being normalized
+        @param slot_type: Slot range type
+        @param key_name: Name of the key or identifier in the range
+        @param keyed: True means each identifier must be unique
+        @param is_list: True means inlined as list
+        """
         raw_slot: Union[list, dict, JsonObj] = self[slot_name]
         cooked_slot = list() if is_list else dict()
         cooked_keys = set()
@@ -184,84 +196,36 @@ class YAMLRoot(JsonObj):
     def _normalize_inlined_slot(self, slot_name: str, slot_type: Type, key_name: Optional[str],
                                 inlined_as_list: Optional[bool], keyed: bool) -> None:
         """
-         __post_init__ function for a list of inlined keyed or identified classes.
-        The input to this is either a list or dictionary of dictionaries.  In the list case, every key entry
-        in the list must be unique.  In the dictionary case, the key may or may not be repeated in the dictionary
-        element. The internal storage structure is a dictionary of dictionaries.
-        @param slot_name: Name of the slot being normalized
-        @param slot_type: Slot range type
-        @param key_name: Name of the key or identifier in the range
-        @param inlined_as_list: True means represent as a list, false or None as a dictionary
-        @param keyed: True means each identifier must be unique
+        A deprecated entry point to slot normalization. Used for models generated prior to the linkml-runtime split.
+
+        This code is invoked via one of the following patterns:
+            if self.<slot> is None:
+                self.<slot> = []
+            if not isinstance(self.<slot>, list):
+                self.extensions = [self.<slot>]
+            self._normalize_inlined_slot(slot_name="<slot>", slot_type=<type>, key_name="<key>", inlined_as_list=True, keyed=...)
+        or
+            if self.<slot> is None:
+                self.<slot> = []
+            if not isinstance(self.<slot>, (list, dict)):
+                self.local_names = [self.<slot>]
+            self._normalize_inlined_slot(slot_name="<slot>", slot_type=<type>, key_name="<key>", inlined_as_list=None, keyed=...)
+
+        The above pattern broke when the new jsonasobj was introduced, which is why we have the normalization above.  The code
+        below reverse engineers the above and invokes the new form
+
         """
-        raw_slot: Union[list, dict, JsonObj] = self[slot_name]
-        cooked_slot = list() if inlined_as_list else dict()
-        key_list = list()
-
-        def cook_a_slot(entry) -> None:
-            if keyed:
-                if key in key_list:
-                    raise ValueError(f"{TypedNode.yaml_loc(key)}: duplicate key")
-                key_list.append(key)
-            if inlined_as_list:
-                cooked_slot.append(entry)
-            else:
-                cooked_slot[entry[key_name]] = entry
-
-        if isinstance(raw_slot, list):
-            # A list of dictionaries
-            #   [ {key_name: v11, slot_2: v12, ..., slot_n:v1n}, {key_name: v21, slot_2: v22, ..., slot_n:v2n}, ...]
-            for raw_slot_entry in raw_slot:
-                if not isinstance(raw_slot_entry, (dict, JsonObj)):
-                    raise ValueError(f"Slot: {slot_name} - unrecognized element: {raw_slot_entry}")
-                if keyed and key_name in raw_slot_entry:
-                    value = raw_slot_entry if isinstance(raw_slot_entry, slot_type) else \
-                            slot_type(**raw_slot_entry) if isinstance(raw_slot_entry, dict) else\
-                            slot_type(**raw_slot_entry.__dict__)
-                    key = getattr(value, key_name)
-                    cook_a_slot(value)
-                else:
-                    for k, v in items(raw_slot_entry):
-                        key = k
-                        slot_v = slot_type(k, **as_dict(v)) if isinstance(v, (dict, JsonObj)) else slot_type(k, v)
-                        cook_a_slot(slot_v)
-        elif isinstance(raw_slot, (dict, JsonObj)):
-            # A dictionary or equivalent.  The generated code makes sure that we never get an inlined_as_list in this
-            # format.
-            #
-            # One of:
-            #    1) A simple dictionary -- in this case, our job is to lift the key:
-            #       {key: k1, [slot_2: v12, ... slot_n: v1n]} --> {k1: {key: k1, [slot_2: v12, ... slot_n: v1n]}}
-            #       {key: k2, [slot_2: v22, ... slot_n: v2n]} --> {k2: {key: k2, [slot_2: v22, ... slot_n: v2n]}}
-            #    2) A dictionary already in the output form above:
-            #       {k: {key: k, [slot_2: v2, ... slot_n: vn]}}
-            #       Our only task above is to make sure that k == k1
-            #    3) A key/value pair, where value is NOT a valid instance of the target object
-            #       {k: value} --> {k: {key: k, slot_2: value}}
-            for key, value in items(raw_slot):
-                if not isinstance(value, (dict, JsonObj)):
-                    cook_a_slot(slot_type(key, value))
-                elif isinstance(value, JsonObj):
-                    vk = getattr(value, key_name, None)
-                    if vk is None or vk == key:
-                        setattr(value, key_name, key)
-                        cook_a_slot(value)
-                    else:
-                        raise ValueError(f"Slot: {slot_name} - value ({vk}) does not match key ({key})")
-                else:
-                    # Inject a key if not there otherwise make sure it matches
-                    vk = value.get(key_name, None)
-                    if vk is None:
-                        value_copy = value.copy()
-                        value_copy[key_name] = key
-                        cook_a_slot(slot_type(**value_copy))
-                    elif vk != key:
-                        raise ValueError(f"Slot: {slot_name} - value ({vk}) does not match key ({key})")
-                    else:
-                        cook_a_slot(slot_type(**value))
+        if inlined_as_list:
+            list_slot = self[slot_name]
+            if len(list_slot) == 1 and not isinstance(list_slot[0], list):
+                self[slot_name] = list_slot[0]
+            self._normalize_inlined_as_list(slot_name, slot_type, key_name, keyed)
         else:
-            raise ValueError(f"Slot: {slot_name} must be a dictionary or a list")
-        self[slot_name] = cooked_slot
+            dict_slot = self[slot_name]
+            if isinstance(dict_slot, list):
+                if len(dict_slot) == 1 and not isinstance(dict_slot[0], (list, dict)):
+                    self[slot_name] = dict_slot[0]
+            self._normalize_inlined_as_dict(slot_name, slot_type, key_name, keyed)
 
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):

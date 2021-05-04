@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Update readme to have badges
+* Remove all dependencies on linkml\_model with the exception of the unit tests
 * Temporarily fix linkml\_model references
 * Revised form of inlined\_as\_list now operational
 * Add two new test files
