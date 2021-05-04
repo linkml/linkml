@@ -661,7 +661,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                         break
                 keyed = False
             else:
-                inlined_as_list = slot.inlined_as_list
+                # Place for future expansion
                 keyed = True
             if identifier:
                 if not slot.inlined_as_list:
@@ -670,10 +670,9 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                               f'key_name="{self.aliased_slot_name(identifier)}", '
                               f'keyed={keyed})')
                 else:
-                    rlines.append(f'self._normalize_inlined_slot(slot_name="{aliased_slot_name}", '
+                    rlines.append(f'self._normalize_inlined_as_list(slot_name="{aliased_slot_name}", '
                                   f'slot_type={base_type_name}, '
                                   f'key_name="{self.aliased_slot_name(identifier)}", '
-                                  f'inlined_as_list={slot.inlined_as_list}, '
                                   f'keyed={keyed})')
             else:
                 sn = f'self.{aliased_slot_name}'
