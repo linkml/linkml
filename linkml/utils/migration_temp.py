@@ -1,6 +1,6 @@
 from typing import Any
 
-from linkml.utils.yamlutils import YAMLRoot as BLYAMLRoot, TypedNode as BLTypedNode
+from linkml_runtime.utils.yamlutils import YAMLRoot as BLYAMLRoot, TypedNode as BLTypedNode
 
 
 def is_YAMLROOT(node: Any) -> bool:

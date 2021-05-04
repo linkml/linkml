@@ -2,7 +2,7 @@ import unittest
 
 from linkml.generators.pythongen import PythonGenerator
 from tests.utils.python_comparator import compare_python
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
 from tests.utils.filters import metadata_filter
 
 from tests.utils.test_environment import TestEnvironmentTestCase

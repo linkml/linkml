@@ -1,9 +1,9 @@
 import unittest
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.yamlutils import from_yaml
+from linkml_runtime.utils.yamlutils import from_yaml
 from tests.utils.python_comparator import compare_python
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_enhancements.environment import env
 

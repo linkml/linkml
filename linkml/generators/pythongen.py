@@ -11,11 +11,11 @@ import linkml
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
     SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue
-from linkml.utils.formatutils import camelcase, underscore, be, wrapped_annotation, split_line, sfx
+from linkml_runtime.utils.formatutils import camelcase, underscore, be, wrapped_annotation, split_line, sfx
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration, ifabsent_postinit_declaration, \
     default_curie_or_uri
-from linkml.utils.metamodelcore import builtinnames
+from linkml_runtime.utils.metamodelcore import builtinnames
 
 
 class PythonGenerator(Generator):
@@ -95,7 +95,7 @@ class PythonGenerator(Generator):
         # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
         enumimports = '' if self.genmeta else \
             'from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n'
-        handlerimport = 'from linkml.utils.enumerations import EnumDefinitionImpl'
+        handlerimport = 'from linkml_runtime.utils.enumerations import EnumDefinitionImpl'
         split_descripton = '\n#              '.join(split_line(be(self.schema.description), split_len=100))
         head = f'''# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
@@ -110,17 +110,18 @@ class PythonGenerator(Generator):
 import dataclasses
 import sys
 import re
+from jsonasobj import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 {enumimports}
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 {handlerimport}
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.curienamespace import CurieNamespace
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
@@ -190,7 +191,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 if '.' in typ.base:
                     rval.add_entry(*typ.base.rsplit('.'))
                 else:
-                    rval.add_entry('linkml.utils.metamodelcore', typ.base)
+                    rval.add_entry('linkml_runtime.utils.metamodelcore', typ.base)
             if typ.typeof:
                 add_type_ref(self.schema.types[typ.typeof])
             rval.add_element(typ)
@@ -606,7 +607,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.multivalued:
                 if slot.inlined and slot_identifier:
                     # Identified type multivalued slots can either be lists or dictionaries
-                    rlines.append(f'elif not isinstance(self.{aliased_slot_name}, (list, dict)):')
+                    rlines.append(f'elif not isinstance(self.{aliased_slot_name}, (list, dict, JsonObj)):')
                     rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
                     rlines.append(f'if len(self.{aliased_slot_name}) == 0:')
                     rlines.append(f'\traise ValueError(f"{aliased_slot_name} '
@@ -617,13 +618,13 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     rlines.append(f'elif len(self.{aliased_slot_name}) == 0:')
                     rlines.append(f'\traise ValueError(f"{aliased_slot_name} must be a non-empty list")')
         elif slot.multivalued:
-            rlines.append(f'if self.{aliased_slot_name} is None:')
-            rlines.append(f'\tself.{aliased_slot_name} = []')
-            if slot.inlined and slot_identifier:
+            if slot.inlined and slot_identifier and not slot.inlined_as_list:
                 # Identified type multivalued slots can either be lists or dictionaries
-                rlines.append(f'if not isinstance(self.{aliased_slot_name}, (list, dict)):')
+                rlines.append(f'if not isinstance(self.{aliased_slot_name}, (list, dict, JsonObj)):')
                 rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
             else:
+                rlines.append(f'if self.{aliased_slot_name} is None:')
+                rlines.append(f'\tself.{aliased_slot_name} = []')
                 rlines.append(f'if not isinstance(self.{aliased_slot_name}, list):')
                 rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
 
@@ -658,15 +659,22 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                         keyed = False
                         identifier = range_slot.name
                         break
+                keyed = False
             else:
                 inlined_as_list = slot.inlined_as_list
                 keyed = True
             if identifier:
-                # TODO: match inlined_as_list to the inlined setting
-                rlines.append(f'self._normalize_inlined_slot(slot_name="{aliased_slot_name}", slot_type={base_type_name}, '
+                if not slot.inlined_as_list:
+                    rlines.append(f'self._normalize_inlined_as_dict(slot_name="{aliased_slot_name}", '
+                              f'slot_type={base_type_name}, '
                               f'key_name="{self.aliased_slot_name(identifier)}", '
-                              f'inlined_as_list={inlined_as_list}, '
                               f'keyed={keyed})')
+                else:
+                    rlines.append(f'self._normalize_inlined_slot(slot_name="{aliased_slot_name}", '
+                                  f'slot_type={base_type_name}, '
+                                  f'key_name="{self.aliased_slot_name(identifier)}", '
+                                  f'inlined_as_list={slot.inlined_as_list}, '
+                                  f'keyed={keyed})')
             else:
                 sn = f'self.{aliased_slot_name}'
                 rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**v) for v in {sn}]')

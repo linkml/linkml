@@ -9,7 +9,7 @@ import click
 
 from linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 
 
 class YAMLGenerator(Generator):

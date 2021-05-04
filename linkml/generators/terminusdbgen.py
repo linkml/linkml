@@ -6,7 +6,7 @@ import click
 
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 
-from linkml.utils.formatutils import camelcase, be, underscore
+from linkml_runtime.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from terminusdb_client.woqlquery import WOQLQuery as WQ
 
@@ -95,7 +95,7 @@ class TerminusdbGenerator(Generator):
         if slot.range in self.schema.classes:
             rng = camelcase(slot.range)
         elif slot.range in self.schema.types:
-            # XXX Why does `linkml.utils.metamodelcore.Identifier` subclass `str`??
+            # XXX Why does `linkml_runtime.utils.metamodelcore.Identifier` subclass `str`??
             rng = str(self.schema.types[slot.range].uri)
         else:
             rng = "xsd:string"

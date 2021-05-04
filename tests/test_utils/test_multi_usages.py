@@ -3,7 +3,7 @@ from typing import Optional
 
 from linkml_model.meta import SchemaDefinition
 from linkml.utils.schemaloader import SchemaLoader
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 from tests.utils.filters import yaml_filter
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_utils.environment import env

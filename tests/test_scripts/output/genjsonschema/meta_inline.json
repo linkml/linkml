@@ -220,7 +220,7 @@
                "type": "array"
             },
             "mixin": {
-               "description": "this slot or class can only be used as a mixin -- equivalent to abstract",
+               "description": "this slot or class can only be used as a mixin.",
                "type": "boolean"
             },
             "mixins": {
@@ -1183,7 +1183,7 @@
                "type": "integer"
             },
             "mixin": {
-               "description": "this slot or class can only be used as a mixin -- equivalent to abstract",
+               "description": "this slot or class can only be used as a mixin.",
                "type": "boolean"
             },
             "mixins": {

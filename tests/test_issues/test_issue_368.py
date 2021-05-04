@@ -1,18 +1,18 @@
 import unittest
 from typing import Callable
 
-from linkml.dumpers import json_dumper, yaml_dumper, rdf_dumper
+from linkml_runtime.dumpers import json_dumper, yaml_dumper, rdf_dumper
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_issues.environment import env
-from tests.test_loaders_dumpers.ldtestcase import LDTestCase
 from tests.utils.filters import ldcontext_metadata_filter
 from tests.utils.python_comparator import compare_python
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
+from tests.utils.loaderdumpertestcase import LoaderDumperTestCase
 
 
 @unittest.skip("Need to get the correct pyld installed for this to rune")
-class Issue368TestCase(LDTestCase):
+class Issue368TestCase(LoaderDumperTestCase):
     env = env
 
     def header(self, txt: str) -> str:

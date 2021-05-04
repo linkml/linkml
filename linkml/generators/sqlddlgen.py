@@ -6,7 +6,7 @@ import logging
 
 from sqlalchemy import *
 from linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition
-from linkml.utils.formatutils import camelcase, lcamelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 
 def _quote(s: str) -> str:

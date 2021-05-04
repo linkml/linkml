@@ -7,14 +7,14 @@ from jsonasobj import loads
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.yamlutils import as_rdf
+from linkml_runtime.utils.yamlutils import as_rdf
 from tests.test_utils.environment import env
 from tests.utils.filters import ldcontext_metadata_filter, metadata_filter, json_metadata_filter
 
 
 from tests.utils.generatortestcase import GeneratorTestCase
 from tests.utils.python_comparator import compare_python
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
 from tests.utils.compare_rdf import compare_rdf
 
 

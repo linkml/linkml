@@ -4,11 +4,12 @@ from io import StringIO
 from typing import Union, TextIO, Optional, Set, List, Any, Callable, Dict
 
 import click
+from jsonasobj import JsonObj, values
 
 from linkml.generators.yumlgen import YumlGenerator
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
     TypeDefinition, EnumDefinition
-from linkml.utils.formatutils import camelcase, be, underscore
+from linkml_runtime.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
 
@@ -261,9 +262,9 @@ class MarkdownGenerator(Generator):
                 -> None:
             if formatter is None:
                 formatter = identity
+            if isinstance(entries, (dict, JsonObj)):
+                entries = list(values(entries))
             if entries:
-                if isinstance(entries, Dict):
-                    entries = list(entries.values())
                 print(f"| **{title}:** | | {formatter(entries[0])} |")
                 for entry in entries[1:]:
                     print(f"|  | | {formatter(entry)} |")
@@ -310,7 +311,7 @@ class MarkdownGenerator(Generator):
             #       - deprecated element has possible replacement
             if type(obj) == EnumDefinition:
                 enum_list('Permissible Values', obj)
-                
+
         if attributes.getvalue():
             self.header(2, 'Other properties')
             print("|  |  |  |")

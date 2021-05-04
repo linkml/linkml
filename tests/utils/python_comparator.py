@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 from tests.utils.dirutils import file_text
 from tests.utils.filters import metadata_filter
 from tests.environment import env
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
 
 
 def compare_python(expected: str, actual: str, expected_path: Optional[str] = None) -> Optional[str]:

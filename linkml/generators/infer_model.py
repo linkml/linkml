@@ -16,7 +16,7 @@ import time
 
 from linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 from dateutil.parser import parse
 
 def infer_model(tsvfile: str, sep="\t", class_name='example',

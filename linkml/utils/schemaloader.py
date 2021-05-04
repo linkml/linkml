@@ -7,15 +7,15 @@ from urllib.parse import urlparse
 
 from linkml_model.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
     ClassDefinitionName, TypeDefinitionName, TypeDefinition, ElementName, EnumDefinition, EnumDefinitionName
-from linkml.utils.context_utils import parse_import_map
-from linkml.utils.formatutils import underscore, camelcase, sfx, lcamelcase, mangled_attribute_name
+from linkml_runtime.utils.context_utils import parse_import_map
+from linkml_runtime.utils.formatutils import underscore, camelcase, sfx, lcamelcase, mangled_attribute_name
 from linkml.utils.mergeutils import merge_schemas, merge_slots, merge_classes, slot_usage_name
-from linkml.utils.metamodelcore import Bool
+from linkml_runtime.utils.metamodelcore import Bool
 from linkml.utils.migration_temp import is_TypedNode
-from linkml.utils.namespaces import Namespaces
+from linkml_runtime.utils.namespaces import Namespaces
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
-from linkml.utils.yamlutils import TypedNode
+from linkml_runtime.utils.yamlutils import TypedNode
 
 
 class SchemaLoader:

@@ -4,10 +4,10 @@ import unittest
 from jsonasobj import as_json
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.yamlutils import YAMLRoot, as_yaml
+from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 from tests.test_issues.environment import env
 from tests.utils.python_comparator import compare_python
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 
@@ -24,9 +24,8 @@ class ContainedObjectTestCase(TestEnvironmentTestCase):
         module = compile_python(env.expected_path(f'{test_name}.py'))
         c = module.Container(module.Containee('11111', "Glaubner's disease"))
         self.assertEqual('''entry:
-  '11111':
-    id: '11111'
-    value: Glaubner's disease''', as_yaml(c).strip())
+  id: '11111'
+  value: Glaubner's disease''', as_yaml(c).strip())
 
         c = module.Container({'22222': dict(id='22222', value='Phrenooscopy')})
         self.assertEqual('''entry:
@@ -38,12 +37,10 @@ class ContainedObjectTestCase(TestEnvironmentTestCase):
         alt_object.value = 'test'
         c = module.Container(alt_object)
         self.assertEqual('''entry:
-  '33333':
     id: '33333'
     value: test''', as_yaml(c).strip())
         c = module.Container([dict(id='44444', value="Gracken's curse")])
         self.assertEqual('''entry:
-  '44444':
     id: '44444'
     value: Gracken's curse''', as_yaml(c).strip())
 

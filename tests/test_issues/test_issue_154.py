@@ -3,7 +3,7 @@ import unittest
 import yaml
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 

@@ -5,10 +5,10 @@ from jsonasobj import as_json
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.yamlutils import as_rdf
+from linkml_runtime.utils.yamlutils import as_rdf
 from tests.test_issues.environment import env
 from tests.utils.python_comparator import compare_python
-from linkml_runtime.utils import compile_python
+from linkml_runtime.utils.compile_python import compile_python
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 

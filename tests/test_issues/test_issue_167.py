@@ -5,7 +5,7 @@ from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.utils.schemaloader import SchemaLoader
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 from tests.utils.compare_rdf import compare_rdf
 from tests.utils.filters import yaml_filter, json_metadata_filter
 from tests.utils.python_comparator import compare_python

@@ -10,9 +10,9 @@ from jsonasobj import as_json
 from linkml import METAMODEL_CONTEXT_URI
 from linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
     ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition
-from linkml.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.yamlutils import YAMLRoot
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.utils.migration_temp import is_YAMLROOT
 

@@ -6,7 +6,7 @@ from jsonasobj import JsonObj, as_json
 
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
-from linkml.utils.formatutils import camelcase, be, underscore
+from linkml_runtime.utils.formatutils import camelcase, be, underscore
 
 
 class JsonSchemaGenerator(Generator):

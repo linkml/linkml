@@ -6,9 +6,9 @@ from rdflib import URIRef
 
 from linkml_model.meta import SchemaDefinition, Element, SlotDefinition, ClassDefinition, TypeDefinition, \
     SlotDefinitionName, TypeDefinitionName, EnumDefinition
-from linkml.utils.formatutils import camelcase, underscore
-from linkml.utils.namespaces import Namespaces
-from linkml.utils.yamlutils import extended_str
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.yamlutils import extended_str
 
 
 def merge_schemas(target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None,

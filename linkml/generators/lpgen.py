@@ -5,7 +5,7 @@ import click
 from prologterms import Term, TermGenerator, PrologRenderer, SExpressionRenderer
 
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
-from linkml.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 
 
