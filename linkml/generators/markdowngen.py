@@ -338,6 +338,7 @@ class MarkdownGenerator(Generator):
     def dir_path(self, obj: Union[ClassDefinition, SlotDefinition, TypeDefinition]) -> str:
         filename = self.formatted_element_name(obj) if isinstance(obj, ClassDefinition) \
             else underscore(obj.name) if isinstance(obj, SlotDefinition) \
+            else underscore(obj.name) if isinstance(obj, EnumDefinition) \
             else camelcase(obj.name)
         subdir = '/types' if isinstance(obj, TypeDefinition) and not self.no_types_dir else ''
         return f'{self.directory}{subdir}/{filename}.md'
