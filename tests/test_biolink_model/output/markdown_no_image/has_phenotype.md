@@ -9,7 +9,8 @@ URI: [biolink:has_phenotype](https://w3id.org/biolink/vocab/has_phenotype)
 
 ## Domain and Range
 
-[BiologicalEntity](BiologicalEntity.md) ->  <sub>0..*</sub> [PhenotypicFeature](PhenotypicFeature.md)
+[BiologicalEntity](BiologicalEntity.md) ->  <sub>0..*</sub>
+ [PhenotypicFeature](PhenotypicFeature.md)
 
 ## Parents
 

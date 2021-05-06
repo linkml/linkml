@@ -9,7 +9,8 @@ URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
 
 ## Domain and Range
 
-slot_definition ->  <sub>0..*</sub> class_definition
+slot_definition ->  <sub>0..*</sub>
+ class_definition
 
 ## Parents
 

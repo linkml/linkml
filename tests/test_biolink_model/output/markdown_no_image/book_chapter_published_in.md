@@ -9,7 +9,8 @@ URI: [biolink:book_chapter_published_in](https://w3id.org/biolink/vocab/book_cha
 
 ## Domain and Range
 
-[BookChapter](BookChapter.md) ->  <sub>REQ</sub> [Uriorcurie](types/Uriorcurie.md)
+[BookChapter](BookChapter.md) ->  <sub>REQ</sub>
+ [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

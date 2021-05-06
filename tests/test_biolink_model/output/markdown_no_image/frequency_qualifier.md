@@ -9,7 +9,8 @@ URI: [biolink:frequency_qualifier](https://w3id.org/biolink/vocab/frequency_qual
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [FrequencyValue](types/FrequencyValue.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [FrequencyValue](types/FrequencyValue.md)
 
 ## Parents
 

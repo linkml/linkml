@@ -9,7 +9,8 @@ URI: [biolink:description](https://w3id.org/biolink/vocab/description)
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [NarrativeText](types/NarrativeText.md)
+None ->  <sub>OPT</sub>
+ [NarrativeText](types/NarrativeText.md)
 
 ## Parents
 

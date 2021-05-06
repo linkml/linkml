@@ -22,4 +22,5 @@ URI: [biolink:EntityToOutcomeAssociationMixin](https://w3id.org/biolink/vocab/En
 ### Own
 
  * [entity to outcome association mixin➞object](entity_to_outcome_association_mixin_object.md)  <sub>REQ</sub>
+
      * range: [Outcome](Outcome.md)

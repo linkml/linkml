@@ -9,7 +9,8 @@ URI: [biolink:entity_positively_regulates_entity](https://w3id.org/biolink/vocab
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
+ [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

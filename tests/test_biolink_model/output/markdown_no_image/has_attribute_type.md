@@ -9,7 +9,8 @@ URI: [biolink:has_attribute_type](https://w3id.org/biolink/vocab/has_attribute_t
 
 ## Domain and Range
 
-[Attribute](Attribute.md) ->  <sub>REQ</sub> [OntologyClass](OntologyClass.md)
+[Attribute](Attribute.md) ->  <sub>REQ</sub>
+ [OntologyClass](OntologyClass.md)
 
 ## Parents
 

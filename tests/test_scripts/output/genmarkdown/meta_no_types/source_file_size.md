@@ -9,7 +9,8 @@ URI: [linkml:source_file_size](https://w3id.org/linkml/source_file_size)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>OPT</sub> [Integer](Integer.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>OPT</sub>
+ [Integer](Integer.md)
 
 ## Parents
 

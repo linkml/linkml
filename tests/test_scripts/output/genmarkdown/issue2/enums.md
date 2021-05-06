@@ -9,7 +9,8 @@ URI: [linkml:enums](https://w3id.org/linkml/enums)
 
 ## Domain and Range
 
-schema_definition ->  <sub>0..*</sub> enum_definition
+schema_definition ->  <sub>0..*</sub>
+ enum_definition
 
 ## Parents
 

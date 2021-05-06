@@ -9,7 +9,8 @@ URI: [biolink:attribute_name](https://w3id.org/biolink/vocab/attribute_name)
 
 ## Domain and Range
 
-[Attribute](Attribute.md) ->  <sub>OPT</sub> [LabelType](types/LabelType.md)
+[Attribute](Attribute.md) ->  <sub>OPT</sub>
+ [LabelType](types/LabelType.md)
 
 ## Parents
 

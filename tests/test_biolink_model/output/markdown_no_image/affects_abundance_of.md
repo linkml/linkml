@@ -9,7 +9,8 @@ URI: [biolink:affects_abundance_of](https://w3id.org/biolink/vocab/affects_abund
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
+ [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

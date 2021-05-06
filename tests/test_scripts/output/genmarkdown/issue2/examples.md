@@ -9,7 +9,8 @@ URI: [linkml:examples](https://w3id.org/linkml/examples)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> [Example](Example.md)
+[Element](Element.md) ->  <sub>0..*</sub>
+ [Example](Example.md)
 
 ## Parents
 

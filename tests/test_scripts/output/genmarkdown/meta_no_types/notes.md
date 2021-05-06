@@ -9,7 +9,8 @@ URI: [linkml:notes](https://w3id.org/linkml/notes)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> [String](String.md)
+[Element](Element.md) ->  <sub>0..*</sub>
+ [String](String.md)
 
 ## Parents
 

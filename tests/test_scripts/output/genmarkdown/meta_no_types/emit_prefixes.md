@@ -9,7 +9,8 @@ URI: [linkml:emit_prefixes](https://w3id.org/linkml/emit_prefixes)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub> [Ncname](Ncname.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub>
+ [Ncname](Ncname.md)
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [linkml:slot_usage](https://w3id.org/linkml/slot_usage)
 
 ## Domain and Range
 
-class_definition ->  <sub>0..*</sub> slot_definition
+class_definition ->  <sub>0..*</sub>
+ slot_definition
 
 ## Parents
 

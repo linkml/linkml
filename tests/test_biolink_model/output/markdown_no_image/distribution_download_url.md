@@ -9,7 +9,8 @@ URI: [biolink:distribution_download_url](https://w3id.org/biolink/vocab/distribu
 
 ## Domain and Range
 
-[DatasetDistribution](DatasetDistribution.md) ->  <sub>OPT</sub> [String](types/String.md)
+[DatasetDistribution](DatasetDistribution.md) ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

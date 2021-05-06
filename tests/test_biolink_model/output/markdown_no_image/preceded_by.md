@@ -9,7 +9,8 @@ URI: [biolink:preceded_by](https://w3id.org/biolink/vocab/preceded_by)
 
 ## Domain and Range
 
-[Occurrent](Occurrent.md) ->  <sub>0..*</sub> [Occurrent](Occurrent.md)
+[Occurrent](Occurrent.md) ->  <sub>0..*</sub>
+ [Occurrent](Occurrent.md)
 
 ## Parents
 

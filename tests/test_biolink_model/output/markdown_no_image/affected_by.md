@@ -9,7 +9,8 @@ URI: [biolink:affected_by](https://w3id.org/biolink/vocab/affected_by)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [NamedThing](NamedThing.md)
 
 ## Parents
 

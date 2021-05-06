@@ -9,7 +9,8 @@ URI: [linkml:slots](https://w3id.org/linkml/slots)
 
 ## Domain and Range
 
-[ClassDefinition](ClassDefinition.md) ->  <sub>0..*</sub> [SlotDefinition](SlotDefinition.md)
+[ClassDefinition](ClassDefinition.md) ->  <sub>0..*</sub>
+ [SlotDefinition](SlotDefinition.md)
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [biolink:edge_label](https://w3id.org/biolink/vocab/edge_label)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[Association](Association.md) ->  <sub>REQ</sub>
+ [PredicateType](types/PredicateType.md)
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [biolink:anatomical_entity_to_anatomical_entity_part_of_association_predica
 
 ## Domain and Range
 
-[AnatomicalEntityToAnatomicalEntityPartOfAssociation](AnatomicalEntityToAnatomicalEntityPartOfAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[AnatomicalEntityToAnatomicalEntityPartOfAssociation](AnatomicalEntityToAnatomicalEntityPartOfAssociation.md) ->  <sub>REQ</sub>
+ [PredicateType](types/PredicateType.md)
 
 ## Parents
 

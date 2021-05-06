@@ -9,7 +9,8 @@ URI: [linkml:subclass_of](https://w3id.org/linkml/subclass_of)
 
 ## Domain and Range
 
-class_definition ->  <sub>OPT</sub> uriorcurie
+class_definition ->  <sub>OPT</sub>
+ uriorcurie
 
 ## Parents
 

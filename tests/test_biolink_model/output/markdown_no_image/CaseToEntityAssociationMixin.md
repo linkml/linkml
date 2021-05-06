@@ -22,5 +22,6 @@ URI: [biolink:CaseToEntityAssociationMixin](https://w3id.org/biolink/vocab/CaseT
 ### Own
 
  * [case to entity association mixin➞subject](case_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+
      * Description: the case (e.g. patient) that has the property
      * range: [Case](Case.md)

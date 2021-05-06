@@ -9,7 +9,8 @@ URI: [biolink:genetically_interacts_with](https://w3id.org/biolink/vocab/genetic
 
 ## Domain and Range
 
-[Gene](Gene.md) ->  <sub>0..*</sub> [Gene](Gene.md)
+[Gene](Gene.md) ->  <sub>0..*</sub>
+ [Gene](Gene.md)
 
 ## Parents
 

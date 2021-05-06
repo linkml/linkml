@@ -9,7 +9,8 @@ URI: [biolink:severity_qualifier](https://w3id.org/biolink/vocab/severity_qualif
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [SeverityValue](SeverityValue.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [SeverityValue](SeverityValue.md)
 
 ## Parents
 

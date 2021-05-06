@@ -9,7 +9,8 @@ URI: [biolink:has_topic](https://w3id.org/biolink/vocab/has_topic)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>OPT</sub> [OntologyClass](OntologyClass.md)
+[NamedThing](NamedThing.md) ->  <sub>OPT</sub>
+ [OntologyClass](OntologyClass.md)
 
 ## Parents
 

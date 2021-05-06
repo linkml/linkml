@@ -9,7 +9,8 @@ URI: [linkml:class_definition_is_a](https://w3id.org/linkml/class_definition_is_
 
 ## Domain and Range
 
-[ClassDefinition](ClassDefinition.md) ->  <sub>OPT</sub> [ClassDefinition](ClassDefinition.md)
+[ClassDefinition](ClassDefinition.md) ->  <sub>OPT</sub>
+ [ClassDefinition](ClassDefinition.md)
 
 ## Parents
 

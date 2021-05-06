@@ -9,7 +9,8 @@ URI: [biolink:has_gene](https://w3id.org/biolink/vocab/has_gene)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [Gene](Gene.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [Gene](Gene.md)
 
 ## Parents
 

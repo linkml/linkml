@@ -9,7 +9,8 @@ URI: [linkml:subsets](https://w3id.org/linkml/subsets)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub> [SubsetDefinition](SubsetDefinition.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub>
+ [SubsetDefinition](SubsetDefinition.md)
 
 ## Parents
 

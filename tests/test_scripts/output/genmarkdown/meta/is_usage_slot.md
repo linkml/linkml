@@ -9,7 +9,8 @@ URI: [linkml:is_usage_slot](https://w3id.org/linkml/is_usage_slot)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [Boolean](types/Boolean.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub>
+ [Boolean](types/Boolean.md)
 
 ## Parents
 

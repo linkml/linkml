@@ -9,7 +9,8 @@ URI: [biolink:agent_name](https://w3id.org/biolink/vocab/agent_name)
 
 ## Domain and Range
 
-[Agent](Agent.md) ->  <sub>OPT</sub> [LabelType](types/LabelType.md)
+[Agent](Agent.md) ->  <sub>OPT</sub>
+ [LabelType](types/LabelType.md)
 
 ## Parents
 

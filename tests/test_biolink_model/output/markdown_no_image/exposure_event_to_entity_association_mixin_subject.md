@@ -9,7 +9,8 @@ URI: [biolink:exposure_event_to_entity_association_mixin_subject](https://w3id.o
 
 ## Domain and Range
 
-[ExposureEventToEntityAssociationMixin](ExposureEventToEntityAssociationMixin.md) ->  <sub>REQ</sub> [ExposureEvent](ExposureEvent.md)
+[ExposureEventToEntityAssociationMixin](ExposureEventToEntityAssociationMixin.md) ->  <sub>REQ</sub>
+ [ExposureEvent](ExposureEvent.md)
 
 ## Parents
 

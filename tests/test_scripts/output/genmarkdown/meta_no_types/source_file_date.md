@@ -9,7 +9,8 @@ URI: [linkml:source_file_date](https://w3id.org/linkml/source_file_date)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>OPT</sub> [Datetime](Datetime.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>OPT</sub>
+ [Datetime](Datetime.md)
 
 ## Parents
 

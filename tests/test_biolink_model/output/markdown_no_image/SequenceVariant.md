@@ -33,13 +33,20 @@ URI: [biolink:SequenceVariant](https://w3id.org/biolink/vocab/SequenceVariant)
 
 ## Referenced by class
 
- *  **[GenotypeToVariantAssociation](GenotypeToVariantAssociation.md)** *[genotype to variant association➞object](genotype_to_variant_association_object.md)*  <sub>REQ</sub>  **[SequenceVariant](SequenceVariant.md)**
- *  **[SequenceVariantModulatesTreatmentAssociation](SequenceVariantModulatesTreatmentAssociation.md)** *[sequence variant modulates treatment association➞subject](sequence_variant_modulates_treatment_association_subject.md)*  <sub>REQ</sub>  **[SequenceVariant](SequenceVariant.md)**
- *  **[Association](Association.md)** *[sequence variant qualifier](sequence_variant_qualifier.md)*  <sub>OPT</sub>  **[SequenceVariant](SequenceVariant.md)**
- *  **[VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md)** *[variant as a model of disease association➞subject](variant_as_a_model_of_disease_association_subject.md)*  <sub>REQ</sub>  **[SequenceVariant](SequenceVariant.md)**
- *  **[VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md)** *[variant to entity association mixin➞subject](variant_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>  **[SequenceVariant](SequenceVariant.md)**
- *  **[VariantToPhenotypicFeatureAssociation](VariantToPhenotypicFeatureAssociation.md)** *[variant to phenotypic feature association➞subject](variant_to_phenotypic_feature_association_subject.md)*  <sub>REQ</sub>  **[SequenceVariant](SequenceVariant.md)**
- *  **[VariantToPopulationAssociation](VariantToPopulationAssociation.md)** *[variant to population association➞subject](variant_to_population_association_subject.md)*  <sub>REQ</sub>  **[SequenceVariant](SequenceVariant.md)**
+ *  **[GenotypeToVariantAssociation](GenotypeToVariantAssociation.md)** *[genotype to variant association➞object](genotype_to_variant_association_object.md)*  <sub>REQ</sub>
+  **[SequenceVariant](SequenceVariant.md)**
+ *  **[SequenceVariantModulatesTreatmentAssociation](SequenceVariantModulatesTreatmentAssociation.md)** *[sequence variant modulates treatment association➞subject](sequence_variant_modulates_treatment_association_subject.md)*  <sub>REQ</sub>
+  **[SequenceVariant](SequenceVariant.md)**
+ *  **[Association](Association.md)** *[sequence variant qualifier](sequence_variant_qualifier.md)*  <sub>OPT</sub>
+  **[SequenceVariant](SequenceVariant.md)**
+ *  **[VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md)** *[variant as a model of disease association➞subject](variant_as_a_model_of_disease_association_subject.md)*  <sub>REQ</sub>
+  **[SequenceVariant](SequenceVariant.md)**
+ *  **[VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md)** *[variant to entity association mixin➞subject](variant_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>
+  **[SequenceVariant](SequenceVariant.md)**
+ *  **[VariantToPhenotypicFeatureAssociation](VariantToPhenotypicFeatureAssociation.md)** *[variant to phenotypic feature association➞subject](variant_to_phenotypic_feature_association_subject.md)*  <sub>REQ</sub>
+  **[SequenceVariant](SequenceVariant.md)**
+ *  **[VariantToPopulationAssociation](VariantToPopulationAssociation.md)** *[variant to population association➞subject](variant_to_population_association_subject.md)*  <sub>REQ</sub>
+  **[SequenceVariant](SequenceVariant.md)**
 
 ## Attributes
 
@@ -47,12 +54,15 @@ URI: [biolink:SequenceVariant](https://w3id.org/biolink/vocab/SequenceVariant)
 ### Own
 
  * [sequence variant➞has biological sequence](sequence_variant_has_biological_sequence.md)  <sub>OPT</sub>
+
      * Description: The state of the sequence w.r.t a reference sequence
      * range: [BiologicalSequence](types/BiologicalSequence.md)
  * [sequence variant➞has gene](sequence_variant_has_gene.md)  <sub>0..*</sub>
+
      * Description: Each allele can be associated with any number of genes
      * range: [Gene](Gene.md)
  * [sequence variant➞id](sequence_variant_id.md)  <sub>REQ</sub>
+
      * range: [String](types/String.md)
      * Example:    
      * Example:    
@@ -60,31 +70,39 @@ URI: [biolink:SequenceVariant](https://w3id.org/biolink/vocab/SequenceVariant)
 ### Inherited from genomic entity:
 
  * [description](description.md)  <sub>OPT</sub>
+
      * Description: a human-readable description of an entity
      * range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
  * [has attribute](has_attribute.md)  <sub>0..*</sub>
+
      * Description: connects any entity to an attribute
      * range: [Attribute](Attribute.md)
      * in subsets: (samples)
  * [iri](iri.md)  <sub>OPT</sub>
+
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
  * [name](name.md)  <sub>OPT</sub>
+
      * Description: A human-readable name for an attribute or entity.
      * range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
  * [named thing➞category](named_thing_category.md)  <sub>1..*</sub>
+
      * range: [NamedThing](NamedThing.md)
  * [provided by](provided_by.md)  <sub>0..*</sub>
+
      * Description: connects an association to the agent (person, organization or group) that provided it
      * range: [Agent](Agent.md)
  * [source](source.md)  <sub>OPT</sub>
+
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
  * [type](type.md)  <sub>OPT</sub>
+
      * range: [String](types/String.md)
 
 ## Other properties

@@ -9,7 +9,8 @@ URI: [biolink:pages](https://w3id.org/biolink/vocab/pages)
 
 ## Domain and Range
 
-[Publication](Publication.md) ->  <sub>0..*</sub> [String](types/String.md)
+[Publication](Publication.md) ->  <sub>0..*</sub>
+ [String](types/String.md)
 
 ## Parents
 

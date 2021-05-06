@@ -9,7 +9,8 @@ URI: [linkml:permissible_value_is_a](https://w3id.org/linkml/permissible_value_i
 
 ## Domain and Range
 
-[PermissibleValue](PermissibleValue.md) ->  <sub>OPT</sub> [PermissibleValue](PermissibleValue.md)
+[PermissibleValue](PermissibleValue.md) ->  <sub>OPT</sub>
+ [PermissibleValue](PermissibleValue.md)
 
 ## Parents
 

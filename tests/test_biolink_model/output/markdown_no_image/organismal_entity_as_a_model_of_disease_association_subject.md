@@ -9,7 +9,8 @@ URI: [biolink:organismal_entity_as_a_model_of_disease_association_subject](https
 
 ## Domain and Range
 
-[OrganismalEntityAsAModelOfDiseaseAssociation](OrganismalEntityAsAModelOfDiseaseAssociation.md) ->  <sub>REQ</sub> [OrganismalEntity](OrganismalEntity.md)
+[OrganismalEntityAsAModelOfDiseaseAssociation](OrganismalEntityAsAModelOfDiseaseAssociation.md) ->  <sub>REQ</sub>
+ [OrganismalEntity](OrganismalEntity.md)
 
 ## Parents
 

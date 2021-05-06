@@ -9,7 +9,8 @@ URI: [biolink:in_linkage_disequilibrium_with](https://w3id.org/biolink/vocab/in_
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [NamedThing](NamedThing.md)
 
 ## Parents
 

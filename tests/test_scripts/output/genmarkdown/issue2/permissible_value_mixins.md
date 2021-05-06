@@ -9,7 +9,8 @@ URI: [linkml:permissible_value_mixins](https://w3id.org/linkml/permissible_value
 
 ## Domain and Range
 
-permissible_value ->  <sub>0..*</sub> permissible_value
+permissible_value ->  <sub>0..*</sub>
+ permissible_value
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [biolink:organism_taxon_to_organism_taxon_interaction_associated_environmen
 
 ## Domain and Range
 
-[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) ->  <sub>OPT</sub> [String](types/String.md)
+[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

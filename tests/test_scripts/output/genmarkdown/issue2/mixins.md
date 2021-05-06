@@ -9,7 +9,8 @@ URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 
 ## Domain and Range
 
-definition ->  <sub>0..*</sub> definition
+definition ->  <sub>0..*</sub>
+ definition
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [biolink:type](https://w3id.org/biolink/vocab/type)
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [String](types/String.md)
+None ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

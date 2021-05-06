@@ -9,7 +9,8 @@ URI: [linkml:slot_uri](https://w3id.org/linkml/slot_uri)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub> uriorcurie
+slot_definition ->  <sub>OPT</sub>
+ uriorcurie
 
 ## Parents
 

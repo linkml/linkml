@@ -9,7 +9,8 @@ URI: [biolink:contributor_association_object](https://w3id.org/biolink/vocab/con
 
 ## Domain and Range
 
-[ContributorAssociation](ContributorAssociation.md) ->  <sub>REQ</sub> [Agent](Agent.md)
+[ContributorAssociation](ContributorAssociation.md) ->  <sub>REQ</sub>
+ [Agent](Agent.md)
 
 ## Parents
 

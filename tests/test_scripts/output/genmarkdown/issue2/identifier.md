@@ -9,7 +9,8 @@ URI: [linkml:identifier](https://w3id.org/linkml/identifier)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub> boolean
+slot_definition ->  <sub>OPT</sub>
+ boolean
 
 ## Parents
 

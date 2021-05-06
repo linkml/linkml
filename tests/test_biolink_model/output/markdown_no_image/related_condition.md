@@ -9,7 +9,8 @@ URI: [biolink:related_condition](https://w3id.org/biolink/vocab/related_conditio
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [NamedThing](NamedThing.md)
 
 ## Parents
 

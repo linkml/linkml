@@ -9,7 +9,8 @@ URI: [biolink:genomic_sequence_localization_predicate](https://w3id.org/biolink/
 
 ## Domain and Range
 
-[GenomicSequenceLocalization](GenomicSequenceLocalization.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[GenomicSequenceLocalization](GenomicSequenceLocalization.md) ->  <sub>REQ</sub>
+ [PredicateType](types/PredicateType.md)
 
 ## Parents
 

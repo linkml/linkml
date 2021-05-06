@@ -9,7 +9,8 @@ URI: [linkml:minimum_value](https://w3id.org/linkml/minimum_value)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub> integer
+slot_definition ->  <sub>OPT</sub>
+ integer
 
 ## Parents
 

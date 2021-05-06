@@ -9,7 +9,8 @@ URI: [linkml:type_uri](https://w3id.org/linkml/type_uri)
 
 ## Domain and Range
 
-[TypeDefinition](TypeDefinition.md) ->  <sub>OPT</sub> [Uriorcurie](Uriorcurie.md)
+[TypeDefinition](TypeDefinition.md) ->  <sub>OPT</sub>
+ [Uriorcurie](Uriorcurie.md)
 
 ## Parents
 

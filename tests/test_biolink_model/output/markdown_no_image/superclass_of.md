@@ -9,7 +9,8 @@ URI: [biolink:superclass_of](https://w3id.org/biolink/vocab/superclass_of)
 
 ## Domain and Range
 
-[OntologyClass](OntologyClass.md) ->  <sub>0..*</sub> [OntologyClass](OntologyClass.md)
+[OntologyClass](OntologyClass.md) ->  <sub>0..*</sub>
+ [OntologyClass](OntologyClass.md)
 
 ## Parents
 

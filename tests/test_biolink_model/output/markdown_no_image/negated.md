@@ -9,7 +9,8 @@ URI: [biolink:negated](https://w3id.org/biolink/vocab/negated)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [Boolean](types/Boolean.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [Boolean](types/Boolean.md)
 
 ## Parents
 

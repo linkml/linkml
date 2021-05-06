@@ -9,7 +9,8 @@ URI: [biolink:p_value](https://w3id.org/biolink/vocab/p_value)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [Float](types/Float.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [Float](types/Float.md)
 
 ## Parents
 

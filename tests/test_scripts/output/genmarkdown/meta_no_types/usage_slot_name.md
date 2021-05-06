@@ -9,7 +9,8 @@ URI: [linkml:usage_slot_name](https://w3id.org/linkml/usage_slot_name)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [String](String.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub>
+ [String](String.md)
 
 ## Parents
 

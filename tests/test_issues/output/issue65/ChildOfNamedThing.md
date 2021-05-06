@@ -22,4 +22,5 @@ URI: [https://example.com/test65/ChildOfNamedThing](https://example.com/test65/C
 ### Own
 
  * [child of named thing➞subject](child_of_named_thing_subject.md)  <sub>OPT</sub>
+
      * range: [String](types/String.md)

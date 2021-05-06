@@ -9,7 +9,8 @@ URI: [biolink:functional_association_subject](https://w3id.org/biolink/vocab/fun
 
 ## Domain and Range
 
-[FunctionalAssociation](FunctionalAssociation.md) ->  <sub>REQ</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
+[FunctionalAssociation](FunctionalAssociation.md) ->  <sub>REQ</sub>
+ [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
 
 ## Parents
 

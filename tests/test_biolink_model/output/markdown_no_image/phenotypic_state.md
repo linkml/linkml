@@ -9,7 +9,8 @@ URI: [biolink:phenotypic_state](https://w3id.org/biolink/vocab/phenotypic_state)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 

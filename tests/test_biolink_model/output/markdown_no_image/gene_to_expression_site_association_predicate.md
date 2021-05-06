@@ -9,7 +9,8 @@ URI: [biolink:gene_to_expression_site_association_predicate](https://w3id.org/bi
 
 ## Domain and Range
 
-[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md) ->  <sub>REQ</sub>
+ [PredicateType](types/PredicateType.md)
 
 ## Parents
 

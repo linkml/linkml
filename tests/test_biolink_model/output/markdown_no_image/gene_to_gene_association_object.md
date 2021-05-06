@@ -9,7 +9,8 @@ URI: [biolink:gene_to_gene_association_object](https://w3id.org/biolink/vocab/ge
 
 ## Domain and Range
 
-[GeneToGeneAssociation](GeneToGeneAssociation.md) ->  <sub>REQ</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
+[GeneToGeneAssociation](GeneToGeneAssociation.md) ->  <sub>REQ</sub>
+ [GeneOrGeneProduct](GeneOrGeneProduct.md)
 
 ## Parents
 

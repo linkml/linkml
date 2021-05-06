@@ -9,7 +9,8 @@ URI: [biolink:article_iso_abbreviation](https://w3id.org/biolink/vocab/article_i
 
 ## Domain and Range
 
-[Article](Article.md) ->  <sub>OPT</sub> [String](types/String.md)
+[Article](Article.md) ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

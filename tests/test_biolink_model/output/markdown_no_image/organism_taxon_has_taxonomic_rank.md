@@ -9,7 +9,8 @@ URI: [biolink:organism_taxon_has_taxonomic_rank](https://w3id.org/biolink/vocab/
 
 ## Domain and Range
 
-[OrganismTaxon](OrganismTaxon.md) ->  <sub>OPT</sub> [TaxonomicRank](TaxonomicRank.md)
+[OrganismTaxon](OrganismTaxon.md) ->  <sub>OPT</sub>
+ [TaxonomicRank](TaxonomicRank.md)
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [linkml:aliases](https://w3id.org/linkml/aliases)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> [String](types/String.md)
+[Element](Element.md) ->  <sub>0..*</sub>
+ [String](types/String.md)
 
 ## Parents
 

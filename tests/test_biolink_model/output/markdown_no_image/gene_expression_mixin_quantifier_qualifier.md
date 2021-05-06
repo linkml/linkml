@@ -9,7 +9,8 @@ URI: [biolink:gene_expression_mixin_quantifier_qualifier](https://w3id.org/bioli
 
 ## Domain and Range
 
-[GeneExpressionMixin](GeneExpressionMixin.md) ->  <sub>OPT</sub> [OntologyClass](OntologyClass.md)
+[GeneExpressionMixin](GeneExpressionMixin.md) ->  <sub>OPT</sub>
+ [OntologyClass](OntologyClass.md)
 
 ## Parents
 

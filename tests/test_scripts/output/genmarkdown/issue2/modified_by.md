@@ -9,7 +9,8 @@ URI: [linkml:modified_by](https://w3id.org/linkml/modified_by)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>OPT</sub> uriorcurie
+[Element](Element.md) ->  <sub>OPT</sub>
+ uriorcurie
 
 ## Parents
 

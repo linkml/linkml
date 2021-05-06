@@ -9,7 +9,8 @@ URI: [linkml:default_curi_maps](https://w3id.org/linkml/default_curi_maps)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub> [String](String.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub>
+ [String](String.md)
 
 ## Parents
 

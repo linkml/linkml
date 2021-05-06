@@ -9,7 +9,8 @@ URI: [biolink:pairwise_molecular_interaction_predicate](https://w3id.org/biolink
 
 ## Domain and Range
 
-[PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) ->  <sub>REQ</sub>
+ [PredicateType](types/PredicateType.md)
 
 ## Parents
 

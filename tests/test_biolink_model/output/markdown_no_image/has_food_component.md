@@ -9,7 +9,8 @@ URI: [biolink:has_food_component](https://w3id.org/biolink/vocab/has_food_compon
 
 ## Domain and Range
 
-[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>0..*</sub> [ChemicalSubstance](ChemicalSubstance.md)
+[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>0..*</sub>
+ [ChemicalSubstance](ChemicalSubstance.md)
 
 ## Parents
 

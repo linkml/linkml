@@ -9,7 +9,8 @@ URI: [biolink:xref](https://w3id.org/biolink/vocab/xref)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [IriType](types/IriType.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [IriType](types/IriType.md)
 
 ## Parents
 

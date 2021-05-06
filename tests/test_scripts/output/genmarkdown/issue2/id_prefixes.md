@@ -9,7 +9,8 @@ URI: [linkml:id_prefixes](https://w3id.org/linkml/id_prefixes)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> ncname
+[Element](Element.md) ->  <sub>0..*</sub>
+ ncname
 
 ## Parents
 

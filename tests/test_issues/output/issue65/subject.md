@@ -9,7 +9,8 @@ URI: [https://example.com/test65/subject](https://example.com/test65/subject)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>OPT</sub> [String](types/String.md)
+[NamedThing](NamedThing.md) ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

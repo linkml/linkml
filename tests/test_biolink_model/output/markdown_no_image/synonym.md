@@ -9,7 +9,8 @@ URI: [biolink:synonym](https://w3id.org/biolink/vocab/synonym)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [LabelType](types/LabelType.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [LabelType](types/LabelType.md)
 
 ## Parents
 

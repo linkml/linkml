@@ -9,7 +9,8 @@ URI: [biolink:has_confidence_level](https://w3id.org/biolink/vocab/has_confidenc
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [ConfidenceLevel](ConfidenceLevel.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [ConfidenceLevel](ConfidenceLevel.md)
 
 ## Parents
 

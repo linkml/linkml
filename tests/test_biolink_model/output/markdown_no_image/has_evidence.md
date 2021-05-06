@@ -9,7 +9,8 @@ URI: [biolink:has_evidence](https://w3id.org/biolink/vocab/has_evidence)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [EvidenceType](EvidenceType.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [EvidenceType](EvidenceType.md)
 
 ## Parents
 

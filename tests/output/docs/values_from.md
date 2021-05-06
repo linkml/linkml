@@ -9,7 +9,8 @@ URI: [linkml:values_from](https://w3id.org/linkml/values_from)
 
 ## Domain and Range
 
-[Definition](Definition.md) ->  <sub>0..*</sub> [Uriorcurie](types/Uriorcurie.md)
+[Definition](Definition.md) ->  <sub>0..*</sub>
+ [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

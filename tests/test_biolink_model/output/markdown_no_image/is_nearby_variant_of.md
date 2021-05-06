@@ -9,7 +9,8 @@ URI: [biolink:is_nearby_variant_of](https://w3id.org/biolink/vocab/is_nearby_var
 
 ## Domain and Range
 
-[SequenceVariant](SequenceVariant.md) ->  <sub>0..*</sub> [Gene](Gene.md)
+[SequenceVariant](SequenceVariant.md) ->  <sub>0..*</sub>
+ [Gene](Gene.md)
 
 ## Parents
 

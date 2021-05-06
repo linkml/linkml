@@ -9,7 +9,8 @@ URI: [linkml:code_set_version](https://w3id.org/linkml/code_set_version)
 
 ## Domain and Range
 
-enum_definition ->  <sub>OPT</sub> [String](types/String.md)
+enum_definition ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

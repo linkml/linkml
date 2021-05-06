@@ -22,7 +22,8 @@ URI: [biolink:Outcome](https://w3id.org/biolink/vocab/Outcome)
 
 ## Referenced by class
 
- *  **[EntityToOutcomeAssociationMixin](EntityToOutcomeAssociationMixin.md)** *[entity to outcome association mixin➞object](entity_to_outcome_association_mixin_object.md)*  <sub>REQ</sub>  **[Outcome](Outcome.md)**
+ *  **[EntityToOutcomeAssociationMixin](EntityToOutcomeAssociationMixin.md)** *[entity to outcome association mixin➞object](entity_to_outcome_association_mixin_object.md)*  <sub>REQ</sub>
+  **[Outcome](Outcome.md)**
 
 ## Attributes
 

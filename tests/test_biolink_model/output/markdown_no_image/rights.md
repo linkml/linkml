@@ -9,7 +9,8 @@ URI: [biolink:rights](https://w3id.org/biolink/vocab/rights)
 
 ## Domain and Range
 
-[InformationContentEntity](InformationContentEntity.md) ->  <sub>OPT</sub> [String](types/String.md)
+[InformationContentEntity](InformationContentEntity.md) ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

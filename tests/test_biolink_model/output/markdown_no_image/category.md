@@ -13,7 +13,8 @@ URI: [biolink:category](https://w3id.org/biolink/vocab/category)
 
 ## Domain and Range
 
-[Entity](Entity.md) ->  <sub>0..*</sub> [CategoryType](types/CategoryType.md)
+[Entity](Entity.md) ->  <sub>0..*</sub>
+ [CategoryType](types/CategoryType.md)
 
 ## Parents
 

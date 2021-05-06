@@ -9,7 +9,8 @@ URI: [linkml:multivalued](https://w3id.org/linkml/multivalued)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub> boolean
+slot_definition ->  <sub>OPT</sub>
+ boolean
 
 ## Parents
 

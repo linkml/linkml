@@ -15,7 +15,8 @@ URI: [biolink:QuantityValue](https://w3id.org/biolink/vocab/QuantityValue)
 
 ## Referenced by class
 
- *  **[Attribute](Attribute.md)** *[has quantitative value](has_quantitative_value.md)*  <sub>0..*</sub>  **[QuantityValue](QuantityValue.md)**
+ *  **[Attribute](Attribute.md)** *[has quantitative value](has_quantitative_value.md)*  <sub>0..*</sub>
+  **[QuantityValue](QuantityValue.md)**
 
 ## Attributes
 
@@ -23,10 +24,12 @@ URI: [biolink:QuantityValue](https://w3id.org/biolink/vocab/QuantityValue)
 ### Own
 
  * [has numeric value](has_numeric_value.md)  <sub>OPT</sub>
+
      * Description: connects a quantity value to a number
      * range: [Double](types/Double.md)
      * in subsets: (samples)
  * [has unit](has_unit.md)  <sub>OPT</sub>
+
      * Description: connects a quantity value to a unit
      * range: [Unit](types/Unit.md)
      * in subsets: (samples)

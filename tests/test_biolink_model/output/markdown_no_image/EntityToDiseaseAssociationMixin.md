@@ -33,6 +33,7 @@ URI: [biolink:EntityToDiseaseAssociationMixin](https://w3id.org/biolink/vocab/En
 ### Own
 
  * [entity to disease association mixin➞object](entity_to_disease_association_mixin_object.md)  <sub>REQ</sub>
+
      * Description: disease
      * range: [Disease](Disease.md)
      * Example:    
@@ -40,11 +41,14 @@ URI: [biolink:EntityToDiseaseAssociationMixin](https://w3id.org/biolink/vocab/En
 ### Inherited from entity to feature or disease qualifiers mixin:
 
  * [frequency qualifier](frequency_qualifier.md)  <sub>OPT</sub>
+
      * Description: a qualifier used in a phenotypic association to state how frequent the phenotype is observed in the subject
      * range: [FrequencyValue](types/FrequencyValue.md)
  * [onset qualifier](onset_qualifier.md)  <sub>OPT</sub>
+
      * Description: a qualifier used in a phenotypic association to state when the phenotype appears is in the subject
      * range: [Onset](Onset.md)
  * [severity qualifier](severity_qualifier.md)  <sub>OPT</sub>
+
      * Description: a qualifier used in a phenotypic association to state how severe the phenotype is in the subject
      * range: [SeverityValue](SeverityValue.md)

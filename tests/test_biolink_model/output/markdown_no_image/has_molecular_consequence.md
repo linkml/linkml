@@ -9,7 +9,8 @@ URI: [biolink:has_molecular_consequence](https://w3id.org/biolink/vocab/has_mole
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [OntologyClass](OntologyClass.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [OntologyClass](OntologyClass.md)
 
 ## Parents
 

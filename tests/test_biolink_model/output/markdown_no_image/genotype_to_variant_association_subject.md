@@ -9,7 +9,8 @@ URI: [biolink:genotype_to_variant_association_subject](https://w3id.org/biolink/
 
 ## Domain and Range
 
-[GenotypeToVariantAssociation](GenotypeToVariantAssociation.md) ->  <sub>REQ</sub> [Genotype](Genotype.md)
+[GenotypeToVariantAssociation](GenotypeToVariantAssociation.md) ->  <sub>REQ</sub>
+ [Genotype](Genotype.md)
 
 ## Parents
 

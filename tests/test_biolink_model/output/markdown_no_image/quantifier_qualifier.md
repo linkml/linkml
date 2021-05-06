@@ -9,7 +9,8 @@ URI: [biolink:quantifier_qualifier](https://w3id.org/biolink/vocab/quantifier_qu
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [OntologyClass](OntologyClass.md)
+[Association](Association.md) ->  <sub>OPT</sub>
+ [OntologyClass](OntologyClass.md)
 
 ## Parents
 

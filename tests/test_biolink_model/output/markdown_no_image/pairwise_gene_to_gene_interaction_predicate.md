@@ -9,7 +9,8 @@ URI: [biolink:pairwise_gene_to_gene_interaction_predicate](https://w3id.org/biol
 
 ## Domain and Range
 
-[PairwiseGeneToGeneInteraction](PairwiseGeneToGeneInteraction.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[PairwiseGeneToGeneInteraction](PairwiseGeneToGeneInteraction.md) ->  <sub>REQ</sub>
+ [PredicateType](types/PredicateType.md)
 
 ## Parents
 

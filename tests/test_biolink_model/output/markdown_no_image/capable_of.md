@@ -9,7 +9,8 @@ URI: [biolink:capable_of](https://w3id.org/biolink/vocab/capable_of)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [Occurrent](Occurrent.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
+ [Occurrent](Occurrent.md)
 
 ## Parents
 

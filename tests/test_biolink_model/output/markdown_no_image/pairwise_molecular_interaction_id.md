@@ -9,7 +9,8 @@ URI: [biolink:pairwise_molecular_interaction_id](https://w3id.org/biolink/vocab/
 
 ## Domain and Range
 
-[PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) ->  <sub>REQ</sub> [String](types/String.md)
+[PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) ->  <sub>REQ</sub>
+ [String](types/String.md)
 
 ## Parents
 

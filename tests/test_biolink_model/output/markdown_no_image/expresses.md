@@ -9,7 +9,8 @@ URI: [biolink:expresses](https://w3id.org/biolink/vocab/expresses)
 
 ## Domain and Range
 
-[AnatomicalEntity](AnatomicalEntity.md) ->  <sub>0..*</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
+[AnatomicalEntity](AnatomicalEntity.md) ->  <sub>0..*</sub>
+ [GeneOrGeneProduct](GeneOrGeneProduct.md)
 
 ## Parents
 

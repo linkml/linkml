@@ -25,5 +25,6 @@ URI: [biolink:Mixture](https://w3id.org/biolink/vocab/Mixture)
 ### Own
 
  * [has constituent](has_constituent.md)  <sub>0..*</sub>
+
      * Description: one or more chemical substances within a mixture
      * range: [ChemicalSubstance](ChemicalSubstance.md)

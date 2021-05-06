@@ -9,7 +9,8 @@ URI: [linkml:narrow_mappings](https://w3id.org/linkml/narrow_mappings)
 
 ## Domain and Range
 
-None ->  <sub>0..*</sub> uriorcurie
+None ->  <sub>0..*</sub>
+ uriorcurie
 
 ## Parents
 

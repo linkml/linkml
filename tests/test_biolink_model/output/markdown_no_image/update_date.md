@@ -9,7 +9,8 @@ URI: [biolink:update_date](https://w3id.org/biolink/vocab/update_date)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>OPT</sub> [Date](types/Date.md)
+[NamedThing](NamedThing.md) ->  <sub>OPT</sub>
+ [Date](types/Date.md)
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [biolink:drug_to_entity_association_mixin_subject](https://w3id.org/biolink
 
 ## Domain and Range
 
-[DrugToEntityAssociationMixin](DrugToEntityAssociationMixin.md) ->  <sub>REQ</sub> [Drug](Drug.md)
+[DrugToEntityAssociationMixin](DrugToEntityAssociationMixin.md) ->  <sub>REQ</sub>
+ [Drug](Drug.md)
 
 ## Parents
 

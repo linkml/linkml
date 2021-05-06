@@ -9,7 +9,8 @@ URI: [linkml:comments](https://w3id.org/linkml/comments)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> [String](types/String.md)
+[Element](Element.md) ->  <sub>0..*</sub>
+ [String](types/String.md)
 
 ## Parents
 

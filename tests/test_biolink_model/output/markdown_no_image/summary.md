@@ -9,7 +9,8 @@ URI: [biolink:summary](https://w3id.org/biolink/vocab/summary)
 
 ## Domain and Range
 
-[Publication](Publication.md) ->  <sub>OPT</sub> [String](types/String.md)
+[Publication](Publication.md) ->  <sub>OPT</sub>
+ [String](types/String.md)
 
 ## Parents
 

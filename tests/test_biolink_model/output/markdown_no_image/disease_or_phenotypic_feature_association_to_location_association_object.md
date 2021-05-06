@@ -9,7 +9,8 @@ URI: [biolink:disease_or_phenotypic_feature_association_to_location_association_
 
 ## Domain and Range
 
-[DiseaseOrPhenotypicFeatureAssociationToLocationAssociation](DiseaseOrPhenotypicFeatureAssociationToLocationAssociation.md) ->  <sub>REQ</sub> [AnatomicalEntity](AnatomicalEntity.md)
+[DiseaseOrPhenotypicFeatureAssociationToLocationAssociation](DiseaseOrPhenotypicFeatureAssociationToLocationAssociation.md) ->  <sub>REQ</sub>
+ [AnatomicalEntity](AnatomicalEntity.md)
 
 ## Parents
 

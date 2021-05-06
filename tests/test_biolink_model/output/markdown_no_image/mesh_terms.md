@@ -9,7 +9,8 @@ URI: [biolink:mesh_terms](https://w3id.org/biolink/vocab/mesh_terms)
 
 ## Domain and Range
 
-[Publication](Publication.md) ->  <sub>0..*</sub> [Uriorcurie](types/Uriorcurie.md)
+[Publication](Publication.md) ->  <sub>0..*</sub>
+ [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

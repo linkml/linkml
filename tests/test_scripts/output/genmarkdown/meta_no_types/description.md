@@ -9,7 +9,8 @@ URI: [linkml:description](https://w3id.org/linkml/description)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>OPT</sub> [String](String.md)
+[Element](Element.md) ->  <sub>OPT</sub>
+ [String](String.md)
 
 ## Parents
 

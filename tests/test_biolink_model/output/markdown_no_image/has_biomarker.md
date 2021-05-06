@@ -9,7 +9,8 @@ URI: [biolink:has_biomarker](https://w3id.org/biolink/vocab/has_biomarker)
 
 ## Domain and Range
 
-[DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md) ->  <sub>0..*</sub>
+ [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

@@ -9,7 +9,8 @@ URI: [biolink:affects_splicing_of](https://w3id.org/biolink/vocab/affects_splici
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [Transcript](Transcript.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
+ [Transcript](Transcript.md)
 
 ## Parents
 

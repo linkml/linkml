@@ -9,7 +9,8 @@ URI: [linkml:in_subset](https://w3id.org/linkml/in_subset)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> [SubsetDefinition](SubsetDefinition.md)
+[Element](Element.md) ->  <sub>0..*</sub>
+ [SubsetDefinition](SubsetDefinition.md)
 
 ## Parents
 

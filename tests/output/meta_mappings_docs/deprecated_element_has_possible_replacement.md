@@ -9,7 +9,8 @@ URI: [linkml:deprecated_element_has_possible_replacement](https://w3id.org/linkm
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [Uriorcurie](types/Uriorcurie.md)
+None ->  <sub>OPT</sub>
+ [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

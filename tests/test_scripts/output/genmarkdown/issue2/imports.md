@@ -9,7 +9,8 @@ URI: [linkml:imports](https://w3id.org/linkml/imports)
 
 ## Domain and Range
 
-schema_definition ->  <sub>0..*</sub> uriorcurie
+schema_definition ->  <sub>0..*</sub>
+ uriorcurie
 
 ## Parents
 

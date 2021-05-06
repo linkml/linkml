@@ -9,7 +9,8 @@ URI: [linkml:maximum_value](https://w3id.org/linkml/maximum_value)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [Integer](types/Integer.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub>
+ [Integer](types/Integer.md)
 
 ## Parents
 
