@@ -9,8 +9,7 @@ URI: [biolink:variant_to_disease_association_subject](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) ->  <sub>REQ</sub>
- [NamedThing](NamedThing.md)
+[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) ->  <sub>REQ</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

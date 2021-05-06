@@ -23,6 +23,5 @@ URI: [biolink:OrganismTaxonToEntityAssociation](https://w3id.org/biolink/vocab/O
 ### Own
 
  * [organism taxon to entity association➞subject](organism_taxon_to_entity_association_subject.md)  <sub>REQ</sub>
-
      * Description: organism taxon that is the subject of the association
      * range: [OrganismTaxon](OrganismTaxon.md)

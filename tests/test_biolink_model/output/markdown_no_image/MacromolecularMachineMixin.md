@@ -16,14 +16,10 @@ URI: [biolink:MacromolecularMachineMixin](https://w3id.org/biolink/vocab/Macromo
 
 ## Referenced by class
 
- *  **[Association](Association.md)** *[catalyst qualifier](catalyst_qualifier.md)*  <sub>0..*</sub>
-  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
- *  **[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md)** *[chemical to chemical derivation association➞catalyst qualifier](chemical_to_chemical_derivation_association_catalyst_qualifier.md)*  <sub>0..*</sub>
-  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
- *  **[FunctionalAssociation](FunctionalAssociation.md)** *[functional association➞subject](functional_association_subject.md)*  <sub>REQ</sub>
-  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
- *  **[MolecularActivity](MolecularActivity.md)** *[molecular activity➞enabled by](molecular_activity_enabled_by.md)*  <sub>0..*</sub>
-  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
+ *  **[Association](Association.md)** *[catalyst qualifier](catalyst_qualifier.md)*  <sub>0..*</sub>  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
+ *  **[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md)** *[chemical to chemical derivation association➞catalyst qualifier](chemical_to_chemical_derivation_association_catalyst_qualifier.md)*  <sub>0..*</sub>  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
+ *  **[FunctionalAssociation](FunctionalAssociation.md)** *[functional association➞subject](functional_association_subject.md)*  <sub>REQ</sub>  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
+ *  **[MolecularActivity](MolecularActivity.md)** *[molecular activity➞enabled by](molecular_activity_enabled_by.md)*  <sub>0..*</sub>  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
 
 ## Attributes
 
@@ -31,6 +27,5 @@ URI: [biolink:MacromolecularMachineMixin](https://w3id.org/biolink/vocab/Macromo
 ### Own
 
  * [macromolecular machine mixin➞name](macromolecular_machine_mixin_name.md)  <sub>OPT</sub>
-
      * Description: genes are typically designated by a short symbol and a full name. We map the symbol to the default display name and use an additional slot for full name
      * range: [SymbolType](types/SymbolType.md)

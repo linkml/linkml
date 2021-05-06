@@ -9,8 +9,7 @@ URI: [biolink:agent_id](https://w3id.org/biolink/vocab/agent_id)
 
 ## Domain and Range
 
-[Agent](Agent.md) ->  <sub>REQ</sub>
- [String](types/String.md)
+[Agent](Agent.md) ->  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

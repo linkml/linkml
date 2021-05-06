@@ -9,8 +9,7 @@ URI: [biolink:cell_line_to_entity_association_mixin_subject](https://w3id.org/bi
 
 ## Domain and Range
 
-[CellLineToEntityAssociationMixin](CellLineToEntityAssociationMixin.md) ->  <sub>REQ</sub>
- [CellLine](CellLine.md)
+[CellLineToEntityAssociationMixin](CellLineToEntityAssociationMixin.md) ->  <sub>REQ</sub> [CellLine](CellLine.md)
 
 ## Parents
 

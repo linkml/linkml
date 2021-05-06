@@ -9,8 +9,7 @@ URI: [biolink:aggregate_statistic](https://w3id.org/biolink/vocab/aggregate_stat
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>OPT</sub>
- [String](types/String.md)
+[NamedThing](NamedThing.md) ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

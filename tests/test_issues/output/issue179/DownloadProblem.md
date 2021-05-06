@@ -19,11 +19,9 @@ URI: [http://example.org/sample/example1/DownloadProblem](http://example.org/sam
 ### Own
 
  * [has source](has_source.md)  <sub>OPT</sub>
-
      * range: [String](types/String.md)
 
 ### Inherited from problem:
 
  * [description](description.md)  <sub>OPT</sub>
-
      * range: [String](types/String.md)

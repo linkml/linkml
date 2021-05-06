@@ -9,8 +9,7 @@ URI: [linkml:alt_description_text](https://w3id.org/linkml/alt_description_text)
 
 ## Domain and Range
 
-[AltDescription](AltDescription.md) ->  <sub>REQ</sub>
- [String](types/String.md)
+[AltDescription](AltDescription.md) ->  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

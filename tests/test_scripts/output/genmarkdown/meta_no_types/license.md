@@ -9,8 +9,7 @@ URI: [linkml:license](https://w3id.org/linkml/license)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>OPT</sub>
- [String](String.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>OPT</sub> [String](String.md)
 
 ## Parents
 

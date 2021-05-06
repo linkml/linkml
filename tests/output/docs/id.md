@@ -9,8 +9,7 @@ URI: [linkml:id](https://w3id.org/linkml/id)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>REQ</sub>
- [Uri](types/Uri.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>REQ</sub> [Uri](types/Uri.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:association_category](https://w3id.org/biolink/vocab/association_c
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>0..*</sub>
- [CategoryType](types/CategoryType.md)
+[Association](Association.md) ->  <sub>0..*</sub> [CategoryType](types/CategoryType.md)
 
 ## Parents
 

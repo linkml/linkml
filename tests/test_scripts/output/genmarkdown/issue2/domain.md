@@ -17,8 +17,7 @@ URI: [linkml:domain](https://w3id.org/linkml/domain)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub>
- class_definition
+slot_definition ->  <sub>OPT</sub> class_definition
 
 ## Parents
 

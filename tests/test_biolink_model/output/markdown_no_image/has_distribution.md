@@ -9,8 +9,7 @@ URI: [biolink:has_distribution](https://w3id.org/biolink/vocab/has_distribution)
 
 ## Domain and Range
 
-[DatasetVersion](DatasetVersion.md) ->  <sub>OPT</sub>
- [DatasetDistribution](DatasetDistribution.md)
+[DatasetVersion](DatasetVersion.md) ->  <sub>OPT</sub> [DatasetDistribution](DatasetDistribution.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:phase](https://w3id.org/biolink/vocab/phase)
 
 ## Domain and Range
 
-[CodingSequence](CodingSequence.md) ->  <sub>OPT</sub>
- [String](types/String.md)
+[CodingSequence](CodingSequence.md) ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [linkml:class_definition_apply_to](https://w3id.org/linkml/class_definition
 
 ## Domain and Range
 
-class_definition ->  <sub>0..*</sub>
- class_definition
+class_definition ->  <sub>0..*</sub> class_definition
 
 ## Parents
 

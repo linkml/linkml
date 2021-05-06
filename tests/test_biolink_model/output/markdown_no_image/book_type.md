@@ -9,8 +9,7 @@ URI: [biolink:book_type](https://w3id.org/biolink/vocab/book_type)
 
 ## Domain and Range
 
-[Book](Book.md) ->  <sub>REQ</sub>
- [String](types/String.md)
+[Book](Book.md) ->  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

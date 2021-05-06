@@ -9,8 +9,7 @@ URI: [biolink:named_thing_category](https://w3id.org/biolink/vocab/named_thing_c
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>1..*</sub>
- [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>1..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

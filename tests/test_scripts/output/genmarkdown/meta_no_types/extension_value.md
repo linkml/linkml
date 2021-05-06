@@ -9,8 +9,7 @@ URI: [linkml:extension_value](https://w3id.org/linkml/extension_value)
 
 ## Domain and Range
 
-[Extension](Extension.md) ->  <sub>REQ</sub>
- [String](String.md)
+[Extension](Extension.md) ->  <sub>REQ</sub> [String](String.md)
 
 ## Parents
 

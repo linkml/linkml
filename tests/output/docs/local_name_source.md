@@ -9,8 +9,7 @@ URI: [linkml:local_name_source](https://w3id.org/linkml/local_name_source)
 
 ## Domain and Range
 
-[LocalName](LocalName.md) ->  <sub>REQ</sub>
- [Ncname](types/Ncname.md)
+[LocalName](LocalName.md) ->  <sub>REQ</sub> [Ncname](types/Ncname.md)
 
 ## Parents
 

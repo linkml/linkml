@@ -9,8 +9,7 @@ URI: [biolink:affects_molecular_modification_of](https://w3id.org/biolink/vocab/
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
- [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

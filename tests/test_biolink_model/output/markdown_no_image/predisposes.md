@@ -9,8 +9,7 @@ URI: [biolink:predisposes](https://w3id.org/biolink/vocab/predisposes)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
- [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

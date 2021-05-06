@@ -9,8 +9,7 @@ URI: [biolink:has_quantitative_value](https://w3id.org/biolink/vocab/has_quantit
 
 ## Domain and Range
 
-[Attribute](Attribute.md) ->  <sub>0..*</sub>
- [QuantityValue](QuantityValue.md)
+[Attribute](Attribute.md) ->  <sub>0..*</sub> [QuantityValue](QuantityValue.md)
 
 ## Parents
 

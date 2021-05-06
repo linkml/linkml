@@ -9,8 +9,7 @@ URI: [biolink:derives_from](https://w3id.org/biolink/vocab/derives_from)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
- [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

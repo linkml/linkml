@@ -9,8 +9,7 @@ URI: [linkml:default_range](https://w3id.org/linkml/default_range)
 
 ## Domain and Range
 
-schema_definition ->  <sub>OPT</sub>
- type_definition
+schema_definition ->  <sub>OPT</sub> type_definition
 
 ## Parents
 

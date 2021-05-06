@@ -9,8 +9,7 @@ URI: [biolink:biological_role_mixin](https://w3id.org/biolink/vocab/biological_r
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub>
- [String](types/String.md)
+None ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

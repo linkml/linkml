@@ -9,8 +9,7 @@ URI: [biolink:symbol](https://w3id.org/biolink/vocab/symbol)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>OPT</sub>
- [String](types/String.md)
+[NamedThing](NamedThing.md) ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

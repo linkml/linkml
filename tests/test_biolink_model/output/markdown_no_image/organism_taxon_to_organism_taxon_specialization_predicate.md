@@ -9,8 +9,7 @@ URI: [biolink:organism_taxon_to_organism_taxon_specialization_predicate](https:/
 
 ## Domain and Range
 
-[OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

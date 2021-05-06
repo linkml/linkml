@@ -9,8 +9,7 @@ URI: [biolink:has_temporal_context](https://w3id.org/biolink/vocab/has_temporal_
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub>
- [TimeType](types/TimeType.md)
+[Association](Association.md) ->  <sub>OPT</sub> [TimeType](types/TimeType.md)
 
 ## Parents
 

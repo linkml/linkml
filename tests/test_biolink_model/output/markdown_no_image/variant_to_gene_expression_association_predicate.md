@@ -9,8 +9,7 @@ URI: [biolink:variant_to_gene_expression_association_predicate](https://w3id.org
 
 ## Domain and Range
 
-[VariantToGeneExpressionAssociation](VariantToGeneExpressionAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[VariantToGeneExpressionAssociation](VariantToGeneExpressionAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:negatively_regulates](https://w3id.org/biolink/vocab/negatively_re
 
 ## Domain and Range
 
-[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) ->  <sub>OPT</sub>
- [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
+[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) ->  <sub>OPT</sub> [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
 
 ## Parents
 

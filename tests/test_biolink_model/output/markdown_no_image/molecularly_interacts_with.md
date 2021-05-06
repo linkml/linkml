@@ -9,8 +9,7 @@ URI: [biolink:molecularly_interacts_with](https://w3id.org/biolink/vocab/molecul
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
- [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

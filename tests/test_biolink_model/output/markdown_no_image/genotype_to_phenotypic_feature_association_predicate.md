@@ -9,8 +9,7 @@ URI: [biolink:genotype_to_phenotypic_feature_association_predicate](https://w3id
 
 ## Domain and Range
 
-[GenotypeToPhenotypicFeatureAssociation](GenotypeToPhenotypicFeatureAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[GenotypeToPhenotypicFeatureAssociation](GenotypeToPhenotypicFeatureAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

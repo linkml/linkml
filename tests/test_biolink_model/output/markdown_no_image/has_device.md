@@ -9,8 +9,7 @@ URI: [biolink:has_device](https://w3id.org/biolink/vocab/has_device)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
- [Device](Device.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [Device](Device.md)
 
 ## Parents
 

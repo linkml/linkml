@@ -9,8 +9,7 @@ URI: [biolink:genotype_to_disease_association_subject](https://w3id.org/biolink/
 
 ## Domain and Range
 
-[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md) ->  <sub>REQ</sub>
- [NamedThing](NamedThing.md)
+[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md) ->  <sub>REQ</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

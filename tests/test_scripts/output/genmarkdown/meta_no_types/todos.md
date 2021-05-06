@@ -9,8 +9,7 @@ URI: [linkml:todos](https://w3id.org/linkml/todos)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub>
- [String](String.md)
+[Element](Element.md) ->  <sub>0..*</sub> [String](String.md)
 
 ## Parents
 

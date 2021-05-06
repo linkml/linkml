@@ -9,8 +9,7 @@ URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub>
- [Boolean](Boolean.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [Boolean](Boolean.md)
 
 ## Parents
 

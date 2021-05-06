@@ -9,8 +9,7 @@ URI: [biolink:enabled_by](https://w3id.org/biolink/vocab/enabled_by)
 
 ## Domain and Range
 
-[BiologicalProcessOrActivity](BiologicalProcessOrActivity.md) ->  <sub>0..*</sub>
- [PhysicalEntity](PhysicalEntity.md)
+[BiologicalProcessOrActivity](BiologicalProcessOrActivity.md) ->  <sub>0..*</sub> [PhysicalEntity](PhysicalEntity.md)
 
 ## Parents
 

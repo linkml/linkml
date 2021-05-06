@@ -9,8 +9,7 @@ URI: [linkml:title](https://w3id.org/linkml/title)
 
 ## Domain and Range
 
-schema_definition ->  <sub>OPT</sub>
- [String](types/String.md)
+schema_definition ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

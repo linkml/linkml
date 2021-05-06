@@ -9,8 +9,7 @@ URI: [biolink:contributor_association_predicate](https://w3id.org/biolink/vocab/
 
 ## Domain and Range
 
-[ContributorAssociation](ContributorAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[ContributorAssociation](ContributorAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

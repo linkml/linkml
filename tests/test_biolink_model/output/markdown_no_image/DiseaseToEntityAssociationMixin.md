@@ -23,7 +23,6 @@ URI: [biolink:DiseaseToEntityAssociationMixin](https://w3id.org/biolink/vocab/Di
 ### Own
 
  * [disease to entity association mixin➞subject](disease_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
-
      * Description: disease class
      * range: [Disease](Disease.md)
      * Example:    

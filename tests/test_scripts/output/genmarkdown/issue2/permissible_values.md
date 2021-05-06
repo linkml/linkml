@@ -9,8 +9,7 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 
 ## Domain and Range
 
-enum_definition ->  <sub>0..*</sub>
- permissible_value
+enum_definition ->  <sub>0..*</sub> permissible_value
 
 ## Parents
 

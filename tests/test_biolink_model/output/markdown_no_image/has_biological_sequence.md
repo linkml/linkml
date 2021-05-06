@@ -9,8 +9,7 @@ URI: [biolink:has_biological_sequence](https://w3id.org/biolink/vocab/has_biolog
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>OPT</sub>
- [BiologicalSequence](types/BiologicalSequence.md)
+[NamedThing](NamedThing.md) ->  <sub>OPT</sub> [BiologicalSequence](types/BiologicalSequence.md)
 
 ## Parents
 

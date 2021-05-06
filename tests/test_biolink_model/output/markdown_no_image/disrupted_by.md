@@ -9,8 +9,7 @@ URI: [biolink:disrupted_by](https://w3id.org/biolink/vocab/disrupted_by)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
- [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

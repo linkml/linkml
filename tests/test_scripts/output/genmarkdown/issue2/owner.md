@@ -9,8 +9,7 @@ URI: [linkml:owner](https://w3id.org/linkml/owner)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub>
- definition
+slot_definition ->  <sub>OPT</sub> definition
 
 ## Parents
 

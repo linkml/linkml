@@ -12,8 +12,7 @@ URI: [linkml:string_serialization](https://w3id.org/linkml/string_serialization)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub>
- [String](String.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [String](String.md)
 
 ## Parents
 

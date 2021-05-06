@@ -9,8 +9,7 @@ URI: [linkml:attributes](https://w3id.org/linkml/attributes)
 
 ## Domain and Range
 
-class_definition ->  <sub>0..*</sub>
- slot_definition
+class_definition ->  <sub>0..*</sub> slot_definition
 
 ## Parents
 

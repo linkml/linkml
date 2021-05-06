@@ -9,8 +9,7 @@ URI: [biolink:chi_squared_statistic](https://w3id.org/biolink/vocab/chi_squared_
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub>
- [Float](types/Float.md)
+[Association](Association.md) ->  <sub>OPT</sub> [Float](types/Float.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [linkml:inlined](https://w3id.org/linkml/inlined)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub>
- boolean
+slot_definition ->  <sub>OPT</sub> boolean
 
 ## Parents
 

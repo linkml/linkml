@@ -9,8 +9,7 @@ URI: [linkml:apply_to](https://w3id.org/linkml/apply_to)
 
 ## Domain and Range
 
-definition ->  <sub>0..*</sub>
- definition
+definition ->  <sub>0..*</sub> definition
 
 ## Parents
 

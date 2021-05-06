@@ -9,8 +9,7 @@ URI: [linkml:metamodel_version](https://w3id.org/linkml/metamodel_version)
 
 ## Domain and Range
 
-schema_definition ->  <sub>OPT</sub>
- [String](types/String.md)
+schema_definition ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:pairwise_gene_to_gene_interaction_relation](https://w3id.org/bioli
 
 ## Domain and Range
 
-[PairwiseGeneToGeneInteraction](PairwiseGeneToGeneInteraction.md) ->  <sub>REQ</sub>
- [Uriorcurie](types/Uriorcurie.md)
+[PairwiseGeneToGeneInteraction](PairwiseGeneToGeneInteraction.md) ->  <sub>REQ</sub> [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

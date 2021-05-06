@@ -9,8 +9,7 @@ URI: [biolink:chemical_to_chemical_derivation_association_predicate](https://w3i
 
 ## Domain and Range
 
-[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

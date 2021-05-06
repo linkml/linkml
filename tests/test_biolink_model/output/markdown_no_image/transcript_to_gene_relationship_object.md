@@ -9,8 +9,7 @@ URI: [biolink:transcript_to_gene_relationship_object](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[TranscriptToGeneRelationship](TranscriptToGeneRelationship.md) ->  <sub>REQ</sub>
- [Gene](Gene.md)
+[TranscriptToGeneRelationship](TranscriptToGeneRelationship.md) ->  <sub>REQ</sub> [Gene](Gene.md)
 
 ## Parents
 

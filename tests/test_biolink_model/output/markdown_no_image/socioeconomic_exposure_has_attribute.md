@@ -9,8 +9,7 @@ URI: [biolink:socioeconomic_exposure_has_attribute](https://w3id.org/biolink/voc
 
 ## Domain and Range
 
-[SocioeconomicExposure](SocioeconomicExposure.md) ->  <sub>1..*</sub>
- [SocioeconomicAttribute](SocioeconomicAttribute.md)
+[SocioeconomicExposure](SocioeconomicExposure.md) ->  <sub>1..*</sub> [SocioeconomicAttribute](SocioeconomicAttribute.md)
 
 ## Parents
 

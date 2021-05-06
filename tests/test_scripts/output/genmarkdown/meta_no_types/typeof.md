@@ -9,8 +9,7 @@ URI: [linkml:typeof](https://w3id.org/linkml/typeof)
 
 ## Domain and Range
 
-[TypeDefinition](TypeDefinition.md) ->  <sub>OPT</sub>
- [TypeDefinition](TypeDefinition.md)
+[TypeDefinition](TypeDefinition.md) ->  <sub>OPT</sub> [TypeDefinition](TypeDefinition.md)
 
 ## Parents
 

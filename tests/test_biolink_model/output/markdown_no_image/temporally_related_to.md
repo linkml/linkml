@@ -9,8 +9,7 @@ URI: [biolink:temporally_related_to](https://w3id.org/biolink/vocab/temporally_r
 
 ## Domain and Range
 
-[Occurrent](Occurrent.md) ->  <sub>0..*</sub>
- [Occurrent](Occurrent.md)
+[Occurrent](Occurrent.md) ->  <sub>0..*</sub> [Occurrent](Occurrent.md)
 
 ## Parents
 

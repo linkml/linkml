@@ -16,18 +16,12 @@ URI: [biolink:PhysicalEssenceOrOccurrent](https://w3id.org/biolink/vocab/Physica
 
 ## Referenced by class
 
- *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[negatively regulated by](negatively_regulated_by.md)*  <sub>OPT</sub>
-  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
- *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[negatively regulates](negatively_regulates.md)*  <sub>OPT</sub>
-  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
- *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[positively regulated by](positively_regulated_by.md)*  <sub>OPT</sub>
-  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
- *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[positively regulates](positively_regulates.md)*  <sub>OPT</sub>
-  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
- *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[regulated by](regulated_by.md)*  <sub>OPT</sub>
-  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
- *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[regulates](regulates.md)*  <sub>OPT</sub>
-  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
+ *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[negatively regulated by](negatively_regulated_by.md)*  <sub>OPT</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
+ *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[negatively regulates](negatively_regulates.md)*  <sub>OPT</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
+ *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[positively regulated by](positively_regulated_by.md)*  <sub>OPT</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
+ *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[positively regulates](positively_regulates.md)*  <sub>OPT</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
+ *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[regulated by](regulated_by.md)*  <sub>OPT</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
+ *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[regulates](regulates.md)*  <sub>OPT</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
 
 ## Attributes
 

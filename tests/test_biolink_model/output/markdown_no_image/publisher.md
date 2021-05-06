@@ -9,8 +9,7 @@ URI: [biolink:publisher](https://w3id.org/biolink/vocab/publisher)
 
 ## Domain and Range
 
-[Publication](Publication.md) ->  <sub>0..*</sub>
- [Agent](Agent.md)
+[Publication](Publication.md) ->  <sub>0..*</sub> [Agent](Agent.md)
 
 ## Parents
 

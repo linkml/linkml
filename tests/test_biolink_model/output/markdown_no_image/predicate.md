@@ -9,8 +9,7 @@ URI: [biolink:predicate](https://w3id.org/biolink/vocab/predicate)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[Association](Association.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

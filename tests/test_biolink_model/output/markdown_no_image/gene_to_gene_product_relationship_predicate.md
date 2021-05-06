@@ -9,8 +9,7 @@ URI: [biolink:gene_to_gene_product_relationship_predicate](https://w3id.org/biol
 
 ## Domain and Range
 
-[GeneToGeneProductRelationship](GeneToGeneProductRelationship.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[GeneToGeneProductRelationship](GeneToGeneProductRelationship.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

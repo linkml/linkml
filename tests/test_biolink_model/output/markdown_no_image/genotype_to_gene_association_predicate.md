@@ -9,8 +9,7 @@ URI: [biolink:genotype_to_gene_association_predicate](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[GenotypeToGeneAssociation](GenotypeToGeneAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[GenotypeToGeneAssociation](GenotypeToGeneAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

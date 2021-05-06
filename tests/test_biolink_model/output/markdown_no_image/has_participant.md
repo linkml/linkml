@@ -9,8 +9,7 @@ URI: [biolink:has_participant](https://w3id.org/biolink/vocab/has_participant)
 
 ## Domain and Range
 
-[Occurrent](Occurrent.md) ->  <sub>0..*</sub>
- [NamedThing](NamedThing.md)
+[Occurrent](Occurrent.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

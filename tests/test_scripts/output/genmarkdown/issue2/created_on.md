@@ -9,8 +9,7 @@ URI: [linkml:created_on](https://w3id.org/linkml/created_on)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>OPT</sub>
- datetime
+[Element](Element.md) ->  <sub>OPT</sub> datetime
 
 ## Parents
 

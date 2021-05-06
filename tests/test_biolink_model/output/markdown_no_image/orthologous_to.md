@@ -9,8 +9,7 @@ URI: [biolink:orthologous_to](https://w3id.org/biolink/vocab/orthologous_to)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub>
- [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

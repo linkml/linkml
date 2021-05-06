@@ -9,8 +9,7 @@ URI: [biolink:cell_line_to_disease_or_phenotypic_feature_association_subject](ht
 
 ## Domain and Range
 
-[CellLineToDiseaseOrPhenotypicFeatureAssociation](CellLineToDiseaseOrPhenotypicFeatureAssociation.md) ->  <sub>REQ</sub>
- [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[CellLineToDiseaseOrPhenotypicFeatureAssociation](CellLineToDiseaseOrPhenotypicFeatureAssociation.md) ->  <sub>REQ</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 

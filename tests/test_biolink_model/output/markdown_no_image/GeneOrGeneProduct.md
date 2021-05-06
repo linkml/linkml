@@ -28,40 +28,23 @@ URI: [biolink:GeneOrGeneProduct](https://w3id.org/biolink/vocab/GeneOrGeneProduc
 
 ## Referenced by class
 
- *  **[ChemicalToGeneAssociation](ChemicalToGeneAssociation.md)** *[chemical to gene association➞object](chemical_to_gene_association_object.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[coexpressed with](coexpressed_with.md)*  <sub>0..*</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[DrugToGeneAssociation](DrugToGeneAssociation.md)** *[drug to gene association➞object](drug_to_gene_association_object.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[AnatomicalEntity](AnatomicalEntity.md)** *[expresses](expresses.md)*  <sub>0..*</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneAsAModelOfDiseaseAssociation](GeneAsAModelOfDiseaseAssociation.md)** *[gene as a model of disease association➞subject](gene_as_a_model_of_disease_association_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneHasVariantThatContributesToDiseaseAssociation](GeneHasVariantThatContributesToDiseaseAssociation.md)** *[gene has variant that contributes to disease association➞subject](gene_has_variant_that_contributes_to_disease_association_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneRegulatoryRelationship](GeneRegulatoryRelationship.md)** *[gene regulatory relationship➞object](gene_regulatory_relationship_object.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneRegulatoryRelationship](GeneRegulatoryRelationship.md)** *[gene regulatory relationship➞subject](gene_regulatory_relationship_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneToDiseaseAssociation](GeneToDiseaseAssociation.md)** *[gene to disease association➞subject](gene_to_disease_association_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneToEntityAssociationMixin](GeneToEntityAssociationMixin.md)** *[gene to entity association mixin➞subject](gene_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md)** *[gene to expression site association➞subject](gene_to_expression_site_association_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneToGeneAssociation](GeneToGeneAssociation.md)** *[gene to gene association➞object](gene_to_gene_association_object.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneToGeneAssociation](GeneToGeneAssociation.md)** *[gene to gene association➞subject](gene_to_gene_association_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneToPhenotypicFeatureAssociation](GeneToPhenotypicFeatureAssociation.md)** *[gene to phenotypic feature association➞subject](gene_to_phenotypic_feature_association_subject.md)*  <sub>REQ</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[in cell population with](in_cell_population_with.md)*  <sub>0..*</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[in complex with](in_complex_with.md)*  <sub>0..*</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
- *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[in pathway with](in_pathway_with.md)*  <sub>0..*</sub>
-  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[ChemicalToGeneAssociation](ChemicalToGeneAssociation.md)** *[chemical to gene association➞object](chemical_to_gene_association_object.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[coexpressed with](coexpressed_with.md)*  <sub>0..*</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[DrugToGeneAssociation](DrugToGeneAssociation.md)** *[drug to gene association➞object](drug_to_gene_association_object.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[AnatomicalEntity](AnatomicalEntity.md)** *[expresses](expresses.md)*  <sub>0..*</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneAsAModelOfDiseaseAssociation](GeneAsAModelOfDiseaseAssociation.md)** *[gene as a model of disease association➞subject](gene_as_a_model_of_disease_association_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneHasVariantThatContributesToDiseaseAssociation](GeneHasVariantThatContributesToDiseaseAssociation.md)** *[gene has variant that contributes to disease association➞subject](gene_has_variant_that_contributes_to_disease_association_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneRegulatoryRelationship](GeneRegulatoryRelationship.md)** *[gene regulatory relationship➞object](gene_regulatory_relationship_object.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneRegulatoryRelationship](GeneRegulatoryRelationship.md)** *[gene regulatory relationship➞subject](gene_regulatory_relationship_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneToDiseaseAssociation](GeneToDiseaseAssociation.md)** *[gene to disease association➞subject](gene_to_disease_association_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneToEntityAssociationMixin](GeneToEntityAssociationMixin.md)** *[gene to entity association mixin➞subject](gene_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md)** *[gene to expression site association➞subject](gene_to_expression_site_association_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneToGeneAssociation](GeneToGeneAssociation.md)** *[gene to gene association➞object](gene_to_gene_association_object.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneToGeneAssociation](GeneToGeneAssociation.md)** *[gene to gene association➞subject](gene_to_gene_association_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneToPhenotypicFeatureAssociation](GeneToPhenotypicFeatureAssociation.md)** *[gene to phenotypic feature association➞subject](gene_to_phenotypic_feature_association_subject.md)*  <sub>REQ</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[in cell population with](in_cell_population_with.md)*  <sub>0..*</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[in complex with](in_complex_with.md)*  <sub>0..*</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
+ *  **[GeneOrGeneProduct](GeneOrGeneProduct.md)** *[in pathway with](in_pathway_with.md)*  <sub>0..*</sub>  **[GeneOrGeneProduct](GeneOrGeneProduct.md)**
 
 ## Attributes
 
@@ -69,6 +52,5 @@ URI: [biolink:GeneOrGeneProduct](https://w3id.org/biolink/vocab/GeneOrGeneProduc
 ### Inherited from macromolecular machine mixin:
 
  * [macromolecular machine mixin➞name](macromolecular_machine_mixin_name.md)  <sub>OPT</sub>
-
      * Description: genes are typically designated by a short symbol and a full name. We map the symbol to the default display name and use an additional slot for full name
      * range: [SymbolType](types/SymbolType.md)

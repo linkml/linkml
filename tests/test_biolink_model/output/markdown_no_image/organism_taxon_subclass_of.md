@@ -9,8 +9,7 @@ URI: [biolink:organism_taxon_subclass_of](https://w3id.org/biolink/vocab/organis
 
 ## Domain and Range
 
-[OrganismTaxon](OrganismTaxon.md) ->  <sub>0..*</sub>
- [OrganismTaxon](OrganismTaxon.md)
+[OrganismTaxon](OrganismTaxon.md) ->  <sub>0..*</sub> [OrganismTaxon](OrganismTaxon.md)
 
 ## Parents
 

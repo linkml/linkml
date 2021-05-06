@@ -9,8 +9,7 @@ URI: [linkml:inverse](https://w3id.org/linkml/inverse)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub>
- slot_definition
+slot_definition ->  <sub>OPT</sub> slot_definition
 
 ## Parents
 

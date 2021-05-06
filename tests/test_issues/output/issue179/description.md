@@ -9,8 +9,7 @@ URI: [http://example.org/sample/example1/description](http://example.org/sample/
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub>
- [String](types/String.md)
+None ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

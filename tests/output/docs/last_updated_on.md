@@ -9,8 +9,7 @@ URI: [linkml:last_updated_on](https://w3id.org/linkml/last_updated_on)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>OPT</sub>
- [Datetime](types/Datetime.md)
+[Element](Element.md) ->  <sub>OPT</sub> [Datetime](types/Datetime.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:gene_regulatory_relationship_predicate](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[GeneRegulatoryRelationship](GeneRegulatoryRelationship.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[GeneRegulatoryRelationship](GeneRegulatoryRelationship.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

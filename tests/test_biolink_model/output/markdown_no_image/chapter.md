@@ -9,8 +9,7 @@ URI: [biolink:chapter](https://w3id.org/biolink/vocab/chapter)
 
 ## Domain and Range
 
-[BookChapter](BookChapter.md) ->  <sub>OPT</sub>
- [String](types/String.md)
+[BookChapter](BookChapter.md) ->  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

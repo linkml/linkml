@@ -9,8 +9,7 @@ URI: [biolink:is_excipient_of](https://w3id.org/biolink/vocab/is_excipient_of)
 
 ## Domain and Range
 
-[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>0..*</sub>
- [Drug](Drug.md)
+[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>0..*</sub> [Drug](Drug.md)
 
 ## Parents
 

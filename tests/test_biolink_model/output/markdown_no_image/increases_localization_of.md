@@ -9,8 +9,7 @@ URI: [biolink:increases_localization_of](https://w3id.org/biolink/vocab/increase
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
- [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:organismal_entity_has_attribute](https://w3id.org/biolink/vocab/or
 
 ## Domain and Range
 
-[OrganismalEntity](OrganismalEntity.md) ->  <sub>0..*</sub>
- [Attribute](Attribute.md)
+[OrganismalEntity](OrganismalEntity.md) ->  <sub>0..*</sub> [Attribute](Attribute.md)
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [linkml:extensions](https://w3id.org/linkml/extensions)
 
 ## Domain and Range
 
-extensible ->  <sub>0..*</sub>
- extension
+extensible ->  <sub>0..*</sub> extension
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [linkml:meaning](https://w3id.org/linkml/meaning)
 
 ## Domain and Range
 
-permissible_value ->  <sub>OPT</sub>
- uriorcurie
+permissible_value ->  <sub>OPT</sub> uriorcurie
 
 ## Parents
 

@@ -9,8 +9,7 @@ URI: [biolink:published_in](https://w3id.org/biolink/vocab/published_in)
 
 ## Domain and Range
 
-[Publication](Publication.md) ->  <sub>OPT</sub>
- [Uriorcurie](types/Uriorcurie.md)
+[Publication](Publication.md) ->  <sub>OPT</sub> [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

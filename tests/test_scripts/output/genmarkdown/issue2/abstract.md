@@ -9,8 +9,7 @@ URI: [linkml:abstract](https://w3id.org/linkml/abstract)
 
 ## Domain and Range
 
-definition ->  <sub>OPT</sub>
- boolean
+definition ->  <sub>OPT</sub> boolean
 
 ## Parents
 

@@ -24,26 +24,16 @@ URI: [biolink:OrganismTaxon](https://w3id.org/biolink/vocab/OrganismTaxon)
 
 ## Referenced by class
 
- *  **[ThingWithTaxon](ThingWithTaxon.md)** *[in taxon](in_taxon.md)*  <sub>0..*</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToEntityAssociation](OrganismTaxonToEntityAssociation.md)** *[organism taxon to entity association➞subject](organism_taxon_to_entity_association_subject.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)** *[organism taxon to environment association➞subject](organism_taxon_to_environment_association_subject.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)** *[organism taxon to organism taxon association➞object](organism_taxon_to_organism_taxon_association_object.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)** *[organism taxon to organism taxon association➞subject](organism_taxon_to_organism_taxon_association_subject.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)** *[organism taxon to organism taxon interaction➞object](organism_taxon_to_organism_taxon_interaction_object.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)** *[organism taxon to organism taxon interaction➞subject](organism_taxon_to_organism_taxon_interaction_subject.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md)** *[organism taxon to organism taxon specialization➞object](organism_taxon_to_organism_taxon_specialization_object.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md)** *[organism taxon to organism taxon specialization➞subject](organism_taxon_to_organism_taxon_specialization_subject.md)*  <sub>REQ</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
- *  **[OrganismTaxon](OrganismTaxon.md)** *[organism taxon➞subclass of](organism_taxon_subclass_of.md)*  <sub>0..*</sub>
-  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[ThingWithTaxon](ThingWithTaxon.md)** *[in taxon](in_taxon.md)*  <sub>0..*</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToEntityAssociation](OrganismTaxonToEntityAssociation.md)** *[organism taxon to entity association➞subject](organism_taxon_to_entity_association_subject.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)** *[organism taxon to environment association➞subject](organism_taxon_to_environment_association_subject.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)** *[organism taxon to organism taxon association➞object](organism_taxon_to_organism_taxon_association_object.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)** *[organism taxon to organism taxon association➞subject](organism_taxon_to_organism_taxon_association_subject.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)** *[organism taxon to organism taxon interaction➞object](organism_taxon_to_organism_taxon_interaction_object.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)** *[organism taxon to organism taxon interaction➞subject](organism_taxon_to_organism_taxon_interaction_subject.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md)** *[organism taxon to organism taxon specialization➞object](organism_taxon_to_organism_taxon_specialization_object.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md)** *[organism taxon to organism taxon specialization➞subject](organism_taxon_to_organism_taxon_specialization_subject.md)*  <sub>REQ</sub>  **[OrganismTaxon](OrganismTaxon.md)**
+ *  **[OrganismTaxon](OrganismTaxon.md)** *[organism taxon➞subclass of](organism_taxon_subclass_of.md)*  <sub>0..*</sub>  **[OrganismTaxon](OrganismTaxon.md)**
 
 ## Attributes
 
@@ -51,10 +41,8 @@ URI: [biolink:OrganismTaxon](https://w3id.org/biolink/vocab/OrganismTaxon)
 ### Own
 
  * [organism taxon➞has taxonomic rank](organism_taxon_has_taxonomic_rank.md)  <sub>OPT</sub>
-
      * range: [TaxonomicRank](TaxonomicRank.md)
  * [organism taxon➞subclass of](organism_taxon_subclass_of.md)  <sub>0..*</sub>
-
      * Description: subclass of holds between two taxa, e.g. human subclass of mammal
      * range: [OrganismTaxon](OrganismTaxon.md)
 

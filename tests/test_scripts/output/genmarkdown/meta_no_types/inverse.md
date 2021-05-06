@@ -9,8 +9,7 @@ URI: [linkml:inverse](https://w3id.org/linkml/inverse)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub>
- [SlotDefinition](SlotDefinition.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [SlotDefinition](SlotDefinition.md)
 
 ## Parents
 

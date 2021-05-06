@@ -9,8 +9,7 @@ URI: [biolink:contributor_association_qualifiers](https://w3id.org/biolink/vocab
 
 ## Domain and Range
 
-[ContributorAssociation](ContributorAssociation.md) ->  <sub>0..*</sub>
- [OntologyClass](OntologyClass.md)
+[ContributorAssociation](ContributorAssociation.md) ->  <sub>0..*</sub> [OntologyClass](OntologyClass.md)
 
 ## Parents
 

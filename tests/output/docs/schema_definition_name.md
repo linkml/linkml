@@ -9,8 +9,7 @@ URI: [linkml:schema_definition_name](https://w3id.org/linkml/schema_definition_n
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>REQ</sub>
- [Ncname](types/Ncname.md)
+[SchemaDefinition](SchemaDefinition.md) ->  <sub>REQ</sub> [Ncname](types/Ncname.md)
 
 ## Parents
 

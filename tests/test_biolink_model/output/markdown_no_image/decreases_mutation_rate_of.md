@@ -9,8 +9,7 @@ URI: [biolink:decreases_mutation_rate_of](https://w3id.org/biolink/vocab/decreas
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub>
- [GenomicEntity](GenomicEntity.md)
+[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
 
 ## Parents
 

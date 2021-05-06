@@ -9,8 +9,7 @@ URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 
 ## Domain and Range
 
-definition ->  <sub>OPT</sub>
- boolean
+definition ->  <sub>OPT</sub> boolean
 
 ## Parents
 

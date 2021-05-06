@@ -9,8 +9,7 @@ URI: [biolink:gene_to_gene_homology_association_predicate](https://w3id.org/biol
 
 ## Domain and Range
 
-[GeneToGeneHomologyAssociation](GeneToGeneHomologyAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[GeneToGeneHomologyAssociation](GeneToGeneHomologyAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

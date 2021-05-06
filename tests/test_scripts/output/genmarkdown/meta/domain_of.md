@@ -9,8 +9,7 @@ URI: [linkml:domain_of](https://w3id.org/linkml/domain_of)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>0..*</sub>
- [ClassDefinition](ClassDefinition.md)
+[SlotDefinition](SlotDefinition.md) ->  <sub>0..*</sub> [ClassDefinition](ClassDefinition.md)
 
 ## Parents
 

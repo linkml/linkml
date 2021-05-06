@@ -9,8 +9,7 @@ URI: [biolink:positively_regulated_by](https://w3id.org/biolink/vocab/positively
 
 ## Domain and Range
 
-[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) ->  <sub>OPT</sub>
- [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
+[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) ->  <sub>OPT</sub> [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
 
 ## Parents
 

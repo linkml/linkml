@@ -26,7 +26,6 @@ URI: [biolink:MacromolecularComplexMixin](https://w3id.org/biolink/vocab/Macromo
 ### Inherited from macromolecular machine mixin:
 
  * [macromolecular machine mixin➞name](macromolecular_machine_mixin_name.md)  <sub>OPT</sub>
-
      * Description: genes are typically designated by a short symbol and a full name. We map the symbol to the default display name and use an additional slot for full name
      * range: [SymbolType](types/SymbolType.md)
 

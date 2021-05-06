@@ -9,8 +9,7 @@ URI: [linkml:inherited](https://w3id.org/linkml/inherited)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub>
- boolean
+slot_definition ->  <sub>OPT</sub> boolean
 
 ## Parents
 

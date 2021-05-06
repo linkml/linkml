@@ -9,8 +9,7 @@ URI: [biolink:has_attribute](https://w3id.org/biolink/vocab/has_attribute)
 
 ## Domain and Range
 
-[Entity](Entity.md) ->  <sub>0..*</sub>
- [Attribute](Attribute.md)
+[Entity](Entity.md) ->  <sub>0..*</sub> [Attribute](Attribute.md)
 
 ## Parents
 

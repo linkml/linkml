@@ -9,8 +9,7 @@ URI: [biolink:is_metabolite](https://w3id.org/biolink/vocab/is_metabolite)
 
 ## Domain and Range
 
-[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>OPT</sub>
- [Boolean](types/Boolean.md)
+[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>OPT</sub> [Boolean](types/Boolean.md)
 
 ## Parents
 

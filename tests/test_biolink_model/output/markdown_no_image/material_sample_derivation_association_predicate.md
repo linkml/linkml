@@ -9,8 +9,7 @@ URI: [biolink:material_sample_derivation_association_predicate](https://w3id.org
 
 ## Domain and Range
 
-[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md) ->  <sub>REQ</sub>
- [PredicateType](types/PredicateType.md)
+[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 
