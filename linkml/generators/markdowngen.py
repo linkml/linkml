@@ -413,7 +413,7 @@ class MarkdownGenerator(Generator):
             card_str = '1..*' if slot.required else '0..*'
         else:
             card_str = 'REQ' if slot.required else 'OPT'
-        return f"  <sub>{card_str}</sub>\n"
+        return f"  <sub>{card_str}</sub>"
 
     @staticmethod
     def range_cardinality(slot: SlotDefinition) -> str:
