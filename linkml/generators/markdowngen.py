@@ -271,18 +271,27 @@ class MarkdownGenerator(Generator):
         def enum_list(title: str,obj:EnumDefinition) -> None:
             # This data is from the enum provided in the YAML
             self.header(2, title)
-            print(f"| Text | Meaning |")
-            print("| :--- | --------: |")
+            print(f"| Text | Description | Meaning | Other Information |")
+            print("| :--- | :---: | :---: | ---: |")
+
             for item, item_info in obj.permissible_values.items():
-                line = ''
+                text = ''
+                desc = ''
+                meaning =''
+                other = {}
                 for k in item_info:
                     if item_info[k] is not None and len(item_info[k]) > 0:
-                        if item_info[k] == item:
-                            line = '| '+ item_info[k] + ' | '
+                        if k == 'text':
+                            text = item_info[k]
+                        elif k == 'description':
+                            desc = item_info[k]
+                        elif k == 'meaning':
+                            meaning = item_info[k]
                         else:
-                            line += item_info[k] + ' |'
-                            print(line)
-                            line = ''
+                            other[k] = item_info[k]
+                if not other:
+                    other = ''
+                print(f'| {text} | {desc} | {meaning} | {other} |')
 
         attributes = StringIO()
         with redirect_stdout(attributes):
@@ -335,9 +344,10 @@ class MarkdownGenerator(Generator):
             for child in sorted(self.synopsis.isarefs[enum.name].classrefs):
                 self.enum_hier(self.schema.enums[child], level+1)
 
-    def dir_path(self, obj: Union[ClassDefinition, SlotDefinition, TypeDefinition]) -> str:
+    def dir_path(self, obj: Union[ClassDefinition, SlotDefinition, TypeDefinition, EnumDefinition]) -> str:
         filename = self.formatted_element_name(obj) if isinstance(obj, ClassDefinition) \
             else underscore(obj.name) if isinstance(obj, SlotDefinition) \
+            else underscore(obj.name) if isinstance(obj, EnumDefinition) \
             else camelcase(obj.name)
         subdir = '/types' if isinstance(obj, TypeDefinition) and not self.no_types_dir else ''
         return f'{self.directory}{subdir}/{filename}.md'
@@ -403,7 +413,7 @@ class MarkdownGenerator(Generator):
             card_str = '1..*' if slot.required else '0..*'
         else:
             card_str = 'REQ' if slot.required else 'OPT'
-        return f"  <sub>{card_str}</sub>"
+        return f"  <sub>{card_str}</sub>\n"
 
     @staticmethod
     def range_cardinality(slot: SlotDefinition) -> str:
@@ -508,17 +518,18 @@ class MarkdownGenerator(Generator):
         return self._link(self.schema.classes[ref] if isinstance(ref, str) else ref, after_link=after_link,
                          use_desc=use_desc, add_subset=add_subset)
 
-    def class_type_link(self, ref: Optional[Union[str, ClassDefinition, TypeDefinition]], *, after_link: str = None,
+    def class_type_link(self, ref: Optional[Union[str, ClassDefinition, TypeDefinition, EnumDefinition]], *, after_link: str = None,
                         use_desc: bool=False, add_subset: bool=True) -> str:
         if isinstance(ref, ClassDefinition):
             return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif isinstance(ref, TypeDefinition):
             return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
+        elif isinstance(ref, EnumDefinition):
+            return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset) 
         elif ref in self.schema.classes:
             return self.class_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
         elif ref in self.schema.enums:
-            # TODO: enums - fill this in
-            return ''
+            return self.enum_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset) 
         else:
             return self.type_link(ref, after_link=after_link, use_desc=use_desc, add_subset=add_subset)
 
