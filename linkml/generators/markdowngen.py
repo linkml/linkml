@@ -269,20 +269,27 @@ class MarkdownGenerator(Generator):
         def enum_list(title: str,obj:EnumDefinition) -> None:
             # This data is from the enum provided in the YAML
             self.header(2, title)
-            print(f"| Text | Meaning |")
-            print("| :--- | --------: |")
+            print(f"| Text | Description | Meaning | Other Information |")
+            print("| :--- | :---: | :---: | ---: |")
+
             for item, item_info in obj.permissible_values.items():
-                line = ''
+                text = ''
+                desc = ''
+                meaning =''
+                other = {}
                 for k in item_info:
                     if item_info[k] is not None and len(item_info[k]) > 0:
-                        if item_info[k] == item:
-                            line = '| '+ item_info[k] + ' | '
+                        if k == 'text':
+                            text = item_info[k]
+                        elif k == 'description':
+                            desc = item_info[k]
+                        elif k == 'meaning':
+                            meaning = item_info[k]
                         else:
-                            line += item_info[k] + ' |'
-                            print(line)
-                            line = ''
-                    else:
-                        print('| '+ k + ' | ---- |')
+                            other[k] = item_info[k]
+                if not other:
+                    other = ''
+                print(f'| {text} | {desc} | {meaning} | {other} |')
 
         attributes = StringIO()
         with redirect_stdout(attributes):
@@ -335,10 +342,10 @@ class MarkdownGenerator(Generator):
             for child in sorted(self.synopsis.isarefs[enum.name].classrefs):
                 self.enum_hier(self.schema.enums[child], level+1)
 
-    def dir_path(self, obj: Union[ClassDefinition, SlotDefinition, TypeDefinition]) -> str:
+    def dir_path(self, obj: Union[ClassDefinition, SlotDefinition, TypeDefinition, EnumDefinition]) -> str:
         filename = self.formatted_element_name(obj) if isinstance(obj, ClassDefinition) \
             else underscore(obj.name) if isinstance(obj, SlotDefinition) \
-            else underscore(obj.name) if isinstance(obj, EnumDefinition) \ 
+            else underscore(obj.name) if isinstance(obj, EnumDefinition) \
             else camelcase(obj.name)
         subdir = '/types' if isinstance(obj, TypeDefinition) and not self.no_types_dir else ''
         return f'{self.directory}{subdir}/{filename}.md'
