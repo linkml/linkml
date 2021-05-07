@@ -602,31 +602,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         # Generate existence check for required slots.  Note that inherited classes have to do post init checks because
         # You can't have required elements after optional elements in the parent class
         if slot.required:
-            rlines.append(f'if self.{aliased_slot_name} is None:')
+            rlines.append(f'if self._is_empty(self.{aliased_slot_name}):')
             rlines.append(f'\traise ValueError("{aliased_slot_name} must be supplied")')
-            if slot.multivalued:
-                if slot.inlined and slot_identifier:
-                    # Identified type multivalued slots can either be lists or dictionaries
-                    rlines.append(f'elif not isinstance(self.{aliased_slot_name}, (list, dict, JsonObj)):')
-                    rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
-                    rlines.append(f'if len(self.{aliased_slot_name}) == 0:')
-                    rlines.append(f'\traise ValueError(f"{aliased_slot_name} '
-                                  f'must be a non-empty list, dictionary, or class")')
-                else:
-                    rlines.append(f'elif not isinstance(self.{aliased_slot_name}, list):')
-                    rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
-                    rlines.append(f'elif len(self.{aliased_slot_name}) == 0:')
-                    rlines.append(f'\traise ValueError(f"{aliased_slot_name} must be a non-empty list")')
-        elif slot.multivalued:
-            if slot.inlined and slot_identifier:
-                # Identified type multivalued slots can either be lists or dictionaries
-                rlines.append(f'if not isinstance(self.{aliased_slot_name}, (list, dict, JsonObj)):')
-                rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
-            else:
-                rlines.append(f'if self.{aliased_slot_name} is None:')
-                rlines.append(f'\tself.{aliased_slot_name} = []')
-                rlines.append(f'if not isinstance(self.{aliased_slot_name}, list):')
-                rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')
 
         # Generate the type co-orcion for the various types.
         indent = len(f'self.{aliased_slot_name} = [') * ' '

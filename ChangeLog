@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+* Sole non-published dependency is now on linkml-model
+* Fix a couple of bad Pipfile entries
+* Passes all non-disabled unit tests
 * Switch to new runtime
 * remove extraneous test artifact
 * Alpha transition to linkml-runtime -- all duplicate code removed

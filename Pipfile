@@ -26,7 +26,7 @@ pyldmod = "*"
 rdflib-pyld-compat = "*"
 hbreader = "*"
 # NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
-linkml-model = {ref = "runtime_split", git = "https://github.com/linkml/linkml-model" }
+linkml-model = ">=0.1.0.dev1"
 linkml-runtime = "~=1.0, >=1.0.1"
 sqlalchemy = "*"
 
