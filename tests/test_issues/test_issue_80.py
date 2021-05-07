@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from jsonasobj import as_json
+from jsonasobj2 import as_json
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator

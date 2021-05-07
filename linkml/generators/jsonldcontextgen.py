@@ -7,7 +7,7 @@ import os
 from typing import Union, TextIO, Set, Optional
 
 import click
-from jsonasobj import JsonObj, as_json
+from jsonasobj2 import JsonObj, as_json
 from rdflib import XSD, SKOS
 
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element, EnumDefinition

@@ -1,6 +1,6 @@
 import unittest
 
-from jsonasobj import loads
+from jsonasobj2 import loads
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from tests.test_issues.environment import env

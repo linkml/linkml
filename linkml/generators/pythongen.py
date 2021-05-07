@@ -110,7 +110,7 @@ class PythonGenerator(Generator):
 import dataclasses
 import sys
 import re
-from jsonasobj import JsonObj
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 {enumimports}
@@ -618,7 +618,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                     rlines.append(f'elif len(self.{aliased_slot_name}) == 0:')
                     rlines.append(f'\traise ValueError(f"{aliased_slot_name} must be a non-empty list")')
         elif slot.multivalued:
-            if slot.inlined and slot_identifier and not slot.inlined_as_list:
+            if slot.inlined and slot_identifier:
                 # Identified type multivalued slots can either be lists or dictionaries
                 rlines.append(f'if not isinstance(self.{aliased_slot_name}, (list, dict, JsonObj)):')
                 rlines.append(f'\tself.{aliased_slot_name} = [self.{aliased_slot_name}]')

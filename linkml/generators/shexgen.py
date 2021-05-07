@@ -8,7 +8,7 @@ import click
 from ShExJSG import ShExC
 from ShExJSG.SchemaWithContext import Schema
 from ShExJSG.ShExJ import Shape, IRIREF, EachOf, TripleConstraint, NodeConstraint, ShapeOr
-from jsonasobj import as_json
+from jsonasobj import as_json as as_json_1
 from rdflib import Graph, OWL, RDF, Namespace, XSD
 
 from linkml import METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE
@@ -114,7 +114,7 @@ class ShExGenerator(Generator):
 
     def end_schema(self, output: Optional[str] = None, **_) -> None:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
-        shex = as_json(self.shex)
+        shex = as_json_1(self.shex)
         if self.format == 'rdf':
             g = Graph()
             g.parse(data=shex, format="json-ld")

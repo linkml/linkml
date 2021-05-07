@@ -4,7 +4,7 @@ from io import StringIO
 from typing import Union, TextIO, Optional, Set, List, Any, Callable, Dict
 
 import click
-from jsonasobj import JsonObj, values
+from jsonasobj2 import JsonObj, values
 
 from linkml.generators.yumlgen import YumlGenerator
 from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \

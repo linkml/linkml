@@ -2,7 +2,7 @@ import os
 import unittest
 
 import yaml
-from jsonasobj import as_json
+from jsonasobj2 import as_json
 
 from linkml_model.meta import SchemaDefinition
 from linkml.utils.rawloader import load_raw_schema

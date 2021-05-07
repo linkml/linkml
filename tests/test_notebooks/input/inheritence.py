@@ -1,6 +1,6 @@
 from types import ModuleType
 
-from jsonasobj import as_json, loads
+from jsonasobj2 import as_json, loads
 from rdflib import Graph
 
 from linkml.generators.jsonldcontextgen import ContextGenerator

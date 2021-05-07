@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 import yaml
-from jsonasobj import as_dict
+from jsonasobj2 import as_dict
 
 from linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml.utils.mergeutils import merge_schemas, set_from_schema

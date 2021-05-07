@@ -1,6 +1,6 @@
 import unittest
 
-from jsonasobj import loads
+from jsonasobj2 import loads
 
 from linkml.generators.shexgen import ShExGenerator
 from linkml_model.meta import LINKML

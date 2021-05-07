@@ -5,7 +5,7 @@ from io import StringIO
 from typing import Optional
 
 import jsonasobj
-from jsonasobj import as_json, load
+from jsonasobj2 import as_json, load
 
 from linkml.utils.schemaloader import SchemaLoader
 from tests.test_utils.environment import env

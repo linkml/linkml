@@ -1,6 +1,6 @@
 import unittest
 
-from jsonasobj import JsonObj, loads
+from jsonasobj2 import JsonObj, loads
 
 from linkml import METAMODEL_CONTEXT_URI, META_BASE_URI
 from linkml_runtime.utils.context_utils import merge_contexts

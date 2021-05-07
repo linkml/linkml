@@ -2,7 +2,7 @@ import os
 import unittest
 
 from linkml.utils.schemaloader import SchemaLoader
-from jsonasobj import as_dict, as_json, JsonObj, load
+from jsonasobj2 import as_dict, as_json, JsonObj, load
 
 from tests.test_utils.environment import env
 

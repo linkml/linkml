@@ -2,7 +2,7 @@ import os
 import unittest
 from typing import Callable
 
-from jsonasobj import as_json, loads, load, as_dict, JsonObj
+from jsonasobj2 import as_json, loads, load, as_dict, JsonObj
 
 from linkml_model.meta import SchemaDefinition
 from linkml.utils.rawloader import load_raw_schema

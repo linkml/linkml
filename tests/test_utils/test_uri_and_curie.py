@@ -2,7 +2,7 @@ import os
 import unittest
 from types import ModuleType
 
-from jsonasobj import loads
+from jsonasobj2 import loads
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
