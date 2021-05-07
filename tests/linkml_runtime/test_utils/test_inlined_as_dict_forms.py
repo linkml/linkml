@@ -90,6 +90,19 @@ class InlinedAsDictTestcase(unittest.TestCase):
         v = E({"s1": "k1", "s2": "v12"})
         self.assertEqual("E(ev={'k1': EInst(s1='k1', s2='v12', s3=None)})", str(v), "Single entry dictionary")
 
+    def test_isempties(self):
+        base = E()
+        self.assertTrue(base._is_empty(None))
+        self.assertTrue(base._is_empty([]))
+        self.assertTrue(base._is_empty({}))
+        self.assertTrue(base._is_empty(JsonObj()))
+        self.assertTrue(base._is_empty(JsonObj([])))
+        self.assertFalse(base._is_empty(0))
+        self.assertFalse(base._is_empty(""))
+        self.assertFalse(base._is_empty(JsonObj({'k': 0})))
+        self.assertFalse(base._is_empty(JsonObj([None])))
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -86,6 +86,10 @@ class YAMLRoot(JsonObj):
             return obj._default(obj) if hasattr(obj, '_default') and callable(obj._default) else\
                 JSONDecoder().decode(obj)
 
+    @staticmethod
+    def _is_empty(v: Any) -> bool:
+        return v is None or (isinstance(v, (dict, list)) and not v) or (isinstance(v, JsonObj) and not as_dict(v))
+
     def _normalize_inlined_as_list(self, slot_name: str, slot_type: Type, key_name: str, keyed: bool) -> None:
         self._normalize_inlined(slot_name, slot_type, key_name, keyed, True)
 
