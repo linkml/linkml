@@ -3,8 +3,7 @@
 import re
 from json import loads
 
-from jsonasobj import as_json
-
+from jsonasobj2 import as_json
 
 def ldcontext_metadata_filter(s: str) -> str:
     """

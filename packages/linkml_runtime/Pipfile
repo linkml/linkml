@@ -7,15 +7,15 @@ name = "pypi"
 hbreader = "*"
 # Note: pyld needs requests package to access contexts
 requests = "*"
-pyld = { git = "https://github.com/hsolbrig/pyld" }
-jsonasobj = {  git = "https://github.com/hsolbrig/jsonasobj" }
-pyyaml = ">=5.1"
-rdflib = "*"
+pyldmod = "*"
+jsonasobj2 = "~=1.0"
+pyyaml = "~=5.1"
+rdflib = "~=5.0"
 rdflib-pyld-compat = "*"
-rdflib-jsonld = "*"
+rdflib-jsonld = "~=0.5"
 click = "*"
 prefixcommons = "*"
-shexjsg = "*"
+shexjsg = "~=0.7"
 
 [dev-packages]
 

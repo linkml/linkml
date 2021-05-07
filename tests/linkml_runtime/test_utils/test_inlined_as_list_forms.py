@@ -1,6 +1,6 @@
 import unittest
 
-from jsonasobj import JsonObj
+from jsonasobj2 import JsonObj
 
 from tests.test_utils.input.inlined_as_list import E, EInst
 

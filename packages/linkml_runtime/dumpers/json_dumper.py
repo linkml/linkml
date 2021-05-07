@@ -1,6 +1,6 @@
 import json
 from typing import Dict
-from jsonasobj import items, JsonObj, as_dict
+from jsonasobj2 import items, JsonObj, as_dict
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE

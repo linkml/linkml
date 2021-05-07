@@ -4,7 +4,7 @@ from json import JSONDecoder
 from typing import Union, Any, List, Optional, Type, Callable, Dict
 
 import yaml
-from jsonasobj import JsonObj, as_json, as_dict, JsonObjTypes, items
+from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
 from rdflib import Graph
 from yaml.constructor import ConstructorError
 

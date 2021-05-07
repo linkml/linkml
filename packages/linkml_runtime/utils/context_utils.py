@@ -4,7 +4,7 @@ from io import TextIOWrapper
 from typing import Optional, Union, List, Any, Dict
 
 import yaml
-from jsonasobj import JsonObj, loads
+from jsonasobj2 import JsonObj, loads
 
 CONTEXT_TYPE = Union[str, dict, JsonObj]
 CONTEXTS_PARAM_TYPE = Optional[Union[CONTEXT_TYPE, List[CONTEXT_TYPE]]]
