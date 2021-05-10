@@ -1,5 +1,5 @@
 from dataclasses import fields
-from typing import Union, Optional
+from typing import Union, Optional, Type
 
 from linkml_runtime.utils.metamodelcore import Curie
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -19,8 +19,8 @@ class EnumDefinitionMeta(type):
         cls.__dict__[key] = value
 
     def __setattr__(self, key, value):
-        value_is_pv = "PermissibleValue" in [c.__name__ for c in type(value).mro()]
-        if self._defn.code_set and value_is_pv and value.meaning:
+        from linkml_model.meta import PermissibleValue
+        if self._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
             print(f"Validating {value.meaning} against {self._defn.code_set}")
         super().__setattr__(key, value)
 
@@ -28,16 +28,15 @@ class EnumDefinitionMeta(type):
         return item in cls.__dict__
 
 
-class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
-    _defn: YAMLRoot = None         # Overridden by implementation - Must be EnumDefinition
+def isinstance_dt(cls: Type, inst: str) -> bool:
+    """ Duck typing isinstance to prevent recursion errors """
+    return inst in [c.__name__ for c in type(cls).mro()]
 
-    def __init__(self, code: Union[str, Curie, YAMLRoot]) -> None:
-        """
-        @param code: A permissible value or something that can be morphed into a PV
-        """
-        code_is_pv = "PermissibleValue" in [c.__name__ for c in type(code).mro()]
-        # if isinstance(code, PermissibleValue):
-        if code_is_pv:
+class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
+    _defn: "EnumDefinition" = None         # Overridden by implementation
+
+    def __init__(self, code: Union[str, Curie]) -> None:
+        if isinstance_dt(code, "PermissibleValue"):
             key = code.text
         elif isinstance(code, Curie):
             key = str(code)
@@ -51,7 +50,7 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
                 self._code = code
         elif key not in self.__class__:
             raise ValueError(f"Unknown {self.__class__.__name__} enumeration code: {key}")
-        elif code_is_pv:
+        elif isinstance_dt(code, "PermissibleValue"):
             if getattr(self, 'code', None):
                 if self._code != code:
                     raise ValueError(f"Enumeration: {self.__class__.__name__} - "
@@ -61,10 +60,10 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         else:
             self._code = self.__class__[key]
 
-    def _lookup(self, key: str) -> Optional[YAMLRoot]:
+    def _lookup(self, key: str) -> Optional["PermissibleValue"]:
         """
         Hook to look up key in the appropriate code system
-        @param key: URI or string in Curie form (TBD) or a PermissibleValue
+        @param key: URI or string in Curie form (TBD)
         @return: Permissible value rendering if key is valid
         """
         return None

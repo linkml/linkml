@@ -1,5 +1,5 @@
 # Auto generated from annotations.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-04-29 21:27
+# Generation date: 2021-05-07 16:49
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -21,9 +21,9 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from .extensions import Extension
+from .types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
-from tests.static_linkml_model.extensions import Extension
-from tests.static_linkml_model.types import String, Uriorcurie
 
 metamodel_version = "1.7.0"
 
@@ -60,7 +60,7 @@ class Annotatable(YAMLRoot):
             self.annotations = []
         if not isinstance(self.annotations, list):
             self.annotations = [self.annotations]
-        self._normalize_inlined_slot(slot_name="annotations", slot_type=Annotation, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -86,7 +86,7 @@ class Annotation(Extension):
             self.annotations = []
         if not isinstance(self.annotations, list):
             self.annotations = [self.annotations]
-        self._normalize_inlined_slot(slot_name="annotations", slot_type=Annotation, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 

@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-04-29 21:27
+# Generation date: 2021-05-07 16:49
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -21,10 +21,10 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from .annotations import Annotation
+from .extensions import Extension
+from .types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
-from tests.static_linkml_model.annotations import Annotation
-from tests.static_linkml_model.extensions import Extension
-from tests.static_linkml_model.types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
 
 metamodel_version = "1.7.0"
 
@@ -158,11 +158,9 @@ class Element(YAMLRoot):
             self.aliases = [self.aliases]
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        if self.local_names is None:
-            self.local_names = []
         if not isinstance(self.local_names, (list, dict, JsonObj)):
             self.local_names = [self.local_names]
-        self._normalize_inlined_slot(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", keyed=True)
 
         if self.mappings is None:
             self.mappings = []
@@ -173,11 +171,9 @@ class Element(YAMLRoot):
         if self.description is not None and not isinstance(self.description, str):
             self.description = str(self.description)
 
-        if self.alt_descriptions is None:
-            self.alt_descriptions = []
         if not isinstance(self.alt_descriptions, (list, dict, JsonObj)):
             self.alt_descriptions = [self.alt_descriptions]
-        self._normalize_inlined_slot(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
@@ -264,13 +260,13 @@ class Element(YAMLRoot):
             self.extensions = []
         if not isinstance(self.extensions, list):
             self.extensions = [self.extensions]
-        self._normalize_inlined_slot(slot_name="extensions", slot_type=Extension, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
         if self.annotations is None:
             self.annotations = []
         if not isinstance(self.annotations, list):
             self.annotations = [self.annotations]
-        self._normalize_inlined_slot(slot_name="annotations", slot_type=Annotation, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -337,11 +333,9 @@ class SchemaDefinition(Element):
         if self.license is not None and not isinstance(self.license, str):
             self.license = str(self.license)
 
-        if self.prefixes is None:
-            self.prefixes = []
         if not isinstance(self.prefixes, (list, dict, JsonObj)):
             self.prefixes = [self.prefixes]
-        self._normalize_inlined_slot(slot_name="prefixes", slot_type=Prefix, key_name="prefix_prefix", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="prefixes", slot_type=Prefix, key_name="prefix_prefix", keyed=True)
 
         if self.emit_prefixes is None:
             self.emit_prefixes = []
@@ -361,35 +355,25 @@ class SchemaDefinition(Element):
         if self.default_range is not None and not isinstance(self.default_range, TypeDefinitionName):
             self.default_range = TypeDefinitionName(self.default_range)
 
-        if self.subsets is None:
-            self.subsets = []
         if not isinstance(self.subsets, (list, dict, JsonObj)):
             self.subsets = [self.subsets]
-        self._normalize_inlined_slot(slot_name="subsets", slot_type=SubsetDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="subsets", slot_type=SubsetDefinition, key_name="name", keyed=True)
 
-        if self.types is None:
-            self.types = []
         if not isinstance(self.types, (list, dict, JsonObj)):
             self.types = [self.types]
-        self._normalize_inlined_slot(slot_name="types", slot_type=TypeDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="types", slot_type=TypeDefinition, key_name="name", keyed=True)
 
-        if self.enums is None:
-            self.enums = []
         if not isinstance(self.enums, (list, dict, JsonObj)):
             self.enums = [self.enums]
-        self._normalize_inlined_slot(slot_name="enums", slot_type=EnumDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="enums", slot_type=EnumDefinition, key_name="name", keyed=True)
 
-        if self.slots is None:
-            self.slots = []
         if not isinstance(self.slots, (list, dict, JsonObj)):
             self.slots = [self.slots]
-        self._normalize_inlined_slot(slot_name="slots", slot_type=SlotDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="slots", slot_type=SlotDefinition, key_name="name", keyed=True)
 
-        if self.classes is None:
-            self.classes = []
         if not isinstance(self.classes, (list, dict, JsonObj)):
             self.classes = [self.classes]
-        self._normalize_inlined_slot(slot_name="classes", slot_type=ClassDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="classes", slot_type=ClassDefinition, key_name="name", keyed=True)
 
         if self.metamodel_version is not None and not isinstance(self.metamodel_version, str):
             self.metamodel_version = str(self.metamodel_version)
@@ -579,11 +563,9 @@ class EnumDefinition(Element):
         if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
-        if self.permissible_values is None:
-            self.permissible_values = []
         if not isinstance(self.permissible_values, (list, dict, JsonObj)):
             self.permissible_values = [self.permissible_values]
-        self._normalize_inlined_slot(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -777,17 +759,13 @@ class ClassDefinition(Definition):
             self.slots = [self.slots]
         self.slots = [v if isinstance(v, SlotDefinitionName) else SlotDefinitionName(v) for v in self.slots]
 
-        if self.slot_usage is None:
-            self.slot_usage = []
         if not isinstance(self.slot_usage, (list, dict, JsonObj)):
             self.slot_usage = [self.slot_usage]
-        self._normalize_inlined_slot(slot_name="slot_usage", slot_type=SlotDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="slot_usage", slot_type=SlotDefinition, key_name="name", keyed=True)
 
-        if self.attributes is None:
-            self.attributes = []
         if not isinstance(self.attributes, (list, dict, JsonObj)):
             self.attributes = [self.attributes]
-        self._normalize_inlined_slot(slot_name="attributes", slot_type=SlotDefinition, key_name="name", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="attributes", slot_type=SlotDefinition, key_name="name", keyed=True)
 
         if self.class_uri is not None and not isinstance(self.class_uri, URIorCURIE):
             self.class_uri = URIorCURIE(self.class_uri)
@@ -984,11 +962,9 @@ class PermissibleValue(YAMLRoot):
         if self.meaning is not None and not isinstance(self.meaning, URIorCURIE):
             self.meaning = URIorCURIE(self.meaning)
 
-        if self.alt_descriptions is None:
-            self.alt_descriptions = []
         if not isinstance(self.alt_descriptions, (list, dict, JsonObj)):
             self.alt_descriptions = [self.alt_descriptions]
-        self._normalize_inlined_slot(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
@@ -1054,13 +1030,13 @@ class PermissibleValue(YAMLRoot):
             self.extensions = []
         if not isinstance(self.extensions, list):
             self.extensions = [self.extensions]
-        self._normalize_inlined_slot(slot_name="extensions", slot_type=Extension, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
         if self.annotations is None:
             self.annotations = []
         if not isinstance(self.annotations, list):
             self.annotations = [self.annotations]
-        self._normalize_inlined_slot(slot_name="annotations", slot_type=Annotation, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 

@@ -1,5 +1,5 @@
 # Auto generated from mappings.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-04-29 21:27
+# Generation date: 2021-05-07 16:49
 # Schema: mappings
 #
 # id: https://w3id.org/linkml/mappings
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -21,8 +21,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from .types import Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
-from tests.static_linkml_model.types import Uriorcurie
 
 metamodel_version = "1.7.0"
 

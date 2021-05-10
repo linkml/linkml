@@ -1,8 +1,28 @@
 CHANGES
 =======
 
+* Added \_is\_empty function to YAMLRoot
+
+v1.0.1
+------
+
+* Automatically generated requirements.txt and requirements-dev.txt
+* Switch to jsonasobj2 and pyldmod
+
+v1.0.0
+------
+
+* Fix an issue where the json\_dumper didn't handle contexts correctly
+
+v0.1.6
+------
+
 * Redirect the old \`\_normalize\_inlined\` function to the new code
 * Update readme to have badges
+
+v0.1.5
+------
+
 * Remove all dependencies on linkml\_model with the exception of the unit tests
 * Temporarily fix linkml\_model references
 * Revised form of inlined\_as\_list now operational
