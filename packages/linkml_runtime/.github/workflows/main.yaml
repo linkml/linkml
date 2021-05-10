@@ -50,9 +50,6 @@ jobs:
     - name: Install dependencies and run
       run: |
         pipenv install --dev
-        # Force pyldmod install
-        pip uninstall pyld
-        pipenv install pyldmod
         pipenv run python -m unittest
 
     - name: Check in test outputs
