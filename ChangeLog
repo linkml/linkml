@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+v0.1.0.dev2
+-----------
+
+* Update python generator to reference the linkml\_runtime model
+* Update required missing value check
 * Sole non-published dependency is now on linkml-model
 * Fix a couple of bad Pipfile entries
 * Passes all non-disabled unit tests

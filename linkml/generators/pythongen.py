@@ -653,11 +653,20 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                                   f'key_name="{self.aliased_slot_name(identifier)}", '
                                   f'keyed={keyed})')
             else:
+                # Multivalued, inlined and no identifier
+                # TODO: JsonObj([...]) will not be treated correctly here.
                 sn = f'self.{aliased_slot_name}'
+                rlines.append(f'if not isinstance({sn}, list):')
+                rlines.append(f'\t{sn} = [{sn}]')
                 rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**v) for v in {sn}]')
         else:
-            rlines.append(f'self.{aliased_slot_name} = [v if isinstance(v, {base_type_name}) '
-                          f'else {base_type_name}(v) for v in self.{aliased_slot_name}]')
+            # Multivalued and not inlined
+            # TODO: JsonObj([...]) will fail here as well
+            sn = f'self.{aliased_slot_name}'
+            rlines.append(f'if not isinstance({sn}, list):')
+            rlines.append(f'\t{sn} = [{sn}]')
+            rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) '
+                          f'else {base_type_name}(v) for v in {sn}]')
         if rlines:
             rlines.append('')
         return '\n\t\t'.join(rlines)
