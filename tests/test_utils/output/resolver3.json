@@ -1,5 +1,7 @@
 {
    "name": "s1",
+   "annotations": {},
+   "extensions": {},
    "definition_uri": "http://example.org/yaml4/s1",
    "local_names": {},
    "description": "this is s1 it is good",

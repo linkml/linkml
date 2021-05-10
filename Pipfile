@@ -23,11 +23,9 @@ watchdog = ">=0.9.0"
 isodate = ">=0.6.0"
 parse = "*"
 pyldmod = "*"
-rdflib-pyld-compat = "*"
+rdflib-pyldmod-compat = "*"
 hbreader = "*"
-# NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
-linkml-model = ">=0.1.0.dev1"
-linkml-runtime = "~=1.0, >=1.0.1"
+linkml-runtime = "~=1.0, >=1.0.2"
 sqlalchemy = "*"
 
 [dev-packages]

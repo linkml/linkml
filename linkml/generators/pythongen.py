@@ -9,7 +9,7 @@ from rdflib import URIRef
 
 import linkml
 from linkml.generators import PYTHON_GEN_VERSION
-from linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
     SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue
 from linkml_runtime.utils.formatutils import camelcase, underscore, be, wrapped_annotation, split_line, sfx
 from linkml.utils.generator import Generator, shared_arguments
@@ -94,7 +94,7 @@ class PythonGenerator(Generator):
     def gen_schema(self) -> str:
         # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
         enumimports = '' if self.genmeta else \
-            'from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n'
+            'from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions\n'
         handlerimport = 'from linkml_runtime.utils.enumerations import EnumDefinitionImpl'
         split_descripton = '\n#              '.join(split_line(be(self.schema.description), split_len=100))
         head = f'''# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
@@ -171,7 +171,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             def add_entry(innerself, path: Union[str, URIRef], name: str) -> None:
                 path = str(self.namespaces.uri_for(path) if ':' in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
-                    innerself.v.setdefault('linkml_model.' + path[len(linkml_files.LINKML_NAMESPACE):], set()).add(name)
+                    model_base = '.' if self.genmeta else 'linkml_model.'
+                    innerself.v.setdefault(model_base + path[len(linkml_files.LINKML_NAMESPACE):], set()).add(name)
                 elif path == linkml.BIOLINK_MODEL_URI:
                     innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(name)
                 elif '://' in path:
