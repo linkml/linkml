@@ -24,4 +24,5 @@ jobs:
     - name: Install dependencies and test
       run: |
         pipenv install --dev
+        pipenv install pyldmod
         pipenv run python -m unittest
