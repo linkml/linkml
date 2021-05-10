@@ -1,0 +1,30 @@
+id: http://examples.org/test
+name: test
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  test: http://examples.org/test/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: test
+default_range: string
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+slots:
+  a_slot:
+    description: A single slot
+
+classes:
+  AClass:
+    description: class 1
+    slots:
+        a_slot
+
+  BClass:
+    mixins:
+        AClass

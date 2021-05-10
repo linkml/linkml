@@ -1,5 +1,5 @@
 # Auto generated from annotations.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-05-07 16:49
+# Generation date: 2021-05-10 17:13
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj import JsonObj
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -56,10 +56,6 @@ class Annotatable(YAMLRoot):
     annotations: Optional[Union[Union[dict, "Annotation"], List[Union[dict, "Annotation"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.annotations is None:
-            self.annotations = []
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations]
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
@@ -82,10 +78,6 @@ class Annotation(Extension):
     annotations: Optional[Union[Union[dict, "Annotation"], List[Union[dict, "Annotation"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.annotations is None:
-            self.annotations = []
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations]
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)

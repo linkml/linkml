@@ -1,5 +1,5 @@
 # Auto generated from mappings.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-05-07 16:49
+# Generation date: 2021-05-10 17:13
 # Schema: mappings
 #
 # id: https://w3id.org/linkml/mappings
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj import JsonObj
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 

@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-05-07 16:49
+# Generation date: 2021-05-10 17:13
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj import JsonObj
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -138,13 +138,11 @@ class Element(YAMLRoot):
     annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, ElementName):
             self.name = ElementName(self.name)
 
-        if self.id_prefixes is None:
-            self.id_prefixes = []
         if not isinstance(self.id_prefixes, list):
             self.id_prefixes = [self.id_prefixes]
         self.id_prefixes = [v if isinstance(v, NCName) else NCName(v) for v in self.id_prefixes]
@@ -152,18 +150,12 @@ class Element(YAMLRoot):
         if self.definition_uri is not None and not isinstance(self.definition_uri, URIorCURIE):
             self.definition_uri = URIorCURIE(self.definition_uri)
 
-        if self.aliases is None:
-            self.aliases = []
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases]
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        if not isinstance(self.local_names, (list, dict, JsonObj)):
-            self.local_names = [self.local_names]
         self._normalize_inlined_as_dict(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", keyed=True)
 
-        if self.mappings is None:
-            self.mappings = []
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings]
         self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
@@ -171,39 +163,27 @@ class Element(YAMLRoot):
         if self.description is not None and not isinstance(self.description, str):
             self.description = str(self.description)
 
-        if not isinstance(self.alt_descriptions, (list, dict, JsonObj)):
-            self.alt_descriptions = [self.alt_descriptions]
         self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
 
-        if self.todos is None:
-            self.todos = []
         if not isinstance(self.todos, list):
             self.todos = [self.todos]
         self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
 
-        if self.notes is None:
-            self.notes = []
         if not isinstance(self.notes, list):
             self.notes = [self.notes]
         self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
 
-        if self.comments is None:
-            self.comments = []
         if not isinstance(self.comments, list):
             self.comments = [self.comments]
         self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
 
-        if self.examples is None:
-            self.examples = []
         if not isinstance(self.examples, list):
             self.examples = [self.examples]
         self.examples = [v if isinstance(v, Example) else Example(**v) for v in self.examples]
 
-        if self.in_subset is None:
-            self.in_subset = []
         if not isinstance(self.in_subset, list):
             self.in_subset = [self.in_subset]
         self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
@@ -214,38 +194,26 @@ class Element(YAMLRoot):
         if self.imported_from is not None and not isinstance(self.imported_from, str):
             self.imported_from = str(self.imported_from)
 
-        if self.see_also is None:
-            self.see_also = []
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also]
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
 
-        if self.exact_mappings is None:
-            self.exact_mappings = []
         if not isinstance(self.exact_mappings, list):
             self.exact_mappings = [self.exact_mappings]
         self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
 
-        if self.close_mappings is None:
-            self.close_mappings = []
         if not isinstance(self.close_mappings, list):
             self.close_mappings = [self.close_mappings]
         self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
 
-        if self.related_mappings is None:
-            self.related_mappings = []
         if not isinstance(self.related_mappings, list):
             self.related_mappings = [self.related_mappings]
         self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
 
-        if self.narrow_mappings is None:
-            self.narrow_mappings = []
         if not isinstance(self.narrow_mappings, list):
             self.narrow_mappings = [self.narrow_mappings]
         self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
 
-        if self.broad_mappings is None:
-            self.broad_mappings = []
         if not isinstance(self.broad_mappings, list):
             self.broad_mappings = [self.broad_mappings]
         self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
@@ -256,16 +224,8 @@ class Element(YAMLRoot):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
-        if self.extensions is None:
-            self.extensions = []
-        if not isinstance(self.extensions, list):
-            self.extensions = [self.extensions]
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
-        if self.annotations is None:
-            self.annotations = []
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations]
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
@@ -308,12 +268,12 @@ class SchemaDefinition(Element):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.default_prefix is None:
             self.default_prefix = sfx(str(self.id))
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, SchemaDefinitionName):
             self.name = SchemaDefinitionName(self.name)
 
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, URI):
             self.id = URI(self.id)
@@ -324,8 +284,6 @@ class SchemaDefinition(Element):
         if self.version is not None and not isinstance(self.version, str):
             self.version = str(self.version)
 
-        if self.imports is None:
-            self.imports = []
         if not isinstance(self.imports, list):
             self.imports = [self.imports]
         self.imports = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.imports]
@@ -333,18 +291,12 @@ class SchemaDefinition(Element):
         if self.license is not None and not isinstance(self.license, str):
             self.license = str(self.license)
 
-        if not isinstance(self.prefixes, (list, dict, JsonObj)):
-            self.prefixes = [self.prefixes]
         self._normalize_inlined_as_dict(slot_name="prefixes", slot_type=Prefix, key_name="prefix_prefix", keyed=True)
 
-        if self.emit_prefixes is None:
-            self.emit_prefixes = []
         if not isinstance(self.emit_prefixes, list):
             self.emit_prefixes = [self.emit_prefixes]
         self.emit_prefixes = [v if isinstance(v, NCName) else NCName(v) for v in self.emit_prefixes]
 
-        if self.default_curi_maps is None:
-            self.default_curi_maps = []
         if not isinstance(self.default_curi_maps, list):
             self.default_curi_maps = [self.default_curi_maps]
         self.default_curi_maps = [v if isinstance(v, str) else str(v) for v in self.default_curi_maps]
@@ -355,24 +307,14 @@ class SchemaDefinition(Element):
         if self.default_range is not None and not isinstance(self.default_range, TypeDefinitionName):
             self.default_range = TypeDefinitionName(self.default_range)
 
-        if not isinstance(self.subsets, (list, dict, JsonObj)):
-            self.subsets = [self.subsets]
         self._normalize_inlined_as_dict(slot_name="subsets", slot_type=SubsetDefinition, key_name="name", keyed=True)
 
-        if not isinstance(self.types, (list, dict, JsonObj)):
-            self.types = [self.types]
         self._normalize_inlined_as_dict(slot_name="types", slot_type=TypeDefinition, key_name="name", keyed=True)
 
-        if not isinstance(self.enums, (list, dict, JsonObj)):
-            self.enums = [self.enums]
         self._normalize_inlined_as_dict(slot_name="enums", slot_type=EnumDefinition, key_name="name", keyed=True)
 
-        if not isinstance(self.slots, (list, dict, JsonObj)):
-            self.slots = [self.slots]
         self._normalize_inlined_as_dict(slot_name="slots", slot_type=SlotDefinition, key_name="name", keyed=True)
 
-        if not isinstance(self.classes, (list, dict, JsonObj)):
-            self.classes = [self.classes]
         self._normalize_inlined_as_dict(slot_name="classes", slot_type=ClassDefinition, key_name="name", keyed=True)
 
         if self.metamodel_version is not None and not isinstance(self.metamodel_version, str):
@@ -412,7 +354,7 @@ class TypeDefinition(Element):
     repr: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, TypeDefinitionName):
             self.name = TypeDefinitionName(self.name)
@@ -447,7 +389,7 @@ class SubsetDefinition(Element):
     name: Union[str, SubsetDefinitionName] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, SubsetDefinitionName):
             self.name = SubsetDefinitionName(self.name)
@@ -490,20 +432,14 @@ class Definition(Element):
         if self.mixin is not None and not isinstance(self.mixin, Bool):
             self.mixin = Bool(self.mixin)
 
-        if self.mixins is None:
-            self.mixins = []
         if not isinstance(self.mixins, list):
             self.mixins = [self.mixins]
         self.mixins = [v if isinstance(v, DefinitionName) else DefinitionName(v) for v in self.mixins]
 
-        if self.apply_to is None:
-            self.apply_to = []
         if not isinstance(self.apply_to, list):
             self.apply_to = [self.apply_to]
         self.apply_to = [v if isinstance(v, DefinitionName) else DefinitionName(v) for v in self.apply_to]
 
-        if self.values_from is None:
-            self.values_from = []
         if not isinstance(self.values_from, list):
             self.values_from = [self.values_from]
         self.values_from = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.values_from]
@@ -546,7 +482,7 @@ class EnumDefinition(Element):
     permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]], List[Union[dict, "PermissibleValue"]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, EnumDefinitionName):
             self.name = EnumDefinitionName(self.name)
@@ -563,8 +499,6 @@ class EnumDefinition(Element):
         if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
-        if not isinstance(self.permissible_values, (list, dict, JsonObj)):
-            self.permissible_values = [self.permissible_values]
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -615,7 +549,7 @@ class SlotDefinition(Definition):
     apply_to: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, SlotDefinitionName):
             self.name = SlotDefinitionName(self.name)
@@ -665,8 +599,6 @@ class SlotDefinition(Definition):
         if self.owner is not None and not isinstance(self.owner, DefinitionName):
             self.owner = DefinitionName(self.owner)
 
-        if self.domain_of is None:
-            self.domain_of = []
         if not isinstance(self.domain_of, list):
             self.domain_of = [self.domain_of]
         self.domain_of = [v if isinstance(v, ClassDefinitionName) else ClassDefinitionName(v) for v in self.domain_of]
@@ -707,14 +639,10 @@ class SlotDefinition(Definition):
         if self.is_a is not None and not isinstance(self.is_a, SlotDefinitionName):
             self.is_a = SlotDefinitionName(self.is_a)
 
-        if self.mixins is None:
-            self.mixins = []
         if not isinstance(self.mixins, list):
             self.mixins = [self.mixins]
         self.mixins = [v if isinstance(v, SlotDefinitionName) else SlotDefinitionName(v) for v in self.mixins]
 
-        if self.apply_to is None:
-            self.apply_to = []
         if not isinstance(self.apply_to, list):
             self.apply_to = [self.apply_to]
         self.apply_to = [v if isinstance(v, SlotDefinitionName) else SlotDefinitionName(v) for v in self.apply_to]
@@ -748,23 +676,17 @@ class ClassDefinition(Definition):
     apply_to: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, ClassDefinitionName):
             self.name = ClassDefinitionName(self.name)
 
-        if self.slots is None:
-            self.slots = []
         if not isinstance(self.slots, list):
             self.slots = [self.slots]
         self.slots = [v if isinstance(v, SlotDefinitionName) else SlotDefinitionName(v) for v in self.slots]
 
-        if not isinstance(self.slot_usage, (list, dict, JsonObj)):
-            self.slot_usage = [self.slot_usage]
         self._normalize_inlined_as_dict(slot_name="slot_usage", slot_type=SlotDefinition, key_name="name", keyed=True)
 
-        if not isinstance(self.attributes, (list, dict, JsonObj)):
-            self.attributes = [self.attributes]
         self._normalize_inlined_as_dict(slot_name="attributes", slot_type=SlotDefinition, key_name="name", keyed=True)
 
         if self.class_uri is not None and not isinstance(self.class_uri, URIorCURIE):
@@ -773,14 +695,10 @@ class ClassDefinition(Definition):
         if self.subclass_of is not None and not isinstance(self.subclass_of, URIorCURIE):
             self.subclass_of = URIorCURIE(self.subclass_of)
 
-        if self.union_of is None:
-            self.union_of = []
         if not isinstance(self.union_of, list):
             self.union_of = [self.union_of]
         self.union_of = [v if isinstance(v, ClassDefinitionName) else ClassDefinitionName(v) for v in self.union_of]
 
-        if self.defining_slots is None:
-            self.defining_slots = []
         if not isinstance(self.defining_slots, list):
             self.defining_slots = [self.defining_slots]
         self.defining_slots = [v if isinstance(v, SlotDefinitionName) else SlotDefinitionName(v) for v in self.defining_slots]
@@ -791,14 +709,10 @@ class ClassDefinition(Definition):
         if self.is_a is not None and not isinstance(self.is_a, ClassDefinitionName):
             self.is_a = ClassDefinitionName(self.is_a)
 
-        if self.mixins is None:
-            self.mixins = []
         if not isinstance(self.mixins, list):
             self.mixins = [self.mixins]
         self.mixins = [v if isinstance(v, ClassDefinitionName) else ClassDefinitionName(v) for v in self.mixins]
 
-        if self.apply_to is None:
-            self.apply_to = []
         if not isinstance(self.apply_to, list):
             self.apply_to = [self.apply_to]
         self.apply_to = [v if isinstance(v, ClassDefinitionName) else ClassDefinitionName(v) for v in self.apply_to]
@@ -822,12 +736,12 @@ class Prefix(YAMLRoot):
     prefix_reference: Union[str, URI] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.prefix_prefix is None:
+        if self._is_empty(self.prefix_prefix):
             raise ValueError("prefix_prefix must be supplied")
         if not isinstance(self.prefix_prefix, PrefixPrefixPrefix):
             self.prefix_prefix = PrefixPrefixPrefix(self.prefix_prefix)
 
-        if self.prefix_reference is None:
+        if self._is_empty(self.prefix_reference):
             raise ValueError("prefix_reference must be supplied")
         if not isinstance(self.prefix_reference, URI):
             self.prefix_reference = URI(self.prefix_reference)
@@ -851,12 +765,12 @@ class LocalName(YAMLRoot):
     local_name_value: str = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.local_name_source is None:
+        if self._is_empty(self.local_name_source):
             raise ValueError("local_name_source must be supplied")
         if not isinstance(self.local_name_source, LocalNameLocalNameSource):
             self.local_name_source = LocalNameLocalNameSource(self.local_name_source)
 
-        if self.local_name_value is None:
+        if self._is_empty(self.local_name_value):
             raise ValueError("local_name_value must be supplied")
         if not isinstance(self.local_name_value, str):
             self.local_name_value = str(self.local_name_value)
@@ -905,12 +819,12 @@ class AltDescription(YAMLRoot):
     description: str = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.source is None:
+        if self._is_empty(self.source):
             raise ValueError("source must be supplied")
         if not isinstance(self.source, AltDescriptionSource):
             self.source = AltDescriptionSource(self.source)
 
-        if self.description is None:
+        if self._is_empty(self.description):
             raise ValueError("description must be supplied")
         if not isinstance(self.description, str):
             self.description = str(self.description)
@@ -951,7 +865,7 @@ class PermissibleValue(YAMLRoot):
     annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.text is None:
+        if self._is_empty(self.text):
             raise ValueError("text must be supplied")
         if not isinstance(self.text, PermissibleValueText):
             self.text = PermissibleValueText(self.text)
@@ -962,39 +876,27 @@ class PermissibleValue(YAMLRoot):
         if self.meaning is not None and not isinstance(self.meaning, URIorCURIE):
             self.meaning = URIorCURIE(self.meaning)
 
-        if not isinstance(self.alt_descriptions, (list, dict, JsonObj)):
-            self.alt_descriptions = [self.alt_descriptions]
         self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
 
-        if self.todos is None:
-            self.todos = []
         if not isinstance(self.todos, list):
             self.todos = [self.todos]
         self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
 
-        if self.notes is None:
-            self.notes = []
         if not isinstance(self.notes, list):
             self.notes = [self.notes]
         self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
 
-        if self.comments is None:
-            self.comments = []
         if not isinstance(self.comments, list):
             self.comments = [self.comments]
         self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
 
-        if self.examples is None:
-            self.examples = []
         if not isinstance(self.examples, list):
             self.examples = [self.examples]
         self.examples = [v if isinstance(v, Example) else Example(**v) for v in self.examples]
 
-        if self.in_subset is None:
-            self.in_subset = []
         if not isinstance(self.in_subset, list):
             self.in_subset = [self.in_subset]
         self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
@@ -1005,8 +907,6 @@ class PermissibleValue(YAMLRoot):
         if self.imported_from is not None and not isinstance(self.imported_from, str):
             self.imported_from = str(self.imported_from)
 
-        if self.see_also is None:
-            self.see_also = []
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also]
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -1020,22 +920,12 @@ class PermissibleValue(YAMLRoot):
         if self.is_a is not None and not isinstance(self.is_a, PermissibleValueText):
             self.is_a = PermissibleValueText(self.is_a)
 
-        if self.mixins is None:
-            self.mixins = []
         if not isinstance(self.mixins, list):
             self.mixins = [self.mixins]
         self.mixins = [v if isinstance(v, PermissibleValueText) else PermissibleValueText(v) for v in self.mixins]
 
-        if self.extensions is None:
-            self.extensions = []
-        if not isinstance(self.extensions, list):
-            self.extensions = [self.extensions]
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
-        if self.annotations is None:
-            self.annotations = []
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations]
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
