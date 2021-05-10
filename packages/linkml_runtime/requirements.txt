@@ -17,7 +17,7 @@ prefixcommons
 pyldmod
 pyyaml~=5.1
 rdflib-jsonld~=0.5
-rdflib-pyld-compat
+rdflib-pyldmod-compat
 rdflib~=5.0
 requests
 shexjsg~=0.7
