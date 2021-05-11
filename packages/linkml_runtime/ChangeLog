@@ -1,6 +1,17 @@
 CHANGES
 =======
 
+v1.0.2
+------
+
+* Fixed import statement mystery
+* Update w/ solo strings issue
+* One last attempt to brute force this whole thing..
+* Automatically generated requirements.txt and requirements-dev.txt
+* Change dependency to rdflib-pyldmod-compat
+* Trying to force pyld out of the picture (!)
+* Force pyldmod install
+* Create a local image of linkml-model
 * Added \_is\_empty function to YAMLRoot
 
 v1.0.1
