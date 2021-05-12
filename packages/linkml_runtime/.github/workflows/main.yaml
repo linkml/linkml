@@ -53,6 +53,8 @@ jobs:
         # Force pyldmod install
         pip uninstall pyld
         pipenv install pyldmod
+        pip uninstall rdflib-pyld-compat
+        pip install rdflib-pyldmod-compat
         pipenv run python -m unittest
 
     - name: Check in test outputs
