@@ -22,7 +22,8 @@ jobs:
     - name: Install pipenv
       uses: dschep/install-pipenv-action@v1
     - name: Install dependencies
-      run: pip install linkml-model
+      run: |
+       pip install linkml-model
        pip install "git+https://github.com/hsolbrig/pyld"
        pipenv install --dev
 
