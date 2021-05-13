@@ -11,7 +11,7 @@ import click
 import requests
 from rdflib import Namespace
 
-from linkml_model.meta import ClassDefinitionName, SchemaDefinition, SlotDefinition, \
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SchemaDefinition, SlotDefinition, \
     ClassDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments

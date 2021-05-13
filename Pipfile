@@ -25,7 +25,7 @@ parse = "*"
 pyldmod = "*"
 rdflib-pyldmod-compat = "*"
 hbreader = "*"
-linkml-runtime = "~=1.0, >=1.0.2"
+linkml-runtime = "~=1.0, >=1.0.5"
 sqlalchemy = "*"
 
 [dev-packages]

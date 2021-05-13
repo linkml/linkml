@@ -7,7 +7,7 @@ from typing import List, Set, Union, TextIO, Optional, cast, Callable, Type
 import click
 from click import Command, Argument, Option
 
-from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, ClassDefinitionName, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, ClassDefinitionName, \
     TypeDefinition, Element, SlotDefinitionName, TypeDefinitionName, PrefixPrefixPrefix, ElementName, \
     SubsetDefinition, SubsetDefinitionName, EnumDefinition, EnumDefinitionName
 from linkml_runtime.utils.formatutils import camelcase, underscore

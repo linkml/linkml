@@ -11,7 +11,7 @@ from urllib.request import Request, urlopen
 import yaml
 from jsonasobj2 import as_dict
 
-from linkml_model.meta import SchemaDefinition, metamodel_version
+from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml.utils.mergeutils import merge_schemas, set_from_schema
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLMark, TypedNode

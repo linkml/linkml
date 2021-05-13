@@ -8,7 +8,7 @@ import click
 from jsonasobj2 import as_json
 
 from linkml import METAMODEL_CONTEXT_URI
-from linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
     ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments

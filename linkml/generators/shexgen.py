@@ -12,9 +12,9 @@ from jsonasobj import as_json as as_json_1
 from rdflib import Graph, OWL, RDF, Namespace, XSD
 
 from linkml import METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE
-from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, SlotDefinitionName, ElementName, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, SlotDefinitionName, ElementName, \
     TypeDefinition, EnumDefinition
-from linkml_model.types import SHEX
+from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.utils.metamodelcore import URIorCURIE

@@ -5,7 +5,7 @@ from collections import OrderedDict
 from typing import Union, TextIO, Optional, Set, List, cast, Dict, Mapping, Tuple, Iterator
 from urllib.parse import urlparse
 
-from linkml_model.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
     ClassDefinitionName, TypeDefinitionName, TypeDefinition, ElementName, EnumDefinition, EnumDefinitionName
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.utils.formatutils import underscore, camelcase, sfx, lcamelcase, mangled_attribute_name

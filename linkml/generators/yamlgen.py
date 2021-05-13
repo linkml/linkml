@@ -6,7 +6,7 @@ from typing import Union, TextIO
 
 import click
 
-from linkml_model.meta import SchemaDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.utils.yamlutils import as_yaml
 

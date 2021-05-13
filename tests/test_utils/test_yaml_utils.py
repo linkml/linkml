@@ -4,7 +4,7 @@ import unittest
 import yaml
 from jsonasobj2 import as_json
 
-from linkml_model.meta import SchemaDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml.utils.rawloader import load_raw_schema
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, as_yaml
 from tests.test_utils.environment import env

@@ -13,7 +13,7 @@ from rdflib.namespace import RDFS, SKOS
 from rdflib.plugin import plugins as rdflib_plugins, Parser as rdflib_Parser
 
 from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE, METAMODEL_YAML_URI, META_BASE_URI
-from linkml_model.meta import ClassDefinitionName, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
     TypeDefinitionName, SlotDefinition, TypeDefinition, Element, EnumDefinitionName
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments

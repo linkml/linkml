@@ -8,7 +8,7 @@ from typing import List, Union, TextIO, Set, Optional
 
 import click
 
-from linkml_model.meta import ClassDefinition, ClassDefinitionName, SchemaDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SchemaDefinition
 from linkml_runtime.utils.formatutils import underscore, be
 from linkml.utils.generator import Generator, shared_arguments
 

@@ -10,10 +10,10 @@ import click
 from jsonasobj2 import JsonObj, as_json
 from rdflib import XSD, SKOS
 
-from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element, EnumDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element, EnumDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore, be
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_model.types import SHEX
+from linkml_runtime.linkml_model.types import SHEX
 
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)

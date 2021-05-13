@@ -4,7 +4,7 @@ import re
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 
 import click
-from linkml_model import linkml_files
+from linkml_runtime.linkml_model import linkml_files
 from rdflib import URIRef
 
 import linkml
@@ -171,7 +171,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             def add_entry(innerself, path: Union[str, URIRef], name: str) -> None:
                 path = str(self.namespaces.uri_for(path) if ':' in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
-                    model_base = '.' if self.genmeta else 'linkml_model.'
+                    model_base = '.' if self.genmeta else 'linkml_runtime.linkml_model.'
                     innerself.v.setdefault(model_base + path[len(linkml_files.LINKML_NAMESPACE):], set()).add(name)
                 elif path == linkml.BIOLINK_MODEL_URI:
                     innerself.v.setdefault(linkml.BIOLINK_MODEL_PYTHON_LOC, set()).add(name)

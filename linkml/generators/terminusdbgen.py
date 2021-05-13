@@ -4,7 +4,7 @@ from typing import Union, TextIO
 
 import click
 
-from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments

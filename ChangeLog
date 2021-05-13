@@ -1,7 +1,9 @@
 CHANGES
 =======
 
-v0.1.0.dev2
+* Fix an issue where lists like class.slots or class.mixins failed if no list
+
+v0.1.0.dev3
 -----------
 
 * Update python generator to reference the linkml\_runtime model

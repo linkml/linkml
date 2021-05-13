@@ -27,8 +27,8 @@ class Issue121TestCase(TestEnvironmentTestCase):
 
         has_includes = False
         for line in python.split("\n"):
-            if line.startswith("from linkml_model.types "):
-                assert line == "from linkml_model.types import String"
+            if line.startswith("from linkml_runtime.linkml_model.types "):
+                assert line == "from linkml_runtime.linkml_model.types import String"
                 has_includes = True
         assert has_includes
         module = compile_python(env.expected_path('issue_121.py'))

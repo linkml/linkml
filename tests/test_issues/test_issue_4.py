@@ -3,7 +3,7 @@ import unittest
 from jsonasobj2 import loads
 
 from linkml.generators.shexgen import ShExGenerator
-from linkml_model.meta import LINKML
+from linkml_runtime.linkml_model.meta import LINKML
 from tests.test_issues.environment import env
 
 
