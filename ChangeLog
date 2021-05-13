@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+* Tests for issue on enum loading
+* Move tox settings to the correct spot
+* Update tests to use latest biolink-model
 * Fix an issue where lists like class.slots or class.mixins failed if no list
 
 v0.1.0.dev3
