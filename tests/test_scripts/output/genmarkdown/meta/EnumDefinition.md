@@ -36,7 +36,7 @@ URI: [linkml:EnumDefinition](https://w3id.org/linkml/EnumDefinition)
      * range: [PermissibleValue](PermissibleValue.md)
  * [pv_formula](pv_formula.md)  <sub>OPT</sub>
      * Description: Defines the specific formula to be used to generate the permissible values.
-     * range: 
+     * range: [pv_formula_options](pv_formula_options.md)
 
 ### Inherited from element:
 
