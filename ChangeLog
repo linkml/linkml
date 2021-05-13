@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+0.1.1.dev2
+----------
+
+* Remove linkml-model dependencies
 * Tests for issue on enum loading
 * Move tox settings to the correct spot
 * Update tests to use latest biolink-model
