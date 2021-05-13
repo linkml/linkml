@@ -1,0 +1,53 @@
+id: https://w3id.org/linkml/extensions
+name: extensions
+description: Extension mixin
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 2.0.0
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+default_prefix: linkml
+default_range: string
+
+emit_prefixes:
+  - linkml
+
+imports:
+  - linkml:types
+
+slots:
+  extensions:
+    domain: extensible
+    range: extension
+    description: a tag/text tuple attached to an arbitrary element
+    multivalued: true
+    inlined: true
+
+  extension_tag:
+    description: a tag associated with an extension
+    domain: extension
+    range: uriorcurie
+    alias: tag
+    required: true
+
+  extension_value:
+    description: the actual annotation
+    domain: extension
+    alias: value
+    required: true
+
+
+classes:
+  extension:
+    description: a tag/value pair used to add non-model information to an entry
+    slots:
+      - extension_tag
+      - extension_value
+      - extensions
+
+  extensible:
+    description: mixin for classes that support extension
+    mixin: true
+    slots:
+      - extensions

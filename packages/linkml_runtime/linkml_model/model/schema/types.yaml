@@ -1,0 +1,112 @@
+title: Core LinkML metamodel types
+name: types
+id: https://w3id.org/linkml/types
+
+description: Shared type definitions for the core LinkML mode and metamodel
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 2.0.0
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+  shex: http://www.w3.org/ns/shex#
+
+default_prefix: linkml
+default_range: string
+
+
+#==================================
+# Common type definitions
+#
+# Definition consists of:
+#    <name>:   type name
+#      uri:    RDF datatype
+#      base:   python base type
+#      repr:   representational form in yaml/python if different than representation in base
+#      (additional metadata)
+#==================================
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+  integer:
+    uri: xsd:integer
+    base: int
+    description: An integer
+
+  boolean:
+    uri: xsd:boolean
+    base: Bool
+    repr: bool
+    description: A binary (true or false) value
+
+  float:
+    uri: xsd:float
+    base: float
+    description: A real number that conforms to the xsd:float specification
+
+  double:
+    uri: xsd:double
+    base: float
+    description: A real number that conforms to the xsd:double specification
+
+  decimal:
+    uri: xsd:decimal
+    base: Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal specification
+
+  time:
+    uri: xsd:dateTime
+    base: XSDTime
+    repr: str
+    description: A time object represents a (local) time of day, independent of any particular day
+    notes:
+      - URI is dateTime because OWL reasoners don't work with straight date or time
+
+  date:
+    uri: xsd:date
+    base: XSDDate
+    repr: str
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+      - URI is dateTime because OWL reasoners don't work with straight date or time
+
+  datetime:
+    uri: xsd:dateTime
+    repr: str
+    base: XSDDateTime
+    description: The combination of a date and time
+
+  uriorcurie:
+    uri: xsd:anyURI
+    base: URIorCURIE
+    repr: str
+    description: a URI or a CURIE
+
+  uri:
+    uri: xsd:anyURI
+    base: URI
+    repr: str
+    description: a complete URI
+
+  ncname:
+    uri: xsd:string
+    base: NCName
+    repr: str
+    description: Prefix part of CURIE
+
+  objectidentifier:
+    uri: shex:iri
+    base: ElementIdentifier
+    repr: str
+    description: A URI or CURIE that represents an object in the model.
+    comments:
+      - Used for inheritence and type checking
+
+  nodeidentifier:
+    uri: shex:nonLiteral
+    base: NodeIdentifier
+    repr: str
+    description: A URI, CURIE or BNODE that represents a node in a model.

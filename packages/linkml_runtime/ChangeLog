@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+* Another (last) brute force attempt to get rid of pyld
+* Add test for issue #3
+
 v1.0.3
 ------
 

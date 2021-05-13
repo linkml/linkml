@@ -1,0 +1,100 @@
+id: https://w3id.org/linkml/mappings
+title: LinkML Schema Mappings
+name: mappings
+description: LinkML model for mappings
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 2.0.0
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  skos: http://www.w3.org/2004/02/skos/core#
+  OIO: http://www.geneontology.org/formats/oboInOwl#
+  IAO: http://purl.obolibrary.org/obo/IAO_
+
+default_curi_maps:
+    - semweb_context
+
+default_prefix: linkml
+default_range: string
+
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - skos
+  - OIO
+  - IAO
+
+imports:
+  - linkml:types
+
+slots:
+  mappings:
+    range: uriorcurie
+    multivalued: true
+    description: >-
+      A list of terms from different schemas or terminology systems that have comparable meaning.
+      These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically
+      related but not equivalent from a strict ontological perspective.
+    slot_uri: skos:mappingRelation
+
+  exact mappings:
+    is_a: mappings
+    range: uriorcurie
+    multivalued: true
+    inherited: false
+    description: >-
+      A list of terms from different schemas or terminology systems that have identical meaning.
+    slot_uri: skos:exactMatch
+
+  close mappings:
+    is_a: mappings
+    range: uriorcurie
+    multivalued: true
+    inherited: false
+    description: >-
+      A list of terms from different schemas or terminology systems that have close meaning.
+    slot_uri: skos:closeMatch
+
+  related mappings:
+    is_a: mappings
+    range: uriorcurie
+    multivalued: true
+    inherited: false
+    description: >-
+      A list of terms from different schemas or terminology systems that have related meaning.
+    slot_uri: skos:relatedMatch
+
+  narrow mappings:
+    is_a: mappings
+    range: uriorcurie
+    multivalued: true
+    inherited: false
+    description: >-
+      A list of terms from different schemas or terminology systems that have narrower meaning.
+    slot_uri: skos:narrowMatch
+
+  broad mappings:
+    is_a: mappings
+    range: uriorcurie
+    multivalued: true
+    inherited: false
+    description: >-
+      A list of terms from different schemas or terminology systems that have broader meaning.
+    slot_uri: skos:broadMatch
+
+  deprecated element has exact replacement:
+    range: uriorcurie
+    description: >-
+      When an element is deprecated, it can be automatically replaced by this uri or curie
+    mappings:
+      - IAO:0100001
+
+  deprecated element has possible replacement:
+    range: uriorcurie
+    description: >-
+      When an element is deprecated, it can be potentially replaced by this uri or curie
+    mappings:
+      - OIO:consider

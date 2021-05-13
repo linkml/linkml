@@ -1,0 +1,43 @@
+id: https://w3id.org/linkml/annotations
+name: annotations
+description: Annotations mixin
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 2.0.0
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+default_prefix: linkml
+default_range: string
+
+emit_prefixes:
+  - linkml
+
+imports:
+  - linkml:types
+  - linkml:extensions
+
+slots:
+  annotations:
+    is_a: extensions
+    domain: annotatable
+    range: annotation
+    description: a collection of tag/text tuples with the semantics of OWL Annotation
+    multivalued: true
+
+
+classes:
+  annotatable:
+    description: mixin for classes that support annotations
+    mixin: true
+    slots:
+      - annotations
+
+  annotation:
+    description: a tag/value pair with the semantics of OWL Annotation
+    is_a: extension
+    mixins:
+      - annotatable
+    slots:
+      - annotations
+
