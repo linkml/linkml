@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7.1", 3.8, 3.9]
+        python-version: [3.7.1, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -24,18 +24,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pipenv-to-requirements
         pipenv_to_requirements
-        # NOTE: pipenv_to_requirements doesn't handle github requirements, so requirements.txt is wrong when it comes
-        #       to pyld.  We have to use pipenv for the time being
-        pip install linkml-model
-        pip install git+https://github.com/hsolbrig/pyld
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
-        # pipenv install --dev
+        pipenv install --dev
 
     - name: Test with unittest
       run: |
-        # pipenv run python -m unittest discover -p 'test_*.py'
-        python -m unittest discover -p 'test_*.py'
+        pipenv run python -m unittest discover -p 'test_*.py'
 
     - name: Check in requirements.txt and requirements-dev.txt
       if: ${{ matrix.python-version == '3.8' }}
