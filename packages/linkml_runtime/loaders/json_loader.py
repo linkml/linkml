@@ -14,7 +14,7 @@ class JSONLoader(Loader):
         def loader(data: Union[str, dict], _: FileInfo) -> Optional[Dict]:
             data_as_dict = json.loads(data) if isinstance(data, str) else data
             typ = data_as_dict.pop('@type', None)
-            # TODO: Remove this when https://github.com/linkml/issues/364 gets fixed
+            # TODO: Remove this when https://github.com/linkml/linkml/issues/116 gets fixed
             if not typ:
                 typ = data_as_dict.pop('@type', None)
             if typ and typ != target_class.__name__:
