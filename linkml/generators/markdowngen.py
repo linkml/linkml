@@ -412,7 +412,7 @@ class MarkdownGenerator(Generator):
         if slot.multivalued:
             card_str = '1..*' if slot.required else '0..*'
         else:
-            card_str = 'REQ' if slot.required else 'OPT'
+            card_str = '1..1' if slot.required else '0..1'
         return f"  <sub>{card_str}</sub>"
 
     @staticmethod
