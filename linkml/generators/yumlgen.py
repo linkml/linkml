@@ -24,7 +24,7 @@ yuml_inline = '++- '
 yuml_inline_rev = '-++'
 yuml_ref = '- '
 
-yuml_base = 'http://yuml.me/diagram/nofunky'
+yuml_base = 'https://yuml.me/diagram/nofunky'
 yuml_scale = ''                # ';scale:180' ';scale:80' for small
 yuml_dir = ';dir:TB'           # '
 yuml_class = '/class/'
