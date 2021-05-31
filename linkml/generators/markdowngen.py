@@ -113,7 +113,8 @@ class MarkdownGenerator(Generator):
                         img_url = yg.serialize(classes=[cls.name])\
                             .replace('?', '%3F').replace(' ', '%20').replace('|', '&#124;')
 
-                    print(f'![img]({img_url})')
+                    print(f'[![img]({img_url})]({img_url})')
+
                 self.mappings(cls)
 
                 if cls.id_prefixes:
