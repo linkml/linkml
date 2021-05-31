@@ -207,7 +207,7 @@ class MarkdownGenerator(Generator):
                 self.mappings(slot)
 
                 self.header(2, 'Domain and Range')
-                print(f'{self.class_link(slot.domain)} ->{self.predicate_cardinality(slot)} '
+                print(f'{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} '
                       f'{self.class_type_link(slot.range)}')
 
                 self.header(2, 'Parents')
