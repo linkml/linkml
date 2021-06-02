@@ -12,7 +12,7 @@
 
 click
 hbreader
-jsonasobj2~=1.0
+jsonasobj2~=1.0, >=1.0.4
 prefixcommons
 pyldmod
 pyyaml~=5.1
