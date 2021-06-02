@@ -9,6 +9,7 @@ import click
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.utils.yamlutils import as_yaml
+from linkml.utils.schemaloader import load_raw_schema
 
 
 class YAMLGenerator(Generator):
@@ -28,11 +29,19 @@ class YAMLGenerator(Generator):
 
 @shared_arguments(YAMLGenerator)
 @click.command()
+@click.option("--raw/--no-raw", default=False,
+              help="Use the raw loader and do not inject additional information")
 @click.option("--validateonly/--generate", "-v/-g", default=False,
               help="Just validate / generate output (default: generate)")
-def cli(yamlfile, **args):
+def cli(yamlfile, raw: bool, **args):
     """ Validate input and produce fully resolved yaml equivalent """
-    print(YAMLGenerator(yamlfile, **args).serialize(**args))
+    if raw:
+        with open(yamlfile, 'r') as stream:
+            s = load_raw_schema(stream)
+            print(as_yaml(s))
+    else:
+        gen = YAMLGenerator(yamlfile, **args)
+        print(gen.serialize(**args))
 
 
 if __name__ == '__main__':
