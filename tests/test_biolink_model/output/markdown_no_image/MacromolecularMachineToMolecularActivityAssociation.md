@@ -42,7 +42,7 @@ URI: [biolink:MacromolecularMachineToMolecularActivityAssociation](https://w3id.
  * [functional association➞subject](functional_association_subject.md)  <sub>REQ</sub>
      * Description: gene, product or macromolecular complex mixin that has the function associated with the GO term
      * range: [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
-     * Example:    
+     * Example: ZFIN:ZDB-GENE-050417-357 twist1b
  * [has attribute](has_attribute.md)  <sub>0..*</sub>
      * Description: connects any entity to an attribute
      * range: [Attribute](Attribute.md)

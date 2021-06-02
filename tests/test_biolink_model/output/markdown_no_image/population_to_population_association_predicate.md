@@ -9,7 +9,7 @@ URI: [biolink:population_to_population_association_predicate](https://w3id.org/b
 
 ## Domain and Range
 
-[PopulationToPopulationAssociation](PopulationToPopulationAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[PopulationToPopulationAssociation](PopulationToPopulationAssociation.md) &#8594;  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

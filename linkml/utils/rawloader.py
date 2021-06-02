@@ -9,11 +9,12 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 import yaml
+from jsonasobj2 import as_dict
 
-from linkml_model.meta import SchemaDefinition, metamodel_version
+from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml.utils.mergeutils import merge_schemas, set_from_schema
-from linkml.utils.namespaces import Namespaces
-from linkml.utils.yamlutils import DupCheckYamlLoader, YAMLMark, TypedNode
+from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLMark, TypedNode
 
 yaml.error.Mark = YAMLMark
 
@@ -147,7 +148,7 @@ def load_raw_schema(data: Union[str, dict, TextIO],
                         usage['domain'] = cname
 
         schema: Optional[SchemaDefinition] = None
-        for sname, sdef in {k: SchemaDefinition(name=k, **v) for k, v in schemadefs.items()}.items():
+        for sname, sdef in {k: SchemaDefinition(name=k, **as_dict(v)) for k, v in schemadefs.items()}.items():
             if schema is None:
                 schema = sdef
                 if source_file:

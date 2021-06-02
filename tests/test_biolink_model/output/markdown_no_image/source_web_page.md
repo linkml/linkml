@@ -9,7 +9,7 @@ URI: [biolink:source_web_page](https://w3id.org/biolink/vocab/source_web_page)
 
 ## Domain and Range
 
-[DatasetSummary](DatasetSummary.md) ->  <sub>OPT</sub> [String](types/String.md)
+[DatasetSummary](DatasetSummary.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

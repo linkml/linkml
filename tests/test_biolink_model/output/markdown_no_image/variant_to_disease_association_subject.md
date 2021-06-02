@@ -9,7 +9,7 @@ URI: [biolink:variant_to_disease_association_subject](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) ->  <sub>REQ</sub> [NamedThing](NamedThing.md)
+[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -27,5 +27,5 @@ URI: [biolink:variant_to_disease_association_subject](https://w3id.org/biolink/v
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'ClinVar:52241', 'description': 'NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)'} |
+| **Examples:** | | Example(value='ClinVar:52241', description='NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)') |
 

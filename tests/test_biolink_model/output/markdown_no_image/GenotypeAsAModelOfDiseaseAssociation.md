@@ -44,7 +44,7 @@ URI: [biolink:GenotypeAsAModelOfDiseaseAssociation](https://w3id.org/biolink/voc
  * [genotype to disease association➞object](genotype_to_disease_association_object.md)  <sub>REQ</sub>
      * Description: a disease that is associated with that genotype
      * range: [NamedThing](NamedThing.md)
-     * Example:    
+     * Example: MONDO:0016419 hereditary breast cancer
  * [genotype to disease association➞predicate](genotype_to_disease_association_predicate.md)  <sub>REQ</sub>
      * Description: E.g. is pathogenic for
      * range: [PredicateType](types/PredicateType.md)

@@ -9,7 +9,7 @@ URI: [linkml:permissible_value_is_a](https://w3id.org/linkml/permissible_value_i
 
 ## Domain and Range
 
-permissible_value ->  <sub>OPT</sub> permissible_value
+permissible_value &#8594;  <sub>OPT</sub> permissible_value
 
 ## Parents
 

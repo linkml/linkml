@@ -9,7 +9,7 @@ URI: [linkml:name](https://w3id.org/linkml/name)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>REQ</sub> [String](String.md)
+[Element](Element.md) &#8594;  <sub>REQ</sub> [String](String.md)
 
 ## Parents
 

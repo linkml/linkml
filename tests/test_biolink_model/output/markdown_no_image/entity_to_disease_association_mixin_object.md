@@ -9,7 +9,7 @@ URI: [biolink:entity_to_disease_association_mixin_object](https://w3id.org/bioli
 
 ## Domain and Range
 
-[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) ->  <sub>REQ</sub> [Disease](Disease.md)
+[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) &#8594;  <sub>REQ</sub> [Disease](Disease.md)
 
 ## Parents
 
@@ -26,5 +26,5 @@ URI: [biolink:entity_to_disease_association_mixin_object](https://w3id.org/bioli
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'MONDO:0020066', 'description': 'Ehlers-Danlos syndrome'} |
+| **Examples:** | | Example(value='MONDO:0020066', description='Ehlers-Danlos syndrome') |
 

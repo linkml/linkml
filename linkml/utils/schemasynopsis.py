@@ -4,12 +4,12 @@ import logging
 
 from rdflib import URIRef
 
-from linkml_model.meta import SchemaDefinition, Element, Definition, ClassDefinition, SlotDefinitionName, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, Element, Definition, ClassDefinition, SlotDefinitionName, \
     ClassDefinitionName, TypeDefinitionName, DefinitionName, SlotDefinition, ElementName, TypeDefinition, \
     SubsetDefinitionName, EnumDefinitionName, EnumDefinition
-from linkml.utils.metamodelcore import empty_dict
+from linkml_runtime.utils.metamodelcore import empty_dict
 from linkml.utils.typereferences import RefType, ClassType, TypeType, SlotType, References, SubsetType, EnumType
-from linkml.utils.yamlutils import TypedNode
+from linkml_runtime.utils.yamlutils import TypedNode
 
 
 def empty_references() -> field:

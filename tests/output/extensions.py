@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-26 14:19
+# Generation date: 2021-06-02 16:43
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -9,19 +9,20 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
-from linkml.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
-from linkml.utils.metamodelcore import URIorCURIE
-from linkml_model.types import String, Uriorcurie
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from .types import String, Uriorcurie
+from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
 
@@ -56,21 +57,17 @@ class Extension(YAMLRoot):
     extensions: Optional[Union[Union[dict, "Extension"], List[Union[dict, "Extension"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.tag is None:
+        if self._is_empty(self.tag):
             raise ValueError("tag must be supplied")
         if not isinstance(self.tag, URIorCURIE):
             self.tag = URIorCURIE(self.tag)
 
-        if self.value is None:
+        if self._is_empty(self.value):
             raise ValueError("value must be supplied")
         if not isinstance(self.value, str):
             self.value = str(self.value)
 
-        if self.extensions is None:
-            self.extensions = []
-        if not isinstance(self.extensions, list):
-            self.extensions = [self.extensions]
-        self._normalize_inlined_slot(slot_name="extensions", slot_type=Extension, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -90,11 +87,7 @@ class Extensible(YAMLRoot):
     extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.extensions is None:
-            self.extensions = []
-        if not isinstance(self.extensions, list):
-            self.extensions = [self.extensions]
-        self._normalize_inlined_slot(slot_name="extensions", slot_type=Extension, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 

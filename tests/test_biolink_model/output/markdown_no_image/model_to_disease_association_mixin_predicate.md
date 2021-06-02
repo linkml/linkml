@@ -9,7 +9,7 @@ URI: [biolink:model_to_disease_association_mixin_predicate](https://w3id.org/bio
 
 ## Domain and Range
 
-[ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md) &#8594;  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

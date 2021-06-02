@@ -9,7 +9,7 @@ URI: [linkml:is_class_field](https://w3id.org/linkml/is_class_field)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [Boolean](types/Boolean.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [Boolean](types/Boolean.md)
 
 ## Parents
 

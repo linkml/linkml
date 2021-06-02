@@ -9,7 +9,7 @@ URI: [biolink:type](https://w3id.org/biolink/vocab/type)
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [String](types/String.md)
+None &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 
@@ -35,6 +35,7 @@ None ->  <sub>OPT</sub> [String](types/String.md)
  * [BiologicalEntity](BiologicalEntity.md)
  * [BiologicalProcess](BiologicalProcess.md)
  * [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
+ * [BioticExposure](BioticExposure.md)
  * [Carbohydrate](Carbohydrate.md)
  * [Case](Case.md)
  * [Cell](Cell.md)
@@ -101,6 +102,7 @@ None ->  <sub>OPT</sub> [String](types/String.md)
  * [NamedThing](NamedThing.md)
  * [NoncodingRNAProduct](NoncodingRNAProduct.md)
  * [Nutrient](Nutrient.md)
+ * [OrganismTaxon](OrganismTaxon.md)
  * [OrganismalEntity](OrganismalEntity.md)
  * [PathologicalAnatomicalExposure](PathologicalAnatomicalExposure.md)
  * [PathologicalAnatomicalOutcome](PathologicalAnatomicalOutcome.md)

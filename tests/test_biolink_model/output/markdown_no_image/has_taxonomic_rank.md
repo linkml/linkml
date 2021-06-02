@@ -9,7 +9,7 @@ URI: [biolink:has_taxonomic_rank](https://w3id.org/biolink/vocab/has_taxonomic_r
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [TaxonomicRank](TaxonomicRank.md)
+None &#8594;  <sub>OPT</sub> [TaxonomicRank](TaxonomicRank.md)
 
 ## Parents
 

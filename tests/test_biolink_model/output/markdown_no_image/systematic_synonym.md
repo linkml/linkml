@@ -9,7 +9,7 @@ URI: [biolink:systematic_synonym](https://w3id.org/biolink/vocab/systematic_syno
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [LabelType](types/LabelType.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [LabelType](types/LabelType.md)
 
 ## Parents
 

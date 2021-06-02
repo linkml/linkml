@@ -1,0 +1,12 @@
+name: linkml_classes_bug
+id: http://example.org/
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+- linkml:types
+classes:
+- name: Entity
+  attributes:
+  - name: id
+  - name: description

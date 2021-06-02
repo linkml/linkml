@@ -9,7 +9,7 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> uriorcurie
+[Element](Element.md) &#8594;  <sub>0..*</sub> uriorcurie
 
 ## Parents
 

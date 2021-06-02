@@ -9,7 +9,7 @@ URI: [linkml:code_set_tag](https://w3id.org/linkml/code_set_tag)
 
 ## Domain and Range
 
-[EnumDefinition](EnumDefinition.md) ->  <sub>OPT</sub> [String](String.md)
+[EnumDefinition](EnumDefinition.md) &#8594;  <sub>OPT</sub> [String](String.md)
 
 ## Parents
 

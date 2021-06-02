@@ -9,7 +9,7 @@ URI: [biolink:variant_to_population_association_has_count](https://w3id.org/biol
 
 ## Domain and Range
 
-[VariantToPopulationAssociation](VariantToPopulationAssociation.md) ->  <sub>OPT</sub> [Integer](types/Integer.md)
+[VariantToPopulationAssociation](VariantToPopulationAssociation.md) &#8594;  <sub>OPT</sub> [Integer](types/Integer.md)
 
 ## Parents
 
@@ -26,5 +26,5 @@ URI: [biolink:variant_to_population_association_has_count](https://w3id.org/biol
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': '4', 'description': '4 individuals in gnomad set'} |
+| **Examples:** | | Example(value='4', description='4 individuals in gnomad set') |
 

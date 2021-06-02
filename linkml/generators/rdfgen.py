@@ -14,7 +14,7 @@ from rdflib.plugin import plugins as rdflib_plugins, Parser as rdflib_Parser
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.jsonldgen import JSONLDGenerator
-from linkml_model.meta import SchemaDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml.utils.generator import Generator, shared_arguments
 
 

@@ -70,7 +70,7 @@ G = Triple*
 Triple = < Subject Predicate Object >
 Subject = IRI | BlankNode
 Predicate = IRI
-Subject = IRI | BlankNode | Literal
+Object = IRI | BlankNode | Literal
 ```
 
 ### Notes (informative)

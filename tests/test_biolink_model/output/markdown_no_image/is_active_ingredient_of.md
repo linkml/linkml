@@ -9,7 +9,7 @@ URI: [biolink:is_active_ingredient_of](https://w3id.org/biolink/vocab/is_active_
 
 ## Domain and Range
 
-[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>0..*</sub> [Drug](Drug.md)
+[ChemicalSubstance](ChemicalSubstance.md) &#8594;  <sub>0..*</sub> [Drug](Drug.md)
 
 ## Parents
 

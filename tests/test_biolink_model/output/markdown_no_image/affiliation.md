@@ -9,7 +9,7 @@ URI: [biolink:affiliation](https://w3id.org/biolink/vocab/affiliation)
 
 ## Domain and Range
 
-[Agent](Agent.md) ->  <sub>0..*</sub> [Uriorcurie](types/Uriorcurie.md)
+[Agent](Agent.md) &#8594;  <sub>0..*</sub> [Uriorcurie](types/Uriorcurie.md)
 
 ## Parents
 

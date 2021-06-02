@@ -1,13 +1,13 @@
 from types import ModuleType
 
-from jsonasobj import as_json, loads
+from jsonasobj2 import as_json, loads
 from rdflib import Graph
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.yumlgen import YumlGenerator
-from linkml.utils.yamlutils import as_json_object as yaml_to_json
+from linkml_runtime.utils.yamlutils import as_json_object as yaml_to_json
 
 yaml = """
 id: http://example.org/sample/example2

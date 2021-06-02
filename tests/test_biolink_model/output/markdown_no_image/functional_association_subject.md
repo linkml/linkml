@@ -9,7 +9,7 @@ URI: [biolink:functional_association_subject](https://w3id.org/biolink/vocab/fun
 
 ## Domain and Range
 
-[FunctionalAssociation](FunctionalAssociation.md) ->  <sub>REQ</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
+[FunctionalAssociation](FunctionalAssociation.md) &#8594;  <sub>REQ</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
 
 ## Parents
 
@@ -30,5 +30,5 @@ URI: [biolink:functional_association_subject](https://w3id.org/biolink/vocab/fun
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'ZFIN:ZDB-GENE-050417-357', 'description': 'twist1b'} |
+| **Examples:** | | Example(value='ZFIN:ZDB-GENE-050417-357', description='twist1b') |
 

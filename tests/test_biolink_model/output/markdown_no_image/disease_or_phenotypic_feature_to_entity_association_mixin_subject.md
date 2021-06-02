@@ -9,7 +9,7 @@ URI: [biolink:disease_or_phenotypic_feature_to_entity_association_mixin_subject]
 
 ## Domain and Range
 
-[DiseaseOrPhenotypicFeatureToEntityAssociationMixin](DiseaseOrPhenotypicFeatureToEntityAssociationMixin.md) ->  <sub>REQ</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[DiseaseOrPhenotypicFeatureToEntityAssociationMixin](DiseaseOrPhenotypicFeatureToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 
@@ -26,6 +26,6 @@ URI: [biolink:disease_or_phenotypic_feature_to_entity_association_mixin_subject]
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'MONDO:0017314', 'description': 'Ehlers-Danlos syndrome, vascular type'} |
-|  | | {'value': 'MP:0013229', 'description': 'abnormal brain ventricle size'} |
+| **Examples:** | | Example(value='MONDO:0017314', description='Ehlers-Danlos syndrome, vascular type') |
+|  | | Example(value='MP:0013229', description='abnormal brain ventricle size') |
 

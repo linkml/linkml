@@ -3,7 +3,7 @@
 import re
 from json import dumps
 
-from jsonasobj import loads, as_json
+from jsonasobj2 import loads, as_json
 
 
 def ldcontext_metadata_filter(s: str) -> str:

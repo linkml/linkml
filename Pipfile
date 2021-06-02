@@ -3,24 +3,15 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-pipenv-to-requirements = "*"
-tox = "*"
-tox-pipenv = "*"
-unittest2 = "*"
-nbconvert = "*"
-nbformat = "*"
-ipykernel = "*"
-
 [packages]
 click = "~=7.0"
 python-dateutil = "*"
 graphviz = ">=0.10.1"
-jsonasobj = ">=1.3.1"
+jsonasobj2 = "~=1.0, >=1.0.3"
 jsonschema = ">=3.0.1"
 prefixcommons = ">=0.1.7"
 rdflib-jsonld = ">=0.5.0"
-rdflib = ">=5.0.0"
+rdflib = "~=5.0"
 requests = ">=2.22"
 pyjsg = ">=0.11.6"
 pyyaml = "~=5.1"
@@ -31,10 +22,16 @@ prologterms = ">=0.0.6"
 watchdog = ">=0.9.0"
 isodate = ">=0.6.0"
 parse = "*"
-pyld = {git = "https://github.com/hsolbrig/pyld"}
-rdflib-pyld-compat = "*"
+pyldmod = "*"
+rdflib-pyldmod-compat = "*"
 hbreader = "*"
-# NOTE: Always lock down the linkml model -- figure how to lock this w/o locking everything else
-#linkml_model = {editable = true, path = "/Users/solbrig/git/linkml/linkml-model"}
-linkml_model = ">=0.0.10"
+linkml-runtime = "~=1.0, >=1.0.5"
 sqlalchemy = "*"
+
+[dev-packages]
+nbconvert = "*"
+nbformat = "*"
+ipykernel = "*"
+
+[pipenv]
+allow_prereleases = true

@@ -9,7 +9,7 @@ URI: [linkml:definition_uri](https://w3id.org/linkml/definition_uri)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>OPT</sub> uriorcurie
+[Element](Element.md) &#8594;  <sub>OPT</sub> uriorcurie
 
 ## Parents
 

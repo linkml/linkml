@@ -1,23 +1,17 @@
 """Infer a schema from a TSV
 
 """
-import os
-import re
-import requests
-from dataclasses import dataclass
-from typing import Union
-from typing.io import TextIO
-
-import logging
-import click
-import yaml
 import csv
+import logging
+import re
 import time
+from dataclasses import dataclass
 
-from linkml_model.meta import SchemaDefinition
-from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.yamlutils import as_yaml
+import click
+import requests
+import yaml
 from dateutil.parser import parse
+
 
 def infer_model(tsvfile: str, sep="\t", class_name='example',
                 schema_name: str = 'example',

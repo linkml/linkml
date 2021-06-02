@@ -9,7 +9,7 @@ URI: [http://example.org/sample/example1/has_source](http://example.org/sample/e
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [String](types/String.md)
+None &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

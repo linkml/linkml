@@ -47,8 +47,8 @@ URI: [biolink:Snv](https://w3id.org/biolink/vocab/Snv)
      * range: [Gene](Gene.md)
  * [sequence variant➞id](sequence_variant_id.md)  <sub>REQ</sub>
      * range: [String](types/String.md)
-     * Example:    
-     * Example:    
+     * Example: ZFIN:ZDB-ALT-980203-1091 ti282a allele from ZFIN
+     * Example: ClinVarVariant:17681 NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)
  * [source](source.md)  <sub>OPT</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * range: [LabelType](types/LabelType.md)

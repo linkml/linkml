@@ -9,7 +9,7 @@ URI: [linkml:types](https://w3id.org/linkml/types)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub> [TypeDefinition](TypeDefinition.md)
+[SchemaDefinition](SchemaDefinition.md) &#8594;  <sub>0..*</sub> [TypeDefinition](TypeDefinition.md)
 
 ## Parents
 

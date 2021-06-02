@@ -9,7 +9,7 @@ URI: [linkml:generation_date](https://w3id.org/linkml/generation_date)
 
 ## Domain and Range
 
-schema_definition ->  <sub>OPT</sub> datetime
+schema_definition &#8594;  <sub>OPT</sub> datetime
 
 ## Parents
 

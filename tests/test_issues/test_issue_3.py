@@ -3,7 +3,7 @@ import unittest
 from rdflib import Graph, XSD
 
 from linkml.generators.rdfgen import RDFGenerator
-from linkml_model.meta import LINKML
+from linkml_runtime.linkml_model.meta import LINKML
 from tests.test_issues.environment import env
 
 

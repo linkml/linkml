@@ -33,14 +33,14 @@ URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/Varian
  * [variant to disease association➞object](variant_to_disease_association_object.md)  <sub>REQ</sub>
      * Description: a disease that is associated with that variant
      * range: [NamedThing](NamedThing.md)
-     * Example:    
+     * Example: MONDO:0016419 hereditary breast cancer
  * [variant to disease association➞predicate](variant_to_disease_association_predicate.md)  <sub>REQ</sub>
      * Description: E.g. is pathogenic for
      * range: [PredicateType](types/PredicateType.md)
  * [variant to disease association➞subject](variant_to_disease_association_subject.md)  <sub>REQ</sub>
      * Description: a sequence variant in which the allele state is associated in some way with the disease state
      * range: [NamedThing](NamedThing.md)
-     * Example:    
+     * Example: ClinVar:52241 NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)
 
 ### Inherited from association:
 

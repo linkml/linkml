@@ -5,9 +5,10 @@ import click
 import logging
 
 from sqlalchemy import *
-from linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
-from linkml_model.types import NCName, URIorCURIE
-from linkml.utils.formatutils import underscore, camelcase
+from sqlalchemy import *
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
+from linkml_runtime.linkml_model.types import NCName, URIorCURIE
+from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml.utils.generator import Generator, shared_arguments
 
 TABLENAME = str
@@ -35,7 +36,7 @@ class SQLDDLGenerator(Generator):
     """
     A `Generator` for creating SQL DDL
     TODO: allow configuration between camelcase and snake case for tanle names
-    
+
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"

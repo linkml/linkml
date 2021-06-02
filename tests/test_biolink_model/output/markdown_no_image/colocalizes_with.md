@@ -9,7 +9,7 @@ URI: [biolink:colocalizes_with](https://w3id.org/biolink/vocab/colocalizes_with)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -27,5 +27,4 @@ URI: [biolink:colocalizes_with](https://w3id.org/biolink/vocab/colocalizes_with)
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
 | **Exact Mappings:** | | RO:00002325 |
-|  | | GO:colocalizes_with |
 

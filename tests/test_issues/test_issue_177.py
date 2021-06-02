@@ -4,7 +4,7 @@ import jsonasobj
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.schemaloader import SchemaLoader
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 from tests.test_issues.environment import env
 from tests.utils.filters import yaml_filter
 from tests.utils.test_environment import TestEnvironmentTestCase

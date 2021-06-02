@@ -1,5 +1,5 @@
 # Auto generated from issue_355.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-26 14:21
+# Generation date: 2021-06-02 16:45
 # Schema: issue355
 #
 # id: http://example.org/issue355/
@@ -9,20 +9,21 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
-from linkml.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
-from linkml.utils.metamodelcore import URIorCURIE
-from linkml_model.types import String, Uriorcurie
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.linkml_model.types import String, Uriorcurie
+from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
 
@@ -54,11 +55,7 @@ class Container(YAMLRoot):
     entry: Optional[Union[Dict[Union[str, ContaineeId], Union[dict, "Containee"]], List[Union[dict, "Containee"]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.entry is None:
-            self.entry = []
-        if not isinstance(self.entry, (list, dict)):
-            self.entry = [self.entry]
-        self._normalize_inlined_slot(slot_name="entry", slot_type=Containee, key_name="id", inlined_as_list=None, keyed=True)
+        self._normalize_inlined_as_dict(slot_name="entry", slot_type=Containee, key_name="id", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -76,7 +73,7 @@ class Containee(YAMLRoot):
     value: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ContaineeId):
             self.id = ContaineeId(self.id)

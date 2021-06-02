@@ -18,7 +18,7 @@ URI: [linkml:ifabsent](https://w3id.org/linkml/ifabsent)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [String](String.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [String](String.md)
 
 ## Parents
 

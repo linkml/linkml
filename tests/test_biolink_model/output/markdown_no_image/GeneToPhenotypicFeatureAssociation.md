@@ -29,7 +29,7 @@ URI: [biolink:GeneToPhenotypicFeatureAssociation](https://w3id.org/biolink/vocab
  * [gene to phenotypic feature association➞subject](gene_to_phenotypic_feature_association_subject.md)  <sub>REQ</sub>
      * Description: gene in which variation is correlated with the phenotypic feature
      * range: [GeneOrGeneProduct](GeneOrGeneProduct.md)
-     * Example:    
+     * Example: HGNC:2197 COL1A1 (Human)
 
 ### Inherited from association:
 

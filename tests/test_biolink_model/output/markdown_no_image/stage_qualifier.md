@@ -9,7 +9,7 @@ URI: [biolink:stage_qualifier](https://w3id.org/biolink/vocab/stage_qualifier)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [LifeStage](LifeStage.md)
+[Association](Association.md) &#8594;  <sub>OPT</sub> [LifeStage](LifeStage.md)
 
 ## Parents
 

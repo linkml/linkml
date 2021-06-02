@@ -4,11 +4,12 @@ from io import StringIO
 from typing import Union, TextIO, Optional, Set, List, Any, Callable, Dict
 
 import click
+from jsonasobj2 import JsonObj, values
 
 from linkml.generators.yumlgen import YumlGenerator
-from linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
     TypeDefinition, EnumDefinition
-from linkml.utils.formatutils import camelcase, be, underscore
+from linkml_runtime.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
 
@@ -56,7 +57,7 @@ class MarkdownGenerator(Generator):
 
         with open(self.exist_warning(directory, 'index.md'), 'w') as ixfile:
             with redirect_stdout(ixfile):
-                self.frontmatter(f"{self.schema.name.title()} schema")
+                self.frontmatter(f"{self.schema.name} schema")
                 self.para(be(self.schema.description))
 
                 self.header(3, 'Classes')
@@ -207,7 +208,7 @@ class MarkdownGenerator(Generator):
                 self.mappings(slot)
 
                 self.header(2, 'Domain and Range')
-                print(f'{self.class_link(slot.domain)} ->{self.predicate_cardinality(slot)} '
+                print(f'{self.class_link(slot.domain)} &#8594;{self.predicate_cardinality(slot)} '
                       f'{self.class_type_link(slot.range)}')
 
                 self.header(2, 'Parents')
@@ -261,9 +262,9 @@ class MarkdownGenerator(Generator):
                 -> None:
             if formatter is None:
                 formatter = identity
+            if isinstance(entries, (dict, JsonObj)):
+                entries = list(values(entries))
             if entries:
-                if isinstance(entries, Dict):
-                    entries = list(entries.values())
                 print(f"| **{title}:** | | {formatter(entries[0])} |")
                 for entry in entries[1:]:
                     print(f"|  | | {formatter(entry)} |")
@@ -319,7 +320,7 @@ class MarkdownGenerator(Generator):
             #       - deprecated element has possible replacement
             if type(obj) == EnumDefinition:
                 enum_list('Permissible Values', obj)
-                
+
         if attributes.getvalue():
             self.header(2, 'Other properties')
             print("|  |  |  |")

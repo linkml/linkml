@@ -9,7 +9,7 @@ URI: [biolink:entity_to_outcome_association_mixin_object](https://w3id.org/bioli
 
 ## Domain and Range
 
-[EntityToOutcomeAssociationMixin](EntityToOutcomeAssociationMixin.md) ->  <sub>REQ</sub> [Outcome](Outcome.md)
+[EntityToOutcomeAssociationMixin](EntityToOutcomeAssociationMixin.md) &#8594;  <sub>REQ</sub> [Outcome](Outcome.md)
 
 ## Parents
 

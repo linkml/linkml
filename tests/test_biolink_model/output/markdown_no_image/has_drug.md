@@ -9,7 +9,7 @@ URI: [biolink:has_drug](https://w3id.org/biolink/vocab/has_drug)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [Drug](Drug.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [Drug](Drug.md)
 
 ## Parents
 

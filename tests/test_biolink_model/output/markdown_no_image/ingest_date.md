@@ -9,7 +9,7 @@ URI: [biolink:ingest_date](https://w3id.org/biolink/vocab/ingest_date)
 
 ## Domain and Range
 
-[DatasetVersion](DatasetVersion.md) ->  <sub>OPT</sub> [String](types/String.md)
+[DatasetVersion](DatasetVersion.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

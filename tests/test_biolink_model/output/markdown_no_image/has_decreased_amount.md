@@ -9,7 +9,7 @@ URI: [biolink:has_decreased_amount](https://w3id.org/biolink/vocab/has_decreased
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:coexpressed_with](https://w3id.org/biolink/vocab/coexpressed_with)
 
 ## Domain and Range
 
-[GeneOrGeneProduct](GeneOrGeneProduct.md) ->  <sub>0..*</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
+[GeneOrGeneProduct](GeneOrGeneProduct.md) &#8594;  <sub>0..*</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
 
 ## Parents
 

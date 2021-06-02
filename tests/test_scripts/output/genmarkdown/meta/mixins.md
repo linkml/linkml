@@ -9,7 +9,7 @@ URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 
 ## Domain and Range
 
-[Definition](Definition.md) ->  <sub>0..*</sub> [Definition](Definition.md)
+[Definition](Definition.md) &#8594;  <sub>0..*</sub> [Definition](Definition.md)
 
 ## Parents
 
@@ -23,3 +23,12 @@ URI: [linkml:mixins](https://w3id.org/linkml/mixins)
 ## Used by
 
  * [Definition](Definition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | traits |
+| **Comments:** | | mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance |
+| **See also:** | | https://en.wikipedia.org/wiki/Mixin |
+

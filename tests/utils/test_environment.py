@@ -11,8 +11,8 @@ from io import StringIO
 from pathlib import Path
 from typing import Optional, Callable, Union, List
 
-from linkml_model import linkml_files
-from linkml_model.linkml_files import Source, Format
+from linkml_runtime.linkml_model import linkml_files
+from linkml_runtime.linkml_model.linkml_files import Source, Format
 
 from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE, LOCAL_MAPPINGS_YAML_FILE
 from tests.utils.dirutils import are_dir_trees_equal

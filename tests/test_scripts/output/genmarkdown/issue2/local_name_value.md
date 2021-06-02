@@ -9,7 +9,7 @@ URI: [linkml:local_name_value](https://w3id.org/linkml/local_name_value)
 
 ## Domain and Range
 
-local_name ->  <sub>REQ</sub> [String](types/String.md)
+local_name &#8594;  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

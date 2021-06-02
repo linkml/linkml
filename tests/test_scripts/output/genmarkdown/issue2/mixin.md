@@ -2,14 +2,14 @@
 # Slot: mixin
 
 
-this slot or class can only be used as a mixin -- equivalent to abstract
+this slot or class can only be used as a mixin.
 
 URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 
 
 ## Domain and Range
 
-definition ->  <sub>OPT</sub> boolean
+definition &#8594;  <sub>OPT</sub> boolean
 
 ## Parents
 
@@ -22,3 +22,11 @@ definition ->  <sub>OPT</sub> boolean
  * class_definition
  * definition
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | trait |
+| **See also:** | | https://en.wikipedia.org/wiki/Mixin |
+

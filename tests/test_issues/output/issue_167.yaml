@@ -13,24 +13,24 @@ subsets:
     description: A random subset
     from_schema: http://example.org/tests/issue167
     extensions:
-    - tag: http://example.org/c2
-      value: test2
-    - tag: EX:foo2
-      value: bar2
+      http://example.org/c2:
+        tag: http://example.org/c2
+        value: test2
+      EX:foo2:
+        tag: EX:foo2
+        value: bar2
 types:
   string:
     name: string
     definition_uri: http://example.org/tests/issue167/String
     from_schema: http://example.org/tests/issue167
     extensions:
-    - tag: tag
-      value: http://example.org/c1
-    - tag: value
-      value: test1
-    - tag: tag
-      value: EX:foo1
-    - tag: value
-      value: bar1
+      http://example.org/c1:
+        tag: http://example.org/c1
+        value: test1
+      EX:foo1:
+        tag: EX:foo1
+        value: bar1
     base: str
     uri: xsd:string
   integer:
@@ -54,12 +54,13 @@ slots:
     definition_uri: http://example.org/tests/issue167/sb
     from_schema: http://example.org/tests/issue167
     extensions:
-    - tag: tag
-      value: http://example.org/c4
-    - tag: value
-      value: test4
-    - tag: extensions
-      value: '[{''tag'': ''http://semantics.r.us/c1'', ''value'': 143}]'
+      http://example.org/c4:
+        tag: http://example.org/c4
+        value: test4
+        extensions:
+          http://semantics.r.us/c1:
+            tag: http://semantics.r.us/c1
+            value: '143'
     range: integer
     slot_uri: http://example.org/tests/issue167/sb
     owner: c2
@@ -72,14 +73,12 @@ classes:
     definition_uri: http://example.org/tests/issue167/C1
     from_schema: http://example.org/tests/issue167
     extensions:
-    - tag: tag
-      value: http://example.org/c3
-    - tag: value
-      value: test3
-    - tag: tag
-      value: EX:foo3
-    - tag: value
-      value: bar3
+      http://example.org/c3:
+        tag: http://example.org/c3
+        value: test3
+      EX:foo3:
+        tag: EX:foo3
+        value: bar3
     slots:
     - sa
     - sb
@@ -94,6 +93,6 @@ classes:
     class_uri: http://example.org/tests/issue167/C2
 metamodel_version: 1.7.0
 source_file: issue_167.yaml
-source_file_date: Wed Mar 24 16:43:50 2021
+source_file_date: Wed Jun  2 16:41:42 2021
 source_file_size: 852
-generation_date: 2021-03-24 16:47
+generation_date: 2021-06-02 16:45

@@ -4,7 +4,7 @@ import click
 
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.formatutils import split_line, be
+from linkml_runtime.utils.formatutils import split_line, be
 from linkml.utils.generator import shared_arguments
 
 
@@ -35,7 +35,7 @@ class NamespaceGenerator(PythonGenerator):
 from collections import defaultdict
 from typing import Iterable, Dict, Tuple
 
-from linkml.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.curienamespace import CurieNamespace
 
 GENE = 'gene'
 DISEASE = 'disease'

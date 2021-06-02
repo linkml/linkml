@@ -9,7 +9,7 @@ URI: [biolink:variant_to_disease_association_object](https://w3id.org/biolink/vo
 
 ## Domain and Range
 
-[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) ->  <sub>REQ</sub> [NamedThing](NamedThing.md)
+[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -27,5 +27,5 @@ URI: [biolink:variant_to_disease_association_object](https://w3id.org/biolink/vo
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'MONDO:0016419', 'description': 'hereditary breast cancer'} |
+| **Examples:** | | Example(value='MONDO:0016419', description='hereditary breast cancer') |
 

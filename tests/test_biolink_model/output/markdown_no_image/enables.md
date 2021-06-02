@@ -9,7 +9,7 @@ URI: [biolink:enables](https://w3id.org/biolink/vocab/enables)
 
 ## Domain and Range
 
-[PhysicalEntity](PhysicalEntity.md) ->  <sub>0..*</sub> [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
+[PhysicalEntity](PhysicalEntity.md) &#8594;  <sub>0..*</sub> [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
 
 ## Parents
 
@@ -27,5 +27,4 @@ URI: [biolink:enables](https://w3id.org/biolink/vocab/enables)
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
 | **Exact Mappings:** | | RO:0002327 |
-|  | | GO:enables |
 

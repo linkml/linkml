@@ -322,6 +322,15 @@ type BiologicalSex
 
 type BioticExposure implements ExposureEvent
   {
+    id: String!
+    iri: IriType
+    type: String
+    name: LabelType
+    description: NarrativeText
+    source: LabelType
+    providedBy: [Agent]
+    hasAttribute: [Attribute]
+    category: [NamedThing]!
     hasTaxonomicRank: TaxonomicRank
     subclassOf: [OrganismTaxon]
     timepoint: TimeType
@@ -537,6 +546,10 @@ type ChemicalExposure implements ExposureEvent
     inTaxon: [OrganismTaxon]
     isMetabolite: Boolean
     timepoint: TimeType
+  }
+
+interface ChemicalOrDrugOrTreatment
+  {
   }
 
 type ChemicalSubstance implements OntologyClass
@@ -1090,7 +1103,7 @@ type DiseaseToPhenotypicFeatureAssociation implements EntityToPhenotypicFeatureA
     sexQualifier: BiologicalSex
   }
 
-type Drug implements Mixture, OntologyClass
+type Drug implements Mixture, ChemicalOrDrugOrTreatment, OntologyClass
   {
     id: String!
     iri: IriType
@@ -2506,6 +2519,15 @@ type OrganismAttribute
 
 type OrganismTaxon
   {
+    id: String!
+    iri: IriType
+    type: String
+    name: LabelType
+    description: NarrativeText
+    source: LabelType
+    providedBy: [Agent]
+    hasAttribute: [Attribute]
+    category: [NamedThing]!
     hasTaxonomicRank: TaxonomicRank
     subclassOf: [OrganismTaxon]
   }
@@ -2570,10 +2592,10 @@ type OrganismTaxonToOrganismTaxonInteraction
     publications: [Publication]
     type: String
     category: [CategoryType]
+    associatedEnvironmentalContext: String
     subject: OrganismTaxon!
     object: OrganismTaxon!
     predicate: PredicateType!
-    associatedEnvironmentalContext: String
   }
 
 type OrganismTaxonToOrganismTaxonSpecialization
@@ -3331,7 +3353,7 @@ type TranscriptToGeneRelationship
     object: Gene!
   }
 
-type Treatment implements ExposureEvent
+type Treatment implements ExposureEvent, ChemicalOrDrugOrTreatment
   {
     id: String!
     iri: IriType

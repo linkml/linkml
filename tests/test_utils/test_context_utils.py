@@ -1,9 +1,9 @@
 import unittest
 
-from jsonasobj import JsonObj, loads
+from jsonasobj2 import JsonObj, loads
 
 from linkml import METAMODEL_CONTEXT_URI, META_BASE_URI
-from linkml.utils.context_utils import merge_contexts
+from linkml_runtime.utils.context_utils import merge_contexts
 
 json_1 = '{ "ex": "http://example.org/test/", "ex2": "http://example.org/test2/" }'
 json_2 = '{ "foo": 17, "@context": { "ex": "http://example.org/test3/", "ex2": {"@id": "http://example.org/test4/" }}}'

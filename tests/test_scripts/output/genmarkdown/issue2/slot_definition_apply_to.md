@@ -9,7 +9,7 @@ URI: [linkml:slot_definition_apply_to](https://w3id.org/linkml/slot_definition_a
 
 ## Domain and Range
 
-slot_definition ->  <sub>0..*</sub> slot_definition
+slot_definition &#8594;  <sub>0..*</sub> slot_definition
 
 ## Parents
 

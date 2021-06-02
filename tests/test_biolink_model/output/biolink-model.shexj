@@ -1565,7 +1565,7 @@
                         "https://w3id.org/biolink/vocab/BioticExposure"
                      ]
                   },
-                  "min": 0
+                  "min": 1
                }
             ]
          }
@@ -2250,6 +2250,34 @@
             },
             "https://w3id.org/biolink/vocab/ComplexChemicalExposure"
          ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment",
+         "closed": false,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment_tes",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "min": 0,
+                  "max": -1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
       },
       {
          "type": "ShapeOr",
@@ -4151,6 +4179,18 @@
                                  "type": "NodeConstraint",
                                  "values": [
                                     "https://w3id.org/biolink/vocab/Mixture"
+                                 ]
+                              },
+                              "min": 0
+                           },
+                           "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment_tes",
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment"
                                  ]
                               },
                               "min": 0
@@ -9310,6 +9350,7 @@
             "https://w3id.org/biolink/vocab/ClinicalEntity",
             "https://w3id.org/biolink/vocab/Device",
             "https://w3id.org/biolink/vocab/InformationContentEntity",
+            "https://w3id.org/biolink/vocab/OrganismTaxon",
             "https://w3id.org/biolink/vocab/Phenomenon",
             "https://w3id.org/biolink/vocab/PhysicalEntity",
             "https://w3id.org/biolink/vocab/PlanetaryEntity",
@@ -9498,7 +9539,6 @@
          "id": "https://w3id.org/biolink/vocab/OntologyClass",
          "shapeExprs": [
             "https://w3id.org/biolink/vocab/GeneOntologyClass",
-            "https://w3id.org/biolink/vocab/OrganismTaxon",
             "https://w3id.org/biolink/vocab/RelationshipType",
             "https://w3id.org/biolink/vocab/TaxonomicRank",
             "https://w3id.org/biolink/vocab/UnclassifiedOntologyClass"
@@ -9592,14 +9632,14 @@
                         "type": "EachOf",
                         "id": "https://w3id.org/biolink/vocab/OrganismTaxon_tes",
                         "expressions": [
-                           "https://w3id.org/biolink/vocab/OntologyClass_tes",
+                           "https://w3id.org/biolink/vocab/NamedThing_tes",
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                               "valueExpr": {
                                  "type": "NodeConstraint",
                                  "values": [
-                                    "https://w3id.org/biolink/vocab/OntologyClass"
+                                    "https://w3id.org/biolink/vocab/NamedThing"
                                  ]
                               },
                               "min": 0
@@ -9629,7 +9669,7 @@
                               "https://w3id.org/biolink/vocab/OrganismTaxon"
                            ]
                         },
-                        "min": 0
+                        "min": 1
                      }
                   ]
                }
@@ -9836,6 +9876,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/biolink/vocab/associated_environmental_context",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject",
                         "valueExpr": "https://w3id.org/biolink/vocab/OrganismTaxon",
                         "min": 1,
@@ -9853,13 +9900,6 @@
                         "predicate": "https://w3id.org/biolink/vocab/predicate",
                         "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
                         "min": 1,
-                        "max": 1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/biolink/vocab/associated_environmental_context",
-                        "valueExpr": "https://w3id.org/linkml/String",
-                        "min": 0,
                         "max": 1
                      }
                   ]
@@ -12777,6 +12817,18 @@
                            "type": "NodeConstraint",
                            "values": [
                               "https://w3id.org/biolink/vocab/ExposureEvent"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment"
                            ]
                         },
                         "min": 0

@@ -12,7 +12,7 @@ URI: [biolink:NoncodingRNAProduct](https://w3id.org/biolink/vocab/NoncodingRNAPr
 ## Identifier prefixes
 
  * RNACENTRAL
- * NCBIGENE
+ * NCBIGene
  * ENSEMBL
 
 ## Parents

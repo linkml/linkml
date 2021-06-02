@@ -93,4 +93,5 @@ URI: [biolink:BiologicalProcess](https://w3id.org/biolink/vocab/BiologicalProces
 | **Exact Mappings:** | | GO:0008150 |
 |  | | SIO:000006 |
 |  | | WIKIDATA:Q2996394 |
+| **Broad Mappings:** | | WIKIDATA:P682 |
 

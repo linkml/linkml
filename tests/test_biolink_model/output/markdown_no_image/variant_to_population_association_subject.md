@@ -9,7 +9,7 @@ URI: [biolink:variant_to_population_association_subject](https://w3id.org/biolin
 
 ## Domain and Range
 
-[VariantToPopulationAssociation](VariantToPopulationAssociation.md) ->  <sub>REQ</sub> [SequenceVariant](SequenceVariant.md)
+[VariantToPopulationAssociation](VariantToPopulationAssociation.md) &#8594;  <sub>REQ</sub> [SequenceVariant](SequenceVariant.md)
 
 ## Parents
 
@@ -26,5 +26,5 @@ URI: [biolink:variant_to_population_association_subject](https://w3id.org/biolin
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'NC_000017.11:g.43051071A>T', 'description': '17:41203088 A/C in gnomad'} |
+| **Examples:** | | Example(value='NC_000017.11:g.43051071A>T', description='17:41203088 A/C in gnomad') |
 

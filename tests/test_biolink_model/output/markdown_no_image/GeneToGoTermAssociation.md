@@ -24,11 +24,11 @@ URI: [biolink:GeneToGoTermAssociation](https://w3id.org/biolink/vocab/GeneToGoTe
  * [gene to go term association➞object](gene_to_go_term_association_object.md)  <sub>REQ</sub>
      * Description: class describing the activity, process or localization of the gene product
      * range: [GeneOntologyClass](GeneOntologyClass.md)
-     * Example:    
+     * Example: GO:0016301 kinase activity
  * [gene to go term association➞subject](gene_to_go_term_association_subject.md)  <sub>REQ</sub>
      * Description: gene, product or macromolecular complex that has the function associated with the GO term
      * range: [MolecularEntity](MolecularEntity.md)
-     * Example:    
+     * Example: ZFIN:ZDB-GENE-050417-357 twist1b
 
 ### Inherited from functional association:
 

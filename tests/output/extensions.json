@@ -258,9 +258,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "extensions.yaml",
-  "source_file_date": "Wed Mar 24 16:45:57 2021",
-  "source_file_size": 1041,
-  "generation_date": "2021-03-24 16:46",
+  "source_file_date": "Wed Jun  2 16:43:06 2021",
+  "source_file_size": 1043,
+  "generation_date": "2021-06-02 16:43",
   "@type": "SchemaDefinition",
   "@context": [
     [

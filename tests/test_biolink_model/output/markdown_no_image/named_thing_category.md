@@ -9,7 +9,7 @@ URI: [biolink:named_thing_category](https://w3id.org/biolink/vocab/named_thing_c
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>1..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>1..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -34,6 +34,7 @@ URI: [biolink:named_thing_category](https://w3id.org/biolink/vocab/named_thing_c
  * [BiologicalEntity](BiologicalEntity.md)
  * [BiologicalProcess](BiologicalProcess.md)
  * [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
+ * [BioticExposure](BioticExposure.md)
  * [Book](Book.md)
  * [BookChapter](BookChapter.md)
  * [Carbohydrate](Carbohydrate.md)
@@ -101,6 +102,7 @@ URI: [biolink:named_thing_category](https://w3id.org/biolink/vocab/named_thing_c
  * [NamedThing](NamedThing.md)
  * [NoncodingRNAProduct](NoncodingRNAProduct.md)
  * [Nutrient](Nutrient.md)
+ * [OrganismTaxon](OrganismTaxon.md)
  * [OrganismalEntity](OrganismalEntity.md)
  * [PathologicalAnatomicalExposure](PathologicalAnatomicalExposure.md)
  * [PathologicalAnatomicalOutcome](PathologicalAnatomicalOutcome.md)

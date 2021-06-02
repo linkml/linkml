@@ -9,7 +9,7 @@ URI: [linkml:created_by](https://w3id.org/linkml/created_by)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>OPT</sub> uriorcurie
+[Element](Element.md) &#8594;  <sub>OPT</sub> uriorcurie
 
 ## Parents
 

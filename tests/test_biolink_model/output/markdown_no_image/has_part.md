@@ -9,7 +9,7 @@ URI: [biolink:has_part](https://w3id.org/biolink/vocab/has_part)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -33,7 +33,6 @@ URI: [biolink:has_part](https://w3id.org/biolink/vocab/has_part)
 | **Exact Mappings:** | | BFO:0000051 |
 |  | | BFO:0000055 |
 |  | | WIKIDATA_PROPERTY:P527 |
-|  | | GO:has_part |
 |  | | RO:0001019 |
 |  | | RTXKG1:has_part |
 |  | | RXNORM:consists_of |
@@ -51,7 +50,7 @@ URI: [biolink:has_part](https://w3id.org/biolink/vocab/has_part)
 |  | | NCIT:complex_has_physical_part |
 |  | | NDDF:has_ingredient |
 |  | | PathWhiz:has_element_in_bound |
-|  | | NCIT:gene_product_has_structural_domain_or_motif |
+|  | | NCIT:R50 |
 |  | | PDQ:has_component |
 |  | | PathWhiz:has_protein_in_complex |
 |  | | RO:0002104 |

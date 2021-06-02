@@ -49,7 +49,7 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
      * Description: time at which the element was last updated
      * range: [Datetime](Datetime.md)
  * [mixin](mixin.md)  <sub>OPT</sub>
-     * Description: this slot or class can only be used as a mixin -- equivalent to abstract
+     * Description: this slot or class can only be used as a mixin.
      * range: [Boolean](Boolean.md)
  * [mixins](mixins.md)  <sub>0..*</sub>
      * Description: List of definitions to be mixed in. Targets may be any definition of the same type

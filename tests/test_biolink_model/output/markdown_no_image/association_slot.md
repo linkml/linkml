@@ -9,7 +9,7 @@ URI: [biolink:association_slot](https://w3id.org/biolink/vocab/association_slot)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [String](types/String.md)
+[Association](Association.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 
@@ -30,6 +30,7 @@ URI: [biolink:association_slot](https://w3id.org/biolink/vocab/association_slot)
  *  [has population context](has_population_context.md)
  *  [has temporal context](has_temporal_context.md)
  *  [interacting molecules category](interacting_molecules_category.md)
+ *  [logical interpretation](logical_interpretation.md)
  *  [negated](negated.md)
  *  [object](object.md)
  *  [onset qualifier](onset_qualifier.md)
