@@ -9,7 +9,7 @@ hbreader = "*"
 requests = "*"
 # TODO: this becomes pyld again once we get all our changes merged
 pyldmod = "*"
-jsonasobj2 = "~=1.0"
+jsonasobj2 = "~=1.0, >=1.0.4"
 pyyaml = "~=5.1"
 rdflib = "~=5.0"
 # TODO: this becomes rdflib-pyld-compat once we get pyld changes merged
