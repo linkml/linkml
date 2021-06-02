@@ -5,7 +5,6 @@ import click
 import logging
 
 from sqlalchemy import *
-from sqlalchemy import *
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
 from linkml_runtime.linkml_model.types import NCName, URIorCURIE
 from linkml_runtime.utils.formatutils import underscore, camelcase
