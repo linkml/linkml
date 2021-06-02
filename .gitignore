@@ -1,8 +1,7 @@
 metamodel/metamodel.py-PREV
 temp/
 output/
-tests/target
-tests/test_biolink_model/target
+
 
 # Jekyll
 Gemfile.lock

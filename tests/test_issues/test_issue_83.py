@@ -6,12 +6,9 @@ from typing import Optional, ClassVar, Dict, Any
 
 import yaml
 
-from linkml.utils.yamlutils import YAMLRoot, TypedNode, DupCheckYamlLoader
+from linkml_runtime.utils.yamlutils import YAMLRoot, TypedNode, DupCheckYamlLoader
 
-if sys.version_info < (3, 7, 6):
-    from linkml.utils.dataclass_extensions_375 import dataclasses_init_fn_with_kwargs
-else:
-    from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

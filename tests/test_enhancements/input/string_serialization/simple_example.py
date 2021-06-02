@@ -12,17 +12,14 @@ import re
 from parse import parse
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-if sys.version_info < (3, 7, 6):
-    from linkml.utils.dataclass_extensions_375 import dataclasses_init_fn_with_kwargs
-else:
-    from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.curienamespace import CurieNamespace
 from includes.types import String
 
 metamodel_version = "1.7.0"

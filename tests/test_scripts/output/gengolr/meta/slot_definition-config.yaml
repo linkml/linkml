@@ -119,7 +119,7 @@ fields:
     to group common slots together and cannot be directly instantiated.
   display_name: abstract
 - id: mixin
-  description: this slot or class can only be used as a mixin -- equivalent to abstract
+  description: this slot or class can only be used as a mixin.
   display_name: mixin
 - id: values_from
   description: the identifier of a "value set" -- a set of identifiers that form the

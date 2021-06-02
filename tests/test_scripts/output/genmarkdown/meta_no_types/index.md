@@ -102,7 +102,7 @@ A metamodel for defining linked open data schemas
  * [meaning](meaning.md) - the value meaning (in the 11179 sense) of a permissible value
  * [metamodel_version](metamodel_version.md) - Version of the metamodel used to load the schema
  * [minimum_value](minimum_value.md) - for slots with ranges of type number, the value must be equal to or higher than this
- * [mixin](mixin.md) - this slot or class can only be used as a mixin -- equivalent to abstract
+ * [mixin](mixin.md) - this slot or class can only be used as a mixin.
  * [mixins](mixins.md) - List of definitions to be mixed in. Targets may be any definition of the same type
      * [class_definition➞mixins](class_definition_mixins.md)
      * [permissible_value➞mixins](permissible_value_mixins.md)

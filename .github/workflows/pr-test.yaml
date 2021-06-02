@@ -20,13 +20,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install pipenv
       uses: dschep/install-pipenv-action@v1
+
     - name: Install dependencies
       run: |
-       pip install linkml-model
-       pip install "git+https://github.com/hsolbrig/pyld"
        pipenv install --dev
 
     - name: Test with unittest
-      run: pipenv run python -m unittest discover -p 'test_*.py'
+      run: |
+        pipenv run python -m unittest discover -p 'test_*.py'

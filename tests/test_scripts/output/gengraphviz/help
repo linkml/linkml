@@ -1,0 +1,28 @@
+Usage: gen-graphviz [OPTIONS] YAMLFILE
+
+  Generate graphviz representations of the biolink model
+
+Options:
+  -d, --directory TEXT            Output directory - if supplied, a graph per
+                                  class will be generated
+
+  -o, --out TEXT                  Target file -- if supplied, one large graph
+                                  will be generated
+
+  -c, --classname TEXT            Class(es) to transform
+  -f, --format [png|bmp|canon|cgimage|cmap|cmapx|cmapx_np|dot|dot_json|eps|exr|fig|gd|gd2|gif|gtk|gv|ico|imap|imap_np|ismap|jp2|jpe|jpeg|jpg|json|json0|pct|pdf|pic|pict|plain|plain-ext|png|pov|ps|ps2|psd|sgi|svg|svgz|tga|tif|tiff|tk|vml|vmlz|vrml|wbmp|webp|x11|xdot|xdot1.2|xdot1.4|xdot_json|xlib]
+                                  Output format (default=png)
+  --metadata / --no-metadata      Include metadata in output
+                                  (default=--metadata)
+
+  --useuris / --metauris          Include metadata in output
+                                  (default=--useuris)
+
+  -im, --importmap FILENAME       Import mapping file
+  --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
+                                  Logging level (default=WARNING)
+  --mergeimports / --no-mergeimports
+                                  Merge imports into source file
+                                  (default=mergeimports)
+
+  --help                          Show this message and exit.

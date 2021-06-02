@@ -5,8 +5,8 @@ import click
 import logging
 
 from sqlalchemy import *
-from linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition
-from linkml.utils.formatutils import camelcase, lcamelcase, underscore
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition
+from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 
 def _quote(s: str) -> str:
@@ -19,7 +19,7 @@ class SQLDDLGenerator(Generator):
     """
     A `Generator` for creating SQL DDL
     TODO: allow configuration between camelcase and snake case for tanle names
-    
+
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"

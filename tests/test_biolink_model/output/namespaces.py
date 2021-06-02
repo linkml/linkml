@@ -9,7 +9,7 @@
 from collections import defaultdict
 from typing import Iterable, Dict, Tuple
 
-from linkml.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.curienamespace import CurieNamespace
 
 GENE = 'gene'
 DISEASE = 'disease'

@@ -2,7 +2,7 @@
 # Slot: mixin
 
 
-this slot or class can only be used as a mixin -- equivalent to abstract
+this slot or class can only be used as a mixin.
 
 URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 
@@ -22,3 +22,11 @@ URI: [linkml:mixin](https://w3id.org/linkml/mixin)
  * [ClassDefinition](ClassDefinition.md)
  * [Definition](Definition.md)
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | trait |
+| **See also:** | | https://en.wikipedia.org/wiki/Mixin |
+

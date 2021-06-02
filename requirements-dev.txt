@@ -13,7 +13,3 @@
 ipykernel
 nbconvert
 nbformat
-pipenv-to-requirements
-tox
-tox-pipenv
-unittest2

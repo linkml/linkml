@@ -3,7 +3,7 @@ import unittest
 from rdflib import URIRef
 from rdflib.namespace import SKOS
 
-from linkml.utils.namespaces import Namespaces
+from linkml_runtime.utils.namespaces import Namespaces
 
 
 class NamespacesTestCase(unittest.TestCase):

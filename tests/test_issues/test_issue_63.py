@@ -2,7 +2,7 @@ import unittest
 
 from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.utils.schemaloader import SchemaLoader
-from linkml.utils.yamlutils import as_yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 

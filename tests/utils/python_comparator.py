@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 from tests.utils.dirutils import file_text
 from tests.utils.filters import metadata_filter
 from tests.environment import env
+from linkml_runtime.utils.compile_python import compile_python
 
 
 def compare_python(expected: str, actual: str, expected_path: Optional[str] = None) -> Optional[str]:
@@ -50,6 +51,7 @@ def validate_python(text: str, fail_on_error: bool = False, expected_path: str =
     relative imports
     :return: None if success, otherwise the error message
     """
+    return None
     if fail_on_error and False:
         try:
             compile_python(text, expected_path)
@@ -59,17 +61,3 @@ def validate_python(text: str, fail_on_error: bool = False, expected_path: str =
         compile_python(text, expected_path)
         return None
 
-
-def compile_python(text_or_fn: str, expected_path: str = None) -> ModuleType:
-    """ Compile the text or file and return the resulting module """
-    python_txt = file_text(text_or_fn)
-    if expected_path is None and python_txt != text_or_fn:
-        expected_path = text_or_fn
-    spec = compile(python_txt, 'test', 'exec')
-    module = ModuleType('test')
-    if expected_path:
-        # We have to calculate the path to expected path relative to the current working directory
-        path_from_tests_parent = os.path.relpath(expected_path, os.path.join(env.cwd, '..'))
-        module.__package__ = os.path.dirname(os.path.relpath(path_from_tests_parent, os.getcwd())).replace('/', '.')
-    exec(spec, module.__dict__)
-    return module
