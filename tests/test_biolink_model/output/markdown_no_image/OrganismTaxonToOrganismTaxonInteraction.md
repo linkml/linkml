@@ -7,7 +7,7 @@ An interaction relationship between two taxa. This may be a symbiotic relationsh
 URI: [biolink:OrganismTaxonToOrganismTaxonInteraction](https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonInteraction)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Publication],[OrganismTaxon]<object%201..1-++[OrganismTaxonToOrganismTaxonInteraction&#124;predicate:predicate_type;associated_environmental_context:string%20%3F;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[OrganismTaxon]<subject%201..1-++[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation]^-[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxon],[OntologyClass],[Attribute],[Agent])
+![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Publication],[OrganismTaxon]<object%201..1-%20[OrganismTaxonToOrganismTaxonInteraction&#124;associated_environmental_context:string%20%3F;predicate:predicate_type;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[OrganismTaxon]<subject%201..1-%20[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation]^-[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxon],[OntologyClass],[Attribute],[Agent])
 
 ## Parents
 

@@ -266,9 +266,18 @@ message BiologicalSex
 // An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).
 message BioticExposure
  {
-  optional hasTaxonomicRank TaxonomicRank = 1
-  repeated subclassOf OrganismTaxon = 2
-  optional timepoint TimeType = 3
+  id String = 1
+  optional iri IriType = 2
+  optional type String = 3
+  optional name LabelType = 4
+  optional description NarrativeText = 5
+  optional source LabelType = 6
+  repeated providedBy Agent = 7
+  repeated hasAttribute Attribute = 8
+  repeated category NamedThing = 9
+  optional hasTaxonomicRank TaxonomicRank = 10
+  repeated subclassOf OrganismTaxon = 11
+  optional timepoint TimeType = 12
  }
 // This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
 message Book
@@ -2194,8 +2203,17 @@ message OrganismAttribute
 // A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or subspecies.
 message OrganismTaxon
  {
-  optional hasTaxonomicRank TaxonomicRank = 1
-  repeated subclassOf OrganismTaxon = 2
+  id String = 1
+  optional iri IriType = 2
+  optional type String = 3
+  optional name LabelType = 4
+  optional description NarrativeText = 5
+  optional source LabelType = 6
+  repeated providedBy Agent = 7
+  repeated hasAttribute Attribute = 8
+  repeated category NamedThing = 9
+  optional hasTaxonomicRank TaxonomicRank = 10
+  repeated subclassOf OrganismTaxon = 11
  }
 // An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and parasitism), or it may be non-symbiotic. Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens
 message OrganismTaxonToOrganismTaxonInteraction
@@ -2213,10 +2231,10 @@ message OrganismTaxonToOrganismTaxonInteraction
   repeated publications Publication = 11
   optional type String = 12
   repeated category CategoryType = 13
-  subject OrganismTaxon = 14
-  object OrganismTaxon = 15
-  predicate PredicateType = 16
-  optional associatedEnvironmentalContext String = 17
+  optional associatedEnvironmentalContext String = 14
+  subject OrganismTaxon = 15
+  object OrganismTaxon = 16
+  predicate PredicateType = 17
  }
 // A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo
 message OrganismTaxonToOrganismTaxonSpecialization

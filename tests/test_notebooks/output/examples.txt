@@ -9,9 +9,10 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
@@ -86,18 +87,16 @@ class Person(YAMLRoot):
     knows: Optional[Union[Union[str, PersonId], List[Union[str, PersonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PersonId):
             self.id = PersonId(self.id)
 
-        if self.last_name is None:
+        if self._is_empty(self.last_name):
             raise ValueError("last_name must be supplied")
         if not isinstance(self.last_name, str):
             self.last_name = str(self.last_name)
 
-        if self.first_name is None:
-            self.first_name = []
         if not isinstance(self.first_name, list):
             self.first_name = [self.first_name]
         self.first_name = [v if isinstance(v, str) else str(v) for v in self.first_name]
@@ -108,8 +107,6 @@ class Person(YAMLRoot):
         if self.living is not None and not isinstance(self.living, Bool):
             self.living = Bool(self.living)
 
-        if self.knows is None:
-            self.knows = []
         if not isinstance(self.knows, list):
             self.knows = [self.knows]
         self.knows = [v if isinstance(v, PersonId) else PersonId(v) for v in self.knows]
@@ -134,17 +131,15 @@ class FriendlyPerson(Person):
     knows: Union[Union[str, PersonId], List[Union[str, PersonId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, FriendlyPersonId):
             self.id = FriendlyPersonId(self.id)
 
-        if self.knows is None:
+        if self._is_empty(self.knows):
             raise ValueError("knows must be supplied")
-        elif not isinstance(self.knows, list):
+        if not isinstance(self.knows, list):
             self.knows = [self.knows]
-        elif len(self.knows) == 0:
-            raise ValueError(f"knows must be a non-empty list")
         self.knows = [v if isinstance(v, PersonId) else PersonId(v) for v in self.knows]
 
         super().__post_init__(**kwargs)

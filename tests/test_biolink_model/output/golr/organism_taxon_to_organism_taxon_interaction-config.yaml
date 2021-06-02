@@ -59,6 +59,10 @@ fields:
 - id: category
   display_name: association_category
   cardinality: multi
+- id: associated_environmental_context
+  description: the environment in which the two taxa interact
+  display_name: organism taxon to organism taxon interaction_associated environmental
+    context
 - id: subject
   description: the taxon that is the subject of the association
   display_name: organism taxon to organism taxon interaction_subject
@@ -67,7 +71,3 @@ fields:
   display_name: organism taxon to organism taxon interaction_object
 - id: predicate
   display_name: organism taxon to organism taxon interaction_predicate
-- id: associated_environmental_context
-  description: the environment in which the two taxa interact
-  display_name: organism taxon to organism taxon interaction_associated environmental
-    context

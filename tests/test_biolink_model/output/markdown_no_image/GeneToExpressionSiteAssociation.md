@@ -24,7 +24,7 @@ URI: [biolink:GeneToExpressionSiteAssociation](https://w3id.org/biolink/vocab/Ge
  * [gene to expression site association➞object](gene_to_expression_site_association_object.md)  <sub>REQ</sub>
      * Description: location in which the gene is expressed
      * range: [AnatomicalEntity](AnatomicalEntity.md)
-     * Example:    
+     * Example: UBERON:0002037 cerebellum
  * [gene to expression site association➞predicate](gene_to_expression_site_association_predicate.md)  <sub>REQ</sub>
      * Description: expression relationship
      * range: [PredicateType](types/PredicateType.md)
@@ -34,7 +34,7 @@ URI: [biolink:GeneToExpressionSiteAssociation](https://w3id.org/biolink/vocab/Ge
  * [gene to expression site association➞stage qualifier](gene_to_expression_site_association_stage_qualifier.md)  <sub>OPT</sub>
      * Description: stage at which the gene is expressed in the site
      * range: [LifeStage](LifeStage.md)
-     * Example:    
+     * Example: UBERON:0000069 larval stage
  * [gene to expression site association➞subject](gene_to_expression_site_association_subject.md)  <sub>REQ</sub>
      * Description: gene in which variation is correlated with the phenotypic feature
      * range: [GeneOrGeneProduct](GeneOrGeneProduct.md)

@@ -26,5 +26,5 @@ URI: [biolink:pairwise_molecular_interaction_relation](https://w3id.org/biolink/
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'RO:0002447', 'description': 'the subject molecular phosphorylates the object molecule'} |
+| **Examples:** | | Example(value='RO:0002447', description='the subject molecular phosphorylates the object molecule') |
 

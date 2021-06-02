@@ -7,7 +7,7 @@ A child-parent relationship between two taxa. For example: Homo sapiens subclass
 URI: [biolink:OrganismTaxonToOrganismTaxonSpecialization](https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonSpecialization)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Publication],[OrganismTaxon]<object%201..1-++[OrganismTaxonToOrganismTaxonSpecialization&#124;predicate:predicate_type;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[OrganismTaxon]<subject%201..1-++[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonAssociation]^-[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxon],[OntologyClass],[Attribute],[Agent])
+![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Publication],[OrganismTaxon]<object%201..1-%20[OrganismTaxonToOrganismTaxonSpecialization&#124;predicate:predicate_type;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[OrganismTaxon]<subject%201..1-%20[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonAssociation]^-[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxon],[OntologyClass],[Attribute],[Agent])
 
 ## Parents
 

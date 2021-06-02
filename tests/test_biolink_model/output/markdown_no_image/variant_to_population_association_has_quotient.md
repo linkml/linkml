@@ -26,5 +26,5 @@ URI: [biolink:variant_to_population_association_has_quotient](https://w3id.org/b
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': '0.0001666', 'description': None} |
+| **Examples:** | | Example(value='0.0001666', description=None) |
 

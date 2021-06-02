@@ -26,5 +26,5 @@ URI: [biolink:entity_to_disease_association_mixin_object](https://w3id.org/bioli
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'MONDO:0020066', 'description': 'Ehlers-Danlos syndrome'} |
+| **Examples:** | | Example(value='MONDO:0020066', description='Ehlers-Danlos syndrome') |
 

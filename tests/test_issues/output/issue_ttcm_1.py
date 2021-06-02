@@ -1,5 +1,5 @@
 # Auto generated from resourcedescription.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-26 14:21
+# Generation date: 2021-06-02 16:45
 # Schema: resourcedescription
 #
 # id: https://hotecosystem.org/tccm/resourcedescription
@@ -12,22 +12,23 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
-from linkml.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
-from linkml.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, XSDDateTime
-from linkml_model.annotations import Annotation
-from linkml_model.extensions import Extension
-from linkml_model.types import String
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.linkml_model.annotations import Annotation
+from linkml_runtime.linkml_model.extensions import Extension
+from linkml_runtime.linkml_model.types import String
+from linkml_runtime.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
 
@@ -488,12 +489,12 @@ class ResourceDescription(YAMLRoot):
     annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.about is None:
+        if self._is_empty(self.about):
             raise ValueError("about must be supplied")
         if not isinstance(self.about, ExternalURI):
             self.about = ExternalURI(self.about)
 
-        if self.resourceID is None:
+        if self._is_empty(self.resourceID):
             raise ValueError("resourceID must be supplied")
         if not isinstance(self.resourceID, LocalIdentifier):
             self.resourceID = LocalIdentifier(self.resourceID)
@@ -501,8 +502,6 @@ class ResourceDescription(YAMLRoot):
         if self.formalName is not None and not isinstance(self.formalName, str):
             self.formalName = str(self.formalName)
 
-        if self.keyword is None:
-            self.keyword = []
         if not isinstance(self.keyword, list):
             self.keyword = [self.keyword]
         self.keyword = [v if isinstance(v, str) else str(v) for v in self.keyword]
@@ -510,8 +509,6 @@ class ResourceDescription(YAMLRoot):
         if self.resourceSynopsis is not None and not isinstance(self.resourceSynopsis, str):
             self.resourceSynopsis = str(self.resourceSynopsis)
 
-        if self.additionalDocumentation is None:
-            self.additionalDocumentation = []
         if not isinstance(self.additionalDocumentation, list):
             self.additionalDocumentation = [self.additionalDocumentation]
         self.additionalDocumentation = [v if isinstance(v, PersistentURI) else PersistentURI(v) for v in self.additionalDocumentation]
@@ -522,17 +519,9 @@ class ResourceDescription(YAMLRoot):
         if self.alternateID is not None and not isinstance(self.alternateID, str):
             self.alternateID = str(self.alternateID)
 
-        if self.extensions is None:
-            self.extensions = []
-        if not isinstance(self.extensions, list):
-            self.extensions = [self.extensions]
-        self._normalize_inlined_slot(slot_name="extensions", slot_type=Extension, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
-        if self.annotations is None:
-            self.annotations = []
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations]
-        self._normalize_inlined_slot(slot_name="annotations", slot_type=Annotation, key_name="tag", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -591,8 +580,6 @@ class AbstractResourceDescription(ResourceDescription):
         if self.releaseDocumentation is not None and not isinstance(self.releaseDocumentation, str):
             self.releaseDocumentation = str(self.releaseDocumentation)
 
-        if self.releaseFormat is None:
-            self.releaseFormat = []
         if not isinstance(self.releaseFormat, list):
             self.releaseFormat = [self.releaseFormat]
         self.releaseFormat = [v if isinstance(v, SourceAndNotation) else SourceAndNotation(**v) for v in self.releaseFormat]
@@ -663,7 +650,7 @@ class NameAndMeaningReference(YAMLRoot):
     href: Optional[Union[str, RenderingURI]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, LocalIdentifier):
             self.name = LocalIdentifier(self.name)
@@ -1081,12 +1068,12 @@ class PredicateReference(YAMLRoot):
     designation: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.uri is None:
+        if self._is_empty(self.uri):
             raise ValueError("uri must be supplied")
         if not isinstance(self.uri, ExternalURI):
             self.uri = ExternalURI(self.uri)
 
-        if self.name is None:
+        if self._is_empty(self.name):
             raise ValueError("name must be supplied")
         if not isinstance(self.name, Curie):
             self.name = Curie(self.name)

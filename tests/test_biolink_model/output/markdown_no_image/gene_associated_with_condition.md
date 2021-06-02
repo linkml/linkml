@@ -27,9 +27,9 @@ URI: [biolink:gene_associated_with_condition](https://w3id.org/biolink/vocab/gen
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
 | **Exact Mappings:** | | RTXKG1:gene_associated_with_condition |
-| **Narrow Mappings:** | | NCIT:gene_associated_with_disease |
-|  | | NCIT:gene_involved_in_pathogenesis_of_disease |
-|  | | NCIT:gene_product_malfunction_associated_with_disease |
+| **Narrow Mappings:** | | NCIT:R38 |
+|  | | NCIT:R175 |
+|  | | NCIT:R48 |
 | **Broad Mappings:** | | GENO:0000840 |
 |  | | GENO:0000841 |
 

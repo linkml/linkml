@@ -72,4 +72,5 @@ URI: [biolink:CellularComponent](https://w3id.org/biolink/vocab/CellularComponen
 |  | | WIKIDATA:Q5058355 |
 |  | | UMLSSC:T026 |
 |  | | UMLSST:celc |
+| **Broad Mappings:** | | WIKIDATA:P681 |
 

@@ -34,7 +34,6 @@ URI: [biolink:part_of](https://w3id.org/biolink/vocab/part_of)
 |  | | SEMMEDDB:part_of |
 |  | | WIKIDATA_PROPERTY:P361 |
 |  | | FMA:part_of |
-|  | | GO:part_of |
 |  | | RXNORM:constitutes |
 |  | | RXNORM:part_of |
 | **Narrow Mappings:** | | BSPO:0001106 |
@@ -58,8 +57,8 @@ URI: [biolink:part_of](https://w3id.org/biolink/vocab/part_of)
 |  | | LOINC:multipart_of |
 |  | | MEDDRA:member_of |
 |  | | MONDO:part_of_progression_of_disease |
-|  | | NCIT:anatomic_structure_is_physical_part_of |
-|  | | NCIT:conceptual_part_of |
+|  | | NCIT:R82 |
+|  | | NCIT:R27 |
 |  | | NCIT:is_component_of_chemotherapy_regimen |
 |  | | NDDF:ingredient_of |
 |  | | PDQ:component_of |

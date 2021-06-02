@@ -26,5 +26,5 @@ URI: [biolink:disease_to_entity_association_mixin_subject](https://w3id.org/biol
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'MONDO:0017314', 'description': 'Ehlers-Danlos syndrome, vascular type'} |
+| **Examples:** | | Example(value='MONDO:0017314', description='Ehlers-Danlos syndrome, vascular type') |
 

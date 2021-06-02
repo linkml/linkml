@@ -27,7 +27,7 @@ URI: [biolink:PairwiseMolecularInteraction](https://w3id.org/biolink/vocab/Pairw
  * [pairwise molecular interaction➞id](pairwise_molecular_interaction_id.md)  <sub>REQ</sub>
      * Description: identifier for the interaction. This may come from an interaction database such as IMEX.
      * range: [String](types/String.md)
-     * Example:    
+     * Example: WB:WBInteraction000538741 None
  * [pairwise molecular interaction➞object](pairwise_molecular_interaction_object.md)  <sub>REQ</sub>
      * range: [MolecularEntity](MolecularEntity.md)
  * [pairwise molecular interaction➞predicate](pairwise_molecular_interaction_predicate.md)  <sub>REQ</sub>
@@ -35,7 +35,7 @@ URI: [biolink:PairwiseMolecularInteraction](https://w3id.org/biolink/vocab/Pairw
  * [pairwise molecular interaction➞relation](pairwise_molecular_interaction_relation.md)  <sub>REQ</sub>
      * Description: interaction relationship type
      * range: [Uriorcurie](types/Uriorcurie.md)
-     * Example:    
+     * Example: RO:0002447 the subject molecular phosphorylates the object molecule
  * [pairwise molecular interaction➞subject](pairwise_molecular_interaction_subject.md)  <sub>REQ</sub>
      * range: [MolecularEntity](MolecularEntity.md)
 

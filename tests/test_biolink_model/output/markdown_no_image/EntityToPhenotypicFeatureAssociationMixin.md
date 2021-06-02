@@ -37,9 +37,9 @@ URI: [biolink:EntityToPhenotypicFeatureAssociationMixin](https://w3id.org/biolin
  * [entity to phenotypic feature association mixin➞object](entity_to_phenotypic_feature_association_mixin_object.md)  <sub>REQ</sub>
      * Description: phenotypic class
      * range: [PhenotypicFeature](PhenotypicFeature.md)
-     * Example:    
-     * Example:    
-     * Example:    
+     * Example: HP:0002487 Hyperkinesis
+     * Example: WBPhenotype:0000180 axon morphology variant
+     * Example: MP:0001569 abnormal circulating bilirubin level
  * [sex qualifier](sex_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state whether the association is specific to a particular sex.
      * range: [BiologicalSex](BiologicalSex.md)

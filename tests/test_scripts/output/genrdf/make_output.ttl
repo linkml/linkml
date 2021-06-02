@@ -1240,7 +1240,9 @@ linkml:last_updated_on a linkml:SlotDefinition ;
     linkml:slot_uri pav:lastUpdatedOn .
 
 linkml:mixin a linkml:SlotDefinition ;
-    skos:definition "this slot or class can only be used as a mixin -- equivalent to abstract" ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Mixin> ;
+    skos:altLabel "trait" ;
+    skos:definition "this slot or class can only be used as a mixin." ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:mixin ;
     linkml:domain linkml:Definition ;
@@ -1408,8 +1410,11 @@ linkml:is_a a linkml:SlotDefinition ;
     linkml:slot_uri linkml:is_a .
 
 linkml:mixins a linkml:SlotDefinition ;
+    rdfs:seeAlso <https://en.wikipedia.org/wiki/Mixin> ;
+    skos:altLabel "traits" ;
     skos:definition "List of definitions to be mixed in. Targets may be any definition of the same type" ;
     skos:inScheme linkml:meta ;
+    skos:note "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance" ;
     linkml:definition_uri linkml:mixins ;
     linkml:domain linkml:Definition ;
     linkml:domain_of linkml:Definition ;
@@ -2093,27 +2098,27 @@ linkml:meta a linkml:SchemaDefinition ;
         "skos",
         "xsd" ;
     linkml:enums linkml:pv_formula_options ;
-    linkml:generation_date "2021-03-24 16:48"^^xsd:dateTime ;
+    linkml:generation_date "2021-06-02 16:45"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:mappings,
         linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "skos" ;
-            linkml:prefix_reference skos: ],
-        [ linkml:prefix_prefix "pav" ;
-            linkml:prefix_reference pav: ],
-        [ linkml:prefix_prefix "oslc" ;
+    linkml:prefixes [ linkml:prefix_prefix "oslc" ;
             linkml:prefix_reference oslc: ],
         [ linkml:prefix_prefix "linkml" ;
             linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference pav: ],
+        [ linkml:prefix_prefix "OIO" ;
+            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "skos" ;
+            linkml:prefix_reference skos: ],
         [ linkml:prefix_prefix "schema" ;
             linkml:prefix_reference schema: ],
         [ linkml:prefix_prefix "bibo" ;
-            linkml:prefix_reference bibo: ],
-        [ linkml:prefix_prefix "OIO" ;
-            linkml:prefix_reference OIO: ] ;
+            linkml:prefix_reference bibo: ] ;
     linkml:slots linkml:abstract,
         linkml:alias,
         linkml:aliases,
@@ -2237,8 +2242,8 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "Wed Mar 24 16:45:57 2021"^^xsd:dateTime ;
-    linkml:source_file_size 32441 ;
+    linkml:source_file_date "Wed Jun  2 16:43:06 2021"^^xsd:dateTime ;
+    linkml:source_file_size 32760 ;
     linkml:subsets linkml:owl ;
     linkml:types linkml:boolean,
         linkml:date,

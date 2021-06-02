@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by namespacegen.py version: 0.9.0
-# Generation date: 2021-03-24 16:46
+# Generation date: 2021-06-02 16:44
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -118,7 +118,7 @@ class BiolinkNameSpace:
         CurieNamespace('MP', 'http://purl.obolibrary.org/obo/MP_'),
         CurieNamespace('MSigDB', 'https://www.gsea-msigdb.org/gsea/msigdb/'),
         CurieNamespace('MetaCyc', 'http://translator.ncats.nih.gov/MetaCyc_'),
-        CurieNamespace('NCBIGENE', 'http://identifiers.org/ncbigene/'),
+        CurieNamespace('NCBIGene', 'http://identifiers.org/ncbigene/'),
         CurieNamespace('NCBITaxon', 'http://purl.obolibrary.org/obo/NCBITaxon_'),
         CurieNamespace('NCIT', 'http://purl.obolibrary.org/obo/NCIT_'),
         CurieNamespace('NDC', 'http://identifiers.org/ndc/'),
@@ -219,6 +219,7 @@ class BiolinkNameSpace:
         CurieNamespace('linkml', 'https://w3id.org/linkml/'),
         CurieNamespace('medgen', 'https://www.ncbi.nlm.nih.gov/medgen/'),
         CurieNamespace('oboformat', 'http://www.geneontology.org/formats/oboInOWL#'),
+        CurieNamespace('os', 'https://github.com/cmungall/owlstar/blob/master/owlstar.ttl'),
         CurieNamespace('pav', 'http://purl.org/pav/'),
         CurieNamespace('prov', 'http://www.w3.org/ns/prov#'),
         CurieNamespace('qud', 'http://qudt.org/1.1/schema/qudt#'),

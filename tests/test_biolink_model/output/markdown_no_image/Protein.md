@@ -7,7 +7,7 @@ A gene product that is composed of a chain of amino acid sequences and is produc
 URI: [biolink:Protein](https://w3id.org/biolink/vocab/Protein)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[ProteinIsoform],[Protein&#124;synonym:label_type%20*;xref:iri_type%20*;has_biological_sequence(i):biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F]uses%20-.->[GeneProductMixin],[Protein]^-[ProteinIsoform],[GenomicEntity]^-[Protein],[OrganismTaxon],[NamedThing],[GenomicEntity],[GeneProductMixin],[Attribute],[Agent])
+![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Transcript],[ProteinIsoform],[Protein&#124;synonym:label_type%20*;xref:iri_type%20*;has_biological_sequence(i):biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F]uses%20-.->[GeneProductMixin],[Protein]^-[ProteinIsoform],[GenomicEntity]^-[Protein],[OrganismTaxon],[NamedThing],[GenomicEntity],[GeneProductMixin],[Attribute],[Agent])
 
 ## Identifier prefixes
 
@@ -15,6 +15,7 @@ URI: [biolink:Protein](https://w3id.org/biolink/vocab/Protein)
  * PR
  * ENSEMBL
  * FB
+ * UMLS
 
 ## Parents
 
@@ -30,6 +31,7 @@ URI: [biolink:Protein](https://w3id.org/biolink/vocab/Protein)
 
 ## Referenced by class
 
+ *  **[Transcript](Transcript.md)** *[translates to](translates_to.md)*  <sub>0..*</sub>  **[Protein](Protein.md)**
 
 ## Attributes
 

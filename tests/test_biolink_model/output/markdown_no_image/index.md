@@ -188,6 +188,8 @@ Entity and association taxonomy and datamodel for life-sciences data
                  * [Book](Book.md) - This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
                  * [BookChapter](BookChapter.md)
                  * [Serial](Serial.md) - This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
+         * [OrganismTaxon](OrganismTaxon.md) - A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or subspecies.
+             * [BioticExposure](BioticExposure.md) - An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).
          * [Phenomenon](Phenomenon.md) - a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question
          * [PhysicalEntity](PhysicalEntity.md) - An entity that has material reality (a.k.a. physical essence).
              * [MaterialSample](MaterialSample.md) - A sample is a limited quantity of something (e.g. an individual or set of individuals from a population, or a portion of a substance) to be used for testing, analysis, inspection, investigation, demonstration, or trial use. [SIO]
@@ -206,6 +208,7 @@ Entity and association taxonomy and datamodel for life-sciences data
  * [ActivityAndBehavior](ActivityAndBehavior.md) - Activity or behavior of any independent integral living, organization or mechanical actor in the world
  * [CaseToEntityAssociationMixin](CaseToEntityAssociationMixin.md) - An abstract association for use where the case is the subject
  * [CellLineToEntityAssociationMixin](CellLineToEntityAssociationMixin.md) - An relationship between a cell line and another entity
+ * [ChemicalOrDrugOrTreatment](ChemicalOrDrugOrTreatment.md)
  * [ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) - An interaction between a chemical entity and another entity
  * [DiseaseOrPhenotypicFeatureToEntityAssociationMixin](DiseaseOrPhenotypicFeatureToEntityAssociationMixin.md)
  * [DiseaseToEntityAssociationMixin](DiseaseToEntityAssociationMixin.md)
@@ -253,8 +256,6 @@ Entity and association taxonomy and datamodel for life-sciences data
      * [ActivityAndBehavior](ActivityAndBehavior.md) - Activity or behavior of any independent integral living, organization or mechanical actor in the world
  * [OntologyClass](OntologyClass.md) - a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.
      * [GeneOntologyClass](GeneOntologyClass.md) - an ontology class that describes a functional aspect of a gene, gene prodoct or complex
-     * [OrganismTaxon](OrganismTaxon.md) - A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or subspecies.
-         * [BioticExposure](BioticExposure.md) - An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).
      * [RelationshipType](RelationshipType.md) - An OWL property used as an edge label
      * [TaxonomicRank](TaxonomicRank.md) - A descriptor for the rank within a taxonomic classification. Example instance: TAXRANK:0000017 (kingdom)
      * [UnclassifiedOntologyClass](UnclassifiedOntologyClass.md) - this is used for nodes that are taken from an ontology but are not typed using an existing biolink class
@@ -299,6 +300,7 @@ Entity and association taxonomy and datamodel for life-sciences data
      * [has population context](has_population_context.md) - a biological population (general, study, cohort, etc.) with a specific set of characteristics to constrain an association.
      * [has temporal context](has_temporal_context.md) - a constraint of time placed upon the truth value of an association.
      * [interacting molecules category](interacting_molecules_category.md)
+     * [logical interpretation](logical_interpretation.md)
      * [negated](negated.md) - if set to true, then the association is negated i.e. is not true
      * [object](object.md) - connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
          * [anatomical entity to anatomical entity association➞object](anatomical_entity_to_anatomical_entity_association_object.md)
@@ -665,6 +667,7 @@ Entity and association taxonomy and datamodel for life-sciences data
      * [disease has basis in](disease_has_basis_in.md) - A relation that holds between a disease and an entity where the state of the entity has contribution to the disease.
      * [expressed in](expressed_in.md) - holds between a gene or gene product and an anatomical entity in which it is expressed
      * [expresses](expresses.md) - holds between an anatomical entity and gene or gene product that is expressed there
+     * [gene product of](gene_product_of.md) - definition x has gene product of y if and only if y is a gene (SO:0000704) that participates in some gene expression process (GO:0010467) where the output of thatf process is either y or something that is ribosomally translated from x
      * [genetic association](genetic_association.md) - Co-occurrence of a certain allele of a genetic marker and the phenotype of interest in the same individuals at above-chance level
          * [condition associated with gene](condition_associated_with_gene.md) - holds between a gene and a disease or phenotypic feature that may be influenced, contribute to, or be correlated with the gene or its alleles/products
          * [gene associated with condition](gene_associated_with_condition.md) - holds between a gene and a disease or phenotypic feature that the gene or its alleles/products may influence, contribute to, or correlate with
@@ -706,6 +709,7 @@ Entity and association taxonomy and datamodel for life-sciences data
      * [manifestation of](manifestation_of.md) - that part of a phenomenon which is directly observable or visibly expressed, or which gives evidence to the underlying process; used in SemMedDB for linking things like dysfunctions and processes to some disease or syndrome
      * [narrow match](narrow_match.md) - a list of terms from different schemas or terminology systems that have a narrower, more specific meaning. Narrower terms are typically shown as children in a hierarchy or tree.
      * [occurs in](occurs_in.md) - holds between a process and a material entity or site within which the process occurs
+     * [opposite of](opposite_of.md) - x is the opposite of y if there exists some distance metric M, and there exists no z such as M(x,z) <= M(x,y) or M(y,z) <= M(y,x). (This description is from RO. Needs to be rephrased).
      * [overlaps](overlaps.md) - holds between entities that overlap in their extents (materials or processes)
          * [has part](has_part.md) - holds between wholes and their parts (material entities or processes)
              * [has active ingredient](has_active_ingredient.md) - holds between a drug and a chemical substance in which the latter is a part of the former, and is a biologically active component
@@ -722,6 +726,7 @@ Entity and association taxonomy and datamodel for life-sciences data
          * [actively involved in](actively_involved_in.md) - holds between a continuant and a process or function, where the continuant actively contributes to part or all of the process or function it realizes
              * [capable of](capable_of.md) - holds between a physical entity and process or function, where the continuant alone has the ability to carry out the process or function.
          * [enables](enables.md) - holds between a physical entity and a process, where the physical entity executes the process
+     * [phenotype of](phenotype_of.md) - holds between a phenotype and a biological entity, where a phenotype is construed broadly as any kind of quality of an organism part, a collection of these qualities, or a change in quality or qualities (e.g. abnormally increased temperature).
      * [prevented by](prevented_by.md) - holds between a potential outcome of which the likelihood was reduced by the application or use of an entity.
      * [produced by](produced_by.md)
      * [produces](produces.md) - holds between a material entity and a product that is generated through the intentional actions or functioning of the material entity
@@ -732,13 +737,17 @@ Entity and association taxonomy and datamodel for life-sciences data
              * [orthologous to](orthologous_to.md) - a homology relationship between entities (typically genes) that diverged after a speciation event.
              * [paralogous to](paralogous_to.md) - a homology relationship that holds between entities (typically genes) that diverged after a duplication event.
              * [xenologous to](xenologous_to.md) - a homology relationship characterized by an interspecies (horizontal) transfer since the common ancestor.
-         * [model of](model_of.md) - holds between an entity and some other entity it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity.
+         * [model of](model_of.md) - holds between a thing and some other thing it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity.
      * [subclass of](subclass_of.md) - holds between two classes where the domain class is a specialization of the range class
          * [organism taxon➞subclass of](organism_taxon_subclass_of.md) - subclass of holds between two taxa, e.g. human subclass of mammal
      * [superclass of](superclass_of.md) - holds between two classes where the domain class is a super class of the range class
      * [temporally related to](temporally_related_to.md) - holds between two entities with a temporal relationship
          * [preceded by](preceded_by.md) - holds between two processes, where the other is completed before the one begins
          * [precedes](precedes.md) - holds between two processes, where one completes before the other begins
+     * [transcribed from](transcribed_from.md) - x is transcribed from y if and only if x is synthesized from template y
+     * [transcribed to](transcribed_to.md) - inverse of transcribed from
+     * [translates to](translates_to.md) - x (amino acid chain/polypeptide) is the ribosomal translation of y (transcript) if and only if a ribosome reads y (transcript) through a series of triplet codon-amino acid adaptor activities (GO:0030533) and produces x (amino acid chain/polypeptide)
+     * [translation of](translation_of.md) - inverse of translates to
      * [treated by](treated_by.md) - holds between a disease or phenotypic feature and a therapeutic process or chemical substance that is used to treat the condition
          * [approved for treatment by](approved_for_treatment_by.md) - holds between a disease or phenotypic feature and a therapeutic process or chemical substance that is approved for treatment of the condition (or not, if negated) to some level of clinical trial
  * [source](source.md) - a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
@@ -753,6 +762,7 @@ Entity and association taxonomy and datamodel for life-sciences data
 
 ### Enums
 
+ * [logical_interpretation_enum](logical_interpretation_enum.md)
 
 ### Types
 

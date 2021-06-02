@@ -30,6 +30,6 @@ URI: [biolink:functional_association_object](https://w3id.org/biolink/vocab/func
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'GO:0016301', 'description': 'kinase activity'} |
-|  | | {'value': 'GO:0045211', 'description': 'postsynaptic membrane'} |
+| **Examples:** | | Example(value='GO:0016301', description='kinase activity') |
+|  | | Example(value='GO:0045211', description='postsynaptic membrane') |
 

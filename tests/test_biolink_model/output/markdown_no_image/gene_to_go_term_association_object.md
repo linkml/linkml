@@ -26,5 +26,5 @@ URI: [biolink:gene_to_go_term_association_object](https://w3id.org/biolink/vocab
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'GO:0016301', 'description': 'kinase activity'} |
+| **Examples:** | | Example(value='GO:0016301', description='kinase activity') |
 

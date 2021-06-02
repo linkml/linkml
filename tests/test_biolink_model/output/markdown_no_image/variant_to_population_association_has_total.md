@@ -26,5 +26,5 @@ URI: [biolink:variant_to_population_association_has_total](https://w3id.org/biol
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': '24014', 'description': '24014 individuals in gnomad set'} |
+| **Examples:** | | Example(value='24014', description='24014 individuals in gnomad set') |
 

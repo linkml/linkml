@@ -26,5 +26,5 @@ URI: [biolink:gene_to_expression_site_association_object](https://w3id.org/bioli
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'UBERON:0002037', 'description': 'cerebellum'} |
+| **Examples:** | | Example(value='UBERON:0002037', description='cerebellum') |
 

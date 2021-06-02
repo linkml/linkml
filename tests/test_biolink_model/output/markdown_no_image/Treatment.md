@@ -7,7 +7,7 @@ A treatment is targeted at a disease or phenotype and may involve multiple drug 
 URI: [biolink:Treatment](https://w3id.org/biolink/vocab/Treatment)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Procedure]<has%20procedure%200..*-%20[Treatment&#124;timepoint:time_type%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[Device]<has%20device%200..*-%20[Treatment],[Drug]<has%20drug%200..*-%20[Treatment],[SequenceVariantModulatesTreatmentAssociation]-%20object%201..1>[Treatment],[Treatment]uses%20-.->[ExposureEvent],[NamedThing]^-[Treatment],[SequenceVariantModulatesTreatmentAssociation],[Procedure],[NamedThing],[ExposureEvent],[Drug],[DiseaseOrPhenotypicFeature],[Device],[Attribute],[Agent])
+![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Procedure]<has%20procedure%200..*-%20[Treatment&#124;timepoint:time_type%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[Device]<has%20device%200..*-%20[Treatment],[Drug]<has%20drug%200..*-%20[Treatment],[SequenceVariantModulatesTreatmentAssociation]-%20object%201..1>[Treatment],[Treatment]uses%20-.->[ExposureEvent],[Treatment]uses%20-.->[ChemicalOrDrugOrTreatment],[NamedThing]^-[Treatment],[SequenceVariantModulatesTreatmentAssociation],[Procedure],[NamedThing],[ExposureEvent],[Drug],[DiseaseOrPhenotypicFeature],[Device],[ChemicalOrDrugOrTreatment],[Attribute],[Agent])
 
 ## Parents
 
@@ -16,6 +16,7 @@ URI: [biolink:Treatment](https://w3id.org/biolink/vocab/Treatment)
 ## Uses Mixins
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
+ *  mixin: [ChemicalOrDrugOrTreatment](ChemicalOrDrugOrTreatment.md)
 
 ## Referenced by class
 

@@ -26,5 +26,5 @@ URI: [biolink:gene_to_expression_site_association_stage_qualifier](https://w3id.
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'UBERON:0000069', 'description': 'larval stage'} |
+| **Examples:** | | Example(value='UBERON:0000069', description='larval stage') |
 

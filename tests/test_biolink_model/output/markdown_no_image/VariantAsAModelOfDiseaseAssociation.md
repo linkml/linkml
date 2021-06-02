@@ -79,7 +79,7 @@ URI: [biolink:VariantAsAModelOfDiseaseAssociation](https://w3id.org/biolink/voca
  * [variant to disease association➞object](variant_to_disease_association_object.md)  <sub>REQ</sub>
      * Description: a disease that is associated with that variant
      * range: [NamedThing](NamedThing.md)
-     * Example:    
+     * Example: MONDO:0016419 hereditary breast cancer
  * [variant to disease association➞predicate](variant_to_disease_association_predicate.md)  <sub>REQ</sub>
      * Description: E.g. is pathogenic for
      * range: [PredicateType](types/PredicateType.md)

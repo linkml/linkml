@@ -27,9 +27,8 @@ URI: [biolink:regulates](https://w3id.org/biolink/vocab/regulates)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | This is a grouping for process-process and entity-entity regulation. |
-| **Exact Mappings:** | | GO:regulates |
-| **Close Mappings:** | | GO:regulated_by |
-|  | | RO:0002334 |
+| **Exact Mappings:** | | RO:0002211 |
+| **Close Mappings:** | | RO:0002334 |
 | **Narrow Mappings:** | | WIKIDATA_PROPERTY:P128 |
 |  | | CHEMBL.MECHANISM:modulator |
 |  | | RO:0002295 |

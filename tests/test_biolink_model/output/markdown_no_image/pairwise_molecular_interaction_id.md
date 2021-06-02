@@ -26,5 +26,5 @@ URI: [biolink:pairwise_molecular_interaction_id](https://w3id.org/biolink/vocab/
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'WB:WBInteraction000538741', 'description': None} |
+| **Examples:** | | Example(value='WB:WBInteraction000538741', description=None) |
 

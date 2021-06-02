@@ -27,5 +27,5 @@ URI: [biolink:genotype_to_disease_association_object](https://w3id.org/biolink/v
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'MONDO:0016419', 'description': 'hereditary breast cancer'} |
+| **Examples:** | | Example(value='MONDO:0016419', description='hereditary breast cancer') |
 

@@ -27,14 +27,12 @@ URI: [biolink:negatively_regulates](https://w3id.org/biolink/vocab/negatively_re
 | --- | --- | --- |
 | **Comments:** | | This is a grouping for negative process-process and entity-entity regulation. |
 | **Exact Mappings:** | | RO:0004035 |
-|  | | GO:negatively_regulates |
-| **Close Mappings:** | | GO:negatively_regulated_by |
+|  | | RO:0002212 |
+| **Close Mappings:** | | RO:0002335 |
 | **Narrow Mappings:** | | CHEMBL.MECHANISM:blocker |
 |  | | CHEMBL.MECHANISM:inhibitor |
 |  | | CHEMBL.MECHANISM:negative_allosteric_modulator |
 |  | | CHEMBL.MECHANISM:negative_modulator |
-|  | | GO:acts_upstream_of_negative_effect |
-|  | | GO:acts_upstream_of_or_within_negative_effect |
 |  | | RO:0002630 |
 | **Broad Mappings:** | | RO:0004033 |
 

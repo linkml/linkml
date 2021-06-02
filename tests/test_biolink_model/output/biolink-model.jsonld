@@ -2,7 +2,7 @@
   "name": "Biolink-Model",
   "description": "Entity and association taxonomy and datamodel for life-sciences data",
   "id": "https://w3id.org/biolink/biolink-model",
-  "version": "1.6.0",
+  "version": "1.8.2",
   "imports": [
     "linkml:types"
   ],
@@ -271,6 +271,10 @@
     {
       "prefix_prefix": "ORPHA",
       "prefix_reference": "http://www.orpha.net/ORDO/Orphanet_"
+    },
+    {
+      "prefix_prefix": "os",
+      "prefix_reference": "https://github.com/cmungall/owlstar/blob/master/owlstar.ttl"
     },
     {
       "prefix_prefix": "PathWhiz",
@@ -731,6 +735,28 @@
       "uri": "http://www.w3.org/ns/shex#nonLiteral",
       "repr": "str",
       "@type": "TypeDefinition"
+    }
+  ],
+  "enums": [
+    {
+      "name": "logical_interpretation_enum",
+      "definition_uri": "https://w3id.org/biolink/vocab/LogicalInterpretationEnum",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "permissible_values": [
+        {
+          "text": "SomeSome",
+          "description": "A modifier on a triple that causes the triple to be interpreted as a some-some statement",
+          "meaning": "os:SomeSomeInterpretation"
+        },
+        {
+          "text": "AllSome",
+          "description": "A modifier on a triple that causes the triple to be interpreted as an all-some statement.",
+          "meaning": "os:AllSomeInterpretation"
+        },
+        {
+          "text": "InverseAllSome"
+        }
+      ]
     }
   ],
   "slots": [
@@ -2175,9 +2201,9 @@
         "FMA:continuous_with",
         "FMA:homonym_of",
         "FMA:related_developmental_entity_of",
-        "GO:ends_during",
-        "GO:happens_during",
-        "GO:inverse_ends_during",
+        "RO:0002093",
+        "RO:0002092",
+        "RO:0002084",
         "GOREL:0002005",
         "GOREL:0012006",
         "HCPCS:mapped_to",
@@ -2202,12 +2228,12 @@
         "OBO:envo#has_increased_levels_of",
         "OBO:has_role",
         "OBO:nbo#is_about",
-        "OBOREL:0000053",
-        "PATO:decreased_in_magnitude_relative_to",
-        "PATO:has_cross_section",
-        "PATO:has_relative_magnitude",
-        "PATO:increased_in_magnitude_relative_to",
-        "PATO:reciprocal_of",
+        "RO:0000053",
+        "PATO-PROPERTY:decreased_in_magnitude_relative_to",
+        "PATO-PROPERTY:has_cross_section",
+        "PATO-PROPERTY:has_relative_magnitude",
+        "PATO-PROPERTY:increased_in_magnitude_relative_to",
+        "PATO-PROPERTY:reciprocal_of",
         "RO:0000052",
         "RO:0002001",
         "RO:0002002",
@@ -2350,12 +2376,12 @@
         "LOINC:has_parent_group",
         "LOINC:is_presence_guidance_for",
         "NCIT:gene_product_has_chemical_classification",
-        "NCIT:gene_is_biomarker_type",
-        "NCIT:gene_product_is_biomarker_type",
-        "NCIT:has_inc_parent",
-        "NCIT:has_nichd_parent",
-        "NCIT:neoplasm_has_special_category",
-        "NCIT:role_has_parent",
+        "NCIT:R36",
+        "NCIT:R42",
+        "NCIT:A16",
+        "NCIT:A11",
+        "NCIT:A14",
+        "NCIT:A3",
         "NDDF:has_dose_form",
         "OBO:intersection_of",
         "RXNORM:has_dose_form",
@@ -2506,6 +2532,28 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "opposite_of",
+      "definition_uri": "https://w3id.org/biolink/vocab/opposite_of",
+      "description": "x is the opposite of y if there exists some distance metric M, and there exists no z such as M(x,z) <= M(x,y) or M(y,z) <= M(y,x). (This description is from RO. Needs to be rephrased).",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "see_also": [
+        "https://doi.org/10.1101/108977",
+        "https://github.com/biolink/biolink-model/issues/657"
+      ],
+      "exact_mappings": [
+        "RO:0002604"
+      ],
+      "is_a": "related_to",
+      "domain": "NamedThing",
+      "range": "NamedThing",
+      "slot_uri": "https://w3id.org/biolink/vocab/opposite_of",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "opposite_of",
+      "symmetric": true,
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "contributor",
       "definition_uri": "https://w3id.org/biolink/vocab/contributor",
       "comments": [
@@ -2645,7 +2693,7 @@
         "SEMMEDDB:interacts_with",
         "DRUGBANK:drug-interaction",
         "FMA:adheres_to",
-        "NCIT:has_target",
+        "NCIT:A7",
         "PR:non-covalently_bound_to"
       ],
       "is_a": "interacts_with",
@@ -2727,24 +2775,24 @@
         "GOREL:0001006",
         "CTD:inferred",
         "UPHENO:0000001",
-        "GO:acts_upstream_of",
-        "GO:acts_upstream_of_or_within",
-        "NCIT:allele_plays_altered_role_in_process",
-        "NCIT:allele_plays_role_in_metabolism_of_chemical_or_drug",
-        "NCIT:biological_process_has_associated_location",
-        "NCIT:chemical_or_drug_affects_abnormal_cell",
-        "NCIT:chemical_or_drug_affects_cell_type_or_tissue",
-        "NCIT:chemical_or_drug_affects_gene_product",
-        "NCIT:chemical_or_drug_has_mechanism_of_action",
-        "NCIT:cytogenetic_abnormality_involves_chromosome",
-        "NCIT:disease_has_associated_anatomic_site",
-        "NCIT:disease_has_metastatic_anatomic_site",
-        "NCIT:disease_has_primary_anatomic_site",
-        "NCIT:disease_may_have_abnormal_cell",
-        "NCIT:eo_disease_has_associated_cell_type",
-        "NCIT:eo_disease_has_associated_eo_anatomy",
+        "RO:0002263",
+        "RO:0002264",
+        "NCIT:R158",
+        "NCIT:R160",
+        "NCIT:R30",
+        "NCIT:R150",
+        "NCIT:R72",
+        "NCIT:R146",
+        "NCIT:R124",
+        "NCIT:R173",
+        "NCIT:R100",
+        "NCIT:R102",
+        "NCIT:R101",
+        "NCIT:R113",
+        "NCIT:R23",
+        "NCIT:R25",
         "NCIT:gene_mapped_to_disease",
-        "NCIT:gene_product_has_abnormality",
+        "NCIT:R133",
         "RO:0002343",
         "RO:0002355",
         "RO:0002591",
@@ -3025,6 +3073,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "RO:0003003",
         "CTD:increases_expression_of"
       ],
       "close_mappings": [
@@ -3048,6 +3097,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "RO:0003002",
         "CTD:decreases_expression_of"
       ],
       "related_mappings": [
@@ -4044,10 +4094,9 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
-        "GO:regulates"
+        "RO:0002211"
       ],
       "close_mappings": [
-        "GO:regulated_by",
         "RO:0002334"
       ],
       "narrow_mappings": [
@@ -4089,17 +4138,16 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
-        "RO:0002213",
-        "GO:positively_regulates"
+        "RO:0002213"
       ],
       "close_mappings": [
-        "GO:positively_regulated_by"
+        "RO:0002336"
       ],
       "narrow_mappings": [
         "CHEMBL.MECHANISM:activator",
         "DGIdb:activator",
-        "GO:acts_upstream_of_or_within_positive_effect",
-        "GO:acts_upstream_of_positive_effect",
+        "RO:0004032",
+        "RO:0004034",
         "RO:0002629",
         "SEMMEDDB:augments"
       ],
@@ -4136,18 +4184,16 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
         "RO:0004035",
-        "GO:negatively_regulates"
+        "RO:0002212"
       ],
       "close_mappings": [
-        "GO:negatively_regulated_by"
+        "RO:0002335"
       ],
       "narrow_mappings": [
         "CHEMBL.MECHANISM:blocker",
         "CHEMBL.MECHANISM:inhibitor",
         "CHEMBL.MECHANISM:negative_allosteric_modulator",
         "CHEMBL.MECHANISM:negative_modulator",
-        "GO:acts_upstream_of_negative_effect",
-        "GO:acts_upstream_of_or_within_negative_effect",
         "RO:0002630"
       ],
       "broad_mappings": [
@@ -4503,6 +4549,27 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "gene_product_of",
+      "definition_uri": "https://w3id.org/biolink/vocab/gene_product_of",
+      "description": "definition x has gene product of y if and only if y is a gene (SO:0000704) that participates in some gene expression process (GO:0010467) where the output of thatf process is either y or something that is ribosomally translated from x",
+      "in_subset": [
+        "translator_minimal"
+      ],
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "RO:0002204"
+      ],
+      "is_a": "related_to",
+      "domain": "GeneProductMixin",
+      "range": "Gene",
+      "slot_uri": "https://w3id.org/biolink/vocab/gene_product_of",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "gene_product_of",
+      "inverse": "has_gene_product",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "has_gene_product",
       "definition_uri": "https://w3id.org/biolink/vocab/has_gene_product",
       "description": "holds between a gene and a transcribed and/or translated product generated from it",
@@ -4519,7 +4586,7 @@
         "PR:has_gene_template"
       ],
       "narrow_mappings": [
-        "NCIT:gene_mutant_encodes_gene_product_sequence_variation"
+        "NCIT:R178"
       ],
       "is_a": "related_to",
       "domain": "Gene",
@@ -4529,6 +4596,83 @@
       "inherited": true,
       "inlined": true,
       "owner": "has_gene_product",
+      "inverse": "gene_product_of",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "transcribed_to",
+      "definition_uri": "https://w3id.org/biolink/vocab/transcribed_to",
+      "description": "inverse of transcribed from",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "RO:0002511",
+        "SIO:010080"
+      ],
+      "is_a": "related_to",
+      "domain": "Gene",
+      "range": "Transcript",
+      "slot_uri": "https://w3id.org/biolink/vocab/transcribed_to",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "transcribed_to",
+      "inverse": "transcribed_from",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "transcribed_from",
+      "definition_uri": "https://w3id.org/biolink/vocab/transcribed_from",
+      "description": "x is transcribed from y if and only if x is synthesized from template y",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "RO:0002510",
+        "SIO:010081"
+      ],
+      "is_a": "related_to",
+      "domain": "Transcript",
+      "range": "Gene",
+      "slot_uri": "https://w3id.org/biolink/vocab/transcribed_from",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "transcribed_from",
+      "inverse": "transcribed_to",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "translates_to",
+      "definition_uri": "https://w3id.org/biolink/vocab/translates_to",
+      "description": "x (amino acid chain/polypeptide) is the ribosomal translation of y (transcript) if and only if a ribosome reads y (transcript) through a series of triplet codon-amino acid adaptor activities (GO:0030533) and produces x (amino acid chain/polypeptide)",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "close_mappings": [
+        "RO:0002513",
+        "SIO:010082"
+      ],
+      "is_a": "related_to",
+      "domain": "Transcript",
+      "range": "Protein",
+      "slot_uri": "https://w3id.org/biolink/vocab/translates_to",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "translates_to",
+      "inverse": "translation_of",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "translation_of",
+      "definition_uri": "https://w3id.org/biolink/vocab/translation_of",
+      "description": "inverse of translates to",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "close_mappings": [
+        "RO:0002512",
+        "SIO:010083"
+      ],
+      "is_a": "related_to",
+      "domain": "Protein",
+      "range": "Transcript",
+      "slot_uri": "https://w3id.org/biolink/vocab/translation_of",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "translation_of",
+      "inverse": "translates_to",
       "@type": "SlotDefinition"
     },
     {
@@ -4891,8 +5035,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
-        "RO:00002325",
-        "GO:colocalizes_with"
+        "RO:00002325"
       ],
       "is_a": "coexists_with",
       "domain": "NamedThing",
@@ -4934,9 +5077,9 @@
         "RTXKG1:gene_associated_with_condition"
       ],
       "narrow_mappings": [
-        "NCIT:gene_associated_with_disease",
-        "NCIT:gene_involved_in_pathogenesis_of_disease",
-        "NCIT:gene_product_malfunction_associated_with_disease"
+        "NCIT:R38",
+        "NCIT:R175",
+        "NCIT:R48"
       ],
       "broad_mappings": [
         "GENO:0000840",
@@ -5021,8 +5164,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
-        "RO:0002326",
-        "GO:contributes_to"
+        "RO:0002326"
       ],
       "close_mappings": [
         "IDO:0000664"
@@ -5178,6 +5320,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "DRUGBANK:treats",
         "SEMMEDDB:TREATS",
         "SEMMEDDB:treats",
         "WIKIDATA_PROPERTY:P2175"
@@ -5214,7 +5357,7 @@
         "RO:0003307"
       ],
       "is_a": "ameliorates",
-      "domain": "Treatment",
+      "domain": "ChemicalOrDrugOrTreatment",
       "range": "DiseaseOrPhenotypicFeature",
       "slot_uri": "https://w3id.org/biolink/vocab/treats",
       "multivalued": true,
@@ -5280,7 +5423,7 @@
         "REPODB:clinically_tested_withdrawn_phase_3"
       ],
       "is_a": "treats",
-      "domain": "Treatment",
+      "domain": "ChemicalOrDrugOrTreatment",
       "range": "DiseaseOrPhenotypicFeature",
       "slot_uri": "https://w3id.org/biolink/vocab/approved_to_treat",
       "multivalued": true,
@@ -5467,10 +5610,10 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
-        "NCIT:gene_is_biomarker_of"
+        "NCIT:R39"
       ],
       "narrow_mappings": [
-        "NCIT:gene_product_is_biomarker_of",
+        "NCIT:R47",
         "NCIT:genetic_biomarker_related_to",
         "NCIT:is_molecular_abnormality_of_disease",
         "ORPHA:465410",
@@ -5501,8 +5644,8 @@
         "RO:0002206"
       ],
       "narrow_mappings": [
-        "NCIT:gene_product_expressed_in_tissue",
-        "NCIT:gene_product_has_associated_anatomy",
+        "NCIT:R49",
+        "NCIT:R46",
         "RTXKG1:expressed_in"
       ],
       "is_a": "related_to",
@@ -5558,13 +5701,13 @@
         "OMIM:phenotype_of"
       ],
       "narrow_mappings": [
-        "NCIT:disease_may_have_molecular_abnormality",
+        "NCIT:R89",
         "OBO:doid#has_symptom",
         "RO:0004022"
       ],
       "broad_mappings": [
         "hetio:PRESENTS_DpS",
-        "NCIT:disease_may_have_finding",
+        "NCIT:R115",
         "OMIM:has_phenotype"
       ],
       "is_a": "related_to",
@@ -5574,6 +5717,28 @@
       "multivalued": true,
       "inherited": true,
       "owner": "has_phenotype",
+      "inverse": "phenotype_of",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "phenotype_of",
+      "definition_uri": "https://w3id.org/biolink/vocab/phenotype_of",
+      "description": "holds between a phenotype and a biological entity, where a phenotype is construed broadly as any kind of quality of an organism part, a collection of these qualities, or a change in quality or qualities (e.g. abnormally increased temperature).",
+      "notes": [
+        "check the domain"
+      ],
+      "in_subset": [
+        "translator_minimal"
+      ],
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "is_a": "related_to",
+      "domain": "PhenotypicFeature",
+      "range": "BiologicalEntity",
+      "slot_uri": "https://w3id.org/biolink/vocab/phenotype_of",
+      "multivalued": true,
+      "inherited": true,
+      "owner": "phenotype_of",
+      "inverse": "has_phenotype",
       "@type": "SlotDefinition"
     },
     {
@@ -5586,7 +5751,6 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
         "BFO:0000066",
-        "GO:occurs_in",
         "PathWhiz:has_location",
         "SNOMED:occurs_in"
       ],
@@ -5657,18 +5821,18 @@
         "HMDB:at_tissue",
         "HMDB:in_biospecimen",
         "LOINC:has_imaging_focus",
-        "NCIT:allele_absent_from_wild-type_chromosomal_location",
-        "NCIT:allele_in_chromosomal_location",
-        "NCIT:gene_has_physical_location",
-        "NCIT:gene_in_chromosomal_location",
+        "NCIT:R156",
+        "NCIT:R155",
+        "NCIT:R145",
+        "NCIT:R40",
         "NCIT:is_location_of_anatomic_structure",
-        "NCIT:procedure_has_completely_excised_anatomy",
-        "NCIT:procedure_has_excised_anatomy",
-        "NCIT:procedure_has_imaged_anatomy",
-        "NCIT:procedure_has_partially_excised_anatomy",
-        "NCIT:procedure_may_have_completely_excised_anatomy",
-        "NCIT:procedure_may_have_excised_anatomy",
-        "NCIT:procedure_may_have_partially_excised_anatomy",
+        "NCIT:R171",
+        "NCIT:R167",
+        "NCIT:R165",
+        "NCIT:R169",
+        "NCIT:R170",
+        "NCIT:R166",
+        "NCIT:R168",
         "RO:0002303",
         "RTXKG1:disease_has_location",
         "SNOMED:has_finding_site",
@@ -5783,7 +5947,7 @@
     {
       "name": "model_of",
       "definition_uri": "https://w3id.org/biolink/vocab/model_of",
-      "description": "holds between an entity and some other entity it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity.",
+      "description": "holds between a thing and some other thing it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity.",
       "in_subset": [
         "translator_minimal"
       ],
@@ -5843,7 +6007,6 @@
         "BFO:0000051",
         "BFO:0000055",
         "WIKIDATA_PROPERTY:P527",
-        "GO:has_part",
         "RO:0001019",
         "RTXKG1:has_part",
         "RXNORM:consists_of",
@@ -5863,7 +6026,7 @@
         "NCIT:complex_has_physical_part",
         "NDDF:has_ingredient",
         "PathWhiz:has_element_in_bound",
-        "NCIT:gene_product_has_structural_domain_or_motif",
+        "NCIT:R50",
         "PDQ:has_component",
         "PathWhiz:has_protein_in_complex",
         "RO:0002104",
@@ -5908,7 +6071,6 @@
         "SEMMEDDB:part_of",
         "WIKIDATA_PROPERTY:P361",
         "FMA:part_of",
-        "GO:part_of",
         "RXNORM:constitutes",
         "RXNORM:part_of"
       ],
@@ -5934,8 +6096,8 @@
         "LOINC:multipart_of",
         "MEDDRA:member_of",
         "MONDO:part_of_progression_of_disease",
-        "NCIT:anatomic_structure_is_physical_part_of",
-        "NCIT:conceptual_part_of",
+        "NCIT:R82",
+        "NCIT:R27",
         "NCIT:is_component_of_chemotherapy_regimen",
         "NDDF:ingredient_of",
         "PDQ:component_of",
@@ -6039,7 +6201,7 @@
         "RTXKG1:output_of"
       ],
       "narrow_mappings": [
-        "NCIT:biological_process_has_result_anatomy",
+        "NCIT:R31",
         "OBI:0000299",
         "PathWhiz:has_right_element",
         "RO:0002296",
@@ -6119,19 +6281,17 @@
       "exact_mappings": [
         "RO:0000056",
         "BFO:0000056",
-        "GO:involved_in",
-        "RO:participates_in",
         "RTXKG1:participates_in"
       ],
       "narrow_mappings": [
         "DRUGBANK:pathway",
         "HMDB:in_pathway",
         "LOINC:is_given_pharmaceutical_substance_for",
-        "NCIT:gene_is_element_in_pathway",
-        "NCIT:gene_plays_role_in_process",
-        "NCIT:gene_product_is_element_in_pathway",
-        "NCIT:gene_product_is_physical_part_of",
-        "NCIT:gene_product_plays_role_in_biological_process",
+        "NCIT:R130",
+        "NCIT:R37",
+        "NCIT:R131",
+        "NCIT:R51",
+        "NCIT:R53",
         "OBI:0000295",
         "RO:0002216",
         "RO:0002505",
@@ -6159,7 +6319,7 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
         "RO:0002331",
-        "GO:is_active_in"
+        "RO:0002432"
       ],
       "close_mappings": [
         "NCIT:biological_process_involves_chemical_or_drug"
@@ -6170,7 +6330,7 @@
         "ORPHA:317348",
         "ORPHA:317349",
         "ORPHA:327767",
-        "PATO:towards"
+        "RO:0002503"
       ],
       "broad_mappings": [
         "RTXKG1:involved_in"
@@ -6198,8 +6358,7 @@
         "RTXKG1:capable_of"
       ],
       "narrow_mappings": [
-        "GO:has_occurrence",
-        "NCIT:gene_product_has_biochemical_function",
+        "NCIT:R52",
         "RO:0002500"
       ],
       "is_a": "actively_involved_in",
@@ -6221,8 +6380,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
-        "RO:0002327",
-        "GO:enables"
+        "RO:0002327"
       ],
       "is_a": "participates_in",
       "domain": "PhysicalEntity",
@@ -6296,8 +6454,7 @@
       "exact_mappings": [
         "RO:0001000",
         "FMA:derives_from",
-        "OBO:doid#derives_from",
-        "RO:derives_from"
+        "OBO:doid#derives_from"
       ],
       "narrow_mappings": [
         "CHEBI:has_functional_parent",
@@ -6566,7 +6723,7 @@
         "GOREL:0001010"
       ],
       "narrow_mappings": [
-        "NCIT:biological_process_has_result_chemical_or_drug",
+        "NCIT:R29",
         "SNOMED:has_process_output",
         "SNOMED:specimen_procedure_of"
       ],
@@ -6740,8 +6897,8 @@
         "SIO:000203"
       ],
       "is_a": "interacts_with",
-      "domain": "NamedThing",
-      "range": "NamedThing",
+      "domain": "MolecularEntity",
+      "range": "MolecularEntity",
       "slot_uri": "https://w3id.org/biolink/vocab/directly_interacts_with",
       "multivalued": true,
       "inherited": true,
@@ -6808,7 +6965,8 @@
       "narrow_mappings": [
         "NCIT:gene_product_sequence_variation_encoded_by_gene_mutant",
         "NCIT:gene_product_variant_of_gene_product",
-        "OMIM:allelic_variant_of"
+        "OMIM:allelic_variant_of",
+        "WIKIDATA:P3433"
       ],
       "is_a": "related_to",
       "domain": "SequenceVariant",
@@ -7225,7 +7383,6 @@
       "slot_uri": "https://w3id.org/biolink/vocab/in_taxon",
       "multivalued": true,
       "inherited": true,
-      "inlined": true,
       "owner": "ThingWithTaxon",
       "domain_of": [
         "ThingWithTaxon"
@@ -7421,6 +7578,20 @@
       "slot_uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
       "required": true,
       "owner": "edge_label",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "logical_interpretation",
+      "definition_uri": "https://w3id.org/biolink/vocab/logical_interpretation",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "os:LogicalInterpretation"
+      ],
+      "is_a": "association_slot",
+      "domain": "Association",
+      "range": "logical_interpretation_enum",
+      "slot_uri": "https://w3id.org/biolink/vocab/logical_interpretation",
+      "owner": "logical_interpretation",
       "@type": "SlotDefinition"
     },
     {
@@ -7822,7 +7993,10 @@
       "domain": "Association",
       "range": "string",
       "slot_uri": "https://w3id.org/biolink/vocab/associated_environmental_context",
-      "owner": "associated_environmental_context",
+      "owner": "OrganismTaxonToOrganismTaxonInteraction",
+      "domain_of": [
+        "OrganismTaxonToOrganismTaxonInteraction"
+      ],
       "@type": "SlotDefinition"
     },
     {
@@ -7981,13 +8155,13 @@
       "range": "TaxonomicRank",
       "slot_uri": "https://w3id.org/biolink/vocab/has_taxonomic_rank",
       "inlined": true,
-      "alias": "has_taxonomic_rank",
+      "alias": "has taxonomic rank",
       "owner": "OrganismTaxon",
       "domain_of": [
         "OrganismTaxon"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_taxonomic_rank",
+      "usage_slot_name": "has taxonomic rank",
       "@type": "SlotDefinition"
     },
     {
@@ -8000,14 +8174,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/subclass_of",
       "multivalued": true,
       "inherited": true,
-      "inlined": true,
-      "alias": "subclass_of",
+      "alias": "subclass of",
       "owner": "OrganismTaxon",
       "domain_of": [
         "OrganismTaxon"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "subclass_of",
+      "usage_slot_name": "subclass of",
       "@type": "SlotDefinition"
     },
     {
@@ -8182,13 +8355,13 @@
       "range": "uriorcurie",
       "slot_uri": "https://w3id.org/biolink/vocab/published_in",
       "required": true,
-      "alias": "published_in",
+      "alias": "published in",
       "owner": "BookChapter",
       "domain_of": [
         "BookChapter"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "published_in",
+      "usage_slot_name": "published in",
       "@type": "SlotDefinition"
     },
     {
@@ -8237,13 +8410,13 @@
       "range": "uriorcurie",
       "slot_uri": "https://w3id.org/biolink/vocab/published_in",
       "required": true,
-      "alias": "published_in",
+      "alias": "published in",
       "owner": "Article",
       "domain_of": [
         "Article"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "published_in",
+      "usage_slot_name": "published in",
       "@type": "SlotDefinition"
     },
     {
@@ -8254,13 +8427,13 @@
       "domain": "Article",
       "range": "string",
       "slot_uri": "https://w3id.org/biolink/vocab/iso_abbreviation",
-      "alias": "iso_abbreviation",
+      "alias": "iso abbreviation",
       "owner": "Article",
       "domain_of": [
         "Article"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "iso_abbreviation",
+      "usage_slot_name": "iso abbreviation",
       "@type": "SlotDefinition"
     },
     {
@@ -8273,13 +8446,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/has_input",
       "multivalued": true,
       "inherited": true,
-      "alias": "has_input",
+      "alias": "has input",
       "owner": "MolecularActivity",
       "domain_of": [
         "MolecularActivity"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_input",
+      "usage_slot_name": "has input",
       "@type": "SlotDefinition"
     },
     {
@@ -8292,13 +8465,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/has_output",
       "multivalued": true,
       "inherited": true,
-      "alias": "has_output",
+      "alias": "has output",
       "owner": "MolecularActivity",
       "domain_of": [
         "MolecularActivity"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_output",
+      "usage_slot_name": "has output",
       "@type": "SlotDefinition"
     },
     {
@@ -8312,13 +8485,13 @@
       "multivalued": true,
       "inherited": true,
       "inlined": true,
-      "alias": "enabled_by",
+      "alias": "enabled by",
       "owner": "MolecularActivity",
       "domain_of": [
         "MolecularActivity"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "enabled_by",
+      "usage_slot_name": "enabled by",
       "@type": "SlotDefinition"
     },
     {
@@ -8331,13 +8504,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/has_attribute",
       "multivalued": true,
       "inlined": true,
-      "alias": "has_attribute",
+      "alias": "has attribute",
       "owner": "OrganismalEntity",
       "domain_of": [
         "OrganismalEntity"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_attribute",
+      "usage_slot_name": "has attribute",
       "@type": "SlotDefinition"
     },
     {
@@ -8366,13 +8539,13 @@
       "range": "Gene",
       "slot_uri": "https://w3id.org/biolink/vocab/has_gene",
       "multivalued": true,
-      "alias": "has_gene",
+      "alias": "has gene",
       "owner": "SequenceVariant",
       "domain_of": [
         "SequenceVariant"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_gene",
+      "usage_slot_name": "has gene",
       "@type": "SlotDefinition"
     },
     {
@@ -8383,13 +8556,13 @@
       "domain": "SequenceVariant",
       "range": "biological_sequence",
       "slot_uri": "https://w3id.org/biolink/vocab/has_biological_sequence",
-      "alias": "has_biological_sequence",
+      "alias": "has biological sequence",
       "owner": "SequenceVariant",
       "domain_of": [
         "SequenceVariant"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_biological_sequence",
+      "usage_slot_name": "has biological sequence",
       "@type": "SlotDefinition"
     },
     {
@@ -8397,11 +8570,13 @@
       "examples": [
         {
           "value": "ZFIN:ZDB-ALT-980203-1091",
-          "description": "ti282a allele from ZFIN"
+          "description": "ti282a allele from ZFIN",
+          "@type": "Example"
         },
         {
           "value": "ClinVarVariant:17681",
-          "description": "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)"
+          "description": "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -8433,13 +8608,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/has_attribute_type",
       "required": true,
       "inlined": true,
-      "alias": "has_attribute_type",
+      "alias": "has attribute type",
       "owner": "ClinicalMeasurement",
       "domain_of": [
         "ClinicalMeasurement"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_attribute_type",
+      "usage_slot_name": "has attribute type",
       "@type": "SlotDefinition"
     },
     {
@@ -8451,13 +8626,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/has_attribute",
       "multivalued": true,
       "inlined": true,
-      "alias": "has_attribute",
+      "alias": "has attribute",
       "owner": "ClinicalFinding",
       "domain_of": [
         "ClinicalFinding"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_attribute",
+      "usage_slot_name": "has attribute",
       "@type": "SlotDefinition"
     },
     {
@@ -8470,13 +8645,13 @@
       "multivalued": true,
       "required": true,
       "inlined": true,
-      "alias": "has_attribute",
+      "alias": "has attribute",
       "owner": "SocioeconomicExposure",
       "domain_of": [
         "SocioeconomicExposure"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_attribute",
+      "usage_slot_name": "has attribute",
       "@type": "SlotDefinition"
     },
     {
@@ -8816,13 +8991,13 @@
       "range": "OntologyClass",
       "slot_uri": "https://w3id.org/biolink/vocab/quantifier_qualifier",
       "inlined": true,
-      "alias": "quantifier_qualifier",
+      "alias": "quantifier qualifier",
       "owner": "GeneExpressionMixin",
       "domain_of": [
         "GeneExpressionMixin"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "quantifier_qualifier",
+      "usage_slot_name": "quantifier qualifier",
       "@type": "SlotDefinition"
     },
     {
@@ -8908,7 +9083,7 @@
       "examples": [
         {
           "value": "WB:WBInteraction000538741",
-          "description": null
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -8955,7 +9130,8 @@
       "examples": [
         {
           "value": "RO:0002447",
-          "description": "the subject molecular phosphorylates the object molecule"
+          "description": "the subject molecular phosphorylates the object molecule",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9182,13 +9358,13 @@
       "slot_uri": "https://w3id.org/biolink/vocab/catalyst_qualifier",
       "multivalued": true,
       "inlined": true,
-      "alias": "catalyst_qualifier",
+      "alias": "catalyst qualifier",
       "owner": "ChemicalToChemicalDerivationAssociation",
       "domain_of": [
         "ChemicalToChemicalDerivationAssociation"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "catalyst_qualifier",
+      "usage_slot_name": "catalyst qualifier",
       "@type": "SlotDefinition"
     },
     {
@@ -9344,7 +9520,8 @@
       "examples": [
         {
           "value": "MONDO:0017314",
-          "description": "Ehlers-Danlos syndrome, vascular type"
+          "description": "Ehlers-Danlos syndrome, vascular type",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9446,15 +9623,18 @@
       "examples": [
         {
           "value": "HP:0002487",
-          "description": "Hyperkinesis"
+          "description": "Hyperkinesis",
+          "@type": "Example"
         },
         {
           "value": "WBPhenotype:0000180",
-          "description": "axon morphology variant"
+          "description": "axon morphology variant",
+          "@type": "Example"
         },
         {
           "value": "MP:0001569",
-          "description": "abnormal circulating bilirubin level"
+          "description": "abnormal circulating bilirubin level",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9484,7 +9664,8 @@
       "examples": [
         {
           "value": "MONDO:0020066",
-          "description": "Ehlers-Danlos syndrome"
+          "description": "Ehlers-Danlos syndrome",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9508,11 +9689,13 @@
       "examples": [
         {
           "value": "MONDO:0017314",
-          "description": "Ehlers-Danlos syndrome, vascular type"
+          "description": "Ehlers-Danlos syndrome, vascular type",
+          "@type": "Example"
         },
         {
           "value": "MP:0013229",
-          "description": "abnormal brain ventricle size"
+          "description": "abnormal brain ventricle size",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9553,7 +9736,8 @@
       "examples": [
         {
           "value": "UBERON:0002048",
-          "description": "lung"
+          "description": "lung",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9577,11 +9761,13 @@
       "examples": [
         {
           "value": "MONDO:0017314",
-          "description": "Ehlers-Danlos syndrome, vascular type"
+          "description": "Ehlers-Danlos syndrome, vascular type",
+          "@type": "Example"
         },
         {
           "value": "MP:0013229",
-          "description": "abnormal brain ventricle size"
+          "description": "abnormal brain ventricle size",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9732,11 +9918,13 @@
       "examples": [
         {
           "value": "ClinVar:38077",
-          "description": "ClinVar representation of NM_000059.3(BRCA2):c.7007G>A (p.Arg2336His)"
+          "description": "ClinVar representation of NM_000059.3(BRCA2):c.7007G>A (p.Arg2336His)",
+          "@type": "Example"
         },
         {
           "value": "ClinGen:CA024716",
-          "description": "chr13:g.32921033G>C (hg19) in ClinGen"
+          "description": "chr13:g.32921033G>C (hg19) in ClinGen",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9760,7 +9948,8 @@
       "examples": [
         {
           "value": "HGNC:2197",
-          "description": "COL1A1 (Human)"
+          "description": "COL1A1 (Human)",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9857,7 +10046,8 @@
       "examples": [
         {
           "value": "NC_000017.11:g.43051071A>T",
-          "description": "17:41203088 A/C in gnomad"
+          "description": "17:41203088 A/C in gnomad",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9881,7 +10071,8 @@
       "examples": [
         {
           "value": "HANCESTRO:0010",
-          "description": "African"
+          "description": "African",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9905,7 +10096,7 @@
       "examples": [
         {
           "value": "0.0001666",
-          "description": null
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9913,13 +10104,13 @@
       "domain": "VariantToPopulationAssociation",
       "range": "double",
       "slot_uri": "https://w3id.org/biolink/vocab/has_quotient",
-      "alias": "has_quotient",
+      "alias": "has quotient",
       "owner": "VariantToPopulationAssociation",
       "domain_of": [
         "VariantToPopulationAssociation"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_quotient",
+      "usage_slot_name": "has quotient",
       "@type": "SlotDefinition"
     },
     {
@@ -9928,7 +10119,8 @@
       "examples": [
         {
           "value": "4",
-          "description": "4 individuals in gnomad set"
+          "description": "4 individuals in gnomad set",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9936,13 +10128,13 @@
       "domain": "VariantToPopulationAssociation",
       "range": "integer",
       "slot_uri": "https://w3id.org/biolink/vocab/has_count",
-      "alias": "has_count",
+      "alias": "has count",
       "owner": "VariantToPopulationAssociation",
       "domain_of": [
         "VariantToPopulationAssociation"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_count",
+      "usage_slot_name": "has count",
       "@type": "SlotDefinition"
     },
     {
@@ -9951,7 +10143,8 @@
       "examples": [
         {
           "value": "24014",
-          "description": "24014 individuals in gnomad set"
+          "description": "24014 individuals in gnomad set",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -9959,13 +10152,13 @@
       "domain": "VariantToPopulationAssociation",
       "range": "integer",
       "slot_uri": "https://w3id.org/biolink/vocab/has_total",
-      "alias": "has_total",
+      "alias": "has total",
       "owner": "VariantToPopulationAssociation",
       "domain_of": [
         "VariantToPopulationAssociation"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "has_total",
+      "usage_slot_name": "has total",
       "@type": "SlotDefinition"
     },
     {
@@ -10046,7 +10239,8 @@
       "examples": [
         {
           "value": "ClinVar:52241",
-          "description": "NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)"
+          "description": "NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10089,7 +10283,8 @@
       "examples": [
         {
           "value": "MONDO:0016419",
-          "description": "hereditary breast cancer"
+          "description": "hereditary breast cancer",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10150,7 +10345,8 @@
       "examples": [
         {
           "value": "MONDO:0016419",
-          "description": "hereditary breast cancer"
+          "description": "hereditary breast cancer",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10340,7 +10536,8 @@
       "examples": [
         {
           "value": "UBERON:0002037",
-          "description": "cerebellum"
+          "description": "cerebellum",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10383,7 +10580,8 @@
       "examples": [
         {
           "value": "UBERON:0000069",
-          "description": "larval stage"
+          "description": "larval stage",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10391,13 +10589,13 @@
       "domain": "GeneToExpressionSiteAssociation",
       "range": "LifeStage",
       "slot_uri": "https://w3id.org/biolink/vocab/stage_qualifier",
-      "alias": "stage_qualifier",
+      "alias": "stage qualifier",
       "owner": "GeneToExpressionSiteAssociation",
       "domain_of": [
         "GeneToExpressionSiteAssociation"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "stage_qualifier",
+      "usage_slot_name": "stage qualifier",
       "@type": "SlotDefinition"
     },
     {
@@ -10409,13 +10607,13 @@
       "range": "OntologyClass",
       "slot_uri": "https://w3id.org/biolink/vocab/quantifier_qualifier",
       "inlined": true,
-      "alias": "quantifier_qualifier",
+      "alias": "quantifier qualifier",
       "owner": "GeneToExpressionSiteAssociation",
       "domain_of": [
         "GeneToExpressionSiteAssociation"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "quantifier_qualifier",
+      "usage_slot_name": "quantifier qualifier",
       "@type": "SlotDefinition"
     },
     {
@@ -10460,7 +10658,8 @@
       "examples": [
         {
           "value": "ZFIN:ZDB-GENE-050417-357",
-          "description": "twist1b"
+          "description": "twist1b",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10485,11 +10684,13 @@
       "examples": [
         {
           "value": "GO:0016301",
-          "description": "kinase activity"
+          "description": "kinase activity",
+          "@type": "Example"
         },
         {
           "value": "GO:0045211",
-          "description": "postsynaptic membrane"
+          "description": "postsynaptic membrane",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10585,7 +10786,8 @@
       "examples": [
         {
           "value": "ZFIN:ZDB-GENE-050417-357",
-          "description": "twist1b"
+          "description": "twist1b",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -10609,7 +10811,8 @@
       "examples": [
         {
           "value": "GO:0016301",
-          "description": "kinase activity"
+          "description": "kinase activity",
+          "@type": "Example"
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
@@ -11051,7 +11254,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/subject",
       "required": true,
-      "inlined": true,
       "alias": "subject",
       "owner": "OrganismTaxonToEntityAssociation",
       "domain_of": [
@@ -11069,7 +11271,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/subject",
       "required": true,
-      "inlined": true,
       "alias": "subject",
       "owner": "OrganismTaxonToOrganismTaxonAssociation",
       "domain_of": [
@@ -11087,7 +11288,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/object",
       "required": true,
-      "inlined": true,
       "alias": "object",
       "owner": "OrganismTaxonToOrganismTaxonAssociation",
       "domain_of": [
@@ -11106,7 +11306,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/subject",
       "required": true,
-      "inlined": true,
       "alias": "subject",
       "owner": "OrganismTaxonToOrganismTaxonSpecialization",
       "domain_of": [
@@ -11126,7 +11325,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/object",
       "required": true,
-      "inlined": true,
       "alias": "object",
       "owner": "OrganismTaxonToOrganismTaxonSpecialization",
       "domain_of": [
@@ -11164,7 +11362,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/subject",
       "required": true,
-      "inlined": true,
       "alias": "subject",
       "owner": "OrganismTaxonToOrganismTaxonInteraction",
       "domain_of": [
@@ -11184,7 +11381,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/object",
       "required": true,
-      "inlined": true,
       "alias": "object",
       "owner": "OrganismTaxonToOrganismTaxonInteraction",
       "domain_of": [
@@ -11221,13 +11417,13 @@
       "domain": "OrganismTaxonToOrganismTaxonInteraction",
       "range": "string",
       "slot_uri": "https://w3id.org/biolink/vocab/associated_environmental_context",
-      "alias": "associated_environmental_context",
+      "alias": "associated environmental context",
       "owner": "OrganismTaxonToOrganismTaxonInteraction",
       "domain_of": [
         "OrganismTaxonToOrganismTaxonInteraction"
       ],
       "is_usage_slot": true,
-      "usage_slot_name": "associated_environmental_context",
+      "usage_slot_name": "associated environmental context",
       "@type": "SlotDefinition"
     },
     {
@@ -11239,7 +11435,6 @@
       "range": "OrganismTaxon",
       "slot_uri": "https://w3id.org/biolink/vocab/subject",
       "required": true,
-      "inlined": true,
       "alias": "subject",
       "owner": "OrganismTaxonToEnvironmentAssociation",
       "domain_of": [
@@ -11271,7 +11466,7 @@
     },
     {
       "name": "organism_taxon_to_environment_association_predicate",
-      "description": "predicate describing the relationship between the taxon and the environment",
+      "description": "predicate describing the relationship between the taxon and the environment\n ",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "is_a": "predicate",
       "domain": "OrganismTaxonToEnvironmentAssociation",
@@ -11300,7 +11495,7 @@
       "description": "a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.",
       "comments": [
         "This is modeled as a mixin. 'ontology class' should not be the primary type of a node in the KG. Instead you should use an informative bioloink category, such as AnatomicalEntity (for Uberon classes), ChemicalSubstance (for CHEBI or CHEMBL), etc",
-        "Note that formally this is a metaclass. Instances of this class are instances in the graph, but can be the object of 'type' edges. For example, if we had a node in the graph representing a specific brain of a specific patient (e.g brain001), this could have a category of bl:Sample, and by typed more specifically with an ontology class UBERON:nnn, which has as category bl:AnatomicalEntity"
+        "Note that formally this is a metaclass. Instances of this class are instances in the graph, but can be the object of 'type' edges. For example, if we had a node in the graph representing a specific brain of a specific patient (e.g brain001), this could have  a category of bl:Sample, and by typed more specifically with an ontology class UBERON:nnn, which has as category bl:AnatomicalEntity"
       ],
       "examples": [
         {
@@ -11503,6 +11698,14 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "ChemicalOrDrugOrTreatment",
+      "definition_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment",
+      "from_schema": "https://w3id.org/biolink/biolink-model",
+      "mixin": true,
+      "class_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "Entity",
       "definition_uri": "https://w3id.org/biolink/vocab/Entity",
       "description": "Root Biolink Model class for all things and informational relationships, real or imagined.",
@@ -11648,11 +11851,20 @@
         "UMLSSC:T016",
         "UMLSST:humn"
       ],
-      "is_a": "OntologyClass",
+      "is_a": "NamedThing",
       "values_from": [
         "NCBITaxon"
       ],
       "slots": [
+        "id",
+        "iri",
+        "type",
+        "name",
+        "description",
+        "source",
+        "provided_by",
+        "has_attribute",
+        "named_thing_category",
         "organism_taxon_has_taxonomic_rank",
         "organism_taxon_subclass_of"
       ],
@@ -12764,6 +12976,9 @@
         "SIO:000006",
         "WIKIDATA:Q2996394"
       ],
+      "broad_mappings": [
+        "WIKIDATA:P682"
+      ],
       "is_a": "BiologicalProcessOrActivity",
       "mixins": [
         "Occurrent",
@@ -12993,6 +13208,7 @@
         "UMLSST:chem"
       ],
       "narrow_mappings": [
+        "CHEBI:24431",
         "UMLSSC:T104",
         "UMLSST:chvs",
         "UMLSSC:T109",
@@ -13125,6 +13341,7 @@
       "is_a": "MolecularEntity",
       "mixins": [
         "Mixture",
+        "ChemicalOrDrugOrTreatment",
         "OntologyClass"
       ],
       "slots": [
@@ -13350,7 +13567,7 @@
       "name": "Metabolite",
       "definition_uri": "https://w3id.org/biolink/vocab/Metabolite",
       "description": "Any intermediate or product resulting from metabolism. Includes primary and secondary metabolites.",
-      "deprecated": "Metabolite is replaced by a slot/role of chemical substance and will be removed from the Biolink model.",
+      "deprecated": "Metabolite is replaced by a slot/role of chemical substance and will be removed  from the Biolink model.",
       "comments": [
         "The CHEBI ID represents a role rather than a substance"
       ],
@@ -13857,6 +14074,9 @@
         "UMLSSC:T026",
         "UMLSST:celc"
       ],
+      "broad_mappings": [
+        "WIKIDATA:P681"
+      ],
       "is_a": "AnatomicalEntity",
       "slots": [
         "id",
@@ -13939,6 +14159,9 @@
       "name": "GrossAnatomicalStructure",
       "id_prefixes": [
         "UBERON",
+        "UMLS",
+        "MESH",
+        "NCIT",
         "PO",
         "FAO"
       ],
@@ -14012,10 +14235,9 @@
     {
       "name": "Gene",
       "id_prefixes": [
-        "NCBIGENE",
+        "NCBIGene",
         "ENSEMBL",
         "HGNC",
-        "UniProtKB",
         "MGI",
         "ZFIN",
         "dictyBase",
@@ -14026,7 +14248,9 @@
         "RGD",
         "SGD",
         "POMBASE",
-        "KEGG.GENE"
+        "OMIM",
+        "KEGG.GENE",
+        "UMLS"
       ],
       "definition_uri": "https://w3id.org/biolink/vocab/Gene",
       "aliases": [
@@ -14292,7 +14516,8 @@
         "UniProtKB",
         "PR",
         "ENSEMBL",
-        "FB"
+        "FB",
+        "UMLS"
       ],
       "definition_uri": "https://w3id.org/biolink/vocab/Protein",
       "aliases": [
@@ -14440,7 +14665,7 @@
       "name": "NoncodingRNAProduct",
       "id_prefixes": [
         "RNACENTRAL",
-        "NCBIGENE",
+        "NCBIGene",
         "ENSEMBL"
       ],
       "definition_uri": "https://w3id.org/biolink/vocab/NoncodingRNAProduct",
@@ -15456,7 +15681,8 @@
       ],
       "is_a": "NamedThing",
       "mixins": [
-        "ExposureEvent"
+        "ExposureEvent",
+        "ChemicalOrDrugOrTreatment"
       ],
       "slots": [
         "id",
@@ -15490,6 +15716,15 @@
         "ExposureEvent"
       ],
       "slots": [
+        "id",
+        "iri",
+        "type",
+        "name",
+        "description",
+        "source",
+        "provided_by",
+        "has_attribute",
+        "named_thing_category",
         "organism_taxon_has_taxonomic_rank",
         "organism_taxon_subclass_of",
         "timepoint"
@@ -18319,10 +18554,10 @@
         "publications",
         "association_type",
         "association_category",
+        "organism_taxon_to_organism_taxon_interaction_associated_environmental_context",
         "organism_taxon_to_organism_taxon_interaction_subject",
         "organism_taxon_to_organism_taxon_interaction_object",
-        "organism_taxon_to_organism_taxon_interaction_predicate",
-        "organism_taxon_to_organism_taxon_interaction_associated_environmental_context"
+        "organism_taxon_to_organism_taxon_interaction_predicate"
       ],
       "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonInteraction",
       "defining_slots": [
@@ -18363,9 +18598,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "biolink-model.yaml",
-  "source_file_date": "Wed Mar 24 16:43:50 2021",
-  "source_file_size": 266238,
-  "generation_date": "2021-03-24 16:46",
+  "source_file_date": "Wed Jun  2 16:41:41 2021",
+  "source_file_size": 267853,
+  "generation_date": "2021-06-02 16:43",
   "@type": "SchemaDefinition",
   "@context": [
     [

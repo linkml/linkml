@@ -26,8 +26,8 @@ URI: [biolink:biomarker_for](https://w3id.org/biolink/vocab/biomarker_for)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
-| **Exact Mappings:** | | NCIT:gene_is_biomarker_of |
-| **Narrow Mappings:** | | NCIT:gene_product_is_biomarker_of |
+| **Exact Mappings:** | | NCIT:R39 |
+| **Narrow Mappings:** | | NCIT:R47 |
 |  | | NCIT:genetic_biomarker_related_to |
 |  | | NCIT:is_molecular_abnormality_of_disease |
 |  | | ORPHA:465410 |

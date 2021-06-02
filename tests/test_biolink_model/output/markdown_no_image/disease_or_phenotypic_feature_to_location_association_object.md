@@ -26,5 +26,5 @@ URI: [biolink:disease_or_phenotypic_feature_to_location_association_object](http
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'UBERON:0002048', 'description': 'lung'} |
+| **Examples:** | | Example(value='UBERON:0002048', description='lung') |
 

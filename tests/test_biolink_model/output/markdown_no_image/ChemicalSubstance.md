@@ -122,7 +122,8 @@ URI: [biolink:ChemicalSubstance](https://w3id.org/biolink/vocab/ChemicalSubstanc
 |  | | WIKIDATA:Q79529 |
 |  | | UMLSSC:T103 |
 |  | | UMLSST:chem |
-| **Narrow Mappings:** | | UMLSSC:T104 |
+| **Narrow Mappings:** | | CHEBI:24431 |
+|  | | UMLSSC:T104 |
 |  | | UMLSST:chvs |
 |  | | UMLSSC:T109 |
 |  | | UMLSST:orch |

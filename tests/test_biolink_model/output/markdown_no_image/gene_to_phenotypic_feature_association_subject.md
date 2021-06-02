@@ -26,5 +26,5 @@ URI: [biolink:gene_to_phenotypic_feature_association_subject](https://w3id.org/b
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'HGNC:2197', 'description': 'COL1A1 (Human)'} |
+| **Examples:** | | Example(value='HGNC:2197', description='COL1A1 (Human)') |
 

@@ -31,12 +31,12 @@ URI: [biolink:FunctionalAssociation](https://w3id.org/biolink/vocab/FunctionalAs
  * [functional association➞object](functional_association_object.md)  <sub>REQ</sub>
      * Description: class describing the activity, process or localization of the gene product
      * range: [GeneOntologyClass](GeneOntologyClass.md)
-     * Example:    
-     * Example:    
+     * Example: GO:0016301 kinase activity
+     * Example: GO:0045211 postsynaptic membrane
  * [functional association➞subject](functional_association_subject.md)  <sub>REQ</sub>
      * Description: gene, product or macromolecular complex mixin that has the function associated with the GO term
      * range: [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
-     * Example:    
+     * Example: ZFIN:ZDB-GENE-050417-357 twist1b
 
 ### Inherited from association:
 

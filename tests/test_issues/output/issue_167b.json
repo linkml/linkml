@@ -286,18 +286,15 @@
       "from_schema": "http://example.org/tests/issue167b",
       "annotations": [
         {
-          "tag": "tag",
-          "value": "prefLabel",
-          "@type": "Annotation"
-        },
-        {
-          "tag": "value",
+          "tag": "prefLabel",
           "value": "a preferred label",
-          "@type": "Annotation"
-        },
-        {
-          "tag": "annotations",
-          "value": "{'source': 'PMID:12345'}",
+          "annotations": [
+            {
+              "tag": "source",
+              "value": "PMID:12345",
+              "@type": "Annotation"
+            }
+          ],
           "@type": "Annotation"
         }
       ],
@@ -366,9 +363,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "issue_167b.yaml",
-  "source_file_date": "Wed Mar 24 16:43:50 2021",
+  "source_file_date": "Wed Jun  2 16:41:42 2021",
   "source_file_size": 818,
-  "generation_date": "2021-03-24 16:47",
+  "generation_date": "2021-06-02 16:45",
   "@type": "SchemaDefinition",
   "@context": [
     [

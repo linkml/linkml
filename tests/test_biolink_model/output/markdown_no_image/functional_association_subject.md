@@ -30,5 +30,5 @@ URI: [biolink:functional_association_subject](https://w3id.org/biolink/vocab/fun
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'ZFIN:ZDB-GENE-050417-357', 'description': 'twist1b'} |
+| **Examples:** | | Example(value='ZFIN:ZDB-GENE-050417-357', description='twist1b') |
 
