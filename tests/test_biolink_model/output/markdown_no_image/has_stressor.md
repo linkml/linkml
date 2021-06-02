@@ -9,7 +9,7 @@ URI: [biolink:has_stressor](https://w3id.org/biolink/vocab/has_stressor)
 
 ## Domain and Range
 
-[ExposureEvent](ExposureEvent.md) ->  <sub>OPT</sub> [String](types/String.md)
+[ExposureEvent](ExposureEvent.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

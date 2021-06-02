@@ -9,7 +9,7 @@ URI: [linkml:meaning](https://w3id.org/linkml/meaning)
 
 ## Domain and Range
 
-[PermissibleValue](PermissibleValue.md) ->  <sub>OPT</sub> [Uriorcurie](Uriorcurie.md)
+[PermissibleValue](PermissibleValue.md) &#8594;  <sub>OPT</sub> [Uriorcurie](Uriorcurie.md)
 
 ## Parents
 

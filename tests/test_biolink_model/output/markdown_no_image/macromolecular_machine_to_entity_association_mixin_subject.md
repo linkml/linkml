@@ -9,7 +9,7 @@ URI: [biolink:macromolecular_machine_to_entity_association_mixin_subject](https:
 
 ## Domain and Range
 
-[MacromolecularMachineToEntityAssociationMixin](MacromolecularMachineToEntityAssociationMixin.md) ->  <sub>REQ</sub> [NamedThing](NamedThing.md)
+[MacromolecularMachineToEntityAssociationMixin](MacromolecularMachineToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:organism_taxon_to_organism_taxon_interaction_predicate](https://w3
 
 ## Domain and Range
 
-[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) &#8594;  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

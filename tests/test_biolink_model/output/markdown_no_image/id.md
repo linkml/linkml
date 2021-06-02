@@ -9,7 +9,7 @@ URI: [biolink:id](https://w3id.org/biolink/vocab/id)
 
 ## Domain and Range
 
-None ->  <sub>REQ</sub> [String](types/String.md)
+None &#8594;  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

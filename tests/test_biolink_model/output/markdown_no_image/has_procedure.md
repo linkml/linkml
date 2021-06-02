@@ -9,7 +9,7 @@ URI: [biolink:has_procedure](https://w3id.org/biolink/vocab/has_procedure)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [Procedure](Procedure.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [Procedure](Procedure.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:sequence_feature_relationship_object](https://w3id.org/biolink/voc
 
 ## Domain and Range
 
-[SequenceFeatureRelationship](SequenceFeatureRelationship.md) ->  <sub>REQ</sub> [GenomicEntity](GenomicEntity.md)
+[SequenceFeatureRelationship](SequenceFeatureRelationship.md) &#8594;  <sub>REQ</sub> [GenomicEntity](GenomicEntity.md)
 
 ## Parents
 

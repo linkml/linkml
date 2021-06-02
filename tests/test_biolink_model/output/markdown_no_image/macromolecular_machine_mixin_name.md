@@ -9,7 +9,7 @@ URI: [biolink:macromolecular_machine_mixin_name](https://w3id.org/biolink/vocab/
 
 ## Domain and Range
 
-[MacromolecularMachineMixin](MacromolecularMachineMixin.md) ->  <sub>OPT</sub> [SymbolType](types/SymbolType.md)
+[MacromolecularMachineMixin](MacromolecularMachineMixin.md) &#8594;  <sub>OPT</sub> [SymbolType](types/SymbolType.md)
 
 ## Parents
 

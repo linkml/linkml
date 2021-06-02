@@ -9,7 +9,7 @@ URI: [biolink:created_with](https://w3id.org/biolink/vocab/created_with)
 
 ## Domain and Range
 
-[Dataset](Dataset.md) ->  <sub>OPT</sub> [String](types/String.md)
+[Dataset](Dataset.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

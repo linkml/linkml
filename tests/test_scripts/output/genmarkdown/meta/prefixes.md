@@ -9,7 +9,7 @@ URI: [linkml:prefixes](https://w3id.org/linkml/prefixes)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) ->  <sub>0..*</sub> [Prefix](Prefix.md)
+[SchemaDefinition](SchemaDefinition.md) &#8594;  <sub>0..*</sub> [Prefix](Prefix.md)
 
 ## Parents
 

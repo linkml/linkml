@@ -9,7 +9,7 @@ URI: [biolink:serial_type](https://w3id.org/biolink/vocab/serial_type)
 
 ## Domain and Range
 
-[Serial](Serial.md) ->  <sub>REQ</sub> [String](types/String.md)
+[Serial](Serial.md) &#8594;  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

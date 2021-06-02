@@ -9,7 +9,7 @@ URI: [http://example.org/sample/example1/lone_slot_joe](http://example.org/sampl
 
 ## Domain and Range
 
-[MetricResult](MetricResult.md) ->  <sub>OPT</sub> [String](types/String.md)
+[MetricResult](MetricResult.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

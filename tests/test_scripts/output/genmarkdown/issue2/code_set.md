@@ -9,7 +9,7 @@ URI: [linkml:code_set](https://w3id.org/linkml/code_set)
 
 ## Domain and Range
 
-enum_definition ->  <sub>OPT</sub> uriorcurie
+enum_definition &#8594;  <sub>OPT</sub> uriorcurie
 
 ## Parents
 

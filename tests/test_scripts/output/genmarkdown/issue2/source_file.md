@@ -9,7 +9,7 @@ URI: [linkml:source_file](https://w3id.org/linkml/source_file)
 
 ## Domain and Range
 
-schema_definition ->  <sub>OPT</sub> [String](types/String.md)
+schema_definition &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:start_interbase_coordinate](https://w3id.org/biolink/vocab/start_i
 
 ## Domain and Range
 
-[GenomicSequenceLocalization](GenomicSequenceLocalization.md) ->  <sub>OPT</sub> [Integer](types/Integer.md)
+[GenomicSequenceLocalization](GenomicSequenceLocalization.md) &#8594;  <sub>OPT</sub> [Integer](types/Integer.md)
 
 ## Parents
 

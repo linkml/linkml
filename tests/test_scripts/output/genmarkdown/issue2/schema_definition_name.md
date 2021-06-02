@@ -9,7 +9,7 @@ URI: [linkml:schema_definition_name](https://w3id.org/linkml/schema_definition_n
 
 ## Domain and Range
 
-schema_definition ->  <sub>REQ</sub> ncname
+schema_definition &#8594;  <sub>REQ</sub> ncname
 
 ## Parents
 

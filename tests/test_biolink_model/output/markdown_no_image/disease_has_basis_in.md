@@ -9,7 +9,7 @@ URI: [biolink:disease_has_basis_in](https://w3id.org/biolink/vocab/disease_has_b
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

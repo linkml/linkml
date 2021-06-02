@@ -9,7 +9,7 @@ URI: [linkml:text](https://w3id.org/linkml/text)
 
 ## Domain and Range
 
-[PermissibleValue](PermissibleValue.md) ->  <sub>REQ</sub> [String](String.md)
+[PermissibleValue](PermissibleValue.md) &#8594;  <sub>REQ</sub> [String](String.md)
 
 ## Parents
 

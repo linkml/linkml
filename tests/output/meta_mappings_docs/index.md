@@ -1,5 +1,5 @@
 
-# Mappings schema
+# mappings schema
 
 
 LinkML model for mappings

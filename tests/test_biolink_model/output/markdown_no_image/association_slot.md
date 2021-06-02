@@ -9,7 +9,7 @@ URI: [biolink:association_slot](https://w3id.org/biolink/vocab/association_slot)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [String](types/String.md)
+[Association](Association.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:drug_to_gene_association_object](https://w3id.org/biolink/vocab/dr
 
 ## Domain and Range
 
-[DrugToGeneAssociation](DrugToGeneAssociation.md) ->  <sub>REQ</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
+[DrugToGeneAssociation](DrugToGeneAssociation.md) &#8594;  <sub>REQ</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
 
 ## Parents
 

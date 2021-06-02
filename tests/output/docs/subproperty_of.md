@@ -9,7 +9,7 @@ URI: [linkml:subproperty_of](https://w3id.org/linkml/subproperty_of)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [SlotDefinition](SlotDefinition.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [SlotDefinition](SlotDefinition.md)
 
 ## Parents
 

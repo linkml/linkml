@@ -9,7 +9,7 @@ URI: [biolink:catalyst_qualifier](https://w3id.org/biolink/vocab/catalyst_qualif
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>0..*</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
+[Association](Association.md) &#8594;  <sub>0..*</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
 
 ## Parents
 

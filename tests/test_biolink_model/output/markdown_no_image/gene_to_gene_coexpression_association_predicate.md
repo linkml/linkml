@@ -9,7 +9,7 @@ URI: [biolink:gene_to_gene_coexpression_association_predicate](https://w3id.org/
 
 ## Domain and Range
 
-[GeneToGeneCoexpressionAssociation](GeneToGeneCoexpressionAssociation.md) ->  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[GeneToGeneCoexpressionAssociation](GeneToGeneCoexpressionAssociation.md) &#8594;  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

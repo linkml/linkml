@@ -9,7 +9,7 @@ URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
 
 ## Domain and Range
 
-[Element](Element.md) ->  <sub>0..*</sub> alt_description
+[Element](Element.md) &#8594;  <sub>0..*</sub> alt_description
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:has_unit](https://w3id.org/biolink/vocab/has_unit)
 
 ## Domain and Range
 
-[QuantityValue](QuantityValue.md) ->  <sub>OPT</sub> [Unit](types/Unit.md)
+[QuantityValue](QuantityValue.md) &#8594;  <sub>OPT</sub> [Unit](types/Unit.md)
 
 ## Parents
 

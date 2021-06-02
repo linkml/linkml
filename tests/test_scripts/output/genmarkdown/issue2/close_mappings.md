@@ -9,7 +9,7 @@ URI: [linkml:close_mappings](https://w3id.org/linkml/close_mappings)
 
 ## Domain and Range
 
-None ->  <sub>0..*</sub> uriorcurie
+None &#8594;  <sub>0..*</sub> uriorcurie
 
 ## Parents
 

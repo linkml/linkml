@@ -9,7 +9,7 @@ URI: [biolink:provider](https://w3id.org/biolink/vocab/provider)
 
 ## Domain and Range
 
-[InformationContentEntity](InformationContentEntity.md) ->  <sub>0..*</sub> [Agent](Agent.md)
+[InformationContentEntity](InformationContentEntity.md) &#8594;  <sub>0..*</sub> [Agent](Agent.md)
 
 ## Parents
 

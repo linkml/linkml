@@ -9,7 +9,7 @@ URI: [biolink:biomarker_for](https://w3id.org/biolink/vocab/biomarker_for)
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 

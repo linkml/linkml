@@ -9,7 +9,7 @@ URI: [biolink:association_type](https://w3id.org/biolink/vocab/association_type)
 
 ## Domain and Range
 
-[Association](Association.md) ->  <sub>OPT</sub> [String](types/String.md)
+[Association](Association.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

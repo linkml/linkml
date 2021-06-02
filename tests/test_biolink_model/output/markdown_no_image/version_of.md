@@ -9,7 +9,7 @@ URI: [biolink:version_of](https://w3id.org/biolink/vocab/version_of)
 
 ## Domain and Range
 
-[DatasetVersion](DatasetVersion.md) ->  <sub>OPT</sub> [DatasetSummary](DatasetSummary.md)
+[DatasetVersion](DatasetVersion.md) &#8594;  <sub>OPT</sub> [DatasetSummary](DatasetSummary.md)
 
 ## Parents
 

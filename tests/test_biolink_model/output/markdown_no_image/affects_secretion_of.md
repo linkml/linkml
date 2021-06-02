@@ -9,7 +9,7 @@ URI: [biolink:affects_secretion_of](https://w3id.org/biolink/vocab/affects_secre
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 
