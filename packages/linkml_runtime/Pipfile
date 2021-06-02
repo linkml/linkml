@@ -7,10 +7,12 @@ name = "pypi"
 hbreader = "*"
 # Note: pyld needs requests package to access contexts
 requests = "*"
+# TODO: this becomes pyld again once we get all our changes merged
 pyldmod = "*"
 jsonasobj2 = "~=1.0"
 pyyaml = "~=5.1"
 rdflib = "~=5.0"
+# TODO: this becomes rdflib-pyld-compat once we get pyld changes merged
 rdflib-pyldmod-compat = "*"
 rdflib-jsonld = "~=0.5"
 click = "*"
