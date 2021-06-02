@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-26 14:20
+# Generation date: 2021-06-02 16:44
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -9,20 +9,21 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
-from linkml.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
-from linkml.utils.metamodelcore import Bool, URIorCURIE, XSDDate, XSDTime
-from linkml_model.types import Boolean, Date, Double, Float, Integer, String, Time, Uriorcurie
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.linkml_model.types import Boolean, Date, Double, Float, Integer, String, Time, Uriorcurie
+from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE, XSDDate, XSDTime
 
 metamodel_version = "1.7.0"
 
@@ -120,7 +121,7 @@ MONDO = CurieNamespace('MONDO', 'http://purl.obolibrary.org/obo/MONDO_')
 MP = CurieNamespace('MP', 'http://purl.obolibrary.org/obo/MP_')
 MSIGDB = CurieNamespace('MSigDB', 'https://www.gsea-msigdb.org/gsea/msigdb/')
 METACYC = CurieNamespace('MetaCyc', 'http://translator.ncats.nih.gov/MetaCyc_')
-NCBIGENE = CurieNamespace('NCBIGENE', 'http://identifiers.org/ncbigene/')
+NCBIGENE = CurieNamespace('NCBIGene', 'http://identifiers.org/ncbigene/')
 NCBITAXON = CurieNamespace('NCBITaxon', 'http://purl.obolibrary.org/obo/NCBITaxon_')
 NCIT = CurieNamespace('NCIT', 'http://purl.obolibrary.org/obo/NCIT_')
 NDC = CurieNamespace('NDC', 'http://identifiers.org/ndc/')
@@ -221,6 +222,7 @@ ISSN = CurieNamespace('issn', 'https://portal.issn.org/resource/ISSN/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 MEDGEN = CurieNamespace('medgen', 'https://www.ncbi.nlm.nih.gov/medgen/')
 OBOFORMAT = CurieNamespace('oboformat', 'http://www.geneontology.org/formats/oboInOWL#')
+OS = CurieNamespace('os', 'https://github.com/cmungall/owlstar/blob/master/owlstar.ttl')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 QUD = CurieNamespace('qud', 'http://qudt.org/1.1/schema/qudt#')
@@ -337,6 +339,10 @@ class EntityId(extended_str):
 
 
 class NamedThingId(EntityId):
+    pass
+
+
+class OrganismTaxonId(NamedThingId):
     pass
 
 
@@ -732,6 +738,10 @@ class TreatmentId(NamedThingId):
     pass
 
 
+class BioticExposureId(OrganismTaxonId):
+    pass
+
+
 class GeographicExposureId(GeographicLocationId):
     pass
 
@@ -1110,7 +1120,7 @@ class Attribute(Annotation):
     source: Optional[Union[str, LabelType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.has_attribute_type is None:
+        if self._is_empty(self.has_attribute_type):
             raise ValueError("has_attribute_type must be supplied")
         if not isinstance(self.has_attribute_type, OntologyClass):
             self.has_attribute_type = OntologyClass()
@@ -1118,8 +1128,6 @@ class Attribute(Annotation):
         if self.name is not None and not isinstance(self.name, LabelType):
             self.name = LabelType(self.name)
 
-        if self.has_quantitative_value is None:
-            self.has_quantitative_value = []
         if not isinstance(self.has_quantitative_value, list):
             self.has_quantitative_value = [self.has_quantitative_value]
         self.has_quantitative_value = [v if isinstance(v, QuantityValue) else QuantityValue(**v) for v in self.has_quantitative_value]
@@ -1260,6 +1268,15 @@ class FrequencyQuantifier(RelationshipQuantifier):
         super().__post_init__(**kwargs)
 
 
+class ChemicalOrDrugOrTreatment(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatment
+    class_class_curie: ClassVar[str] = "biolink:ChemicalOrDrugOrTreatment"
+    class_name: ClassVar[str] = "chemical or drug or treatment"
+    class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalOrDrugOrTreatment
+
+
 @dataclass
 class Entity(YAMLRoot):
     """
@@ -1283,7 +1300,7 @@ class Entity(YAMLRoot):
     has_attribute: Optional[Union[Union[dict, Attribute], List[Union[dict, Attribute]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EntityId):
             self.id = EntityId(self.id)
@@ -1291,8 +1308,6 @@ class Entity(YAMLRoot):
         if self.iri is not None and not isinstance(self.iri, IriType):
             self.iri = IriType(self.iri)
 
-        if self.category is None:
-            self.category = []
         if not isinstance(self.category, list):
             self.category = [self.category]
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
@@ -1309,17 +1324,11 @@ class Entity(YAMLRoot):
         if self.source is not None and not isinstance(self.source, LabelType):
             self.source = LabelType(self.source)
 
-        if self.provided_by is None:
-            self.provided_by = []
         if not isinstance(self.provided_by, list):
             self.provided_by = [self.provided_by]
         self.provided_by = [v if isinstance(v, AgentId) else AgentId(v) for v in self.provided_by]
 
-        if self.has_attribute is None:
-            self.has_attribute = []
-        if not isinstance(self.has_attribute, list):
-            self.has_attribute = [self.has_attribute]
-        self._normalize_inlined_slot(slot_name="has_attribute", slot_type=Attribute, key_name="has attribute type", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="has_attribute", slot_type=Attribute, key_name="has attribute type", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -1340,17 +1349,15 @@ class NamedThing(Entity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, NamedThingId):
             self.id = NamedThingId(self.id)
 
-        if self.category is None:
+        if self._is_empty(self.category):
             raise ValueError("category must be supplied")
-        elif not isinstance(self.category, list):
+        if not isinstance(self.category, list):
             self.category = [self.category]
-        elif len(self.category) == 0:
-            raise ValueError(f"category must be a non-empty list")
         self.category = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.category]
 
         super().__post_init__(**kwargs)
@@ -1405,7 +1412,7 @@ class TaxonomicRank(OntologyClass):
 
 
 @dataclass
-class OrganismTaxon(OntologyClass):
+class OrganismTaxon(NamedThing):
     """
     A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria).
     Can also be used to represent strains or subspecies.
@@ -1417,18 +1424,23 @@ class OrganismTaxon(OntologyClass):
     class_name: ClassVar[str] = "organism taxon"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxon
 
+    id: Union[str, OrganismTaxonId] = None
+    category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
     has_taxonomic_rank: Optional[Union[dict, TaxonomicRank]] = None
-    subclass_of: Optional[Union[Union[dict, "OrganismTaxon"], List[Union[dict, "OrganismTaxon"]]]] = empty_list()
+    subclass_of: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            raise ValueError("id must be supplied")
+        if not isinstance(self.id, OrganismTaxonId):
+            self.id = OrganismTaxonId(self.id)
+
         if self.has_taxonomic_rank is not None and not isinstance(self.has_taxonomic_rank, TaxonomicRank):
             self.has_taxonomic_rank = TaxonomicRank()
 
-        if self.subclass_of is None:
-            self.subclass_of = []
         if not isinstance(self.subclass_of, list):
             self.subclass_of = [self.subclass_of]
-        self.subclass_of = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.subclass_of]
+        self.subclass_of = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.subclass_of]
 
         super().__post_init__(**kwargs)
 
@@ -1464,13 +1476,11 @@ class Agent(AdministrativeEntity):
     name: Optional[Union[str, LabelType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, AgentId):
             self.id = AgentId(self.id)
 
-        if self.affiliation is None:
-            self.affiliation = []
         if not isinstance(self.affiliation, list):
             self.affiliation = [self.affiliation]
         self.affiliation = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.affiliation]
@@ -1535,7 +1545,7 @@ class Dataset(InformationContentEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DatasetId):
             self.id = DatasetId(self.id)
@@ -1560,7 +1570,7 @@ class DatasetDistribution(InformationContentEntity):
     distribution_download_url: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DatasetDistributionId):
             self.id = DatasetDistributionId(self.id)
@@ -1590,7 +1600,7 @@ class DatasetVersion(InformationContentEntity):
     has_distribution: Optional[Union[str, DatasetDistributionId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DatasetVersionId):
             self.id = DatasetVersionId(self.id)
@@ -1625,7 +1635,7 @@ class DatasetSummary(InformationContentEntity):
     source_logo: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DatasetSummaryId):
             self.id = DatasetSummaryId(self.id)
@@ -1655,7 +1665,7 @@ class ConfidenceLevel(InformationContentEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ConfidenceLevelId):
             self.id = ConfidenceLevelId(self.id)
@@ -1679,7 +1689,7 @@ class EvidenceType(InformationContentEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EvidenceTypeId):
             self.id = EvidenceTypeId(self.id)
@@ -1714,24 +1724,20 @@ class Publication(InformationContentEntity):
     name: Optional[Union[str, LabelType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PublicationId):
             self.id = PublicationId(self.id)
 
-        if self.type is None:
+        if self._is_empty(self.type):
             raise ValueError("type must be supplied")
         if not isinstance(self.type, str):
             self.type = str(self.type)
 
-        if self.authors is None:
-            self.authors = []
         if not isinstance(self.authors, list):
             self.authors = [self.authors]
         self.authors = [v if isinstance(v, str) else str(v) for v in self.authors]
 
-        if self.pages is None:
-            self.pages = []
         if not isinstance(self.pages, list):
             self.pages = [self.pages]
         self.pages = [v if isinstance(v, str) else str(v) for v in self.pages]
@@ -1739,20 +1745,14 @@ class Publication(InformationContentEntity):
         if self.summary is not None and not isinstance(self.summary, str):
             self.summary = str(self.summary)
 
-        if self.keywords is None:
-            self.keywords = []
         if not isinstance(self.keywords, list):
             self.keywords = [self.keywords]
         self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
-        if self.mesh_terms is None:
-            self.mesh_terms = []
         if not isinstance(self.mesh_terms, list):
             self.mesh_terms = [self.mesh_terms]
         self.mesh_terms = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mesh_terms]
 
-        if self.xref is None:
-            self.xref = []
         if not isinstance(self.xref, list):
             self.xref = [self.xref]
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
@@ -1780,12 +1780,12 @@ class Book(Publication):
     type: str = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BookId):
             self.id = BookId(self.id)
 
-        if self.type is None:
+        if self._is_empty(self.type):
             raise ValueError("type must be supplied")
         if not isinstance(self.type, str):
             self.type = str(self.type)
@@ -1810,12 +1810,12 @@ class BookChapter(Publication):
     chapter: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BookChapterId):
             self.id = BookChapterId(self.id)
 
-        if self.published_in is None:
+        if self._is_empty(self.published_in):
             raise ValueError("published_in must be supplied")
         if not isinstance(self.published_in, URIorCURIE):
             self.published_in = URIorCURIE(self.published_in)
@@ -1849,12 +1849,12 @@ class Serial(Publication):
     issue: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SerialId):
             self.id = SerialId(self.id)
 
-        if self.type is None:
+        if self._is_empty(self.type):
             raise ValueError("type must be supplied")
         if not isinstance(self.type, str):
             self.type = str(self.type)
@@ -1889,12 +1889,12 @@ class Article(Publication):
     issue: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ArticleId):
             self.id = ArticleId(self.id)
 
-        if self.published_in is None:
+        if self._is_empty(self.published_in):
             raise ValueError("published_in must be supplied")
         if not isinstance(self.published_in, URIorCURIE):
             self.published_in = URIorCURIE(self.published_in)
@@ -1951,7 +1951,7 @@ class PhysicalEntity(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PhysicalEntityId):
             self.id = PhysicalEntityId(self.id)
@@ -2000,7 +2000,7 @@ class Activity(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ActivityId):
             self.id = ActivityId(self.id)
@@ -2024,7 +2024,7 @@ class Procedure(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ProcedureId):
             self.id = ProcedureId(self.id)
@@ -2048,7 +2048,7 @@ class Phenomenon(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PhenomenonId):
             self.id = PhenomenonId(self.id)
@@ -2072,7 +2072,7 @@ class Device(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DeviceId):
             self.id = DeviceId(self.id)
@@ -2110,7 +2110,7 @@ class MaterialSample(PhysicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MaterialSampleId):
             self.id = MaterialSampleId(self.id)
@@ -2134,7 +2134,7 @@ class PlanetaryEntity(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PlanetaryEntityId):
             self.id = PlanetaryEntityId(self.id)
@@ -2155,7 +2155,7 @@ class EnvironmentalProcess(PlanetaryEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EnvironmentalProcessId):
             self.id = EnvironmentalProcessId(self.id)
@@ -2176,7 +2176,7 @@ class EnvironmentalFeature(PlanetaryEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EnvironmentalFeatureId):
             self.id = EnvironmentalFeatureId(self.id)
@@ -2202,7 +2202,7 @@ class GeographicLocation(PlanetaryEntity):
     longitude: Optional[float] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeographicLocationId):
             self.id = GeographicLocationId(self.id)
@@ -2233,7 +2233,7 @@ class GeographicLocationAtTime(GeographicLocation):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeographicLocationAtTimeId):
             self.id = GeographicLocationAtTimeId(self.id)
@@ -2269,14 +2269,12 @@ class ThingWithTaxon(YAMLRoot):
     class_name: ClassVar[str] = "thing with taxon"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ThingWithTaxon
 
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -2295,19 +2293,17 @@ class MolecularEntity(BiologicalEntity):
 
     id: Union[str, MolecularEntityId] = None
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MolecularEntityId):
             self.id = MolecularEntityId(self.id)
 
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -2332,25 +2328,19 @@ class BiologicalProcessOrActivity(BiologicalEntity):
     enabled_by: Optional[Union[Union[str, PhysicalEntityId], List[Union[str, PhysicalEntityId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BiologicalProcessOrActivityId):
             self.id = BiologicalProcessOrActivityId(self.id)
 
-        if self.has_input is None:
-            self.has_input = []
         if not isinstance(self.has_input, list):
             self.has_input = [self.has_input]
         self.has_input = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_input]
 
-        if self.has_output is None:
-            self.has_output = []
         if not isinstance(self.has_output, list):
             self.has_output = [self.has_output]
         self.has_output = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_output]
 
-        if self.enabled_by is None:
-            self.enabled_by = []
         if not isinstance(self.enabled_by, list):
             self.enabled_by = [self.enabled_by]
         self.enabled_by = [v if isinstance(v, PhysicalEntityId) else PhysicalEntityId(v) for v in self.enabled_by]
@@ -2377,25 +2367,19 @@ class MolecularActivity(BiologicalProcessOrActivity):
     enabled_by: Optional[Union[Union[dict, "MacromolecularMachineMixin"], List[Union[dict, "MacromolecularMachineMixin"]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MolecularActivityId):
             self.id = MolecularActivityId(self.id)
 
-        if self.has_input is None:
-            self.has_input = []
         if not isinstance(self.has_input, list):
             self.has_input = [self.has_input]
         self.has_input = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_input]
 
-        if self.has_output is None:
-            self.has_output = []
         if not isinstance(self.has_output, list):
             self.has_output = [self.has_output]
         self.has_output = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_output]
 
-        if self.enabled_by is None:
-            self.enabled_by = []
         if not isinstance(self.enabled_by, list):
             self.enabled_by = [self.enabled_by]
         self.enabled_by = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**v) for v in self.enabled_by]
@@ -2419,7 +2403,7 @@ class BiologicalProcess(BiologicalProcessOrActivity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BiologicalProcessId):
             self.id = BiologicalProcessId(self.id)
@@ -2440,7 +2424,7 @@ class Pathway(BiologicalProcess):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathwayId):
             self.id = PathwayId(self.id)
@@ -2461,7 +2445,7 @@ class PhysiologicalProcess(BiologicalProcess):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PhysiologicalProcessId):
             self.id = PhysiologicalProcessId(self.id)
@@ -2482,7 +2466,7 @@ class Behavior(BiologicalProcess):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BehaviorId):
             self.id = BehaviorId(self.id)
@@ -2503,7 +2487,7 @@ class Death(BiologicalProcess):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DeathId):
             self.id = DeathId(self.id)
@@ -2527,8 +2511,6 @@ class Mixture(YAMLRoot):
     has_constituent: Optional[Union[Union[str, ChemicalSubstanceId], List[Union[str, ChemicalSubstanceId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.has_constituent is None:
-            self.has_constituent = []
         if not isinstance(self.has_constituent, list):
             self.has_constituent = [self.has_constituent]
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
@@ -2554,7 +2536,7 @@ class ChemicalSubstance(MolecularEntity):
     is_metabolite: Optional[Union[bool, Bool]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalSubstanceId):
             self.id = ChemicalSubstanceId(self.id)
@@ -2578,7 +2560,7 @@ class Carbohydrate(ChemicalSubstance):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CarbohydrateId):
             self.id = CarbohydrateId(self.id)
@@ -2603,13 +2585,11 @@ class ProcessedMaterial(ChemicalSubstance):
     has_constituent: Optional[Union[Union[str, ChemicalSubstanceId], List[Union[str, ChemicalSubstanceId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ProcessedMaterialId):
             self.id = ProcessedMaterialId(self.id)
 
-        if self.has_constituent is None:
-            self.has_constituent = []
         if not isinstance(self.has_constituent, list):
             self.has_constituent = [self.has_constituent]
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
@@ -2634,13 +2614,11 @@ class Drug(MolecularEntity):
     has_constituent: Optional[Union[Union[str, ChemicalSubstanceId], List[Union[str, ChemicalSubstanceId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DrugId):
             self.id = DrugId(self.id)
 
-        if self.has_constituent is None:
-            self.has_constituent = []
         if not isinstance(self.has_constituent, list):
             self.has_constituent = [self.has_constituent]
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
@@ -2661,7 +2639,7 @@ class FoodComponent(ChemicalSubstance):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, FoodComponentId):
             self.id = FoodComponentId(self.id)
@@ -2682,7 +2660,7 @@ class EnvironmentalFoodContaminant(ChemicalSubstance):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EnvironmentalFoodContaminantId):
             self.id = EnvironmentalFoodContaminantId(self.id)
@@ -2703,7 +2681,7 @@ class FoodAdditive(ChemicalSubstance):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, FoodAdditiveId):
             self.id = FoodAdditiveId(self.id)
@@ -2724,7 +2702,7 @@ class Nutrient(ChemicalSubstance):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, NutrientId):
             self.id = NutrientId(self.id)
@@ -2745,7 +2723,7 @@ class Macronutrient(Nutrient):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MacronutrientId):
             self.id = MacronutrientId(self.id)
@@ -2766,7 +2744,7 @@ class Micronutrient(Nutrient):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MicronutrientId):
             self.id = MicronutrientId(self.id)
@@ -2787,7 +2765,7 @@ class Vitamin(Micronutrient):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VitaminId):
             self.id = VitaminId(self.id)
@@ -2812,13 +2790,11 @@ class Food(MolecularEntity):
     has_constituent: Optional[Union[Union[str, ChemicalSubstanceId], List[Union[str, ChemicalSubstanceId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, FoodId):
             self.id = FoodId(self.id)
 
-        if self.has_constituent is None:
-            self.has_constituent = []
         if not isinstance(self.has_constituent, list):
             self.has_constituent = [self.has_constituent]
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
@@ -2842,7 +2818,7 @@ class Metabolite(ChemicalSubstance):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MetaboliteId):
             self.id = MetaboliteId(self.id)
@@ -2911,11 +2887,7 @@ class OrganismalEntity(BiologicalEntity):
     has_attribute: Optional[Union[Union[dict, Attribute], List[Union[dict, Attribute]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.has_attribute is None:
-            self.has_attribute = []
-        if not isinstance(self.has_attribute, list):
-            self.has_attribute = [self.has_attribute]
-        self._normalize_inlined_slot(slot_name="has_attribute", slot_type=Attribute, key_name="has attribute type", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="has_attribute", slot_type=Attribute, key_name="has attribute type", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -2934,19 +2906,17 @@ class LifeStage(OrganismalEntity):
 
     id: Union[str, LifeStageId] = None
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, LifeStageId):
             self.id = LifeStageId(self.id)
 
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -2966,19 +2936,17 @@ class IndividualOrganism(OrganismalEntity):
 
     id: Union[str, IndividualOrganismId] = None
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, IndividualOrganismId):
             self.id = IndividualOrganismId(self.id)
 
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -2999,19 +2967,17 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
 
     id: Union[str, PopulationOfIndividualOrganismsId] = None
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PopulationOfIndividualOrganismsId):
             self.id = PopulationOfIndividualOrganismsId(self.id)
 
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -3032,7 +2998,7 @@ class StudyPopulation(PopulationOfIndividualOrganisms):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, StudyPopulationId):
             self.id = StudyPopulationId(self.id)
@@ -3055,19 +3021,17 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
 
     id: Union[str, DiseaseOrPhenotypicFeatureId] = None
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureId):
             self.id = DiseaseOrPhenotypicFeatureId(self.id)
 
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -3085,7 +3049,7 @@ class Disease(DiseaseOrPhenotypicFeature):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseId):
             self.id = DiseaseId(self.id)
@@ -3106,7 +3070,7 @@ class PhenotypicFeature(DiseaseOrPhenotypicFeature):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PhenotypicFeatureId):
             self.id = PhenotypicFeatureId(self.id)
@@ -3130,7 +3094,7 @@ class BehavioralFeature(PhenotypicFeature):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BehavioralFeatureId):
             self.id = BehavioralFeatureId(self.id)
@@ -3152,19 +3116,17 @@ class AnatomicalEntity(OrganismalEntity):
 
     id: Union[str, AnatomicalEntityId] = None
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
-    in_taxon: Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]] = empty_list()
+    in_taxon: Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, AnatomicalEntityId):
             self.id = AnatomicalEntityId(self.id)
 
-        if self.in_taxon is None:
-            self.in_taxon = []
         if not isinstance(self.in_taxon, list):
             self.in_taxon = [self.in_taxon]
-        self.in_taxon = [v if isinstance(v, OrganismTaxon) else OrganismTaxon(**v) for v in self.in_taxon]
+        self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
 
@@ -3185,7 +3147,7 @@ class CellularComponent(AnatomicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CellularComponentId):
             self.id = CellularComponentId(self.id)
@@ -3206,7 +3168,7 @@ class Cell(AnatomicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CellId):
             self.id = CellId(self.id)
@@ -3227,7 +3189,7 @@ class CellLine(OrganismalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CellLineId):
             self.id = CellLineId(self.id)
@@ -3248,7 +3210,7 @@ class GrossAnatomicalStructure(AnatomicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GrossAnatomicalStructureId):
             self.id = GrossAnatomicalStructureId(self.id)
@@ -3307,14 +3269,10 @@ class GeneProductMixin(GeneOrGeneProduct):
     xref: Optional[Union[Union[str, IriType], List[Union[str, IriType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.synonym is None:
-            self.synonym = []
         if not isinstance(self.synonym, list):
             self.synonym = [self.synonym]
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
-        if self.xref is None:
-            self.xref = []
         if not isinstance(self.xref, list):
             self.xref = [self.xref]
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
@@ -3367,7 +3325,7 @@ class GenomicEntity(MolecularEntity):
     has_biological_sequence: Optional[Union[str, BiologicalSequence]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenomicEntityId):
             self.id = GenomicEntityId(self.id)
@@ -3398,7 +3356,7 @@ class Gene(GenomicEntity):
     xref: Optional[Union[Union[str, IriType], List[Union[str, IriType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneId):
             self.id = GeneId(self.id)
@@ -3406,14 +3364,10 @@ class Gene(GenomicEntity):
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
 
-        if self.synonym is None:
-            self.synonym = []
         if not isinstance(self.synonym, list):
             self.synonym = [self.synonym]
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
-        if self.xref is None:
-            self.xref = []
         if not isinstance(self.xref, list):
             self.xref = [self.xref]
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
@@ -3437,7 +3391,7 @@ class Genome(GenomicEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenomeId):
             self.id = GenomeId(self.id)
@@ -3462,7 +3416,7 @@ class Exon(GenomicEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ExonId):
             self.id = ExonId(self.id)
@@ -3486,7 +3440,7 @@ class Transcript(GenomicEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, TranscriptId):
             self.id = TranscriptId(self.id)
@@ -3507,7 +3461,7 @@ class CodingSequence(GenomicEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CodingSequenceId):
             self.id = CodingSequenceId(self.id)
@@ -3534,19 +3488,15 @@ class Protein(GenomicEntity):
     xref: Optional[Union[Union[str, IriType], List[Union[str, IriType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ProteinId):
             self.id = ProteinId(self.id)
 
-        if self.synonym is None:
-            self.synonym = []
         if not isinstance(self.synonym, list):
             self.synonym = [self.synonym]
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
-        if self.xref is None:
-            self.xref = []
         if not isinstance(self.xref, list):
             self.xref = [self.xref]
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
@@ -3571,7 +3521,7 @@ class ProteinIsoform(Protein):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ProteinIsoformId):
             self.id = ProteinIsoformId(self.id)
@@ -3594,19 +3544,15 @@ class RNAProduct(Transcript):
     xref: Optional[Union[Union[str, IriType], List[Union[str, IriType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, RNAProductId):
             self.id = RNAProductId(self.id)
 
-        if self.synonym is None:
-            self.synonym = []
         if not isinstance(self.synonym, list):
             self.synonym = [self.synonym]
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
-        if self.xref is None:
-            self.xref = []
         if not isinstance(self.xref, list):
             self.xref = [self.xref]
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
@@ -3630,7 +3576,7 @@ class RNAProductIsoform(RNAProduct):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, RNAProductIsoformId):
             self.id = RNAProductIsoformId(self.id)
@@ -3651,7 +3597,7 @@ class NoncodingRNAProduct(RNAProduct):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, NoncodingRNAProductId):
             self.id = NoncodingRNAProductId(self.id)
@@ -3672,7 +3618,7 @@ class MicroRNA(NoncodingRNAProduct):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MicroRNAId):
             self.id = MicroRNAId(self.id)
@@ -3698,7 +3644,7 @@ class SiRNA(NoncodingRNAProduct):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SiRNAId):
             self.id = SiRNAId(self.id)
@@ -3721,8 +3667,6 @@ class GeneGroupingMixin(YAMLRoot):
     has_gene_or_gene_product: Optional[Union[Union[str, GeneId], List[Union[str, GeneId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.has_gene_or_gene_product is None:
-            self.has_gene_or_gene_product = []
         if not isinstance(self.has_gene_or_gene_product, list):
             self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
@@ -3747,13 +3691,11 @@ class GeneFamily(MolecularEntity):
     has_gene_or_gene_product: Optional[Union[Union[str, GeneId], List[Union[str, GeneId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneFamilyId):
             self.id = GeneFamilyId(self.id)
 
-        if self.has_gene_or_gene_product is None:
-            self.has_gene_or_gene_product = []
         if not isinstance(self.has_gene_or_gene_product, list):
             self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
@@ -3790,7 +3732,7 @@ class Genotype(GenomicEntity):
     has_zygosity: Optional[Union[dict, Zygosity]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeId):
             self.id = GenotypeId(self.id)
@@ -3817,7 +3759,7 @@ class Haplotype(GenomicEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, HaplotypeId):
             self.id = HaplotypeId(self.id)
@@ -3843,13 +3785,11 @@ class SequenceVariant(GenomicEntity):
     has_biological_sequence: Optional[Union[str, BiologicalSequence]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SequenceVariantId):
             self.id = SequenceVariantId(self.id)
 
-        if self.has_gene is None:
-            self.has_gene = []
         if not isinstance(self.has_gene, list):
             self.has_gene = [self.has_gene]
         self.has_gene = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene]
@@ -3876,7 +3816,7 @@ class Snv(SequenceVariant):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SnvId):
             self.id = SnvId(self.id)
@@ -3901,7 +3841,7 @@ class ReagentTargetedGene(GenomicEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ReagentTargetedGeneId):
             self.id = ReagentTargetedGeneId(self.id)
@@ -3939,7 +3879,7 @@ class ClinicalMeasurement(ClinicalAttribute):
     has_attribute_type: Union[dict, OntologyClass] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.has_attribute_type is None:
+        if self._is_empty(self.has_attribute_type):
             raise ValueError("has_attribute_type must be supplied")
         if not isinstance(self.has_attribute_type, OntologyClass):
             self.has_attribute_type = OntologyClass()
@@ -4008,7 +3948,7 @@ class ClinicalEntity(NamedThing):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ClinicalEntityId):
             self.id = ClinicalEntityId(self.id)
@@ -4029,7 +3969,7 @@ class ClinicalTrial(ClinicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ClinicalTrialId):
             self.id = ClinicalTrialId(self.id)
@@ -4050,7 +3990,7 @@ class ClinicalIntervention(ClinicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ClinicalInterventionId):
             self.id = ClinicalInterventionId(self.id)
@@ -4076,16 +4016,12 @@ class ClinicalFinding(PhenotypicFeature):
     has_attribute: Optional[Union[Union[dict, ClinicalAttribute], List[Union[dict, ClinicalAttribute]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ClinicalFindingId):
             self.id = ClinicalFindingId(self.id)
 
-        if self.has_attribute is None:
-            self.has_attribute = []
-        if not isinstance(self.has_attribute, list):
-            self.has_attribute = [self.has_attribute]
-        self._normalize_inlined_slot(slot_name="has_attribute", slot_type=ClinicalAttribute, key_name="has attribute type", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="has_attribute", slot_type=ClinicalAttribute, key_name="has attribute type", keyed=False)
 
         super().__post_init__(**kwargs)
 
@@ -4103,7 +4039,7 @@ class Hospitalization(ClinicalIntervention):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, HospitalizationId):
             self.id = HospitalizationId(self.id)
@@ -4141,7 +4077,7 @@ class Case(IndividualOrganism):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CaseId):
             self.id = CaseId(self.id)
@@ -4166,7 +4102,7 @@ class Cohort(StudyPopulation):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CohortId):
             self.id = CohortId(self.id)
@@ -4216,7 +4152,7 @@ class GenomicBackgroundExposure(GenomicEntity):
     has_gene_or_gene_product: Optional[Union[Union[str, GeneId], List[Union[str, GeneId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenomicBackgroundExposureId):
             self.id = GenomicBackgroundExposureId(self.id)
@@ -4224,8 +4160,6 @@ class GenomicBackgroundExposure(GenomicEntity):
         if self.timepoint is not None and not isinstance(self.timepoint, TimeType):
             self.timepoint = TimeType(self.timepoint)
 
-        if self.has_gene_or_gene_product is None:
-            self.has_gene_or_gene_product = []
         if not isinstance(self.has_gene_or_gene_product, list):
             self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
@@ -4262,7 +4196,7 @@ class PathologicalProcess(BiologicalProcess):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathologicalProcessId):
             self.id = PathologicalProcessId(self.id)
@@ -4288,7 +4222,7 @@ class PathologicalProcessExposure(PathologicalProcess):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathologicalProcessExposureId):
             self.id = PathologicalProcessExposureId(self.id)
@@ -4316,7 +4250,7 @@ class PathologicalAnatomicalStructure(AnatomicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathologicalAnatomicalStructureId):
             self.id = PathologicalAnatomicalStructureId(self.id)
@@ -4342,7 +4276,7 @@ class PathologicalAnatomicalExposure(PathologicalAnatomicalStructure):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathologicalAnatomicalExposureId):
             self.id = PathologicalAnatomicalExposureId(self.id)
@@ -4372,7 +4306,7 @@ class DiseaseOrPhenotypicFeatureExposure(DiseaseOrPhenotypicFeature):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureExposureId):
             self.id = DiseaseOrPhenotypicFeatureExposureId(self.id)
@@ -4400,7 +4334,7 @@ class ChemicalExposure(ChemicalSubstance):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalExposureId):
             self.id = ChemicalExposureId(self.id)
@@ -4428,13 +4362,11 @@ class ComplexChemicalExposure(ChemicalExposure):
     has_constituent: Optional[Union[Union[str, ChemicalSubstanceId], List[Union[str, ChemicalSubstanceId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ComplexChemicalExposureId):
             self.id = ComplexChemicalExposureId(self.id)
 
-        if self.has_constituent is None:
-            self.has_constituent = []
         if not isinstance(self.has_constituent, list):
             self.has_constituent = [self.has_constituent]
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
@@ -4459,7 +4391,7 @@ class DrugExposure(Drug):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DrugExposureId):
             self.id = DrugExposureId(self.id)
@@ -4488,13 +4420,11 @@ class DrugToGeneInteractionExposure(DrugExposure):
     has_gene_or_gene_product: Optional[Union[Union[str, GeneId], List[Union[str, GeneId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DrugToGeneInteractionExposureId):
             self.id = DrugToGeneInteractionExposureId(self.id)
 
-        if self.has_gene_or_gene_product is None:
-            self.has_gene_or_gene_product = []
         if not isinstance(self.has_gene_or_gene_product, list):
             self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
@@ -4523,25 +4453,19 @@ class Treatment(NamedThing):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, TreatmentId):
             self.id = TreatmentId(self.id)
 
-        if self.has_drug is None:
-            self.has_drug = []
         if not isinstance(self.has_drug, list):
             self.has_drug = [self.has_drug]
         self.has_drug = [v if isinstance(v, DrugId) else DrugId(v) for v in self.has_drug]
 
-        if self.has_device is None:
-            self.has_device = []
         if not isinstance(self.has_device, list):
             self.has_device = [self.has_device]
         self.has_device = [v if isinstance(v, DeviceId) else DeviceId(v) for v in self.has_device]
 
-        if self.has_procedure is None:
-            self.has_procedure = []
         if not isinstance(self.has_procedure, list):
             self.has_procedure = [self.has_procedure]
         self.has_procedure = [v if isinstance(v, ProcedureId) else ProcedureId(v) for v in self.has_procedure]
@@ -4564,9 +4488,16 @@ class BioticExposure(OrganismTaxon):
     class_name: ClassVar[str] = "biotic exposure"
     class_model_uri: ClassVar[URIRef] = BIOLINK.BioticExposure
 
+    id: Union[str, BioticExposureId] = None
+    category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            raise ValueError("id must be supplied")
+        if not isinstance(self.id, BioticExposureId):
+            self.id = BioticExposureId(self.id)
+
         if self.timepoint is not None and not isinstance(self.timepoint, TimeType):
             self.timepoint = TimeType(self.timepoint)
 
@@ -4590,7 +4521,7 @@ class GeographicExposure(GeographicLocation):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeographicExposureId):
             self.id = GeographicExposureId(self.id)
@@ -4619,7 +4550,7 @@ class EnvironmentalExposure(EnvironmentalProcess):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EnvironmentalExposureId):
             self.id = EnvironmentalExposureId(self.id)
@@ -4647,7 +4578,7 @@ class BehavioralExposure(Behavior):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BehavioralExposureId):
             self.id = BehavioralExposureId(self.id)
@@ -4677,18 +4608,14 @@ class SocioeconomicExposure(Behavior):
     timepoint: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SocioeconomicExposureId):
             self.id = SocioeconomicExposureId(self.id)
 
-        if self.has_attribute is None:
+        if self._is_empty(self.has_attribute):
             raise ValueError("has_attribute must be supplied")
-        elif not isinstance(self.has_attribute, list):
-            self.has_attribute = [self.has_attribute]
-        elif len(self.has_attribute) == 0:
-            raise ValueError(f"has_attribute must be a non-empty list")
-        self._normalize_inlined_slot(slot_name="has_attribute", slot_type=SocioeconomicAttribute, key_name="has attribute type", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="has_attribute", slot_type=SocioeconomicAttribute, key_name="has attribute type", keyed=False)
 
         if self.timepoint is not None and not isinstance(self.timepoint, TimeType):
             self.timepoint = TimeType(self.timepoint)
@@ -4725,7 +4652,7 @@ class PathologicalProcessOutcome(PathologicalProcess):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathologicalProcessOutcomeId):
             self.id = PathologicalProcessOutcomeId(self.id)
@@ -4749,7 +4676,7 @@ class PathologicalAnatomicalOutcome(PathologicalAnatomicalStructure):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PathologicalAnatomicalOutcomeId):
             self.id = PathologicalAnatomicalOutcomeId(self.id)
@@ -4774,7 +4701,7 @@ class DiseaseOrPhenotypicFeatureOutcome(DiseaseOrPhenotypicFeature):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureOutcomeId):
             self.id = DiseaseOrPhenotypicFeatureOutcomeId(self.id)
@@ -4798,7 +4725,7 @@ class BehavioralOutcome(Behavior):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BehavioralOutcomeId):
             self.id = BehavioralOutcomeId(self.id)
@@ -4823,7 +4750,7 @@ class HospitalizationOutcome(Hospitalization):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, HospitalizationOutcomeId):
             self.id = HospitalizationOutcomeId(self.id)
@@ -4847,7 +4774,7 @@ class MortalityOutcome(Death):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MortalityOutcomeId):
             self.id = MortalityOutcomeId(self.id)
@@ -4871,7 +4798,7 @@ class EpidemiologicalOutcome(BiologicalEntity):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, EpidemiologicalOutcomeId):
             self.id = EpidemiologicalOutcomeId(self.id)
@@ -4896,7 +4823,7 @@ class SocioeconomicOutcome(Behavior):
     category: Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SocioeconomicOutcomeId):
             self.id = SocioeconomicOutcomeId(self.id)
@@ -4928,27 +4855,27 @@ class Association(Entity):
     category: Optional[Union[Union[str, CategoryType], List[Union[str, CategoryType]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, AssociationId):
             self.id = AssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
-        if self.relation is None:
+        if self._is_empty(self.relation):
             raise ValueError("relation must be supplied")
         if not isinstance(self.relation, URIorCURIE):
             self.relation = URIorCURIE(self.relation)
@@ -4956,14 +4883,10 @@ class Association(Entity):
         if self.negated is not None and not isinstance(self.negated, Bool):
             self.negated = Bool(self.negated)
 
-        if self.qualifiers is None:
-            self.qualifiers = []
         if not isinstance(self.qualifiers, list):
             self.qualifiers = [self.qualifiers]
         self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**v) for v in self.qualifiers]
 
-        if self.publications is None:
-            self.publications = []
         if not isinstance(self.publications, list):
             self.publications = [self.publications]
         self.publications = [v if isinstance(v, PublicationId) else PublicationId(v) for v in self.publications]
@@ -4971,8 +4894,6 @@ class Association(Entity):
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
 
-        if self.category is None:
-            self.category = []
         if not isinstance(self.category, list):
             self.category = [self.category]
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
@@ -5000,28 +4921,26 @@ class ContributorAssociation(Association):
     qualifiers: Optional[Union[Union[dict, OntologyClass], List[Union[dict, OntologyClass]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ContributorAssociationId):
             self.id = ContributorAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, InformationContentEntityId):
             self.subject = InformationContentEntityId(self.subject)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AgentId):
             self.object = AgentId(self.object)
 
-        if self.qualifiers is None:
-            self.qualifiers = []
         if not isinstance(self.qualifiers, list):
             self.qualifiers = [self.qualifiers]
         self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**v) for v in self.qualifiers]
@@ -5048,22 +4967,22 @@ class GenotypeToGenotypePartAssociation(Association):
     object: Union[str, GenotypeId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeToGenotypePartAssociationId):
             self.id = GenotypeToGenotypePartAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GenotypeId):
             self.object = GenotypeId(self.object)
@@ -5091,22 +5010,22 @@ class GenotypeToGeneAssociation(Association):
     object: Union[str, GeneId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeToGeneAssociationId):
             self.id = GenotypeToGeneAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneId):
             self.object = GeneId(self.object)
@@ -5133,22 +5052,22 @@ class GenotypeToVariantAssociation(Association):
     object: Union[str, SequenceVariantId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeToVariantAssociationId):
             self.id = GenotypeToVariantAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, SequenceVariantId):
             self.object = SequenceVariantId(self.object)
@@ -5176,12 +5095,12 @@ class GeneToGeneAssociation(Association):
     object: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
@@ -5209,12 +5128,12 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToGeneHomologyAssociationId):
             self.id = GeneToGeneHomologyAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -5279,12 +5198,12 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
     phenotypic_state: Optional[Union[str, DiseaseOrPhenotypicFeatureId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToGeneCoexpressionAssociationId):
             self.id = GeneToGeneCoexpressionAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -5324,17 +5243,17 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
     relation: Union[str, URIorCURIE] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PairwiseGeneToGeneInteractionId):
             self.id = PairwiseGeneToGeneInteractionId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.relation is None:
+        if self._is_empty(self.relation):
             raise ValueError("relation must be supplied")
         if not isinstance(self.relation, URIorCURIE):
             self.relation = URIorCURIE(self.relation)
@@ -5362,27 +5281,27 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
     interacting_molecules_category: Optional[Union[dict, OntologyClass]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PairwiseMolecularInteractionId):
             self.id = PairwiseMolecularInteractionId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, MolecularEntityId):
             self.subject = MolecularEntityId(self.subject)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.relation is None:
+        if self._is_empty(self.relation):
             raise ValueError("relation must be supplied")
         if not isinstance(self.relation, URIorCURIE):
             self.relation = URIorCURIE(self.relation)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, MolecularEntityId):
             self.object = MolecularEntityId(self.object)
@@ -5408,7 +5327,7 @@ class CellLineToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, CellLineId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, CellLineId):
             self.subject = CellLineId(self.subject)
@@ -5436,12 +5355,12 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
     subject: Union[str, DiseaseOrPhenotypicFeatureId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CellLineToDiseaseOrPhenotypicFeatureAssociationId):
             self.id = CellLineToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, DiseaseOrPhenotypicFeatureId):
             self.subject = DiseaseOrPhenotypicFeatureId(self.subject)
@@ -5464,7 +5383,7 @@ class MolecularEntityToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, MolecularEntityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, MolecularEntityId):
             self.subject = MolecularEntityId(self.subject)
@@ -5487,7 +5406,7 @@ class DrugToEntityAssociationMixin(MolecularEntityToEntityAssociationMixin):
     subject: Union[str, DrugId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, DrugId):
             self.subject = DrugId(self.subject)
@@ -5510,7 +5429,7 @@ class ChemicalToEntityAssociationMixin(MolecularEntityToEntityAssociationMixin):
     subject: Union[str, ChemicalSubstanceId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, ChemicalSubstanceId):
             self.subject = ChemicalSubstanceId(self.subject)
@@ -5533,7 +5452,7 @@ class CaseToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, CaseId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, CaseId):
             self.subject = CaseId(self.subject)
@@ -5561,12 +5480,12 @@ class ChemicalToChemicalAssociation(Association):
     object: Union[str, ChemicalSubstanceId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalToChemicalAssociationId):
             self.id = ChemicalToChemicalAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, ChemicalSubstanceId):
             self.object = ChemicalSubstanceId(self.object)
@@ -5602,28 +5521,26 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
     catalyst_qualifier: Optional[Union[Union[dict, MacromolecularMachineMixin], List[Union[dict, MacromolecularMachineMixin]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalToChemicalDerivationAssociationId):
             self.id = ChemicalToChemicalDerivationAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, ChemicalSubstanceId):
             self.subject = ChemicalSubstanceId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, ChemicalSubstanceId):
             self.object = ChemicalSubstanceId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.catalyst_qualifier is None:
-            self.catalyst_qualifier = []
         if not isinstance(self.catalyst_qualifier, list):
             self.catalyst_qualifier = [self.catalyst_qualifier]
         self.catalyst_qualifier = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**v) for v in self.catalyst_qualifier]
@@ -5651,12 +5568,12 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
     object: Union[str, DiseaseOrPhenotypicFeatureId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalToDiseaseOrPhenotypicFeatureAssociationId):
             self.id = ChemicalToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, DiseaseOrPhenotypicFeatureId):
             self.object = DiseaseOrPhenotypicFeatureId(self.object)
@@ -5683,12 +5600,12 @@ class ChemicalToPathwayAssociation(Association):
     object: Union[str, PathwayId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalToPathwayAssociationId):
             self.id = ChemicalToPathwayAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, PathwayId):
             self.object = PathwayId(self.object)
@@ -5715,12 +5632,12 @@ class ChemicalToGeneAssociation(Association):
     object: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ChemicalToGeneAssociationId):
             self.id = ChemicalToGeneAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
@@ -5747,12 +5664,12 @@ class DrugToGeneAssociation(Association):
     object: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DrugToGeneAssociationId):
             self.id = DrugToGeneAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
@@ -5775,7 +5692,7 @@ class MaterialSampleToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, MaterialSampleId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, MaterialSampleId):
             self.subject = MaterialSampleId(self.subject)
@@ -5802,22 +5719,22 @@ class MaterialSampleDerivationAssociation(Association):
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MaterialSampleDerivationAssociationId):
             self.id = MaterialSampleDerivationAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, MaterialSampleId):
             self.subject = MaterialSampleId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -5844,7 +5761,7 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
     relation: Union[str, URIorCURIE] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MaterialSampleToDiseaseOrPhenotypicFeatureAssociationId):
             self.id = MaterialSampleToDiseaseOrPhenotypicFeatureAssociationId(self.id)
@@ -5864,7 +5781,7 @@ class DiseaseToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, DiseaseId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, DiseaseId):
             self.subject = DiseaseId(self.subject)
@@ -5887,7 +5804,7 @@ class EntityToExposureEventAssociationMixin(YAMLRoot):
     object: Union[dict, ExposureEvent] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, ExposureEvent):
             self.object = ExposureEvent(**self.object)
@@ -5914,7 +5831,7 @@ class DiseaseToExposureEventAssociation(Association):
     relation: Union[str, URIorCURIE] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseToExposureEventAssociationId):
             self.id = DiseaseToExposureEventAssociationId(self.id)
@@ -5937,7 +5854,7 @@ class ExposureEventToEntityAssociationMixin(YAMLRoot):
     subject: Union[dict, ExposureEvent] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, ExposureEvent):
             self.subject = ExposureEvent(**self.subject)
@@ -5960,7 +5877,7 @@ class EntityToOutcomeAssociationMixin(YAMLRoot):
     object: Union[dict, Outcome] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, Outcome):
             self.object = Outcome()
@@ -5989,7 +5906,7 @@ class ExposureEventToOutcomeAssociation(Association):
     has_temporal_context: Optional[Union[str, TimeType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ExposureEventToOutcomeAssociationId):
             self.id = ExposureEventToOutcomeAssociationId(self.id)
@@ -6063,7 +5980,7 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
     description: Optional[Union[str, NarrativeText]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, PhenotypicFeatureId):
             self.object = PhenotypicFeatureId(self.object)
@@ -6092,7 +6009,7 @@ class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
     object: Union[str, DiseaseId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, DiseaseId):
             self.object = DiseaseId(self.object)
@@ -6112,7 +6029,7 @@ class DiseaseOrPhenotypicFeatureToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, DiseaseOrPhenotypicFeatureId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, DiseaseOrPhenotypicFeatureId):
             self.subject = DiseaseOrPhenotypicFeatureId(self.subject)
@@ -6136,12 +6053,12 @@ class DiseaseOrPhenotypicFeatureAssociationToLocationAssociation(Association):
     object: Union[str, AnatomicalEntityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureAssociationToLocationAssociationId):
             self.id = DiseaseOrPhenotypicFeatureAssociationToLocationAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
@@ -6169,12 +6086,12 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
     object: Union[str, AnatomicalEntityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureToLocationAssociationId):
             self.id = DiseaseOrPhenotypicFeatureToLocationAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
@@ -6194,7 +6111,7 @@ class EntityToDiseaseOrPhenotypicFeatureAssociationMixin(YAMLRoot):
     object: Union[str, DiseaseOrPhenotypicFeatureId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, DiseaseOrPhenotypicFeatureId):
             self.object = DiseaseOrPhenotypicFeatureId(self.object)
@@ -6214,7 +6131,7 @@ class GenotypeToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, GenotypeId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
@@ -6243,17 +6160,17 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeToPhenotypicFeatureAssociationId):
             self.id = GenotypeToPhenotypicFeatureAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
@@ -6285,12 +6202,12 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ExposureEventToPhenotypicFeatureAssociationId):
             self.id = ExposureEventToPhenotypicFeatureAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, ExposureEvent):
             self.subject = ExposureEvent(**self.subject)
@@ -6322,7 +6239,7 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, DiseaseToPhenotypicFeatureAssociationId):
             self.id = DiseaseToPhenotypicFeatureAssociationId(self.id)
@@ -6354,7 +6271,7 @@ class CaseToPhenotypicFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CaseToPhenotypicFeatureAssociationId):
             self.id = CaseToPhenotypicFeatureAssociationId(self.id)
@@ -6386,17 +6303,17 @@ class BehaviorToBehavioralFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BehaviorToBehavioralFeatureAssociationId):
             self.id = BehaviorToBehavioralFeatureAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, BehaviorId):
             self.subject = BehaviorId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, BehavioralFeatureId):
             self.object = BehavioralFeatureId(self.object)
@@ -6419,7 +6336,7 @@ class GeneToEntityAssociationMixin(YAMLRoot):
     subject: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
@@ -6439,7 +6356,7 @@ class VariantToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, SequenceVariantId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
@@ -6464,12 +6381,12 @@ class GeneToPhenotypicFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToPhenotypicFeatureAssociationId):
             self.id = GeneToPhenotypicFeatureAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
@@ -6496,12 +6413,12 @@ class GeneToDiseaseAssociation(Association):
     subject: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToDiseaseAssociationId):
             self.id = GeneToDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
@@ -6529,17 +6446,17 @@ class VariantToGeneAssociation(Association):
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VariantToGeneAssociationId):
             self.id = VariantToGeneAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneId):
             self.object = GeneId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -6570,12 +6487,12 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
     phenotypic_state: Optional[Union[str, DiseaseOrPhenotypicFeatureId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VariantToGeneExpressionAssociationId):
             self.id = VariantToGeneExpressionAssociationId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -6619,17 +6536,17 @@ class VariantToPopulationAssociation(Association):
     frequency_qualifier: Optional[Union[str, FrequencyValue]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VariantToPopulationAssociationId):
             self.id = VariantToPopulationAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, PopulationOfIndividualOrganismsId):
             self.object = PopulationOfIndividualOrganismsId(self.object)
@@ -6671,22 +6588,22 @@ class PopulationToPopulationAssociation(Association):
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, PopulationToPopulationAssociationId):
             self.id = PopulationToPopulationAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, PopulationOfIndividualOrganismsId):
             self.subject = PopulationOfIndividualOrganismsId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, PopulationOfIndividualOrganismsId):
             self.object = PopulationOfIndividualOrganismsId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -6711,12 +6628,12 @@ class VariantToPhenotypicFeatureAssociation(Association):
     sex_qualifier: Optional[Union[dict, BiologicalSex]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VariantToPhenotypicFeatureAssociationId):
             self.id = VariantToPhenotypicFeatureAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
@@ -6743,22 +6660,22 @@ class VariantToDiseaseAssociation(Association):
     object: Union[str, NamedThingId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VariantToDiseaseAssociationId):
             self.id = VariantToDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
@@ -6782,22 +6699,22 @@ class GenotypeToDiseaseAssociation(Association):
     object: Union[str, NamedThingId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeToDiseaseAssociationId):
             self.id = GenotypeToDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
@@ -6823,12 +6740,12 @@ class ModelToDiseaseAssociationMixin(YAMLRoot):
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -6852,12 +6769,12 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
     subject: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneAsAModelOfDiseaseAssociationId):
             self.id = GeneAsAModelOfDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
@@ -6881,12 +6798,12 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
     subject: Union[str, SequenceVariantId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, VariantAsAModelOfDiseaseAssociationId):
             self.id = VariantAsAModelOfDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
@@ -6910,12 +6827,12 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
     subject: Union[str, GenotypeId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenotypeAsAModelOfDiseaseAssociationId):
             self.id = GenotypeAsAModelOfDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
@@ -6939,12 +6856,12 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
     subject: Union[str, CellLineId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CellLineAsAModelOfDiseaseAssociationId):
             self.id = CellLineAsAModelOfDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, CellLineId):
             self.subject = CellLineId(self.subject)
@@ -6968,12 +6885,12 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
     subject: Union[str, OrganismalEntityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, OrganismalEntityAsAModelOfDiseaseAssociationId):
             self.id = OrganismalEntityAsAModelOfDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, OrganismalEntityId):
             self.subject = OrganismalEntityId(self.subject)
@@ -6998,12 +6915,12 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
     sequence_variant_qualifier: Optional[Union[str, SequenceVariantId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneHasVariantThatContributesToDiseaseAssociationId):
             self.id = GeneHasVariantThatContributesToDiseaseAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
@@ -7035,22 +6952,22 @@ class GeneToExpressionSiteAssociation(Association):
     quantifier_qualifier: Optional[Union[dict, OntologyClass]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToExpressionSiteAssociationId):
             self.id = GeneToExpressionSiteAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7084,12 +7001,12 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
     object: Union[str, TreatmentId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, TreatmentId):
             self.object = TreatmentId(self.object)
@@ -7117,17 +7034,17 @@ class FunctionalAssociation(Association):
     object: Union[dict, GeneOntologyClass] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, FunctionalAssociationId):
             self.id = FunctionalAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, MacromolecularMachineMixin):
             self.subject = MacromolecularMachineMixin(**self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneOntologyClass):
             self.object = GeneOntologyClass()
@@ -7150,7 +7067,7 @@ class MacromolecularMachineToEntityAssociationMixin(YAMLRoot):
     subject: Union[str, NamedThingId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
@@ -7179,12 +7096,12 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
     object: Union[str, MolecularActivityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MacromolecularMachineToMolecularActivityAssociationId):
             self.id = MacromolecularMachineToMolecularActivityAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, MolecularActivityId):
             self.object = MolecularActivityId(self.object)
@@ -7213,12 +7130,12 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
     object: Union[str, BiologicalProcessId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MacromolecularMachineToBiologicalProcessAssociationId):
             self.id = MacromolecularMachineToBiologicalProcessAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, BiologicalProcessId):
             self.object = BiologicalProcessId(self.object)
@@ -7247,12 +7164,12 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
     object: Union[str, CellularComponentId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, MacromolecularMachineToCellularComponentAssociationId):
             self.id = MacromolecularMachineToCellularComponentAssociationId(self.id)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, CellularComponentId):
             self.object = CellularComponentId(self.object)
@@ -7276,17 +7193,17 @@ class GeneToGoTermAssociation(FunctionalAssociation):
     object: Union[dict, GeneOntologyClass] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToGoTermAssociationId):
             self.id = GeneToGoTermAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, MolecularEntityId):
             self.subject = MolecularEntityId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneOntologyClass):
             self.object = GeneOntologyClass()
@@ -7313,7 +7230,7 @@ class SequenceAssociation(Association):
     relation: Union[str, URIorCURIE] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SequenceAssociationId):
             self.id = SequenceAssociationId(self.id)
@@ -7346,22 +7263,22 @@ class GenomicSequenceLocalization(SequenceAssociation):
     phase: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GenomicSequenceLocalizationId):
             self.id = GenomicSequenceLocalizationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenomicEntityId):
             self.subject = GenomicEntityId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GenomicEntityId):
             self.object = GenomicEntityId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7403,17 +7320,17 @@ class SequenceFeatureRelationship(Association):
     object: Union[str, GenomicEntityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, SequenceFeatureRelationshipId):
             self.id = SequenceFeatureRelationshipId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GenomicEntityId):
             self.subject = GenomicEntityId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GenomicEntityId):
             self.object = GenomicEntityId(self.object)
@@ -7440,17 +7357,17 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
     object: Union[str, GeneId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, TranscriptToGeneRelationshipId):
             self.id = TranscriptToGeneRelationshipId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, TranscriptId):
             self.subject = TranscriptId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneId):
             self.object = GeneId(self.object)
@@ -7477,22 +7394,22 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneToGeneProductRelationshipId):
             self.id = GeneToGeneProductRelationshipId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneId):
             self.subject = GeneId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneProductMixin):
             self.object = GeneProductMixin(**self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7519,17 +7436,17 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
     object: Union[str, TranscriptId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, ExonToTranscriptRelationshipId):
             self.id = ExonToTranscriptRelationshipId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, ExonId):
             self.subject = ExonId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, TranscriptId):
             self.object = TranscriptId(self.object)
@@ -7556,22 +7473,22 @@ class GeneRegulatoryRelationship(Association):
     object: Union[dict, GeneOrGeneProduct] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, GeneRegulatoryRelationshipId):
             self.id = GeneRegulatoryRelationshipId(self.id)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
@@ -7595,12 +7512,12 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
     object: Union[str, AnatomicalEntityId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, AnatomicalEntityId):
             self.subject = AnatomicalEntityId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
@@ -7629,22 +7546,22 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, AnatomicalEntityToAnatomicalEntityPartOfAssociationId):
             self.id = AnatomicalEntityToAnatomicalEntityPartOfAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, AnatomicalEntityId):
             self.subject = AnatomicalEntityId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7673,22 +7590,22 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, AnatomicalEntityToAnatomicalEntityOntogenicAssociationId):
             self.id = AnatomicalEntityToAnatomicalEntityOntogenicAssociationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
         if not isinstance(self.subject, AnatomicalEntityId):
             self.subject = AnatomicalEntityId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7708,13 +7625,13 @@ class OrganismTaxonToEntityAssociation(YAMLRoot):
     class_name: ClassVar[str] = "organism taxon to entity association"
     class_model_uri: ClassVar[URIRef] = BIOLINK.OrganismTaxonToEntityAssociation
 
-    subject: Union[dict, OrganismTaxon] = None
+    subject: Union[str, OrganismTaxonId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
-        if not isinstance(self.subject, OrganismTaxon):
-            self.subject = OrganismTaxon(**self.subject)
+        if not isinstance(self.subject, OrganismTaxonId):
+            self.subject = OrganismTaxonId(self.subject)
 
         super().__post_init__(**kwargs)
 
@@ -7734,19 +7651,19 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
     id: Union[str, OrganismTaxonToOrganismTaxonAssociationId] = None
     predicate: Union[str, PredicateType] = None
     relation: Union[str, URIorCURIE] = None
-    subject: Union[dict, OrganismTaxon] = None
-    object: Union[dict, OrganismTaxon] = None
+    subject: Union[str, OrganismTaxonId] = None
+    object: Union[str, OrganismTaxonId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
-        if not isinstance(self.subject, OrganismTaxon):
-            self.subject = OrganismTaxon(**self.subject)
+        if not isinstance(self.subject, OrganismTaxonId):
+            self.subject = OrganismTaxonId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
-        if not isinstance(self.object, OrganismTaxon):
-            self.object = OrganismTaxon(**self.object)
+        if not isinstance(self.object, OrganismTaxonId):
+            self.object = OrganismTaxonId(self.object)
 
         super().__post_init__(**kwargs)
 
@@ -7765,27 +7682,27 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
 
     id: Union[str, OrganismTaxonToOrganismTaxonSpecializationId] = None
     relation: Union[str, URIorCURIE] = None
-    subject: Union[dict, OrganismTaxon] = None
-    object: Union[dict, OrganismTaxon] = None
+    subject: Union[str, OrganismTaxonId] = None
+    object: Union[str, OrganismTaxonId] = None
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, OrganismTaxonToOrganismTaxonSpecializationId):
             self.id = OrganismTaxonToOrganismTaxonSpecializationId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
-        if not isinstance(self.subject, OrganismTaxon):
-            self.subject = OrganismTaxon(**self.subject)
+        if not isinstance(self.subject, OrganismTaxonId):
+            self.subject = OrganismTaxonId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
-        if not isinstance(self.object, OrganismTaxon):
-            self.object = OrganismTaxon(**self.object)
+        if not isinstance(self.object, OrganismTaxonId):
+            self.object = OrganismTaxonId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7809,28 +7726,28 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
 
     id: Union[str, OrganismTaxonToOrganismTaxonInteractionId] = None
     relation: Union[str, URIorCURIE] = None
-    subject: Union[dict, OrganismTaxon] = None
-    object: Union[dict, OrganismTaxon] = None
+    subject: Union[str, OrganismTaxonId] = None
+    object: Union[str, OrganismTaxonId] = None
     predicate: Union[str, PredicateType] = None
     associated_environmental_context: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, OrganismTaxonToOrganismTaxonInteractionId):
             self.id = OrganismTaxonToOrganismTaxonInteractionId(self.id)
 
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
-        if not isinstance(self.subject, OrganismTaxon):
-            self.subject = OrganismTaxon(**self.subject)
+        if not isinstance(self.subject, OrganismTaxonId):
+            self.subject = OrganismTaxonId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
-        if not isinstance(self.object, OrganismTaxon):
-            self.object = OrganismTaxon(**self.object)
+        if not isinstance(self.object, OrganismTaxonId):
+            self.object = OrganismTaxonId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7852,22 +7769,22 @@ class OrganismTaxonToEnvironmentAssociation(Association):
 
     id: Union[str, OrganismTaxonToEnvironmentAssociationId] = None
     relation: Union[str, URIorCURIE] = None
-    subject: Union[dict, OrganismTaxon] = None
+    subject: Union[str, OrganismTaxonId] = None
     object: Union[str, NamedThingId] = None
     predicate: Union[str, PredicateType] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.subject is None:
+        if self._is_empty(self.subject):
             raise ValueError("subject must be supplied")
-        if not isinstance(self.subject, OrganismTaxon):
-            self.subject = OrganismTaxon(**self.subject)
+        if not isinstance(self.subject, OrganismTaxonId):
+            self.subject = OrganismTaxonId(self.subject)
 
-        if self.object is None:
+        if self._is_empty(self.object):
             raise ValueError("object must be supplied")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
-        if self.predicate is None:
+        if self._is_empty(self.predicate):
             raise ValueError("predicate must be supplied")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
@@ -7876,7 +7793,19 @@ class OrganismTaxonToEnvironmentAssociation(Association):
 
 
 # Enumerations
+class LogicalInterpretationEnum(EnumDefinitionImpl):
 
+    SomeSome = PermissibleValue(text="SomeSome",
+                                       description="A modifier on a triple that causes the triple to be interpreted as a some-some statement",
+                                       meaning=OS.SomeSomeInterpretation)
+    AllSome = PermissibleValue(text="AllSome",
+                                     description="A modifier on a triple that causes the triple to be interpreted as an all-some statement.",
+                                     meaning=OS.AllSomeInterpretation)
+    InverseAllSome = PermissibleValue(text="InverseAllSome")
+
+    _defn = EnumDefinition(
+        name="LogicalInterpretationEnum",
+    )
 
 # Slots
 class slots:
@@ -8125,6 +8054,9 @@ slots.broad_match = Slot(uri=BIOLINK.broad_match, name="broad match", curie=BIOL
 slots.narrow_match = Slot(uri=BIOLINK.narrow_match, name="narrow match", curie=BIOLINK.curie('narrow_match'),
                    model_uri=BIOLINK.narrow_match, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
 
+slots.opposite_of = Slot(uri=BIOLINK.opposite_of, name="opposite of", curie=BIOLINK.curie('opposite_of'),
+                   model_uri=BIOLINK.opposite_of, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
+
 slots.contributor = Slot(uri=BIOLINK.contributor, name="contributor", curie=BIOLINK.curie('contributor'),
                    model_uri=BIOLINK.contributor, domain=InformationContentEntity, range=Optional[Union[Union[str, AgentId], List[Union[str, AgentId]]]])
 
@@ -8368,8 +8300,23 @@ slots.disrupts = Slot(uri=BIOLINK.disrupts, name="disrupts", curie=BIOLINK.curie
 slots.disrupted_by = Slot(uri=BIOLINK.disrupted_by, name="disrupted by", curie=BIOLINK.curie('disrupted_by'),
                    model_uri=BIOLINK.disrupted_by, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
 
+slots.gene_product_of = Slot(uri=BIOLINK.gene_product_of, name="gene product of", curie=BIOLINK.curie('gene_product_of'),
+                   model_uri=BIOLINK.gene_product_of, domain=None, range=Optional[Union[Union[str, GeneId], List[Union[str, GeneId]]]])
+
 slots.has_gene_product = Slot(uri=BIOLINK.has_gene_product, name="has gene product", curie=BIOLINK.curie('has_gene_product'),
                    model_uri=BIOLINK.has_gene_product, domain=Gene, range=Optional[Union[Union[dict, "GeneProductMixin"], List[Union[dict, "GeneProductMixin"]]]])
+
+slots.transcribed_to = Slot(uri=BIOLINK.transcribed_to, name="transcribed to", curie=BIOLINK.curie('transcribed_to'),
+                   model_uri=BIOLINK.transcribed_to, domain=Gene, range=Optional[Union[Union[str, TranscriptId], List[Union[str, TranscriptId]]]])
+
+slots.transcribed_from = Slot(uri=BIOLINK.transcribed_from, name="transcribed from", curie=BIOLINK.curie('transcribed_from'),
+                   model_uri=BIOLINK.transcribed_from, domain=Transcript, range=Optional[Union[Union[str, GeneId], List[Union[str, GeneId]]]])
+
+slots.translates_to = Slot(uri=BIOLINK.translates_to, name="translates to", curie=BIOLINK.curie('translates_to'),
+                   model_uri=BIOLINK.translates_to, domain=Transcript, range=Optional[Union[Union[str, ProteinId], List[Union[str, ProteinId]]]])
+
+slots.translation_of = Slot(uri=BIOLINK.translation_of, name="translation of", curie=BIOLINK.curie('translation_of'),
+                   model_uri=BIOLINK.translation_of, domain=Protein, range=Optional[Union[Union[str, TranscriptId], List[Union[str, TranscriptId]]]])
 
 slots.homologous_to = Slot(uri=BIOLINK.homologous_to, name="homologous to", curie=BIOLINK.curie('homologous_to'),
                    model_uri=BIOLINK.homologous_to, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
@@ -8429,13 +8376,13 @@ slots.exacerbates = Slot(uri=BIOLINK.exacerbates, name="exacerbates", curie=BIOL
                    model_uri=BIOLINK.exacerbates, domain=BiologicalEntity, range=Optional[Union[Union[str, DiseaseOrPhenotypicFeatureId], List[Union[str, DiseaseOrPhenotypicFeatureId]]]])
 
 slots.treats = Slot(uri=BIOLINK.treats, name="treats", curie=BIOLINK.curie('treats'),
-                   model_uri=BIOLINK.treats, domain=Treatment, range=Optional[Union[Union[str, DiseaseOrPhenotypicFeatureId], List[Union[str, DiseaseOrPhenotypicFeatureId]]]])
+                   model_uri=BIOLINK.treats, domain=None, range=Optional[Union[Union[str, DiseaseOrPhenotypicFeatureId], List[Union[str, DiseaseOrPhenotypicFeatureId]]]])
 
 slots.treated_by = Slot(uri=BIOLINK.treated_by, name="treated by", curie=BIOLINK.curie('treated_by'),
                    model_uri=BIOLINK.treated_by, domain=DiseaseOrPhenotypicFeature, range=Optional[Union[Union[str, TreatmentId], List[Union[str, TreatmentId]]]])
 
 slots.approved_to_treat = Slot(uri=BIOLINK.approved_to_treat, name="approved to treat", curie=BIOLINK.curie('approved_to_treat'),
-                   model_uri=BIOLINK.approved_to_treat, domain=Treatment, range=Optional[Union[Union[str, DiseaseOrPhenotypicFeatureId], List[Union[str, DiseaseOrPhenotypicFeatureId]]]])
+                   model_uri=BIOLINK.approved_to_treat, domain=None, range=Optional[Union[Union[str, DiseaseOrPhenotypicFeatureId], List[Union[str, DiseaseOrPhenotypicFeatureId]]]])
 
 slots.approved_for_treatment_by = Slot(uri=BIOLINK.approved_for_treatment_by, name="approved for treatment by", curie=BIOLINK.curie('approved_for_treatment_by'),
                    model_uri=BIOLINK.approved_for_treatment_by, domain=DiseaseOrPhenotypicFeature, range=Optional[Union[Union[str, TreatmentId], List[Union[str, TreatmentId]]]])
@@ -8472,6 +8419,9 @@ slots.expresses = Slot(uri=BIOLINK.expresses, name="expresses", curie=BIOLINK.cu
 
 slots.has_phenotype = Slot(uri=BIOLINK.has_phenotype, name="has phenotype", curie=BIOLINK.curie('has_phenotype'),
                    model_uri=BIOLINK.has_phenotype, domain=BiologicalEntity, range=Optional[Union[Union[str, PhenotypicFeatureId], List[Union[str, PhenotypicFeatureId]]]])
+
+slots.phenotype_of = Slot(uri=BIOLINK.phenotype_of, name="phenotype of", curie=BIOLINK.curie('phenotype_of'),
+                   model_uri=BIOLINK.phenotype_of, domain=PhenotypicFeature, range=Optional[Union[Union[str, BiologicalEntityId], List[Union[str, BiologicalEntityId]]]])
 
 slots.occurs_in = Slot(uri=BIOLINK.occurs_in, name="occurs in", curie=BIOLINK.curie('occurs_in'),
                    model_uri=BIOLINK.occurs_in, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
@@ -8582,7 +8532,7 @@ slots.preceded_by = Slot(uri=BIOLINK.preceded_by, name="preceded by", curie=BIOL
                    model_uri=BIOLINK.preceded_by, domain=None, range=Optional[Union[Union[dict, "Occurrent"], List[Union[dict, "Occurrent"]]]])
 
 slots.directly_interacts_with = Slot(uri=BIOLINK.directly_interacts_with, name="directly interacts with", curie=BIOLINK.curie('directly_interacts_with'),
-                   model_uri=BIOLINK.directly_interacts_with, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
+                   model_uri=BIOLINK.directly_interacts_with, domain=MolecularEntity, range=Optional[Union[Union[str, MolecularEntityId], List[Union[str, MolecularEntityId]]]])
 
 slots.affects_expression_in = Slot(uri=BIOLINK.affects_expression_in, name="affects expression in", curie=BIOLINK.curie('affects_expression_in'),
                    model_uri=BIOLINK.affects_expression_in, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
@@ -8654,7 +8604,7 @@ slots.develops_from = Slot(uri=BIOLINK.develops_from, name="develops from", curi
                    model_uri=BIOLINK.develops_from, domain=NamedThing, range=Optional[Union[Union[str, NamedThingId], List[Union[str, NamedThingId]]]])
 
 slots.in_taxon = Slot(uri=BIOLINK.in_taxon, name="in taxon", curie=BIOLINK.curie('in_taxon'),
-                   model_uri=BIOLINK.in_taxon, domain=None, range=Optional[Union[Union[dict, OrganismTaxon], List[Union[dict, OrganismTaxon]]]])
+                   model_uri=BIOLINK.in_taxon, domain=None, range=Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]])
 
 slots.has_molecular_consequence = Slot(uri=BIOLINK.has_molecular_consequence, name="has molecular consequence", curie=BIOLINK.curie('has_molecular_consequence'),
                    model_uri=BIOLINK.has_molecular_consequence, domain=NamedThing, range=Optional[Union[Union[dict, OntologyClass], List[Union[dict, OntologyClass]]]])
@@ -8676,6 +8626,9 @@ slots.predicate = Slot(uri=RDF.predicate, name="predicate", curie=RDF.curie('pre
 
 slots.edge_label = Slot(uri=RDF.predicate, name="edge label", curie=RDF.curie('predicate'),
                    model_uri=BIOLINK.edge_label, domain=Association, range=Union[str, PredicateType])
+
+slots.logical_interpretation = Slot(uri=BIOLINK.logical_interpretation, name="logical interpretation", curie=BIOLINK.curie('logical_interpretation'),
+                   model_uri=BIOLINK.logical_interpretation, domain=Association, range=Optional[Union[str, "LogicalInterpretationEnum"]])
 
 slots.relation = Slot(uri=BIOLINK.relation, name="relation", curie=BIOLINK.curie('relation'),
                    model_uri=BIOLINK.relation, domain=Association, range=Union[str, URIorCURIE])
@@ -8780,7 +8733,7 @@ slots.organism_taxon_has_taxonomic_rank = Slot(uri=BIOLINK.has_taxonomic_rank, n
                    model_uri=BIOLINK.organism_taxon_has_taxonomic_rank, domain=OrganismTaxon, range=Optional[Union[dict, TaxonomicRank]], mappings = [WIKIDATA.P105])
 
 slots.organism_taxon_subclass_of = Slot(uri=BIOLINK.subclass_of, name="organism taxon_subclass of", curie=BIOLINK.curie('subclass_of'),
-                   model_uri=BIOLINK.organism_taxon_subclass_of, domain=OrganismTaxon, range=Optional[Union[Union[dict, "OrganismTaxon"], List[Union[dict, "OrganismTaxon"]]]])
+                   model_uri=BIOLINK.organism_taxon_subclass_of, domain=OrganismTaxon, range=Optional[Union[Union[str, OrganismTaxonId], List[Union[str, OrganismTaxonId]]]])
 
 slots.agent_id = Slot(uri=BIOLINK.id, name="agent_id", curie=BIOLINK.curie('id'),
                    model_uri=BIOLINK.agent_id, domain=Agent, range=Union[str, AgentId])
@@ -9248,28 +9201,28 @@ slots.anatomical_entity_to_anatomical_entity_ontogenic_association_predicate = S
                    model_uri=BIOLINK.anatomical_entity_to_anatomical_entity_ontogenic_association_predicate, domain=AnatomicalEntityToAnatomicalEntityOntogenicAssociation, range=Union[str, PredicateType])
 
 slots.organism_taxon_to_entity_association_subject = Slot(uri=BIOLINK.subject, name="organism taxon to entity association_subject", curie=BIOLINK.curie('subject'),
-                   model_uri=BIOLINK.organism_taxon_to_entity_association_subject, domain=None, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_entity_association_subject, domain=None, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_association_subject = Slot(uri=BIOLINK.subject, name="organism taxon to organism taxon association_subject", curie=BIOLINK.curie('subject'),
-                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_association_subject, domain=OrganismTaxonToOrganismTaxonAssociation, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_association_subject, domain=OrganismTaxonToOrganismTaxonAssociation, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_association_object = Slot(uri=BIOLINK.object, name="organism taxon to organism taxon association_object", curie=BIOLINK.curie('object'),
-                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_association_object, domain=OrganismTaxonToOrganismTaxonAssociation, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_association_object, domain=OrganismTaxonToOrganismTaxonAssociation, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_specialization_subject = Slot(uri=BIOLINK.subject, name="organism taxon to organism taxon specialization_subject", curie=BIOLINK.curie('subject'),
-                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_specialization_subject, domain=OrganismTaxonToOrganismTaxonSpecialization, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_specialization_subject, domain=OrganismTaxonToOrganismTaxonSpecialization, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_specialization_object = Slot(uri=BIOLINK.object, name="organism taxon to organism taxon specialization_object", curie=BIOLINK.curie('object'),
-                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_specialization_object, domain=OrganismTaxonToOrganismTaxonSpecialization, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_specialization_object, domain=OrganismTaxonToOrganismTaxonSpecialization, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_specialization_predicate = Slot(uri=BIOLINK.predicate, name="organism taxon to organism taxon specialization_predicate", curie=BIOLINK.curie('predicate'),
                    model_uri=BIOLINK.organism_taxon_to_organism_taxon_specialization_predicate, domain=OrganismTaxonToOrganismTaxonSpecialization, range=Union[str, PredicateType])
 
 slots.organism_taxon_to_organism_taxon_interaction_subject = Slot(uri=BIOLINK.subject, name="organism taxon to organism taxon interaction_subject", curie=BIOLINK.curie('subject'),
-                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_interaction_subject, domain=OrganismTaxonToOrganismTaxonInteraction, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_interaction_subject, domain=OrganismTaxonToOrganismTaxonInteraction, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_interaction_object = Slot(uri=BIOLINK.object, name="organism taxon to organism taxon interaction_object", curie=BIOLINK.curie('object'),
-                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_interaction_object, domain=OrganismTaxonToOrganismTaxonInteraction, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_organism_taxon_interaction_object, domain=OrganismTaxonToOrganismTaxonInteraction, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_organism_taxon_interaction_predicate = Slot(uri=BIOLINK.predicate, name="organism taxon to organism taxon interaction_predicate", curie=BIOLINK.curie('predicate'),
                    model_uri=BIOLINK.organism_taxon_to_organism_taxon_interaction_predicate, domain=OrganismTaxonToOrganismTaxonInteraction, range=Union[str, PredicateType])
@@ -9278,7 +9231,7 @@ slots.organism_taxon_to_organism_taxon_interaction_associated_environmental_cont
                    model_uri=BIOLINK.organism_taxon_to_organism_taxon_interaction_associated_environmental_context, domain=OrganismTaxonToOrganismTaxonInteraction, range=Optional[str])
 
 slots.organism_taxon_to_environment_association_subject = Slot(uri=BIOLINK.subject, name="organism taxon to environment association_subject", curie=BIOLINK.curie('subject'),
-                   model_uri=BIOLINK.organism_taxon_to_environment_association_subject, domain=OrganismTaxonToEnvironmentAssociation, range=Union[dict, OrganismTaxon])
+                   model_uri=BIOLINK.organism_taxon_to_environment_association_subject, domain=OrganismTaxonToEnvironmentAssociation, range=Union[str, OrganismTaxonId])
 
 slots.organism_taxon_to_environment_association_object = Slot(uri=BIOLINK.object, name="organism taxon to environment association_object", curie=BIOLINK.curie('object'),
                    model_uri=BIOLINK.organism_taxon_to_environment_association_object, domain=OrganismTaxonToEnvironmentAssociation, range=Union[str, NamedThingId])

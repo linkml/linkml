@@ -9,7 +9,7 @@ URI: [biolink:increases_expression_of](https://w3id.org/biolink/vocab/increases_
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
 
 ## Parents
 
@@ -26,6 +26,7 @@ URI: [biolink:increases_expression_of](https://w3id.org/biolink/vocab/increases_
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
-| **Exact Mappings:** | | CTD:increases_expression_of |
+| **Exact Mappings:** | | RO:0003003 |
+|  | | CTD:increases_expression_of |
 | **Close Mappings:** | | CHEMBL.MECHANISM:releasing_agent |
 

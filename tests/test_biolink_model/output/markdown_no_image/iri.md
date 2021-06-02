@@ -9,7 +9,7 @@ URI: [biolink:iri](https://w3id.org/biolink/vocab/iri)
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [IriType](types/IriType.md)
+None &#8594;  <sub>OPT</sub> [IriType](types/IriType.md)
 
 ## Parents
 
@@ -40,6 +40,7 @@ None ->  <sub>OPT</sub> [IriType](types/IriType.md)
  * [BiologicalProcess](BiologicalProcess.md)
  * [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
  * [BiologicalSex](BiologicalSex.md)
+ * [BioticExposure](BioticExposure.md)
  * [Book](Book.md)
  * [BookChapter](BookChapter.md)
  * [Carbohydrate](Carbohydrate.md)
@@ -157,6 +158,7 @@ None ->  <sub>OPT</sub> [IriType](types/IriType.md)
  * [Nutrient](Nutrient.md)
  * [Onset](Onset.md)
  * [OrganismAttribute](OrganismAttribute.md)
+ * [OrganismTaxon](OrganismTaxon.md)
  * [OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)
  * [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)
  * [OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)

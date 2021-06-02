@@ -9,7 +9,7 @@ URI: [biolink:chemical_to_chemical_association_object](https://w3id.org/biolink/
 
 ## Domain and Range
 
-[ChemicalToChemicalAssociation](ChemicalToChemicalAssociation.md) ->  <sub>REQ</sub> [ChemicalSubstance](ChemicalSubstance.md)
+[ChemicalToChemicalAssociation](ChemicalToChemicalAssociation.md) &#8594;  <sub>REQ</sub> [ChemicalSubstance](ChemicalSubstance.md)
 
 ## Parents
 

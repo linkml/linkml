@@ -151,7 +151,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -919,7 +919,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -1223,22 +1223,68 @@
          "additionalProperties": false,
          "description": "An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).",
          "properties": {
+            "category": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "description": {
+               "description": "a human-readable description of an entity",
+               "type": "string"
+            },
+            "has_attribute": {
+               "description": "connects any entity to an attribute",
+               "items": {
+                  "$ref": "#/definitions/Attribute"
+               },
+               "type": "array"
+            },
             "has_taxonomic_rank": {
                "$ref": "#/definitions/TaxonomicRank"
+            },
+            "id": {
+               "description": "A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI",
+               "type": "string"
+            },
+            "iri": {
+               "description": "An IRI for an entity. This is determined by the id using expansion rules.",
+               "type": "string"
+            },
+            "name": {
+               "description": "A human-readable name for an attribute or entity.",
+               "type": "string"
+            },
+            "provided_by": {
+               "description": "connects an association to the agent (person, organization or group) that provided it",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.",
+               "type": "string"
             },
             "subclass_of": {
                "description": "subclass of holds between two taxa, e.g. human subclass of mammal",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
             "timepoint": {
                "description": "a point in time",
                "type": "string"
+            },
+            "type": {
+               "type": "string"
             }
          },
-         "required": [],
+         "required": [
+            "id",
+            "category"
+         ],
          "title": "BioticExposure",
          "type": "object"
       },
@@ -1501,7 +1547,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -1567,7 +1613,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -1738,7 +1784,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -2052,7 +2098,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -2114,7 +2160,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -2184,7 +2230,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -2851,7 +2897,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -3102,7 +3148,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -3164,7 +3210,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -3233,7 +3279,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -3885,7 +3931,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -3947,7 +3993,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -4101,7 +4147,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -4167,7 +4213,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -4531,7 +4577,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -4600,7 +4646,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -4773,7 +4819,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -4953,7 +4999,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -5201,7 +5247,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -5570,7 +5616,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -5632,7 +5678,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -5698,7 +5744,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -5861,7 +5907,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -6053,7 +6099,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -7018,7 +7064,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -7091,7 +7137,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -7161,7 +7207,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -7340,7 +7386,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -8233,7 +8279,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -8299,7 +8345,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -8471,7 +8517,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -8571,7 +8617,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -8909,7 +8955,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9216,7 +9262,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9286,7 +9332,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9362,7 +9408,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9504,7 +9550,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9701,7 +9747,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9777,7 +9823,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -9895,18 +9941,64 @@
          "additionalProperties": false,
          "description": "A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or subspecies.",
          "properties": {
+            "category": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "description": {
+               "description": "a human-readable description of an entity",
+               "type": "string"
+            },
+            "has_attribute": {
+               "description": "connects any entity to an attribute",
+               "items": {
+                  "$ref": "#/definitions/Attribute"
+               },
+               "type": "array"
+            },
             "has_taxonomic_rank": {
                "$ref": "#/definitions/TaxonomicRank"
+            },
+            "id": {
+               "description": "A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI",
+               "type": "string"
+            },
+            "iri": {
+               "description": "An IRI for an entity. This is determined by the id using expansion rules.",
+               "type": "string"
+            },
+            "name": {
+               "description": "A human-readable name for an attribute or entity.",
+               "type": "string"
+            },
+            "provided_by": {
+               "description": "connects an association to the agent (person, organization or group) that provided it",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.",
+               "type": "string"
             },
             "subclass_of": {
                "description": "subclass of holds between two taxa, e.g. human subclass of mammal",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
+            },
+            "type": {
+               "type": "string"
             }
          },
-         "required": [],
+         "required": [
+            "id",
+            "category"
+         ],
          "title": "OrganismTaxon",
          "type": "object"
       },
@@ -9952,8 +10044,8 @@
                "type": "boolean"
             },
             "object": {
-               "$ref": "#/definitions/OrganismTaxon",
-               "description": "the taxon that is the subject of the association"
+               "description": "the taxon that is the subject of the association",
+               "type": "string"
             },
             "predicate": {
                "type": "string"
@@ -9988,8 +10080,8 @@
                "type": "string"
             },
             "subject": {
-               "$ref": "#/definitions/OrganismTaxon",
-               "description": "the taxon that is the subject of the association"
+               "description": "the taxon that is the subject of the association",
+               "type": "string"
             },
             "type": {
                "description": "rdf:type of biolink:Association should be fixed at rdf:Statement",
@@ -10044,8 +10136,8 @@
                "type": "boolean"
             },
             "object": {
-               "$ref": "#/definitions/OrganismTaxon",
-               "description": "the more general taxon"
+               "description": "the more general taxon",
+               "type": "string"
             },
             "predicate": {
                "type": "string"
@@ -10080,8 +10172,8 @@
                "type": "string"
             },
             "subject": {
-               "$ref": "#/definitions/OrganismTaxon",
-               "description": "the more specific taxon"
+               "description": "the more specific taxon",
+               "type": "string"
             },
             "type": {
                "description": "rdf:type of biolink:Association should be fixed at rdf:Statement",
@@ -10416,7 +10508,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -10482,7 +10574,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -10544,7 +10636,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -10969,7 +11061,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -11293,7 +11385,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -11510,7 +11602,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -11580,7 +11672,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -11660,7 +11752,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -11866,7 +11958,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -11946,7 +12038,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -12026,7 +12118,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -12290,7 +12382,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -12515,7 +12607,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -12601,7 +12693,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -12857,7 +12949,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -12931,7 +13023,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },
@@ -13794,7 +13886,7 @@
             "in_taxon": {
                "description": "connects an entity to its taxonomic classification. Only certain kinds of entities can be taxonomically classified; see 'thing with taxon'",
                "items": {
-                  "$ref": "#/definitions/OrganismTaxon"
+                  "type": "string"
                },
                "type": "array"
             },

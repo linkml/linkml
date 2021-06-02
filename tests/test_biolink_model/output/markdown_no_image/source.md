@@ -9,7 +9,7 @@ URI: [biolink:source](https://w3id.org/biolink/vocab/source)
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [LabelType](types/LabelType.md)
+None &#8594;  <sub>OPT</sub> [LabelType](types/LabelType.md)
 
 ## Parents
 
@@ -40,6 +40,7 @@ None ->  <sub>OPT</sub> [LabelType](types/LabelType.md)
  * [BiologicalProcess](BiologicalProcess.md)
  * [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
  * [BiologicalSex](BiologicalSex.md)
+ * [BioticExposure](BioticExposure.md)
  * [Book](Book.md)
  * [BookChapter](BookChapter.md)
  * [Carbohydrate](Carbohydrate.md)
@@ -157,6 +158,7 @@ None ->  <sub>OPT</sub> [LabelType](types/LabelType.md)
  * [Nutrient](Nutrient.md)
  * [Onset](Onset.md)
  * [OrganismAttribute](OrganismAttribute.md)
+ * [OrganismTaxon](OrganismTaxon.md)
  * [OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)
  * [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)
  * [OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)

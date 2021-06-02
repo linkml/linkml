@@ -9,7 +9,7 @@ URI: [biolink:clinical_finding_has_attribute](https://w3id.org/biolink/vocab/cli
 
 ## Domain and Range
 
-[ClinicalFinding](ClinicalFinding.md) ->  <sub>0..*</sub> [ClinicalAttribute](ClinicalAttribute.md)
+[ClinicalFinding](ClinicalFinding.md) &#8594;  <sub>0..*</sub> [ClinicalAttribute](ClinicalAttribute.md)
 
 ## Parents
 

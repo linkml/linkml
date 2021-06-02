@@ -9,7 +9,7 @@ URI: [biolink:has_attribute](https://w3id.org/biolink/vocab/has_attribute)
 
 ## Domain and Range
 
-[Entity](Entity.md) ->  <sub>0..*</sub> [Attribute](Attribute.md)
+[Entity](Entity.md) &#8594;  <sub>0..*</sub> [Attribute](Attribute.md)
 
 ## Parents
 
@@ -40,6 +40,7 @@ URI: [biolink:has_attribute](https://w3id.org/biolink/vocab/has_attribute)
  * [BiologicalEntity](BiologicalEntity.md)
  * [BiologicalProcess](BiologicalProcess.md)
  * [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
+ * [BioticExposure](BioticExposure.md)
  * [Book](Book.md)
  * [BookChapter](BookChapter.md)
  * [Carbohydrate](Carbohydrate.md)
@@ -140,6 +141,7 @@ URI: [biolink:has_attribute](https://w3id.org/biolink/vocab/has_attribute)
  * [NamedThing](NamedThing.md)
  * [NoncodingRNAProduct](NoncodingRNAProduct.md)
  * [Nutrient](Nutrient.md)
+ * [OrganismTaxon](OrganismTaxon.md)
  * [OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)
  * [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)
  * [OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)

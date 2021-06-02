@@ -9,7 +9,7 @@ URI: [biolink:has_qualitative_value](https://w3id.org/biolink/vocab/has_qualitat
 
 ## Domain and Range
 
-[Attribute](Attribute.md) ->  <sub>OPT</sub> [NamedThing](NamedThing.md)
+[Attribute](Attribute.md) &#8594;  <sub>OPT</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

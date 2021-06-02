@@ -9,7 +9,7 @@ URI: [biolink:derives_from](https://w3id.org/biolink/vocab/derives_from)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -31,7 +31,6 @@ URI: [biolink:derives_from](https://w3id.org/biolink/vocab/derives_from)
 | **Exact Mappings:** | | RO:0001000 |
 |  | | FMA:derives_from |
 |  | | OBO:doid#derives_from |
-|  | | RO:derives_from |
 | **Narrow Mappings:** | | CHEBI:has_functional_parent |
 |  | | SNOMED:has_specimen_source_topography |
 

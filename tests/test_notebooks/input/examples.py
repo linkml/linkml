@@ -7,8 +7,8 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.yumlgen import YumlGenerator
-from linkml.utils.yamlutils import DupCheckYamlLoader
-from linkml.dumpers.json_dumper import dumps
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader
+from linkml_runtime.dumpers import json_dumper
 
 yaml = '''
 id: http://example.org/sample/example1
@@ -105,7 +105,7 @@ joe_smith = module.Person(id="42", last_name="smith", first_name=['Joe', 'Bob'],
 print(joe_smith)
 
 # Add the context and turn it into RDF
-jsonld = dumps(joe_smith, cntxt)
+jsonld = json_dumper.dumps(joe_smith, cntxt)
 print(jsonld)
 g = Graph()
 g.parse(data=jsonld, format="json-ld")

@@ -1,11 +1,12 @@
 import os
 import unittest
 
-from jsonasobj import as_json
+from jsonasobj2 import as_json
 
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_issues.environment import env
-from tests.utils.python_comparator import compare_python, compile_python
+from tests.utils.python_comparator import compare_python
+from linkml_runtime.utils.compile_python import compile_python
 from tests.utils.test_environment import TestEnvironmentTestCase
 
 
@@ -26,8 +27,8 @@ class Issue121TestCase(TestEnvironmentTestCase):
 
         has_includes = False
         for line in python.split("\n"):
-            if line.startswith("from linkml_model.types "):
-                assert line == "from linkml_model.types import String"
+            if line.startswith("from linkml_runtime.linkml_model.types "):
+                assert line == "from linkml_runtime.linkml_model.types import String"
                 has_includes = True
         assert has_includes
         module = compile_python(env.expected_path('issue_121.py'))

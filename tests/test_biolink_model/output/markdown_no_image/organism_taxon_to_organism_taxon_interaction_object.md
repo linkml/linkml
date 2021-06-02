@@ -9,7 +9,7 @@ URI: [biolink:organism_taxon_to_organism_taxon_interaction_object](https://w3id.
 
 ## Domain and Range
 
-[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) ->  <sub>REQ</sub> [OrganismTaxon](OrganismTaxon.md)
+[OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) &#8594;  <sub>REQ</sub> [OrganismTaxon](OrganismTaxon.md)
 
 ## Parents
 

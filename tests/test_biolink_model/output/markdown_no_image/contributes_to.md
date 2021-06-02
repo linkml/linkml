@@ -9,7 +9,7 @@ URI: [biolink:contributes_to](https://w3id.org/biolink/vocab/contributes_to)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -28,7 +28,6 @@ URI: [biolink:contributes_to](https://w3id.org/biolink/vocab/contributes_to)
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
 | **Exact Mappings:** | | RO:0002326 |
-|  | | GO:contributes_to |
 | **Close Mappings:** | | IDO:0000664 |
 | **Narrow Mappings:** | | CTD:marker_mechanism |
 |  | | MONDO:predisposes_towards |

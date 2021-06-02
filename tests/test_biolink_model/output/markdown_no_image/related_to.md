@@ -9,7 +9,7 @@ URI: [biolink:related_to](https://w3id.org/biolink/vocab/related_to)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -33,6 +33,7 @@ URI: [biolink:related_to](https://w3id.org/biolink/vocab/related_to)
  *  [disease has basis in](disease_has_basis_in.md)
  *  [expressed in](expressed_in.md)
  *  [expresses](expresses.md)
+ *  [gene product of](gene_product_of.md)
  *  [genetic association](genetic_association.md)
  *  [has completed](has_completed.md)
  *  [has decreased amount](has_decreased_amount.md)
@@ -53,8 +54,10 @@ URI: [biolink:related_to](https://w3id.org/biolink/vocab/related_to)
  *  [manifestation of](manifestation_of.md)
  *  [narrow match](narrow_match.md)
  *  [occurs in](occurs_in.md)
+ *  [opposite of](opposite_of.md)
  *  [overlaps](overlaps.md)
  *  [participates in](participates_in.md)
+ *  [phenotype of](phenotype_of.md)
  *  [prevented by](prevented_by.md)
  *  [produced by](produced_by.md)
  *  [produces](produces.md)
@@ -63,6 +66,10 @@ URI: [biolink:related_to](https://w3id.org/biolink/vocab/related_to)
  *  [subclass of](subclass_of.md)
  *  [superclass of](superclass_of.md)
  *  [temporally related to](temporally_related_to.md)
+ *  [transcribed from](transcribed_from.md)
+ *  [transcribed to](transcribed_to.md)
+ *  [translates to](translates_to.md)
+ *  [translation of](translation_of.md)
  *  [treated by](treated_by.md)
 
 ## Used by
@@ -95,9 +102,9 @@ URI: [biolink:related_to](https://w3id.org/biolink/vocab/related_to)
 |  | | FMA:continuous_with |
 |  | | FMA:homonym_of |
 |  | | FMA:related_developmental_entity_of |
-|  | | GO:ends_during |
-|  | | GO:happens_during |
-|  | | GO:inverse_ends_during |
+|  | | RO:0002093 |
+|  | | RO:0002092 |
+|  | | RO:0002084 |
 |  | | GOREL:0002005 |
 |  | | GOREL:0012006 |
 |  | | HCPCS:mapped_to |
@@ -122,12 +129,12 @@ URI: [biolink:related_to](https://w3id.org/biolink/vocab/related_to)
 |  | | OBO:envo#has_increased_levels_of |
 |  | | OBO:has_role |
 |  | | OBO:nbo#is_about |
-|  | | OBOREL:0000053 |
-|  | | PATO:decreased_in_magnitude_relative_to |
-|  | | PATO:has_cross_section |
-|  | | PATO:has_relative_magnitude |
-|  | | PATO:increased_in_magnitude_relative_to |
-|  | | PATO:reciprocal_of |
+|  | | RO:0000053 |
+|  | | PATO-PROPERTY:decreased_in_magnitude_relative_to |
+|  | | PATO-PROPERTY:has_cross_section |
+|  | | PATO-PROPERTY:has_relative_magnitude |
+|  | | PATO-PROPERTY:increased_in_magnitude_relative_to |
+|  | | PATO-PROPERTY:reciprocal_of |
 |  | | RO:0000052 |
 |  | | RO:0002001 |
 |  | | RO:0002002 |

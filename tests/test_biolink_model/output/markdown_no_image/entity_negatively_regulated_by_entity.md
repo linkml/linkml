@@ -9,7 +9,7 @@ URI: [biolink:entity_negatively_regulated_by_entity](https://w3id.org/biolink/vo
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

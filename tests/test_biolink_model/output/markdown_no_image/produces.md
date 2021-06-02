@@ -9,7 +9,7 @@ URI: [biolink:produces](https://w3id.org/biolink/vocab/produces)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -30,7 +30,7 @@ URI: [biolink:produces](https://w3id.org/biolink/vocab/produces)
 |  | | WIKIDATA_PROPERTY:P1056 |
 |  | | SEMMEDDB:PRODUCES |
 |  | | SEMMEDDB:produces |
-| **Narrow Mappings:** | | NCIT:biological_process_has_result_chemical_or_drug |
+| **Narrow Mappings:** | | NCIT:R29 |
 |  | | SNOMED:has_process_output |
 |  | | SNOMED:specimen_procedure_of |
 | **Related Mappings:** | | GOREL:0001010 |

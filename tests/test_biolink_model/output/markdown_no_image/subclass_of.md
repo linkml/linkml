@@ -9,7 +9,7 @@ URI: [biolink:subclass_of](https://w3id.org/biolink/vocab/subclass_of)
 
 ## Domain and Range
 
-[OntologyClass](OntologyClass.md) ->  <sub>0..*</sub> [OntologyClass](OntologyClass.md)
+[OntologyClass](OntologyClass.md) &#8594;  <sub>0..*</sub> [OntologyClass](OntologyClass.md)
 
 ## Parents
 
@@ -44,12 +44,12 @@ URI: [biolink:subclass_of](https://w3id.org/biolink/vocab/subclass_of)
 |  | | LOINC:has_parent_group |
 |  | | LOINC:is_presence_guidance_for |
 |  | | NCIT:gene_product_has_chemical_classification |
-|  | | NCIT:gene_is_biomarker_type |
-|  | | NCIT:gene_product_is_biomarker_type |
-|  | | NCIT:has_inc_parent |
-|  | | NCIT:has_nichd_parent |
-|  | | NCIT:neoplasm_has_special_category |
-|  | | NCIT:role_has_parent |
+|  | | NCIT:R36 |
+|  | | NCIT:R42 |
+|  | | NCIT:A16 |
+|  | | NCIT:A11 |
+|  | | NCIT:A14 |
+|  | | NCIT:A3 |
 |  | | NDDF:has_dose_form |
 |  | | OBO:intersection_of |
 |  | | RXNORM:has_dose_form |

@@ -9,7 +9,7 @@ URI: [biolink:gene_to_expression_site_association_object](https://w3id.org/bioli
 
 ## Domain and Range
 
-[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md) ->  <sub>REQ</sub> [AnatomicalEntity](AnatomicalEntity.md)
+[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md) &#8594;  <sub>REQ</sub> [AnatomicalEntity](AnatomicalEntity.md)
 
 ## Parents
 
@@ -26,5 +26,5 @@ URI: [biolink:gene_to_expression_site_association_object](https://w3id.org/bioli
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'UBERON:0002037', 'description': 'cerebellum'} |
+| **Examples:** | | Example(value='UBERON:0002037', description='cerebellum') |
 

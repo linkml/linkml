@@ -35,7 +35,7 @@ URI: [biolink:EntityToDiseaseAssociationMixin](https://w3id.org/biolink/vocab/En
  * [entity to disease association mixin➞object](entity_to_disease_association_mixin_object.md)  <sub>REQ</sub>
      * Description: disease
      * range: [Disease](Disease.md)
-     * Example:    
+     * Example: MONDO:0020066 Ehlers-Danlos syndrome
 
 ### Inherited from entity to feature or disease qualifiers mixin:
 

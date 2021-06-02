@@ -23,8 +23,8 @@ from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
-from linkml.utils.context_utils import parse_import_map
-from linkml.utils.formatutils import shex_results_as_string
+from linkml_runtime.utils.context_utils import parse_import_map
+from linkml_runtime.utils.formatutils import shex_results_as_string
 from tests import SKIP_GRAPHVIZ_VALIDATION, SKIP_MARKDOWN_VALIDATION, SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON, \
     SKIP_MARKDOWN_VALIDATION_REASON
 from tests.test_biolink_model.environment import env

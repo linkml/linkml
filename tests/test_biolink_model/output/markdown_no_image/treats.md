@@ -9,7 +9,7 @@ URI: [biolink:treats](https://w3id.org/biolink/vocab/treats)
 
 ## Domain and Range
 
-[Treatment](Treatment.md) ->  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[ChemicalOrDrugOrTreatment](ChemicalOrDrugOrTreatment.md) &#8594;  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 
@@ -28,7 +28,8 @@ URI: [biolink:treats](https://w3id.org/biolink/vocab/treats)
 | --- | --- | --- |
 | **Aliases:** | | is substance that treats |
 | **In Subsets:** | | translator_minimal |
-| **Exact Mappings:** | | SEMMEDDB:TREATS |
+| **Exact Mappings:** | | DRUGBANK:treats |
+|  | | SEMMEDDB:TREATS |
 |  | | SEMMEDDB:treats |
 |  | | WIKIDATA_PROPERTY:P2175 |
 | **Narrow Mappings:** | | RO:0002606 |

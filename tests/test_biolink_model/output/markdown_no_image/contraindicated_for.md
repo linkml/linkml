@@ -9,7 +9,7 @@ URI: [biolink:contraindicated_for](https://w3id.org/biolink/vocab/contraindicate
 
 ## Domain and Range
 
-[Drug](Drug.md) ->  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[Drug](Drug.md) &#8594;  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 

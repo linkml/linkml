@@ -30,7 +30,7 @@ LinkML type definitions can take one of three forms:
     ```yaml
     types:
        <type>:
-          base: <type defined in linkml/utils/metamodelcore.py> (e.g. URIorCURIE, Date, NCName, etc)
+          base: <type defined in linkml/linkml_runtime/utils/metamodelcore.py> (e.g. URIorCURIE, Date, NCName, etc)
           ...
     ```
 

@@ -1,5 +1,5 @@
 # Auto generated from issue_84.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-03-26 14:21
+# Generation date: 2021-06-02 16:45
 # Schema: nmdc_schema
 #
 # id: https://microbiomedata/schema
@@ -9,20 +9,21 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
-from linkml.utils.slot import Slot
-from linkml.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml.utils.formatutils import camelcase, underscore, sfx
-from linkml.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
+from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
-from linkml.utils.curienamespace import CurieNamespace
-from linkml.utils.metamodelcore import ElementIdentifier
-from linkml_model.types import Double, Float, String
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.linkml_model.types import Double, Float, String
+from linkml_runtime.utils.metamodelcore import ElementIdentifier
 
 metamodel_version = "1.7.0"
 
@@ -83,7 +84,7 @@ class Biosample(YAMLRoot):
     alternate_identifiers: Optional[Union[ElementIdentifier, List[ElementIdentifier]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, BiosampleId):
             self.id = BiosampleId(self.id)
@@ -91,14 +92,8 @@ class Biosample(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if self.annotations is None:
-            self.annotations = []
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations]
-        self._normalize_inlined_slot(slot_name="annotations", slot_type=Annotation, key_name="has raw value", inlined_as_list=True, keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="has raw value", keyed=False)
 
-        if self.alternate_identifiers is None:
-            self.alternate_identifiers = []
         if not isinstance(self.alternate_identifiers, list):
             self.alternate_identifiers = [self.alternate_identifiers]
         self.alternate_identifiers = [v if isinstance(v, ElementIdentifier) else ElementIdentifier(v) for v in self.alternate_identifiers]
@@ -122,14 +117,10 @@ class BiosampleProcessing(YAMLRoot):
     output: Optional[Union[Union[ElementIdentifier, BiosampleId], List[Union[ElementIdentifier, BiosampleId]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.input is None:
-            self.input = []
         if not isinstance(self.input, list):
             self.input = [self.input]
         self.input = [v if isinstance(v, BiosampleId) else BiosampleId(v) for v in self.input]
 
-        if self.output is None:
-            self.output = []
         if not isinstance(self.output, list):
             self.output = [self.output]
         self.output = [v if isinstance(v, BiosampleId) else BiosampleId(v) for v in self.output]
@@ -154,7 +145,7 @@ class Annotation(YAMLRoot):
     has_normalized_value: Optional[Union[dict, "NormalizedValue"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.has_raw_value is None:
+        if self._is_empty(self.has_raw_value):
             raise ValueError("has_raw_value must be supplied")
         if not isinstance(self.has_raw_value, str):
             self.has_raw_value = str(self.has_raw_value)
@@ -187,7 +178,7 @@ class Characteristic(YAMLRoot):
     alternate_identifiers: Optional[Union[ElementIdentifier, List[ElementIdentifier]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, CharacteristicId):
             self.id = CharacteristicId(self.id)
@@ -198,8 +189,6 @@ class Characteristic(YAMLRoot):
         if self.description is not None and not isinstance(self.description, str):
             self.description = str(self.description)
 
-        if self.alternate_identifiers is None:
-            self.alternate_identifiers = []
         if not isinstance(self.alternate_identifiers, list):
             self.alternate_identifiers = [self.alternate_identifiers]
         self.alternate_identifiers = [v if isinstance(v, ElementIdentifier) else ElementIdentifier(v) for v in self.alternate_identifiers]
@@ -312,7 +301,7 @@ class OntologyClass(YAMLRoot):
     name: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.id is None:
+        if self._is_empty(self.id):
             raise ValueError("id must be supplied")
         if not isinstance(self.id, OntologyClassId):
             self.id = OntologyClassId(self.id)

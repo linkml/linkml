@@ -7,7 +7,7 @@ An RNA synthesized on a DNA or RNA template by an RNA polymerase.
 URI: [biolink:Transcript](https://w3id.org/biolink/vocab/Transcript)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[TranscriptToGeneRelationship],[ExonToTranscriptRelationship]-%20object%201..1>[Transcript&#124;has_biological_sequence(i):biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[TranscriptToGeneRelationship]-%20subject%201..1>[Transcript],[Transcript]^-[RNAProduct],[GenomicEntity]^-[Transcript],[OrganismTaxon],[NamedThing],[MolecularEntity],[GenomicEntity],[ExonToTranscriptRelationship],[Attribute],[Agent],[RNAProduct])
+![img](http://yuml.me/diagram/nofunky;dir:TB/class/[TranscriptToGeneRelationship],[ExonToTranscriptRelationship]-%20object%201..1>[Transcript&#124;has_biological_sequence(i):biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[TranscriptToGeneRelationship]-%20subject%201..1>[Transcript],[Transcript]^-[RNAProduct],[GenomicEntity]^-[Transcript],[Protein],[OrganismTaxon],[NamedThing],[MolecularEntity],[GenomicEntity],[Gene],[ExonToTranscriptRelationship],[Attribute],[Agent],[RNAProduct])
 
 ## Identifier prefixes
 
@@ -28,7 +28,9 @@ URI: [biolink:Transcript](https://w3id.org/biolink/vocab/Transcript)
  *  **[MolecularEntity](MolecularEntity.md)** *[decreases splicing of](decreases_splicing_of.md)*  <sub>0..*</sub>  **[Transcript](Transcript.md)**
  *  **[ExonToTranscriptRelationship](ExonToTranscriptRelationship.md)** *[exon to transcript relationship➞object](exon_to_transcript_relationship_object.md)*  <sub>REQ</sub>  **[Transcript](Transcript.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[increases splicing of](increases_splicing_of.md)*  <sub>0..*</sub>  **[Transcript](Transcript.md)**
+ *  **[Gene](Gene.md)** *[transcribed to](transcribed_to.md)*  <sub>0..*</sub>  **[Transcript](Transcript.md)**
  *  **[TranscriptToGeneRelationship](TranscriptToGeneRelationship.md)** *[transcript to gene relationship➞subject](transcript_to_gene_relationship_subject.md)*  <sub>REQ</sub>  **[Transcript](Transcript.md)**
+ *  **[Protein](Protein.md)** *[translation of](translation_of.md)*  <sub>0..*</sub>  **[Transcript](Transcript.md)**
 
 ## Attributes
 

@@ -9,7 +9,7 @@ URI: [biolink:publication_id](https://w3id.org/biolink/vocab/publication_id)
 
 ## Domain and Range
 
-[Publication](Publication.md) ->  <sub>REQ</sub> [String](types/String.md)
+[Publication](Publication.md) &#8594;  <sub>REQ</sub> [String](types/String.md)
 
 ## Parents
 

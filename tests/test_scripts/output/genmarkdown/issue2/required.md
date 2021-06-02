@@ -9,7 +9,7 @@ URI: [linkml:required](https://w3id.org/linkml/required)
 
 ## Domain and Range
 
-slot_definition ->  <sub>OPT</sub> boolean
+slot_definition &#8594;  <sub>OPT</sub> boolean
 
 ## Parents
 

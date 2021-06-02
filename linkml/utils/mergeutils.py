@@ -4,11 +4,11 @@ from typing import Dict, Optional, Union, cast, List
 
 from rdflib import URIRef
 
-from linkml_model.meta import SchemaDefinition, Element, SlotDefinition, ClassDefinition, TypeDefinition, \
+from linkml_runtime.linkml_model.meta import SchemaDefinition, Element, SlotDefinition, ClassDefinition, TypeDefinition, \
     SlotDefinitionName, TypeDefinitionName, EnumDefinition
-from linkml.utils.formatutils import camelcase, underscore
-from linkml.utils.namespaces import Namespaces
-from linkml.utils.yamlutils import extended_str
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.yamlutils import extended_str
 
 
 def merge_schemas(target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None,
@@ -111,6 +111,7 @@ def merge_slots(target: Union[SlotDefinition, TypeDefinition], source: Union[Slo
                 setattr(target, k, deepcopy(v))
             else:
                 setattr(target, k, None)
+    target.__post_init__()
 
 
 def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinition) -> SlotDefinitionName:

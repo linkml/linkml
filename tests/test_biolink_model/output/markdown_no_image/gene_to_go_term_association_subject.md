@@ -9,7 +9,7 @@ URI: [biolink:gene_to_go_term_association_subject](https://w3id.org/biolink/voca
 
 ## Domain and Range
 
-[GeneToGoTermAssociation](GeneToGoTermAssociation.md) ->  <sub>REQ</sub> [MolecularEntity](MolecularEntity.md)
+[GeneToGoTermAssociation](GeneToGoTermAssociation.md) &#8594;  <sub>REQ</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 
@@ -26,5 +26,5 @@ URI: [biolink:gene_to_go_term_association_subject](https://w3id.org/biolink/voca
 
 |  |  |  |
 | --- | --- | --- |
-| **Examples:** | | {'value': 'ZFIN:ZDB-GENE-050417-357', 'description': 'twist1b'} |
+| **Examples:** | | Example(value='ZFIN:ZDB-GENE-050417-357', description='twist1b') |
 

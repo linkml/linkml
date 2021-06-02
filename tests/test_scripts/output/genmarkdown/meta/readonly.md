@@ -9,7 +9,7 @@ URI: [linkml:readonly](https://w3id.org/linkml/readonly)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [String](types/String.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

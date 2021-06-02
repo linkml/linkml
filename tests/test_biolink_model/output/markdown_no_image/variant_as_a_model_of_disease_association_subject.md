@@ -9,7 +9,7 @@ URI: [biolink:variant_as_a_model_of_disease_association_subject](https://w3id.or
 
 ## Domain and Range
 
-[VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md) ->  <sub>REQ</sub> [SequenceVariant](SequenceVariant.md)
+[VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [SequenceVariant](SequenceVariant.md)
 
 ## Parents
 

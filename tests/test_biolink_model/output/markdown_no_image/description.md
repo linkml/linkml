@@ -9,7 +9,7 @@ URI: [biolink:description](https://w3id.org/biolink/vocab/description)
 
 ## Domain and Range
 
-None ->  <sub>OPT</sub> [NarrativeText](types/NarrativeText.md)
+None &#8594;  <sub>OPT</sub> [NarrativeText](types/NarrativeText.md)
 
 ## Parents
 
@@ -39,6 +39,7 @@ None ->  <sub>OPT</sub> [NarrativeText](types/NarrativeText.md)
  * [BiologicalEntity](BiologicalEntity.md)
  * [BiologicalProcess](BiologicalProcess.md)
  * [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)
+ * [BioticExposure](BioticExposure.md)
  * [Book](Book.md)
  * [BookChapter](BookChapter.md)
  * [Carbohydrate](Carbohydrate.md)
@@ -148,6 +149,7 @@ None ->  <sub>OPT</sub> [NarrativeText](types/NarrativeText.md)
  * [NamedThing](NamedThing.md)
  * [NoncodingRNAProduct](NoncodingRNAProduct.md)
  * [Nutrient](Nutrient.md)
+ * [OrganismTaxon](OrganismTaxon.md)
  * [OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)
  * [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)
  * [OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md)

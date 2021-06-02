@@ -2,11 +2,11 @@ import os
 import unittest
 
 import yaml
-from jsonasobj import as_json
+from jsonasobj2 import as_json
 
-from linkml_model.meta import SchemaDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml.utils.rawloader import load_raw_schema
-from linkml.utils.yamlutils import DupCheckYamlLoader, as_yaml
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, as_yaml
 from tests.test_utils.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 

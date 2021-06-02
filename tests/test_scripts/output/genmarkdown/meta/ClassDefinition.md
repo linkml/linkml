@@ -128,7 +128,7 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * range: [Uriorcurie](types/Uriorcurie.md)
  * [mixin](mixin.md)  <sub>OPT</sub>
-     * Description: this slot or class can only be used as a mixin -- equivalent to abstract
+     * Description: this slot or class can only be used as a mixin.
      * range: [Boolean](types/Boolean.md)
  * [modified_by](modified_by.md)  <sub>OPT</sub>
      * Description: agent that modified the element

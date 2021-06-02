@@ -9,7 +9,7 @@ URI: [biolink:expressed_in](https://w3id.org/biolink/vocab/expressed_in)
 
 ## Domain and Range
 
-[GeneOrGeneProduct](GeneOrGeneProduct.md) ->  <sub>0..*</sub> [AnatomicalEntity](AnatomicalEntity.md)
+[GeneOrGeneProduct](GeneOrGeneProduct.md) &#8594;  <sub>0..*</sub> [AnatomicalEntity](AnatomicalEntity.md)
 
 ## Parents
 
@@ -27,7 +27,7 @@ URI: [biolink:expressed_in](https://w3id.org/biolink/vocab/expressed_in)
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
 | **Exact Mappings:** | | RO:0002206 |
-| **Narrow Mappings:** | | NCIT:gene_product_expressed_in_tissue |
-|  | | NCIT:gene_product_has_associated_anatomy |
+| **Narrow Mappings:** | | NCIT:R49 |
+|  | | NCIT:R46 |
 |  | | RTXKG1:expressed_in |
 

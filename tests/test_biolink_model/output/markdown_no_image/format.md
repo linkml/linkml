@@ -9,7 +9,7 @@ URI: [biolink:format](https://w3id.org/biolink/vocab/format)
 
 ## Domain and Range
 
-[InformationContentEntity](InformationContentEntity.md) ->  <sub>OPT</sub> [String](types/String.md)
+[InformationContentEntity](InformationContentEntity.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

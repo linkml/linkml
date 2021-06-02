@@ -9,7 +9,7 @@ URI: [biolink:manifestation_of](https://w3id.org/biolink/vocab/manifestation_of)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) ->  <sub>0..*</sub> [Disease](Disease.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [Disease](Disease.md)
 
 ## Parents
 

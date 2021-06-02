@@ -9,7 +9,7 @@ URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) ->  <sub>OPT</sub> [String](types/String.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
 
 ## Parents
 

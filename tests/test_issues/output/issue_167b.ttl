@@ -17,22 +17,22 @@
     linkml:default_prefix "ex" ;
     linkml:default_range <http://example.org/string> ;
     linkml:emit_prefixes "linkml" ;
-    linkml:generation_date "2021-03-24 16:47"^^xsd:dateTime ;
+    linkml:generation_date "2021-06-02 16:45"^^xsd:dateTime ;
     linkml:id <http://example.org/tests/issue167b> ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "ex" ;
-            linkml:prefix_reference <http://example.org/> ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ] ;
+    linkml:prefixes [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "ex" ;
+            linkml:prefix_reference <http://example.org/> ] ;
     linkml:slots <http://example.org/annotations>,
         <http://example.org/extension_tag>,
         <http://example.org/extension_value>,
         <http://example.org/extensions> ;
     linkml:source_file "issue_167b.yaml" ;
-    linkml:source_file_date "Wed Mar 24 16:43:50 2021"^^xsd:dateTime ;
+    linkml:source_file_date "Wed Jun  2 16:41:42 2021"^^xsd:dateTime ;
     linkml:source_file_size 818 ;
     linkml:types <http://example.org/boolean>,
         <http://example.org/date>,
@@ -181,16 +181,28 @@
     skos:definition "-> This form of annotations is a tag/value format, which allows annotations to be annotated.  Note, however, that the annotation source is NOT a CURIE, rather just a string." ;
     skos:inScheme <http://example.org/tests/issue167b> ;
     linkml:annotations [ a linkml:Annotation ;
-            skos:example "{'source': 'PMID:12345'}" ;
-            linkml:tag <http://example.org/annotations> ],
-        [ a linkml:Annotation ;
-            skos:example "prefLabel" ;
-            linkml:tag <http://example.org/tag> ],
-        [ a linkml:Annotation ;
             skos:example "a preferred label" ;
-            linkml:tag <http://example.org/value> ] ;
+            linkml:annotations [ a linkml:Annotation ;
+                    skos:example "PMID:12345" ;
+                    linkml:tag <http://example.org/source> ] ;
+            linkml:tag <http://example.org/prefLabel> ] ;
     linkml:class_uri <http://example.org/MyClass2> ;
     linkml:definition_uri <http://example.org/MyClass2> .
+
+<http://example.org/annotations> a linkml:SlotDefinition ;
+    skos:definition "a collection of tag/text tuples with the semantics of OWL Annotation" ;
+    skos:inScheme linkml:annotations ;
+    linkml:definition_uri linkml:annotations ;
+    linkml:domain <http://example.org/Annotatable> ;
+    linkml:domain_of <http://example.org/Annotatable>,
+        <http://example.org/Annotation> ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:inlined true ;
+    linkml:is_a <http://example.org/extensions> ;
+    linkml:multivalued true ;
+    linkml:owner <http://example.org/Annotation> ;
+    linkml:range <http://example.org/Annotation> ;
+    linkml:slot_uri linkml:annotations .
 
 <http://example.org/extension_tag> a linkml:SlotDefinition ;
     skos:definition "a tag associated with an extension" ;
@@ -256,21 +268,6 @@
     linkml:imported_from "linkml:extensions" ;
     linkml:mixin true ;
     linkml:slots <http://example.org/extensions> .
-
-<http://example.org/annotations> a linkml:SlotDefinition ;
-    skos:definition "a collection of tag/text tuples with the semantics of OWL Annotation" ;
-    skos:inScheme linkml:annotations ;
-    linkml:definition_uri linkml:annotations ;
-    linkml:domain <http://example.org/Annotatable> ;
-    linkml:domain_of <http://example.org/Annotatable>,
-        <http://example.org/Annotation> ;
-    linkml:imported_from "linkml:annotations" ;
-    linkml:inlined true ;
-    linkml:is_a <http://example.org/extensions> ;
-    linkml:multivalued true ;
-    linkml:owner <http://example.org/Annotation> ;
-    linkml:range <http://example.org/Annotation> ;
-    linkml:slot_uri linkml:annotations .
 
 <http://example.org/extensions> a linkml:SlotDefinition ;
     skos:definition "a tag/text tuple attached to an arbitrary element" ;

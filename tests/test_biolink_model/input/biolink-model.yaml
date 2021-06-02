@@ -4,7 +4,7 @@ description: Entity and association taxonomy and datamodel for life-sciences dat
 license: https://creativecommons.org/publicdomain/zero/1.0/
 
 # Version should be kept in sync with primary Git repository release tag
-version: 1.6.0
+version: 1.8.2
 
 ## ------------
 ## PREFIXES
@@ -89,6 +89,7 @@ prefixes:
   OBOREL: 'http://purl.obolibrary.org/obo/RO_'
   ORCID: 'https://orcid.org/'
   ORPHA: 'http://www.orpha.net/ORDO/Orphanet_'
+  os: 'https://github.com/cmungall/owlstar/blob/master/owlstar.ttl'
   PathWhiz: 'http://smpdb.ca/pathways/#'  # See also https://smpdb.ca/pathwhiz/
   PATO-PROPERTY: 'http://purl.obolibrary.org/obo/pato#'  # Phenotypic Quality Ontology properties, not core terms
   pav: 'http://purl.org/pav/'
@@ -147,6 +148,18 @@ emit_prefixes:
 ## ------------
 ## SUBSETS
 ## ------------
+enums:
+  logical_interpretation_enum:
+    permissible_values:
+      SomeSome:
+        description: >-
+          A modifier on a triple that causes the triple to be interpreted as a some-some statement
+        meaning: os:SomeSomeInterpretation
+      AllSome:
+        description: >-
+          A modifier on a triple that causes the triple to be interpreted as an all-some statement.
+        meaning: os:AllSomeInterpretation
+      InverseAllSome:
 
 subsets:
 
@@ -492,7 +505,7 @@ slots:
       - translator_minimal
       - samples
     #
-    # BiolinkML doesn't like this name slot to be "required: true".
+    # linkML doesn't like this name slot to be "required: true".
     # Besides, some entity nodes/attributes may not have names?
     # required: true
     slot_uri: rdfs:label
@@ -862,7 +875,7 @@ slots:
 
   summary:
     is_a: node property
-    # since 'abstract' is a BiolinkML keyword denoting a non-instantiable class or slot,
+    # since 'abstract' is a linkML keyword denoting a non-instantiable class or slot,
     # it is generally recommended that knowledge graphs use 'summary' instead to tag a Publication 'abstract'
     aliases: ['abstract']
     description: >-
@@ -1022,7 +1035,7 @@ slots:
     range: named thing
     multivalued: true
     inherited: true
-    symmetric: true
+    symmetric: trueo
     exact_mappings:
       - skos:relatedMatch
       - SEMMEDDB:ASSOCIATED_WITH
@@ -1051,9 +1064,9 @@ slots:
       - FMA:continuous_with
       - FMA:homonym_of
       - FMA:related_developmental_entity_of
-      - GO:ends_during
-      - GO:happens_during
-      - GO:inverse_ends_during
+      - RO:0002093
+      - RO:0002092
+      - RO:0002084
       - GOREL:0002005
       - GOREL:0012006
       - HCPCS:mapped_to
@@ -1079,12 +1092,12 @@ slots:
       - OBO:envo#has_increased_levels_of
       - OBO:has_role
       - OBO:nbo#is_about
-      - OBOREL:0000053 # bearer_of
-      - PATO:decreased_in_magnitude_relative_to
-      - PATO:has_cross_section
-      - PATO:has_relative_magnitude
-      - PATO:increased_in_magnitude_relative_to
-      - PATO:reciprocal_of
+      - RO:0000053 # bearer_of
+      - PATO-PROPERTY:decreased_in_magnitude_relative_to
+      - PATO-PROPERTY:has_cross_section
+      - PATO-PROPERTY:has_relative_magnitude
+      - PATO-PROPERTY:increased_in_magnitude_relative_to
+      - PATO-PROPERTY:reciprocal_of
       - RO:0000052
       - RO:0002001
       - RO:0002002
@@ -1210,12 +1223,12 @@ slots:
       - LOINC:is_presence_guidance_for
       - NCIT:gene_product_has_chemical_classification
       # RTX mapped terms classes for biomarkers
-      - NCIT:gene_is_biomarker_type
-      - NCIT:gene_product_is_biomarker_type
-      - NCIT:has_inc_parent
-      - NCIT:has_nichd_parent
-      - NCIT:neoplasm_has_special_category
-      - NCIT:role_has_parent
+      - NCIT:R36
+      - NCIT:R42
+      - NCIT:A16
+      - NCIT:A11
+      - NCIT:A14
+      - NCIT:A3
       - NDDF:has_dose_form
       - OBO:intersection_of
       - RXNORM:has_dose_form
@@ -1312,6 +1325,19 @@ slots:
       - skos:narrowMatch
       - WIKIDATA:Q39893967
 
+  opposite of:
+    description: >-
+      x is the opposite of y if there exists some distance metric M, and there exists
+      no z such as M(x,z) <= M(x,y) or M(y,z) <= M(y,x). (This description is from RO. Needs to be rephrased).
+    is_a: related to
+    symmetric: true
+    exact_mappings:
+      - RO:0002604
+    see_also:
+      - https://doi.org/10.1101/108977
+      - https://github.com/biolink/biolink-model/issues/657
+
+  
   ## Publication related predicates
 
   contributor:
@@ -1409,7 +1435,7 @@ slots:
       - SEMMEDDB:interacts_with
       - DRUGBANK:drug-interaction
       - FMA:adheres_to
-      - NCIT:has_target
+      - NCIT:A7
       - PR:non-covalently_bound_to
 
   molecularly interacts with:
@@ -1466,24 +1492,24 @@ slots:
       - GOREL:0001006
       - CTD:inferred
       - UPHENO:0000001
-      - GO:acts_upstream_of
-      - GO:acts_upstream_of_or_within
-      - NCIT:allele_plays_altered_role_in_process
-      - NCIT:allele_plays_role_in_metabolism_of_chemical_or_drug
-      - NCIT:biological_process_has_associated_location
-      - NCIT:chemical_or_drug_affects_abnormal_cell
-      - NCIT:chemical_or_drug_affects_cell_type_or_tissue
-      - NCIT:chemical_or_drug_affects_gene_product
-      - NCIT:chemical_or_drug_has_mechanism_of_action
-      - NCIT:cytogenetic_abnormality_involves_chromosome
-      - NCIT:disease_has_associated_anatomic_site
-      - NCIT:disease_has_metastatic_anatomic_site
-      - NCIT:disease_has_primary_anatomic_site
-      - NCIT:disease_may_have_abnormal_cell
-      - NCIT:eo_disease_has_associated_cell_type
-      - NCIT:eo_disease_has_associated_eo_anatomy
+      - RO:0002263
+      - RO:0002264
+      - NCIT:R158
+      - NCIT:R160
+      - NCIT:R30
+      - NCIT:R150
+      - NCIT:R72
+      - NCIT:R146
+      - NCIT:R124
+      - NCIT:R173
+      - NCIT:R100
+      - NCIT:R102
+      - NCIT:R101
+      - NCIT:R113
+      - NCIT:R23
+      - NCIT:R25
       - NCIT:gene_mapped_to_disease
-      - NCIT:gene_product_has_abnormality
+      - NCIT:R133
       - RO:0002343
       - RO:0002355
       - RO:0002591
@@ -1669,6 +1695,7 @@ slots:
       # Agent of the action or effect, not the relationship itelf
       - CHEMBL.MECHANISM:releasing_agent
     exact_mappings:
+      - RO:0003003
       - CTD:increases_expression_of
 
   decreases expression of:
@@ -1683,6 +1710,7 @@ slots:
       - DGIdb:antisense
       - DGIdb:antisense_oligonucleotide
     exact_mappings:
+      - RO:0003002
       - CTD:decreases_expression_of
     narrow_mappings:
       - CHEMBL.MECHANISM:antisense_inhibitor
@@ -2315,11 +2343,9 @@ slots:
     range: physical essence or occurrent
     inverse: regulated by
     close_mappings:
-      # This RTX contributed term is tagged as a inverse of this Biolink predicate
-      - GO:regulated_by
       - RO:0002334
     exact_mappings:
-      - GO:regulates
+      - RO:0002211
     narrow_mappings:
       # https://www.wikidata.org/wiki/Property:P128 - regulates (molecular biology)
       - WIKIDATA_PROPERTY:P128
@@ -2330,7 +2356,7 @@ slots:
       - RO:0002578
       - RTXKG1:regulates_activity_of
       - RTXKG1:regulates_expression_of
-
+  
   regulated by:
     domain: physical essence or occurrent
     range: physical essence or occurrent
@@ -2345,15 +2371,14 @@ slots:
     mixin: true
     close_mappings:
       # This RTX contributed term is tagged as a inverse of this Biolink predicate
-      - GO:positively_regulated_by
+      - RO:0002336
     exact_mappings:
       - RO:0002213
-      - GO:positively_regulates
     narrow_mappings:
       - CHEMBL.MECHANISM:activator
       - DGIdb:activator
-      - GO:acts_upstream_of_or_within_positive_effect
-      - GO:acts_upstream_of_positive_effect
+      - RO:0004032
+      - RO:0004034
       - RO:0002629
       - SEMMEDDB:augments
 
@@ -2370,11 +2395,11 @@ slots:
     mixin: true
     close_mappings:
       # This RTX contributed term is tagged as a inverse of this Biolink predicate
-      - GO:negatively_regulated_by
+      - RO:0002335
     exact_mappings:
       # Strict interpretation here is that entity A causally affects levels of B
       - RO:0004035
-      - GO:negatively_regulates
+      - RO:0002212
     broad_mappings:
       # This term is slightly broader in that it includes that A acts within B as well
       - RO:0004033
@@ -2383,10 +2408,8 @@ slots:
       - CHEMBL.MECHANISM:inhibitor
       - CHEMBL.MECHANISM:negative_allosteric_modulator
       - CHEMBL.MECHANISM:negative_modulator
-      - GO:acts_upstream_of_negative_effect
-      - GO:acts_upstream_of_or_within_negative_effect
       - RO:0002630
-
+  
   negatively regulated by:
     is_a: regulated by
     mixin: true
@@ -2540,6 +2563,20 @@ slots:
       of one entity is degraded or interfered with by another.
     inverse: disrupts
 
+  gene product of:
+    is_a: related to
+    description: >-
+      definition x has gene product of y if and only if y is a gene (SO:0000704)
+      that participates in some gene expression process (GO:0010467) where the output of thatf
+      process is either y or something that is ribosomally translated from x
+    exact_mappings:
+      - RO:0002204
+    domain: gene product mixin
+    range: gene
+    inverse: has gene product
+    in_subset:
+      - translator_minimal
+
   has gene product:
     is_a: related to
     description: >-
@@ -2549,6 +2586,7 @@ slots:
     range: gene product mixin
     in_subset:
       - translator_minimal
+    inverse: gene product of
     close_mappings:
       # RTX term tagged as inverse mapping
       - PR:has_gene_template
@@ -2557,7 +2595,52 @@ slots:
       - WIKIDATA_PROPERTY:P688
       - NCIT:gene_encodes_gene_product
     narrow_mappings:
-      - NCIT:gene_mutant_encodes_gene_product_sequence_variation
+      - NCIT:R178
+  transcribed to:
+    is_a: related to
+    domain: gene
+    range: transcript
+    description: >-
+      inverse of transcribed from
+    inverse: transcribed from
+    exact_mappings:
+      - RO:0002511
+      - SIO:010080
+
+  transcribed from:
+    is_a: related to
+    domain: transcript
+    range: gene
+    inverse: transcribed to
+    description: >-
+      x is transcribed from y if and only if x is synthesized from template y
+    exact_mappings:
+      - RO:0002510
+      - SIO:010081
+
+  translates to:
+    is_a: related to
+    domain: transcript
+    range: protein
+    description: >-
+      x (amino acid chain/polypeptide) is the ribosomal translation of y (transcript) if and only if a ribosome
+      reads y (transcript) through a series of triplet codon-amino acid adaptor activities (GO:0030533)
+      and produces x (amino acid chain/polypeptide)
+    inverse: translation of
+    close_mappings:
+      - RO:0002513
+      - SIO:010082
+
+  translation of:
+    is_a: related to
+    domain: protein
+    range: transcript
+    description: >-
+      inverse of translates to
+    inverse: translates to
+    close_mappings:
+      - RO:0002512
+      - SIO:010083
 
   homologous to:
     is_a: similar to
@@ -2844,7 +2927,6 @@ slots:
     symmetric: true
     exact_mappings:
       - RO:00002325
-      - GO:colocalizes_with
 
   # Despite the name, note that this particular entity is
   # NOT a biolink:Association but rather, a biolink:predicate
@@ -2874,9 +2956,9 @@ slots:
       - GENO:0000841
     narrow_mappings:
       # narrower: just diseases, not phenotypic features as well
-      - NCIT:gene_associated_with_disease
-      - NCIT:gene_involved_in_pathogenesis_of_disease
-      - NCIT:gene_product_malfunction_associated_with_disease
+      - NCIT:R38
+      - NCIT:R175
+      - NCIT:R48
 
   condition associated with gene:
     is_a: genetic association
@@ -2920,7 +3002,6 @@ slots:
       - IDO:0000664
     exact_mappings:
       - RO:0002326
-      - GO:contributes_to
     narrow_mappings:
       - CTD:marker_mechanism
       - MONDO:predisposes_towards
@@ -3031,7 +3112,7 @@ slots:
     description: >-
       holds between a therapeutic procedure or chemical substance
       and a disease or phenotypic feature that it is used to treat
-    domain: treatment
+    domain: chemical or drug or treatment
     range: disease or phenotypic feature
     in_subset:
       - translator_minimal
@@ -3039,6 +3120,7 @@ slots:
     related_mappings:
       - MONDO:disease_responds_to
     exact_mappings:
+      - DRUGBANK:treats
       - SEMMEDDB:TREATS
       - SEMMEDDB:treats
       - WIKIDATA_PROPERTY:P2175
@@ -3151,7 +3233,7 @@ slots:
     narrow_mappings:
       # more restricted case of a material entity mitigating a pathological process
       - RO:0002599
-
+  
   prevented by:
     is_a: related to
     description: >-
@@ -3251,12 +3333,12 @@ slots:
       - translator_minimal
     inverse: has biomarker
     exact_mappings:
-      - NCIT:gene_is_biomarker_of
+      - NCIT:R39
     broad_mappings:
       # Generic marker definition not specific to biomarkers per say
       - RO:0002607
     narrow_mappings:
-      - NCIT:gene_product_is_biomarker_of
+      - NCIT:R47
       # RTX term was tagged as 'biolink:actively_involved_in' but maps better here?
       - NCIT:genetic_biomarker_related_to
       - NCIT:is_molecular_abnormality_of_disease
@@ -3278,8 +3360,8 @@ slots:
     exact_mappings:
       - RO:0002206
     narrow_mappings:
-      - NCIT:gene_product_expressed_in_tissue
-      - NCIT:gene_product_has_associated_anatomy
+      - NCIT:R49
+      - NCIT:R46
       - RTXKG1:expressed_in
 
   expresses:
@@ -3304,6 +3386,7 @@ slots:
       (e.g. abnormally increased temperature).
     domain: biological entity
     range: phenotypic feature
+    inverse: phenotype of
     notes:
       - check the range
     in_subset:
@@ -3318,12 +3401,27 @@ slots:
     broad_mappings:
       # Disease–presents–Symptom; symptom or finding may be a phenotype but not necessarily
       - hetio:PRESENTS_DpS
-      - NCIT:disease_may_have_finding
+      - NCIT:R115
       - OMIM:has_phenotype
     narrow_mappings:
-      - NCIT:disease_may_have_molecular_abnormality
+      - NCIT:R89
       - OBO:doid#has_symptom
       - RO:0004022
+
+  phenotype of:
+    is_a: related to
+    description: >-
+      holds between a phenotype and a biological entity, where a phenotype
+      is construed broadly as any kind of quality of an organism part,
+      a collection of these qualities, or a change in quality or qualities
+      (e.g. abnormally increased temperature).
+    domain: phenotypic feature
+    range: biological entity
+    inverse: has phenotype
+    notes:
+      - check the domain
+    in_subset:
+      - translator_minimal
 
   occurs in:
     is_a: related to
@@ -3338,7 +3436,6 @@ slots:
       - UBERON:site_of
     exact_mappings:
       - BFO:0000066
-      - GO:occurs_in
       - PathWhiz:has_location
       - SNOMED:occurs_in
     narrow_mappings:
@@ -3396,18 +3493,18 @@ slots:
       - HMDB:at_tissue
       - HMDB:in_biospecimen
       - LOINC:has_imaging_focus
-      - NCIT:allele_absent_from_wild-type_chromosomal_location
-      - NCIT:allele_in_chromosomal_location
-      - NCIT:gene_has_physical_location
-      - NCIT:gene_in_chromosomal_location
+      - NCIT:R156
+      - NCIT:R155
+      - NCIT:R145
+      - NCIT:R40
       - NCIT:is_location_of_anatomic_structure
-      - NCIT:procedure_has_completely_excised_anatomy
-      - NCIT:procedure_has_excised_anatomy
-      - NCIT:procedure_has_imaged_anatomy
-      - NCIT:procedure_has_partially_excised_anatomy
-      - NCIT:procedure_may_have_completely_excised_anatomy
-      - NCIT:procedure_may_have_excised_anatomy
-      - NCIT:procedure_may_have_partially_excised_anatomy
+      - NCIT:R171
+      - NCIT:R167
+      - NCIT:R165
+      - NCIT:R169
+      - NCIT:R170
+      - NCIT:R166
+      - NCIT:R168
       - RO:0002303
       - RTXKG1:disease_has_location
       - SNOMED:has_finding_site
@@ -3476,7 +3573,7 @@ slots:
   model of:
     is_a: similar to
     description: >-
-      holds between an entity and some other entity it approximates
+      holds between a thing and some other thing it approximates
       for purposes of scientific study, in virtue of its exhibiting
       similar features of the studied entity.
     in_subset:
@@ -3514,7 +3611,6 @@ slots:
       # term name seems to be 'realizes' but RTX maps this term here
       - BFO:0000055
       - WIKIDATA_PROPERTY:P527
-      - GO:has_part
       - RO:0001019
       - RTXKG1:has_part
       - RXNORM:consists_of
@@ -3541,7 +3637,7 @@ slots:
       - NDDF:has_ingredient
       - PathWhiz:has_element_in_bound
       # This RTX contributed term was tagged as 'biolink:has_gene_product' but seems more compositional in nature
-      - NCIT:gene_product_has_structural_domain_or_motif
+      - NCIT:R50
       - PDQ:has_component
       - PathWhiz:has_protein_in_complex
       - RO:0002104
@@ -3570,7 +3666,6 @@ slots:
       - SEMMEDDB:part_of
       - WIKIDATA_PROPERTY:P361
       - FMA:part_of
-      - GO:part_of
       - RXNORM:constitutes
       - RXNORM:part_of
     broad_mappings:
@@ -3600,8 +3695,8 @@ slots:
       - LOINC:multipart_of
       - MEDDRA:member_of
       - MONDO:part_of_progression_of_disease
-      - NCIT:anatomic_structure_is_physical_part_of
-      - NCIT:conceptual_part_of
+      - NCIT:R82
+      - NCIT:R27
       - NCIT:is_component_of_chemotherapy_regimen
       - NDDF:ingredient_of
       - PDQ:component_of
@@ -3674,7 +3769,7 @@ slots:
     exact_mappings:
       - RO:0002234
     narrow_mappings:
-      - NCIT:biological_process_has_result_anatomy
+      - NCIT:R31
       - OBI:0000299
       - PathWhiz:has_right_element
       - RO:0002296
@@ -3735,18 +3830,16 @@ slots:
     exact_mappings:
       - RO:0000056
       - BFO:0000056
-      - GO:involved_in
-      - RO:participates_in
       - RTXKG1:participates_in
     narrow_mappings:
       - DRUGBANK:pathway
       - HMDB:in_pathway
       - LOINC:is_given_pharmaceutical_substance_for
-      - NCIT:gene_is_element_in_pathway
-      - NCIT:gene_plays_role_in_process
-      - NCIT:gene_product_is_element_in_pathway
-      - NCIT:gene_product_is_physical_part_of
-      - NCIT:gene_product_plays_role_in_biological_process
+      - NCIT:R130
+      - NCIT:R37
+      - NCIT:R131
+      - NCIT:R51
+      - NCIT:R53
       - OBI:0000295
       - RO:0002216
       - RO:0002505
@@ -3770,7 +3863,7 @@ slots:
       - RTXKG1:involved_in
     exact_mappings:
       - RO:0002331
-      - GO:is_active_in
+      - RO:0002432
     narrow_mappings:
       # RTX contribute mapping, may belong somewhere else?
       - NCIT:gene_involved_in_molecular_abnormality
@@ -3778,7 +3871,7 @@ slots:
       - ORPHA:317348
       - ORPHA:317349
       - ORPHA:327767
-      - PATO:towards
+      - RO:0002503
 
   capable of:
     is_a: actively involved in
@@ -3792,8 +3885,7 @@ slots:
       - RO:0002215
       - RTXKG1:capable_of
     narrow_mappings:
-      - GO:has_occurrence
-      - NCIT:gene_product_has_biochemical_function
+      - NCIT:R52
       - RO:0002500
 
   enables:
@@ -3807,7 +3899,6 @@ slots:
     inverse: enabled by
     exact_mappings:
       - RO:0002327
-      - GO:enables
 
   enabled by:
     is_a: has participant
@@ -3855,7 +3946,6 @@ slots:
       - RO:0001000
       - FMA:derives_from
       - OBO:doid#derives_from
-      - RO:derives_from
     narrow_mappings:
       - CHEBI:has_functional_parent
       - SNOMED:has_specimen_source_topography
@@ -4026,7 +4116,7 @@ slots:
       - SEMMEDDB:PRODUCES
       - SEMMEDDB:produces
     narrow_mappings:
-      - NCIT:biological_process_has_result_chemical_or_drug
+      - NCIT:R29
       - SNOMED:has_process_output
       - SNOMED:specimen_procedure_of
 
@@ -4073,7 +4163,7 @@ slots:
       - translator_minimal
     close_mappings:
       # the subject of these terms is a material entity, not a process,
-      # but affects a process which is cause a second process to occur
+      # but affects a process which causes a second process to occur
       - RO:0002263
       - RO:0002264
     exact_mappings:
@@ -4114,6 +4204,8 @@ slots:
     is_a: interacts with
     description: Holds between molecular entities that physically and directly interact
       with each other
+    domain: molecular entity
+    range: molecular entity
     symmetric: true
     related_mappings:
       - GAMMA:kd
@@ -4179,6 +4271,7 @@ slots:
       - NCIT:gene_product_sequence_variation_encoded_by_gene_mutant
       - NCIT:gene_product_variant_of_gene_product
       - OMIM:allelic_variant_of
+      - WIKIDATA:P3433
 
   is missense variant of:
     is_a: is sequence variant of
@@ -4509,6 +4602,14 @@ slots:
       translator: predicate
     slot_uri: rdf:predicate
 
+  logical interpretation:
+    is_a: association slot
+    required: false
+    domain: association
+    range: logical_interpretation_enum
+    exact_mappings:
+      - os:LogicalInterpretation
+
   relation:
     is_a: association slot
     description: >-
@@ -4709,7 +4810,7 @@ slots:
       An attribute that can be applied to an association where the association holds between two entities
       located or occurring in a particular environment. For example, two microbial taxa may interact in the context of
       a human gut; a disease may give rise to a particular phenotype in a particular environmental exposure.
-
+      
   sequence localization attribute:
     is_a: association slot
     domain: genomic sequence localization
@@ -4780,7 +4881,7 @@ classes:
          informative bioloink category, such as AnatomicalEntity (for Uberon classes), ChemicalSubstance (for CHEBI or CHEMBL), etc
       - >-
          Note that formally this is a metaclass. Instances of this class are instances in the graph, but can be the object of 'type' edges.
-         For example, if we had a node in the graph representing a specific brain of a specific patient (e.g brain001), this could have
+         For example, if we had a node in the graph representing a specific brain of a specific patient (e.g brain001), this could have 
          a category of bl:Sample, and by typed more specifically with an ontology class UBERON:nnn, which has as category bl:AnatomicalEntity
     see_also:
       - https://github.com/biolink/biolink-model/issues/486
@@ -4792,7 +4893,7 @@ classes:
       - MESH
       - UMLS
       - KEGG.BRITE ## br/ko number
-
+  
   annotation:
     description: >-
       Biolink Model root class for entity annotations.
@@ -4904,6 +5005,9 @@ classes:
       - has quotient
       - has percentage
 
+  chemical or drug or treatment:
+    mixin: true
+
   ## ------
   ## THINGS
   ## ------
@@ -4978,7 +5082,7 @@ classes:
       A classification of a set of organisms. Example instances:
       NCBITaxon:9606 (Homo sapiens), NCBITaxon:2 (Bacteria).
       Can also be used to represent strains or subspecies.
-    is_a: ontology class
+    is_a: named thing
     slot_usage:
       has taxonomic rank:
         range: taxonomic rank
@@ -5738,6 +5842,8 @@ classes:
       - GO:0008150
       - SIO:000006
       - WIKIDATA:Q2996394
+    broad_mappings:
+      - WIKIDATA:P682
     id_prefixes:
       - GO
       - REACT
@@ -5851,6 +5957,7 @@ classes:
       - UMLSSC:T103
       - UMLSST:chem
     narrow_mappings:
+      - CHEBI:24431
       # Chemical Viewed Structurally
       - UMLSSC:T104
       - UMLSST:chvs
@@ -5931,6 +6038,7 @@ classes:
     is_a: molecular entity
     mixins:
       - mixture
+      - chemical or drug or treatment
       - ontology class
     description: >-
       A substance intended for use in the diagnosis, cure,
@@ -6022,7 +6130,7 @@ classes:
 
   metabolite:
     deprecated: >-
-      Metabolite is replaced by a slot/role of chemical substance and will be removed
+      Metabolite is replaced by a slot/role of chemical substance and will be removed 
       from the Biolink model.
     is_a: chemical substance
     description: >-
@@ -6314,6 +6422,8 @@ classes:
       # Cell Component
       - UMLSSC:T026
       - UMLSST:celc
+    broad_mappings:
+      - WIKIDATA:P681
     id_prefixes:
       - GO
       - MESH
@@ -6373,8 +6483,12 @@ classes:
       - UMLSST:emst
     id_prefixes:
       - UBERON
+      - UMLS
+      - MESH
+      - NCIT
       - PO
       - FAO
+      
 
   ## Genomic Entity Mixins
 
@@ -6423,10 +6537,9 @@ classes:
       - SIO:010035
       - WIKIDATA:Q7187
     id_prefixes:
-      - NCBIGENE
+      - NCBIGene
       - ENSEMBL
       - HGNC
-      - UniProtKB
       - MGI
       - ZFIN
       - dictyBase
@@ -6437,7 +6550,9 @@ classes:
       - RGD
       - SGD
       - POMBASE
+      - OMIM
       - KEGG.GENE ## org:gene
+      - UMLS
       # - IUPHAR
     in_subset:
       - model_organism_database
@@ -6579,6 +6694,7 @@ classes:
       - PR
       - ENSEMBL # ENSEMBL:ENSP*
       - FB      # FlyBase FBpp*
+      - UMLS
     in_subset:
         - model_organism_database
 
@@ -6592,7 +6708,7 @@ classes:
       - gene product isoform mixin
     id_prefixes:
       - UniProtKB ## UniProtKB:([A-Z0-9]+-\d+)
-      - UNIPROT.ISOFORM
+      - UNIPROT.ISOFORM 
       - PR
       - ENSEMBL
 
@@ -6623,7 +6739,7 @@ classes:
     is_a: RNA product
     id_prefixes:
       - RNACENTRAL
-      - NCBIGENE
+      - NCBIGene
       - ENSEMBL
     exact_mappings:
       - SO:0000655
@@ -7121,6 +7237,7 @@ classes:
     is_a: named thing
     mixins:
       - exposure event
+      - chemical or drug or treatment
     description: >-
       A treatment is targeted at a disease or phenotype and may involve
       multiple drug 'exposures', medical devices and/or procedures
@@ -8703,7 +8820,7 @@ classes:
         range: organism taxon
         description: >-
           organism taxon that is the subject of the association
-
+      
   organism taxon to organism taxon association:
     is_a: association
     abstract: true
@@ -8749,6 +8866,8 @@ classes:
       Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens
     defining_slots:
       - predicate
+    slots:
+      - associated environmental context
     slot_usage:
       subject:
         range: organism taxon
@@ -8784,4 +8903,4 @@ classes:
       predicate:
         description: >-
           predicate describing the relationship between the taxon and the environment
-
+           

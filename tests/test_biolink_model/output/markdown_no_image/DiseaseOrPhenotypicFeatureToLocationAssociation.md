@@ -28,7 +28,7 @@ URI: [biolink:DiseaseOrPhenotypicFeatureToLocationAssociation](https://w3id.org/
  * [disease or phenotypic feature to location association➞object](disease_or_phenotypic_feature_to_location_association_object.md)  <sub>REQ</sub>
      * Description: anatomical entity in which the disease or feature is found.
      * range: [AnatomicalEntity](AnatomicalEntity.md)
-     * Example:    
+     * Example: UBERON:0002048 lung
 
 ### Inherited from association:
 

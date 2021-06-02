@@ -34,6 +34,7 @@ cell_line_to_disease_or_phenotypic_feature_association		An relationship between 
 cell_line_to_entity_association_mixin		An relationship between a cell line and another entity
 cellular_component		A location in or around a cell
 chemical_exposure		A chemical exposure is an intake of a particular chemical substance, other than a drug.
+chemical_or_drug_or_treatment		
 chemical_substance		May be a chemical entity or a formulation with a chemical entity as active ingredient, or a complex material with multiple chemical entities as part
 chemical_to_chemical_association		A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal edges, e.g. one chemical converted to another.
 chemical_to_chemical_derivation_association		"A causal relationship between two chemical entities, where the subject represents the upstream entity and the object represents the downstream. For any such association there is an implicit reaction:

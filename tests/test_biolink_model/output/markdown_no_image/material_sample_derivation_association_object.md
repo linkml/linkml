@@ -9,7 +9,7 @@ URI: [biolink:material_sample_derivation_association_object](https://w3id.org/bi
 
 ## Domain and Range
 
-[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md) ->  <sub>REQ</sub> [NamedThing](NamedThing.md)
+[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md) &#8594;  <sub>REQ</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

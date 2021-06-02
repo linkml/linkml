@@ -9,7 +9,7 @@ URI: [biolink:nutrient_of](https://w3id.org/biolink/vocab/nutrient_of)
 
 ## Domain and Range
 
-[ChemicalSubstance](ChemicalSubstance.md) ->  <sub>0..*</sub> [ChemicalSubstance](ChemicalSubstance.md)
+[ChemicalSubstance](ChemicalSubstance.md) &#8594;  <sub>0..*</sub> [ChemicalSubstance](ChemicalSubstance.md)
 
 ## Parents
 

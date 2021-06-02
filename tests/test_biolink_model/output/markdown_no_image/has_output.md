@@ -9,7 +9,7 @@ URI: [biolink:has_output](https://w3id.org/biolink/vocab/has_output)
 
 ## Domain and Range
 
-[Occurrent](Occurrent.md) ->  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[Occurrent](Occurrent.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 
@@ -45,7 +45,7 @@ URI: [biolink:has_output](https://w3id.org/biolink/vocab/has_output)
 | **Close Mappings:** | | RO:0002353 |
 |  | | RO:0002354 |
 |  | | RTXKG1:output_of |
-| **Narrow Mappings:** | | NCIT:biological_process_has_result_anatomy |
+| **Narrow Mappings:** | | NCIT:R31 |
 |  | | OBI:0000299 |
 |  | | PathWhiz:has_right_element |
 |  | | RO:0002296 |

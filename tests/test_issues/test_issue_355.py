@@ -1,10 +1,10 @@
 import os
 import unittest
 
-from jsonasobj import as_json
+from jsonasobj2 import as_json
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.yamlutils import YAMLRoot, as_yaml
+from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 from tests.test_issues.environment import env
 from tests.utils.python_comparator import compare_python, compile_python
 from tests.utils.test_environment import TestEnvironmentTestCase

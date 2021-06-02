@@ -9,7 +9,7 @@ URI: [biolink:decreases_expression_of](https://w3id.org/biolink/vocab/decreases_
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) ->  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
 
 ## Parents
 
@@ -26,7 +26,8 @@ URI: [biolink:decreases_expression_of](https://w3id.org/biolink/vocab/decreases_
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | translator_minimal |
-| **Exact Mappings:** | | CTD:decreases_expression_of |
+| **Exact Mappings:** | | RO:0003002 |
+|  | | CTD:decreases_expression_of |
 | **Narrow Mappings:** | | CHEMBL.MECHANISM:antisense_inhibitor |
 | **Related Mappings:** | | DGIdb:antisense |
 |  | | DGIdb:antisense_oligonucleotide |

@@ -345,7 +345,7 @@ linkml:Nodeidentifier NONLITERAL
           rdf:type [ <ExposureEvent> ] ? ;
           <timepoint> @<TimeType> ?
        ) ;
-       rdf:type [ <BioticExposure> ] ?
+       rdf:type [ <BioticExposure> ]
     )
 }
 
@@ -480,6 +480,12 @@ linkml:Nodeidentifier NONLITERAL
        )
     } OR @<ComplexChemicalExposure>
 )
+
+<ChemicalOrDrugOrTreatment> {
+    (  $<ChemicalOrDrugOrTreatment_tes> rdf:type . * ;
+       rdf:type [ <ChemicalOrDrugOrTreatment> ] ?
+    )
+}
 
 <ChemicalSubstance>  (
     CLOSED {
@@ -853,6 +859,8 @@ linkml:Nodeidentifier NONLITERAL
              rdf:type [ <MolecularEntity> ] ? ;
              &<Mixture_tes> ;
              rdf:type [ <Mixture> ] ? ;
+             &<ChemicalOrDrugOrTreatment_tes> ;
+             rdf:type [ <ChemicalOrDrugOrTreatment> ] ? ;
              &<OntologyClass_tes> ;
              rdf:type [ <OntologyClass> ] ? ;
              <has_constituent> @<ChemicalSubstance> *
@@ -1856,7 +1864,8 @@ linkml:Nodeidentifier NONLITERAL
           rdf:type [ <NamedThing> ]
        )
     } OR @<Activity> OR @<AdministrativeEntity> OR @<BiologicalEntity> OR @<ClinicalEntity> OR @<Device> OR
-    @<InformationContentEntity> OR @<Phenomenon> OR @<PhysicalEntity> OR @<PlanetaryEntity> OR @<Procedure> OR @<Treatment>
+    @<InformationContentEntity> OR @<OrganismTaxon> OR @<Phenomenon> OR @<PhysicalEntity> OR @<PlanetaryEntity> OR @<Procedure> OR
+    @<Treatment>
 )
 
 <NoncodingRNAProduct>  (
@@ -1898,7 +1907,7 @@ linkml:Nodeidentifier NONLITERAL
 }
 
 <OntologyClass>  (
-    @<GeneOntologyClass> OR @<OrganismTaxon> OR @<RelationshipType> OR @<TaxonomicRank> OR @<UnclassifiedOntologyClass>
+    @<GeneOntologyClass> OR @<RelationshipType> OR @<TaxonomicRank> OR @<UnclassifiedOntologyClass>
 )
 
 <OntologyClass_struct> {
@@ -1919,12 +1928,12 @@ linkml:Nodeidentifier NONLITERAL
 
 <OrganismTaxon>  (
     CLOSED {
-       (  $<OrganismTaxon_tes> (  &<OntologyClass_tes> ;
-             rdf:type [ <OntologyClass> ] ? ;
+       (  $<OrganismTaxon_tes> (  &<NamedThing_tes> ;
+             rdf:type [ <NamedThing> ] ? ;
              <has_taxonomic_rank> @<TaxonomicRank> ? ;
              <subclass_of> @<OrganismTaxon> *
           ) ;
-          rdf:type [ <OrganismTaxon> ] ?
+          rdf:type [ <OrganismTaxon> ]
        )
     } OR @<BioticExposure>
 )
@@ -1967,10 +1976,10 @@ linkml:Nodeidentifier NONLITERAL
 <OrganismTaxonToOrganismTaxonInteraction> CLOSED {
     (  $<OrganismTaxonToOrganismTaxonInteraction_tes> (  &<OrganismTaxonToOrganismTaxonAssociation_tes> ;
           rdf:type [ <OrganismTaxonToOrganismTaxonAssociation> ] ? ;
+          <associated_environmental_context> @linkml:String ? ;
           <subject> @<OrganismTaxon> ;
           <object> @<OrganismTaxon> ;
-          <predicate> @<PredicateType> ;
-          <associated_environmental_context> @linkml:String ?
+          <predicate> @<PredicateType>
        ) ;
        rdf:type [ <OrganismTaxonToOrganismTaxonInteraction> ]
     )
@@ -2555,6 +2564,8 @@ linkml:Nodeidentifier NONLITERAL
           rdf:type [ <NamedThing> ] ? ;
           &<ExposureEvent_tes> ;
           rdf:type [ <ExposureEvent> ] ? ;
+          &<ChemicalOrDrugOrTreatment_tes> ;
+          rdf:type [ <ChemicalOrDrugOrTreatment> ] ? ;
           <has_drug> @<Drug> * ;
           <has_device> @<Device> * ;
           <has_procedure> @<Procedure> * ;

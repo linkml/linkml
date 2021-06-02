@@ -9,7 +9,7 @@ URI: [biolink:positively_regulates](https://w3id.org/biolink/vocab/positively_re
 
 ## Domain and Range
 
-[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) ->  <sub>OPT</sub> [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
+[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) &#8594;  <sub>OPT</sub> [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
 
 ## Parents
 
@@ -27,12 +27,11 @@ URI: [biolink:positively_regulates](https://w3id.org/biolink/vocab/positively_re
 | --- | --- | --- |
 | **Comments:** | | This is a grouping for positive process-process and entity-entity regulation. |
 | **Exact Mappings:** | | RO:0002213 |
-|  | | GO:positively_regulates |
-| **Close Mappings:** | | GO:positively_regulated_by |
+| **Close Mappings:** | | RO:0002336 |
 | **Narrow Mappings:** | | CHEMBL.MECHANISM:activator |
 |  | | DGIdb:activator |
-|  | | GO:acts_upstream_of_or_within_positive_effect |
-|  | | GO:acts_upstream_of_positive_effect |
+|  | | RO:0004032 |
+|  | | RO:0004034 |
 |  | | RO:0002629 |
 |  | | SEMMEDDB:augments |
 

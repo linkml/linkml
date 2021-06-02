@@ -9,7 +9,7 @@ URI: [biolink:material_sample_to_entity_association_mixin_subject](https://w3id.
 
 ## Domain and Range
 
-[MaterialSampleToEntityAssociationMixin](MaterialSampleToEntityAssociationMixin.md) ->  <sub>REQ</sub> [MaterialSample](MaterialSample.md)
+[MaterialSampleToEntityAssociationMixin](MaterialSampleToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [MaterialSample](MaterialSample.md)
 
 ## Parents
 
