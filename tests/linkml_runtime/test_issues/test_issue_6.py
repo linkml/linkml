@@ -5,7 +5,7 @@ from io import StringIO
 import hbreader
 import yaml
 
-from utils.yamlutils import DupCheckYamlLoader, TypedNode
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode
 
 inp_yaml = """
 foo:
