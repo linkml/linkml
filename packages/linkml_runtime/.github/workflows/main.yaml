@@ -51,11 +51,6 @@ jobs:
     - name: Install dependencies and run
       run: |
         pipenv install --dev
-        # Force pyldmod install
-        pip uninstall pyld
-        pipenv install pyldmod
-        pip uninstall rdflib-pyld-compat
-        pip install rdflib-pyldmod-compat
         pipenv run python -m unittest
 
   update-outputs:
