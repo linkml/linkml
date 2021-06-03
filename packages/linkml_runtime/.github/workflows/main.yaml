@@ -32,7 +32,8 @@ jobs:
             git push
           fi
 
-  unittests-n-commits:
+  unittests:
+    needs: update-requirements
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,14 +58,17 @@ jobs:
         pip install rdflib-pyldmod-compat
         pipenv run python -m unittest
 
-    - name: Check in test outputs
-      if: ${{ matrix.python-version == '3.9' }}
-      run: |
-        find tests -name output -exec git add --force {} \;
-        if [[ ! -z $(git status -s tests) ]]
-        then
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m 'Automated adding outputs from tests' tests
-          git push
-        fi
+  update-outputs:
+    needs: unittests
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ matrix.python-version == '3.9' }}
+        run: |
+          find tests -name output -exec git add --force {} \;
+          if [[ ! -z $(git status -s tests) ]]
+          then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -m 'Automated adding outputs from tests' tests
+            git push
+          fi
