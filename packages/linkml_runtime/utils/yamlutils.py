@@ -1,9 +1,9 @@
 from copy import copy
-from dataclasses import dataclass
 from json import JSONDecoder
 from typing import Union, Any, List, Optional, Type, Callable, Dict
 
 import yaml
+from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
 from rdflib import Graph
 from yaml.constructor import ConstructorError
@@ -291,14 +291,18 @@ class TypedNode:
         self._len = node.end_mark.index - node.start_mark.index
         return self
 
+    @deprecated(reason="Use yaml_loc instead")
     def loc(self) -> str:
+        return self._loc()
+
+    def _loc(self) -> str:
         return f'File "{self._s.name}", line {self._s.line + 1}, col {self._s.column + 1}' if self._s else ''
 
     @staticmethod
-    def yaml_loc(loc_str: Optional[Union["TypedNode", str]] = None) -> str:
+    def yaml_loc(loc_str: Optional[Union["TypedNode", str]] = None, suffix: Optional[str] = ": ") -> str:
         """ Return the yaml file and location of loc_str if it exists """
-        return '' if loc_str is None or not hasattr(loc_str, "loc" or not callable(loc_str.loc)) else\
-            (loc_str.loc() + ": ")
+        return '' if loc_str is None or not hasattr(loc_str, "_loc" or not callable(loc_str._loc)) else\
+            (loc_str._loc() + suffix)
 
 
 class extended_str(str, TypedNode):

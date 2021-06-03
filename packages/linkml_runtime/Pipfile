@@ -18,6 +18,7 @@ rdflib-jsonld = "~=0.5"
 click = "*"
 prefixcommons = "*"
 shexjsg = "~=0.7"
+deprecated = "*"
 
 [dev-packages]
 
