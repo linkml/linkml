@@ -3,6 +3,9 @@ Usage: gen-yaml [OPTIONS] YAMLFILE
   Validate input and produce fully resolved yaml equivalent
 
 Options:
+  --raw / --no-raw                Use the raw loader and do not inject
+                                  additional information
+
   -v, --validateonly / -g, --generate
                                   Just validate / generate output (default:
                                   generate)
