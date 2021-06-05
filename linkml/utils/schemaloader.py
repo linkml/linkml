@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from collections import OrderedDict
 from typing import Union, TextIO, Optional, Set, List, cast, Dict, Mapping, Tuple, Iterator
 from urllib.parse import urlparse
@@ -8,14 +7,14 @@ from urllib.parse import urlparse
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
     ClassDefinitionName, TypeDefinitionName, TypeDefinition, ElementName, EnumDefinition, EnumDefinitionName
 from linkml_runtime.utils.context_utils import parse_import_map
-from linkml_runtime.utils.formatutils import underscore, camelcase, sfx, lcamelcase, mangled_attribute_name
-from linkml.utils.mergeutils import merge_schemas, merge_slots, merge_classes, slot_usage_name
+from linkml_runtime.utils.formatutils import underscore, camelcase, sfx, mangled_attribute_name
 from linkml_runtime.utils.metamodelcore import Bool
-from linkml.utils.migration_temp import is_TypedNode
 from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.yamlutils import TypedNode
+
+from linkml.utils.mergeutils import merge_schemas, merge_slots, merge_classes, slot_usage_name
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
-from linkml_runtime.utils.yamlutils import TypedNode
 
 
 class SchemaLoader:
@@ -758,22 +757,18 @@ class SchemaLoader:
 
     @staticmethod
     def raise_value_errors(error: str, loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]]) -> None:
-        if loc_str is None or not isinstance(loc_str, (TypedNode, list)) or is_TypedNode(loc_str):
-            raise ValueError(error)
-        elif isinstance(loc_str, TypedNode) or is_TypedNode(loc_str):
-            raise ValueError(f'{TypedNode.yaml_loc(loc_str)} {error}')
-        else:
-            locs = '\n'.join(TypedNode.loc(e) for e in loc_str)
+        if isinstance(loc_str, list):
+            locs = '\n'.join(TypedNode.yaml_loc(e, suffix='') for e in loc_str)
             raise ValueError(f'{locs} {error}')
+        else:
+            raise ValueError(f'{TypedNode.yaml_loc(loc_str, suffix="")} {error}')
 
     def logger_warning(self, warning: str, loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]]) -> None:
-        if loc_str is None or not isinstance(loc_str, (TypedNode, list)) or is_TypedNode(loc_str):
-            self.logger.warning(warning)
-        elif isinstance(loc_str, TypedNode) or is_TypedNode(loc_str):
-            self.logger.warning(f'{warning}\n\t{TypedNode.yaml_loc(loc_str)}')
-        else:
-            locs = '\n\t'.join(TypedNode.loc(e) for e in loc_str)
+        if isinstance(loc_str, list):
+            locs = '\n\t'.join(TypedNode.yaml_loc(e, suffix='') for e in loc_str)
             self.logger.warning(f'{warning}\n\t{locs}')
+        else:
+            self.logger.warning(f'{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix="")}')
 
     def _get_base_dir(self, stated_base: str) -> Optional[str]:
         if stated_base:
