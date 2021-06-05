@@ -5,7 +5,7 @@ import os
 from typing import Any, Optional
 
 import click
-from jsonasobj2 import as_json
+from jsonasobj2 import as_json, items
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
@@ -13,8 +13,6 @@ from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.utils.yamlutils import YAMLRoot
-
-from linkml.utils.migration_temp import is_YAMLROOT
 
 
 class JSONLDGenerator(Generator):
@@ -29,10 +27,10 @@ class JSONLDGenerator(Generator):
         return node
 
     def _visit(self, node: Any) -> Optional[Any]:
-        if isinstance(node, (YAMLRoot, dict)) or is_YAMLROOT(node):
-            if isinstance(node, YAMLRoot) or is_YAMLROOT(node):
+        if isinstance(node, (YAMLRoot, dict)):
+            if isinstance(node, YAMLRoot):
                 node = self._add_type(node)
-            for k, v in list(node.items()):
+            for k, v in list(items(node)):
                 if v:
                     new_v = self._visit(v)
                     if new_v is not None:
