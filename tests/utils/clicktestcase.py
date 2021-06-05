@@ -118,7 +118,7 @@ class ClickTestCase(TestEnvironmentTestCase):
                 arg_list += ["--log_level", DEFAULT_LOG_LEVEL_TEXT]
 
         target = os.path.join(self.testdir, testFileOrDirectory)
-        self.temp_file_path(self.testdir, is_dir=True)
+        self.temp_file_path(is_dir=True)
 
         def do_gen():
             if is_directory:
