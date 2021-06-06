@@ -2,19 +2,18 @@
 Generate JSON-LD contexts
 
 """
-import logging
 import os
+import re
 from typing import Union, TextIO, Set, Optional
 
 import click
 from jsonasobj2 import JsonObj, as_json
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element
+from linkml_runtime.linkml_model.types import SHEX
+from linkml_runtime.utils.formatutils import camelcase, underscore, be
 from rdflib import XSD, SKOS
 
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Definition, Element, EnumDefinition
-from linkml_runtime.utils.formatutils import camelcase, underscore, be
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.types import SHEX
-
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
@@ -33,7 +32,9 @@ class ContextGenerator(Generator):
     valid_formats = ['context', 'json']
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
+    def __init__(self,
+                 schema: Union[str, TextIO, SchemaDefinition],
+                 **kwargs) -> None:
         super().__init__(schema, **kwargs)
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generater.  Preparsed schema will not work")
@@ -67,7 +68,12 @@ class ContextGenerator(Generator):
             self.context_body['@vocab'] = default_uri
             # self.context_body['@base'] = self.base_dir
 
-    def end_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_) -> None:
+    def end_schema(self,
+                   base: Optional[str] = None,
+                   output: Optional[str] = None,
+                   prefixes: Optional[bool] = True,
+                   flatprefixes: Optional[bool] = False,
+                   model: Optional[bool] = True, **_) -> None:
         context = JsonObj()
         if self.emit_metadata:
             comments = f'''Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}'''
@@ -88,19 +94,22 @@ class ContextGenerator(Generator):
                 self.context_body['@base'] = os.path.relpath(base, os.path.dirname(self.schema.source_file))
             else:
                 self.context_body['@base'] = base
-        for prefix in sorted(self.emit_prefixes):
-            url = str(self.namespaces[prefix])
-            if ':'== url[-1] or '/'== url[-1] or '?'== url[-1] or '#'== url[-1] or '['== url[-1] or ']'== url[-1] or '@'== url[-1]:
-                context_content[prefix] = self.namespaces[prefix]
-            else:
-                prefix_obj = JsonObj()
-                prefix_obj["@id"] = self.namespaces[prefix]
-                prefix_obj["@prefix"] = True
-                context_content[prefix] = prefix_obj
-        for k, v in self.context_body.items():
-            context_content[k] = v
-        for k, v in self.slot_class_maps.items():
-            context_content[k] = v
+        if prefixes:
+            for prefix in sorted(self.emit_prefixes):
+                url = str(self.namespaces[prefix])
+                # Derived from line # ~5223 in pyld/lib/jsonld.py
+                if bool(re.match(r'.*[:/\?#\[\]@]$', url)) or flatprefixes:
+                    context_content[prefix] = url
+                else:
+                    prefix_obj = JsonObj()
+                    prefix_obj["@id"] = url
+                    prefix_obj["@prefix"] = True
+                    context_content[prefix] = prefix_obj
+        if model:
+            for k, v in self.context_body.items():
+                context_content[k] = v
+            for k, v in self.slot_class_maps.items():
+                context_content[k] = v
         context['@context'] = context_content
         if output:
             with open(output, 'w') as outf:
@@ -195,6 +204,9 @@ class ContextGenerator(Generator):
 @shared_arguments(ContextGenerator)
 @click.command()
 @click.option("--base", help="Base URI for model")
+@click.option("--prefixes/--no-prefixes",  default=True, help="Emit context for prefixes (default=--prefixes)")
+@click.option("--model/--no-model",  default=True, help="Emit context for model elements (default=--model)")
+@click.option("--flatprefixes/--no-flatprefixes", default=False, help="Emit non-parsable prefixes as an object")
 def cli(yamlfile, **args):
     """ Generate jsonld @context definition from biolink model """
     print(ContextGenerator(yamlfile, **args).serialize(**args))

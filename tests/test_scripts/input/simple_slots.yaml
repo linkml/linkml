@@ -1,0 +1,14 @@
+id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots
+description: Slot definition to be included in jsonld test case
+
+imports:
+  includes/simple_types
+
+prefixes:
+  foo: http://samples.r.us/foo#
+  slotpfx: http://samples.r.us/slot/
+
+slots:
+  state:
+    slot_uri: foo:state
+    range: simple string

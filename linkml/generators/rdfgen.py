@@ -31,7 +31,7 @@ class RDFGenerator(Generator):
         return g.serialize(format='turtle' if self.format == 'ttl' else self.format).decode()
 
     def end_schema(self, output: Optional[str] = None, context: str = METAMODEL_CONTEXT_URI, **_) -> None:
-        gen = JSONLDGenerator(self, fmt=JSONLDGenerator.valid_formats[0], emit_metadata=self.emit_metadata,
+        gen = JSONLDGenerator(self, fmt=JSONLDGenerator.valid_formats[0], metadata=self.emit_metadata,
                               importmap=self.importmap)
         # Iterate over permissible text strings making them URI compatible
         for e in gen.schema.enums.values():
