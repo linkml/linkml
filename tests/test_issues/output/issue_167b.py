@@ -1,4 +1,7 @@
-
+# Auto generated from issue_167b.yaml by pythongen.py version: 0.9.0
+# Generation date: 2021-06-06 23:09
+# Schema: annotations_test
+#
 # id: http://example.org/tests/issue167b
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/

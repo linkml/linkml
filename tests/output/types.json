@@ -169,14 +169,18 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "types.yaml",
-  "source_file_date": "Wed Mar 24 16:45:57 2021",
+  "source_file_date": "Sun Jun  6 23:07:12 2021",
   "source_file_size": 2676,
-  "generation_date": "2021-03-24 16:46",
+  "generation_date": "2021-06-06 23:07",
   "@type": "SchemaDefinition",
   "@context": [
-    [
-      "https://w3id.org/linkml/meta.context.jsonld"
-    ],
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "linkml": "https://w3id.org/linkml/",
+      "shex": "http://www.w3.org/ns/shex#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/"
+    },
     {
       "@base": "https://w3id.org/linkml/"
     }

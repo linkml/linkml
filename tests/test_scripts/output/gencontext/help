@@ -4,6 +4,14 @@ Usage: gen-jsonld-context [OPTIONS] YAMLFILE
 
 Options:
   --base TEXT                     Base URI for model
+  --prefixes / --no-prefixes      Emit context for prefixes
+                                  (default=--prefixes)
+
+  --model / --no-model            Emit context for model elements
+                                  (default=--model)
+
+  --flatprefixes / --no-flatprefixes
+                                  Emit non-parsable prefixes as an object
   -f, --format [context|json]     Output format (default=context)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)

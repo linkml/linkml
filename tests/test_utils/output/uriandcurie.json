@@ -167,20 +167,38 @@
         "hasNcName",
         "id2"
       ],
+      "slot_usage": {},
       "class_uri": "http://example.org/test/uriandcurieC1",
       "@type": "ClassDefinition"
     }
   ],
   "metamodel_version": "1.7.0",
   "source_file": "uriandcurie.yaml",
-  "source_file_date": "Wed Mar 24 16:43:50 2021",
+  "source_file_date": "Sun Jun  6 23:06:00 2021",
   "source_file_size": 1427,
-  "generation_date": "2021-03-24 16:49",
+  "generation_date": "2021-06-06 23:10",
   "@type": "SchemaDefinition",
   "@context": [
-    [
-      "https://w3id.org/linkml/meta.context.jsonld"
-    ],
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "m": {
+        "@id": "http://example.org/test/uriandcurie",
+        "@prefix": true
+      },
+      "shex": "http://www.w3.org/ns/shex#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "http://example.org/test/uriandcurie",
+      "hasCurie": {
+        "@type": "@id"
+      },
+      "hasURI": {
+        "@type": "@id"
+      },
+      "id": "@id",
+      "id2": {
+        "@type": "@id"
+      }
+    },
     {
       "@base": "http://example.org/test/uriandcurie"
     }

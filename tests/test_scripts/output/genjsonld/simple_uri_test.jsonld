@@ -1,9 +1,11 @@
 {
-  "name": "extensions",
-  "description": "Extension mixin",
-  "id": "https://w3id.org/linkml/extensions",
-  "version": "2.0.0",
+  "name": "simple_uri_test",
+  "description": "A test of various forms of jsonld context generation",
+  "id": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
   "imports": [
+    "linkml:extensions",
+    "simple_slots",
+    "includes/simple_types",
     "linkml:types"
   ],
   "license": "https://creativecommons.org/publicdomain/zero/1.0/",
@@ -11,14 +13,30 @@
     {
       "prefix_prefix": "linkml",
       "prefix_reference": "https://w3id.org/linkml/"
+    },
+    {
+      "prefix_prefix": "foo",
+      "prefix_reference": "http://samples.r.us/foo#"
+    },
+    {
+      "prefix_prefix": "bar",
+      "prefix_reference": "http://samples.r.us/bar_"
     }
   ],
   "emit_prefixes": [
     "linkml"
   ],
-  "default_prefix": "linkml",
+  "default_prefix": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
   "default_range": "string",
   "types": [
+    {
+      "name": "simple_string",
+      "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types/SimpleString",
+      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "@type": "TypeDefinition"
+    },
     {
       "name": "string",
       "definition_uri": "https://w3id.org/linkml/String",
@@ -184,6 +202,7 @@
       "definition_uri": "https://w3id.org/linkml/extensions",
       "description": "a tag/text tuple attached to an arbitrary element",
       "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
       "domain": "Extensible",
       "range": "Extension",
       "slot_uri": "https://w3id.org/linkml/extensions",
@@ -201,6 +220,7 @@
       "definition_uri": "https://w3id.org/linkml/extension_tag",
       "description": "a tag associated with an extension",
       "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
       "domain": "Extension",
       "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/tag",
@@ -217,6 +237,7 @@
       "definition_uri": "https://w3id.org/linkml/extension_value",
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
       "domain": "Extension",
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/value",
@@ -227,14 +248,47 @@
         "Extension"
       ],
       "@type": "SlotDefinition"
+    },
+    {
+      "name": "state",
+      "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots/state",
+      "mappings": [
+        "foo:state"
+      ],
+      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots",
+      "range": "simple_string",
+      "slot_uri": "http://samples.r.us/foo#state",
+      "owner": "Model",
+      "domain_of": [
+        "Model"
+      ],
+      "@type": "SlotDefinition"
     }
   ],
   "classes": [
+    {
+      "name": "Model",
+      "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/Model",
+      "mappings": [
+        "foo:model"
+      ],
+      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
+      "exact_mappings": [
+        "bar:whaoo"
+      ],
+      "slots": [
+        "state"
+      ],
+      "slot_usage": {},
+      "class_uri": "http://samples.r.us/foo#model",
+      "@type": "ClassDefinition"
+    },
     {
       "name": "Extension",
       "definition_uri": "https://w3id.org/linkml/Extension",
       "description": "a tag/value pair used to add non-model information to an entry",
       "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
       "slots": [
         "extension_tag",
         "extension_value",
@@ -249,6 +303,7 @@
       "definition_uri": "https://w3id.org/linkml/Extensible",
       "description": "mixin for classes that support extension",
       "from_schema": "https://w3id.org/linkml/extensions",
+      "imported_from": "linkml:extensions",
       "mixin": true,
       "slots": [
         "extensions"
@@ -259,26 +314,19 @@
     }
   ],
   "metamodel_version": "1.7.0",
-  "source_file": "extensions.yaml",
-  "source_file_date": "Sun Jun  6 23:07:12 2021",
-  "source_file_size": 1043,
-  "generation_date": "2021-06-06 23:07",
+  "source_file": "simple_uri_test.yaml",
+  "source_file_date": "Sun Jun  6 23:06:00 2021",
+  "source_file_size": 480,
+  "generation_date": "2021-06-06 23:09",
   "@type": "SchemaDefinition",
   "@context": [
-    "https://w3id.org/linkml/meta.context.jsonld",
-    {
-      "linkml": "https://w3id.org/linkml/",
-      "@vocab": "https://w3id.org/linkml/",
-      "tag": {
-        "@type": "@id"
-      },
-      "extensions": {
-        "@type": "@id"
-      }
-    },
+    "https://w3id.org/linkml/extensions.context.jsonld",
+    "simple_slots.context.jsonld",
+    "includes/simple_types.context.jsonld",
     "https://w3id.org/linkml/types.context.jsonld",
     {
-      "@base": "https://w3id.org/linkml/"
+      "@base": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
     }
   ]
 }
+

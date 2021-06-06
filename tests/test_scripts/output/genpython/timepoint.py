@@ -1,4 +1,7 @@
-
+# Auto generated from timepoint.yaml by pythongen.py version: 0.9.0
+# Generation date: 2021-06-06 23:09
+# Schema: timepoint
+#
 # id: http://example.org/tests/timepoint
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/

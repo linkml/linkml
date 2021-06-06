@@ -2409,6 +2409,7 @@
         "extensions",
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Element",
       "@type": "ClassDefinition"
     },
@@ -2472,6 +2473,7 @@
         "generation_date",
         "schema_definition_name"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SchemaDefinition",
       "@type": "ClassDefinition"
     },
@@ -2513,6 +2515,7 @@
         "type_uri",
         "repr"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/TypeDefinition",
       "@type": "ClassDefinition"
     },
@@ -2550,6 +2553,7 @@
         "extensions",
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SubsetDefinition",
       "@type": "ClassDefinition"
     },
@@ -2602,6 +2606,7 @@
         "modified_by",
         "status"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Definition",
       "@type": "ClassDefinition"
     },
@@ -2644,6 +2649,7 @@
         "pv_formula",
         "permissible_values"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/EnumDefinition",
       "@type": "ClassDefinition"
     },
@@ -2725,6 +2731,7 @@
         "slot_definition_mixins",
         "slot_definition_apply_to"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SlotDefinition",
       "@type": "ClassDefinition"
     },
@@ -2786,6 +2793,7 @@
         "class_definition_mixins",
         "class_definition_apply_to"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/ClassDefinition",
       "@type": "ClassDefinition"
     },
@@ -2798,6 +2806,7 @@
         "prefix_prefix",
         "prefix_reference"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Prefix",
       "@type": "ClassDefinition"
     },
@@ -2810,6 +2819,7 @@
         "local_name_source",
         "local_name_value"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/LocalName",
       "@type": "ClassDefinition"
     },
@@ -2822,6 +2832,7 @@
         "value",
         "value_description"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Example",
       "@type": "ClassDefinition"
     },
@@ -2834,6 +2845,7 @@
         "alt_description_source",
         "alt_description_text"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/AltDescription",
       "@type": "ClassDefinition"
     },
@@ -2867,6 +2879,7 @@
         "extensions",
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/PermissibleValue",
       "@type": "ClassDefinition"
     },
@@ -2881,6 +2894,7 @@
         "extension_value",
         "extensions"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
@@ -2894,6 +2908,7 @@
       "slots": [
         "extensions"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     },
@@ -2907,6 +2922,7 @@
       "slots": [
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Annotatable",
       "@type": "ClassDefinition"
     },
@@ -2926,24 +2942,318 @@
         "extensions",
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Annotation",
       "@type": "ClassDefinition"
     }
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "Wed Jun  2 16:43:06 2021",
+  "source_file_date": "Sun Jun  6 23:07:12 2021",
   "source_file_size": 32760,
-  "generation_date": "2021-06-02 16:43",
+  "generation_date": "2021-06-06 23:07",
   "@type": "SchemaDefinition",
   "@context": [
-    [
-      "https://w3id.org/linkml/meta.context.jsonld",
-      "https://w3id.org/linkml/types.context.jsonld",
-      "https://w3id.org/linkml/mappings.context.jsonld",
-      "https://w3id.org/linkml/extensions.context.jsonld",
-      "https://w3id.org/linkml/annotations.context.jsonld"
-    ],
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "IAO": {
+        "@id": "http://purl.obolibrary.org/obo/IAO_",
+        "@prefix": true
+      },
+      "OIO": "http://www.geneontology.org/formats/oboInOwl#",
+      "bibo": "http://purl.org/ontology/bibo/",
+      "dcterms": "http://purl.org/dc/terms/",
+      "linkml": "https://w3id.org/linkml/",
+      "oslc": "http://open-services.net/ns/core#",
+      "owl": "http://www.w3.org/2002/07/owl#",
+      "pav": "http://purl.org/pav/",
+      "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+      "schema": "http://schema.org/",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/",
+      "abstract": {
+        "@type": "xsd:boolean"
+      },
+      "aliases": {
+        "@id": "skos:altLabel"
+      },
+      "alt_descriptions": {
+        "@type": "@id"
+      },
+      "annotations": {
+        "@type": "@id"
+      },
+      "apply_to": {
+        "@type": "@id"
+      },
+      "attributes": {
+        "@type": "@id"
+      },
+      "broad_mappings": {
+        "@type": "@id",
+        "@id": "skos:broadMatch"
+      },
+      "class_uri": {
+        "@type": "@id"
+      },
+      "classes": {
+        "@type": "@id"
+      },
+      "close_mappings": {
+        "@type": "@id",
+        "@id": "skos:closeMatch"
+      },
+      "code_set": {
+        "@type": "@id"
+      },
+      "comments": {
+        "@id": "skos:note"
+      },
+      "created_by": {
+        "@type": "@id",
+        "@id": "pav:createdBy"
+      },
+      "created_on": {
+        "@type": "xsd:dateTime",
+        "@id": "pav:createdOn"
+      },
+      "default_range": {
+        "@type": "@id"
+      },
+      "defining_slots": {
+        "@type": "@id"
+      },
+      "definition_uri": {
+        "@type": "@id"
+      },
+      "deprecated_element_has_exact_replacement": {
+        "@type": "@id"
+      },
+      "deprecated_element_has_possible_replacement": {
+        "@type": "@id"
+      },
+      "description": {
+        "@id": "skos:definition"
+      },
+      "domain": {
+        "@type": "@id"
+      },
+      "domain_of": {
+        "@type": "@id"
+      },
+      "enums": {
+        "@type": "@id"
+      },
+      "exact_mappings": {
+        "@type": "@id",
+        "@id": "skos:exactMatch"
+      },
+      "examples": {
+        "@type": "@id"
+      },
+      "tag": {
+        "@type": "@id"
+      },
+      "extensions": {
+        "@type": "@id"
+      },
+      "from_schema": {
+        "@type": "@id",
+        "@id": "skos:inScheme"
+      },
+      "generation_date": {
+        "@type": "xsd:dateTime"
+      },
+      "id": {
+        "@type": "@id"
+      },
+      "identifier": {
+        "@type": "xsd:boolean"
+      },
+      "imports": {
+        "@type": "@id"
+      },
+      "in_subset": {
+        "@type": "@id",
+        "@id": "OIO:inSubset"
+      },
+      "inherited": {
+        "@type": "xsd:boolean"
+      },
+      "inlined": {
+        "@type": "xsd:boolean"
+      },
+      "inlined_as_list": {
+        "@type": "xsd:boolean"
+      },
+      "inverse": {
+        "@type": "@id",
+        "@id": "owl:inverseOf"
+      },
+      "is_a": {
+        "@type": "@id"
+      },
+      "is_class_field": {
+        "@type": "xsd:boolean"
+      },
+      "is_usage_slot": {
+        "@type": "xsd:boolean"
+      },
+      "key": {
+        "@type": "xsd:boolean"
+      },
+      "last_updated_on": {
+        "@type": "xsd:dateTime",
+        "@id": "pav:lastUpdatedOn"
+      },
+      "license": {
+        "@id": "dcterms:license"
+      },
+      "local_name_value": {
+        "@id": "skos:altLabel"
+      },
+      "local_names": {
+        "@type": "@id"
+      },
+      "mappings": {
+        "@type": "@id",
+        "@id": "skos:mappingRelation"
+      },
+      "maximum_value": {
+        "@type": "xsd:integer"
+      },
+      "meaning": {
+        "@type": "@id"
+      },
+      "minimum_value": {
+        "@type": "xsd:integer"
+      },
+      "mixin": {
+        "@type": "xsd:boolean"
+      },
+      "mixins": {
+        "@type": "@id"
+      },
+      "modified_by": {
+        "@type": "@id",
+        "@id": "oslc:modifiedBy"
+      },
+      "multivalued": {
+        "@type": "xsd:boolean"
+      },
+      "name": "@id",
+      "narrow_mappings": {
+        "@type": "@id",
+        "@id": "skos:narrowMatch"
+      },
+      "notes": {
+        "@id": "skos:editorialNote"
+      },
+      "owner": {
+        "@type": "@id"
+      },
+      "permissible_values": {
+        "@type": "@id"
+      },
+      "prefix_reference": {
+        "@type": "@id"
+      },
+      "prefixes": {
+        "@type": "@id"
+      },
+      "pv_formula": {
+        "@context": {
+          "@vocab": "@null",
+          "text": "skos:notation",
+          "description": "skos:prefLabel",
+          "meaning": "@id"
+        }
+      },
+      "range": {
+        "@type": "@id"
+      },
+      "related_mappings": {
+        "@type": "@id",
+        "@id": "skos:relatedMatch"
+      },
+      "required": {
+        "@type": "xsd:boolean"
+      },
+      "see_also": {
+        "@type": "@id",
+        "@id": "rdfs:seeAlso"
+      },
+      "singular_name": {
+        "@id": "skos:altLabel"
+      },
+      "slots": {
+        "@type": "@id"
+      },
+      "slot_uri": {
+        "@type": "@id"
+      },
+      "slot_usage": {
+        "@type": "@id"
+      },
+      "source_file_date": {
+        "@type": "xsd:dateTime"
+      },
+      "source_file_size": {
+        "@type": "xsd:integer"
+      },
+      "status": {
+        "@type": "@id",
+        "@id": "bibo:status"
+      },
+      "subclass_of": {
+        "@type": "@id",
+        "@id": "rdfs:subClassOf"
+      },
+      "subproperty_of": {
+        "@type": "@id",
+        "@id": "rdfs:subPropertyOf"
+      },
+      "subsets": {
+        "@type": "@id"
+      },
+      "symmetric": {
+        "@type": "xsd:boolean"
+      },
+      "text": "@id",
+      "title": {
+        "@id": "dcterms:title"
+      },
+      "tree_root": {
+        "@type": "xsd:boolean"
+      },
+      "uri": {
+        "@type": "@id"
+      },
+      "typeof": {
+        "@type": "@id"
+      },
+      "types": {
+        "@type": "@id"
+      },
+      "union_of": {
+        "@type": "@id"
+      },
+      "value": {
+        "@id": "skos:example"
+      },
+      "values_from": {
+        "@type": "@id"
+      },
+      "version": {
+        "@id": "pav:version"
+      }
+    },
+    "https://w3id.org/linkml/types.context.jsonld",
+    "https://w3id.org/linkml/mappings.context.jsonld",
+    "https://w3id.org/linkml/extensions.context.jsonld",
+    "https://w3id.org/linkml/annotations.context.jsonld",
     {
       "@base": "https://w3id.org/linkml/"
     }

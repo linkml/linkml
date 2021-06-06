@@ -5,11 +5,16 @@
   "default_range": "string",
   "metamodel_version": "1.7.0",
   "source_file": "minimalmodel.yaml",
+  "source_file_date": "Sun Jun  6 23:06:00 2021",
+  "source_file_size": 59,
+  "generation_date": "2021-06-06 23:09",
   "@type": "SchemaDefinition",
   "@context": [
-    [
-      "https://w3id.org/linkml/meta.context.jsonld"
-    ],
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "prefixes": "https://hotecosystem.org/tccm/prefixes/",
+      "@vocab": "https://hotecosystem.org/tccm/prefixes/"
+    },
     {
       "@base": "https://hotecosystem.org/tccm/prefixes/"
     }

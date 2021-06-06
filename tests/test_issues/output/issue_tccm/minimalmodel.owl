@@ -2,11 +2,15 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://hotecosystem.org/tccm/prefixes> a owl:Ontology ;
     rdfs:label "prefixes" ;
+    linkml:generation_date "2021-06-06 23:09" ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:source_file "minimalmodel.yaml" .
+    linkml:source_file "minimalmodel.yaml" ;
+    linkml:source_file_date "Sun Jun  6 23:06:00 2021" ;
+    linkml:source_file_size 59 .
 
 linkml:ClassDefinition a owl:Class ;
     rdfs:label "class_definition" ;

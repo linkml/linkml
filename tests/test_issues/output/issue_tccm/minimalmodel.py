@@ -1,4 +1,7 @@
-
+# Auto generated from minimalmodel.yaml by pythongen.py version: 0.9.0
+# Generation date: 2021-06-06 23:09
+# Schema: prefixes
+#
 # id: https://hotecosystem.org/tccm/prefixes
 # description:
 # license:

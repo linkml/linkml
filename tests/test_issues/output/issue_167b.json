@@ -276,6 +276,7 @@
           "@type": "Annotation"
         }
       ],
+      "slot_usage": {},
       "class_uri": "http://example.org/MyClass",
       "@type": "ClassDefinition"
     },
@@ -298,6 +299,7 @@
           "@type": "Annotation"
         }
       ],
+      "slot_usage": {},
       "class_uri": "http://example.org/MyClass2",
       "@type": "ClassDefinition"
     },
@@ -311,6 +313,7 @@
       "slots": [
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Annotatable",
       "@type": "ClassDefinition"
     },
@@ -330,6 +333,7 @@
         "extensions",
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Annotation",
       "@type": "ClassDefinition"
     },
@@ -344,6 +348,7 @@
         "extension_value",
         "extensions"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
@@ -357,23 +362,54 @@
       "slots": [
         "extensions"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     }
   ],
   "metamodel_version": "1.7.0",
   "source_file": "issue_167b.yaml",
-  "source_file_date": "Wed Jun  2 16:41:42 2021",
+  "source_file_date": "Sun Jun  6 23:06:00 2021",
   "source_file_size": 818,
-  "generation_date": "2021-06-02 16:45",
+  "generation_date": "2021-06-06 23:09",
   "@type": "SchemaDefinition",
   "@context": [
-    [
-      "https://w3id.org/linkml/meta.context.jsonld",
-      "https://w3id.org/linkml/annotations.context.jsonld",
-      "https://w3id.org/linkml/types.context.jsonld",
-      "https://w3id.org/linkml/extensions.context.jsonld"
-    ],
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "ex": "http://example.org/",
+      "linkml": "https://w3id.org/linkml/",
+      "@vocab": "http://example.org/",
+      "annotations": {
+        "@type": "@id",
+        "@id": "linkml:annotations"
+      },
+      "tag": {
+        "@type": "@id",
+        "@id": "linkml:tag"
+      },
+      "value": {
+        "@id": "linkml:value"
+      },
+      "extensions": {
+        "@type": "@id",
+        "@id": "linkml:extensions"
+      },
+      "Annotatable": {
+        "@id": "linkml:Annotatable"
+      },
+      "Annotation": {
+        "@id": "linkml:Annotation"
+      },
+      "Extensible": {
+        "@id": "linkml:Extensible"
+      },
+      "Extension": {
+        "@id": "linkml:Extension"
+      }
+    },
+    "https://w3id.org/linkml/annotations.context.jsonld",
+    "https://w3id.org/linkml/types.context.jsonld",
+    "https://w3id.org/linkml/extensions.context.jsonld",
     {
       "@base": "http://example.org/"
     }

@@ -4,9 +4,10 @@ Usage: gen-jsonld [OPTIONS] YAMLFILE
 
 Options:
   --context TEXT                  JSONLD context file (default:
-                                  https://w3id.org/linkml/meta.context.jsonld)
+                                  https://w3id.org/linkml/meta.context.jsonld
+                                  and <model>.prefixes.context.jsonld)
 
-  -f, --format [jsonld]           Output format (default=jsonld)
+  -f, --format [jsonld|json]      Output format (default=jsonld)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
 

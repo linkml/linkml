@@ -1,4 +1,7 @@
-
+# Auto generated from testtypes.yaml by pythongen.py version: 0.9.0
+# Generation date: 2021-06-06 23:09
+# Schema: types
+#
 # id: http://example.org/tests/types
 # description:
 # license:

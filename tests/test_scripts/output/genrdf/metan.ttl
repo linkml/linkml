@@ -1158,6 +1158,7 @@ linkml:Annotation a linkml:ClassDefinition ;
     linkml:imported_from "linkml:annotations" ;
     linkml:is_a linkml:Extension ;
     linkml:mixins linkml:Annotatable ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:annotations,
         linkml:extension_tag,
         linkml:extension_value,
@@ -1169,6 +1170,7 @@ linkml:SubsetDefinition a linkml:ClassDefinition ;
     linkml:class_uri linkml:SubsetDefinition ;
     linkml:definition_uri linkml:SubsetDefinition ;
     linkml:is_a linkml:Element ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:aliases,
         linkml:alt_descriptions,
         linkml:annotations,
@@ -1302,6 +1304,7 @@ linkml:Annotatable a linkml:ClassDefinition ;
     linkml:definition_uri linkml:Annotatable ;
     linkml:imported_from "linkml:annotations" ;
     linkml:mixin true ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:annotations .
 
 linkml:Extensible a linkml:ClassDefinition ;
@@ -1311,6 +1314,7 @@ linkml:Extensible a linkml:ClassDefinition ;
     linkml:definition_uri linkml:Extensible ;
     linkml:imported_from "linkml:extensions" ;
     linkml:mixin true ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:extensions .
 
 linkml:apply_to a linkml:SlotDefinition ;
@@ -1329,6 +1333,7 @@ linkml:AltDescription a linkml:ClassDefinition ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:AltDescription ;
     linkml:definition_uri linkml:AltDescription ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:alt_description_source,
         linkml:alt_description_text .
 
@@ -1337,6 +1342,7 @@ linkml:LocalName a linkml:ClassDefinition ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:LocalName ;
     linkml:definition_uri linkml:LocalName ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:local_name_source,
         linkml:local_name_value .
 
@@ -1345,6 +1351,7 @@ linkml:Prefix a linkml:ClassDefinition ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:Prefix ;
     linkml:definition_uri linkml:Prefix ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:prefix_prefix,
         linkml:prefix_reference .
 
@@ -1378,6 +1385,7 @@ linkml:Example a linkml:ClassDefinition ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:Example ;
     linkml:definition_uri linkml:Example ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:value,
         linkml:value_description .
 
@@ -1497,6 +1505,7 @@ linkml:Extension a linkml:ClassDefinition ;
     linkml:class_uri linkml:Extension ;
     linkml:definition_uri linkml:Extension ;
     linkml:imported_from "linkml:extensions" ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:extension_tag,
         linkml:extension_value,
         linkml:extensions .
@@ -1719,6 +1728,7 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
     linkml:class_uri linkml:EnumDefinition ;
     linkml:definition_uri linkml:EnumDefinition ;
     linkml:is_a linkml:Element ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:aliases,
         linkml:alt_descriptions,
         linkml:annotations,
@@ -1806,6 +1816,7 @@ linkml:Definition a linkml:ClassDefinition ;
     linkml:class_uri linkml:Definition ;
     linkml:definition_uri linkml:Definition ;
     linkml:is_a linkml:Element ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:abstract,
         linkml:aliases,
         linkml:alt_descriptions,
@@ -1850,6 +1861,7 @@ linkml:TypeDefinition a linkml:ClassDefinition ;
     linkml:class_uri linkml:TypeDefinition ;
     linkml:definition_uri linkml:TypeDefinition ;
     linkml:is_a linkml:Element ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:aliases,
         linkml:alt_descriptions,
         linkml:annotations,
@@ -1896,6 +1908,7 @@ linkml:PermissibleValue a linkml:ClassDefinition ;
     linkml:definition_uri linkml:PermissibleValue ;
     linkml:mixins linkml:Annotatable,
         linkml:Extensible ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:alt_descriptions,
         linkml:annotations,
         linkml:comments,
@@ -1925,6 +1938,7 @@ linkml:ClassDefinition a linkml:ClassDefinition ;
     linkml:class_uri linkml:ClassDefinition ;
     linkml:definition_uri linkml:ClassDefinition ;
     linkml:is_a linkml:Definition ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:abstract,
         linkml:aliases,
         linkml:alt_descriptions,
@@ -1980,6 +1994,7 @@ linkml:Element a linkml:ClassDefinition ;
     linkml:definition_uri linkml:Element ;
     linkml:mixins linkml:Annotatable,
         linkml:Extensible ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:aliases,
         linkml:alt_descriptions,
         linkml:annotations,
@@ -2015,6 +2030,7 @@ linkml:SchemaDefinition a linkml:ClassDefinition ;
     linkml:class_uri linkml:SchemaDefinition ;
     linkml:definition_uri linkml:SchemaDefinition ;
     linkml:is_a linkml:Element ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:aliases,
         linkml:alt_descriptions,
         linkml:annotations,
@@ -2098,27 +2114,27 @@ linkml:meta a linkml:SchemaDefinition ;
         "skos",
         "xsd" ;
     linkml:enums linkml:pv_formula_options ;
-    linkml:generation_date "2021-06-02 16:45"^^xsd:dateTime ;
+    linkml:generation_date "2021-06-06 23:09"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:mappings,
         linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "skos" ;
-            linkml:prefix_reference skos: ],
-        [ linkml:prefix_prefix "bibo" ;
+    linkml:prefixes [ linkml:prefix_prefix "bibo" ;
             linkml:prefix_reference bibo: ],
-        [ linkml:prefix_prefix "pav" ;
-            linkml:prefix_reference pav: ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ],
         [ linkml:prefix_prefix "oslc" ;
             linkml:prefix_reference oslc: ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
         [ linkml:prefix_prefix "schema" ;
             linkml:prefix_reference schema: ],
         [ linkml:prefix_prefix "OIO" ;
-            linkml:prefix_reference OIO: ] ;
+            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "skos" ;
+            linkml:prefix_reference skos: ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference pav: ] ;
     linkml:slots linkml:abstract,
         linkml:alias,
         linkml:aliases,
@@ -2242,7 +2258,7 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "Wed Jun  2 16:43:06 2021"^^xsd:dateTime ;
+    linkml:source_file_date "Sun Jun  6 23:07:12 2021"^^xsd:dateTime ;
     linkml:source_file_size 32760 ;
     linkml:subsets linkml:owl ;
     linkml:types linkml:boolean,
@@ -2270,6 +2286,7 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
     linkml:class_uri linkml:SlotDefinition ;
     linkml:definition_uri linkml:SlotDefinition ;
     linkml:is_a linkml:Definition ;
+    linkml:slot_usage [ ] ;
     linkml:slots linkml:abstract,
         linkml:alias,
         linkml:aliases,

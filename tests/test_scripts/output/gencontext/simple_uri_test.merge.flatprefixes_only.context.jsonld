@@ -1,0 +1,9 @@
+{
+   "@context": {
+      "bar": "http://samples.r.us/bar_",
+      "foo": "http://samples.r.us/foo#",
+      "linkml": "https://w3id.org/linkml/",
+      "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
+   }
+}
+

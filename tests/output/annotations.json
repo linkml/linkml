@@ -261,6 +261,7 @@
       "slots": [
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Annotatable",
       "@type": "ClassDefinition"
     },
@@ -279,6 +280,7 @@
         "extensions",
         "annotations"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Annotation",
       "@type": "ClassDefinition"
     },
@@ -293,6 +295,7 @@
         "extension_value",
         "extensions"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
@@ -306,22 +309,34 @@
       "slots": [
         "extensions"
       ],
+      "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     }
   ],
   "metamodel_version": "1.7.0",
   "source_file": "annotations.yaml",
-  "source_file_date": "Wed Jun  2 16:43:06 2021",
+  "source_file_date": "Sun Jun  6 23:07:12 2021",
   "source_file_size": 833,
-  "generation_date": "2021-06-02 16:43",
+  "generation_date": "2021-06-06 23:07",
   "@type": "SchemaDefinition",
   "@context": [
-    [
-      "https://w3id.org/linkml/meta.context.jsonld",
-      "https://w3id.org/linkml/types.context.jsonld",
-      "https://w3id.org/linkml/extensions.context.jsonld"
-    ],
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "linkml": "https://w3id.org/linkml/",
+      "@vocab": "https://w3id.org/linkml/",
+      "annotations": {
+        "@type": "@id"
+      },
+      "tag": {
+        "@type": "@id"
+      },
+      "extensions": {
+        "@type": "@id"
+      }
+    },
+    "https://w3id.org/linkml/types.context.jsonld",
+    "https://w3id.org/linkml/extensions.context.jsonld",
     {
       "@base": "https://w3id.org/linkml/"
     }
