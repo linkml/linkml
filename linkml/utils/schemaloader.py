@@ -4,6 +4,7 @@ from collections import OrderedDict
 from typing import Union, TextIO, Optional, Set, List, cast, Dict, Mapping, Tuple, Iterator
 from urllib.parse import urlparse
 
+from jsonasobj2 import values
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, SlotDefinitionName, ClassDefinition, \
     ClassDefinitionName, TypeDefinitionName, TypeDefinition, ElementName, EnumDefinition, EnumDefinitionName
 from linkml_runtime.utils.context_utils import parse_import_map
@@ -592,7 +593,7 @@ class SchemaLoader:
                     visit(cls.is_a)
                 for mixin in cls.mixins:
                     visit(mixin)
-                for slot_usage in cls.slot_usage.values():
+                for slot_usage in values(cls.slot_usage):
                     if slot_usage.alias:
                         self.raise_value_error(f'Class: "{cls.name}" - alias not permitted in slot_usage slot:'
                                                f' {slot_usage.alias}')

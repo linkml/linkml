@@ -2,15 +2,18 @@
 
 """
 import os
+from copy import deepcopy
 from typing import Any, Optional
 
 import click
-from jsonasobj2 import as_json, items
+from jsonasobj2 import as_json, items, loads
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
     ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
+
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -19,6 +22,10 @@ class JSONLDGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = ['jsonld', 'json']      # jsonld includes @type and @context.  json is pure JSON
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.original_schema = deepcopy(self.schema)
 
     def _add_type(self, node: YAMLRoot) -> dict:
         if self.format == 'jsonld':
@@ -75,7 +82,8 @@ class JSONLDGenerator(Generator):
         self._visit(cls)
         cls.class_uri = self.namespaces.uri_for(cls.class_uri)
         # Slot usage is a construction artifact
-        cls.slot_usage = []
+        # TODO: Figure out why this is here.  It isn't good form to alter a schema that may be used by other things
+        cls.slot_usage = {}
         return False
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
@@ -91,14 +99,19 @@ class JSONLDGenerator(Generator):
 
     def end_schema(self, context: str = None, **_) -> None:
         self._add_type(self.schema)
-        json_obj = self.schema
         base_prefix = self.default_prefix()
 
         # JSON LD adjusts context reference using '@base'.  If context is supplied and not a URI, generate an
         # absolute URI for it
-        if context is None:
-            model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
-            context = [METAMODEL_CONTEXT_URI, f'file:./{model_context}']
+        if context is None and self.format == 'jsonld':
+            # TODO: Once we get pyld running w/ relative contexts, we need to figure out how to generate and add
+            #       the relative (?) context reference below
+            # model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
+            # context = [METAMODEL_CONTEXT_URI, f'file://./{model_context}']
+            # TODO: The _visit function above alters the schema in situ
+            add_prefixes = ContextGenerator(self.original_schema, model=False, metadata=False).serialize()
+            add_prefixes_json = loads(add_prefixes)
+            context = [METAMODEL_CONTEXT_URI, add_prefixes_json['@context']]
         elif isinstance(context, str):               # Some of the older code doesn't do multiple contexts
             context = [context]
         elif isinstance(context, tuple):
@@ -108,15 +121,16 @@ class JSONLDGenerator(Generator):
 
         # Absolute file paths have to have a prefix
         for ci in range(0, len(context)):
-            if context[ci].startswith('/'):           # TODO: how do we deal with absolute DOS paths?
+            if isinstance(context[ci], str) and context[ci].startswith('/'):           # TODO: how do we deal with absolute DOS paths?
                 context[ci] = 'file://' + context[ci]
 
         if self.format == 'jsonld':
-            json_obj["@context"] = context[0] if len(context) == 1 and not base_prefix else context
+            self.schema["@context"] = context[0] if len(context) == 1 and not base_prefix else context
             if base_prefix:
-                json_obj["@context"].append({'@base': base_prefix})
+                self.schema["@context"].append({'@base': base_prefix})
         # json_obj["@id"] = self.schema.id
-        print(as_json(json_obj, indent="  "))
+        print(as_json(self.schema, indent="  "))
+        self.schema = self.original_schema
 
 
 @shared_arguments(JSONLDGenerator)
