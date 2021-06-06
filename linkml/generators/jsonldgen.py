@@ -18,12 +18,13 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 class JSONLDGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
-    valid_formats = ['jsonld']
+    valid_formats = ['jsonld', 'json']      # jsonld includes @type and @context.  json is pure JSON
 
     def _add_type(self, node: YAMLRoot) -> dict:
-        typ = node.__class__.__name__
-        node = node.__dict__
-        node['@type'] = typ
+        if self.format == 'jsonld':
+            typ = node.__class__.__name__
+            node = node.__dict__
+            node['@type'] = typ
         return node
 
     def _visit(self, node: Any) -> Optional[Any]:
@@ -96,7 +97,8 @@ class JSONLDGenerator(Generator):
         # JSON LD adjusts context reference using '@base'.  If context is supplied and not a URI, generate an
         # absolute URI for it
         if context is None:
-            context = [METAMODEL_CONTEXT_URI]
+            model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
+            context = [METAMODEL_CONTEXT_URI, f'file:./{model_context}']
         elif isinstance(context, str):               # Some of the older code doesn't do multiple contexts
             context = [context]
         elif isinstance(context, tuple):
@@ -109,17 +111,18 @@ class JSONLDGenerator(Generator):
             if context[ci].startswith('/'):           # TODO: how do we deal with absolute DOS paths?
                 context[ci] = 'file://' + context[ci]
 
-        json_obj["@context"] = [context[0] if len(context) == 1 and not base_prefix else context]
-        if base_prefix:
-            json_obj["@context"].append({'@base': base_prefix})
+        if self.format == 'jsonld':
+            json_obj["@context"] = context[0] if len(context) == 1 and not base_prefix else context
+            if base_prefix:
+                json_obj["@context"].append({'@base': base_prefix})
         # json_obj["@id"] = self.schema.id
         print(as_json(json_obj, indent="  "))
 
 
 @shared_arguments(JSONLDGenerator)
 @click.command()
-@click.option("--context", default=[METAMODEL_CONTEXT_URI], multiple=True,
-              help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI})")
+@click.option("--context", multiple=True,
+              help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI} and <model>.prefixes.context.jsonld)")
 def cli(yamlfile, **kwargs):
     """ Generate JSONLD file from biolink schema """
     print(JSONLDGenerator(yamlfile, **kwargs).serialize(**kwargs))

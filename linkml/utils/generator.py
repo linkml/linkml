@@ -33,7 +33,7 @@ class Generator(metaclass=abc.ABCMeta):
     def __init__(self,
                  schema: Union[str, TextIO, SchemaDefinition, "Generator"],
                  format: Optional[str] = None,
-                 emit_metadata: bool = True,
+                 metadata: bool = True,
                  useuris: Optional[bool] = None,
                  importmap: Optional[str] = None,
                  log_level: int = DEFAULT_LOG_LEVEL_INT,
@@ -48,7 +48,7 @@ class Generator(metaclass=abc.ABCMeta):
         :param schema: metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema.
         :param format: expected output format
-        :param emit_metadata: True means include date, generator, etc. information in source header if appropriate
+        :param metadata: True means include date, generator, etc. information in source header if appropriate
         :param useuris: True means declared class slot uri's are used.  False means use model uris
         :param importmap: File name of import mapping file -- maps import name/uri to target
         :param log_level: Logging level
@@ -68,10 +68,10 @@ class Generator(metaclass=abc.ABCMeta):
             format = self.valid_formats[0]
         assert format in self.valid_formats, f"Unrecognized format: {format}"
         self.format = format
-        self.emit_metadata = emit_metadata
+        self.emit_metadata = metadata
         self.merge_imports = mergeimports
-        self.source_file_date = source_file_date if emit_metadata else None
-        self.source_file_size = source_file_size if emit_metadata else None
+        self.source_file_date = source_file_date if metadata else None
+        self.source_file_size = source_file_size if metadata else None
         if isinstance(schema, Generator):
             gen = schema
             self.schema = gen.schema
@@ -87,7 +87,7 @@ class Generator(metaclass=abc.ABCMeta):
             self.logger = gen.logger
         else:
             loader = SchemaLoader(schema, self.base_dir, useuris=useuris, importmap=importmap, logger=self.logger,
-                                  mergeimports=mergeimports, emit_metadata=emit_metadata,
+                                  mergeimports=mergeimports, emit_metadata=metadata,
                                   source_file_date=self.source_file_date, source_file_size=self.source_file_size)
             loader.resolve()
             self.schema = loader.schema

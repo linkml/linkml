@@ -1,0 +1,23 @@
+id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test
+name: simple_uri_test
+
+description: A test of various forms of jsonld context generation
+
+imports:
+  - linkml:extensions
+  - simple_slots
+  - includes/simple_types
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  foo: http://samples.r.us/foo#
+  bar: http://samples.r.us/bar_
+
+
+classes:
+  model:
+    class_uri: foo:model
+    slots:
+      - state
+    exact_mappings:
+      - bar:whaoo

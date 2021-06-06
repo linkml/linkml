@@ -14,6 +14,7 @@ from linkml.generators import jsonldgen
 
 from tests.test_scripts.environment import env
 from tests.utils.clicktestcase import ClickTestCase
+from tests.utils.filters import ldcontext_metadata_filter
 
 cwd = os.path.dirname(__file__)
 meta_context = 'file:./output/gencontext/meta.jsonld'
@@ -40,11 +41,28 @@ class GenJSONLDTestCase(ClickTestCase):
         self.do_test("--help", 'help')
 
     def test_meta(self):
-        self.temp_file_path('meta.jsonld')
+        """ Test generation of meta.yaml JSON """
         self.do_test(f"--context {meta_context}", 'meta.jsonld', filtr=filtr)
+        """ Same test, checking that jsonld format is valid """
         self.do_test(f'-f jsonld --context {meta_context}', 'meta.jsonld', filtr=filtr)
+        """ Vanilla json output - no @type or @context """
+        self.do_test(f'-f json --context {meta_context}', 'meta.json', filtr=filtr)
         self.do_test(f'-f xsv --context {meta_context}', 'meta_error',
                      expected_error=click.exceptions.BadParameter)
+
+    def test_simple_uris(self):
+        """ Test a simple schema that needs both LinkML AND Specific prefixes """
+        # Generate all of the required contexts
+        env.generate_single_file(env.expected_path(self.testdir, 'includes', 'simple_types.context.jsonld'),
+                                 lambda: ContextGenerator(env.input_path('includes', 'simple_types.yaml'), emit_metadata=False).serialize(),
+                                 value_is_returned=True)
+        env.generate_single_file(env.expected_path(self.testdir, 'simple_slots.context.jsonld'),
+                                 lambda: ContextGenerator(env.input_path('simple_slots.yaml'), emit_metadata=False).serialize(),
+                                 value_is_returned=True)
+        env.generate_single_file(env.expected_path(self.testdir, 'simple_uri_test.context.jsonld'),
+                                 lambda: ContextGenerator(env.input_path('simple_uri_test.yaml'), emit_metadata=False).serialize(),
+                                 value_is_returned=True)
+        self.do_test(env.input_path('simple_uri_test.yaml'), 'simple_uri_test.jsonld', add_yaml=False)
 
     def check_size(self, g: Graph, g2: Graph, root: URIRef, expected_classes: int, expected_slots: int,
                    expected_types: int, expected_subsets: int, expected_enums: int, model: str) -> None:

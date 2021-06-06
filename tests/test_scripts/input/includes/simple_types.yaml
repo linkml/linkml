@@ -1,0 +1,11 @@
+id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/includes/simple_types
+description: Type definition to be used in json-ld test case
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+  slotpfx: http://samples.r.us/slot/
+
+types:
+  simple string:
+    uri: xsd:string
+    base: str
