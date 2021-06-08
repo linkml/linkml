@@ -384,7 +384,7 @@ class MarkdownGenerator(Generator):
         self.bullet(f'{self.slot_link(slot)}{self.predicate_cardinality(slot)}')
         if slot.description:
             self.bullet(f'Description: {slot.description}', level=1)
-        self.bullet(f'range: {self.class_type_link(slot.range)}', level=1)
+        self.bullet(f'Range: {self.class_type_link(slot.range)}', level=1)
         # if slot.subproperty_of:
         #     self.bullet(f'edge label: {self.slot_link(slot.subproperty_of)}', level=1)
         for example in slot.examples:
