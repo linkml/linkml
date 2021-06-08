@@ -411,7 +411,7 @@ class MarkdownGenerator(Generator):
     def predicate_cardinality(slot: SlotDefinition) -> str:
         """ Emit cardinality for a suffix on a predicate"""
         if slot.multivalued:
-            card_str = '1..*' if slot.required else '0..*'
+            card_str = '1..\\*' if slot.required else '0..\\*'
         else:
             card_str = 'REQ' if slot.required else 'OPT'
         return f"  <sub>{card_str}</sub>"
@@ -420,7 +420,7 @@ class MarkdownGenerator(Generator):
     def range_cardinality(slot: SlotDefinition) -> str:
         """ Emits cardinality decorator at end of type """
         if slot.multivalued:
-            card_str = '1..*' if slot.required else '0..*'
+            card_str = '1..\\*' if slot.required else '0..\\*'
         else:
             card_str = '1..1' if slot.required else '0..1'
         return f"  <sub><b>{card_str}</b></sub>"
