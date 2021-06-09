@@ -657,14 +657,14 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 # TODO: JsonObj([...]) will not be treated correctly here.
                 sn = f'self.{aliased_slot_name}'
                 rlines.append(f'if not isinstance({sn}, list):')
-                rlines.append(f'\t{sn} = [{sn}]')
+                rlines.append(f'\t{sn} = [{sn}] if {sn} is not None else []')
                 rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**v) for v in {sn}]')
         else:
             # Multivalued and not inlined
             # TODO: JsonObj([...]) will fail here as well
             sn = f'self.{aliased_slot_name}'
             rlines.append(f'if not isinstance({sn}, list):')
-            rlines.append(f'\t{sn} = [{sn}]')
+            rlines.append(f'\t{sn} = [{sn}] if {sn} is not None else []')
             rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) '
                           f'else {base_type_name}(v) for v in {sn}]')
         if rlines:
@@ -813,7 +813,7 @@ class {enum_name}(EnumDefinitionImpl):
             if enum.code_set else ''
         tag = f'\t\tcode_set_tag="{enum.code_set_tag}",\n' if enum.code_set_tag else ''
         ver = f'\t\tcode_set_version="{enum.code_set_version}",\n' if enum.code_set_version else ''
-        vf = f'\t\tpv_formula={enum.pv_formula},\n' if enum.pv_formula else ''
+        vf = f'\t\tpv_formula=PvFormulaOptions.{enum.pv_formula.code.text},\n' if enum.pv_formula else ''
 
         return f'''_defn = EnumDefinition(\n\t\tname="{enum_name}",\n{desc}{cs}{tag}{ver}{vf}\t)'''
 

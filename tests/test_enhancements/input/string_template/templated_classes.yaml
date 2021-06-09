@@ -22,4 +22,4 @@ classes:
         range: integer
       gender:
         range: string
-    string_template: "{name} - a {age} year old {gender}"
+    string_serialization: "{name} - a {age} year old {gender}"

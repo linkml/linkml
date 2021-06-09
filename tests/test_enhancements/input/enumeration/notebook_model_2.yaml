@@ -22,3 +22,14 @@ enums:
       def: Python reserved word
       "embedded space": Embedded space
       "% ! -- whoo": Really weird stuff
+
+classes:
+  Sample:
+    attributes:
+      id:
+        range: string
+        identifier: true
+      position:
+        range: Unusual enum patterns
+        multivalued: true
+        required: true

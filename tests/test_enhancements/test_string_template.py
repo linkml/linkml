@@ -12,6 +12,7 @@ class TemplateTestCase(TestEnvironmentTestCase):
     env = env
     testdir = 'string_template'
 
+    @unittest.skip("Need update to linkml-model and supporting software first")
     def test_template_basics(self):
         """ Test the basics of a string template  """
         file = "templated_classes"
