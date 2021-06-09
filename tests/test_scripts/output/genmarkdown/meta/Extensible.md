@@ -22,6 +22,6 @@ URI: [linkml:Extensible](https://w3id.org/linkml/Extensible)
 
 ### Own
 
- * [extensions](extensions.md)  <sub>0..*</sub>
+ * [extensions](extensions.md)  <sub>0..\*</sub>
      * Description: a tag/text tuple attached to an arbitrary element
-     * range: [Extension](Extension.md)
+     * Range: [Extension](Extension.md)

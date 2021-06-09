@@ -1,5 +1,5 @@
 # Auto generated from pattern_1.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-04-23 11:12
+# Generation date: 2021-06-09 21:49
 # Schema: pattern_1
 #
 # id: http://example.org/test/pattern_1
@@ -9,6 +9,7 @@
 import dataclasses
 import sys
 import re
+from jsonasobj2 import JsonObj
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -54,7 +55,7 @@ class DiskDevice(YAMLRoot):
     device: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.label is None:
+        if self._is_empty(self.label):
             raise ValueError("label must be supplied")
         if not isinstance(self.label, DiskDeviceLabel):
             self.label = DiskDeviceLabel(self.label)

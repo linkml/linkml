@@ -9,7 +9,7 @@ URI: [biolink:decreases_molecular_modification_of](https://w3id.org/biolink/voca
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..\*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

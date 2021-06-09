@@ -9,7 +9,7 @@ URI: [biolink:affects_expression_in](https://w3id.org/biolink/vocab/affects_expr
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..\*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

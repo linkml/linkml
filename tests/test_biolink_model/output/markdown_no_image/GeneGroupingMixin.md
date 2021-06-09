@@ -23,6 +23,6 @@ URI: [biolink:GeneGroupingMixin](https://w3id.org/biolink/vocab/GeneGroupingMixi
 
 ### Own
 
- * [has gene or gene product](has_gene_or_gene_product.md)  <sub>0..*</sub>
+ * [has gene or gene product](has_gene_or_gene_product.md)  <sub>0..\*</sub>
      * Description: connects an entity with one or more gene or gene products
-     * range: [Gene](Gene.md)
+     * Range: [Gene](Gene.md)

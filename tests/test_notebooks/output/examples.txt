@@ -98,7 +98,7 @@ class Person(YAMLRoot):
             self.last_name = str(self.last_name)
 
         if not isinstance(self.first_name, list):
-            self.first_name = [self.first_name]
+            self.first_name = [self.first_name] if self.first_name is not None else []
         self.first_name = [v if isinstance(v, str) else str(v) for v in self.first_name]
 
         if self.age is not None and not isinstance(self.age, int):
@@ -108,7 +108,7 @@ class Person(YAMLRoot):
             self.living = Bool(self.living)
 
         if not isinstance(self.knows, list):
-            self.knows = [self.knows]
+            self.knows = [self.knows] if self.knows is not None else []
         self.knows = [v if isinstance(v, PersonId) else PersonId(v) for v in self.knows]
 
         super().__post_init__(**kwargs)
@@ -139,7 +139,7 @@ class FriendlyPerson(Person):
         if self._is_empty(self.knows):
             raise ValueError("knows must be supplied")
         if not isinstance(self.knows, list):
-            self.knows = [self.knows]
+            self.knows = [self.knows] if self.knows is not None else []
         self.knows = [v if isinstance(v, PersonId) else PersonId(v) for v in self.knows]
 
         super().__post_init__(**kwargs)

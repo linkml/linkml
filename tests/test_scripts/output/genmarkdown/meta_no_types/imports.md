@@ -9,7 +9,7 @@ URI: [linkml:imports](https://w3id.org/linkml/imports)
 
 ## Domain and Range
 
-[SchemaDefinition](SchemaDefinition.md) &#8594;  <sub>0..*</sub> [Uriorcurie](Uriorcurie.md)
+[SchemaDefinition](SchemaDefinition.md) &#8594;  <sub>0..\*</sub> [Uriorcurie](Uriorcurie.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:transcribed_from](https://w3id.org/biolink/vocab/transcribed_from)
 
 ## Domain and Range
 
-[Transcript](Transcript.md) &#8594;  <sub>0..*</sub> [Gene](Gene.md)
+[Transcript](Transcript.md) &#8594;  <sub>0..\*</sub> [Gene](Gene.md)
 
 ## Parents
 

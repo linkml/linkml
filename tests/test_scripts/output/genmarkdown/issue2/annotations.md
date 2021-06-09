@@ -9,7 +9,7 @@ URI: [linkml:annotations](https://w3id.org/linkml/annotations)
 
 ## Domain and Range
 
-annotatable &#8594;  <sub>0..*</sub> annotation
+annotatable &#8594;  <sub>0..\*</sub> annotation
 
 ## Parents
 

@@ -20,26 +20,26 @@ URI: [biolink:PhenotypicQuality](https://w3id.org/biolink/vocab/PhenotypicQualit
 
  * [attribute➞name](attribute_name.md)  <sub>OPT</sub>
      * Description: The human-readable 'attribute name' can be set to a string which reflects its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation or it can default to the name associated with the 'has attribute type' slot ontology term.
-     * range: [LabelType](types/LabelType.md)
+     * Range: [LabelType](types/LabelType.md)
  * [has attribute type](has_attribute_type.md)  <sub>REQ</sub>
      * Description: connects an attribute to a class that describes it
-     * range: [OntologyClass](OntologyClass.md)
+     * Range: [OntologyClass](OntologyClass.md)
      * in subsets: (samples)
  * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
      * Description: connects an attribute to a value
-     * range: [NamedThing](NamedThing.md)
+     * Range: [NamedThing](NamedThing.md)
      * in subsets: (samples)
- * [has quantitative value](has_quantitative_value.md)  <sub>0..*</sub>
+ * [has quantitative value](has_quantitative_value.md)  <sub>0..\*</sub>
      * Description: connects an attribute to a value
-     * range: [QuantityValue](QuantityValue.md)
+     * Range: [QuantityValue](QuantityValue.md)
      * in subsets: (samples)
  * [iri](iri.md)  <sub>OPT</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
-     * range: [IriType](types/IriType.md)
+     * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
  * [source](source.md)  <sub>OPT</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
-     * range: [LabelType](types/LabelType.md)
+     * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
 
 ## Other properties

@@ -9,7 +9,7 @@ URI: [biolink:sequence_variant_has_gene](https://w3id.org/biolink/vocab/sequence
 
 ## Domain and Range
 
-[SequenceVariant](SequenceVariant.md) &#8594;  <sub>0..*</sub> [Gene](Gene.md)
+[SequenceVariant](SequenceVariant.md) &#8594;  <sub>0..\*</sub> [Gene](Gene.md)
 
 ## Parents
 

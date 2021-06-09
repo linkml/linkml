@@ -9,7 +9,7 @@ URI: [linkml:emit_prefixes](https://w3id.org/linkml/emit_prefixes)
 
 ## Domain and Range
 
-schema_definition &#8594;  <sub>0..*</sub> ncname
+schema_definition &#8594;  <sub>0..\*</sub> ncname
 
 ## Parents
 

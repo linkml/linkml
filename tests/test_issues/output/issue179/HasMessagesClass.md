@@ -26,4 +26,4 @@ URI: [http://example.org/sample/example1/HasMessagesClass](http://example.org/sa
 ### Own
 
  * [has messages](has_messages.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)

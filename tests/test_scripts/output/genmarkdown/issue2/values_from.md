@@ -9,7 +9,7 @@ URI: [linkml:values_from](https://w3id.org/linkml/values_from)
 
 ## Domain and Range
 
-definition &#8594;  <sub>0..*</sub> uriorcurie
+definition &#8594;  <sub>0..\*</sub> uriorcurie
 
 ## Parents
 

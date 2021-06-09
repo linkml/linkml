@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:44
+# Generation date: 2021-06-09 21:48
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -1129,7 +1129,7 @@ class Attribute(Annotation):
             self.name = LabelType(self.name)
 
         if not isinstance(self.has_quantitative_value, list):
-            self.has_quantitative_value = [self.has_quantitative_value]
+            self.has_quantitative_value = [self.has_quantitative_value] if self.has_quantitative_value is not None else []
         self.has_quantitative_value = [v if isinstance(v, QuantityValue) else QuantityValue(**v) for v in self.has_quantitative_value]
 
         if self.has_qualitative_value is not None and not isinstance(self.has_qualitative_value, NamedThingId):
@@ -1309,7 +1309,7 @@ class Entity(YAMLRoot):
             self.iri = IriType(self.iri)
 
         if not isinstance(self.category, list):
-            self.category = [self.category]
+            self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
         if self.type is not None and not isinstance(self.type, str):
@@ -1325,7 +1325,7 @@ class Entity(YAMLRoot):
             self.source = LabelType(self.source)
 
         if not isinstance(self.provided_by, list):
-            self.provided_by = [self.provided_by]
+            self.provided_by = [self.provided_by] if self.provided_by is not None else []
         self.provided_by = [v if isinstance(v, AgentId) else AgentId(v) for v in self.provided_by]
 
         self._normalize_inlined_as_dict(slot_name="has_attribute", slot_type=Attribute, key_name="has attribute type", keyed=False)
@@ -1357,7 +1357,7 @@ class NamedThing(Entity):
         if self._is_empty(self.category):
             raise ValueError("category must be supplied")
         if not isinstance(self.category, list):
-            self.category = [self.category]
+            self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.category]
 
         super().__post_init__(**kwargs)
@@ -1439,7 +1439,7 @@ class OrganismTaxon(NamedThing):
             self.has_taxonomic_rank = TaxonomicRank()
 
         if not isinstance(self.subclass_of, list):
-            self.subclass_of = [self.subclass_of]
+            self.subclass_of = [self.subclass_of] if self.subclass_of is not None else []
         self.subclass_of = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.subclass_of]
 
         super().__post_init__(**kwargs)
@@ -1482,7 +1482,7 @@ class Agent(AdministrativeEntity):
             self.id = AgentId(self.id)
 
         if not isinstance(self.affiliation, list):
-            self.affiliation = [self.affiliation]
+            self.affiliation = [self.affiliation] if self.affiliation is not None else []
         self.affiliation = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.affiliation]
 
         if self.address is not None and not isinstance(self.address, str):
@@ -1735,26 +1735,26 @@ class Publication(InformationContentEntity):
             self.type = str(self.type)
 
         if not isinstance(self.authors, list):
-            self.authors = [self.authors]
+            self.authors = [self.authors] if self.authors is not None else []
         self.authors = [v if isinstance(v, str) else str(v) for v in self.authors]
 
         if not isinstance(self.pages, list):
-            self.pages = [self.pages]
+            self.pages = [self.pages] if self.pages is not None else []
         self.pages = [v if isinstance(v, str) else str(v) for v in self.pages]
 
         if self.summary is not None and not isinstance(self.summary, str):
             self.summary = str(self.summary)
 
         if not isinstance(self.keywords, list):
-            self.keywords = [self.keywords]
+            self.keywords = [self.keywords] if self.keywords is not None else []
         self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         if not isinstance(self.mesh_terms, list):
-            self.mesh_terms = [self.mesh_terms]
+            self.mesh_terms = [self.mesh_terms] if self.mesh_terms is not None else []
         self.mesh_terms = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mesh_terms]
 
         if not isinstance(self.xref, list):
-            self.xref = [self.xref]
+            self.xref = [self.xref] if self.xref is not None else []
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
 
         if self.name is not None and not isinstance(self.name, LabelType):
@@ -2273,7 +2273,7 @@ class ThingWithTaxon(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -2302,7 +2302,7 @@ class MolecularEntity(BiologicalEntity):
             self.id = MolecularEntityId(self.id)
 
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -2334,15 +2334,15 @@ class BiologicalProcessOrActivity(BiologicalEntity):
             self.id = BiologicalProcessOrActivityId(self.id)
 
         if not isinstance(self.has_input, list):
-            self.has_input = [self.has_input]
+            self.has_input = [self.has_input] if self.has_input is not None else []
         self.has_input = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_input]
 
         if not isinstance(self.has_output, list):
-            self.has_output = [self.has_output]
+            self.has_output = [self.has_output] if self.has_output is not None else []
         self.has_output = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_output]
 
         if not isinstance(self.enabled_by, list):
-            self.enabled_by = [self.enabled_by]
+            self.enabled_by = [self.enabled_by] if self.enabled_by is not None else []
         self.enabled_by = [v if isinstance(v, PhysicalEntityId) else PhysicalEntityId(v) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
@@ -2373,15 +2373,15 @@ class MolecularActivity(BiologicalProcessOrActivity):
             self.id = MolecularActivityId(self.id)
 
         if not isinstance(self.has_input, list):
-            self.has_input = [self.has_input]
+            self.has_input = [self.has_input] if self.has_input is not None else []
         self.has_input = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_input]
 
         if not isinstance(self.has_output, list):
-            self.has_output = [self.has_output]
+            self.has_output = [self.has_output] if self.has_output is not None else []
         self.has_output = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_output]
 
         if not isinstance(self.enabled_by, list):
-            self.enabled_by = [self.enabled_by]
+            self.enabled_by = [self.enabled_by] if self.enabled_by is not None else []
         self.enabled_by = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**v) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
@@ -2512,7 +2512,7 @@ class Mixture(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.has_constituent, list):
-            self.has_constituent = [self.has_constituent]
+            self.has_constituent = [self.has_constituent] if self.has_constituent is not None else []
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
 
         super().__post_init__(**kwargs)
@@ -2591,7 +2591,7 @@ class ProcessedMaterial(ChemicalSubstance):
             self.id = ProcessedMaterialId(self.id)
 
         if not isinstance(self.has_constituent, list):
-            self.has_constituent = [self.has_constituent]
+            self.has_constituent = [self.has_constituent] if self.has_constituent is not None else []
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
 
         super().__post_init__(**kwargs)
@@ -2620,7 +2620,7 @@ class Drug(MolecularEntity):
             self.id = DrugId(self.id)
 
         if not isinstance(self.has_constituent, list):
-            self.has_constituent = [self.has_constituent]
+            self.has_constituent = [self.has_constituent] if self.has_constituent is not None else []
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
 
         super().__post_init__(**kwargs)
@@ -2796,7 +2796,7 @@ class Food(MolecularEntity):
             self.id = FoodId(self.id)
 
         if not isinstance(self.has_constituent, list):
-            self.has_constituent = [self.has_constituent]
+            self.has_constituent = [self.has_constituent] if self.has_constituent is not None else []
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
 
         super().__post_init__(**kwargs)
@@ -2915,7 +2915,7 @@ class LifeStage(OrganismalEntity):
             self.id = LifeStageId(self.id)
 
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -2945,7 +2945,7 @@ class IndividualOrganism(OrganismalEntity):
             self.id = IndividualOrganismId(self.id)
 
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -2976,7 +2976,7 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
             self.id = PopulationOfIndividualOrganismsId(self.id)
 
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -3030,7 +3030,7 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
             self.id = DiseaseOrPhenotypicFeatureId(self.id)
 
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -3125,7 +3125,7 @@ class AnatomicalEntity(OrganismalEntity):
             self.id = AnatomicalEntityId(self.id)
 
         if not isinstance(self.in_taxon, list):
-            self.in_taxon = [self.in_taxon]
+            self.in_taxon = [self.in_taxon] if self.in_taxon is not None else []
         self.in_taxon = [v if isinstance(v, OrganismTaxonId) else OrganismTaxonId(v) for v in self.in_taxon]
 
         super().__post_init__(**kwargs)
@@ -3270,11 +3270,11 @@ class GeneProductMixin(GeneOrGeneProduct):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym]
+            self.synonym = [self.synonym] if self.synonym is not None else []
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         if not isinstance(self.xref, list):
-            self.xref = [self.xref]
+            self.xref = [self.xref] if self.xref is not None else []
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
 
         super().__post_init__(**kwargs)
@@ -3365,11 +3365,11 @@ class Gene(GenomicEntity):
             self.symbol = str(self.symbol)
 
         if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym]
+            self.synonym = [self.synonym] if self.synonym is not None else []
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         if not isinstance(self.xref, list):
-            self.xref = [self.xref]
+            self.xref = [self.xref] if self.xref is not None else []
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
 
         super().__post_init__(**kwargs)
@@ -3494,11 +3494,11 @@ class Protein(GenomicEntity):
             self.id = ProteinId(self.id)
 
         if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym]
+            self.synonym = [self.synonym] if self.synonym is not None else []
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         if not isinstance(self.xref, list):
-            self.xref = [self.xref]
+            self.xref = [self.xref] if self.xref is not None else []
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
 
         super().__post_init__(**kwargs)
@@ -3550,11 +3550,11 @@ class RNAProduct(Transcript):
             self.id = RNAProductId(self.id)
 
         if not isinstance(self.synonym, list):
-            self.synonym = [self.synonym]
+            self.synonym = [self.synonym] if self.synonym is not None else []
         self.synonym = [v if isinstance(v, LabelType) else LabelType(v) for v in self.synonym]
 
         if not isinstance(self.xref, list):
-            self.xref = [self.xref]
+            self.xref = [self.xref] if self.xref is not None else []
         self.xref = [v if isinstance(v, IriType) else IriType(v) for v in self.xref]
 
         super().__post_init__(**kwargs)
@@ -3668,7 +3668,7 @@ class GeneGroupingMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.has_gene_or_gene_product, list):
-            self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
+            self.has_gene_or_gene_product = [self.has_gene_or_gene_product] if self.has_gene_or_gene_product is not None else []
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
@@ -3697,7 +3697,7 @@ class GeneFamily(MolecularEntity):
             self.id = GeneFamilyId(self.id)
 
         if not isinstance(self.has_gene_or_gene_product, list):
-            self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
+            self.has_gene_or_gene_product = [self.has_gene_or_gene_product] if self.has_gene_or_gene_product is not None else []
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
@@ -3791,7 +3791,7 @@ class SequenceVariant(GenomicEntity):
             self.id = SequenceVariantId(self.id)
 
         if not isinstance(self.has_gene, list):
-            self.has_gene = [self.has_gene]
+            self.has_gene = [self.has_gene] if self.has_gene is not None else []
         self.has_gene = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene]
 
         if self.has_biological_sequence is not None and not isinstance(self.has_biological_sequence, BiologicalSequence):
@@ -4161,7 +4161,7 @@ class GenomicBackgroundExposure(GenomicEntity):
             self.timepoint = TimeType(self.timepoint)
 
         if not isinstance(self.has_gene_or_gene_product, list):
-            self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
+            self.has_gene_or_gene_product = [self.has_gene_or_gene_product] if self.has_gene_or_gene_product is not None else []
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
@@ -4368,7 +4368,7 @@ class ComplexChemicalExposure(ChemicalExposure):
             self.id = ComplexChemicalExposureId(self.id)
 
         if not isinstance(self.has_constituent, list):
-            self.has_constituent = [self.has_constituent]
+            self.has_constituent = [self.has_constituent] if self.has_constituent is not None else []
         self.has_constituent = [v if isinstance(v, ChemicalSubstanceId) else ChemicalSubstanceId(v) for v in self.has_constituent]
 
         super().__post_init__(**kwargs)
@@ -4426,7 +4426,7 @@ class DrugToGeneInteractionExposure(DrugExposure):
             self.id = DrugToGeneInteractionExposureId(self.id)
 
         if not isinstance(self.has_gene_or_gene_product, list):
-            self.has_gene_or_gene_product = [self.has_gene_or_gene_product]
+            self.has_gene_or_gene_product = [self.has_gene_or_gene_product] if self.has_gene_or_gene_product is not None else []
         self.has_gene_or_gene_product = [v if isinstance(v, GeneId) else GeneId(v) for v in self.has_gene_or_gene_product]
 
         super().__post_init__(**kwargs)
@@ -4459,15 +4459,15 @@ class Treatment(NamedThing):
             self.id = TreatmentId(self.id)
 
         if not isinstance(self.has_drug, list):
-            self.has_drug = [self.has_drug]
+            self.has_drug = [self.has_drug] if self.has_drug is not None else []
         self.has_drug = [v if isinstance(v, DrugId) else DrugId(v) for v in self.has_drug]
 
         if not isinstance(self.has_device, list):
-            self.has_device = [self.has_device]
+            self.has_device = [self.has_device] if self.has_device is not None else []
         self.has_device = [v if isinstance(v, DeviceId) else DeviceId(v) for v in self.has_device]
 
         if not isinstance(self.has_procedure, list):
-            self.has_procedure = [self.has_procedure]
+            self.has_procedure = [self.has_procedure] if self.has_procedure is not None else []
         self.has_procedure = [v if isinstance(v, ProcedureId) else ProcedureId(v) for v in self.has_procedure]
 
         if self.timepoint is not None and not isinstance(self.timepoint, TimeType):
@@ -4884,18 +4884,18 @@ class Association(Entity):
             self.negated = Bool(self.negated)
 
         if not isinstance(self.qualifiers, list):
-            self.qualifiers = [self.qualifiers]
+            self.qualifiers = [self.qualifiers] if self.qualifiers is not None else []
         self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**v) for v in self.qualifiers]
 
         if not isinstance(self.publications, list):
-            self.publications = [self.publications]
+            self.publications = [self.publications] if self.publications is not None else []
         self.publications = [v if isinstance(v, PublicationId) else PublicationId(v) for v in self.publications]
 
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
 
         if not isinstance(self.category, list):
-            self.category = [self.category]
+            self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, CategoryType) else CategoryType(v) for v in self.category]
 
         super().__post_init__(**kwargs)
@@ -4942,7 +4942,7 @@ class ContributorAssociation(Association):
             self.object = AgentId(self.object)
 
         if not isinstance(self.qualifiers, list):
-            self.qualifiers = [self.qualifiers]
+            self.qualifiers = [self.qualifiers] if self.qualifiers is not None else []
         self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**v) for v in self.qualifiers]
 
         super().__post_init__(**kwargs)
@@ -5542,7 +5542,7 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
             self.predicate = PredicateType(self.predicate)
 
         if not isinstance(self.catalyst_qualifier, list):
-            self.catalyst_qualifier = [self.catalyst_qualifier]
+            self.catalyst_qualifier = [self.catalyst_qualifier] if self.catalyst_qualifier is not None else []
         self.catalyst_qualifier = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**v) for v in self.catalyst_qualifier]
 
         super().__post_init__(**kwargs)

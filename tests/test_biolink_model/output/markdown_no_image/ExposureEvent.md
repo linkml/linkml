@@ -37,7 +37,7 @@ URI: [biolink:ExposureEvent](https://w3id.org/biolink/vocab/ExposureEvent)
 
  * [timepoint](timepoint.md)  <sub>OPT</sub>
      * Description: a point in time
-     * range: [TimeType](types/TimeType.md)
+     * Range: [TimeType](types/TimeType.md)
 
 ## Other properties
 

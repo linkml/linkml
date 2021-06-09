@@ -17,5 +17,5 @@ URI: [https://example.com/test62/NamedThing](https://example.com/test62/NamedThi
 
 ### Own
 
- * [category](category.md)  <sub>1..*</sub>
-     * range: [IriType](types/IriType.md)
+ * [category](category.md)  <sub>1..\*</sub>
+     * Range: [IriType](types/IriType.md)

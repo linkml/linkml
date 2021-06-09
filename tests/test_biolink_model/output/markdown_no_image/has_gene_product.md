@@ -9,7 +9,7 @@ URI: [biolink:has_gene_product](https://w3id.org/biolink/vocab/has_gene_product)
 
 ## Domain and Range
 
-[Gene](Gene.md) &#8594;  <sub>0..*</sub> [GeneProductMixin](GeneProductMixin.md)
+[Gene](Gene.md) &#8594;  <sub>0..\*</sub> [GeneProductMixin](GeneProductMixin.md)
 
 ## Parents
 

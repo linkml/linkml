@@ -26,9 +26,9 @@ URI: [http://example.org/sample/example1/HasMessagesChild](http://example.org/sa
 ### Own
 
  * [has child messages](has_child_messages.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)
 
 ### Inherited from has messages class:
 
  * [has messages](has_messages.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)

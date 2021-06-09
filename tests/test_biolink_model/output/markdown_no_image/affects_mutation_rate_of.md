@@ -9,7 +9,7 @@ URI: [biolink:affects_mutation_rate_of](https://w3id.org/biolink/vocab/affects_m
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..\*</sub> [GenomicEntity](GenomicEntity.md)
 
 ## Parents
 

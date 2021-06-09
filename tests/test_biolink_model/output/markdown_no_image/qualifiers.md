@@ -9,7 +9,7 @@ URI: [biolink:qualifiers](https://w3id.org/biolink/vocab/qualifiers)
 
 ## Domain and Range
 
-[Association](Association.md) &#8594;  <sub>0..*</sub> [OntologyClass](OntologyClass.md)
+[Association](Association.md) &#8594;  <sub>0..\*</sub> [OntologyClass](OntologyClass.md)
 
 ## Parents
 

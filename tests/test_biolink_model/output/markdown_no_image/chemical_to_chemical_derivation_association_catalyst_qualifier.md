@@ -9,7 +9,7 @@ URI: [biolink:chemical_to_chemical_derivation_association_catalyst_qualifier](ht
 
 ## Domain and Range
 
-[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md) &#8594;  <sub>0..*</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
+[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md) &#8594;  <sub>0..\*</sub> [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
 
 ## Parents
 

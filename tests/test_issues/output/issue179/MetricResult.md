@@ -26,15 +26,15 @@ URI: [http://example.org/sample/example1/MetricResult](http://example.org/sample
 ### Own
 
  * [description](description.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)
  * [evaluated using](evaluated_using.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)
  * [has source](has_source.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)
  * [has status](has_status.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)
 
 ### Mixed in from has messages class:
 
  * [has messages](has_messages.md)  <sub>OPT</sub>
-     * range: [String](types/String.md)
+     * Range: [String](types/String.md)

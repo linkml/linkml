@@ -9,7 +9,7 @@ URI: [biolink:has_sequence_location](https://w3id.org/biolink/vocab/has_sequence
 
 ## Domain and Range
 
-[GenomicEntity](GenomicEntity.md) &#8594;  <sub>0..*</sub> [GenomicEntity](GenomicEntity.md)
+[GenomicEntity](GenomicEntity.md) &#8594;  <sub>0..\*</sub> [GenomicEntity](GenomicEntity.md)
 
 ## Parents
 

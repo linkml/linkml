@@ -15,7 +15,7 @@ URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
 ## Referenced by class
 
- *  **[Extensible](Extensible.md)** *[extensions](extensions.md)*  <sub>0..*</sub>  **[Extension](Extension.md)**
+ *  **[Extensible](Extensible.md)** *[extensions](extensions.md)*  <sub>0..\*</sub>  **[Extension](Extension.md)**
 
 ## Attributes
 
@@ -24,10 +24,10 @@ URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
  * [extension➞tag](extension_tag.md)  <sub>REQ</sub>
      * Description: a tag associated with an extension
-     * range: [Uriorcurie](Uriorcurie.md)
+     * Range: [Uriorcurie](Uriorcurie.md)
  * [extension➞value](extension_value.md)  <sub>REQ</sub>
      * Description: the actual annotation
-     * range: [String](String.md)
- * [extensions](extensions.md)  <sub>0..*</sub>
+     * Range: [String](String.md)
+ * [extensions](extensions.md)  <sub>0..\*</sub>
      * Description: a tag/text tuple attached to an arbitrary element
-     * range: [Extension](Extension.md)
+     * Range: [Extension](Extension.md)

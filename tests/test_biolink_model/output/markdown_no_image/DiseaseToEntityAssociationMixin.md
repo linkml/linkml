@@ -24,5 +24,5 @@ URI: [biolink:DiseaseToEntityAssociationMixin](https://w3id.org/biolink/vocab/Di
 
  * [disease to entity association mixin➞subject](disease_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
      * Description: disease class
-     * range: [Disease](Disease.md)
+     * Range: [Disease](Disease.md)
      * Example: MONDO:0017314 Ehlers-Danlos syndrome, vascular type

@@ -9,7 +9,7 @@ URI: [biolink:molecular_activity_has_input](https://w3id.org/biolink/vocab/molec
 
 ## Domain and Range
 
-[MolecularActivity](MolecularActivity.md) &#8594;  <sub>0..*</sub> [ChemicalSubstance](ChemicalSubstance.md)
+[MolecularActivity](MolecularActivity.md) &#8594;  <sub>0..\*</sub> [ChemicalSubstance](ChemicalSubstance.md)
 
 ## Parents
 

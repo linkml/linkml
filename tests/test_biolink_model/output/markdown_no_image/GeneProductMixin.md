@@ -31,27 +31,27 @@ URI: [biolink:GeneProductMixin](https://w3id.org/biolink/vocab/GeneProductMixin)
 ## Referenced by class
 
  *  **[GeneToGeneProductRelationship](GeneToGeneProductRelationship.md)** *[gene to gene product relationship➞object](gene_to_gene_product_relationship_object.md)*  <sub>REQ</sub>  **[GeneProductMixin](GeneProductMixin.md)**
- *  **[Gene](Gene.md)** *[has gene product](has_gene_product.md)*  <sub>0..*</sub>  **[GeneProductMixin](GeneProductMixin.md)**
+ *  **[Gene](Gene.md)** *[has gene product](has_gene_product.md)*  <sub>0..\*</sub>  **[GeneProductMixin](GeneProductMixin.md)**
 
 ## Attributes
 
 
 ### Own
 
- * [synonym](synonym.md)  <sub>0..*</sub>
+ * [synonym](synonym.md)  <sub>0..\*</sub>
      * Description: Alternate human-readable names for a thing
-     * range: [LabelType](types/LabelType.md)
+     * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
- * [xref](xref.md)  <sub>0..*</sub>
+ * [xref](xref.md)  <sub>0..\*</sub>
      * Description: Alternate CURIEs for a thing
-     * range: [IriType](types/IriType.md)
+     * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal)
 
 ### Inherited from gene or gene product:
 
  * [macromolecular machine mixin➞name](macromolecular_machine_mixin_name.md)  <sub>OPT</sub>
      * Description: genes are typically designated by a short symbol and a full name. We map the symbol to the default display name and use an additional slot for full name
-     * range: [SymbolType](types/SymbolType.md)
+     * Range: [SymbolType](types/SymbolType.md)
 
 ## Other properties
 

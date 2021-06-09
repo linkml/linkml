@@ -9,7 +9,7 @@ URI: [linkml:class_definition_mixins](https://w3id.org/linkml/class_definition_m
 
 ## Domain and Range
 
-[ClassDefinition](ClassDefinition.md) &#8594;  <sub>0..*</sub> [ClassDefinition](ClassDefinition.md)
+[ClassDefinition](ClassDefinition.md) &#8594;  <sub>0..\*</sub> [ClassDefinition](ClassDefinition.md)
 
 ## Parents
 

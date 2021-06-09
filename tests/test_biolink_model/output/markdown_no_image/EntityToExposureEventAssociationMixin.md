@@ -22,4 +22,4 @@ URI: [biolink:EntityToExposureEventAssociationMixin](https://w3id.org/biolink/vo
 ### Own
 
  * [entity to exposure event association mixin➞object](entity_to_exposure_event_association_mixin_object.md)  <sub>REQ</sub>
-     * range: [ExposureEvent](ExposureEvent.md)
+     * Range: [ExposureEvent](ExposureEvent.md)

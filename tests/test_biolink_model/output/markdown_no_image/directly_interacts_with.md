@@ -9,7 +9,7 @@ URI: [biolink:directly_interacts_with](https://w3id.org/biolink/vocab/directly_i
 
 ## Domain and Range
 
-[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..*</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntity](MolecularEntity.md) &#8594;  <sub>0..\*</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:ameliorates](https://w3id.org/biolink/vocab/ameliorates)
 
 ## Domain and Range
 
-[BiologicalEntity](BiologicalEntity.md) &#8594;  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[BiologicalEntity](BiologicalEntity.md) &#8594;  <sub>0..\*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 

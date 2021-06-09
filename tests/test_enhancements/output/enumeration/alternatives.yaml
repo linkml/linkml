@@ -1,0 +1,405 @@
+name: alternatives
+description: Enumeration alternatives
+id: http://example.org/test/alternatives
+imports:
+- linkml:types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  evidence:
+    prefix_prefix: evidence
+    prefix_reference: http://example.org/test/evidence/
+  CLUE:
+    prefix_prefix: CLUE
+    prefix_reference: http://ontologies-r.us/clue/
+  CS:
+    prefix_prefix: CS
+    prefix_reference: http://ontologies-r.us/codesystems/
+default_prefix: evidence
+default_range: string
+subsets:
+  hpo_options:
+    name: hpo_options
+    definition_uri: http://example.org/test/evidence/HpoOptions
+    description: Subset of enumerations that include HPO references
+    from_schema: http://example.org/test/alternatives
+  test_subset:
+    name: test_subset
+    definition_uri: http://example.org/test/evidence/TestSubset
+    description: Another subset
+    from_schema: http://example.org/test/alternatives
+types:
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDTime
+    uri: xsd:dateTime
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    description: a complete URI
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    comments:
+    - Used for inheritence and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+enums:
+  open_enum:
+    name: open_enum
+    definition_uri: http://example.org/test/evidence/OpenEnum
+    description: Baseline enumeration -- simple code/value pairs, where the value
+      (description) is optional
+    from_schema: http://example.org/test/alternatives
+    permissible_values:
+      a:
+        text: a
+        description: top
+      b:
+        text: b
+        description: middle
+      c:
+        text: c
+        description: bottom
+      d:
+        text: d
+  constrained_enum_2:
+    name: constrained_enum_2
+    definition_uri: http://example.org/test/evidence/ConstrainedEnum2
+    description: All codes from the version of HPO labeled "current" by the referenced
+      service
+    in_subset:
+    - hpo_options
+    from_schema: http://example.org/test/alternatives
+    code_set: CS:HPO
+    pv_formula:
+      text: CODE
+      description: The permissible values are the set of possible codes in the code
+        set
+  constrained_enum_3:
+    name: constrained_enum_3
+    definition_uri: http://example.org/test/evidence/ConstrainedEnum3
+    description: All uris from the version of HPO with the tag, "production"
+    in_subset:
+    - hpo_options
+    from_schema: http://example.org/test/alternatives
+    code_set: CS:HPO
+    code_set_tag: production
+    pv_formula:
+      text: URI
+      description: The permissible values are the set of code URIs in the code set
+  constrained_enum_4:
+    name: constrained_enum_4
+    definition_uri: http://example.org/test/evidence/ConstrainedEnum4
+    description: All curies from version 1.17 of HPO
+    in_subset:
+    - hpo_options
+    from_schema: http://example.org/test/alternatives
+    code_set: CS:HPO
+    code_set_version: '1.17'
+    pv_formula:
+      text: CURIE
+      description: The permissible values are the set of CURIES in the code set
+  constrained_enum_5:
+    name: constrained_enum_5
+    definition_uri: http://example.org/test/evidence/ConstrainedEnum5
+    description: All fhir codings from the "current" version of the CLUE "mustard
+      options" value set
+    from_schema: http://example.org/test/alternatives
+    code_set: CLUE:mustard_options
+    pv_formula:
+      text: FHIR_CODING
+      description: The permissible values are the set of FHIR coding elements derived
+        from the code set
+  constrained_enum_6:
+    name: constrained_enum_6
+    definition_uri: http://example.org/test/evidence/ConstrainedEnum6
+    description: All codes from SNOMED CT INTL 2020-7-31 or greater
+    from_schema: http://example.org/test/alternatives
+    code_set: CS:SCT
+    code_set_version: '>=2020-7-31'
+    pv_formula:
+      text: CODE
+      description: The permissible values are the set of possible codes in the code
+        set
+  constrained_evidence:
+    name: constrained_evidence
+    definition_uri: http://example.org/test/evidence/ConstrainedEvidence
+    description: Permissible values for CLUE evidence fragments
+    from_schema: http://example.org/test/alternatives
+    code_set: clue_answers
+    permissible_values:
+      IEA:
+        text: IEA
+        description: Colonel Mustard in the Ballroom
+      ISS:
+        text: ISS
+        description: Mrs. Peacock with the Dagger
+        meaning: CLUE:1173
+  mapped_evidence:
+    name: mapped_evidence
+    definition_uri: http://example.org/test/evidence/MappedEvidence
+    description: Permissible values that draw directly from the code set
+    in_subset:
+    - test_subset
+    from_schema: http://example.org/test/alternatives
+    code_set: clue_answers
+    pv_formula:
+      text: URI
+      description: The permissible values are the set of code URIs in the code set
+slots:
+  allEnums__entry_name:
+    name: allEnums__entry_name
+    description: Name of the particular enum permutation
+    from_schema: http://example.org/test/alternatives
+    range: string
+    slot_uri: evidence:entry_name
+    required: true
+    identifier: true
+    alias: entry_name
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_1:
+    name: allEnums__code_1
+    from_schema: http://example.org/test/alternatives
+    range: open_enum
+    slot_uri: evidence:code_1
+    multivalued: true
+    required: true
+    alias: code_1
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_2:
+    name: allEnums__code_2
+    from_schema: http://example.org/test/alternatives
+    range: constrained_enum_2
+    slot_uri: evidence:code_2
+    alias: code_2
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_3:
+    name: allEnums__code_3
+    from_schema: http://example.org/test/alternatives
+    range: constrained_enum_3
+    slot_uri: evidence:code_3
+    alias: code_3
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_4:
+    name: allEnums__code_4
+    from_schema: http://example.org/test/alternatives
+    range: constrained_enum_4
+    slot_uri: evidence:code_4
+    alias: code_4
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_5:
+    name: allEnums__code_5
+    from_schema: http://example.org/test/alternatives
+    range: constrained_enum_4
+    slot_uri: evidence:code_5
+    alias: code_5
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_6:
+    name: allEnums__code_6
+    from_schema: http://example.org/test/alternatives
+    range: constrained_enum_4
+    slot_uri: evidence:code_6
+    alias: code_6
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_7:
+    name: allEnums__code_7
+    from_schema: http://example.org/test/alternatives
+    range: constrained_evidence
+    slot_uri: evidence:code_7
+    alias: code_7
+    owner: all_enums
+    domain_of:
+    - all_enums
+  allEnums__code_8:
+    name: allEnums__code_8
+    from_schema: http://example.org/test/alternatives
+    range: mapped_evidence
+    slot_uri: evidence:code_8
+    alias: code_8
+    owner: all_enums
+    domain_of:
+    - all_enums
+classes:
+  all_enums:
+    name: all_enums
+    definition_uri: http://example.org/test/evidence/AllEnums
+    description: A class that incorporates all of the enumeration examples above
+    from_schema: http://example.org/test/alternatives
+    slots:
+    - allEnums__entry_name
+    - allEnums__code_1
+    - allEnums__code_2
+    - allEnums__code_3
+    - allEnums__code_4
+    - allEnums__code_5
+    - allEnums__code_6
+    - allEnums__code_7
+    - allEnums__code_8
+    attributes:
+      entry_name:
+        name: entry_name
+        description: Name of the particular enum permutation
+        identifier: true
+      code_1:
+        name: code_1
+        range: open_enum
+        multivalued: true
+        required: true
+      code_2:
+        name: code_2
+        range: constrained_enum_2
+      code_3:
+        name: code_3
+        range: constrained_enum_3
+      code_4:
+        name: code_4
+        range: constrained_enum_4
+      code_5:
+        name: code_5
+        range: constrained_enum_4
+      code_6:
+        name: code_6
+        range: constrained_enum_4
+      code_7:
+        name: code_7
+        range: constrained_evidence
+      code_8:
+        name: code_8
+        range: mapped_evidence
+    class_uri: evidence:AllEnums
+metamodel_version: 1.7.0
+source_file: alternatives.yaml
+source_file_date: Wed Jun  9 21:45:31 2021
+source_file_size: 2692
+generation_date: 2021-06-09 21:49

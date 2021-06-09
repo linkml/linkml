@@ -30,4 +30,4 @@ URI: [biolink:ChemicalToEntityAssociationMixin](https://w3id.org/biolink/vocab/C
 
  * [chemical to entity association mixin➞subject](chemical_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
      * Description: the chemical substance or entity that is an interactor
-     * range: [ChemicalSubstance](ChemicalSubstance.md)
+     * Range: [ChemicalSubstance](ChemicalSubstance.md)

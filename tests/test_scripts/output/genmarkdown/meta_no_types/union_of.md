@@ -9,7 +9,7 @@ URI: [linkml:union_of](https://w3id.org/linkml/union_of)
 
 ## Domain and Range
 
-[ClassDefinition](ClassDefinition.md) &#8594;  <sub>0..*</sub> [ClassDefinition](ClassDefinition.md)
+[ClassDefinition](ClassDefinition.md) &#8594;  <sub>0..\*</sub> [ClassDefinition](ClassDefinition.md)
 
 ## Parents
 

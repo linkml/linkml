@@ -33,25 +33,25 @@ URI: [biolink:EntityToPhenotypicFeatureAssociationMixin](https://w3id.org/biolin
 
  * [entity to phenotypic feature association mixin➞description](entity_to_phenotypic_feature_association_mixin_description.md)  <sub>OPT</sub>
      * Description: A description of specific aspects of this phenotype, not otherwise covered by the phenotype ontology class
-     * range: [NarrativeText](types/NarrativeText.md)
+     * Range: [NarrativeText](types/NarrativeText.md)
  * [entity to phenotypic feature association mixin➞object](entity_to_phenotypic_feature_association_mixin_object.md)  <sub>REQ</sub>
      * Description: phenotypic class
-     * range: [PhenotypicFeature](PhenotypicFeature.md)
+     * Range: [PhenotypicFeature](PhenotypicFeature.md)
      * Example: HP:0002487 Hyperkinesis
      * Example: WBPhenotype:0000180 axon morphology variant
      * Example: MP:0001569 abnormal circulating bilirubin level
  * [sex qualifier](sex_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state whether the association is specific to a particular sex.
-     * range: [BiologicalSex](BiologicalSex.md)
+     * Range: [BiologicalSex](BiologicalSex.md)
 
 ### Inherited from entity to feature or disease qualifiers mixin:
 
  * [frequency qualifier](frequency_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state how frequent the phenotype is observed in the subject
-     * range: [FrequencyValue](types/FrequencyValue.md)
+     * Range: [FrequencyValue](types/FrequencyValue.md)
  * [onset qualifier](onset_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state when the phenotype appears is in the subject
-     * range: [Onset](Onset.md)
+     * Range: [Onset](Onset.md)
  * [severity qualifier](severity_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state how severe the phenotype is in the subject
-     * range: [SeverityValue](SeverityValue.md)
+     * Range: [SeverityValue](SeverityValue.md)

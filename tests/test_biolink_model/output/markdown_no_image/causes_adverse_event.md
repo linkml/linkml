@@ -9,7 +9,7 @@ URI: [biolink:causes_adverse_event](https://w3id.org/biolink/vocab/causes_advers
 
 ## Domain and Range
 
-[Drug](Drug.md) &#8594;  <sub>0..*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
+[Drug](Drug.md) &#8594;  <sub>0..\*</sub> [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)
 
 ## Parents
 

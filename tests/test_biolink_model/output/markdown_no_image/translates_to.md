@@ -9,7 +9,7 @@ URI: [biolink:translates_to](https://w3id.org/biolink/vocab/translates_to)
 
 ## Domain and Range
 
-[Transcript](Transcript.md) &#8594;  <sub>0..*</sub> [Protein](Protein.md)
+[Transcript](Transcript.md) &#8594;  <sub>0..\*</sub> [Protein](Protein.md)
 
 ## Parents
 

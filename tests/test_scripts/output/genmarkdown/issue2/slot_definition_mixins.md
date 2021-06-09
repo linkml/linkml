@@ -9,7 +9,7 @@ URI: [linkml:slot_definition_mixins](https://w3id.org/linkml/slot_definition_mix
 
 ## Domain and Range
 
-slot_definition &#8594;  <sub>0..*</sub> slot_definition
+slot_definition &#8594;  <sub>0..\*</sub> slot_definition
 
 ## Parents
 

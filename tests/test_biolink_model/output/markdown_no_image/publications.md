@@ -9,7 +9,7 @@ URI: [biolink:publications](https://w3id.org/biolink/vocab/publications)
 
 ## Domain and Range
 
-[Association](Association.md) &#8594;  <sub>0..*</sub> [Publication](Publication.md)
+[Association](Association.md) &#8594;  <sub>0..\*</sub> [Publication](Publication.md)
 
 ## Parents
 

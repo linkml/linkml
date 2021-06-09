@@ -1,5 +1,5 @@
 # Auto generated from resourcedescription.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-09 21:49
 # Schema: resourcedescription
 #
 # id: https://hotecosystem.org/tccm/resourcedescription
@@ -503,14 +503,14 @@ class ResourceDescription(YAMLRoot):
             self.formalName = str(self.formalName)
 
         if not isinstance(self.keyword, list):
-            self.keyword = [self.keyword]
+            self.keyword = [self.keyword] if self.keyword is not None else []
         self.keyword = [v if isinstance(v, str) else str(v) for v in self.keyword]
 
         if self.resourceSynopsis is not None and not isinstance(self.resourceSynopsis, str):
             self.resourceSynopsis = str(self.resourceSynopsis)
 
         if not isinstance(self.additionalDocumentation, list):
-            self.additionalDocumentation = [self.additionalDocumentation]
+            self.additionalDocumentation = [self.additionalDocumentation] if self.additionalDocumentation is not None else []
         self.additionalDocumentation = [v if isinstance(v, PersistentURI) else PersistentURI(v) for v in self.additionalDocumentation]
 
         if self.rights is not None and not isinstance(self.rights, str):
@@ -581,7 +581,7 @@ class AbstractResourceDescription(ResourceDescription):
             self.releaseDocumentation = str(self.releaseDocumentation)
 
         if not isinstance(self.releaseFormat, list):
-            self.releaseFormat = [self.releaseFormat]
+            self.releaseFormat = [self.releaseFormat] if self.releaseFormat is not None else []
         self.releaseFormat = [v if isinstance(v, SourceAndNotation) else SourceAndNotation(**v) for v in self.releaseFormat]
 
         super().__post_init__(**kwargs)

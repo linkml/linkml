@@ -9,7 +9,7 @@ URI: [biolink:process_regulated_by_process](https://w3id.org/biolink/vocab/proce
 
 ## Domain and Range
 
-[Occurrent](Occurrent.md) &#8594;  <sub>0..*</sub> [Occurrent](Occurrent.md)
+[Occurrent](Occurrent.md) &#8594;  <sub>0..\*</sub> [Occurrent](Occurrent.md)
 
 ## Parents
 

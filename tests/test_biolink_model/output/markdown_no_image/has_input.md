@@ -9,7 +9,7 @@ URI: [biolink:has_input](https://w3id.org/biolink/vocab/has_input)
 
 ## Domain and Range
 
-[Occurrent](Occurrent.md) &#8594;  <sub>0..*</sub> [NamedThing](NamedThing.md)
+[Occurrent](Occurrent.md) &#8594;  <sub>0..\*</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

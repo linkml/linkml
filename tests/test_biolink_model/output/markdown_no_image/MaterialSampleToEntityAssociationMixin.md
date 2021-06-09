@@ -23,4 +23,4 @@ URI: [biolink:MaterialSampleToEntityAssociationMixin](https://w3id.org/biolink/v
 
  * [material sample to entity association mixin➞subject](material_sample_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
      * Description: the material sample being described
-     * range: [MaterialSample](MaterialSample.md)
+     * Range: [MaterialSample](MaterialSample.md)

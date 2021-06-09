@@ -27,4 +27,4 @@ URI: [biolink:FrequencyQualifierMixin](https://w3id.org/biolink/vocab/FrequencyQ
 
  * [frequency qualifier](frequency_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state how frequent the phenotype is observed in the subject
-     * range: [FrequencyValue](types/FrequencyValue.md)
+     * Range: [FrequencyValue](types/FrequencyValue.md)

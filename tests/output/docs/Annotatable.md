@@ -23,6 +23,6 @@ URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)
 
 ### Own
 
- * [annotations](annotations.md)  <sub>0..*</sub>
+ * [annotations](annotations.md)  <sub>0..\*</sub>
      * Description: a collection of tag/text tuples with the semantics of OWL Annotation
-     * range: [Annotation](Annotation.md)
+     * Range: [Annotation](Annotation.md)

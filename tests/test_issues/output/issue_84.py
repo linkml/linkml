@@ -1,5 +1,5 @@
 # Auto generated from issue_84.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-09 21:49
 # Schema: nmdc_schema
 #
 # id: https://microbiomedata/schema
@@ -95,7 +95,7 @@ class Biosample(YAMLRoot):
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="has raw value", keyed=False)
 
         if not isinstance(self.alternate_identifiers, list):
-            self.alternate_identifiers = [self.alternate_identifiers]
+            self.alternate_identifiers = [self.alternate_identifiers] if self.alternate_identifiers is not None else []
         self.alternate_identifiers = [v if isinstance(v, ElementIdentifier) else ElementIdentifier(v) for v in self.alternate_identifiers]
 
         super().__post_init__(**kwargs)
@@ -118,11 +118,11 @@ class BiosampleProcessing(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.input, list):
-            self.input = [self.input]
+            self.input = [self.input] if self.input is not None else []
         self.input = [v if isinstance(v, BiosampleId) else BiosampleId(v) for v in self.input]
 
         if not isinstance(self.output, list):
-            self.output = [self.output]
+            self.output = [self.output] if self.output is not None else []
         self.output = [v if isinstance(v, BiosampleId) else BiosampleId(v) for v in self.output]
 
         super().__post_init__(**kwargs)
@@ -190,7 +190,7 @@ class Characteristic(YAMLRoot):
             self.description = str(self.description)
 
         if not isinstance(self.alternate_identifiers, list):
-            self.alternate_identifiers = [self.alternate_identifiers]
+            self.alternate_identifiers = [self.alternate_identifiers] if self.alternate_identifiers is not None else []
         self.alternate_identifiers = [v if isinstance(v, ElementIdentifier) else ElementIdentifier(v) for v in self.alternate_identifiers]
 
         super().__post_init__(**kwargs)
