@@ -104,13 +104,13 @@ class EnumerationTestCase(TestEnvironmentTestCase):
 
         module = compile_python(env.expected_path(python_name))
         c1 = module.PositionalRecord('my location', 'a')
-        print(str(c1))
-        print(str(c1.position))
-        print(repr(c1.position))
+        self.assertEqual("PositionalRecord(id='my location', position=(text='a', description='top'))", str(c1))
+        self.assertEqual("a: top", str(c1.position))
+        self.assertEqual("(text='a', description='top')", repr(c1.position))
         try:
             c2 = module.PositionalRecord('your location', 'z')
         except ValueError as e:
-            print(e)
+            self.assertEqual("Unknown OpenEnum enumeration code: z", str(e))
         x = module.PositionalRecord("117493", "c")
         self.assertEqual('c: bottom', str(x.position))
         self.assertEqual("PositionalRecord(id='117493', position=(text='c', description='bottom'))", repr(x))

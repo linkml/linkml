@@ -30,7 +30,7 @@ python_types_entries = {
          "Strings(mand_string='s1', mand_multi_string=['s21', 's22'], opt_string='s3', opt_multi_string=['s41', 's42'])", None],
         [(), {}, "mand_string must be supplied", ValueError],
         [('s1',), {}, "mand_multi_string must be supplied", ValueError],
-        [('s1',[]), {}, "mand_multi_string must be a non-empty list", ValueError]
+        [('s1',[]), {}, "mand_multi_string must be supplied", ValueError]
     ],
     "Booleans": [
         [('True', "false", 1, [1, 0, True, False]), {},
@@ -70,6 +70,8 @@ class PythonOutputTestCase(TestEnvironmentTestCase):
                                  comparator=lambda expected, actual: compare_python(expected, actual, env.expected_path(python_name)), value_is_returned=True)
 
         module = compile_python(env.expected_path(python_name))
+        from tests.test_enhancements.output.python_generation.python_types import Strings
+        self.check_expecteds(Strings, "Strings")
         self.check_expecteds(module.Strings, "Strings")
         self.check_expecteds(module.Booleans, "Booleans")
         self.check_expecteds(module.Integers, "Integers")

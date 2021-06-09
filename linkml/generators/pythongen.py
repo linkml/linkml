@@ -657,14 +657,14 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 # TODO: JsonObj([...]) will not be treated correctly here.
                 sn = f'self.{aliased_slot_name}'
                 rlines.append(f'if not isinstance({sn}, list):')
-                rlines.append(f'\t{sn} = [{sn}]')
+                rlines.append(f'\t{sn} = [{sn}] if {sn} is not None else []')
                 rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**v) for v in {sn}]')
         else:
             # Multivalued and not inlined
             # TODO: JsonObj([...]) will fail here as well
             sn = f'self.{aliased_slot_name}'
             rlines.append(f'if not isinstance({sn}, list):')
-            rlines.append(f'\t{sn} = [{sn}]')
+            rlines.append(f'\t{sn} = [{sn}] if {sn} is not None else []')
             rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) '
                           f'else {base_type_name}(v) for v in {sn}]')
         if rlines:
