@@ -1,7 +1,6 @@
 id: http://example.org/test/alternatives
 name: alternatives
 description: Enumeration alternatives
-requires: ~=1.5.8
 
 prefixes:
   linkml: https://w3id.org/linkml/
@@ -74,7 +73,7 @@ enums:
   mapped_evidence:
     description: Permissible values that draw directly from the code set
     code_set: clue_answers
-    pv_formula: IRI
+    pv_formula: URI
     in_subset: test_subset
 
 

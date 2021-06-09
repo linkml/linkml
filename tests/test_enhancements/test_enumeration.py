@@ -65,9 +65,9 @@ class EnumerationTestCase(TestEnvironmentTestCase):
 
         self._check_error("enum_error_6a", 'Slot: "classError1__slot_1" enumerations cannot be inlined')
 
-        self._check_error("enum_error_6b", 'Slot: "classError1__slot_1" enumerations cannot be inlinedz')
+        self._check_error("enum_error_6b", 'Slot: "classError1__slot_1" enumerations cannot be inlined')
 
-        self._check_error("enum_error_7", 'Slot: "Unknown PvFormulaOptions value: LABEL')
+        self._check_error("enum_error_7", 'Unknown PvFormulaOptions enumeration code: LABEL')
 
     @unittest.skipIf(True, "Enable this when we get the emitter updated to include the location of the error")
     def test_enum_valueerror(self):
