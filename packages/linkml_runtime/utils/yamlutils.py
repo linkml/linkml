@@ -304,6 +304,13 @@ class TypedNode:
         return '' if loc_str is None or not hasattr(loc_str, "_loc" or not callable(loc_str._loc)) else\
             (loc_str._loc() + suffix)
 
+    # ==================
+    # Error intercepts
+    # ==================
+    def MissingRequiredField(self, field_name: str, field_value: Any) -> None:
+        """ Generic loader error handler """
+        raise ValueError(f"{field_name} must be supplied")
+
 
 class extended_str(str, TypedNode):
     def concat(self, *items) -> "extended_str":
