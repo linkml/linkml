@@ -1,5 +1,5 @@
 # Auto generated from notebook_model_4.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: simple
 #
 # id: http://example.org/test/simple
@@ -51,12 +51,12 @@ class FavoriteColor(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, FavoriteColorId):
             self.id = FavoriteColorId(self.id)
 
         if self._is_empty(self.position):
-            raise ValueError("position must be supplied")
+            self.MissingRequiredField("position")
         if not isinstance(self.position, Colors):
             self.position = Colors(self.position)
 

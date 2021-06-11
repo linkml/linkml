@@ -1,5 +1,5 @@
 # Auto generated from evidence.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: evidence
 #
 # id: http://example.org/test/evidence
@@ -57,12 +57,12 @@ class Evidencer(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, EvidencerName):
             self.name = EvidencerName(self.name)
 
         if self._is_empty(self.code):
-            raise ValueError("code must be supplied")
+            self.MissingRequiredField("code")
         if not isinstance(self.code, Evidence):
             self.code = Evidence(self.code)
 

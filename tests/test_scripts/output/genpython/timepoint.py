@@ -1,5 +1,5 @@
 # Auto generated from timepoint.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:50
+# Generation date: 2021-06-11 19:13
 # Schema: timepoint
 #
 # id: http://example.org/tests/timepoint
@@ -67,7 +67,7 @@ class GeographicLocation(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.k):
-            raise ValueError("k must be supplied")
+            self.MissingRequiredField("k")
         if not isinstance(self.k, GeographicLocationK):
             self.k = GeographicLocationK(self.k)
 
@@ -88,7 +88,7 @@ class GeographicLocationAtTime(GeographicLocation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.k):
-            raise ValueError("k must be supplied")
+            self.MissingRequiredField("k")
         if not isinstance(self.k, GeographicLocationAtTimeK):
             self.k = GeographicLocationAtTimeK(self.k)
 

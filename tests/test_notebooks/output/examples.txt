@@ -88,12 +88,12 @@ class Person(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PersonId):
             self.id = PersonId(self.id)
 
         if self._is_empty(self.last_name):
-            raise ValueError("last_name must be supplied")
+            self.MissingRequiredField("last_name")
         if not isinstance(self.last_name, str):
             self.last_name = str(self.last_name)
 
@@ -132,12 +132,12 @@ class FriendlyPerson(Person):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, FriendlyPersonId):
             self.id = FriendlyPersonId(self.id)
 
         if self._is_empty(self.knows):
-            raise ValueError("knows must be supplied")
+            self.MissingRequiredField("knows")
         if not isinstance(self.knows, list):
             self.knows = [self.knows] if self.knows is not None else []
         self.knows = [v if isinstance(v, PersonId) else PersonId(v) for v in self.knows]

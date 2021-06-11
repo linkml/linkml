@@ -1,5 +1,5 @@
 # Auto generated from issue_80.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-11 19:12
 # Schema: Issue_80_test_case
 #
 # id: http://example.org/issues/80
@@ -63,12 +63,12 @@ class Person(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PersonId):
             self.id = PersonId(self.id)
 
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, str):
             self.name = str(self.name)
 

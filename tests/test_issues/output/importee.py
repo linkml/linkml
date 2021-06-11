@@ -1,5 +1,5 @@
 # Auto generated from importee.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-11 19:12
 # Schema: importee
 #
 # id: https://example.org/importee
@@ -63,12 +63,12 @@ class Base(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BaseId):
             self.id = BaseId(self.id)
 
         if self._is_empty(self.value):
-            raise ValueError("value must be supplied")
+            self.MissingRequiredField("value")
         if not isinstance(self.value, str):
             self.value = str(self.value)
 

@@ -1,5 +1,5 @@
 # Auto generated from pattern_1.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: pattern_1
 #
 # id: http://example.org/test/pattern_1
@@ -56,7 +56,7 @@ class DiskDevice(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.label):
-            raise ValueError("label must be supplied")
+            self.MissingRequiredField("label")
         if not isinstance(self.label, DiskDeviceLabel):
             self.label = DiskDeviceLabel(self.label)
 

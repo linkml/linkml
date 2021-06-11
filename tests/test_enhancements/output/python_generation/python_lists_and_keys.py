@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -78,7 +78,7 @@ class RequiredOneElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, OneElementClass):
             self.v1 = OneElementClass(**self.v1)
 
@@ -123,7 +123,7 @@ class RequiredOneElementRangeList(OptionalOneElementRangeList):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**v) for v in self.v1]
@@ -147,7 +147,7 @@ class RequiredTwoElementRangeList(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, TwoElementClass) else TwoElementClass(**v) for v in self.v1]
@@ -171,7 +171,7 @@ class RequiredThreeElementRangeList(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
@@ -367,7 +367,7 @@ class RequiredIdentifiedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, IdentifiedThreeElementClassName):
             self.v1 = IdentifiedThreeElementClassName(self.v1)
 
@@ -390,7 +390,7 @@ class RequiredIdentifiedThreeElementRangeList(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, IdentifiedThreeElementClassName) else IdentifiedThreeElementClassName(v) for v in self.v1]
@@ -414,7 +414,7 @@ class RequiredKeyedThreeElementRangeList(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, KeyedThreeElementClassName) else KeyedThreeElementClassName(v) for v in self.v1]
@@ -438,7 +438,7 @@ class RequiredInlinedOneElementRange(RequiredOneElementRange):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, OneElementClass):
             self.v1 = OneElementClass(**self.v1)
 
@@ -461,7 +461,7 @@ class RequiredInlinedOneElementRangeList(RequiredOneElementRangeList):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**v) for v in self.v1]
@@ -485,7 +485,7 @@ class RequiredInlinedTwoElementRangeList(RequiredTwoElementRangeList):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, TwoElementClass) else TwoElementClass(**v) for v in self.v1]
@@ -509,7 +509,7 @@ class RequiredInlinedThreeElementRangeList(RequiredThreeElementRangeList):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
@@ -533,7 +533,7 @@ class RequiredInlinedKeyedOneElementRange(OptionalKeyedOneElementRange):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedOneElementClass):
             self.v1 = KeyedOneElementClass(self.v1)
 
@@ -556,7 +556,7 @@ class RequiredInlinedKeyedOneElementRangeList(OptionalKeyedOneElementRangeList):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedOneElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -578,7 +578,7 @@ class RequiredInlinedKeyedTwoElementRange(OptionalKeyedTwoElementRange):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedTwoElementClass):
             self.v1 = KeyedTwoElementClass(self.v1)
 
@@ -601,7 +601,7 @@ class RequiredInlinedKeyedTwoElementRangeList(OptionalKeyedTwoElementRangeList):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedTwoElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -623,7 +623,7 @@ class RequiredInlinedKeyedThreeElementRange(OptionalKeyedThreeElementRange):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedThreeElementClass):
             self.v1 = KeyedThreeElementClass(self.v1)
 
@@ -646,7 +646,7 @@ class RequiredInlinedKeyedThreeElementRangeList(OptionalKeyedThreeElementRangeLi
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedThreeElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -668,7 +668,7 @@ class RequiredInlinedIdentifiedOneElementRangeList(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         self._normalize_inlined_as_dict(slot_name="v1", slot_type=IdentifiedOneElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -728,7 +728,7 @@ class RequiredThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, ThreeElementClass):
             self.v1 = ThreeElementClass(**self.v1)
 
@@ -772,7 +772,7 @@ class RequiredKeyedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedThreeElementClassName):
             self.v1 = KeyedThreeElementClassName(self.v1)
 
@@ -816,7 +816,7 @@ class RequiredInlinedIdentifiedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, IdentifiedThreeElementClass):
             self.v1 = IdentifiedThreeElementClass(self.v1)
 
@@ -860,7 +860,7 @@ class RequiredInlinedAsListIdentifiedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, IdentifiedThreeElementClass):
             self.v1 = IdentifiedThreeElementClass(self.v1)
 
@@ -905,7 +905,7 @@ class RequiredMultivaluedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
@@ -951,7 +951,7 @@ class RequiredMultivaluedIdentifiedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
         self.v1 = [v if isinstance(v, IdentifiedThreeElementClassName) else IdentifiedThreeElementClassName(v) for v in self.v1]
@@ -995,7 +995,7 @@ class RequiredMultivaluedInlinedListKeyedThreeElementRangeList(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         self._normalize_inlined_as_list(slot_name="v1", slot_type=KeyedThreeElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
@@ -1037,7 +1037,7 @@ class RequiredMultivaluedInlinedKeyedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
-            raise ValueError("v1 must be supplied")
+            self.MissingRequiredField("v1")
         self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedThreeElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)

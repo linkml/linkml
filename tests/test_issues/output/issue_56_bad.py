@@ -1,6 +1,6 @@
 # Auto generated from issue_56_bad.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
-# Schema:
+# Generation date: 2021-06-11 19:12
+# Schema: example.com
 #
 # id: http://example.com
 # description:
@@ -68,7 +68,7 @@ class C1(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, C1Id):
             self.id = C1Id(self.id)
 
@@ -89,7 +89,7 @@ class C2(C1):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, C2Id):
             self.id = C2Id(self.id)
 
@@ -113,7 +113,7 @@ class C3(C1):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, C3Id):
             self.id = C3Id(self.id)
 

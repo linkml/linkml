@@ -1,5 +1,5 @@
 # Auto generated from issue_134.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-11 19:12
 # Schema: example1
 #
 # id: http://example.org/sample/example1
@@ -80,7 +80,7 @@ class A(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AId):
             self.id = AId(self.id)
 
@@ -101,7 +101,7 @@ class B(A):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BId):
             self.id = BId(self.id)
 
@@ -125,7 +125,7 @@ class C(B):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CId):
             self.id = CId(self.id)
 
@@ -149,7 +149,7 @@ class D1(C):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, D1Id):
             self.id = D1Id(self.id)
 
@@ -172,7 +172,7 @@ class D2(C):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, D2Id):
             self.id = D2Id(self.id)
 
@@ -192,7 +192,7 @@ class E(D1):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EId):
             self.id = EId(self.id)
 

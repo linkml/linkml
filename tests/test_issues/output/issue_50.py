@@ -1,6 +1,6 @@
 # Auto generated from issue_50.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
-# Schema:
+# Generation date: 2021-06-11 19:12
+# Schema: example.com
 #
 # id: http://example.com
 # description:
@@ -70,12 +70,12 @@ class TestClass1(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, TestClass1Id):
             self.id = TestClass1Id(self.id)
 
         if self._is_empty(self.required_mixin_slot):
-            raise ValueError("required_mixin_slot must be supplied")
+            self.MissingRequiredField("required_mixin_slot")
         if not isinstance(self.required_mixin_slot, str):
             self.required_mixin_slot = str(self.required_mixin_slot)
 
@@ -100,12 +100,12 @@ class TestClass2(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, TestClass2Id):
             self.id = TestClass2Id(self.id)
 
         if self._is_empty(self.required_mixin_slot):
-            raise ValueError("required_mixin_slot must be supplied")
+            self.MissingRequiredField("required_mixin_slot")
         if not isinstance(self.required_mixin_slot, str):
             self.required_mixin_slot = str(self.required_mixin_slot)
 
@@ -128,7 +128,7 @@ class TestClass3(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, TestClass3Id):
             self.id = TestClass3Id(self.id)
 

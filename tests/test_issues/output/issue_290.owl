@@ -5,11 +5,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://example.org> a owl:Ontology ;
-    rdfs:label "" ;
-    linkml:generation_date "2021-03-24 16:47" ;
+    rdfs:label "example.org" ;
+    linkml:generation_date "2021-06-11 19:12" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_290.yaml" ;
-    linkml:source_file_date "Wed Mar 24 16:43:50 2021" ;
+    linkml:source_file_date "Fri Jun 11 19:09:09 2021" ;
     linkml:source_file_size 118 .
 
 linkml:SubsetDefinition a owl:Class ;

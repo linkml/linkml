@@ -1,5 +1,5 @@
 # Auto generated from python_complex_ranges.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: complex_ranges
 #
 # id: http://examples.org/linkml/test/complex_ranges
@@ -154,7 +154,7 @@ class KeyedOneElementClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedOneElementClassName):
             self.name = KeyedOneElementClassName(self.name)
 
@@ -178,7 +178,7 @@ class KeyedTwoElementClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedTwoElementClassName):
             self.name = KeyedTwoElementClassName(self.name)
 
@@ -206,7 +206,7 @@ class KeyedThreeElementClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedThreeElementClassName):
             self.name = KeyedThreeElementClassName(self.name)
 
@@ -235,7 +235,7 @@ class IdentifiedOneElementClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, IdentifiedOneElementClassName):
             self.name = IdentifiedOneElementClassName(self.name)
 
@@ -259,7 +259,7 @@ class IdentifiedTwoElementClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, IdentifiedTwoElementClassName):
             self.name = IdentifiedTwoElementClassName(self.name)
 
@@ -287,7 +287,7 @@ class IdentifiedThreeElementClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, IdentifiedThreeElementClassName):
             self.name = IdentifiedThreeElementClassName(self.name)
 

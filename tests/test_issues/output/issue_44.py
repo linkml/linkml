@@ -1,5 +1,5 @@
 # Auto generated from issue_44.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: test44
 #
 # id: https://example.com/test44
@@ -175,7 +175,7 @@ class NamedThing(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.category):
-            raise ValueError("category must be supplied")
+            self.MissingRequiredField("category")
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, IriType) else IriType(v) for v in self.category]

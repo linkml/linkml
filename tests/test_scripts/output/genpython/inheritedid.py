@@ -1,5 +1,5 @@
 # Auto generated from inheritedid.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:50
+# Generation date: 2021-06-11 19:13
 # Schema: test_inherited_id
 #
 # id: https://example.org/inheritedid
@@ -101,7 +101,7 @@ class NamedThing(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
             self.id = NamedThingId(self.id)
 
@@ -127,7 +127,7 @@ class Attribute(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AttributeId):
             self.id = AttributeId(self.id)
 
@@ -147,7 +147,7 @@ class BiologicalSex(Attribute):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BiologicalSexId):
             self.id = BiologicalSexId(self.id)
 
@@ -170,7 +170,7 @@ class OntologyClass(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, OntologyClassId):
             self.id = OntologyClassId(self.id)
 

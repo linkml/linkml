@@ -1,5 +1,5 @@
 # Auto generated from issue_14.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-11 19:12
 # Schema: test14
 #
 # id: https://example.com/test14
@@ -182,22 +182,22 @@ class NamedThing(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
             self.id = NamedThingId(self.id)
 
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, str):
             self.name = str(self.name)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
@@ -221,12 +221,12 @@ class MixinOwner(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MixinOwnerId):
             self.id = MixinOwnerId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, SubjectRange1Id):
             self.subject = SubjectRange1Id(self.subject)
 
@@ -252,7 +252,7 @@ class SubjectRange1(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SubjectRange1Id):
             self.id = SubjectRange1Id(self.id)
 
@@ -275,7 +275,7 @@ class ObjectRange1(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ObjectRange1Id):
             self.id = ObjectRange1Id(self.id)
 
@@ -296,7 +296,7 @@ class MixinClass(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, ObjectRange1Id):
             self.object = ObjectRange1Id(self.object)
 

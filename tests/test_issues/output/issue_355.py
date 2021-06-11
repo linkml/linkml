@@ -1,5 +1,5 @@
 # Auto generated from issue_355.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:45
+# Generation date: 2021-06-11 19:12
 # Schema: issue355
 #
 # id: http://example.org/issue355/
@@ -74,7 +74,7 @@ class Containee(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ContaineeId):
             self.id = ContaineeId(self.id)
 

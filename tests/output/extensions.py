@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:43
+# Generation date: 2021-06-11 19:11
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -58,12 +58,12 @@ class Extension(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.tag):
-            raise ValueError("tag must be supplied")
+            self.MissingRequiredField("tag")
         if not isinstance(self.tag, URIorCURIE):
             self.tag = URIorCURIE(self.tag)
 
         if self._is_empty(self.value):
-            raise ValueError("value must be supplied")
+            self.MissingRequiredField("value")
         if not isinstance(self.value, str):
             self.value = str(self.value)
 

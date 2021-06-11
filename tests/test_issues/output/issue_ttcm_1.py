@@ -1,5 +1,5 @@
 # Auto generated from resourcedescription.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: resourcedescription
 #
 # id: https://hotecosystem.org/tccm/resourcedescription
@@ -490,12 +490,12 @@ class ResourceDescription(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.about):
-            raise ValueError("about must be supplied")
+            self.MissingRequiredField("about")
         if not isinstance(self.about, ExternalURI):
             self.about = ExternalURI(self.about)
 
         if self._is_empty(self.resourceID):
-            raise ValueError("resourceID must be supplied")
+            self.MissingRequiredField("resourceID")
         if not isinstance(self.resourceID, LocalIdentifier):
             self.resourceID = LocalIdentifier(self.resourceID)
 
@@ -651,7 +651,7 @@ class NameAndMeaningReference(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, LocalIdentifier):
             self.name = LocalIdentifier(self.name)
 
@@ -1069,12 +1069,12 @@ class PredicateReference(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.uri):
-            raise ValueError("uri must be supplied")
+            self.MissingRequiredField("uri")
         if not isinstance(self.uri, ExternalURI):
             self.uri = ExternalURI(self.uri)
 
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, Curie):
             self.name = Curie(self.name)
 

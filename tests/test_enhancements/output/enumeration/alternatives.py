@@ -1,5 +1,5 @@
 # Auto generated from alternatives.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: alternatives
 #
 # id: http://example.org/test/alternatives
@@ -68,12 +68,12 @@ class AllEnums(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.entry_name):
-            raise ValueError("entry_name must be supplied")
+            self.MissingRequiredField("entry_name")
         if not isinstance(self.entry_name, AllEnumsEntryName):
             self.entry_name = AllEnumsEntryName(self.entry_name)
 
         if self._is_empty(self.code_1):
-            raise ValueError("code_1 must be supplied")
+            self.MissingRequiredField("code_1")
         if not isinstance(self.code_1, list):
             self.code_1 = [self.code_1] if self.code_1 is not None else []
         self.code_1 = [v if isinstance(v, OpenEnum) else OpenEnum(v) for v in self.code_1]

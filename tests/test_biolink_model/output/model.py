@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:48
+# Generation date: 2021-06-11 19:11
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -1121,7 +1121,7 @@ class Attribute(Annotation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.has_attribute_type):
-            raise ValueError("has_attribute_type must be supplied")
+            self.MissingRequiredField("has_attribute_type")
         if not isinstance(self.has_attribute_type, OntologyClass):
             self.has_attribute_type = OntologyClass()
 
@@ -1301,7 +1301,7 @@ class Entity(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EntityId):
             self.id = EntityId(self.id)
 
@@ -1350,12 +1350,12 @@ class NamedThing(Entity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, NamedThingId):
             self.id = NamedThingId(self.id)
 
         if self._is_empty(self.category):
-            raise ValueError("category must be supplied")
+            self.MissingRequiredField("category")
         if not isinstance(self.category, list):
             self.category = [self.category] if self.category is not None else []
         self.category = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.category]
@@ -1431,7 +1431,7 @@ class OrganismTaxon(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, OrganismTaxonId):
             self.id = OrganismTaxonId(self.id)
 
@@ -1477,7 +1477,7 @@ class Agent(AdministrativeEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AgentId):
             self.id = AgentId(self.id)
 
@@ -1546,7 +1546,7 @@ class Dataset(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DatasetId):
             self.id = DatasetId(self.id)
 
@@ -1571,7 +1571,7 @@ class DatasetDistribution(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DatasetDistributionId):
             self.id = DatasetDistributionId(self.id)
 
@@ -1601,7 +1601,7 @@ class DatasetVersion(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DatasetVersionId):
             self.id = DatasetVersionId(self.id)
 
@@ -1636,7 +1636,7 @@ class DatasetSummary(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DatasetSummaryId):
             self.id = DatasetSummaryId(self.id)
 
@@ -1666,7 +1666,7 @@ class ConfidenceLevel(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ConfidenceLevelId):
             self.id = ConfidenceLevelId(self.id)
 
@@ -1690,7 +1690,7 @@ class EvidenceType(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EvidenceTypeId):
             self.id = EvidenceTypeId(self.id)
 
@@ -1725,12 +1725,12 @@ class Publication(InformationContentEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PublicationId):
             self.id = PublicationId(self.id)
 
         if self._is_empty(self.type):
-            raise ValueError("type must be supplied")
+            self.MissingRequiredField("type")
         if not isinstance(self.type, str):
             self.type = str(self.type)
 
@@ -1781,12 +1781,12 @@ class Book(Publication):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BookId):
             self.id = BookId(self.id)
 
         if self._is_empty(self.type):
-            raise ValueError("type must be supplied")
+            self.MissingRequiredField("type")
         if not isinstance(self.type, str):
             self.type = str(self.type)
 
@@ -1811,12 +1811,12 @@ class BookChapter(Publication):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BookChapterId):
             self.id = BookChapterId(self.id)
 
         if self._is_empty(self.published_in):
-            raise ValueError("published_in must be supplied")
+            self.MissingRequiredField("published_in")
         if not isinstance(self.published_in, URIorCURIE):
             self.published_in = URIorCURIE(self.published_in)
 
@@ -1850,12 +1850,12 @@ class Serial(Publication):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SerialId):
             self.id = SerialId(self.id)
 
         if self._is_empty(self.type):
-            raise ValueError("type must be supplied")
+            self.MissingRequiredField("type")
         if not isinstance(self.type, str):
             self.type = str(self.type)
 
@@ -1890,12 +1890,12 @@ class Article(Publication):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ArticleId):
             self.id = ArticleId(self.id)
 
         if self._is_empty(self.published_in):
-            raise ValueError("published_in must be supplied")
+            self.MissingRequiredField("published_in")
         if not isinstance(self.published_in, URIorCURIE):
             self.published_in = URIorCURIE(self.published_in)
 
@@ -1952,7 +1952,7 @@ class PhysicalEntity(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PhysicalEntityId):
             self.id = PhysicalEntityId(self.id)
 
@@ -2001,7 +2001,7 @@ class Activity(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ActivityId):
             self.id = ActivityId(self.id)
 
@@ -2025,7 +2025,7 @@ class Procedure(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ProcedureId):
             self.id = ProcedureId(self.id)
 
@@ -2049,7 +2049,7 @@ class Phenomenon(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PhenomenonId):
             self.id = PhenomenonId(self.id)
 
@@ -2073,7 +2073,7 @@ class Device(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DeviceId):
             self.id = DeviceId(self.id)
 
@@ -2111,7 +2111,7 @@ class MaterialSample(PhysicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MaterialSampleId):
             self.id = MaterialSampleId(self.id)
 
@@ -2135,7 +2135,7 @@ class PlanetaryEntity(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PlanetaryEntityId):
             self.id = PlanetaryEntityId(self.id)
 
@@ -2156,7 +2156,7 @@ class EnvironmentalProcess(PlanetaryEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EnvironmentalProcessId):
             self.id = EnvironmentalProcessId(self.id)
 
@@ -2177,7 +2177,7 @@ class EnvironmentalFeature(PlanetaryEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EnvironmentalFeatureId):
             self.id = EnvironmentalFeatureId(self.id)
 
@@ -2203,7 +2203,7 @@ class GeographicLocation(PlanetaryEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeographicLocationId):
             self.id = GeographicLocationId(self.id)
 
@@ -2234,7 +2234,7 @@ class GeographicLocationAtTime(GeographicLocation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeographicLocationAtTimeId):
             self.id = GeographicLocationAtTimeId(self.id)
 
@@ -2297,7 +2297,7 @@ class MolecularEntity(BiologicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MolecularEntityId):
             self.id = MolecularEntityId(self.id)
 
@@ -2329,7 +2329,7 @@ class BiologicalProcessOrActivity(BiologicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BiologicalProcessOrActivityId):
             self.id = BiologicalProcessOrActivityId(self.id)
 
@@ -2368,7 +2368,7 @@ class MolecularActivity(BiologicalProcessOrActivity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MolecularActivityId):
             self.id = MolecularActivityId(self.id)
 
@@ -2404,7 +2404,7 @@ class BiologicalProcess(BiologicalProcessOrActivity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BiologicalProcessId):
             self.id = BiologicalProcessId(self.id)
 
@@ -2425,7 +2425,7 @@ class Pathway(BiologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathwayId):
             self.id = PathwayId(self.id)
 
@@ -2446,7 +2446,7 @@ class PhysiologicalProcess(BiologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PhysiologicalProcessId):
             self.id = PhysiologicalProcessId(self.id)
 
@@ -2467,7 +2467,7 @@ class Behavior(BiologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BehaviorId):
             self.id = BehaviorId(self.id)
 
@@ -2488,7 +2488,7 @@ class Death(BiologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DeathId):
             self.id = DeathId(self.id)
 
@@ -2537,7 +2537,7 @@ class ChemicalSubstance(MolecularEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalSubstanceId):
             self.id = ChemicalSubstanceId(self.id)
 
@@ -2561,7 +2561,7 @@ class Carbohydrate(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CarbohydrateId):
             self.id = CarbohydrateId(self.id)
 
@@ -2586,7 +2586,7 @@ class ProcessedMaterial(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ProcessedMaterialId):
             self.id = ProcessedMaterialId(self.id)
 
@@ -2615,7 +2615,7 @@ class Drug(MolecularEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DrugId):
             self.id = DrugId(self.id)
 
@@ -2640,7 +2640,7 @@ class FoodComponent(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, FoodComponentId):
             self.id = FoodComponentId(self.id)
 
@@ -2661,7 +2661,7 @@ class EnvironmentalFoodContaminant(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EnvironmentalFoodContaminantId):
             self.id = EnvironmentalFoodContaminantId(self.id)
 
@@ -2682,7 +2682,7 @@ class FoodAdditive(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, FoodAdditiveId):
             self.id = FoodAdditiveId(self.id)
 
@@ -2703,7 +2703,7 @@ class Nutrient(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, NutrientId):
             self.id = NutrientId(self.id)
 
@@ -2724,7 +2724,7 @@ class Macronutrient(Nutrient):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MacronutrientId):
             self.id = MacronutrientId(self.id)
 
@@ -2745,7 +2745,7 @@ class Micronutrient(Nutrient):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MicronutrientId):
             self.id = MicronutrientId(self.id)
 
@@ -2766,7 +2766,7 @@ class Vitamin(Micronutrient):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VitaminId):
             self.id = VitaminId(self.id)
 
@@ -2791,7 +2791,7 @@ class Food(MolecularEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, FoodId):
             self.id = FoodId(self.id)
 
@@ -2819,7 +2819,7 @@ class Metabolite(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MetaboliteId):
             self.id = MetaboliteId(self.id)
 
@@ -2910,7 +2910,7 @@ class LifeStage(OrganismalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, LifeStageId):
             self.id = LifeStageId(self.id)
 
@@ -2940,7 +2940,7 @@ class IndividualOrganism(OrganismalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, IndividualOrganismId):
             self.id = IndividualOrganismId(self.id)
 
@@ -2971,7 +2971,7 @@ class PopulationOfIndividualOrganisms(OrganismalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PopulationOfIndividualOrganismsId):
             self.id = PopulationOfIndividualOrganismsId(self.id)
 
@@ -2999,7 +2999,7 @@ class StudyPopulation(PopulationOfIndividualOrganisms):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, StudyPopulationId):
             self.id = StudyPopulationId(self.id)
 
@@ -3025,7 +3025,7 @@ class DiseaseOrPhenotypicFeature(BiologicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureId):
             self.id = DiseaseOrPhenotypicFeatureId(self.id)
 
@@ -3050,7 +3050,7 @@ class Disease(DiseaseOrPhenotypicFeature):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseId):
             self.id = DiseaseId(self.id)
 
@@ -3071,7 +3071,7 @@ class PhenotypicFeature(DiseaseOrPhenotypicFeature):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PhenotypicFeatureId):
             self.id = PhenotypicFeatureId(self.id)
 
@@ -3095,7 +3095,7 @@ class BehavioralFeature(PhenotypicFeature):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BehavioralFeatureId):
             self.id = BehavioralFeatureId(self.id)
 
@@ -3120,7 +3120,7 @@ class AnatomicalEntity(OrganismalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AnatomicalEntityId):
             self.id = AnatomicalEntityId(self.id)
 
@@ -3148,7 +3148,7 @@ class CellularComponent(AnatomicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CellularComponentId):
             self.id = CellularComponentId(self.id)
 
@@ -3169,7 +3169,7 @@ class Cell(AnatomicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CellId):
             self.id = CellId(self.id)
 
@@ -3190,7 +3190,7 @@ class CellLine(OrganismalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CellLineId):
             self.id = CellLineId(self.id)
 
@@ -3211,7 +3211,7 @@ class GrossAnatomicalStructure(AnatomicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GrossAnatomicalStructureId):
             self.id = GrossAnatomicalStructureId(self.id)
 
@@ -3326,7 +3326,7 @@ class GenomicEntity(MolecularEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenomicEntityId):
             self.id = GenomicEntityId(self.id)
 
@@ -3357,7 +3357,7 @@ class Gene(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneId):
             self.id = GeneId(self.id)
 
@@ -3392,7 +3392,7 @@ class Genome(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenomeId):
             self.id = GenomeId(self.id)
 
@@ -3417,7 +3417,7 @@ class Exon(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ExonId):
             self.id = ExonId(self.id)
 
@@ -3441,7 +3441,7 @@ class Transcript(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, TranscriptId):
             self.id = TranscriptId(self.id)
 
@@ -3462,7 +3462,7 @@ class CodingSequence(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CodingSequenceId):
             self.id = CodingSequenceId(self.id)
 
@@ -3489,7 +3489,7 @@ class Protein(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ProteinId):
             self.id = ProteinId(self.id)
 
@@ -3522,7 +3522,7 @@ class ProteinIsoform(Protein):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ProteinIsoformId):
             self.id = ProteinIsoformId(self.id)
 
@@ -3545,7 +3545,7 @@ class RNAProduct(Transcript):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, RNAProductId):
             self.id = RNAProductId(self.id)
 
@@ -3577,7 +3577,7 @@ class RNAProductIsoform(RNAProduct):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, RNAProductIsoformId):
             self.id = RNAProductIsoformId(self.id)
 
@@ -3598,7 +3598,7 @@ class NoncodingRNAProduct(RNAProduct):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, NoncodingRNAProductId):
             self.id = NoncodingRNAProductId(self.id)
 
@@ -3619,7 +3619,7 @@ class MicroRNA(NoncodingRNAProduct):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MicroRNAId):
             self.id = MicroRNAId(self.id)
 
@@ -3645,7 +3645,7 @@ class SiRNA(NoncodingRNAProduct):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SiRNAId):
             self.id = SiRNAId(self.id)
 
@@ -3692,7 +3692,7 @@ class GeneFamily(MolecularEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneFamilyId):
             self.id = GeneFamilyId(self.id)
 
@@ -3733,7 +3733,7 @@ class Genotype(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeId):
             self.id = GenotypeId(self.id)
 
@@ -3760,7 +3760,7 @@ class Haplotype(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, HaplotypeId):
             self.id = HaplotypeId(self.id)
 
@@ -3786,7 +3786,7 @@ class SequenceVariant(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SequenceVariantId):
             self.id = SequenceVariantId(self.id)
 
@@ -3817,7 +3817,7 @@ class Snv(SequenceVariant):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SnvId):
             self.id = SnvId(self.id)
 
@@ -3842,7 +3842,7 @@ class ReagentTargetedGene(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ReagentTargetedGeneId):
             self.id = ReagentTargetedGeneId(self.id)
 
@@ -3880,7 +3880,7 @@ class ClinicalMeasurement(ClinicalAttribute):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.has_attribute_type):
-            raise ValueError("has_attribute_type must be supplied")
+            self.MissingRequiredField("has_attribute_type")
         if not isinstance(self.has_attribute_type, OntologyClass):
             self.has_attribute_type = OntologyClass()
 
@@ -3949,7 +3949,7 @@ class ClinicalEntity(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ClinicalEntityId):
             self.id = ClinicalEntityId(self.id)
 
@@ -3970,7 +3970,7 @@ class ClinicalTrial(ClinicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ClinicalTrialId):
             self.id = ClinicalTrialId(self.id)
 
@@ -3991,7 +3991,7 @@ class ClinicalIntervention(ClinicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ClinicalInterventionId):
             self.id = ClinicalInterventionId(self.id)
 
@@ -4017,7 +4017,7 @@ class ClinicalFinding(PhenotypicFeature):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ClinicalFindingId):
             self.id = ClinicalFindingId(self.id)
 
@@ -4040,7 +4040,7 @@ class Hospitalization(ClinicalIntervention):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, HospitalizationId):
             self.id = HospitalizationId(self.id)
 
@@ -4078,7 +4078,7 @@ class Case(IndividualOrganism):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CaseId):
             self.id = CaseId(self.id)
 
@@ -4103,7 +4103,7 @@ class Cohort(StudyPopulation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CohortId):
             self.id = CohortId(self.id)
 
@@ -4153,7 +4153,7 @@ class GenomicBackgroundExposure(GenomicEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenomicBackgroundExposureId):
             self.id = GenomicBackgroundExposureId(self.id)
 
@@ -4197,7 +4197,7 @@ class PathologicalProcess(BiologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathologicalProcessId):
             self.id = PathologicalProcessId(self.id)
 
@@ -4223,7 +4223,7 @@ class PathologicalProcessExposure(PathologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathologicalProcessExposureId):
             self.id = PathologicalProcessExposureId(self.id)
 
@@ -4251,7 +4251,7 @@ class PathologicalAnatomicalStructure(AnatomicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathologicalAnatomicalStructureId):
             self.id = PathologicalAnatomicalStructureId(self.id)
 
@@ -4277,7 +4277,7 @@ class PathologicalAnatomicalExposure(PathologicalAnatomicalStructure):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathologicalAnatomicalExposureId):
             self.id = PathologicalAnatomicalExposureId(self.id)
 
@@ -4307,7 +4307,7 @@ class DiseaseOrPhenotypicFeatureExposure(DiseaseOrPhenotypicFeature):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureExposureId):
             self.id = DiseaseOrPhenotypicFeatureExposureId(self.id)
 
@@ -4335,7 +4335,7 @@ class ChemicalExposure(ChemicalSubstance):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalExposureId):
             self.id = ChemicalExposureId(self.id)
 
@@ -4363,7 +4363,7 @@ class ComplexChemicalExposure(ChemicalExposure):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ComplexChemicalExposureId):
             self.id = ComplexChemicalExposureId(self.id)
 
@@ -4392,7 +4392,7 @@ class DrugExposure(Drug):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DrugExposureId):
             self.id = DrugExposureId(self.id)
 
@@ -4421,7 +4421,7 @@ class DrugToGeneInteractionExposure(DrugExposure):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DrugToGeneInteractionExposureId):
             self.id = DrugToGeneInteractionExposureId(self.id)
 
@@ -4454,7 +4454,7 @@ class Treatment(NamedThing):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, TreatmentId):
             self.id = TreatmentId(self.id)
 
@@ -4494,7 +4494,7 @@ class BioticExposure(OrganismTaxon):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BioticExposureId):
             self.id = BioticExposureId(self.id)
 
@@ -4522,7 +4522,7 @@ class GeographicExposure(GeographicLocation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeographicExposureId):
             self.id = GeographicExposureId(self.id)
 
@@ -4551,7 +4551,7 @@ class EnvironmentalExposure(EnvironmentalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EnvironmentalExposureId):
             self.id = EnvironmentalExposureId(self.id)
 
@@ -4579,7 +4579,7 @@ class BehavioralExposure(Behavior):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BehavioralExposureId):
             self.id = BehavioralExposureId(self.id)
 
@@ -4609,12 +4609,12 @@ class SocioeconomicExposure(Behavior):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SocioeconomicExposureId):
             self.id = SocioeconomicExposureId(self.id)
 
         if self._is_empty(self.has_attribute):
-            raise ValueError("has_attribute must be supplied")
+            self.MissingRequiredField("has_attribute")
         self._normalize_inlined_as_dict(slot_name="has_attribute", slot_type=SocioeconomicAttribute, key_name="has attribute type", keyed=False)
 
         if self.timepoint is not None and not isinstance(self.timepoint, TimeType):
@@ -4653,7 +4653,7 @@ class PathologicalProcessOutcome(PathologicalProcess):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathologicalProcessOutcomeId):
             self.id = PathologicalProcessOutcomeId(self.id)
 
@@ -4677,7 +4677,7 @@ class PathologicalAnatomicalOutcome(PathologicalAnatomicalStructure):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PathologicalAnatomicalOutcomeId):
             self.id = PathologicalAnatomicalOutcomeId(self.id)
 
@@ -4702,7 +4702,7 @@ class DiseaseOrPhenotypicFeatureOutcome(DiseaseOrPhenotypicFeature):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureOutcomeId):
             self.id = DiseaseOrPhenotypicFeatureOutcomeId(self.id)
 
@@ -4726,7 +4726,7 @@ class BehavioralOutcome(Behavior):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BehavioralOutcomeId):
             self.id = BehavioralOutcomeId(self.id)
 
@@ -4751,7 +4751,7 @@ class HospitalizationOutcome(Hospitalization):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, HospitalizationOutcomeId):
             self.id = HospitalizationOutcomeId(self.id)
 
@@ -4775,7 +4775,7 @@ class MortalityOutcome(Death):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MortalityOutcomeId):
             self.id = MortalityOutcomeId(self.id)
 
@@ -4799,7 +4799,7 @@ class EpidemiologicalOutcome(BiologicalEntity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, EpidemiologicalOutcomeId):
             self.id = EpidemiologicalOutcomeId(self.id)
 
@@ -4824,7 +4824,7 @@ class SocioeconomicOutcome(Behavior):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SocioeconomicOutcomeId):
             self.id = SocioeconomicOutcomeId(self.id)
 
@@ -4856,27 +4856,27 @@ class Association(Entity):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AssociationId):
             self.id = AssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
         if self._is_empty(self.relation):
-            raise ValueError("relation must be supplied")
+            self.MissingRequiredField("relation")
         if not isinstance(self.relation, URIorCURIE):
             self.relation = URIorCURIE(self.relation)
 
@@ -4922,22 +4922,22 @@ class ContributorAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ContributorAssociationId):
             self.id = ContributorAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, InformationContentEntityId):
             self.subject = InformationContentEntityId(self.subject)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AgentId):
             self.object = AgentId(self.object)
 
@@ -4968,22 +4968,22 @@ class GenotypeToGenotypePartAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeToGenotypePartAssociationId):
             self.id = GenotypeToGenotypePartAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GenotypeId):
             self.object = GenotypeId(self.object)
 
@@ -5011,22 +5011,22 @@ class GenotypeToGeneAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeToGeneAssociationId):
             self.id = GenotypeToGeneAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneId):
             self.object = GeneId(self.object)
 
@@ -5053,22 +5053,22 @@ class GenotypeToVariantAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeToVariantAssociationId):
             self.id = GenotypeToVariantAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, SequenceVariantId):
             self.object = SequenceVariantId(self.object)
 
@@ -5096,12 +5096,12 @@ class GeneToGeneAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
 
@@ -5129,12 +5129,12 @@ class GeneToGeneHomologyAssociation(GeneToGeneAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToGeneHomologyAssociationId):
             self.id = GeneToGeneHomologyAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -5199,12 +5199,12 @@ class GeneToGeneCoexpressionAssociation(GeneToGeneAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToGeneCoexpressionAssociationId):
             self.id = GeneToGeneCoexpressionAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -5244,17 +5244,17 @@ class PairwiseGeneToGeneInteraction(GeneToGeneAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PairwiseGeneToGeneInteractionId):
             self.id = PairwiseGeneToGeneInteractionId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.relation):
-            raise ValueError("relation must be supplied")
+            self.MissingRequiredField("relation")
         if not isinstance(self.relation, URIorCURIE):
             self.relation = URIorCURIE(self.relation)
 
@@ -5282,27 +5282,27 @@ class PairwiseMolecularInteraction(PairwiseGeneToGeneInteraction):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PairwiseMolecularInteractionId):
             self.id = PairwiseMolecularInteractionId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, MolecularEntityId):
             self.subject = MolecularEntityId(self.subject)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.relation):
-            raise ValueError("relation must be supplied")
+            self.MissingRequiredField("relation")
         if not isinstance(self.relation, URIorCURIE):
             self.relation = URIorCURIE(self.relation)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, MolecularEntityId):
             self.object = MolecularEntityId(self.object)
 
@@ -5328,7 +5328,7 @@ class CellLineToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, CellLineId):
             self.subject = CellLineId(self.subject)
 
@@ -5356,12 +5356,12 @@ class CellLineToDiseaseOrPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CellLineToDiseaseOrPhenotypicFeatureAssociationId):
             self.id = CellLineToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, DiseaseOrPhenotypicFeatureId):
             self.subject = DiseaseOrPhenotypicFeatureId(self.subject)
 
@@ -5384,7 +5384,7 @@ class MolecularEntityToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, MolecularEntityId):
             self.subject = MolecularEntityId(self.subject)
 
@@ -5407,7 +5407,7 @@ class DrugToEntityAssociationMixin(MolecularEntityToEntityAssociationMixin):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, DrugId):
             self.subject = DrugId(self.subject)
 
@@ -5430,7 +5430,7 @@ class ChemicalToEntityAssociationMixin(MolecularEntityToEntityAssociationMixin):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, ChemicalSubstanceId):
             self.subject = ChemicalSubstanceId(self.subject)
 
@@ -5453,7 +5453,7 @@ class CaseToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, CaseId):
             self.subject = CaseId(self.subject)
 
@@ -5481,12 +5481,12 @@ class ChemicalToChemicalAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalToChemicalAssociationId):
             self.id = ChemicalToChemicalAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, ChemicalSubstanceId):
             self.object = ChemicalSubstanceId(self.object)
 
@@ -5522,22 +5522,22 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalToChemicalDerivationAssociationId):
             self.id = ChemicalToChemicalDerivationAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, ChemicalSubstanceId):
             self.subject = ChemicalSubstanceId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, ChemicalSubstanceId):
             self.object = ChemicalSubstanceId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -5569,12 +5569,12 @@ class ChemicalToDiseaseOrPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalToDiseaseOrPhenotypicFeatureAssociationId):
             self.id = ChemicalToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, DiseaseOrPhenotypicFeatureId):
             self.object = DiseaseOrPhenotypicFeatureId(self.object)
 
@@ -5601,12 +5601,12 @@ class ChemicalToPathwayAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalToPathwayAssociationId):
             self.id = ChemicalToPathwayAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, PathwayId):
             self.object = PathwayId(self.object)
 
@@ -5633,12 +5633,12 @@ class ChemicalToGeneAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ChemicalToGeneAssociationId):
             self.id = ChemicalToGeneAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
 
@@ -5665,12 +5665,12 @@ class DrugToGeneAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DrugToGeneAssociationId):
             self.id = DrugToGeneAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
 
@@ -5693,7 +5693,7 @@ class MaterialSampleToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, MaterialSampleId):
             self.subject = MaterialSampleId(self.subject)
 
@@ -5720,22 +5720,22 @@ class MaterialSampleDerivationAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MaterialSampleDerivationAssociationId):
             self.id = MaterialSampleDerivationAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, MaterialSampleId):
             self.subject = MaterialSampleId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -5762,7 +5762,7 @@ class MaterialSampleToDiseaseOrPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MaterialSampleToDiseaseOrPhenotypicFeatureAssociationId):
             self.id = MaterialSampleToDiseaseOrPhenotypicFeatureAssociationId(self.id)
 
@@ -5782,7 +5782,7 @@ class DiseaseToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, DiseaseId):
             self.subject = DiseaseId(self.subject)
 
@@ -5805,7 +5805,7 @@ class EntityToExposureEventAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, ExposureEvent):
             self.object = ExposureEvent(**self.object)
 
@@ -5832,7 +5832,7 @@ class DiseaseToExposureEventAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseToExposureEventAssociationId):
             self.id = DiseaseToExposureEventAssociationId(self.id)
 
@@ -5855,7 +5855,7 @@ class ExposureEventToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, ExposureEvent):
             self.subject = ExposureEvent(**self.subject)
 
@@ -5878,7 +5878,7 @@ class EntityToOutcomeAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, Outcome):
             self.object = Outcome()
 
@@ -5907,7 +5907,7 @@ class ExposureEventToOutcomeAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ExposureEventToOutcomeAssociationId):
             self.id = ExposureEventToOutcomeAssociationId(self.id)
 
@@ -5981,7 +5981,7 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, PhenotypicFeatureId):
             self.object = PhenotypicFeatureId(self.object)
 
@@ -6010,7 +6010,7 @@ class EntityToDiseaseAssociationMixin(EntityToFeatureOrDiseaseQualifiersMixin):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, DiseaseId):
             self.object = DiseaseId(self.object)
 
@@ -6030,7 +6030,7 @@ class DiseaseOrPhenotypicFeatureToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, DiseaseOrPhenotypicFeatureId):
             self.subject = DiseaseOrPhenotypicFeatureId(self.subject)
 
@@ -6054,12 +6054,12 @@ class DiseaseOrPhenotypicFeatureAssociationToLocationAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureAssociationToLocationAssociationId):
             self.id = DiseaseOrPhenotypicFeatureAssociationToLocationAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
@@ -6087,12 +6087,12 @@ class DiseaseOrPhenotypicFeatureToLocationAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseOrPhenotypicFeatureToLocationAssociationId):
             self.id = DiseaseOrPhenotypicFeatureToLocationAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
@@ -6112,7 +6112,7 @@ class EntityToDiseaseOrPhenotypicFeatureAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, DiseaseOrPhenotypicFeatureId):
             self.object = DiseaseOrPhenotypicFeatureId(self.object)
 
@@ -6132,7 +6132,7 @@ class GenotypeToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
@@ -6161,17 +6161,17 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeToPhenotypicFeatureAssociationId):
             self.id = GenotypeToPhenotypicFeatureAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
@@ -6203,12 +6203,12 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ExposureEventToPhenotypicFeatureAssociationId):
             self.id = ExposureEventToPhenotypicFeatureAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, ExposureEvent):
             self.subject = ExposureEvent(**self.subject)
 
@@ -6240,7 +6240,7 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, DiseaseToPhenotypicFeatureAssociationId):
             self.id = DiseaseToPhenotypicFeatureAssociationId(self.id)
 
@@ -6272,7 +6272,7 @@ class CaseToPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CaseToPhenotypicFeatureAssociationId):
             self.id = CaseToPhenotypicFeatureAssociationId(self.id)
 
@@ -6304,17 +6304,17 @@ class BehaviorToBehavioralFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, BehaviorToBehavioralFeatureAssociationId):
             self.id = BehaviorToBehavioralFeatureAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, BehaviorId):
             self.subject = BehaviorId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, BehavioralFeatureId):
             self.object = BehavioralFeatureId(self.object)
 
@@ -6337,7 +6337,7 @@ class GeneToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
@@ -6357,7 +6357,7 @@ class VariantToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
@@ -6382,12 +6382,12 @@ class GeneToPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToPhenotypicFeatureAssociationId):
             self.id = GeneToPhenotypicFeatureAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
@@ -6414,12 +6414,12 @@ class GeneToDiseaseAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToDiseaseAssociationId):
             self.id = GeneToDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
@@ -6447,17 +6447,17 @@ class VariantToGeneAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VariantToGeneAssociationId):
             self.id = VariantToGeneAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneId):
             self.object = GeneId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -6488,12 +6488,12 @@ class VariantToGeneExpressionAssociation(VariantToGeneAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VariantToGeneExpressionAssociationId):
             self.id = VariantToGeneExpressionAssociationId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -6537,17 +6537,17 @@ class VariantToPopulationAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VariantToPopulationAssociationId):
             self.id = VariantToPopulationAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, PopulationOfIndividualOrganismsId):
             self.object = PopulationOfIndividualOrganismsId(self.object)
 
@@ -6589,22 +6589,22 @@ class PopulationToPopulationAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, PopulationToPopulationAssociationId):
             self.id = PopulationToPopulationAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, PopulationOfIndividualOrganismsId):
             self.subject = PopulationOfIndividualOrganismsId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, PopulationOfIndividualOrganismsId):
             self.object = PopulationOfIndividualOrganismsId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -6629,12 +6629,12 @@ class VariantToPhenotypicFeatureAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VariantToPhenotypicFeatureAssociationId):
             self.id = VariantToPhenotypicFeatureAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
@@ -6661,22 +6661,22 @@ class VariantToDiseaseAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VariantToDiseaseAssociationId):
             self.id = VariantToDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
@@ -6700,22 +6700,22 @@ class GenotypeToDiseaseAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeToDiseaseAssociationId):
             self.id = GenotypeToDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
@@ -6741,12 +6741,12 @@ class ModelToDiseaseAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -6770,12 +6770,12 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneAsAModelOfDiseaseAssociationId):
             self.id = GeneAsAModelOfDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
@@ -6799,12 +6799,12 @@ class VariantAsAModelOfDiseaseAssociation(VariantToDiseaseAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, VariantAsAModelOfDiseaseAssociationId):
             self.id = VariantAsAModelOfDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
@@ -6828,12 +6828,12 @@ class GenotypeAsAModelOfDiseaseAssociation(GenotypeToDiseaseAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenotypeAsAModelOfDiseaseAssociationId):
             self.id = GenotypeAsAModelOfDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenotypeId):
             self.subject = GenotypeId(self.subject)
 
@@ -6857,12 +6857,12 @@ class CellLineAsAModelOfDiseaseAssociation(CellLineToDiseaseOrPhenotypicFeatureA
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, CellLineAsAModelOfDiseaseAssociationId):
             self.id = CellLineAsAModelOfDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, CellLineId):
             self.subject = CellLineId(self.subject)
 
@@ -6886,12 +6886,12 @@ class OrganismalEntityAsAModelOfDiseaseAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, OrganismalEntityAsAModelOfDiseaseAssociationId):
             self.id = OrganismalEntityAsAModelOfDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, OrganismalEntityId):
             self.subject = OrganismalEntityId(self.subject)
 
@@ -6916,12 +6916,12 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneHasVariantThatContributesToDiseaseAssociationId):
             self.id = GeneHasVariantThatContributesToDiseaseAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
@@ -6953,22 +6953,22 @@ class GeneToExpressionSiteAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToExpressionSiteAssociationId):
             self.id = GeneToExpressionSiteAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7002,12 +7002,12 @@ class SequenceVariantModulatesTreatmentAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, SequenceVariantId):
             self.subject = SequenceVariantId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, TreatmentId):
             self.object = TreatmentId(self.object)
 
@@ -7035,17 +7035,17 @@ class FunctionalAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, FunctionalAssociationId):
             self.id = FunctionalAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, MacromolecularMachineMixin):
             self.subject = MacromolecularMachineMixin(**self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOntologyClass):
             self.object = GeneOntologyClass()
 
@@ -7068,7 +7068,7 @@ class MacromolecularMachineToEntityAssociationMixin(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, NamedThingId):
             self.subject = NamedThingId(self.subject)
 
@@ -7097,12 +7097,12 @@ class MacromolecularMachineToMolecularActivityAssociation(FunctionalAssociation)
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MacromolecularMachineToMolecularActivityAssociationId):
             self.id = MacromolecularMachineToMolecularActivityAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, MolecularActivityId):
             self.object = MolecularActivityId(self.object)
 
@@ -7131,12 +7131,12 @@ class MacromolecularMachineToBiologicalProcessAssociation(FunctionalAssociation)
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MacromolecularMachineToBiologicalProcessAssociationId):
             self.id = MacromolecularMachineToBiologicalProcessAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, BiologicalProcessId):
             self.object = BiologicalProcessId(self.object)
 
@@ -7165,12 +7165,12 @@ class MacromolecularMachineToCellularComponentAssociation(FunctionalAssociation)
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, MacromolecularMachineToCellularComponentAssociationId):
             self.id = MacromolecularMachineToCellularComponentAssociationId(self.id)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, CellularComponentId):
             self.object = CellularComponentId(self.object)
 
@@ -7194,17 +7194,17 @@ class GeneToGoTermAssociation(FunctionalAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToGoTermAssociationId):
             self.id = GeneToGoTermAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, MolecularEntityId):
             self.subject = MolecularEntityId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOntologyClass):
             self.object = GeneOntologyClass()
 
@@ -7231,7 +7231,7 @@ class SequenceAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SequenceAssociationId):
             self.id = SequenceAssociationId(self.id)
 
@@ -7264,22 +7264,22 @@ class GenomicSequenceLocalization(SequenceAssociation):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GenomicSequenceLocalizationId):
             self.id = GenomicSequenceLocalizationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenomicEntityId):
             self.subject = GenomicEntityId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GenomicEntityId):
             self.object = GenomicEntityId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7321,17 +7321,17 @@ class SequenceFeatureRelationship(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, SequenceFeatureRelationshipId):
             self.id = SequenceFeatureRelationshipId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GenomicEntityId):
             self.subject = GenomicEntityId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GenomicEntityId):
             self.object = GenomicEntityId(self.object)
 
@@ -7358,17 +7358,17 @@ class TranscriptToGeneRelationship(SequenceFeatureRelationship):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, TranscriptToGeneRelationshipId):
             self.id = TranscriptToGeneRelationshipId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, TranscriptId):
             self.subject = TranscriptId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneId):
             self.object = GeneId(self.object)
 
@@ -7395,22 +7395,22 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneToGeneProductRelationshipId):
             self.id = GeneToGeneProductRelationshipId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneId):
             self.subject = GeneId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneProductMixin):
             self.object = GeneProductMixin(**self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7437,17 +7437,17 @@ class ExonToTranscriptRelationship(SequenceFeatureRelationship):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, ExonToTranscriptRelationshipId):
             self.id = ExonToTranscriptRelationshipId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, ExonId):
             self.subject = ExonId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, TranscriptId):
             self.object = TranscriptId(self.object)
 
@@ -7474,22 +7474,22 @@ class GeneRegulatoryRelationship(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, GeneRegulatoryRelationshipId):
             self.id = GeneRegulatoryRelationshipId(self.id)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
             self.subject = GeneOrGeneProduct(**self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
             self.object = GeneOrGeneProduct(**self.object)
 
@@ -7513,12 +7513,12 @@ class AnatomicalEntityToAnatomicalEntityAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, AnatomicalEntityId):
             self.subject = AnatomicalEntityId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
@@ -7547,22 +7547,22 @@ class AnatomicalEntityToAnatomicalEntityPartOfAssociation(AnatomicalEntityToAnat
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AnatomicalEntityToAnatomicalEntityPartOfAssociationId):
             self.id = AnatomicalEntityToAnatomicalEntityPartOfAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, AnatomicalEntityId):
             self.subject = AnatomicalEntityId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7591,22 +7591,22 @@ class AnatomicalEntityToAnatomicalEntityOntogenicAssociation(AnatomicalEntityToA
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, AnatomicalEntityToAnatomicalEntityOntogenicAssociationId):
             self.id = AnatomicalEntityToAnatomicalEntityOntogenicAssociationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, AnatomicalEntityId):
             self.subject = AnatomicalEntityId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, AnatomicalEntityId):
             self.object = AnatomicalEntityId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7629,7 +7629,7 @@ class OrganismTaxonToEntityAssociation(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, OrganismTaxonId):
             self.subject = OrganismTaxonId(self.subject)
 
@@ -7656,12 +7656,12 @@ class OrganismTaxonToOrganismTaxonAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, OrganismTaxonId):
             self.subject = OrganismTaxonId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, OrganismTaxonId):
             self.object = OrganismTaxonId(self.object)
 
@@ -7688,22 +7688,22 @@ class OrganismTaxonToOrganismTaxonSpecialization(OrganismTaxonToOrganismTaxonAss
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, OrganismTaxonToOrganismTaxonSpecializationId):
             self.id = OrganismTaxonToOrganismTaxonSpecializationId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, OrganismTaxonId):
             self.subject = OrganismTaxonId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, OrganismTaxonId):
             self.object = OrganismTaxonId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7733,22 +7733,22 @@ class OrganismTaxonToOrganismTaxonInteraction(OrganismTaxonToOrganismTaxonAssoci
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, OrganismTaxonToOrganismTaxonInteractionId):
             self.id = OrganismTaxonToOrganismTaxonInteractionId(self.id)
 
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, OrganismTaxonId):
             self.subject = OrganismTaxonId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, OrganismTaxonId):
             self.object = OrganismTaxonId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 
@@ -7775,17 +7775,17 @@ class OrganismTaxonToEnvironmentAssociation(Association):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.subject):
-            raise ValueError("subject must be supplied")
+            self.MissingRequiredField("subject")
         if not isinstance(self.subject, OrganismTaxonId):
             self.subject = OrganismTaxonId(self.subject)
 
         if self._is_empty(self.object):
-            raise ValueError("object must be supplied")
+            self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
 
         if self._is_empty(self.predicate):
-            raise ValueError("predicate must be supplied")
+            self.MissingRequiredField("predicate")
         if not isinstance(self.predicate, PredicateType):
             self.predicate = PredicateType(self.predicate)
 

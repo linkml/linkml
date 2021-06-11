@@ -1,5 +1,5 @@
 # Auto generated from python_types.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-09 21:49
+# Generation date: 2021-06-11 19:12
 # Schema: ptypes
 #
 # id: http://examples.org/linkml/test/ptypes
@@ -87,12 +87,12 @@ class Strings(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_string):
-            raise ValueError("mand_string must be supplied")
+            self.MissingRequiredField("mand_string")
         if not isinstance(self.mand_string, str):
             self.mand_string = str(self.mand_string)
 
         if self._is_empty(self.mand_multi_string):
-            raise ValueError("mand_multi_string must be supplied")
+            self.MissingRequiredField("mand_multi_string")
         if not isinstance(self.mand_multi_string, list):
             self.mand_multi_string = [self.mand_multi_string] if self.mand_multi_string is not None else []
         self.mand_multi_string = [v if isinstance(v, str) else str(v) for v in self.mand_multi_string]
@@ -164,12 +164,12 @@ class Integers(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_integer):
-            raise ValueError("mand_integer must be supplied")
+            self.MissingRequiredField("mand_integer")
         if not isinstance(self.mand_integer, int):
             self.mand_integer = int(self.mand_integer)
 
         if self._is_empty(self.mand_multi_integer):
-            raise ValueError("mand_multi_integer must be supplied")
+            self.MissingRequiredField("mand_multi_integer")
         if not isinstance(self.mand_multi_integer, list):
             self.mand_multi_integer = [self.mand_multi_integer] if self.mand_multi_integer is not None else []
         self.mand_multi_integer = [v if isinstance(v, int) else int(v) for v in self.mand_multi_integer]
@@ -203,12 +203,12 @@ class Booleans(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_boolean):
-            raise ValueError("mand_boolean must be supplied")
+            self.MissingRequiredField("mand_boolean")
         if not isinstance(self.mand_boolean, Bool):
             self.mand_boolean = Bool(self.mand_boolean)
 
         if self._is_empty(self.mand_multi_boolean):
-            raise ValueError("mand_multi_boolean must be supplied")
+            self.MissingRequiredField("mand_multi_boolean")
         if not isinstance(self.mand_multi_boolean, list):
             self.mand_multi_boolean = [self.mand_multi_boolean] if self.mand_multi_boolean is not None else []
         self.mand_multi_boolean = [v if isinstance(v, Bool) else Bool(v) for v in self.mand_multi_boolean]
@@ -242,12 +242,12 @@ class Floats(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_float):
-            raise ValueError("mand_float must be supplied")
+            self.MissingRequiredField("mand_float")
         if not isinstance(self.mand_float, float):
             self.mand_float = float(self.mand_float)
 
         if self._is_empty(self.mand_multi_float):
-            raise ValueError("mand_multi_float must be supplied")
+            self.MissingRequiredField("mand_multi_float")
         if not isinstance(self.mand_multi_float, list):
             self.mand_multi_float = [self.mand_multi_float] if self.mand_multi_float is not None else []
         self.mand_multi_float = [v if isinstance(v, float) else float(v) for v in self.mand_multi_float]
@@ -281,12 +281,12 @@ class Doubles(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_double):
-            raise ValueError("mand_double must be supplied")
+            self.MissingRequiredField("mand_double")
         if not isinstance(self.mand_double, float):
             self.mand_double = float(self.mand_double)
 
         if self._is_empty(self.mand_multi_double):
-            raise ValueError("mand_multi_double must be supplied")
+            self.MissingRequiredField("mand_multi_double")
         if not isinstance(self.mand_multi_double, list):
             self.mand_multi_double = [self.mand_multi_double] if self.mand_multi_double is not None else []
         self.mand_multi_double = [v if isinstance(v, float) else float(v) for v in self.mand_multi_double]
@@ -320,12 +320,12 @@ class Times(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_time):
-            raise ValueError("mand_time must be supplied")
+            self.MissingRequiredField("mand_time")
         if not isinstance(self.mand_time, XSDTime):
             self.mand_time = XSDTime(self.mand_time)
 
         if self._is_empty(self.mand_multi_time):
-            raise ValueError("mand_multi_time must be supplied")
+            self.MissingRequiredField("mand_multi_time")
         if not isinstance(self.mand_multi_time, list):
             self.mand_multi_time = [self.mand_multi_time] if self.mand_multi_time is not None else []
         self.mand_multi_time = [v if isinstance(v, XSDTime) else XSDTime(v) for v in self.mand_multi_time]
@@ -359,12 +359,12 @@ class Dates(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_date):
-            raise ValueError("mand_date must be supplied")
+            self.MissingRequiredField("mand_date")
         if not isinstance(self.mand_date, XSDDate):
             self.mand_date = XSDDate(self.mand_date)
 
         if self._is_empty(self.mand_multi_date):
-            raise ValueError("mand_multi_date must be supplied")
+            self.MissingRequiredField("mand_multi_date")
         if not isinstance(self.mand_multi_date, list):
             self.mand_multi_date = [self.mand_multi_date] if self.mand_multi_date is not None else []
         self.mand_multi_date = [v if isinstance(v, XSDDate) else XSDDate(v) for v in self.mand_multi_date]
@@ -398,12 +398,12 @@ class DateTimes(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_datetime):
-            raise ValueError("mand_datetime must be supplied")
+            self.MissingRequiredField("mand_datetime")
         if not isinstance(self.mand_datetime, XSDDateTime):
             self.mand_datetime = XSDDateTime(self.mand_datetime)
 
         if self._is_empty(self.mand_multi_datetime):
-            raise ValueError("mand_multi_datetime must be supplied")
+            self.MissingRequiredField("mand_multi_datetime")
         if not isinstance(self.mand_multi_datetime, list):
             self.mand_multi_datetime = [self.mand_multi_datetime] if self.mand_multi_datetime is not None else []
         self.mand_multi_datetime = [v if isinstance(v, XSDDateTime) else XSDDateTime(v) for v in self.mand_multi_datetime]
@@ -437,12 +437,12 @@ class URIorCURIEs(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_uriorcurie):
-            raise ValueError("mand_uriorcurie must be supplied")
+            self.MissingRequiredField("mand_uriorcurie")
         if not isinstance(self.mand_uriorcurie, URIorCURIE):
             self.mand_uriorcurie = URIorCURIE(self.mand_uriorcurie)
 
         if self._is_empty(self.mand_multi_uriorcurie):
-            raise ValueError("mand_multi_uriorcurie must be supplied")
+            self.MissingRequiredField("mand_multi_uriorcurie")
         if not isinstance(self.mand_multi_uriorcurie, list):
             self.mand_multi_uriorcurie = [self.mand_multi_uriorcurie] if self.mand_multi_uriorcurie is not None else []
         self.mand_multi_uriorcurie = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mand_multi_uriorcurie]
@@ -476,12 +476,12 @@ class URIs(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_uri):
-            raise ValueError("mand_uri must be supplied")
+            self.MissingRequiredField("mand_uri")
         if not isinstance(self.mand_uri, URI):
             self.mand_uri = URI(self.mand_uri)
 
         if self._is_empty(self.mand_multi_uri):
-            raise ValueError("mand_multi_uri must be supplied")
+            self.MissingRequiredField("mand_multi_uri")
         if not isinstance(self.mand_multi_uri, list):
             self.mand_multi_uri = [self.mand_multi_uri] if self.mand_multi_uri is not None else []
         self.mand_multi_uri = [v if isinstance(v, URI) else URI(v) for v in self.mand_multi_uri]
@@ -515,12 +515,12 @@ class NCNames(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_ncname):
-            raise ValueError("mand_ncname must be supplied")
+            self.MissingRequiredField("mand_ncname")
         if not isinstance(self.mand_ncname, NCName):
             self.mand_ncname = NCName(self.mand_ncname)
 
         if self._is_empty(self.mand_multi_ncname):
-            raise ValueError("mand_multi_ncname must be supplied")
+            self.MissingRequiredField("mand_multi_ncname")
         if not isinstance(self.mand_multi_ncname, list):
             self.mand_multi_ncname = [self.mand_multi_ncname] if self.mand_multi_ncname is not None else []
         self.mand_multi_ncname = [v if isinstance(v, NCName) else NCName(v) for v in self.mand_multi_ncname]
@@ -554,12 +554,12 @@ class ObjectIdentifiers(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_objectidentifier):
-            raise ValueError("mand_objectidentifier must be supplied")
+            self.MissingRequiredField("mand_objectidentifier")
         if not isinstance(self.mand_objectidentifier, ElementIdentifier):
             self.mand_objectidentifier = ElementIdentifier(self.mand_objectidentifier)
 
         if self._is_empty(self.mand_multi_objectidentifier):
-            raise ValueError("mand_multi_objectidentifier must be supplied")
+            self.MissingRequiredField("mand_multi_objectidentifier")
         if not isinstance(self.mand_multi_objectidentifier, list):
             self.mand_multi_objectidentifier = [self.mand_multi_objectidentifier] if self.mand_multi_objectidentifier is not None else []
         self.mand_multi_objectidentifier = [v if isinstance(v, ElementIdentifier) else ElementIdentifier(v) for v in self.mand_multi_objectidentifier]
@@ -593,12 +593,12 @@ class NodeIdentifiers(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_nodeidentifier):
-            raise ValueError("mand_nodeidentifier must be supplied")
+            self.MissingRequiredField("mand_nodeidentifier")
         if not isinstance(self.mand_nodeidentifier, NodeIdentifier):
             self.mand_nodeidentifier = NodeIdentifier(self.mand_nodeidentifier)
 
         if self._is_empty(self.mand_multi_nodeidentifier):
-            raise ValueError("mand_multi_nodeidentifier must be supplied")
+            self.MissingRequiredField("mand_multi_nodeidentifier")
         if not isinstance(self.mand_multi_nodeidentifier, list):
             self.mand_multi_nodeidentifier = [self.mand_multi_nodeidentifier] if self.mand_multi_nodeidentifier is not None else []
         self.mand_multi_nodeidentifier = [v if isinstance(v, NodeIdentifier) else NodeIdentifier(v) for v in self.mand_multi_nodeidentifier]
@@ -632,12 +632,12 @@ class InheritedTypes(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_InheritedType):
-            raise ValueError("mand_InheritedType must be supplied")
+            self.MissingRequiredField("mand_InheritedType")
         if not isinstance(self.mand_InheritedType, InheritedType):
             self.mand_InheritedType = InheritedType(self.mand_InheritedType)
 
         if self._is_empty(self.mand_multi_InheritedType):
-            raise ValueError("mand_multi_InheritedType must be supplied")
+            self.MissingRequiredField("mand_multi_InheritedType")
         if not isinstance(self.mand_multi_InheritedType, list):
             self.mand_multi_InheritedType = [self.mand_multi_InheritedType] if self.mand_multi_InheritedType is not None else []
         self.mand_multi_InheritedType = [v if isinstance(v, InheritedType) else InheritedType(v) for v in self.mand_multi_InheritedType]
@@ -671,12 +671,12 @@ class InheritedType2s(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_InheritedType2):
-            raise ValueError("mand_InheritedType2 must be supplied")
+            self.MissingRequiredField("mand_InheritedType2")
         if not isinstance(self.mand_InheritedType2, InheritedType2):
             self.mand_InheritedType2 = InheritedType2(self.mand_InheritedType2)
 
         if self._is_empty(self.mand_multi_InheritedType2):
-            raise ValueError("mand_multi_InheritedType2 must be supplied")
+            self.MissingRequiredField("mand_multi_InheritedType2")
         if not isinstance(self.mand_multi_InheritedType2, list):
             self.mand_multi_InheritedType2 = [self.mand_multi_InheritedType2] if self.mand_multi_InheritedType2 is not None else []
         self.mand_multi_InheritedType2 = [v if isinstance(v, InheritedType2) else InheritedType2(v) for v in self.mand_multi_InheritedType2]
@@ -710,12 +710,12 @@ class InheritedType3s(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.mand_InheritedType3):
-            raise ValueError("mand_InheritedType3 must be supplied")
+            self.MissingRequiredField("mand_InheritedType3")
         if not isinstance(self.mand_InheritedType3, InheritedType3):
             self.mand_InheritedType3 = InheritedType3(self.mand_InheritedType3)
 
         if self._is_empty(self.mand_multi_InheritedType3):
-            raise ValueError("mand_multi_InheritedType3 must be supplied")
+            self.MissingRequiredField("mand_multi_InheritedType3")
         if not isinstance(self.mand_multi_InheritedType3, list):
             self.mand_multi_InheritedType3 = [self.mand_multi_InheritedType3] if self.mand_multi_InheritedType3 is not None else []
         self.mand_multi_InheritedType3 = [v if isinstance(v, InheritedType3) else InheritedType3(v) for v in self.mand_multi_InheritedType3]
@@ -747,7 +747,7 @@ class KeyedElement(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, KeyedElementName):
             self.name = KeyedElementName(self.name)
 
@@ -774,7 +774,7 @@ class IdentifiedElement(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, IdentifiedElementId):
             self.id = IdentifiedElementId(self.id)
 
