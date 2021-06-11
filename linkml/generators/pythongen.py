@@ -100,7 +100,7 @@ class PythonGenerator(Generator):
         head = f'''# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
-#''' if self.schema.generation_date else ''
+#''' if self.emit_metadata and self.schema.generation_date else ''
 
         return f'''{head}
 # id: {self.schema.id}
@@ -604,7 +604,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         # You can't have required elements after optional elements in the parent class
         if slot.required:
             rlines.append(f'if self._is_empty(self.{aliased_slot_name}):')
-            rlines.append(f'\traise ValueError("{aliased_slot_name} must be supplied")')
+            rlines.append(f'\tself.MissingRequiredField("{aliased_slot_name}")')
 
         # Generate the type co-orcion for the various types.
         indent = len(f'self.{aliased_slot_name} = [') * ' '

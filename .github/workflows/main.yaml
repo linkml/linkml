@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  unittests-n-commits:
+  unittests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,18 +22,31 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pipenv-to-requirements
-        pipenv_to_requirements
+        pip install pipenv
         pipenv install --dev
 
     - name: Test with unittest
       run: |
         pipenv run python -m unittest discover -p 'test_*.py'
 
-    - name: Check in requirements.txt and requirements-dev.txt
-      if: ${{ matrix.python-version == '3.8' }}
+  commits:
+    needs: unittests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Update requirements
       run: |
+        python -m pip install --upgrade pip
+        pip install pipenv-to-requirements
+        pipenv_to_requirements
         git add requirements*.txt
+
         if [[ ! -z $(git status -s requirements*.txt) ]]
         then
           git config --local user.email "action@github.com"
@@ -43,8 +56,10 @@ jobs:
         fi
 
     - name: Check in test outputs
-      if: ${{ matrix.python-version == '3.8' }}
       run: |
+        pip install pipenv
+        pipenv install --dev
+        pipenv run python -m unittest discover -p 'test_*.py'
         find tests -name output -exec git add --force {} \;
         if [[ ! -z $(git status -s tests) ]]
         then
@@ -54,13 +69,12 @@ jobs:
           git push
         fi
 
-    - name: Check in updated notebooks
-      if: ${{ matrix.python-version == '3.8' }}
+    - name: Check in test updated notebooks
       run: |
-        if [[ ! -z $(git status -s notebooks) ]]
-        then
-        git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m 'Automated adding updated notebooks' notebooks
-          git push
-        fi
+      if [[ ! -z $(git status -s notebooks) ]]
+      then
+      git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m 'Automated adding updated notebooks' notebooks
+        git push
+      fi
