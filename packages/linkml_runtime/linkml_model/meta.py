@@ -139,7 +139,7 @@ class Element(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, ElementName):
             self.name = ElementName(self.name)
 
@@ -269,12 +269,12 @@ class SchemaDefinition(Element):
         if self.default_prefix is None:
             self.default_prefix = sfx(str(self.id))
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, SchemaDefinitionName):
             self.name = SchemaDefinitionName(self.name)
 
         if self._is_empty(self.id):
-            raise ValueError("id must be supplied")
+            self.MissingRequiredField("id")
         if not isinstance(self.id, URI):
             self.id = URI(self.id)
 
@@ -355,7 +355,7 @@ class TypeDefinition(Element):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, TypeDefinitionName):
             self.name = TypeDefinitionName(self.name)
 
@@ -390,7 +390,7 @@ class SubsetDefinition(Element):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, SubsetDefinitionName):
             self.name = SubsetDefinitionName(self.name)
 
@@ -483,7 +483,7 @@ class EnumDefinition(Element):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, EnumDefinitionName):
             self.name = EnumDefinitionName(self.name)
 
@@ -550,7 +550,7 @@ class SlotDefinition(Definition):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, SlotDefinitionName):
             self.name = SlotDefinitionName(self.name)
 
@@ -677,7 +677,7 @@ class ClassDefinition(Definition):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
-            raise ValueError("name must be supplied")
+            self.MissingRequiredField("name")
         if not isinstance(self.name, ClassDefinitionName):
             self.name = ClassDefinitionName(self.name)
 
@@ -737,12 +737,12 @@ class Prefix(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.prefix_prefix):
-            raise ValueError("prefix_prefix must be supplied")
+            self.MissingRequiredField("prefix_prefix")
         if not isinstance(self.prefix_prefix, PrefixPrefixPrefix):
             self.prefix_prefix = PrefixPrefixPrefix(self.prefix_prefix)
 
         if self._is_empty(self.prefix_reference):
-            raise ValueError("prefix_reference must be supplied")
+            self.MissingRequiredField("prefix_reference")
         if not isinstance(self.prefix_reference, URI):
             self.prefix_reference = URI(self.prefix_reference)
 
@@ -766,12 +766,12 @@ class LocalName(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.local_name_source):
-            raise ValueError("local_name_source must be supplied")
+            self.MissingRequiredField("local_name_source")
         if not isinstance(self.local_name_source, LocalNameLocalNameSource):
             self.local_name_source = LocalNameLocalNameSource(self.local_name_source)
 
         if self._is_empty(self.local_name_value):
-            raise ValueError("local_name_value must be supplied")
+            self.MissingRequiredField("local_name_value")
         if not isinstance(self.local_name_value, str):
             self.local_name_value = str(self.local_name_value)
 
@@ -820,12 +820,12 @@ class AltDescription(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.source):
-            raise ValueError("source must be supplied")
+            self.MissingRequiredField("source")
         if not isinstance(self.source, AltDescriptionSource):
             self.source = AltDescriptionSource(self.source)
 
         if self._is_empty(self.description):
-            raise ValueError("description must be supplied")
+            self.MissingRequiredField("description")
         if not isinstance(self.description, str):
             self.description = str(self.description)
 
@@ -866,7 +866,7 @@ class PermissibleValue(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.text):
-            raise ValueError("text must be supplied")
+            self.MissingRequiredField("text")
         if not isinstance(self.text, PermissibleValueText):
             self.text = PermissibleValueText(self.text)
 

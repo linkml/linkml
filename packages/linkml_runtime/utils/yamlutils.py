@@ -231,6 +231,13 @@ class YAMLRoot(JsonObj):
                     self[slot_name] = dict_slot[0]
             self._normalize_inlined_as_dict(slot_name, slot_type, key_name, keyed)
 
+    # ==================
+    # Error intercepts
+    # ==================
+    def MissingRequiredField(self, field_name: str) -> None:
+        """ Generic loader error handler """
+        raise ValueError(f"{field_name} must be supplied")
+
 
 def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
     """ YAML callback -- used to filter out empty values (None, {}, [] and false)

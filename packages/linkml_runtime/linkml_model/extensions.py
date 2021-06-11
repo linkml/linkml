@@ -58,12 +58,12 @@ class Extension(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.tag):
-            raise ValueError("tag must be supplied")
+            self.MissingRequiredField("tag")
         if not isinstance(self.tag, URIorCURIE):
             self.tag = URIorCURIE(self.tag)
 
         if self._is_empty(self.value):
-            raise ValueError("value must be supplied")
+            self.MissingRequiredField("value")
         if not isinstance(self.value, str):
             self.value = str(self.value)
 
