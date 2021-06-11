@@ -1,0 +1,23 @@
+# ID is omitted
+# Name is omitted
+description: >-
+  This is an example of an imported module
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  include_core: https://w3id.org/mixs/include_core/
+default_prefix: include_core
+
+slots:
+  - name: id
+    identifier: true
+    required: true
+
+classes:
+  - name: root
+    description: >-
+      root class
+    slots:
+      - id
+

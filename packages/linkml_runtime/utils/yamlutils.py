@@ -111,6 +111,10 @@ class YAMLRoot(JsonObj):
         @param is_list: True means inlined as list
         """
         raw_slot: Union[list, dict, JsonObj] = self[slot_name]
+        if raw_slot is None:
+            raw_slot = []
+        elif not isinstance(raw_slot, (dict, list, JsonObj)):
+            raw_slot = [raw_slot]
         cooked_slot = list() if is_list else dict()
         cooked_keys = set()
 
