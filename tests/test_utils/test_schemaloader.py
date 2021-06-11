@@ -23,6 +23,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
         self.env.generate_single_file(base_name + '.errs', lambda: '\n'.join(loader.synopsis.errors()),
                                       filtr=json_metadata_filter, value_is_returned=True)
 
+    @unittest.skip("Disabled until we get SchemaDefinitionList implemented")
     def test_basic_merge(self):
         """ Test the basic merge paths """
         logstream = StringIO()
@@ -35,6 +36,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
         self.eval_loader('merge1', logger=logger)
         self.assertIn("Overlapping subset and slot names: s1, s2", logstream.getvalue().strip())
 
+    @unittest.skip("Disabled until we get SchemaDefinitionList implemented")
     def test_mergeerror1(self):
         """ Test conflicting definitions path """
         fn = env.input_path('mergeerror1.yaml')

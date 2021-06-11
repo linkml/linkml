@@ -49,7 +49,7 @@ class SchemaLoader:
             self.schema = data
         else:
             self.schema = load_raw_schema(data, base_dir=base_dir, merge_modules=mergeimports,
-                                          emit_metadata=emit_metadata, source_file_date=source_file_date,
+                                          source_file_date=source_file_date,
                                           source_file_size=source_file_size)
         # Map from URI to source and version tuple
         self.loaded: OrderedDict[str, Tuple[str, str]] = {self.schema.id: (self.schema.source_file, self.schema.version)}
