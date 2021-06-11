@@ -72,10 +72,10 @@ jobs:
 
     - name: Check in test updated notebooks
       run: |
-      if [[ ! -z $(git status -s notebooks) ]]
-      then
-      git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m 'Automated adding updated notebooks' notebooks
-        git push
-      fi
+        if [[ ! -z $(git status -s notebooks) ]]
+        then
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m 'Automated adding updated notebooks' notebooks
+          git push
+        fi
