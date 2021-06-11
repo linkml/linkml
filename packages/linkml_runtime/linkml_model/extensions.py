@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-05-10 17:13
+# Generation date: 2021-06-11 08:45
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -21,7 +21,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from .types import String, Uriorcurie
+from linkml_runtime.linkml_model.types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
