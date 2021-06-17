@@ -3,7 +3,7 @@ from typing import Union, TextIO, Optional, Dict, Tuple
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
 
 from linkml.utils.generator import Generator, shared_arguments
