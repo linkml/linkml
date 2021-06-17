@@ -400,5 +400,5 @@ Note: this list will be replaced by the [linkml registry](https://github.com/lin
  * [Knowledge Graph Change Language](https://cmungall.github.io/ontology-change-language/)
  * https://github.com/diatomsRcool/collections-attribution-model
  * https://github.com/cmungall/dasher/tree/master/src/schema
- * CCDH (todo: add link)
+ * [Cancer Research Data Commons - Harmonized Model](https://cancerdhc.github.io/ccdhmodel/), developed by the NIH [Center for Cancer Data Harmonization](https://harmonization.datacommons.cancer.gov/)
  * [HOT Ecocystem termCI model](https://github.com/HOT-Ecosystem/TermCI-model)
