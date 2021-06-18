@@ -7,7 +7,7 @@ This is an abstract class that can be mixed in with different kinds of gene prod
 URI: [biolink:GeneProductIsoformMixin](https://w3id.org/biolink/vocab/GeneProductIsoformMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[GeneProductMixin],[ProteinIsoform]uses%20-.->[GeneProductIsoformMixin&#124;synonym(i):label_type%20*;xref(i):iri_type%20*;name(i):symbol_type%20%3F],[RNAProductIsoform]uses%20-.->[GeneProductIsoformMixin],[GeneProductMixin]^-[GeneProductIsoformMixin],[ProteinIsoform],[RNAProductIsoform])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[GeneProductMixin],[ProteinIsoform]uses%20-.->[GeneProductIsoformMixin&#124;synonym(i):label_type%20*;xref(i):iri_type%20*;name(i):symbol_type%20%3F],[RNAProductIsoform]uses%20-.->[GeneProductIsoformMixin],[GeneProductMixin]^-[GeneProductIsoformMixin],[ProteinIsoform],[RNAProductIsoform])](https://yuml.me/diagram/nofunky;dir:TB/class/[GeneProductMixin],[ProteinIsoform]uses%20-.->[GeneProductIsoformMixin&#124;synonym(i):label_type%20*;xref(i):iri_type%20*;name(i):symbol_type%20%3F],[RNAProductIsoform]uses%20-.->[GeneProductIsoformMixin],[GeneProductMixin]^-[GeneProductIsoformMixin],[ProteinIsoform],[RNAProductIsoform])
 
 ## Parents
 

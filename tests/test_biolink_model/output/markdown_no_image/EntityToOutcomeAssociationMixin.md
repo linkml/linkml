@@ -7,7 +7,7 @@ An association between some entity and an outcome
 URI: [biolink:EntityToOutcomeAssociationMixin](https://w3id.org/biolink/vocab/EntityToOutcomeAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Outcome],[Outcome]<object%201..1-++[EntityToOutcomeAssociationMixin],[ExposureEventToOutcomeAssociation]uses%20-.->[EntityToOutcomeAssociationMixin],[ExposureEventToOutcomeAssociation])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Outcome],[Outcome]<object%201..1-++[EntityToOutcomeAssociationMixin],[ExposureEventToOutcomeAssociation]uses%20-.->[EntityToOutcomeAssociationMixin],[ExposureEventToOutcomeAssociation])](https://yuml.me/diagram/nofunky;dir:TB/class/[Outcome],[Outcome]<object%201..1-++[EntityToOutcomeAssociationMixin],[ExposureEventToOutcomeAssociation]uses%20-.->[EntityToOutcomeAssociationMixin],[ExposureEventToOutcomeAssociation])
 
 ## Mixin for
 

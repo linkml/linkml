@@ -7,7 +7,7 @@
 URI: [https://example.com/test65/NamedThing](https://example.com/test65/NamedThing)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing&#124;subject:string%20%3F]^-[ChildOfNamedThing],[ChildOfNamedThing])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing&#124;subject:string%20%3F]^-[ChildOfNamedThing],[ChildOfNamedThing])](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing&#124;subject:string%20%3F]^-[ChildOfNamedThing],[ChildOfNamedThing])
 
 ## Children
 

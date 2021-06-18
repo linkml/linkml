@@ -7,7 +7,7 @@ Qualifier for frequency type associations
 URI: [biolink:FrequencyQualifierMixin](https://w3id.org/biolink/vocab/FrequencyQualifierMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[VariantToPopulationAssociation]uses%20-.->[FrequencyQualifierMixin&#124;frequency_qualifier:frequency_value%20%3F],[FrequencyQualifierMixin]^-[EntityToFeatureOrDiseaseQualifiersMixin],[VariantToPopulationAssociation],[EntityToFeatureOrDiseaseQualifiersMixin])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[VariantToPopulationAssociation]uses%20-.->[FrequencyQualifierMixin&#124;frequency_qualifier:frequency_value%20%3F],[FrequencyQualifierMixin]^-[EntityToFeatureOrDiseaseQualifiersMixin],[VariantToPopulationAssociation],[EntityToFeatureOrDiseaseQualifiersMixin])](https://yuml.me/diagram/nofunky;dir:TB/class/[VariantToPopulationAssociation]uses%20-.->[FrequencyQualifierMixin&#124;frequency_qualifier:frequency_value%20%3F],[FrequencyQualifierMixin]^-[EntityToFeatureOrDiseaseQualifiersMixin],[VariantToPopulationAssociation],[EntityToFeatureOrDiseaseQualifiersMixin])
 
 ## Children
 

@@ -1,7 +1,7 @@
-<img src="http://yuml.me/diagram/nofunky;dir:TB/class/[Root]^-[Children|root_id:string],[Children]^-[Child2|description:string;root_id(i):string],[Children]^-[Child1|root_id(i):string],[Child2]^-[Child22|angry:boolean;description(i):string;root_id(i):string],[Child2]^-[Child21|description(i):string;root_id(i):string],[Child22],[Child21],[Child1]"/>
+<img src="https://yuml.me/diagram/nofunky;dir:TB/class/[Root]^-[Children|root_id:string],[Children]^-[Child2|description:string;root_id(i):string],[Children]^-[Child1|root_id(i):string],[Child2]^-[Child22|angry:boolean;description(i):string;root_id(i):string],[Child2]^-[Child21|description(i):string;root_id(i):string],[Child22],[Child21],[Child1]"/>
 
 -----
-http://yuml.me/diagram/nofunky;dir:TB/class/[Root]^-[Children|root_id:string],[Children]^-[Child2|description:string;root_id(i):string],[Children]^-[Child1|root_id(i):string],[Child2]^-[Child22|angry:boolean;description(i):string;root_id(i):string],[Child2]^-[Child21|description(i):string;root_id(i):string],[Child22],[Child21],[Child1]
+https://yuml.me/diagram/nofunky;dir:TB/class/[Root]^-[Children|root_id:string],[Children]^-[Child2|description:string;root_id(i):string],[Children]^-[Child1|root_id(i):string],[Child2]^-[Child22|angry:boolean;description(i):string;root_id(i):string],[Child2]^-[Child21|description(i):string;root_id(i):string],[Child22],[Child21],[Child1]
 
 BASE <http://example.org/model/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

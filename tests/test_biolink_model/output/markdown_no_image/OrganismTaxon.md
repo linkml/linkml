@@ -7,7 +7,7 @@ A classification of a set of organisms. Example instances: NCBITaxon:9606 (Homo 
 URI: [biolink:OrganismTaxon](https://w3id.org/biolink/vocab/OrganismTaxon)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[ThingWithTaxon],[TaxonomicRank],[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxonToEnvironmentAssociation],[OrganismTaxonToEntityAssociation],[OrganismTaxon]<subclass%20of%200..*-%20[OrganismTaxon&#124;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[TaxonomicRank]<has%20taxonomic%20rank%200..1-++[OrganismTaxon],[ThingWithTaxon]-%20in%20taxon%200..*>[OrganismTaxon],[OrganismTaxonToEntityAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToEnvironmentAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonAssociation]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonInteraction]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonInteraction]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonSpecialization]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonSpecialization]-%20subject%201..1>[OrganismTaxon],[OrganismTaxon]^-[BioticExposure],[NamedThing]^-[OrganismTaxon],[NamedThing],[BioticExposure],[Attribute],[Agent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[ThingWithTaxon],[TaxonomicRank],[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxonToEnvironmentAssociation],[OrganismTaxonToEntityAssociation],[OrganismTaxon]<subclass%20of%200..*-%20[OrganismTaxon&#124;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[TaxonomicRank]<has%20taxonomic%20rank%200..1-++[OrganismTaxon],[ThingWithTaxon]-%20in%20taxon%200..*>[OrganismTaxon],[OrganismTaxonToEntityAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToEnvironmentAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonAssociation]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonInteraction]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonInteraction]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonSpecialization]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonSpecialization]-%20subject%201..1>[OrganismTaxon],[OrganismTaxon]^-[BioticExposure],[NamedThing]^-[OrganismTaxon],[NamedThing],[BioticExposure],[Attribute],[Agent])](https://yuml.me/diagram/nofunky;dir:TB/class/[ThingWithTaxon],[TaxonomicRank],[OrganismTaxonToOrganismTaxonSpecialization],[OrganismTaxonToOrganismTaxonInteraction],[OrganismTaxonToOrganismTaxonAssociation],[OrganismTaxonToEnvironmentAssociation],[OrganismTaxonToEntityAssociation],[OrganismTaxon]<subclass%20of%200..*-%20[OrganismTaxon&#124;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[TaxonomicRank]<has%20taxonomic%20rank%200..1-++[OrganismTaxon],[ThingWithTaxon]-%20in%20taxon%200..*>[OrganismTaxon],[OrganismTaxonToEntityAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToEnvironmentAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonAssociation]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonAssociation]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonInteraction]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonInteraction]-%20subject%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonSpecialization]-%20object%201..1>[OrganismTaxon],[OrganismTaxonToOrganismTaxonSpecialization]-%20subject%201..1>[OrganismTaxon],[OrganismTaxon]^-[BioticExposure],[NamedThing]^-[OrganismTaxon],[NamedThing],[BioticExposure],[Attribute],[Agent])
 
 ## Identifier prefixes
 
@@ -48,14 +48,6 @@ URI: [biolink:OrganismTaxon](https://w3id.org/biolink/vocab/OrganismTaxon)
 
 ### Inherited from named thing:
 
- * [description](description.md)  <sub>OPT</sub>
-     * Description: a human-readable description of an entity
-     * Range: [NarrativeText](types/NarrativeText.md)
-     * in subsets: (translator_minimal)
- * [has attribute](has_attribute.md)  <sub>0..\*</sub>
-     * Description: connects any entity to an attribute
-     * Range: [Attribute](Attribute.md)
-     * in subsets: (samples)
  * [id](id.md)  <sub>REQ</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
@@ -64,21 +56,29 @@ URI: [biolink:OrganismTaxon](https://w3id.org/biolink/vocab/OrganismTaxon)
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
+ * [type](type.md)  <sub>OPT</sub>
+     * Range: [String](types/String.md)
  * [name](name.md)  <sub>OPT</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
-     * Range: [NamedThing](NamedThing.md)
- * [provided by](provided_by.md)  <sub>0..\*</sub>
-     * Description: connects an association to the agent (person, organization or group) that provided it
-     * Range: [Agent](Agent.md)
+ * [description](description.md)  <sub>OPT</sub>
+     * Description: a human-readable description of an entity
+     * Range: [NarrativeText](types/NarrativeText.md)
+     * in subsets: (translator_minimal)
  * [source](source.md)  <sub>OPT</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
- * [type](type.md)  <sub>OPT</sub>
-     * Range: [String](types/String.md)
+ * [provided by](provided_by.md)  <sub>0..\*</sub>
+     * Description: connects an association to the agent (person, organization or group) that provided it
+     * Range: [Agent](Agent.md)
+ * [has attribute](has_attribute.md)  <sub>0..\*</sub>
+     * Description: connects any entity to an attribute
+     * Range: [Attribute](Attribute.md)
+     * in subsets: (samples)
+ * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
+     * Range: [NamedThing](NamedThing.md)
 
 ## Other properties
 

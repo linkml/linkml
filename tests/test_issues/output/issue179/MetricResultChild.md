@@ -7,7 +7,7 @@
 URI: [http://example.org/sample/example1/MetricResultChild](http://example.org/sample/example1/MetricResultChild)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[MetricResultChild&#124;result_child_slot:string%20%3F;has_child_messages:string%20%3F;evaluated_using(i):string%20%3F;has_source(i):string%20%3F;has_status(i):string%20%3F;description(i):string%20%3F;has_messages(i):string%20%3F]uses%20-.->[HasMessagesChild],[MetricResult]^-[MetricResultChild],[MetricResult],[HasMessagesChild])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MetricResultChild&#124;result_child_slot:string%20%3F;has_child_messages:string%20%3F;evaluated_using(i):string%20%3F;has_source(i):string%20%3F;has_status(i):string%20%3F;description(i):string%20%3F;has_messages(i):string%20%3F]uses%20-.->[HasMessagesChild],[MetricResult]^-[MetricResultChild],[MetricResult],[HasMessagesChild])](https://yuml.me/diagram/nofunky;dir:TB/class/[MetricResultChild&#124;result_child_slot:string%20%3F;has_child_messages:string%20%3F;evaluated_using(i):string%20%3F;has_source(i):string%20%3F;has_status(i):string%20%3F;description(i):string%20%3F;has_messages(i):string%20%3F]uses%20-.->[HasMessagesChild],[MetricResult]^-[MetricResultChild],[MetricResult],[HasMessagesChild])
 
 ## Parents
 
@@ -27,21 +27,21 @@ URI: [http://example.org/sample/example1/MetricResultChild](http://example.org/s
 
 ### Inherited from metric result:
 
- * [description](description.md)  <sub>OPT</sub>
-     * Range: [String](types/String.md)
  * [evaluated using](evaluated_using.md)  <sub>OPT</sub>
      * Range: [String](types/String.md)
  * [has source](has_source.md)  <sub>OPT</sub>
      * Range: [String](types/String.md)
  * [has status](has_status.md)  <sub>OPT</sub>
      * Range: [String](types/String.md)
-
-### Mixed in from has messages child:
-
- * [has child messages](has_child_messages.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>OPT</sub>
      * Range: [String](types/String.md)
 
 ### Mixed in from has messages class:
 
  * [has messages](has_messages.md)  <sub>OPT</sub>
+     * Range: [String](types/String.md)
+
+### Mixed in from has messages child:
+
+ * [has child messages](has_child_messages.md)  <sub>OPT</sub>
      * Range: [String](types/String.md)

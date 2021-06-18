@@ -7,7 +7,7 @@ Biolink Model root class for entity annotations.
 URI: [biolink:Annotation](https://w3id.org/biolink/vocab/Annotation)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[Attribute],[Annotation]^-[QuantityValue],[Annotation]^-[Attribute])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[Attribute],[Annotation]^-[QuantityValue],[Annotation]^-[Attribute])](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[Attribute],[Annotation]^-[QuantityValue],[Annotation]^-[Attribute])
 
 ## Children
 

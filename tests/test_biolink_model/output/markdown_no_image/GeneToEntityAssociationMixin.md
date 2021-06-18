@@ -7,7 +7,7 @@
 URI: [biolink:GeneToEntityAssociationMixin](https://w3id.org/biolink/vocab/GeneToEntityAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[GeneOrGeneProduct]<subject%201..1-++[GeneToEntityAssociationMixin],[GeneToPhenotypicFeatureAssociation]uses%20-.->[GeneToEntityAssociationMixin],[GeneToDiseaseAssociation]uses%20-.->[GeneToEntityAssociationMixin],[GeneToPhenotypicFeatureAssociation],[GeneToDiseaseAssociation],[GeneOrGeneProduct])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[GeneOrGeneProduct]<subject%201..1-++[GeneToEntityAssociationMixin],[GeneToPhenotypicFeatureAssociation]uses%20-.->[GeneToEntityAssociationMixin],[GeneToDiseaseAssociation]uses%20-.->[GeneToEntityAssociationMixin],[GeneToPhenotypicFeatureAssociation],[GeneToDiseaseAssociation],[GeneOrGeneProduct])](https://yuml.me/diagram/nofunky;dir:TB/class/[GeneOrGeneProduct]<subject%201..1-++[GeneToEntityAssociationMixin],[GeneToPhenotypicFeatureAssociation]uses%20-.->[GeneToEntityAssociationMixin],[GeneToDiseaseAssociation]uses%20-.->[GeneToEntityAssociationMixin],[GeneToPhenotypicFeatureAssociation],[GeneToDiseaseAssociation],[GeneOrGeneProduct])
 
 ## Mixin for
 

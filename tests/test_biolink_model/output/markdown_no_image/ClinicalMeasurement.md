@@ -7,7 +7,7 @@ A clinical measurement is a special kind of attribute which results from a labor
 URI: [biolink:ClinicalMeasurement](https://w3id.org/biolink/vocab/ClinicalMeasurement)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[NamedThing],[OntologyClass]<has%20attribute%20type%201..1-++[ClinicalMeasurement&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F],[ClinicalAttribute]^-[ClinicalMeasurement],[ClinicalAttribute])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[NamedThing],[OntologyClass]<has%20attribute%20type%201..1-++[ClinicalMeasurement&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F],[ClinicalAttribute]^-[ClinicalMeasurement],[ClinicalAttribute])](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[NamedThing],[OntologyClass]<has%20attribute%20type%201..1-++[ClinicalMeasurement&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F],[ClinicalAttribute]^-[ClinicalMeasurement],[ClinicalAttribute])
 
 ## Parents
 
@@ -29,13 +29,13 @@ URI: [biolink:ClinicalMeasurement](https://w3id.org/biolink/vocab/ClinicalMeasur
  * [attribute➞name](attribute_name.md)  <sub>OPT</sub>
      * Description: The human-readable 'attribute name' can be set to a string which reflects its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation or it can default to the name associated with the 'has attribute type' slot ontology term.
      * Range: [LabelType](types/LabelType.md)
- * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
-     * Description: connects an attribute to a value
-     * Range: [NamedThing](NamedThing.md)
-     * in subsets: (samples)
  * [has quantitative value](has_quantitative_value.md)  <sub>0..\*</sub>
      * Description: connects an attribute to a value
      * Range: [QuantityValue](QuantityValue.md)
+     * in subsets: (samples)
+ * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
+     * Description: connects an attribute to a value
+     * Range: [NamedThing](NamedThing.md)
      * in subsets: (samples)
  * [iri](iri.md)  <sub>OPT</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.

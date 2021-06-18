@@ -7,7 +7,7 @@ An interaction between a molecular entity and another entity
 URI: [biolink:MolecularEntityToEntityAssociationMixin](https://w3id.org/biolink/vocab/MolecularEntityToEntityAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[MolecularEntity]<subject%201..1-%20[MolecularEntityToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[DrugToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[ChemicalToEntityAssociationMixin],[MolecularEntity],[DrugToEntityAssociationMixin],[ChemicalToEntityAssociationMixin])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MolecularEntity]<subject%201..1-%20[MolecularEntityToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[DrugToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[ChemicalToEntityAssociationMixin],[MolecularEntity],[DrugToEntityAssociationMixin],[ChemicalToEntityAssociationMixin])](https://yuml.me/diagram/nofunky;dir:TB/class/[MolecularEntity]<subject%201..1-%20[MolecularEntityToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[DrugToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[ChemicalToEntityAssociationMixin],[MolecularEntity],[DrugToEntityAssociationMixin],[ChemicalToEntityAssociationMixin])
 
 ## Children
 

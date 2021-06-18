@@ -7,7 +7,7 @@ an entity that can either be directly located on a genome (gene, transcript, exo
 URI: [biolink:GenomicEntity](https://w3id.org/biolink/vocab/GenomicEntity)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Transcript],[SequenceVariant],[SequenceFeatureRelationship],[ReagentTargetedGene],[Protein],[OrganismTaxon],[NamedThing],[MolecularEntity],[Haplotype],[Genotype],[GenomicSequenceLocalization],[GenomicSequenceLocalization]-%20object%201..1>[GenomicEntity&#124;has_biological_sequence:biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[GenomicSequenceLocalization]-%20subject%201..1>[GenomicEntity],[SequenceFeatureRelationship]-%20object%201..1>[GenomicEntity],[SequenceFeatureRelationship]-%20subject%201..1>[GenomicEntity],[GenomicEntity]^-[Transcript],[GenomicEntity]^-[SequenceVariant],[GenomicEntity]^-[ReagentTargetedGene],[GenomicEntity]^-[Protein],[GenomicEntity]^-[Haplotype],[GenomicEntity]^-[Genotype],[GenomicEntity]^-[GenomicBackgroundExposure],[GenomicEntity]^-[Genome],[GenomicEntity]^-[Gene],[GenomicEntity]^-[Exon],[GenomicEntity]^-[CodingSequence],[MolecularEntity]^-[GenomicEntity],[GenomicBackgroundExposure],[Genome],[Gene],[Exon],[CodingSequence],[Attribute],[Agent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Transcript],[SequenceVariant],[SequenceFeatureRelationship],[ReagentTargetedGene],[Protein],[OrganismTaxon],[NamedThing],[MolecularEntity],[Haplotype],[Genotype],[GenomicSequenceLocalization],[GenomicSequenceLocalization]-%20object%201..1>[GenomicEntity&#124;has_biological_sequence:biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[GenomicSequenceLocalization]-%20subject%201..1>[GenomicEntity],[SequenceFeatureRelationship]-%20object%201..1>[GenomicEntity],[SequenceFeatureRelationship]-%20subject%201..1>[GenomicEntity],[GenomicEntity]^-[Transcript],[GenomicEntity]^-[SequenceVariant],[GenomicEntity]^-[ReagentTargetedGene],[GenomicEntity]^-[Protein],[GenomicEntity]^-[Haplotype],[GenomicEntity]^-[Genotype],[GenomicEntity]^-[GenomicBackgroundExposure],[GenomicEntity]^-[Genome],[GenomicEntity]^-[Gene],[GenomicEntity]^-[Exon],[GenomicEntity]^-[CodingSequence],[MolecularEntity]^-[GenomicEntity],[GenomicBackgroundExposure],[Genome],[Gene],[Exon],[CodingSequence],[Attribute],[Agent])](https://yuml.me/diagram/nofunky;dir:TB/class/[Transcript],[SequenceVariant],[SequenceFeatureRelationship],[ReagentTargetedGene],[Protein],[OrganismTaxon],[NamedThing],[MolecularEntity],[Haplotype],[Genotype],[GenomicSequenceLocalization],[GenomicSequenceLocalization]-%20object%201..1>[GenomicEntity&#124;has_biological_sequence:biological_sequence%20%3F;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[GenomicSequenceLocalization]-%20subject%201..1>[GenomicEntity],[SequenceFeatureRelationship]-%20object%201..1>[GenomicEntity],[SequenceFeatureRelationship]-%20subject%201..1>[GenomicEntity],[GenomicEntity]^-[Transcript],[GenomicEntity]^-[SequenceVariant],[GenomicEntity]^-[ReagentTargetedGene],[GenomicEntity]^-[Protein],[GenomicEntity]^-[Haplotype],[GenomicEntity]^-[Genotype],[GenomicEntity]^-[GenomicBackgroundExposure],[GenomicEntity]^-[Genome],[GenomicEntity]^-[Gene],[GenomicEntity]^-[Exon],[GenomicEntity]^-[CodingSequence],[MolecularEntity]^-[GenomicEntity],[GenomicBackgroundExposure],[Genome],[Gene],[Exon],[CodingSequence],[Attribute],[Agent])
 
 ## Parents
 
@@ -53,14 +53,6 @@ URI: [biolink:GenomicEntity](https://w3id.org/biolink/vocab/GenomicEntity)
 
 ### Inherited from molecular entity:
 
- * [description](description.md)  <sub>OPT</sub>
-     * Description: a human-readable description of an entity
-     * Range: [NarrativeText](types/NarrativeText.md)
-     * in subsets: (translator_minimal)
- * [has attribute](has_attribute.md)  <sub>0..\*</sub>
-     * Description: connects any entity to an attribute
-     * Range: [Attribute](Attribute.md)
-     * in subsets: (samples)
  * [id](id.md)  <sub>REQ</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
@@ -69,21 +61,29 @@ URI: [biolink:GenomicEntity](https://w3id.org/biolink/vocab/GenomicEntity)
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
+ * [type](type.md)  <sub>OPT</sub>
+     * Range: [String](types/String.md)
  * [name](name.md)  <sub>OPT</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
-     * Range: [NamedThing](NamedThing.md)
- * [provided by](provided_by.md)  <sub>0..\*</sub>
-     * Description: connects an association to the agent (person, organization or group) that provided it
-     * Range: [Agent](Agent.md)
+ * [description](description.md)  <sub>OPT</sub>
+     * Description: a human-readable description of an entity
+     * Range: [NarrativeText](types/NarrativeText.md)
+     * in subsets: (translator_minimal)
  * [source](source.md)  <sub>OPT</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
- * [type](type.md)  <sub>OPT</sub>
-     * Range: [String](types/String.md)
+ * [provided by](provided_by.md)  <sub>0..\*</sub>
+     * Description: connects an association to the agent (person, organization or group) that provided it
+     * Range: [Agent](Agent.md)
+ * [has attribute](has_attribute.md)  <sub>0..\*</sub>
+     * Description: connects any entity to an attribute
+     * Range: [Attribute](Attribute.md)
+     * in subsets: (samples)
+ * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
+     * Range: [NamedThing](NamedThing.md)
 
 ## Other properties
 

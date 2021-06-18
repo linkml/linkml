@@ -7,7 +7,7 @@ prefix URI tuple
 URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
 
 
-![img](images/Prefix.svg)
+[![img](images/Prefix.svg)](images/Prefix.svg)
 
 ## Referenced by class
 

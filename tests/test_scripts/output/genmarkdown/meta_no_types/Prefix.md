@@ -7,7 +7,7 @@ prefix URI tuple
 URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[SchemaDefinition],[SchemaDefinition]++-%20prefixes%200..*>[Prefix&#124;prefix_prefix(pk):ncname;prefix_reference:uri])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SchemaDefinition],[SchemaDefinition]++-%20prefixes%200..*>[Prefix&#124;prefix_prefix(pk):ncname;prefix_reference:uri])](https://yuml.me/diagram/nofunky;dir:TB/class/[SchemaDefinition],[SchemaDefinition]++-%20prefixes%200..*>[Prefix&#124;prefix_prefix(pk):ncname;prefix_reference:uri])
 
 ## Referenced by class
 

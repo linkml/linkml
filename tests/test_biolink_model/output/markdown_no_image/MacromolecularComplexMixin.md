@@ -7,7 +7,7 @@ A stable assembly of two or more macromolecules, i.e. proteins, nucleic acids, c
 URI: [biolink:MacromolecularComplexMixin](https://w3id.org/biolink/vocab/MacromolecularComplexMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[MacromolecularMachineMixin],[MacromolecularMachineMixin]^-[MacromolecularComplexMixin&#124;name(i):symbol_type%20%3F])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MacromolecularMachineMixin],[MacromolecularMachineMixin]^-[MacromolecularComplexMixin&#124;name(i):symbol_type%20%3F])](https://yuml.me/diagram/nofunky;dir:TB/class/[MacromolecularMachineMixin],[MacromolecularMachineMixin]^-[MacromolecularComplexMixin&#124;name(i):symbol_type%20%3F])
 
 ## Identifier prefixes
 

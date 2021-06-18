@@ -7,7 +7,7 @@
 URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/VariantToDiseaseAssociation)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[VariantToEntityAssociationMixin],[NamedThing]<object%201..1-%20[VariantToDiseaseAssociation&#124;predicate:predicate_type;frequency_qualifier:frequency_value%20%3F;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[NamedThing]<subject%201..1-%20[VariantToDiseaseAssociation],[VariantToDiseaseAssociation]uses%20-.->[VariantToEntityAssociationMixin],[VariantToDiseaseAssociation]uses%20-.->[EntityToDiseaseAssociationMixin],[VariantToDiseaseAssociation]^-[VariantAsAModelOfDiseaseAssociation],[Association]^-[VariantToDiseaseAssociation],[VariantAsAModelOfDiseaseAssociation],[SeverityValue],[Publication],[OntologyClass],[Onset],[NamedThing],[EntityToDiseaseAssociationMixin],[Attribute],[Association],[Agent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[VariantToEntityAssociationMixin],[NamedThing]<object%201..1-%20[VariantToDiseaseAssociation&#124;predicate:predicate_type;frequency_qualifier:frequency_value%20%3F;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[NamedThing]<subject%201..1-%20[VariantToDiseaseAssociation],[VariantToDiseaseAssociation]uses%20-.->[VariantToEntityAssociationMixin],[VariantToDiseaseAssociation]uses%20-.->[EntityToDiseaseAssociationMixin],[VariantToDiseaseAssociation]^-[VariantAsAModelOfDiseaseAssociation],[Association]^-[VariantToDiseaseAssociation],[VariantAsAModelOfDiseaseAssociation],[SeverityValue],[Publication],[OntologyClass],[Onset],[NamedThing],[EntityToDiseaseAssociationMixin],[Attribute],[Association],[Agent])](https://yuml.me/diagram/nofunky;dir:TB/class/[VariantToEntityAssociationMixin],[NamedThing]<object%201..1-%20[VariantToDiseaseAssociation&#124;predicate:predicate_type;frequency_qualifier:frequency_value%20%3F;relation(i):uriorcurie;negated(i):boolean%20%3F;type(i):string%20%3F;category(i):category_type%20*;id(i):string;iri(i):iri_type%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[NamedThing]<subject%201..1-%20[VariantToDiseaseAssociation],[VariantToDiseaseAssociation]uses%20-.->[VariantToEntityAssociationMixin],[VariantToDiseaseAssociation]uses%20-.->[EntityToDiseaseAssociationMixin],[VariantToDiseaseAssociation]^-[VariantAsAModelOfDiseaseAssociation],[Association]^-[VariantToDiseaseAssociation],[VariantAsAModelOfDiseaseAssociation],[SeverityValue],[Publication],[OntologyClass],[Onset],[NamedThing],[EntityToDiseaseAssociationMixin],[Attribute],[Association],[Agent])
 
 ## Parents
 
@@ -30,33 +30,20 @@ URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/Varian
 
 ### Own
 
- * [variant to disease association➞object](variant_to_disease_association_object.md)  <sub>REQ</sub>
-     * Description: a disease that is associated with that variant
-     * Range: [NamedThing](NamedThing.md)
-     * Example: MONDO:0016419 hereditary breast cancer
- * [variant to disease association➞predicate](variant_to_disease_association_predicate.md)  <sub>REQ</sub>
-     * Description: E.g. is pathogenic for
-     * Range: [PredicateType](types/PredicateType.md)
  * [variant to disease association➞subject](variant_to_disease_association_subject.md)  <sub>REQ</sub>
      * Description: a sequence variant in which the allele state is associated in some way with the disease state
      * Range: [NamedThing](NamedThing.md)
      * Example: ClinVar:52241 NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)
+ * [variant to disease association➞predicate](variant_to_disease_association_predicate.md)  <sub>REQ</sub>
+     * Description: E.g. is pathogenic for
+     * Range: [PredicateType](types/PredicateType.md)
+ * [variant to disease association➞object](variant_to_disease_association_object.md)  <sub>REQ</sub>
+     * Description: a disease that is associated with that variant
+     * Range: [NamedThing](NamedThing.md)
+     * Example: MONDO:0016419 hereditary breast cancer
 
 ### Inherited from association:
 
- * [association➞category](association_category.md)  <sub>0..\*</sub>
-     * Range: [CategoryType](types/CategoryType.md)
- * [association➞type](association_type.md)  <sub>OPT</sub>
-     * Description: rdf:type of biolink:Association should be fixed at rdf:Statement
-     * Range: [String](types/String.md)
- * [description](description.md)  <sub>OPT</sub>
-     * Description: a human-readable description of an entity
-     * Range: [NarrativeText](types/NarrativeText.md)
-     * in subsets: (translator_minimal)
- * [has attribute](has_attribute.md)  <sub>0..\*</sub>
-     * Description: connects any entity to an attribute
-     * Range: [Attribute](Attribute.md)
-     * in subsets: (samples)
  * [id](id.md)  <sub>REQ</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
@@ -69,25 +56,38 @@ URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/Varian
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [negated](negated.md)  <sub>OPT</sub>
-     * Description: if set to true, then the association is negated i.e. is not true
-     * Range: [Boolean](types/Boolean.md)
- * [provided by](provided_by.md)  <sub>0..\*</sub>
-     * Description: connects an association to the agent (person, organization or group) that provided it
-     * Range: [Agent](Agent.md)
- * [publications](publications.md)  <sub>0..\*</sub>
-     * Description: connects an association to publications supporting the association
-     * Range: [Publication](Publication.md)
- * [qualifiers](qualifiers.md)  <sub>0..\*</sub>
-     * Description: connects an association to qualifiers that modify or qualify the meaning of that association
-     * Range: [OntologyClass](OntologyClass.md)
- * [relation](relation.md)  <sub>REQ</sub>
-     * Description: The relation which describes an association between a subject and an object in a more granular manner. Usually this is a term from Relation Ontology, but it can be any edge CURIE.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [description](description.md)  <sub>OPT</sub>
+     * Description: a human-readable description of an entity
+     * Range: [NarrativeText](types/NarrativeText.md)
+     * in subsets: (translator_minimal)
  * [source](source.md)  <sub>OPT</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
+ * [provided by](provided_by.md)  <sub>0..\*</sub>
+     * Description: connects an association to the agent (person, organization or group) that provided it
+     * Range: [Agent](Agent.md)
+ * [has attribute](has_attribute.md)  <sub>0..\*</sub>
+     * Description: connects any entity to an attribute
+     * Range: [Attribute](Attribute.md)
+     * in subsets: (samples)
+ * [relation](relation.md)  <sub>REQ</sub>
+     * Description: The relation which describes an association between a subject and an object in a more granular manner. Usually this is a term from Relation Ontology, but it can be any edge CURIE.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+ * [negated](negated.md)  <sub>OPT</sub>
+     * Description: if set to true, then the association is negated i.e. is not true
+     * Range: [Boolean](types/Boolean.md)
+ * [qualifiers](qualifiers.md)  <sub>0..\*</sub>
+     * Description: connects an association to qualifiers that modify or qualify the meaning of that association
+     * Range: [OntologyClass](OntologyClass.md)
+ * [publications](publications.md)  <sub>0..\*</sub>
+     * Description: connects an association to publications supporting the association
+     * Range: [Publication](Publication.md)
+ * [association➞type](association_type.md)  <sub>OPT</sub>
+     * Description: rdf:type of biolink:Association should be fixed at rdf:Statement
+     * Range: [String](types/String.md)
+ * [association➞category](association_category.md)  <sub>0..\*</sub>
+     * Range: [CategoryType](types/CategoryType.md)
 
 ### Mixed in from frequency qualifier mixin:
 
@@ -97,15 +97,15 @@ URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/Varian
 
 ### Mixed in from entity to feature or disease qualifiers mixin:
 
- * [onset qualifier](onset_qualifier.md)  <sub>OPT</sub>
-     * Description: a qualifier used in a phenotypic association to state when the phenotype appears is in the subject
-     * Range: [Onset](Onset.md)
-
-### Mixed in from entity to feature or disease qualifiers mixin:
-
  * [severity qualifier](severity_qualifier.md)  <sub>OPT</sub>
      * Description: a qualifier used in a phenotypic association to state how severe the phenotype is in the subject
      * Range: [SeverityValue](SeverityValue.md)
+
+### Mixed in from entity to feature or disease qualifiers mixin:
+
+ * [onset qualifier](onset_qualifier.md)  <sub>OPT</sub>
+     * Description: a qualifier used in a phenotypic association to state when the phenotype appears is in the subject
+     * Range: [Onset](Onset.md)
 
 ## Other properties
 

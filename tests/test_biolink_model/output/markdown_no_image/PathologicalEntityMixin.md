@@ -7,7 +7,7 @@ A pathological (abnormal) structure or process.
 URI: [biolink:PathologicalEntityMixin](https://w3id.org/biolink/vocab/PathologicalEntityMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[PathologicalProcess]uses%20-.->[PathologicalEntityMixin],[PathologicalAnatomicalStructure]uses%20-.->[PathologicalEntityMixin],[DiseaseOrPhenotypicFeatureExposure]uses%20-.->[PathologicalEntityMixin],[PathologicalProcess],[PathologicalAnatomicalStructure],[DiseaseOrPhenotypicFeatureExposure])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[PathologicalProcess]uses%20-.->[PathologicalEntityMixin],[PathologicalAnatomicalStructure]uses%20-.->[PathologicalEntityMixin],[DiseaseOrPhenotypicFeatureExposure]uses%20-.->[PathologicalEntityMixin],[PathologicalProcess],[PathologicalAnatomicalStructure],[DiseaseOrPhenotypicFeatureExposure])](https://yuml.me/diagram/nofunky;dir:TB/class/[PathologicalProcess]uses%20-.->[PathologicalEntityMixin],[PathologicalAnatomicalStructure]uses%20-.->[PathologicalEntityMixin],[DiseaseOrPhenotypicFeatureExposure]uses%20-.->[PathologicalEntityMixin],[PathologicalProcess],[PathologicalAnatomicalStructure],[DiseaseOrPhenotypicFeatureExposure])
 
 ## Mixin for
 

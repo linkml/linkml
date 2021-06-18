@@ -7,7 +7,7 @@ A value of an attribute that is quantitative and measurable, expressed as a comb
 URI: [biolink:QuantityValue](https://w3id.org/biolink/vocab/QuantityValue)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Attribute]++-%20has%20quantitative%20value%200..*>[QuantityValue&#124;has_unit:unit%20%3F;has_numeric_value:double%20%3F],[Annotation]^-[QuantityValue],[Attribute],[Annotation])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Attribute]++-%20has%20quantitative%20value%200..*>[QuantityValue&#124;has_unit:unit%20%3F;has_numeric_value:double%20%3F],[Annotation]^-[QuantityValue],[Attribute],[Annotation])](https://yuml.me/diagram/nofunky;dir:TB/class/[Attribute]++-%20has%20quantitative%20value%200..*>[QuantityValue&#124;has_unit:unit%20%3F;has_numeric_value:double%20%3F],[Annotation]^-[QuantityValue],[Attribute],[Annotation])
 
 ## Parents
 
@@ -22,11 +22,11 @@ URI: [biolink:QuantityValue](https://w3id.org/biolink/vocab/QuantityValue)
 
 ### Own
 
- * [has numeric value](has_numeric_value.md)  <sub>OPT</sub>
-     * Description: connects a quantity value to a number
-     * Range: [Double](types/Double.md)
-     * in subsets: (samples)
  * [has unit](has_unit.md)  <sub>OPT</sub>
      * Description: connects a quantity value to a unit
      * Range: [Unit](types/Unit.md)
+     * in subsets: (samples)
+ * [has numeric value](has_numeric_value.md)  <sub>OPT</sub>
+     * Description: connects a quantity value to a number
+     * Range: [Double](types/Double.md)
      * in subsets: (samples)

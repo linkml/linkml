@@ -7,7 +7,7 @@ this is used for nodes that are taken from an ontology but are not typed using a
 URI: [biolink:UnclassifiedOntologyClass](https://w3id.org/biolink/vocab/UnclassifiedOntologyClass)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass]^-[UnclassifiedOntologyClass],[OntologyClass])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass]^-[UnclassifiedOntologyClass],[OntologyClass])](https://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass]^-[UnclassifiedOntologyClass],[OntologyClass])
 
 ## Parents
 

@@ -7,7 +7,7 @@ Semantic mixin concept.  Pertains to entities that have physical properties such
 URI: [biolink:PhysicalEssence](https://w3id.org/biolink/vocab/PhysicalEssence)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent],[PhysicalEntity]uses%20-.->[PhysicalEssence],[MolecularEntity]uses%20-.->[PhysicalEssence],[AnatomicalEntity]uses%20-.->[PhysicalEssence],[PhysicalEssenceOrOccurrent]^-[PhysicalEssence],[PhysicalEntity],[MolecularEntity],[AnatomicalEntity])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent],[PhysicalEntity]uses%20-.->[PhysicalEssence],[MolecularEntity]uses%20-.->[PhysicalEssence],[AnatomicalEntity]uses%20-.->[PhysicalEssence],[PhysicalEssenceOrOccurrent]^-[PhysicalEssence],[PhysicalEntity],[MolecularEntity],[AnatomicalEntity])](https://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent],[PhysicalEntity]uses%20-.->[PhysicalEssence],[MolecularEntity]uses%20-.->[PhysicalEssence],[AnatomicalEntity]uses%20-.->[PhysicalEssence],[PhysicalEssenceOrOccurrent]^-[PhysicalEssence],[PhysicalEntity],[MolecularEntity],[AnatomicalEntity])
 
 ## Parents
 

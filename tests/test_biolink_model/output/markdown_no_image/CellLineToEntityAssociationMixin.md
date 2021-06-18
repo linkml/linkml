@@ -7,7 +7,7 @@ An relationship between a cell line and another entity
 URI: [biolink:CellLineToEntityAssociationMixin](https://w3id.org/biolink/vocab/CellLineToEntityAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[CellLine]<subject%201..1-%20[CellLineToEntityAssociationMixin],[CellLineToDiseaseOrPhenotypicFeatureAssociation]uses%20-.->[CellLineToEntityAssociationMixin],[CellLineToDiseaseOrPhenotypicFeatureAssociation],[CellLine])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CellLine]<subject%201..1-%20[CellLineToEntityAssociationMixin],[CellLineToDiseaseOrPhenotypicFeatureAssociation]uses%20-.->[CellLineToEntityAssociationMixin],[CellLineToDiseaseOrPhenotypicFeatureAssociation],[CellLine])](https://yuml.me/diagram/nofunky;dir:TB/class/[CellLine]<subject%201..1-%20[CellLineToEntityAssociationMixin],[CellLineToDiseaseOrPhenotypicFeatureAssociation]uses%20-.->[CellLineToEntityAssociationMixin],[CellLineToDiseaseOrPhenotypicFeatureAssociation],[CellLine])
 
 ## Mixin for
 

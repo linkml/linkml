@@ -7,7 +7,7 @@ The pattern or 'mode' in which a particular genetic trait or disorder is passed 
 URI: [biolink:Inheritance](https://w3id.org/biolink/vocab/Inheritance)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OrganismAttribute],[OntologyClass],[NamedThing],[OrganismAttribute]^-[Inheritance&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OrganismAttribute],[OntologyClass],[NamedThing],[OrganismAttribute]^-[Inheritance&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F])](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OrganismAttribute],[OntologyClass],[NamedThing],[OrganismAttribute]^-[Inheritance&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F])
 
 ## Parents
 
@@ -25,13 +25,13 @@ URI: [biolink:Inheritance](https://w3id.org/biolink/vocab/Inheritance)
      * Description: connects an attribute to a class that describes it
      * Range: [OntologyClass](OntologyClass.md)
      * in subsets: (samples)
- * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
-     * Description: connects an attribute to a value
-     * Range: [NamedThing](NamedThing.md)
-     * in subsets: (samples)
  * [has quantitative value](has_quantitative_value.md)  <sub>0..\*</sub>
      * Description: connects an attribute to a value
      * Range: [QuantityValue](QuantityValue.md)
+     * in subsets: (samples)
+ * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
+     * Description: connects an attribute to a value
+     * Range: [NamedThing](NamedThing.md)
      * in subsets: (samples)
  * [iri](iri.md)  <sub>OPT</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.

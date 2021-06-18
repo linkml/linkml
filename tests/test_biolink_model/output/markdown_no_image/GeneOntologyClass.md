@@ -7,7 +7,7 @@ an ontology class that describes a functional aspect of a gene, gene prodoct or 
 URI: [biolink:GeneOntologyClass](https://w3id.org/biolink/vocab/GeneOntologyClass)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass],[GeneToGoTermAssociation],[FunctionalAssociation]++-%20object%201..1>[GeneOntologyClass],[GeneToGoTermAssociation]++-%20object%201..1>[GeneOntologyClass],[OntologyClass]^-[GeneOntologyClass],[FunctionalAssociation])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass],[GeneToGoTermAssociation],[FunctionalAssociation]++-%20object%201..1>[GeneOntologyClass],[GeneToGoTermAssociation]++-%20object%201..1>[GeneOntologyClass],[OntologyClass]^-[GeneOntologyClass],[FunctionalAssociation])](https://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass],[GeneToGoTermAssociation],[FunctionalAssociation]++-%20object%201..1>[GeneOntologyClass],[GeneToGoTermAssociation]++-%20object%201..1>[GeneOntologyClass],[OntologyClass]^-[GeneOntologyClass],[FunctionalAssociation])
 
 ## Parents
 

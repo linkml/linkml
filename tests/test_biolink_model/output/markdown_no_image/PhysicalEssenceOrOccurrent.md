@@ -7,7 +7,7 @@ Either a physical or processual entity.
 URI: [biolink:PhysicalEssenceOrOccurrent](https://w3id.org/biolink/vocab/PhysicalEssenceOrOccurrent)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent]^-[PhysicalEssence],[PhysicalEssenceOrOccurrent]^-[Occurrent],[PhysicalEssence],[Occurrent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent]^-[PhysicalEssence],[PhysicalEssenceOrOccurrent]^-[Occurrent],[PhysicalEssence],[Occurrent])](https://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent]^-[PhysicalEssence],[PhysicalEssenceOrOccurrent]^-[Occurrent],[PhysicalEssence],[Occurrent])
 
 ## Children
 

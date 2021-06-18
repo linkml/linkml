@@ -7,7 +7,7 @@ A substance intended for use in the diagnosis, cure, mitigation, treatment, or p
 URI: [biolink:Drug](https://w3id.org/biolink/vocab/Drug)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[OrganismTaxon],[OntologyClass],[NamedThing],[MolecularEntity],[Mixture],[DrugToEntityAssociationMixin],[DrugExposure],[DrugToEntityAssociationMixin]-%20subject%201..1>[Drug&#124;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[Treatment]-%20has%20drug%200..*>[Drug],[Drug]uses%20-.->[Mixture],[Drug]uses%20-.->[ChemicalOrDrugOrTreatment],[Drug]uses%20-.->[OntologyClass],[Drug]^-[DrugExposure],[MolecularEntity]^-[Drug],[Treatment],[ChemicalSubstance],[ChemicalOrDrugOrTreatment],[Attribute],[Agent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[OrganismTaxon],[OntologyClass],[NamedThing],[MolecularEntity],[Mixture],[DrugToEntityAssociationMixin],[DrugExposure],[DrugToEntityAssociationMixin]-%20subject%201..1>[Drug&#124;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[Treatment]-%20has%20drug%200..*>[Drug],[Drug]uses%20-.->[Mixture],[Drug]uses%20-.->[ChemicalOrDrugOrTreatment],[Drug]uses%20-.->[OntologyClass],[Drug]^-[DrugExposure],[MolecularEntity]^-[Drug],[Treatment],[ChemicalSubstance],[ChemicalOrDrugOrTreatment],[Attribute],[Agent])](https://yuml.me/diagram/nofunky;dir:TB/class/[OrganismTaxon],[OntologyClass],[NamedThing],[MolecularEntity],[Mixture],[DrugToEntityAssociationMixin],[DrugExposure],[DrugToEntityAssociationMixin]-%20subject%201..1>[Drug&#124;id(i):string;iri(i):iri_type%20%3F;type(i):string%20%3F;name(i):label_type%20%3F;description(i):narrative_text%20%3F;source(i):label_type%20%3F],[Treatment]-%20has%20drug%200..*>[Drug],[Drug]uses%20-.->[Mixture],[Drug]uses%20-.->[ChemicalOrDrugOrTreatment],[Drug]uses%20-.->[OntologyClass],[Drug]^-[DrugExposure],[MolecularEntity]^-[Drug],[Treatment],[ChemicalSubstance],[ChemicalOrDrugOrTreatment],[Attribute],[Agent])
 
 ## Identifier prefixes
 
@@ -41,14 +41,6 @@ URI: [biolink:Drug](https://w3id.org/biolink/vocab/Drug)
 
 ### Inherited from molecular entity:
 
- * [description](description.md)  <sub>OPT</sub>
-     * Description: a human-readable description of an entity
-     * Range: [NarrativeText](types/NarrativeText.md)
-     * in subsets: (translator_minimal)
- * [has attribute](has_attribute.md)  <sub>0..\*</sub>
-     * Description: connects any entity to an attribute
-     * Range: [Attribute](Attribute.md)
-     * in subsets: (samples)
  * [id](id.md)  <sub>REQ</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
@@ -57,21 +49,29 @@ URI: [biolink:Drug](https://w3id.org/biolink/vocab/Drug)
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
+ * [type](type.md)  <sub>OPT</sub>
+     * Range: [String](types/String.md)
  * [name](name.md)  <sub>OPT</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
-     * Range: [NamedThing](NamedThing.md)
- * [provided by](provided_by.md)  <sub>0..\*</sub>
-     * Description: connects an association to the agent (person, organization or group) that provided it
-     * Range: [Agent](Agent.md)
+ * [description](description.md)  <sub>OPT</sub>
+     * Description: a human-readable description of an entity
+     * Range: [NarrativeText](types/NarrativeText.md)
+     * in subsets: (translator_minimal)
  * [source](source.md)  <sub>OPT</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
- * [type](type.md)  <sub>OPT</sub>
-     * Range: [String](types/String.md)
+ * [provided by](provided_by.md)  <sub>0..\*</sub>
+     * Description: connects an association to the agent (person, organization or group) that provided it
+     * Range: [Agent](Agent.md)
+ * [has attribute](has_attribute.md)  <sub>0..\*</sub>
+     * Description: connects any entity to an attribute
+     * Range: [Attribute](Attribute.md)
+     * in subsets: (samples)
+ * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
+     * Range: [NamedThing](NamedThing.md)
 
 ### Mixed in from mixture:
 

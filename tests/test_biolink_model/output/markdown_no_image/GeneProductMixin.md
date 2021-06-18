@@ -7,7 +7,7 @@ The functional molecular product of a single gene locus. Gene products are eithe
 URI: [biolink:GeneProductMixin](https://w3id.org/biolink/vocab/GeneProductMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[GeneToGeneProductRelationship],[GeneToGeneProductRelationship]++-%20object%201..1>[GeneProductMixin&#124;synonym:label_type%20*;xref:iri_type%20*;name(i):symbol_type%20%3F],[Protein]uses%20-.->[GeneProductMixin],[RNAProduct]uses%20-.->[GeneProductMixin],[GeneProductMixin]^-[GeneProductIsoformMixin],[GeneOrGeneProduct]^-[GeneProductMixin],[Protein],[GeneProductIsoformMixin],[GeneOrGeneProduct],[Gene],[RNAProduct])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[GeneToGeneProductRelationship],[GeneToGeneProductRelationship]++-%20object%201..1>[GeneProductMixin&#124;synonym:label_type%20*;xref:iri_type%20*;name(i):symbol_type%20%3F],[Protein]uses%20-.->[GeneProductMixin],[RNAProduct]uses%20-.->[GeneProductMixin],[GeneProductMixin]^-[GeneProductIsoformMixin],[GeneOrGeneProduct]^-[GeneProductMixin],[Protein],[GeneProductIsoformMixin],[GeneOrGeneProduct],[Gene],[RNAProduct])](https://yuml.me/diagram/nofunky;dir:TB/class/[GeneToGeneProductRelationship],[GeneToGeneProductRelationship]++-%20object%201..1>[GeneProductMixin&#124;synonym:label_type%20*;xref:iri_type%20*;name(i):symbol_type%20%3F],[Protein]uses%20-.->[GeneProductMixin],[RNAProduct]uses%20-.->[GeneProductMixin],[GeneProductMixin]^-[GeneProductIsoformMixin],[GeneOrGeneProduct]^-[GeneProductMixin],[Protein],[GeneProductIsoformMixin],[GeneOrGeneProduct],[Gene],[RNAProduct])
 
 ## Identifier prefixes
 

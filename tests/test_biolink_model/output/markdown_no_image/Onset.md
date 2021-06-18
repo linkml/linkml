@@ -7,7 +7,7 @@ The age group in which (disease) symptom manifestations appear
 URI: [biolink:Onset](https://w3id.org/biolink/vocab/Onset)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[EntityToFeatureOrDiseaseQualifiersMixin]++-%20onset%20qualifier%200..1>[Onset&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F],[ClinicalCourse]^-[Onset],[NamedThing],[EntityToFeatureOrDiseaseQualifiersMixin],[ClinicalCourse],[Association])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[EntityToFeatureOrDiseaseQualifiersMixin]++-%20onset%20qualifier%200..1>[Onset&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F],[ClinicalCourse]^-[Onset],[NamedThing],[EntityToFeatureOrDiseaseQualifiersMixin],[ClinicalCourse],[Association])](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[EntityToFeatureOrDiseaseQualifiersMixin]++-%20onset%20qualifier%200..1>[Onset&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F],[ClinicalCourse]^-[Onset],[NamedThing],[EntityToFeatureOrDiseaseQualifiersMixin],[ClinicalCourse],[Association])
 
 ## Parents
 
@@ -29,13 +29,13 @@ URI: [biolink:Onset](https://w3id.org/biolink/vocab/Onset)
      * Description: connects an attribute to a class that describes it
      * Range: [OntologyClass](OntologyClass.md)
      * in subsets: (samples)
- * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
-     * Description: connects an attribute to a value
-     * Range: [NamedThing](NamedThing.md)
-     * in subsets: (samples)
  * [has quantitative value](has_quantitative_value.md)  <sub>0..\*</sub>
      * Description: connects an attribute to a value
      * Range: [QuantityValue](QuantityValue.md)
+     * in subsets: (samples)
+ * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
+     * Description: connects an attribute to a value
+     * Range: [NamedThing](NamedThing.md)
      * in subsets: (samples)
  * [iri](iri.md)  <sub>OPT</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.

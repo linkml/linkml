@@ -7,7 +7,7 @@ An association between some exposure event and some entity.
 URI: [biolink:ExposureEventToEntityAssociationMixin](https://w3id.org/biolink/vocab/ExposureEventToEntityAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[ExposureEvent]<subject%201..1-++[ExposureEventToEntityAssociationMixin],[ExposureEventToOutcomeAssociation]uses%20-.->[ExposureEventToEntityAssociationMixin],[ExposureEventToOutcomeAssociation],[ExposureEvent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[ExposureEvent]<subject%201..1-++[ExposureEventToEntityAssociationMixin],[ExposureEventToOutcomeAssociation]uses%20-.->[ExposureEventToEntityAssociationMixin],[ExposureEventToOutcomeAssociation],[ExposureEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[ExposureEvent]<subject%201..1-++[ExposureEventToEntityAssociationMixin],[ExposureEventToOutcomeAssociation]uses%20-.->[ExposureEventToEntityAssociationMixin],[ExposureEventToOutcomeAssociation],[ExposureEvent])
 
 ## Mixin for
 

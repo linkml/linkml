@@ -7,7 +7,7 @@
 URI: [http://example.org/sample/example1/HasMessagesChild](http://example.org/sample/example1/HasMessagesChild)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[HasMessagesClass],[MetricResultChild]uses%20-.->[HasMessagesChild&#124;has_child_messages:string%20%3F;has_messages(i):string%20%3F],[HasMessagesClass]^-[HasMessagesChild],[MetricResultChild])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[HasMessagesClass],[MetricResultChild]uses%20-.->[HasMessagesChild&#124;has_child_messages:string%20%3F;has_messages(i):string%20%3F],[HasMessagesClass]^-[HasMessagesChild],[MetricResultChild])](https://yuml.me/diagram/nofunky;dir:TB/class/[HasMessagesClass],[MetricResultChild]uses%20-.->[HasMessagesChild&#124;has_child_messages:string%20%3F;has_messages(i):string%20%3F],[HasMessagesClass]^-[HasMessagesChild],[MetricResultChild])
 
 ## Parents
 

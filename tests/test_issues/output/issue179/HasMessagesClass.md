@@ -7,7 +7,7 @@
 URI: [http://example.org/sample/example1/HasMessagesClass](http://example.org/sample/example1/HasMessagesClass)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[MetricResult]uses%20-.->[HasMessagesClass&#124;has_messages:string%20%3F],[HasMessagesClass]^-[HasMessagesChild],[MetricResult],[HasMessagesChild])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MetricResult]uses%20-.->[HasMessagesClass&#124;has_messages:string%20%3F],[HasMessagesClass]^-[HasMessagesChild],[MetricResult],[HasMessagesChild])](https://yuml.me/diagram/nofunky;dir:TB/class/[MetricResult]uses%20-.->[HasMessagesClass&#124;has_messages:string%20%3F],[HasMessagesClass]^-[HasMessagesChild],[MetricResult],[HasMessagesChild])
 
 ## Children
 

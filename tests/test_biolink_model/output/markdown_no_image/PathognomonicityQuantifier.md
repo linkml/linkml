@@ -7,7 +7,7 @@ A relationship quantifier between a variant or symptom and a disease, which is h
 URI: [biolink:PathognomonicityQuantifier](https://w3id.org/biolink/vocab/PathognomonicityQuantifier)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[SpecificityQuantifier],[SpecificityQuantifier]^-[PathognomonicityQuantifier])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SpecificityQuantifier],[SpecificityQuantifier]^-[PathognomonicityQuantifier])](https://yuml.me/diagram/nofunky;dir:TB/class/[SpecificityQuantifier],[SpecificityQuantifier]^-[PathognomonicityQuantifier])
 
 ## Parents
 

@@ -7,7 +7,7 @@ any grouping of multiple genes or gene products
 URI: [biolink:GeneGroupingMixin](https://w3id.org/biolink/vocab/GeneGroupingMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Gene]<has%20gene%20or%20gene%20product%200..*-%20[GeneGroupingMixin],[GenomicBackgroundExposure]uses%20-.->[GeneGroupingMixin],[GeneFamily]uses%20-.->[GeneGroupingMixin],[DrugToGeneInteractionExposure]uses%20-.->[GeneGroupingMixin],[GenomicBackgroundExposure],[GeneFamily],[Gene],[DrugToGeneInteractionExposure])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Gene]<has%20gene%20or%20gene%20product%200..*-%20[GeneGroupingMixin],[GenomicBackgroundExposure]uses%20-.->[GeneGroupingMixin],[GeneFamily]uses%20-.->[GeneGroupingMixin],[DrugToGeneInteractionExposure]uses%20-.->[GeneGroupingMixin],[GenomicBackgroundExposure],[GeneFamily],[Gene],[DrugToGeneInteractionExposure])](https://yuml.me/diagram/nofunky;dir:TB/class/[Gene]<has%20gene%20or%20gene%20product%200..*-%20[GeneGroupingMixin],[GenomicBackgroundExposure]uses%20-.->[GeneGroupingMixin],[GeneFamily]uses%20-.->[GeneGroupingMixin],[DrugToGeneInteractionExposure]uses%20-.->[GeneGroupingMixin],[GenomicBackgroundExposure],[GeneFamily],[Gene],[DrugToGeneInteractionExposure])
 
 ## Mixin for
 

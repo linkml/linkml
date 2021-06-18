@@ -7,7 +7,7 @@ An interaction between a drug and another entity
 URI: [biolink:DrugToEntityAssociationMixin](https://w3id.org/biolink/vocab/DrugToEntityAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[MolecularEntityToEntityAssociationMixin],[Drug]<subject%201..1-%20[DrugToEntityAssociationMixin],[DrugToGeneAssociation]uses%20-.->[DrugToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[DrugToEntityAssociationMixin],[DrugToGeneAssociation],[Drug])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MolecularEntityToEntityAssociationMixin],[Drug]<subject%201..1-%20[DrugToEntityAssociationMixin],[DrugToGeneAssociation]uses%20-.->[DrugToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[DrugToEntityAssociationMixin],[DrugToGeneAssociation],[Drug])](https://yuml.me/diagram/nofunky;dir:TB/class/[MolecularEntityToEntityAssociationMixin],[Drug]<subject%201..1-%20[DrugToEntityAssociationMixin],[DrugToGeneAssociation]uses%20-.->[DrugToEntityAssociationMixin],[MolecularEntityToEntityAssociationMixin]^-[DrugToEntityAssociationMixin],[DrugToGeneAssociation],[Drug])
 
 ## Parents
 

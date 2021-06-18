@@ -7,7 +7,7 @@ The physical combination of two or more molecular entities in which the identiti
 URI: [biolink:Mixture](https://w3id.org/biolink/vocab/Mixture)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[ChemicalSubstance]<has%20constituent%200..*-%20[Mixture],[ProcessedMaterial]uses%20-.->[Mixture],[Food]uses%20-.->[Mixture],[Drug]uses%20-.->[Mixture],[ComplexChemicalExposure]uses%20-.->[Mixture],[ProcessedMaterial],[Food],[Drug],[ComplexChemicalExposure],[ChemicalSubstance])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[ChemicalSubstance]<has%20constituent%200..*-%20[Mixture],[ProcessedMaterial]uses%20-.->[Mixture],[Food]uses%20-.->[Mixture],[Drug]uses%20-.->[Mixture],[ComplexChemicalExposure]uses%20-.->[Mixture],[ProcessedMaterial],[Food],[Drug],[ComplexChemicalExposure],[ChemicalSubstance])](https://yuml.me/diagram/nofunky;dir:TB/class/[ChemicalSubstance]<has%20constituent%200..*-%20[Mixture],[ProcessedMaterial]uses%20-.->[Mixture],[Food]uses%20-.->[Mixture],[Drug]uses%20-.->[Mixture],[ComplexChemicalExposure]uses%20-.->[Mixture],[ProcessedMaterial],[Food],[Drug],[ComplexChemicalExposure],[ChemicalSubstance])
 
 ## Mixin for
 

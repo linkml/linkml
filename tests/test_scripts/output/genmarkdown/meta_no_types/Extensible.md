@@ -7,7 +7,7 @@ mixin for classes that support extension
 URI: [linkml:Extensible](https://w3id.org/linkml/Extensible)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Extension]<extensions%200..*-++[Extensible],[PermissibleValue]uses%20-.->[Extensible],[Element]uses%20-.->[Extensible],[PermissibleValue],[Element])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Extension]<extensions%200..*-++[Extensible],[PermissibleValue]uses%20-.->[Extensible],[Element]uses%20-.->[Extensible],[PermissibleValue],[Element])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Extension]<extensions%200..*-++[Extensible],[PermissibleValue]uses%20-.->[Extensible],[Element]uses%20-.->[Extensible],[PermissibleValue],[Element])
 
 ## Mixin for
 

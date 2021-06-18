@@ -7,7 +7,7 @@
 URI: [biolink:ChemicalOrDrugOrTreatment](https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Treatment]uses%20-.->[ChemicalOrDrugOrTreatment],[Drug]uses%20-.->[ChemicalOrDrugOrTreatment],[Treatment],[Drug])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Treatment]uses%20-.->[ChemicalOrDrugOrTreatment],[Drug]uses%20-.->[ChemicalOrDrugOrTreatment],[Treatment],[Drug])](https://yuml.me/diagram/nofunky;dir:TB/class/[Treatment]uses%20-.->[ChemicalOrDrugOrTreatment],[Drug]uses%20-.->[ChemicalOrDrugOrTreatment],[Treatment],[Drug])
 
 ## Mixin for
 

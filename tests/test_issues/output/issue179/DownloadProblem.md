@@ -7,7 +7,7 @@ A problem in downloading a knowledge source
 URI: [http://example.org/sample/example1/DownloadProblem](http://example.org/sample/example1/DownloadProblem)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Problem],[Problem]^-[DownloadProblem&#124;has_source:string%20%3F;description(i):string%20%3F])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Problem],[Problem]^-[DownloadProblem&#124;has_source:string%20%3F;description(i):string%20%3F])](https://yuml.me/diagram/nofunky;dir:TB/class/[Problem],[Problem]^-[DownloadProblem&#124;has_source:string%20%3F;description(i):string%20%3F])
 
 ## Parents
 

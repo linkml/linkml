@@ -7,7 +7,7 @@ usage example and description
 URI: [linkml:Example](https://w3id.org/linkml/Example)
 
 
-![img](images/Example.svg)
+[![img](images/Example.svg)](images/Example.svg)
 
 ## Referenced by class
 

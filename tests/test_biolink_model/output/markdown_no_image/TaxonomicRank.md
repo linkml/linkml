@@ -7,7 +7,7 @@ A descriptor for the rank within a taxonomic classification. Example instance: T
 URI: [biolink:TaxonomicRank](https://w3id.org/biolink/vocab/TaxonomicRank)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[OrganismTaxon]++-%20has%20taxonomic%20rank%200..1>[TaxonomicRank],[OntologyClass]^-[TaxonomicRank],[OrganismTaxon],[OntologyClass])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[OrganismTaxon]++-%20has%20taxonomic%20rank%200..1>[TaxonomicRank],[OntologyClass]^-[TaxonomicRank],[OrganismTaxon],[OntologyClass])](https://yuml.me/diagram/nofunky;dir:TB/class/[OrganismTaxon]++-%20has%20taxonomic%20rank%200..1>[TaxonomicRank],[OntologyClass]^-[TaxonomicRank],[OrganismTaxon],[OntologyClass])
 
 ## Identifier prefixes
 

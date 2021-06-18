@@ -7,7 +7,7 @@ The course a disease typically takes from its onset, progression in time, and ev
 URI: [biolink:ClinicalCourse](https://w3id.org/biolink/vocab/ClinicalCourse)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[Onset],[NamedThing],[ClinicalCourse&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F]^-[Onset],[ClinicalAttribute]^-[ClinicalCourse],[ClinicalAttribute])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[Onset],[NamedThing],[ClinicalCourse&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F]^-[Onset],[ClinicalAttribute]^-[ClinicalCourse],[ClinicalAttribute])](https://yuml.me/diagram/nofunky;dir:TB/class/[QuantityValue],[OntologyClass],[Onset],[NamedThing],[ClinicalCourse&#124;name(i):label_type%20%3F;iri(i):iri_type%20%3F;source(i):label_type%20%3F]^-[Onset],[ClinicalAttribute]^-[ClinicalCourse],[ClinicalAttribute])
 
 ## Parents
 
@@ -32,13 +32,13 @@ URI: [biolink:ClinicalCourse](https://w3id.org/biolink/vocab/ClinicalCourse)
      * Description: connects an attribute to a class that describes it
      * Range: [OntologyClass](OntologyClass.md)
      * in subsets: (samples)
- * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
-     * Description: connects an attribute to a value
-     * Range: [NamedThing](NamedThing.md)
-     * in subsets: (samples)
  * [has quantitative value](has_quantitative_value.md)  <sub>0..\*</sub>
      * Description: connects an attribute to a value
      * Range: [QuantityValue](QuantityValue.md)
+     * in subsets: (samples)
+ * [has qualitative value](has_qualitative_value.md)  <sub>OPT</sub>
+     * Description: connects an attribute to a value
+     * Range: [NamedThing](NamedThing.md)
      * in subsets: (samples)
  * [iri](iri.md)  <sub>OPT</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.

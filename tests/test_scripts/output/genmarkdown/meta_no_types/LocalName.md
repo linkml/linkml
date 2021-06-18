@@ -7,7 +7,7 @@ an attributed label
 URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20local_names%200..*>[LocalName&#124;local_name_source(pk):ncname;local_name_value:string],[Element])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20local_names%200..*>[LocalName&#124;local_name_source(pk):ncname;local_name_value:string],[Element])](https://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20local_names%200..*>[LocalName&#124;local_name_source(pk):ncname;local_name_value:string],[Element])
 
 ## Referenced by class
 

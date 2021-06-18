@@ -7,7 +7,7 @@ An OWL property used as an edge label
 URI: [biolink:RelationshipType](https://w3id.org/biolink/vocab/RelationshipType)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass]^-[RelationshipType],[OntologyClass])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass]^-[RelationshipType],[OntologyClass])](https://yuml.me/diagram/nofunky;dir:TB/class/[OntologyClass]^-[RelationshipType],[OntologyClass])
 
 ## Parents
 

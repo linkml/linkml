@@ -7,7 +7,7 @@ an attributed label
 URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)
 
 
-![img](images/LocalName.svg)
+[![img](images/LocalName.svg)](images/LocalName.svg)
 
 ## Referenced by class
 

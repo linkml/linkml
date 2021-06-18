@@ -7,7 +7,7 @@ An object representing an error or problem encountered
 URI: [http://example.org/sample/example1/Problem](http://example.org/sample/example1/Problem)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Problem&#124;description:string%20%3F]^-[DownloadProblem],[DownloadProblem])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Problem&#124;description:string%20%3F]^-[DownloadProblem],[DownloadProblem])](https://yuml.me/diagram/nofunky;dir:TB/class/[Problem&#124;description:string%20%3F]^-[DownloadProblem],[DownloadProblem])
 
 ## Children
 

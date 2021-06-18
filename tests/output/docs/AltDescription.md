@@ -7,7 +7,7 @@ an attributed description
 URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
 
 
-![img](images/AltDescription.svg)
+[![img](images/AltDescription.svg)](images/AltDescription.svg)
 
 ## Referenced by class
 

@@ -7,7 +7,7 @@ A processual entity.
 URI: [biolink:Occurrent](https://w3id.org/biolink/vocab/Occurrent)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent],[Phenomenon]uses%20-.->[Occurrent],[MolecularActivity]uses%20-.->[Occurrent],[EnvironmentalProcess]uses%20-.->[Occurrent],[BiologicalProcessOrActivity]uses%20-.->[Occurrent],[BiologicalProcess]uses%20-.->[Occurrent],[Occurrent]^-[ActivityAndBehavior],[PhysicalEssenceOrOccurrent]^-[Occurrent],[Phenomenon],[NamedThing],[MolecularActivity],[EnvironmentalProcess],[BiologicalProcessOrActivity],[BiologicalProcess],[ActivityAndBehavior])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent],[Phenomenon]uses%20-.->[Occurrent],[MolecularActivity]uses%20-.->[Occurrent],[EnvironmentalProcess]uses%20-.->[Occurrent],[BiologicalProcessOrActivity]uses%20-.->[Occurrent],[BiologicalProcess]uses%20-.->[Occurrent],[Occurrent]^-[ActivityAndBehavior],[PhysicalEssenceOrOccurrent]^-[Occurrent],[Phenomenon],[NamedThing],[MolecularActivity],[EnvironmentalProcess],[BiologicalProcessOrActivity],[BiologicalProcess],[ActivityAndBehavior])](https://yuml.me/diagram/nofunky;dir:TB/class/[PhysicalEssenceOrOccurrent],[Phenomenon]uses%20-.->[Occurrent],[MolecularActivity]uses%20-.->[Occurrent],[EnvironmentalProcess]uses%20-.->[Occurrent],[BiologicalProcessOrActivity]uses%20-.->[Occurrent],[BiologicalProcess]uses%20-.->[Occurrent],[Occurrent]^-[ActivityAndBehavior],[PhysicalEssenceOrOccurrent]^-[Occurrent],[Phenomenon],[NamedThing],[MolecularActivity],[EnvironmentalProcess],[BiologicalProcessOrActivity],[BiologicalProcess],[ActivityAndBehavior])
 
 ## Parents
 

@@ -7,7 +7,7 @@ mixin for classes that support annotations
 URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[Annotation],[Annotation]<annotations%200..*-++[Annotatable],[PermissibleValue]uses%20-.->[Annotatable],[Element]uses%20-.->[Annotatable],[Annotation]uses%20-.->[Annotatable],[PermissibleValue],[Element])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Annotation],[Annotation]<annotations%200..*-++[Annotatable],[PermissibleValue]uses%20-.->[Annotatable],[Element]uses%20-.->[Annotatable],[Annotation]uses%20-.->[Annotatable],[PermissibleValue],[Element])](https://yuml.me/diagram/nofunky;dir:TB/class/[Annotation],[Annotation]<annotations%200..*-++[Annotatable],[PermissibleValue]uses%20-.->[Annotatable],[Element]uses%20-.->[Annotatable],[Annotation]uses%20-.->[Annotatable],[PermissibleValue],[Element])
 
 ## Mixin for
 

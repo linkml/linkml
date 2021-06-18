@@ -7,7 +7,7 @@ An association between a material sample and something.
 URI: [biolink:MaterialSampleToEntityAssociationMixin](https://w3id.org/biolink/vocab/MaterialSampleToEntityAssociationMixin)
 
 
-![img](http://yuml.me/diagram/nofunky;dir:TB/class/[MaterialSample]<subject%201..1-%20[MaterialSampleToEntityAssociationMixin],[MaterialSampleToDiseaseOrPhenotypicFeatureAssociation]uses%20-.->[MaterialSampleToEntityAssociationMixin],[MaterialSampleToDiseaseOrPhenotypicFeatureAssociation],[MaterialSample])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MaterialSample]<subject%201..1-%20[MaterialSampleToEntityAssociationMixin],[MaterialSampleToDiseaseOrPhenotypicFeatureAssociation]uses%20-.->[MaterialSampleToEntityAssociationMixin],[MaterialSampleToDiseaseOrPhenotypicFeatureAssociation],[MaterialSample])](https://yuml.me/diagram/nofunky;dir:TB/class/[MaterialSample]<subject%201..1-%20[MaterialSampleToEntityAssociationMixin],[MaterialSampleToDiseaseOrPhenotypicFeatureAssociation]uses%20-.->[MaterialSampleToEntityAssociationMixin],[MaterialSampleToDiseaseOrPhenotypicFeatureAssociation],[MaterialSample])
 
 ## Mixin for
 
