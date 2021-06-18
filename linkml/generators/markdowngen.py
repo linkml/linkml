@@ -151,7 +151,7 @@ class MarkdownGenerator(Generator):
                 self.header(2, 'Attributes')
 
                 # List all of the slots that directly belong to the class
-                slot_list = [slot for slot in [self.schema.slots[sn] for sn in sorted(cls.slots)]]
+                slot_list = [slot for slot in [self.schema.slots[sn] for sn in cls.slots]]
                 own_slots = [slot for slot in slot_list if cls.name in slot.domain_of]
                 if own_slots:
                     self.header(3, 'Own')
