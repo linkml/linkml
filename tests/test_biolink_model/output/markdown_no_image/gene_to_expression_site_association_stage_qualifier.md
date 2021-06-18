@@ -9,7 +9,7 @@ URI: [biolink:gene_to_expression_site_association_stage_qualifier](https://w3id.
 
 ## Domain and Range
 
-[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md) &#8594;  <sub>OPT</sub> [LifeStage](LifeStage.md)
+[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md) &#8594;  <sub>0..1</sub> [LifeStage](LifeStage.md)
 
 ## Parents
 

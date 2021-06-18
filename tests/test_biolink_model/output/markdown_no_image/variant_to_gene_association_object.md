@@ -9,7 +9,7 @@ URI: [biolink:variant_to_gene_association_object](https://w3id.org/biolink/vocab
 
 ## Domain and Range
 
-[VariantToGeneAssociation](VariantToGeneAssociation.md) &#8594;  <sub>REQ</sub> [Gene](Gene.md)
+[VariantToGeneAssociation](VariantToGeneAssociation.md) &#8594;  <sub>1..1</sub> [Gene](Gene.md)
 
 ## Parents
 

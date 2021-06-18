@@ -9,7 +9,7 @@ URI: [biolink:address](https://w3id.org/biolink/vocab/address)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

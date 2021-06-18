@@ -9,7 +9,7 @@ URI: [linkml:singular_name](https://w3id.org/linkml/singular_name)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [String](String.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [String](String.md)
 
 ## Parents
 

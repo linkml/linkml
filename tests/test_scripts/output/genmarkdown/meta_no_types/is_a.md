@@ -9,7 +9,7 @@ URI: [linkml:is_a](https://w3id.org/linkml/is_a)
 
 ## Domain and Range
 
-[Definition](Definition.md) &#8594;  <sub>OPT</sub> [Definition](Definition.md)
+[Definition](Definition.md) &#8594;  <sub>0..1</sub> [Definition](Definition.md)
 
 ## Parents
 

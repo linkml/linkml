@@ -21,13 +21,13 @@ URI: [biolink:ContributorAssociation](https://w3id.org/biolink/vocab/Contributor
 
 ### Own
 
- * [contributor association➞subject](contributor_association_subject.md)  <sub>REQ</sub>
+ * [contributor association➞subject](contributor_association_subject.md)  <sub>1..1</sub>
      * Description: information content entity which an agent has helped realise
      * Range: [InformationContentEntity](InformationContentEntity.md)
- * [contributor association➞predicate](contributor_association_predicate.md)  <sub>REQ</sub>
+ * [contributor association➞predicate](contributor_association_predicate.md)  <sub>1..1</sub>
      * Description: generally one of the predicate values 'provider', 'publisher', 'editor' or 'author'
      * Range: [PredicateType](types/PredicateType.md)
- * [contributor association➞object](contributor_association_object.md)  <sub>REQ</sub>
+ * [contributor association➞object](contributor_association_object.md)  <sub>1..1</sub>
      * Description: agent helping to realise the given entity (e.g. such as a publication)
      * Range: [Agent](Agent.md)
  * [contributor association➞qualifiers](contributor_association_qualifiers.md)  <sub>0..\*</sub>
@@ -36,23 +36,23 @@ URI: [biolink:ContributorAssociation](https://w3id.org/biolink/vocab/Contributor
 
 ### Inherited from association:
 
- * [id](id.md)  <sub>REQ</sub>
+ * [id](id.md)  <sub>1..1</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
      * in subsets: (translator_minimal)
- * [iri](iri.md)  <sub>OPT</sub>
+ * [iri](iri.md)  <sub>0..1</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
- * [name](name.md)  <sub>OPT</sub>
+ * [name](name.md)  <sub>0..1</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a human-readable description of an entity
      * Range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
- * [source](source.md)  <sub>OPT</sub>
+ * [source](source.md)  <sub>0..1</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
@@ -63,16 +63,16 @@ URI: [biolink:ContributorAssociation](https://w3id.org/biolink/vocab/Contributor
      * Description: connects any entity to an attribute
      * Range: [Attribute](Attribute.md)
      * in subsets: (samples)
- * [relation](relation.md)  <sub>REQ</sub>
+ * [relation](relation.md)  <sub>1..1</sub>
      * Description: The relation which describes an association between a subject and an object in a more granular manner. Usually this is a term from Relation Ontology, but it can be any edge CURIE.
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [negated](negated.md)  <sub>OPT</sub>
+ * [negated](negated.md)  <sub>0..1</sub>
      * Description: if set to true, then the association is negated i.e. is not true
      * Range: [Boolean](types/Boolean.md)
  * [publications](publications.md)  <sub>0..\*</sub>
      * Description: connects an association to publications supporting the association
      * Range: [Publication](Publication.md)
- * [association➞type](association_type.md)  <sub>OPT</sub>
+ * [association➞type](association_type.md)  <sub>0..1</sub>
      * Description: rdf:type of biolink:Association should be fixed at rdf:Statement
      * Range: [String](types/String.md)
  * [association➞category](association_category.md)  <sub>0..\*</sub>

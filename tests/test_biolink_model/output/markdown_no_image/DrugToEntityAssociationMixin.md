@@ -25,6 +25,6 @@ URI: [biolink:DrugToEntityAssociationMixin](https://w3id.org/biolink/vocab/DrugT
 
 ### Own
 
- * [drug to entity association mixin➞subject](drug_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [drug to entity association mixin➞subject](drug_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Description: the drug that is an interactor
      * Range: [Drug](Drug.md)

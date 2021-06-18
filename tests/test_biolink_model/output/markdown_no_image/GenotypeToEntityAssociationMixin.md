@@ -22,6 +22,6 @@ URI: [biolink:GenotypeToEntityAssociationMixin](https://w3id.org/biolink/vocab/G
 
 ### Own
 
- * [genotype to entity association mixin➞subject](genotype_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [genotype to entity association mixin➞subject](genotype_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Description: genotype that is the subject of the association
      * Range: [Genotype](Genotype.md)

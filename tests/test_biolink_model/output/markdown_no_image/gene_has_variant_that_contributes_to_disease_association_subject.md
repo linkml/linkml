@@ -9,7 +9,7 @@ URI: [biolink:gene_has_variant_that_contributes_to_disease_association_subject](
 
 ## Domain and Range
 
-[GeneHasVariantThatContributesToDiseaseAssociation](GeneHasVariantThatContributesToDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
+[GeneHasVariantThatContributesToDiseaseAssociation](GeneHasVariantThatContributesToDiseaseAssociation.md) &#8594;  <sub>1..1</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:genotype_to_disease_association_predicate](https://w3id.org/biolin
 
 ## Domain and Range
 
-[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md) &#8594;  <sub>1..1</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

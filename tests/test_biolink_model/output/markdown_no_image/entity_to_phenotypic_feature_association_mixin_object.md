@@ -9,7 +9,7 @@ URI: [biolink:entity_to_phenotypic_feature_association_mixin_object](https://w3i
 
 ## Domain and Range
 
-[EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md) &#8594;  <sub>REQ</sub> [PhenotypicFeature](PhenotypicFeature.md)
+[EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md) &#8594;  <sub>1..1</sub> [PhenotypicFeature](PhenotypicFeature.md)
 
 ## Parents
 

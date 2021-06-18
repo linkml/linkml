@@ -26,33 +26,33 @@ URI: [biolink:Serial](https://w3id.org/biolink/vocab/Serial)
 
 ### Own
 
- * [iso abbreviation](iso_abbreviation.md)  <sub>OPT</sub>
+ * [iso abbreviation](iso_abbreviation.md)  <sub>0..1</sub>
      * Description: Standard abbreviation for periodicals in the International Organization for Standardization (ISO) 4 system See https://www.issn.org/services/online-services/access-to-the-ltwa/. If the 'published in' property is set, then the iso abbreviation pertains to the broader publication context (the journal) within which the given publication node is embedded, not the publication itself.
      * Range: [String](types/String.md)
- * [volume](volume.md)  <sub>OPT</sub>
+ * [volume](volume.md)  <sub>0..1</sub>
      * Description: volume of a book or music release in a collection/series or a published collection of journal issues in a serial publication
      * Range: [String](types/String.md)
- * [issue](issue.md)  <sub>OPT</sub>
+ * [issue](issue.md)  <sub>0..1</sub>
      * Description: issue of a newspaper, a scientific journal or magazine for reference purpose
      * Range: [String](types/String.md)
- * [serial➞id](serial_id.md)  <sub>REQ</sub>
+ * [serial➞id](serial_id.md)  <sub>1..1</sub>
      * Description: Serials (journals) should have industry-standard identifier such as from ISSN.
      * Range: [String](types/String.md)
- * [serial➞type](serial_type.md)  <sub>REQ</sub>
+ * [serial➞type](serial_type.md)  <sub>1..1</sub>
      * Description: Should generally be set to an ontology class defined term for 'serial' or 'journal'.
      * Range: [String](types/String.md)
 
 ### Inherited from publication:
 
- * [iri](iri.md)  <sub>OPT</sub>
+ * [iri](iri.md)  <sub>0..1</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a human-readable description of an entity
      * Range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
- * [source](source.md)  <sub>OPT</sub>
+ * [source](source.md)  <sub>0..1</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)
@@ -65,13 +65,13 @@ URI: [biolink:Serial](https://w3id.org/biolink/vocab/Serial)
      * in subsets: (samples)
  * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
      * Range: [NamedThing](NamedThing.md)
- * [license](license.md)  <sub>OPT</sub>
+ * [license](license.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [rights](rights.md)  <sub>OPT</sub>
+ * [rights](rights.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [format](format.md)  <sub>OPT</sub>
+ * [format](format.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [creation date](creation_date.md)  <sub>OPT</sub>
+ * [creation date](creation_date.md)  <sub>0..1</sub>
      * Description: date on which an entity was created. This can be applied to nodes or edges
      * Range: [Date](types/Date.md)
  * [authors](authors.md)  <sub>0..\*</sub>
@@ -80,7 +80,7 @@ URI: [biolink:Serial](https://w3id.org/biolink/vocab/Serial)
  * [publication➞pages](publication_pages.md)  <sub>0..\*</sub>
      * Description: When a 2-tuple of page numbers are provided, they represent the start and end page of the publication within its parent publication context. For books, this may be set to the total number of pages of the book.
      * Range: [String](types/String.md)
- * [summary](summary.md)  <sub>OPT</sub>
+ * [summary](summary.md)  <sub>0..1</sub>
      * Description: executive  summary of a publication
      * Range: [String](types/String.md)
  * [keywords](keywords.md)  <sub>0..\*</sub>
@@ -93,7 +93,7 @@ URI: [biolink:Serial](https://w3id.org/biolink/vocab/Serial)
      * Description: Alternate CURIEs for a thing
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal)
- * [publication➞name](publication_name.md)  <sub>OPT</sub>
+ * [publication➞name](publication_name.md)  <sub>0..1</sub>
      * Description: the 'title' of the publication is generally recorded in the 'name' property (inherited from NamedThing). The field name 'title' is now also tagged as an acceptable alias for the node property 'name' (just in case).
      * Range: [LabelType](types/LabelType.md)
 

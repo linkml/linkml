@@ -9,7 +9,7 @@ URI: [biolink:genotype_to_gene_association_object](https://w3id.org/biolink/voca
 
 ## Domain and Range
 
-[GenotypeToGeneAssociation](GenotypeToGeneAssociation.md) &#8594;  <sub>REQ</sub> [Gene](Gene.md)
+[GenotypeToGeneAssociation](GenotypeToGeneAssociation.md) &#8594;  <sub>1..1</sub> [Gene](Gene.md)
 
 ## Parents
 

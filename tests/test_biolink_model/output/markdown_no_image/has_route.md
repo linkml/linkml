@@ -9,7 +9,7 @@ URI: [biolink:has_route](https://w3id.org/biolink/vocab/has_route)
 
 ## Domain and Range
 
-[ExposureEvent](ExposureEvent.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[ExposureEvent](ExposureEvent.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

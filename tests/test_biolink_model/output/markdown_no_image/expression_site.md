@@ -9,7 +9,7 @@ URI: [biolink:expression_site](https://w3id.org/biolink/vocab/expression_site)
 
 ## Domain and Range
 
-[Association](Association.md) &#8594;  <sub>OPT</sub> [AnatomicalEntity](AnatomicalEntity.md)
+[Association](Association.md) &#8594;  <sub>0..1</sub> [AnatomicalEntity](AnatomicalEntity.md)
 
 ## Parents
 

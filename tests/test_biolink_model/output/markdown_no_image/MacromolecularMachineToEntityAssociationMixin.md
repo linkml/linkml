@@ -23,5 +23,5 @@ URI: [biolink:MacromolecularMachineToEntityAssociationMixin](https://w3id.org/bi
 
 ### Own
 
- * [macromolecular machine to entity association mixin➞subject](macromolecular_machine_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [macromolecular machine to entity association mixin➞subject](macromolecular_machine_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Range: [NamedThing](NamedThing.md)

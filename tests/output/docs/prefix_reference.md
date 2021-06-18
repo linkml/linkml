@@ -9,7 +9,7 @@ URI: [linkml:prefix_reference](https://w3id.org/linkml/prefix_reference)
 
 ## Domain and Range
 
-[Prefix](Prefix.md) &#8594;  <sub>REQ</sub> [Uri](types/Uri.md)
+[Prefix](Prefix.md) &#8594;  <sub>1..1</sub> [Uri](types/Uri.md)
 
 ## Parents
 

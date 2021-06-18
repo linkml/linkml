@@ -26,34 +26,34 @@ URI: [biolink:GeographicLocation](https://w3id.org/biolink/vocab/GeographicLocat
 
 ### Own
 
- * [latitude](latitude.md)  <sub>OPT</sub>
+ * [latitude](latitude.md)  <sub>0..1</sub>
      * Description: latitude
      * Range: [Float](types/Float.md)
- * [longitude](longitude.md)  <sub>OPT</sub>
+ * [longitude](longitude.md)  <sub>0..1</sub>
      * Description: longitude
      * Range: [Float](types/Float.md)
 
 ### Inherited from planetary entity:
 
- * [id](id.md)  <sub>REQ</sub>
+ * [id](id.md)  <sub>1..1</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
      * in subsets: (translator_minimal)
- * [iri](iri.md)  <sub>OPT</sub>
+ * [iri](iri.md)  <sub>0..1</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
- * [type](type.md)  <sub>OPT</sub>
+ * [type](type.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [name](name.md)  <sub>OPT</sub>
+ * [name](name.md)  <sub>0..1</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a human-readable description of an entity
      * Range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
- * [source](source.md)  <sub>OPT</sub>
+ * [source](source.md)  <sub>0..1</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)

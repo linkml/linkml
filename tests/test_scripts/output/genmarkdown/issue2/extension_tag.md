@@ -9,7 +9,7 @@ URI: [linkml:extension_tag](https://w3id.org/linkml/extension_tag)
 
 ## Domain and Range
 
-extension &#8594;  <sub>REQ</sub> uriorcurie
+extension &#8594;  <sub>1..1</sub> uriorcurie
 
 ## Parents
 

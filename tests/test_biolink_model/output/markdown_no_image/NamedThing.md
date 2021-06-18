@@ -50,10 +50,10 @@ URI: [biolink:NamedThing](https://w3id.org/biolink/vocab/NamedThing)
  *  **[NamedThing](NamedThing.md)** *[disrupted by](disrupted_by.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[disrupts](disrupts.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[exact match](exact_match.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[NamedThing](NamedThing.md)** *[filler](filler.md)*  <sub>OPT</sub>  **[NamedThing](NamedThing.md)**
+ *  **[NamedThing](NamedThing.md)** *[filler](filler.md)*  <sub>0..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[genetic association](genetic_association.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md)** *[genotype to disease association➞object](genotype_to_disease_association_object.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
- *  **[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md)** *[genotype to disease association➞subject](genotype_to_disease_association_subject.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
+ *  **[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md)** *[genotype to disease association➞object](genotype_to_disease_association_object.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
+ *  **[GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md)** *[genotype to disease association➞subject](genotype_to_disease_association_subject.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[has completed](has_completed.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[has decreased amount](has_decreased_amount.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[has increased amount](has_increased_amount.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
@@ -62,7 +62,7 @@ URI: [biolink:NamedThing](https://w3id.org/biolink/vocab/NamedThing)
  *  **[Occurrent](Occurrent.md)** *[has output](has_output.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[has part](has_part.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[Occurrent](Occurrent.md)** *[has participant](has_participant.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[Attribute](Attribute.md)** *[has qualitative value](has_qualitative_value.md)*  <sub>OPT</sub>  **[NamedThing](NamedThing.md)**
+ *  **[Attribute](Attribute.md)** *[has qualitative value](has_qualitative_value.md)*  <sub>0..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[has variant part](has_variant_part.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[homologous to](homologous_to.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[in linkage disequilibrium with](in_linkage_disequilibrium_with.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
@@ -70,17 +70,17 @@ URI: [biolink:NamedThing](https://w3id.org/biolink/vocab/NamedThing)
  *  **[NamedThing](NamedThing.md)** *[lacks part](lacks_part.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[located in](located_in.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[location of](location_of.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[MacromolecularMachineToEntityAssociationMixin](MacromolecularMachineToEntityAssociationMixin.md)** *[macromolecular machine to entity association mixin➞subject](macromolecular_machine_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
- *  **[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md)** *[material sample derivation association➞object](material_sample_derivation_association_object.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
+ *  **[MacromolecularMachineToEntityAssociationMixin](MacromolecularMachineToEntityAssociationMixin.md)** *[macromolecular machine to entity association mixin➞subject](macromolecular_machine_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
+ *  **[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md)** *[material sample derivation association➞object](material_sample_derivation_association_object.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[model of](model_of.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md)** *[model to disease association mixin➞subject](model_to_disease_association_mixin_subject.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
+ *  **[ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md)** *[model to disease association mixin➞subject](model_to_disease_association_mixin_subject.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[named thing➞category](named_thing_category.md)*  <sub>1..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[narrow match](narrow_match.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[negatively correlated with](negatively_correlated_with.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[Association](Association.md)** *[object](object.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
+ *  **[Association](Association.md)** *[object](object.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[occurs in](occurs_in.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[opposite of](opposite_of.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)** *[organism taxon to environment association➞object](organism_taxon_to_environment_association_object.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
+ *  **[OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md)** *[organism taxon to environment association➞object](organism_taxon_to_environment_association_object.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[orthologous to](orthologous_to.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[overlaps](overlaps.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[paralogous to](paralogous_to.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
@@ -96,9 +96,9 @@ URI: [biolink:NamedThing](https://w3id.org/biolink/vocab/NamedThing)
  *  **[NamedThing](NamedThing.md)** *[related to](related_to.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[same as](same_as.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[similar to](similar_to.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
- *  **[Association](Association.md)** *[subject](subject.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
- *  **[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md)** *[variant to disease association➞object](variant_to_disease_association_object.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
- *  **[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md)** *[variant to disease association➞subject](variant_to_disease_association_subject.md)*  <sub>REQ</sub>  **[NamedThing](NamedThing.md)**
+ *  **[Association](Association.md)** *[subject](subject.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
+ *  **[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md)** *[variant to disease association➞object](variant_to_disease_association_object.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
+ *  **[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md)** *[variant to disease association➞subject](variant_to_disease_association_subject.md)*  <sub>1..1</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[xenologous to](xenologous_to.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
 
 ## Attributes
@@ -111,25 +111,25 @@ URI: [biolink:NamedThing](https://w3id.org/biolink/vocab/NamedThing)
 
 ### Inherited from entity:
 
- * [id](id.md)  <sub>REQ</sub>
+ * [id](id.md)  <sub>1..1</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
      * in subsets: (translator_minimal)
- * [iri](iri.md)  <sub>OPT</sub>
+ * [iri](iri.md)  <sub>0..1</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
- * [type](type.md)  <sub>OPT</sub>
+ * [type](type.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [name](name.md)  <sub>OPT</sub>
+ * [name](name.md)  <sub>0..1</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a human-readable description of an entity
      * Range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
- * [source](source.md)  <sub>OPT</sub>
+ * [source](source.md)  <sub>0..1</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)

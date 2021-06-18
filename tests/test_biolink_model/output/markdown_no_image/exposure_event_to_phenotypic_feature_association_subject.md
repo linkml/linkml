@@ -9,7 +9,7 @@ URI: [biolink:exposure_event_to_phenotypic_feature_association_subject](https://
 
 ## Domain and Range
 
-[ExposureEventToPhenotypicFeatureAssociation](ExposureEventToPhenotypicFeatureAssociation.md) &#8594;  <sub>REQ</sub> [ExposureEvent](ExposureEvent.md)
+[ExposureEventToPhenotypicFeatureAssociation](ExposureEventToPhenotypicFeatureAssociation.md) &#8594;  <sub>1..1</sub> [ExposureEvent](ExposureEvent.md)
 
 ## Parents
 

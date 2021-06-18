@@ -9,7 +9,7 @@ URI: [biolink:iso_abbreviation](https://w3id.org/biolink/vocab/iso_abbreviation)
 
 ## Domain and Range
 
-[Publication](Publication.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[Publication](Publication.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

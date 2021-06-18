@@ -18,9 +18,9 @@ URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)
 
 ### Own
 
- * [local_name_source](local_name_source.md)  <sub>REQ</sub>
+ * [local_name_source](local_name_source.md)  <sub>1..1</sub>
      * Description: the ncname of the source of the name
      * Range: [Ncname](types/Ncname.md)
- * [local_name_value](local_name_value.md)  <sub>REQ</sub>
+ * [local_name_value](local_name_value.md)  <sub>1..1</sub>
      * Description: a name assigned to an element in a given ontology
      * Range: [String](types/String.md)

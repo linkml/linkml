@@ -19,8 +19,8 @@ URI: [biolink:TaxonomicRank](https://w3id.org/biolink/vocab/TaxonomicRank)
 
 ## Referenced by class
 
- *  **None** *[has taxonomic rank](has_taxonomic_rank.md)*  <sub>OPT</sub>  **[TaxonomicRank](TaxonomicRank.md)**
- *  **[OrganismTaxon](OrganismTaxon.md)** *[organism taxon➞has taxonomic rank](organism_taxon_has_taxonomic_rank.md)*  <sub>OPT</sub>  **[TaxonomicRank](TaxonomicRank.md)**
+ *  **None** *[has taxonomic rank](has_taxonomic_rank.md)*  <sub>0..1</sub>  **[TaxonomicRank](TaxonomicRank.md)**
+ *  **[OrganismTaxon](OrganismTaxon.md)** *[organism taxon➞has taxonomic rank](organism_taxon_has_taxonomic_rank.md)*  <sub>0..1</sub>  **[TaxonomicRank](TaxonomicRank.md)**
 
 ## Attributes
 

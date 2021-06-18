@@ -9,7 +9,7 @@ URI: [linkml:tree_root](https://w3id.org/linkml/tree_root)
 
 ## Domain and Range
 
-[ClassDefinition](ClassDefinition.md) &#8594;  <sub>OPT</sub> [Boolean](types/Boolean.md)
+[ClassDefinition](ClassDefinition.md) &#8594;  <sub>0..1</sub> [Boolean](types/Boolean.md)
 
 ## Parents
 

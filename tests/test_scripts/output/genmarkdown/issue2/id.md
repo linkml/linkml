@@ -9,7 +9,7 @@ URI: [linkml:id](https://w3id.org/linkml/id)
 
 ## Domain and Range
 
-schema_definition &#8594;  <sub>REQ</sub> uri
+schema_definition &#8594;  <sub>1..1</sub> uri
 
 ## Parents
 

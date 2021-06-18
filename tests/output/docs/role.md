@@ -9,7 +9,7 @@ URI: [linkml:role](https://w3id.org/linkml/role)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

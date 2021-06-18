@@ -18,10 +18,10 @@ URI: [http://example.org/sample/example1/DownloadProblem](http://example.org/sam
 
 ### Own
 
- * [has source](has_source.md)  <sub>OPT</sub>
+ * [has source](has_source.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
 
 ### Inherited from problem:
 
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

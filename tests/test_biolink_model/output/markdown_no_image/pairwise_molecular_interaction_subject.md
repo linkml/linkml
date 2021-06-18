@@ -9,7 +9,7 @@ URI: [biolink:pairwise_molecular_interaction_subject](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) &#8594;  <sub>REQ</sub> [MolecularEntity](MolecularEntity.md)
+[PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) &#8594;  <sub>1..1</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

@@ -22,26 +22,26 @@ URI: [http://example.org/sample/example1/MetricResultChild](http://example.org/s
 
 ### Own
 
- * [result child slot](result_child_slot.md)  <sub>OPT</sub>
+ * [result child slot](result_child_slot.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
 
 ### Inherited from metric result:
 
- * [evaluated using](evaluated_using.md)  <sub>OPT</sub>
+ * [evaluated using](evaluated_using.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [has source](has_source.md)  <sub>OPT</sub>
+ * [has source](has_source.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [has status](has_status.md)  <sub>OPT</sub>
+ * [has status](has_status.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
 
 ### Mixed in from has messages class:
 
- * [has messages](has_messages.md)  <sub>OPT</sub>
+ * [has messages](has_messages.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
 
 ### Mixed in from has messages child:
 
- * [has child messages](has_child_messages.md)  <sub>OPT</sub>
+ * [has child messages](has_child_messages.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

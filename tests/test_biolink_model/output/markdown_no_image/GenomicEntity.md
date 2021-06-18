@@ -33,45 +33,45 @@ URI: [biolink:GenomicEntity](https://w3id.org/biolink/vocab/GenomicEntity)
  *  **[MolecularEntity](MolecularEntity.md)** *[affects mutation rate of](affects_mutation_rate_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[decreases expression of](decreases_expression_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[decreases mutation rate of](decreases_mutation_rate_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
- *  **[GenomicSequenceLocalization](GenomicSequenceLocalization.md)** *[genomic sequence localization➞object](genomic_sequence_localization_object.md)*  <sub>REQ</sub>  **[GenomicEntity](GenomicEntity.md)**
- *  **[GenomicSequenceLocalization](GenomicSequenceLocalization.md)** *[genomic sequence localization➞subject](genomic_sequence_localization_subject.md)*  <sub>REQ</sub>  **[GenomicEntity](GenomicEntity.md)**
+ *  **[GenomicSequenceLocalization](GenomicSequenceLocalization.md)** *[genomic sequence localization➞object](genomic_sequence_localization_object.md)*  <sub>1..1</sub>  **[GenomicEntity](GenomicEntity.md)**
+ *  **[GenomicSequenceLocalization](GenomicSequenceLocalization.md)** *[genomic sequence localization➞subject](genomic_sequence_localization_subject.md)*  <sub>1..1</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[GenomicEntity](GenomicEntity.md)** *[has sequence location](has_sequence_location.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[increases expression of](increases_expression_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[increases mutation rate of](increases_mutation_rate_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[SequenceVariant](SequenceVariant.md)** *[is sequence variant of](is_sequence_variant_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
- *  **[SequenceFeatureRelationship](SequenceFeatureRelationship.md)** *[sequence feature relationship➞object](sequence_feature_relationship_object.md)*  <sub>REQ</sub>  **[GenomicEntity](GenomicEntity.md)**
- *  **[SequenceFeatureRelationship](SequenceFeatureRelationship.md)** *[sequence feature relationship➞subject](sequence_feature_relationship_subject.md)*  <sub>REQ</sub>  **[GenomicEntity](GenomicEntity.md)**
+ *  **[SequenceFeatureRelationship](SequenceFeatureRelationship.md)** *[sequence feature relationship➞object](sequence_feature_relationship_object.md)*  <sub>1..1</sub>  **[GenomicEntity](GenomicEntity.md)**
+ *  **[SequenceFeatureRelationship](SequenceFeatureRelationship.md)** *[sequence feature relationship➞subject](sequence_feature_relationship_subject.md)*  <sub>1..1</sub>  **[GenomicEntity](GenomicEntity.md)**
 
 ## Attributes
 
 
 ### Own
 
- * [has biological sequence](has_biological_sequence.md)  <sub>OPT</sub>
+ * [has biological sequence](has_biological_sequence.md)  <sub>0..1</sub>
      * Description: connects a genomic feature to its sequence
      * Range: [BiologicalSequence](types/BiologicalSequence.md)
 
 ### Inherited from molecular entity:
 
- * [id](id.md)  <sub>REQ</sub>
+ * [id](id.md)  <sub>1..1</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
      * in subsets: (translator_minimal)
- * [iri](iri.md)  <sub>OPT</sub>
+ * [iri](iri.md)  <sub>0..1</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
- * [type](type.md)  <sub>OPT</sub>
+ * [type](type.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [name](name.md)  <sub>OPT</sub>
+ * [name](name.md)  <sub>0..1</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a human-readable description of an entity
      * Range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
- * [source](source.md)  <sub>OPT</sub>
+ * [source](source.md)  <sub>0..1</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)

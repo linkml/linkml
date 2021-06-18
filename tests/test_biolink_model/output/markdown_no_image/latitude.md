@@ -9,7 +9,7 @@ URI: [biolink:latitude](https://w3id.org/biolink/vocab/latitude)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) &#8594;  <sub>OPT</sub> [Float](types/Float.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..1</sub> [Float](types/Float.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:issue](https://w3id.org/biolink/vocab/issue)
 
 ## Domain and Range
 
-[Publication](Publication.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[Publication](Publication.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

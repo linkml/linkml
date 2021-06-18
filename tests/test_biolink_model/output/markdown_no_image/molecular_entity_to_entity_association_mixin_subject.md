@@ -9,7 +9,7 @@ URI: [biolink:molecular_entity_to_entity_association_mixin_subject](https://w3id
 
 ## Domain and Range
 
-[MolecularEntityToEntityAssociationMixin](MolecularEntityToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [MolecularEntity](MolecularEntity.md)
+[MolecularEntityToEntityAssociationMixin](MolecularEntityToEntityAssociationMixin.md) &#8594;  <sub>1..1</sub> [MolecularEntity](MolecularEntity.md)
 
 ## Parents
 

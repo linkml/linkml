@@ -9,7 +9,7 @@ URI: [biolink:gene_to_gene_product_relationship_object](https://w3id.org/biolink
 
 ## Domain and Range
 
-[GeneToGeneProductRelationship](GeneToGeneProductRelationship.md) &#8594;  <sub>REQ</sub> [GeneProductMixin](GeneProductMixin.md)
+[GeneToGeneProductRelationship](GeneToGeneProductRelationship.md) &#8594;  <sub>1..1</sub> [GeneProductMixin](GeneProductMixin.md)
 
 ## Parents
 

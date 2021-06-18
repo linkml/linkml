@@ -22,6 +22,6 @@ URI: [biolink:GeneToEntityAssociationMixin](https://w3id.org/biolink/vocab/GeneT
 
 ### Own
 
- * [gene to entity association mixin➞subject](gene_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [gene to entity association mixin➞subject](gene_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Description: gene that is the subject of the association
      * Range: [GeneOrGeneProduct](GeneOrGeneProduct.md)

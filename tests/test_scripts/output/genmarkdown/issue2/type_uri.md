@@ -9,7 +9,7 @@ URI: [linkml:type_uri](https://w3id.org/linkml/type_uri)
 
 ## Domain and Range
 
-type_definition &#8594;  <sub>OPT</sub> uriorcurie
+type_definition &#8594;  <sub>0..1</sub> uriorcurie
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [biolink:gene_to_entity_association_mixin_subject](https://w3id.org/biolink
 
 ## Domain and Range
 
-[GeneToEntityAssociationMixin](GeneToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
+[GeneToEntityAssociationMixin](GeneToEntityAssociationMixin.md) &#8594;  <sub>1..1</sub> [GeneOrGeneProduct](GeneOrGeneProduct.md)
 
 ## Parents
 

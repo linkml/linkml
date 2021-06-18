@@ -9,7 +9,7 @@ URI: [biolink:variant_to_disease_association_predicate](https://w3id.org/biolink
 
 ## Domain and Range
 
-[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [PredicateType](types/PredicateType.md)
+[VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) &#8594;  <sub>1..1</sub> [PredicateType](types/PredicateType.md)
 
 ## Parents
 

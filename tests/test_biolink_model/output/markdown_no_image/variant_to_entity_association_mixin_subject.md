@@ -9,7 +9,7 @@ URI: [biolink:variant_to_entity_association_mixin_subject](https://w3id.org/biol
 
 ## Domain and Range
 
-[VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [SequenceVariant](SequenceVariant.md)
+[VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md) &#8594;  <sub>1..1</sub> [SequenceVariant](SequenceVariant.md)
 
 ## Parents
 

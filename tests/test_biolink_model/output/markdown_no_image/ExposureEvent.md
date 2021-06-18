@@ -26,16 +26,16 @@ URI: [biolink:ExposureEvent](https://w3id.org/biolink/vocab/ExposureEvent)
 
 ## Referenced by class
 
- *  **[EntityToExposureEventAssociationMixin](EntityToExposureEventAssociationMixin.md)** *[entity to exposure event association mixin➞object](entity_to_exposure_event_association_mixin_object.md)*  <sub>REQ</sub>  **[ExposureEvent](ExposureEvent.md)**
- *  **[ExposureEventToEntityAssociationMixin](ExposureEventToEntityAssociationMixin.md)** *[exposure event to entity association mixin➞subject](exposure_event_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>  **[ExposureEvent](ExposureEvent.md)**
- *  **[ExposureEventToPhenotypicFeatureAssociation](ExposureEventToPhenotypicFeatureAssociation.md)** *[exposure event to phenotypic feature association➞subject](exposure_event_to_phenotypic_feature_association_subject.md)*  <sub>REQ</sub>  **[ExposureEvent](ExposureEvent.md)**
+ *  **[EntityToExposureEventAssociationMixin](EntityToExposureEventAssociationMixin.md)** *[entity to exposure event association mixin➞object](entity_to_exposure_event_association_mixin_object.md)*  <sub>1..1</sub>  **[ExposureEvent](ExposureEvent.md)**
+ *  **[ExposureEventToEntityAssociationMixin](ExposureEventToEntityAssociationMixin.md)** *[exposure event to entity association mixin➞subject](exposure_event_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[ExposureEvent](ExposureEvent.md)**
+ *  **[ExposureEventToPhenotypicFeatureAssociation](ExposureEventToPhenotypicFeatureAssociation.md)** *[exposure event to phenotypic feature association➞subject](exposure_event_to_phenotypic_feature_association_subject.md)*  <sub>1..1</sub>  **[ExposureEvent](ExposureEvent.md)**
 
 ## Attributes
 
 
 ### Own
 
- * [timepoint](timepoint.md)  <sub>OPT</sub>
+ * [timepoint](timepoint.md)  <sub>0..1</sub>
      * Description: a point in time
      * Range: [TimeType](types/TimeType.md)
 

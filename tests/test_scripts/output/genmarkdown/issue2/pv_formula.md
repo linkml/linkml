@@ -9,7 +9,7 @@ URI: [linkml:pv_formula](https://w3id.org/linkml/pv_formula)
 
 ## Domain and Range
 
-enum_definition &#8594;  <sub>OPT</sub> [pv_formula_options](pv_formula_options.md)
+enum_definition &#8594;  <sub>0..1</sub> [pv_formula_options](pv_formula_options.md)
 
 ## Parents
 

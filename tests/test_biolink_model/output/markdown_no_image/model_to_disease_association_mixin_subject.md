@@ -9,7 +9,7 @@ URI: [biolink:model_to_disease_association_mixin_subject](https://w3id.org/bioli
 
 ## Domain and Range
 
-[ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md) &#8594;  <sub>REQ</sub> [NamedThing](NamedThing.md)
+[ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md) &#8594;  <sub>1..1</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

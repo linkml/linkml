@@ -9,7 +9,7 @@ URI: [biolink:exon_to_transcript_relationship_subject](https://w3id.org/biolink/
 
 ## Domain and Range
 
-[ExonToTranscriptRelationship](ExonToTranscriptRelationship.md) &#8594;  <sub>REQ</sub> [Exon](Exon.md)
+[ExonToTranscriptRelationship](ExonToTranscriptRelationship.md) &#8594;  <sub>1..1</sub> [Exon](Exon.md)
 
 ## Parents
 

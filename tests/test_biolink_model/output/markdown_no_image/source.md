@@ -9,7 +9,7 @@ URI: [biolink:source](https://w3id.org/biolink/vocab/source)
 
 ## Domain and Range
 
-None &#8594;  <sub>OPT</sub> [LabelType](types/LabelType.md)
+None &#8594;  <sub>0..1</sub> [LabelType](types/LabelType.md)
 
 ## Parents
 

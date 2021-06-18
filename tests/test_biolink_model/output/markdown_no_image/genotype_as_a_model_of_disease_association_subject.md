@@ -9,7 +9,7 @@ URI: [biolink:genotype_as_a_model_of_disease_association_subject](https://w3id.o
 
 ## Domain and Range
 
-[GenotypeAsAModelOfDiseaseAssociation](GenotypeAsAModelOfDiseaseAssociation.md) &#8594;  <sub>REQ</sub> [Genotype](Genotype.md)
+[GenotypeAsAModelOfDiseaseAssociation](GenotypeAsAModelOfDiseaseAssociation.md) &#8594;  <sub>1..1</sub> [Genotype](Genotype.md)
 
 ## Parents
 

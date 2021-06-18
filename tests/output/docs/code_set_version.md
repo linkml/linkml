@@ -9,7 +9,7 @@ URI: [linkml:code_set_version](https://w3id.org/linkml/code_set_version)
 
 ## Domain and Range
 
-[EnumDefinition](EnumDefinition.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[EnumDefinition](EnumDefinition.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

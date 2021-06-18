@@ -9,7 +9,7 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
 
 ## Domain and Range
 
-[Element](Element.md) &#8594;  <sub>OPT</sub> uri
+[Element](Element.md) &#8594;  <sub>0..1</sub> uri
 
 ## Parents
 

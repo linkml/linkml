@@ -9,7 +9,7 @@ URI: [biolink:regulated_by](https://w3id.org/biolink/vocab/regulated_by)
 
 ## Domain and Range
 
-[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) &#8594;  <sub>OPT</sub> [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
+[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md) &#8594;  <sub>0..1</sub> [PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)
 
 ## Parents
 

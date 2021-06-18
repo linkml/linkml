@@ -21,22 +21,22 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
 ## Referenced by class
 
  *  **[Definition](Definition.md)** *[apply_to](apply_to.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
- *  **[Definition](Definition.md)** *[is_a](is_a.md)*  <sub>OPT</sub>  **[Definition](Definition.md)**
+ *  **[Definition](Definition.md)** *[is_a](is_a.md)*  <sub>0..1</sub>  **[Definition](Definition.md)**
  *  **[Definition](Definition.md)** *[mixins](mixins.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
- *  **[SlotDefinition](SlotDefinition.md)** *[owner](owner.md)*  <sub>OPT</sub>  **[Definition](Definition.md)**
+ *  **[SlotDefinition](SlotDefinition.md)** *[owner](owner.md)*  <sub>0..1</sub>  **[Definition](Definition.md)**
 
 ## Attributes
 
 
 ### Own
 
- * [is_a](is_a.md)  <sub>OPT</sub>
+ * [is_a](is_a.md)  <sub>0..1</sub>
      * Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
      * Range: [Definition](Definition.md)
- * [abstract](abstract.md)  <sub>OPT</sub>
+ * [abstract](abstract.md)  <sub>0..1</sub>
      * Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
      * Range: [Boolean](Boolean.md)
- * [mixin](mixin.md)  <sub>OPT</sub>
+ * [mixin](mixin.md)  <sub>0..1</sub>
      * Description: this slot or class can only be used as a mixin.
      * Range: [Boolean](Boolean.md)
  * [mixins](mixins.md)  <sub>0..\*</sub>
@@ -48,33 +48,33 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
  * [values_from](values_from.md)  <sub>0..\*</sub>
      * Description: the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
      * Range: [Uriorcurie](Uriorcurie.md)
- * [created_by](created_by.md)  <sub>OPT</sub>
+ * [created_by](created_by.md)  <sub>0..1</sub>
      * Description: agent that created the element
      * Range: [Uriorcurie](Uriorcurie.md)
- * [created_on](created_on.md)  <sub>OPT</sub>
+ * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](Datetime.md)
- * [last_updated_on](last_updated_on.md)  <sub>OPT</sub>
+ * [last_updated_on](last_updated_on.md)  <sub>0..1</sub>
      * Description: time at which the element was last updated
      * Range: [Datetime](Datetime.md)
- * [modified_by](modified_by.md)  <sub>OPT</sub>
+ * [modified_by](modified_by.md)  <sub>0..1</sub>
      * Description: agent that modified the element
      * Range: [Uriorcurie](Uriorcurie.md)
- * [status](status.md)  <sub>OPT</sub>
+ * [status](status.md)  <sub>0..1</sub>
      * Description: status of the element
      * Range: [Uriorcurie](Uriorcurie.md)
      * Example: bibo:draft None
 
 ### Inherited from element:
 
- * [name](name.md)  <sub>REQ</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](String.md)
      * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with one of the URIs referenced by this prefix
      * Range: [Ncname](Ncname.md)
- * [definition_uri](definition_uri.md)  <sub>OPT</sub>
+ * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](Uriorcurie.md)
  * [aliases](aliases.md)  <sub>0..\*</sub>
@@ -84,13 +84,13 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](Uriorcurie.md)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](String.md)
      * in subsets: (owl)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
- * [deprecated](deprecated.md)  <sub>OPT</sub>
+ * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](String.md)
  * [todos](todos.md)  <sub>0..\*</sub>
@@ -111,10 +111,10 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
- * [from_schema](from_schema.md)  <sub>OPT</sub>
+ * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](Uri.md)
- * [imported_from](imported_from.md)  <sub>OPT</sub>
+ * [imported_from](imported_from.md)  <sub>0..1</sub>
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * Range: [String](String.md)
  * [see_also](see_also.md)  <sub>0..\*</sub>
@@ -136,10 +136,10 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
  * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have broader meaning.
      * Range: [Uriorcurie](Uriorcurie.md)
- * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be automatically replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
- * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
 

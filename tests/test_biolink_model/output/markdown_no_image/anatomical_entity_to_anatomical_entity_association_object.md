@@ -9,7 +9,7 @@ URI: [biolink:anatomical_entity_to_anatomical_entity_association_object](https:/
 
 ## Domain and Range
 
-[AnatomicalEntityToAnatomicalEntityAssociation](AnatomicalEntityToAnatomicalEntityAssociation.md) &#8594;  <sub>REQ</sub> [AnatomicalEntity](AnatomicalEntity.md)
+[AnatomicalEntityToAnatomicalEntityAssociation](AnatomicalEntityToAnatomicalEntityAssociation.md) &#8594;  <sub>1..1</sub> [AnatomicalEntity](AnatomicalEntity.md)
 
 ## Parents
 

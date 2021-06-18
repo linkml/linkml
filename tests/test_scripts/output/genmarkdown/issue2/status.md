@@ -9,7 +9,7 @@ URI: [linkml:status](https://w3id.org/linkml/status)
 
 ## Domain and Range
 
-[Element](Element.md) &#8594;  <sub>OPT</sub> uriorcurie
+[Element](Element.md) &#8594;  <sub>0..1</sub> uriorcurie
 
 ## Parents
 

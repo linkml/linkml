@@ -24,21 +24,21 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 ## Referenced by class
 
- *  **[SlotDefinition](SlotDefinition.md)** *[range](range.md)*  <sub>OPT</sub>  **[Element](Element.md)**
+ *  **[SlotDefinition](SlotDefinition.md)** *[range](range.md)*  <sub>0..1</sub>  **[Element](Element.md)**
 
 ## Attributes
 
 
 ### Own
 
- * [name](name.md)  <sub>REQ</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](types/String.md)
      * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with one of the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
- * [definition_uri](definition_uri.md)  <sub>OPT</sub>
+ * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [aliases](aliases.md)  <sub>0..\*</sub>
@@ -48,13 +48,13 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](types/String.md)
      * in subsets: (owl)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
- * [deprecated](deprecated.md)  <sub>OPT</sub>
+ * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)
  * [todos](todos.md)  <sub>0..\*</sub>
@@ -75,10 +75,10 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
- * [from_schema](from_schema.md)  <sub>OPT</sub>
+ * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](types/Uri.md)
- * [imported_from](imported_from.md)  <sub>OPT</sub>
+ * [imported_from](imported_from.md)  <sub>0..1</sub>
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * Range: [String](types/String.md)
  * [see_also](see_also.md)  <sub>0..\*</sub>
@@ -100,10 +100,10 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have broader meaning.
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be automatically replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
 

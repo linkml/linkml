@@ -9,7 +9,7 @@ URI: [biolink:has_zygosity](https://w3id.org/biolink/vocab/has_zygosity)
 
 ## Domain and Range
 
-[GenomicEntity](GenomicEntity.md) &#8594;  <sub>OPT</sub> [Zygosity](Zygosity.md)
+[GenomicEntity](GenomicEntity.md) &#8594;  <sub>0..1</sub> [Zygosity](Zygosity.md)
 
 ## Parents
 

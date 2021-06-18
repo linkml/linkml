@@ -9,7 +9,7 @@ URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
 
 ## Domain and Range
 
-[Element](Element.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[Element](Element.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

@@ -9,7 +9,7 @@ URI: [linkml:identifier](https://w3id.org/linkml/identifier)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) &#8594;  <sub>OPT</sub> [Boolean](Boolean.md)
+[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [Boolean](Boolean.md)
 
 ## Parents
 

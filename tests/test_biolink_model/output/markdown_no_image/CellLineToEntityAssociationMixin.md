@@ -21,5 +21,5 @@ URI: [biolink:CellLineToEntityAssociationMixin](https://w3id.org/biolink/vocab/C
 
 ### Own
 
- * [cell line to entity association mixin➞subject](cell_line_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [cell line to entity association mixin➞subject](cell_line_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Range: [CellLine](CellLine.md)

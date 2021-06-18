@@ -17,24 +17,24 @@ URI: [linkml:SlotDefinition](https://w3id.org/linkml/SlotDefinition)
 
  *  **[ClassDefinition](ClassDefinition.md)** *[attributes](attributes.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[defining_slots](defining_slots.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
- *  **[SlotDefinition](SlotDefinition.md)** *[inverse](inverse.md)*  <sub>OPT</sub>  **[SlotDefinition](SlotDefinition.md)**
+ *  **[SlotDefinition](SlotDefinition.md)** *[inverse](inverse.md)*  <sub>0..1</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞apply_to](slot_definition_apply_to.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
- *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞is_a](slot_definition_is_a.md)*  <sub>OPT</sub>  **[SlotDefinition](SlotDefinition.md)**
+ *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞is_a](slot_definition_is_a.md)*  <sub>0..1</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞mixins](slot_definition_mixins.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SchemaDefinition](SchemaDefinition.md)** *[schema_definition➞slots](slot_definitions.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[slot_usage](slot_usage.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[slots](slots.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
- *  **[SlotDefinition](SlotDefinition.md)** *[subproperty_of](subproperty_of.md)*  <sub>OPT</sub>  **[SlotDefinition](SlotDefinition.md)**
+ *  **[SlotDefinition](SlotDefinition.md)** *[subproperty_of](subproperty_of.md)*  <sub>0..1</sub>  **[SlotDefinition](SlotDefinition.md)**
 
 ## Attributes
 
 
 ### Own
 
- * [singular_name](singular_name.md)  <sub>OPT</sub>
+ * [singular_name](singular_name.md)  <sub>0..1</sub>
      * Description: a name that is used in the singular form
      * Range: [String](String.md)
- * [domain](domain.md)  <sub>OPT</sub>
+ * [domain](domain.md)  <sub>0..1</sub>
      * Description: defines the type of the subject of the slot.  Given the following slot definition
   S1:
     domain: C1
@@ -46,7 +46,7 @@ the declaration
 implicitly asserts that X is an instance of C1
 
      * Range: [ClassDefinition](ClassDefinition.md)
- * [range](range.md)  <sub>OPT</sub>
+ * [range](range.md)  <sub>0..1</sub>
      * Description: defines the type of the object of the slot.  Given the following slot definition
   S1:
     domain: C1
@@ -58,19 +58,19 @@ the declaration
 implicitly asserts Y is an instance of C2
 
      * Range: [Element](Element.md)
- * [slot_uri](slot_uri.md)  <sub>OPT</sub>
+ * [slot_uri](slot_uri.md)  <sub>0..1</sub>
      * Description: predicate of this slot for semantic web application
      * Range: [Uriorcurie](Uriorcurie.md)
- * [multivalued](multivalued.md)  <sub>OPT</sub>
+ * [multivalued](multivalued.md)  <sub>0..1</sub>
      * Description: true means that slot can have more than one value
      * Range: [Boolean](Boolean.md)
- * [inherited](inherited.md)  <sub>OPT</sub>
+ * [inherited](inherited.md)  <sub>0..1</sub>
      * Description: true means that the *value* of a slot is inherited by subclasses
      * Range: [Boolean](Boolean.md)
- * [readonly](readonly.md)  <sub>OPT</sub>
+ * [readonly](readonly.md)  <sub>0..1</sub>
      * Description: If present, slot is read only.  Text explains why
      * Range: [String](String.md)
- * [ifabsent](ifabsent.md)  <sub>OPT</sub>
+ * [ifabsent](ifabsent.md)  <sub>0..1</sub>
      * Description: function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
@@ -82,67 +82,67 @@ implicitly asserts Y is an instance of C2
   * class_curie -- CURIE for the containing class
   * class_uri -- URI for the containing class
      * Range: [String](String.md)
- * [required](required.md)  <sub>OPT</sub>
+ * [required](required.md)  <sub>0..1</sub>
      * Description: true means that the slot must be present in the loaded definition
      * Range: [Boolean](Boolean.md)
- * [inlined](inlined.md)  <sub>OPT</sub>
+ * [inlined](inlined.md)  <sub>0..1</sub>
      * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
      * Range: [Boolean](Boolean.md)
- * [inlined_as_list](inlined_as_list.md)  <sub>OPT</sub>
+ * [inlined_as_list](inlined_as_list.md)  <sub>0..1</sub>
      * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
      * Range: [Boolean](Boolean.md)
- * [key](key.md)  <sub>OPT</sub>
+ * [key](key.md)  <sub>0..1</sub>
      * Description: True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier
      * Range: [Boolean](Boolean.md)
- * [identifier](identifier.md)  <sub>OPT</sub>
+ * [identifier](identifier.md)  <sub>0..1</sub>
      * Description: True means that the key slot(s) uniquely identify the container. There can be at most one identifier or key per container
      * Range: [Boolean](Boolean.md)
- * [alias](alias.md)  <sub>OPT</sub>
+ * [alias](alias.md)  <sub>0..1</sub>
      * Description: the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.
      * Range: [String](String.md)
- * [owner](owner.md)  <sub>OPT</sub>
+ * [owner](owner.md)  <sub>0..1</sub>
      * Description: the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
      * Range: [Definition](Definition.md)
  * [domain_of](domain_of.md)  <sub>0..\*</sub>
      * Description: the class(es) that reference the slot in a "slots" or "slot_usage" context
      * Range: [ClassDefinition](ClassDefinition.md)
- * [subproperty_of](subproperty_of.md)  <sub>OPT</sub>
+ * [subproperty_of](subproperty_of.md)  <sub>0..1</sub>
      * Description: Ontology property which this slot is a subproperty of
      * Range: [SlotDefinition](SlotDefinition.md)
- * [symmetric](symmetric.md)  <sub>OPT</sub>
+ * [symmetric](symmetric.md)  <sub>0..1</sub>
      * Description: True means that any instance of  d s r implies that there is also an instance of r s d
      * Range: [Boolean](Boolean.md)
- * [inverse](inverse.md)  <sub>OPT</sub>
+ * [inverse](inverse.md)  <sub>0..1</sub>
      * Description: indicates that any instance of d s r implies that there is also an instance of r s' d
      * Range: [SlotDefinition](SlotDefinition.md)
- * [is_class_field](is_class_field.md)  <sub>OPT</sub>
+ * [is_class_field](is_class_field.md)  <sub>0..1</sub>
      * Description: indicates that any instance, i,  the domain of this slot will include an assert of i s range
      * Range: [Boolean](Boolean.md)
- * [role](role.md)  <sub>OPT</sub>
+ * [role](role.md)  <sub>0..1</sub>
      * Description: the role played by the slot range
      * Range: [String](String.md)
- * [is_usage_slot](is_usage_slot.md)  <sub>OPT</sub>
+ * [is_usage_slot](is_usage_slot.md)  <sub>0..1</sub>
      * Description: True means that this slot was defined in a slot_usage situation
      * Range: [Boolean](Boolean.md)
- * [usage_slot_name](usage_slot_name.md)  <sub>OPT</sub>
+ * [usage_slot_name](usage_slot_name.md)  <sub>0..1</sub>
      * Description: The name of the slot referenced in the slot_usage
      * Range: [String](String.md)
- * [minimum_value](minimum_value.md)  <sub>OPT</sub>
+ * [minimum_value](minimum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or higher than this
      * Range: [Integer](Integer.md)
- * [maximum_value](maximum_value.md)  <sub>OPT</sub>
+ * [maximum_value](maximum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or lowe than this
      * Range: [Integer](Integer.md)
- * [pattern](pattern.md)  <sub>OPT</sub>
+ * [pattern](pattern.md)  <sub>0..1</sub>
      * Description: the string value of the slot must conform to this regular expression
      * Range: [String](String.md)
- * [string_serialization](string_serialization.md)  <sub>OPT</sub>
+ * [string_serialization](string_serialization.md)  <sub>0..1</sub>
      * Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
 We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects
 For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
      * Range: [String](String.md)
- * [slot_definition➞is_a](slot_definition_is_a.md)  <sub>OPT</sub>
+ * [slot_definition➞is_a](slot_definition_is_a.md)  <sub>0..1</sub>
      * Range: [SlotDefinition](SlotDefinition.md)
  * [slot_definition➞mixins](slot_definition_mixins.md)  <sub>0..\*</sub>
      * Range: [SlotDefinition](SlotDefinition.md)
@@ -151,14 +151,14 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
 ### Inherited from definition:
 
- * [name](name.md)  <sub>REQ</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](String.md)
      * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with one of the URIs referenced by this prefix
      * Range: [Ncname](Ncname.md)
- * [definition_uri](definition_uri.md)  <sub>OPT</sub>
+ * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](Uriorcurie.md)
  * [aliases](aliases.md)  <sub>0..\*</sub>
@@ -168,13 +168,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](Uriorcurie.md)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](String.md)
      * in subsets: (owl)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
- * [deprecated](deprecated.md)  <sub>OPT</sub>
+ * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](String.md)
  * [todos](todos.md)  <sub>0..\*</sub>
@@ -195,10 +195,10 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
- * [from_schema](from_schema.md)  <sub>OPT</sub>
+ * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](Uri.md)
- * [imported_from](imported_from.md)  <sub>OPT</sub>
+ * [imported_from](imported_from.md)  <sub>0..1</sub>
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * Range: [String](String.md)
  * [see_also](see_also.md)  <sub>0..\*</sub>
@@ -220,34 +220,34 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
  * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have broader meaning.
      * Range: [Uriorcurie](Uriorcurie.md)
- * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be automatically replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
- * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
- * [abstract](abstract.md)  <sub>OPT</sub>
+ * [abstract](abstract.md)  <sub>0..1</sub>
      * Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
      * Range: [Boolean](Boolean.md)
- * [mixin](mixin.md)  <sub>OPT</sub>
+ * [mixin](mixin.md)  <sub>0..1</sub>
      * Description: this slot or class can only be used as a mixin.
      * Range: [Boolean](Boolean.md)
  * [values_from](values_from.md)  <sub>0..\*</sub>
      * Description: the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
      * Range: [Uriorcurie](Uriorcurie.md)
- * [created_by](created_by.md)  <sub>OPT</sub>
+ * [created_by](created_by.md)  <sub>0..1</sub>
      * Description: agent that created the element
      * Range: [Uriorcurie](Uriorcurie.md)
- * [created_on](created_on.md)  <sub>OPT</sub>
+ * [created_on](created_on.md)  <sub>0..1</sub>
      * Description: time at which the element was created
      * Range: [Datetime](Datetime.md)
- * [last_updated_on](last_updated_on.md)  <sub>OPT</sub>
+ * [last_updated_on](last_updated_on.md)  <sub>0..1</sub>
      * Description: time at which the element was last updated
      * Range: [Datetime](Datetime.md)
- * [modified_by](modified_by.md)  <sub>OPT</sub>
+ * [modified_by](modified_by.md)  <sub>0..1</sub>
      * Description: agent that modified the element
      * Range: [Uriorcurie](Uriorcurie.md)
- * [status](status.md)  <sub>OPT</sub>
+ * [status](status.md)  <sub>0..1</sub>
      * Description: status of the element
      * Range: [Uriorcurie](Uriorcurie.md)
      * Example: bibo:draft None

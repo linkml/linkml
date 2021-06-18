@@ -9,7 +9,7 @@ URI: [biolink:chemical_to_pathway_association_object](https://w3id.org/biolink/v
 
 ## Domain and Range
 
-[ChemicalToPathwayAssociation](ChemicalToPathwayAssociation.md) &#8594;  <sub>REQ</sub> [Pathway](Pathway.md)
+[ChemicalToPathwayAssociation](ChemicalToPathwayAssociation.md) &#8594;  <sub>1..1</sub> [Pathway](Pathway.md)
 
 ## Parents
 

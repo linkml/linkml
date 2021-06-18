@@ -9,7 +9,7 @@ URI: [biolink:creation_date](https://w3id.org/biolink/vocab/creation_date)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) &#8594;  <sub>OPT</sub> [Date](types/Date.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..1</sub> [Date](types/Date.md)
 
 ## Parents
 

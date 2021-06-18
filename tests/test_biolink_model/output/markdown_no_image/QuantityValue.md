@@ -22,11 +22,11 @@ URI: [biolink:QuantityValue](https://w3id.org/biolink/vocab/QuantityValue)
 
 ### Own
 
- * [has unit](has_unit.md)  <sub>OPT</sub>
+ * [has unit](has_unit.md)  <sub>0..1</sub>
      * Description: connects a quantity value to a unit
      * Range: [Unit](types/Unit.md)
      * in subsets: (samples)
- * [has numeric value](has_numeric_value.md)  <sub>OPT</sub>
+ * [has numeric value](has_numeric_value.md)  <sub>0..1</sub>
      * Description: connects a quantity value to a number
      * Range: [Double](types/Double.md)
      * in subsets: (samples)

@@ -21,5 +21,5 @@ URI: [https://example.com/test65/NamedThing](https://example.com/test65/NamedThi
 
 ### Own
 
- * [subject](subject.md)  <sub>OPT</sub>
+ * [subject](subject.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

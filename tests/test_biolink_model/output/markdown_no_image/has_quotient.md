@@ -9,7 +9,7 @@ URI: [biolink:has_quotient](https://w3id.org/biolink/vocab/has_quotient)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) &#8594;  <sub>OPT</sub> [Double](types/Double.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..1</sub> [Double](types/Double.md)
 
 ## Parents
 

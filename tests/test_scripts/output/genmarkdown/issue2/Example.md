@@ -18,9 +18,9 @@ URI: [linkml:Example](https://w3id.org/linkml/Example)
 
 ### Own
 
- * value  <sub>OPT</sub>
+ * value  <sub>0..1</sub>
      * Description: example value
      * Range: [String](types/String.md)
- * value_description  <sub>OPT</sub>
+ * value_description  <sub>0..1</sub>
      * Description: description of what the value is doing
      * Range: [String](types/String.md)

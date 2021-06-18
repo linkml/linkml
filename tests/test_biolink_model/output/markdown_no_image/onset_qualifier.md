@@ -9,7 +9,7 @@ URI: [biolink:onset_qualifier](https://w3id.org/biolink/vocab/onset_qualifier)
 
 ## Domain and Range
 
-[Association](Association.md) &#8594;  <sub>OPT</sub> [Onset](Onset.md)
+[Association](Association.md) &#8594;  <sub>0..1</sub> [Onset](Onset.md)
 
 ## Parents
 

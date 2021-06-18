@@ -22,6 +22,6 @@ URI: [biolink:MolecularEntityToEntityAssociationMixin](https://w3id.org/biolink/
 
 ### Own
 
- * [molecular entity to entity association mixin➞subject](molecular_entity_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [molecular entity to entity association mixin➞subject](molecular_entity_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Description: the molecular entity that is an interactor
      * Range: [MolecularEntity](MolecularEntity.md)

@@ -16,7 +16,7 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 ## Referenced by class
 
- *  **[PermissibleValue](PermissibleValue.md)** *[permissible_value➞is_a](permissible_value_is_a.md)*  <sub>OPT</sub>  **[PermissibleValue](PermissibleValue.md)**
+ *  **[PermissibleValue](PermissibleValue.md)** *[permissible_value➞is_a](permissible_value_is_a.md)*  <sub>0..1</sub>  **[PermissibleValue](PermissibleValue.md)**
  *  **[PermissibleValue](PermissibleValue.md)** *[permissible_value➞mixins](permissible_value_mixins.md)*  <sub>0..\*</sub>  **[PermissibleValue](PermissibleValue.md)**
  *  **[EnumDefinition](EnumDefinition.md)** *[permissible_values](permissible_values.md)*  <sub>0..\*</sub>  **[PermissibleValue](PermissibleValue.md)**
 
@@ -25,18 +25,18 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 ### Own
 
- * [text](text.md)  <sub>REQ</sub>
+ * [text](text.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](types/String.md)
      * in subsets: (owl)
- * [meaning](meaning.md)  <sub>OPT</sub>
+ * [meaning](meaning.md)  <sub>0..1</sub>
      * Description: the value meaning (in the 11179 sense) of a permissible value
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
- * [deprecated](deprecated.md)  <sub>OPT</sub>
+ * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)
  * [todos](todos.md)  <sub>0..\*</sub>
@@ -57,23 +57,23 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
- * [from_schema](from_schema.md)  <sub>OPT</sub>
+ * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](types/Uri.md)
- * [imported_from](imported_from.md)  <sub>OPT</sub>
+ * [imported_from](imported_from.md)  <sub>0..1</sub>
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * Range: [String](types/String.md)
  * [see_also](see_also.md)  <sub>0..\*</sub>
      * Description: a reference
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * in subsets: (owl)
- * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be automatically replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [permissible_value➞is_a](permissible_value_is_a.md)  <sub>OPT</sub>
+ * [permissible_value➞is_a](permissible_value_is_a.md)  <sub>0..1</sub>
      * Range: [PermissibleValue](PermissibleValue.md)
  * [permissible_value➞mixins](permissible_value_mixins.md)  <sub>0..\*</sub>
      * Range: [PermissibleValue](PermissibleValue.md)

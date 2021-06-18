@@ -9,7 +9,7 @@ URI: [biolink:organism_taxon_to_environment_association_object](https://w3id.org
 
 ## Domain and Range
 
-[OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md) &#8594;  <sub>REQ</sub> [NamedThing](NamedThing.md)
+[OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md) &#8594;  <sub>1..1</sub> [NamedThing](NamedThing.md)
 
 ## Parents
 

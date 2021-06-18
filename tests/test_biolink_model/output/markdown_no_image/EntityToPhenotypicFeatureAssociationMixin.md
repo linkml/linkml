@@ -31,13 +31,13 @@ URI: [biolink:EntityToPhenotypicFeatureAssociationMixin](https://w3id.org/biolin
 
 ### Own
 
- * [sex qualifier](sex_qualifier.md)  <sub>OPT</sub>
+ * [sex qualifier](sex_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state whether the association is specific to a particular sex.
      * Range: [BiologicalSex](BiologicalSex.md)
- * [entity to phenotypic feature association mixin➞description](entity_to_phenotypic_feature_association_mixin_description.md)  <sub>OPT</sub>
+ * [entity to phenotypic feature association mixin➞description](entity_to_phenotypic_feature_association_mixin_description.md)  <sub>0..1</sub>
      * Description: A description of specific aspects of this phenotype, not otherwise covered by the phenotype ontology class
      * Range: [NarrativeText](types/NarrativeText.md)
- * [entity to phenotypic feature association mixin➞object](entity_to_phenotypic_feature_association_mixin_object.md)  <sub>REQ</sub>
+ * [entity to phenotypic feature association mixin➞object](entity_to_phenotypic_feature_association_mixin_object.md)  <sub>1..1</sub>
      * Description: phenotypic class
      * Range: [PhenotypicFeature](PhenotypicFeature.md)
      * Example: HP:0002487 Hyperkinesis
@@ -46,12 +46,12 @@ URI: [biolink:EntityToPhenotypicFeatureAssociationMixin](https://w3id.org/biolin
 
 ### Inherited from entity to feature or disease qualifiers mixin:
 
- * [frequency qualifier](frequency_qualifier.md)  <sub>OPT</sub>
+ * [frequency qualifier](frequency_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state how frequent the phenotype is observed in the subject
      * Range: [FrequencyValue](types/FrequencyValue.md)
- * [severity qualifier](severity_qualifier.md)  <sub>OPT</sub>
+ * [severity qualifier](severity_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state how severe the phenotype is in the subject
      * Range: [SeverityValue](SeverityValue.md)
- * [onset qualifier](onset_qualifier.md)  <sub>OPT</sub>
+ * [onset qualifier](onset_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state when the phenotype appears is in the subject
      * Range: [Onset](Onset.md)

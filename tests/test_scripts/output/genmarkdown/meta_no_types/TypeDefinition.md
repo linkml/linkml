@@ -15,8 +15,8 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 
 ## Referenced by class
 
- *  **[SchemaDefinition](SchemaDefinition.md)** *[default_range](default_range.md)*  <sub>OPT</sub>  **[TypeDefinition](TypeDefinition.md)**
- *  **[TypeDefinition](TypeDefinition.md)** *[typeof](typeof.md)*  <sub>OPT</sub>  **[TypeDefinition](TypeDefinition.md)**
+ *  **[SchemaDefinition](SchemaDefinition.md)** *[default_range](default_range.md)*  <sub>0..1</sub>  **[TypeDefinition](TypeDefinition.md)**
+ *  **[TypeDefinition](TypeDefinition.md)** *[typeof](typeof.md)*  <sub>0..1</sub>  **[TypeDefinition](TypeDefinition.md)**
  *  **[SchemaDefinition](SchemaDefinition.md)** *[types](types.md)*  <sub>0..\*</sub>  **[TypeDefinition](TypeDefinition.md)**
 
 ## Attributes
@@ -24,29 +24,29 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 
 ### Own
 
- * [typeof](typeof.md)  <sub>OPT</sub>
+ * [typeof](typeof.md)  <sub>0..1</sub>
      * Description: Names a parent type
      * Range: [TypeDefinition](TypeDefinition.md)
- * [base](base.md)  <sub>OPT</sub>
+ * [base](base.md)  <sub>0..1</sub>
      * Description: python base type that implements this type definition
      * Range: [String](String.md)
- * [type_definition➞uri](type_uri.md)  <sub>OPT</sub>
+ * [type_definition➞uri](type_uri.md)  <sub>0..1</sub>
      * Description: The uri that defines the possible values for the type definition
      * Range: [Uriorcurie](Uriorcurie.md)
- * [repr](repr.md)  <sub>OPT</sub>
+ * [repr](repr.md)  <sub>0..1</sub>
      * Description: the name of the python object that implements this type definition
      * Range: [String](String.md)
 
 ### Inherited from element:
 
- * [name](name.md)  <sub>REQ</sub>
+ * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](String.md)
      * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with one of the URIs referenced by this prefix
      * Range: [Ncname](Ncname.md)
- * [definition_uri](definition_uri.md)  <sub>OPT</sub>
+ * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](Uriorcurie.md)
  * [aliases](aliases.md)  <sub>0..\*</sub>
@@ -56,13 +56,13 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](Uriorcurie.md)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](String.md)
      * in subsets: (owl)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
- * [deprecated](deprecated.md)  <sub>OPT</sub>
+ * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](String.md)
  * [todos](todos.md)  <sub>0..\*</sub>
@@ -83,10 +83,10 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
- * [from_schema](from_schema.md)  <sub>OPT</sub>
+ * [from_schema](from_schema.md)  <sub>0..1</sub>
      * Description: id of the schema that defined the element
      * Range: [Uri](Uri.md)
- * [imported_from](imported_from.md)  <sub>OPT</sub>
+ * [imported_from](imported_from.md)  <sub>0..1</sub>
      * Description: the imports entry that this element was derived from.  Empty means primary source
      * Range: [String](String.md)
  * [see_also](see_also.md)  <sub>0..\*</sub>
@@ -108,9 +108,9 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have broader meaning.
      * Range: [Uriorcurie](Uriorcurie.md)
- * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be automatically replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
- * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>OPT</sub>
+ * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)

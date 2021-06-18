@@ -9,7 +9,7 @@ URI: [biolink:clinical_measurement_has_attribute_type](https://w3id.org/biolink/
 
 ## Domain and Range
 
-[ClinicalMeasurement](ClinicalMeasurement.md) &#8594;  <sub>REQ</sub> [OntologyClass](OntologyClass.md)
+[ClinicalMeasurement](ClinicalMeasurement.md) &#8594;  <sub>1..1</sub> [OntologyClass](OntologyClass.md)
 
 ## Parents
 

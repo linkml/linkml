@@ -9,7 +9,7 @@ URI: [biolink:behavior_to_behavioral_feature_association_subject](https://w3id.o
 
 ## Domain and Range
 
-[BehaviorToBehavioralFeatureAssociation](BehaviorToBehavioralFeatureAssociation.md) &#8594;  <sub>REQ</sub> [Behavior](Behavior.md)
+[BehaviorToBehavioralFeatureAssociation](BehaviorToBehavioralFeatureAssociation.md) &#8594;  <sub>1..1</sub> [Behavior](Behavior.md)
 
 ## Parents
 

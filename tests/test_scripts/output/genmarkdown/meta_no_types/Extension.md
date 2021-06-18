@@ -22,10 +22,10 @@ URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
 ### Own
 
- * [extension➞tag](extension_tag.md)  <sub>REQ</sub>
+ * [extension➞tag](extension_tag.md)  <sub>1..1</sub>
      * Description: a tag associated with an extension
      * Range: [Uriorcurie](Uriorcurie.md)
- * [extension➞value](extension_value.md)  <sub>REQ</sub>
+ * [extension➞value](extension_value.md)  <sub>1..1</sub>
      * Description: the actual annotation
      * Range: [String](String.md)
  * [extensions](extensions.md)  <sub>0..\*</sub>

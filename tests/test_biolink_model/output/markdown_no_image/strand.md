@@ -9,7 +9,7 @@ URI: [biolink:strand](https://w3id.org/biolink/vocab/strand)
 
 ## Domain and Range
 
-[GenomicSequenceLocalization](GenomicSequenceLocalization.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[GenomicSequenceLocalization](GenomicSequenceLocalization.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

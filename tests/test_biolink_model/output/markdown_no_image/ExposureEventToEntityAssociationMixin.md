@@ -21,5 +21,5 @@ URI: [biolink:ExposureEventToEntityAssociationMixin](https://w3id.org/biolink/vo
 
 ### Own
 
- * [exposure event to entity association mixin➞subject](exposure_event_to_entity_association_mixin_subject.md)  <sub>REQ</sub>
+ * [exposure event to entity association mixin➞subject](exposure_event_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
      * Range: [ExposureEvent](ExposureEvent.md)

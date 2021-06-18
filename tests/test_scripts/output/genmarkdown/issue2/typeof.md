@@ -9,7 +9,7 @@ URI: [linkml:typeof](https://w3id.org/linkml/typeof)
 
 ## Domain and Range
 
-type_definition &#8594;  <sub>OPT</sub> type_definition
+type_definition &#8594;  <sub>0..1</sub> type_definition
 
 ## Parents
 

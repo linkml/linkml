@@ -9,7 +9,7 @@ URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
 
 ## Domain and Range
 
-class_definition &#8594;  <sub>OPT</sub> uriorcurie
+class_definition &#8594;  <sub>0..1</sub> uriorcurie
 
 ## Parents
 

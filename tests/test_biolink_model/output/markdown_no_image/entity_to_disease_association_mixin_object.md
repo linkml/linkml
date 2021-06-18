@@ -9,7 +9,7 @@ URI: [biolink:entity_to_disease_association_mixin_object](https://w3id.org/bioli
 
 ## Domain and Range
 
-[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) &#8594;  <sub>REQ</sub> [Disease](Disease.md)
+[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) &#8594;  <sub>1..1</sub> [Disease](Disease.md)
 
 ## Parents
 

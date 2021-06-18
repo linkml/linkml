@@ -9,7 +9,7 @@ URI: [biolink:entity_to_phenotypic_feature_association_mixin_description](https:
 
 ## Domain and Range
 
-[EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md) &#8594;  <sub>OPT</sub> [NarrativeText](types/NarrativeText.md)
+[EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md) &#8594;  <sub>0..1</sub> [NarrativeText](types/NarrativeText.md)
 
 ## Parents
 

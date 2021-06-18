@@ -9,7 +9,7 @@ URI: [linkml:prefix_reference](https://w3id.org/linkml/prefix_reference)
 
 ## Domain and Range
 
-prefix &#8594;  <sub>REQ</sub> uri
+prefix &#8594;  <sub>1..1</sub> uri
 
 ## Parents
 

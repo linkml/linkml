@@ -9,7 +9,7 @@ URI: [biolink:has_population_context](https://w3id.org/biolink/vocab/has_populat
 
 ## Domain and Range
 
-[Association](Association.md) &#8594;  <sub>OPT</sub> [PopulationOfIndividualOrganisms](PopulationOfIndividualOrganisms.md)
+[Association](Association.md) &#8594;  <sub>0..1</sub> [PopulationOfIndividualOrganisms](PopulationOfIndividualOrganisms.md)
 
 ## Parents
 

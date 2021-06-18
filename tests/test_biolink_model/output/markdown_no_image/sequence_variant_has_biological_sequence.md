@@ -9,7 +9,7 @@ URI: [biolink:sequence_variant_has_biological_sequence](https://w3id.org/biolink
 
 ## Domain and Range
 
-[SequenceVariant](SequenceVariant.md) &#8594;  <sub>OPT</sub> [BiologicalSequence](types/BiologicalSequence.md)
+[SequenceVariant](SequenceVariant.md) &#8594;  <sub>0..1</sub> [BiologicalSequence](types/BiologicalSequence.md)
 
 ## Parents
 

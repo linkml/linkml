@@ -26,15 +26,15 @@ URI: [biolink:EntityToFeatureOrDiseaseQualifiersMixin](https://w3id.org/biolink/
 
 ### Own
 
- * [severity qualifier](severity_qualifier.md)  <sub>OPT</sub>
+ * [severity qualifier](severity_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state how severe the phenotype is in the subject
      * Range: [SeverityValue](SeverityValue.md)
- * [onset qualifier](onset_qualifier.md)  <sub>OPT</sub>
+ * [onset qualifier](onset_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state when the phenotype appears is in the subject
      * Range: [Onset](Onset.md)
 
 ### Inherited from frequency qualifier mixin:
 
- * [frequency qualifier](frequency_qualifier.md)  <sub>OPT</sub>
+ * [frequency qualifier](frequency_qualifier.md)  <sub>0..1</sub>
      * Description: a qualifier used in a phenotypic association to state how frequent the phenotype is observed in the subject
      * Range: [FrequencyValue](types/FrequencyValue.md)

@@ -9,7 +9,7 @@ URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
 
 ## Domain and Range
 
-schema_definition &#8594;  <sub>OPT</sub> [String](types/String.md)
+schema_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

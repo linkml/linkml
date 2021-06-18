@@ -9,7 +9,7 @@ URI: [biolink:has_numeric_value](https://w3id.org/biolink/vocab/has_numeric_valu
 
 ## Domain and Range
 
-[QuantityValue](QuantityValue.md) &#8594;  <sub>OPT</sub> [Double](types/Double.md)
+[QuantityValue](QuantityValue.md) &#8594;  <sub>0..1</sub> [Double](types/Double.md)
 
 ## Parents
 

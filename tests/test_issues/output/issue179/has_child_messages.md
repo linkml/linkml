@@ -9,7 +9,7 @@ URI: [http://example.org/sample/example1/has_child_messages](http://example.org/
 
 ## Domain and Range
 
-None &#8594;  <sub>OPT</sub> [String](types/String.md)
+None &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

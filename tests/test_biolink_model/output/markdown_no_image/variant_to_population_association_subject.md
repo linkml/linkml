@@ -9,7 +9,7 @@ URI: [biolink:variant_to_population_association_subject](https://w3id.org/biolin
 
 ## Domain and Range
 
-[VariantToPopulationAssociation](VariantToPopulationAssociation.md) &#8594;  <sub>REQ</sub> [SequenceVariant](SequenceVariant.md)
+[VariantToPopulationAssociation](VariantToPopulationAssociation.md) &#8594;  <sub>1..1</sub> [SequenceVariant](SequenceVariant.md)
 
 ## Parents
 

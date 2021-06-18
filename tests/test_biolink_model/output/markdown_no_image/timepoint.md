@@ -9,7 +9,7 @@ URI: [biolink:timepoint](https://w3id.org/biolink/vocab/timepoint)
 
 ## Domain and Range
 
-[NamedThing](NamedThing.md) &#8594;  <sub>OPT</sub> [TimeType](types/TimeType.md)
+[NamedThing](NamedThing.md) &#8594;  <sub>0..1</sub> [TimeType](types/TimeType.md)
 
 ## Parents
 

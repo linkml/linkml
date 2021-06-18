@@ -35,8 +35,8 @@ URI: [biolink:Disease](https://w3id.org/biolink/vocab/Disease)
 
 ## Referenced by class
 
- *  **[DiseaseToEntityAssociationMixin](DiseaseToEntityAssociationMixin.md)** *[disease to entity association mixin➞subject](disease_to_entity_association_mixin_subject.md)*  <sub>REQ</sub>  **[Disease](Disease.md)**
- *  **[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md)** *[entity to disease association mixin➞object](entity_to_disease_association_mixin_object.md)*  <sub>REQ</sub>  **[Disease](Disease.md)**
+ *  **[DiseaseToEntityAssociationMixin](DiseaseToEntityAssociationMixin.md)** *[disease to entity association mixin➞subject](disease_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[Disease](Disease.md)**
+ *  **[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md)** *[entity to disease association mixin➞object](entity_to_disease_association_mixin_object.md)*  <sub>1..1</sub>  **[Disease](Disease.md)**
  *  **[NamedThing](NamedThing.md)** *[manifestation of](manifestation_of.md)*  <sub>0..\*</sub>  **[Disease](Disease.md)**
 
 ## Attributes
@@ -44,25 +44,25 @@ URI: [biolink:Disease](https://w3id.org/biolink/vocab/Disease)
 
 ### Inherited from disease or phenotypic feature:
 
- * [id](id.md)  <sub>REQ</sub>
+ * [id](id.md)  <sub>1..1</sub>
      * Description: A unique identifier for an entity. Must be either a CURIE shorthand for a URI or a complete URI
      * Range: [String](types/String.md)
      * in subsets: (translator_minimal)
- * [iri](iri.md)  <sub>OPT</sub>
+ * [iri](iri.md)  <sub>0..1</sub>
      * Description: An IRI for an entity. This is determined by the id using expansion rules.
      * Range: [IriType](types/IriType.md)
      * in subsets: (translator_minimal,samples)
- * [type](type.md)  <sub>OPT</sub>
+ * [type](type.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
- * [name](name.md)  <sub>OPT</sub>
+ * [name](name.md)  <sub>0..1</sub>
      * Description: A human-readable name for an attribute or entity.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal,samples)
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Description: a human-readable description of an entity
      * Range: [NarrativeText](types/NarrativeText.md)
      * in subsets: (translator_minimal)
- * [source](source.md)  <sub>OPT</sub>
+ * [source](source.md)  <sub>0..1</sub>
      * Description: a lightweight analog to the association class 'has provider' slot, which is the string name, or the authoritative (i.e. database) namespace, designating the origin of the entity to which the slot belongs.
      * Range: [LabelType](types/LabelType.md)
      * in subsets: (translator_minimal)

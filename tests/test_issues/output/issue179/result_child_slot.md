@@ -9,7 +9,7 @@ URI: [http://example.org/sample/example1/result_child_slot](http://example.org/s
 
 ## Domain and Range
 
-[Problem](Problem.md) &#8594;  <sub>OPT</sub> [String](types/String.md)
+[Problem](Problem.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 

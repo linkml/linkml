@@ -18,9 +18,9 @@ URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
 
 ### Own
 
- * [alt_description➞source](alt_description_source.md)  <sub>REQ</sub>
+ * [alt_description➞source](alt_description_source.md)  <sub>1..1</sub>
      * Description: the source of an attributed description
      * Range: [String](types/String.md)
- * [alt_description➞description](alt_description_text.md)  <sub>REQ</sub>
+ * [alt_description➞description](alt_description_text.md)  <sub>1..1</sub>
      * Description: text of an attributed description
      * Range: [String](types/String.md)

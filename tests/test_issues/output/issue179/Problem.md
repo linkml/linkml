@@ -21,5 +21,5 @@ URI: [http://example.org/sample/example1/Problem](http://example.org/sample/exam
 
 ### Own
 
- * [description](description.md)  <sub>OPT</sub>
+ * [description](description.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)

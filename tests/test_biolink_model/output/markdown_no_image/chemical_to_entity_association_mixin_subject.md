@@ -9,7 +9,7 @@ URI: [biolink:chemical_to_entity_association_mixin_subject](https://w3id.org/bio
 
 ## Domain and Range
 
-[ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) &#8594;  <sub>REQ</sub> [ChemicalSubstance](ChemicalSubstance.md)
+[ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) &#8594;  <sub>1..1</sub> [ChemicalSubstance](ChemicalSubstance.md)
 
 ## Parents
 

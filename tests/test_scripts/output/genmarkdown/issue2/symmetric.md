@@ -9,7 +9,7 @@ URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 
 ## Domain and Range
 
-slot_definition &#8594;  <sub>OPT</sub> boolean
+slot_definition &#8594;  <sub>0..1</sub> boolean
 
 ## Parents
 
