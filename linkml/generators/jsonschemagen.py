@@ -95,7 +95,9 @@ class JsonSchemaGenerator(Generator):
             prop.description = slot.description
         if slot.required:
             self.clsobj.required.append(underscore(aliased_slot_name))
-
+        if slot.pattern:
+            # See https://github.com/linkml/linkml/issues/193
+            prop.pattern = slot.pattern
         self.clsobj.properties[underscore(aliased_slot_name)] = prop
         if self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name) or \
                 self.topCls is None and cls.tree_root:
