@@ -47,6 +47,7 @@ classes:
       - id
       - name
       - has employment history
+      - age in years
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
@@ -66,6 +67,21 @@ classes:
       - started at time
       - ended at time
       - is current
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - filler
+      - type
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+      filler:
+        range: Person
 
   EmploymentEvent:
     is_a: Event
@@ -123,7 +139,22 @@ slots:
     range: MedicalEvent
     multivalued: true
     inlined_as_list: true
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
   married to:
     range: Person
   in location:
     range: Place
+  age in years:
+    range: integer
+  filler:
+  type:
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:

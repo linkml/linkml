@@ -1,6 +1,7 @@
 persons:
   - id: P:001
     name: fred bloggs
+    age_in_years: 33
   - id: P:002
     name: joe schmoe
     has_employment_history:
