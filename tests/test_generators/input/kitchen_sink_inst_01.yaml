@@ -1,8 +1,8 @@
 persons:
   - id: P:001
-    name: fred
+    name: fred bloggs
   - id: P:002
-    name: joe
+    name: joe schmoe
     has_employment_history:
       - employed_at: ROR:1
         started_at_time: 2019-01-01

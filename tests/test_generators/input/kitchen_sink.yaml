@@ -47,6 +47,9 @@ classes:
       - id
       - name
       - has employment history
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
 
   Organization:
     slots:
