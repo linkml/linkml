@@ -1,0 +1,126 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+description: |-
+  Kitchen Sink Schema
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+    
+default_curi_maps:
+  - semweb_context
+imports:
+ - linkml:types
+ - core
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  gocam: https://w3id.org/gocam/
+  goshapes: http://purl.obolibrary.org/obo/go/shapes/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+default_prefix: gocam
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    description: >-
+      A test subset
+
+classes:
+
+  Person:
+    slots:
+      - id
+      - name
+      - has employment history
+
+  Organization:
+    slots:
+      - id
+      - name
+
+  Place:
+    slots:
+      - id
+      - name
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+
+  EmploymentEvent:
+    is_a: Event
+    slots:
+      - employed at
+
+  MedicalEvent:
+    is_a: Event
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+
+  Dataset:
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+
+slots:
+  employed at:
+    range: Company
+  is current:
+    range: boolean
+  has employment history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+  has medical history:
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+  married to:
+    range: Person
+  in location:
+    range: Place

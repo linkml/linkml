@@ -1,0 +1,12 @@
+persons:
+  - id: P:001
+    name: fred
+  - id: P:002
+    name: joe
+    has_employment_history:
+      - employed_at: ROR:1
+        started_at_time: 2019-01-01
+        is_current: true
+companies:
+  - id: ROR:1
+    name: foo
