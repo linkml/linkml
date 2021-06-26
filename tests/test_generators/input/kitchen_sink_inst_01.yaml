@@ -8,6 +8,9 @@ persons:
       - employed_at: ROR:1
         started_at_time: 2019-01-01
         is_current: true
+    has_familial_relationships:
+      - related_to: P:001
+        type: SIBLING_OF
 companies:
   - id: ROR:1
     name: foo

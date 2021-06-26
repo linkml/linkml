@@ -47,6 +47,8 @@ classes:
       - id
       - name
       - has employment history
+      - has familial relationships
+      - has medical history
       - age in years
     slot_usage:
       name:
@@ -72,7 +74,7 @@ classes:
     slots:
       - started at time
       - ended at time
-      - filler
+      - related to
       - type
 
   FamilialRelationship:
@@ -80,7 +82,7 @@ classes:
     slot_usage:
       type:
         range: FamilialRelationshipType
-      filler:
+      related to:
         range: Person
 
   EmploymentEvent:
@@ -149,7 +151,7 @@ slots:
     range: Place
   age in years:
     range: integer
-  filler:
+  related to:
   type:
 
 enums:
