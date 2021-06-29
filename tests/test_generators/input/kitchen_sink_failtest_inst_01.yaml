@@ -22,3 +22,48 @@
     companies:
       - id: ROR:1
         name: 5
+- description: missing required type field
+  skip: false
+  dataset:
+    persons:
+      - id: P:001
+        name: jane smith
+        has_familial_relationships:
+          - related_to: P:002
+- description: wrong enum
+  skip: true ## https://github.com/linkml/linkml/issues/201
+  dataset:
+    persons:
+      - id: P:001
+        name: jane smith
+        has_familial_relationships:
+          - related_to: P:002
+            type: NON_EXISTENT_RELATION
+- description: age lower than threshold
+  skip: true ## TODO
+  dataset:
+    persons:
+      - id: P
+        name: benjamin button
+        age_in_years: -5
+- description: age higher than threshold
+  skip: true ## TODO
+  dataset:
+    persons:
+      - id: P
+        name: dr who
+        age_in_years: 5000
+- description: additional properties is closed
+  skip: false
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        made_up_property: "abc"
+- description: additional properties is closed on enclosing object
+  skip: true ## https://github.com/linkml/linkml/issues/106
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+    made_up_property: "abc"

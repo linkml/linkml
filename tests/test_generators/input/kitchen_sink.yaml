@@ -26,11 +26,11 @@ prefixes:
   lego: http://geneontology.org/lego/
   linkml: https://w3id.org/linkml/
   biolink: https://w3id.org/biolink/
-  gocam: https://w3id.org/gocam/
+  ex: https://w3id.org/example/
   goshapes: http://purl.obolibrary.org/obo/go/shapes/
   RO: http://purl.obolibrary.org/obo/RO_
   BFO: http://purl.obolibrary.org/obo/BFO_
-default_prefix: gocam
+default_prefix: ex
 see_also:
   - https://example.org/
 
@@ -42,7 +42,15 @@ subsets:
 
 classes:
 
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        multivalued: true
+
   Person:
+    mixins:
+      - HasAliases
     slots:
       - id
       - name
@@ -55,11 +63,15 @@ classes:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
 
   Organization:
+    mixins:
+      - HasAliases
     slots:
       - id
       - name
 
   Place:
+    mixins:
+      - HasAliases
     slots:
       - id
       - name
@@ -82,8 +94,10 @@ classes:
     slot_usage:
       type:
         range: FamilialRelationshipType
+        required: true
       related to:
         range: Person
+        required: true
 
   EmploymentEvent:
     is_a: Event
@@ -123,6 +137,11 @@ classes:
         inlined_as_list: true
         inlined: true
         multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
 
 slots:
   employed at:
@@ -151,6 +170,8 @@ slots:
     range: Place
   age in years:
     range: integer
+    minimum_value: 0
+    maximum_value: 999
   related to:
   type:
 
@@ -160,3 +181,4 @@ enums:
       SIBLING_OF:
       PARENT_OF:
       CHILD_OF:
+  DiagnosisType:

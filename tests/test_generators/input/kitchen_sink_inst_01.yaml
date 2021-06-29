@@ -11,6 +11,12 @@ persons:
     has_familial_relationships:
       - related_to: P:001
         type: SIBLING_OF
+    has_medical_history:
+      - started_at_time: 2019-01-01
 companies:
   - id: ROR:1
     name: foo
+activities:
+  - id: A:1
+    started_at_time: 2019-01-01
+    was_associated_with: Agent:987

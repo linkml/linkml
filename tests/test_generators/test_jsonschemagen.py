@@ -1,7 +1,7 @@
 import unittest
 
 from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader
-from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.dumpers import json_dumper, rdf_dumper
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_generators.environment import env
@@ -33,7 +33,7 @@ def make_python() -> None:
     p = Person('P:1', has_employment_history=[h])
 
 class JsonSchemaTestCase(unittest.TestCase):
-    def test_jsonschem(self):
+    def test_jsonschema(self):
         """ json schema """
         make_python()
         inst = yaml_loader.load(DATA, target_class=Dataset)
@@ -50,14 +50,17 @@ class JsonSchemaTestCase(unittest.TestCase):
             failobjs = yaml.load(io)
         for failobj in failobjs:
             dataset = failobj['dataset']
-            print(f'Testing {failobj["description"]} {dataset}')
+            is_skip = failobj.get('skip', False)
+            print(f'[{is_skip}] Testing {failobj["description"]} {dataset}')
             is_fail = False
             try:
                 jsonschema.validate(dataset, schema=jsonschema_obj)
                 is_fail = False
             except:
                 is_fail = True
-            assert is_fail
+            print(f'Detected error: {is_fail}')
+            if not is_skip:
+                assert is_fail
 
 
 
