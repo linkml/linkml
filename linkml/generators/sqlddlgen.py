@@ -423,6 +423,9 @@ Path to sqlalchemy generated python
 @click.option("--python-import",  help="""
 Python import header for generated sql-alchemy code
 """)
+@click.option("--direct-mapping/--no-direct-mapping", default=False, help="""
+Map classes directly to 
+""")
 @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, help="Emit FK declarations")
 def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
     """ Generate SQL DDL representation """
