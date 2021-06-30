@@ -8,6 +8,8 @@ from sqlalchemy import create_engine
 from io import StringIO
 from contextlib import redirect_stdout
 
+from linkml_runtime.utils.compile_python import compile_python
+
 import os
 from output.kitchen_sink import *
 #from kitchen_sink_db_mapping import *
@@ -23,6 +25,13 @@ BASIC_SQLA_CODE = env.expected_path('kitchen_sink_basic_db_mapping.py')
 NAME = 'fred'
 CITY = 'Gotham city'
 
+def create_and_compile_sqla_bindings(gen: SQLDDLGenerator, path: str = SQLA_CODE):
+    with open(path, 'w') as stream:
+        with redirect_stdout(stream):
+            gen.write_sqla_python_imperative('output.kitchen_sink')
+            module = compile_python(path)
+            return module
+
 class SQLDDLTestCase(unittest.TestCase):
 
     def test_sqlddl_basic(self):
@@ -34,6 +43,8 @@ class SQLDDLTestCase(unittest.TestCase):
         with open(BASIC_SQLA_CODE, 'w') as stream:
             with redirect_stdout(stream):
                 gen.write_sqla_python_imperative('output.kitchen_sink')
+                # don't load this - will conflict
+                #create_and_compile_sqla_bindings(gen, BASIC_SQLA_CODE)
 
     def test_sqlddl(self):
         """ DDL  """
@@ -57,12 +68,13 @@ class SQLDDLTestCase(unittest.TestCase):
         con.commit()
         con.close()
         #print(gen.to_sqla_python())
-        output = StringIO()
-        with redirect_stdout(output):
-            gen.write_sqla_python_imperative('output.kitchen_sink')
+        #output = StringIO()
+        #with redirect_stdout(output):
+        #    gen.write_sqla_python_imperative('output.kitchen_sink')
         #print(output.getvalue())
-        with open(SQLA_CODE, 'w') as stream:
-            stream.write(output.getvalue())
+        #with open(SQLA_CODE, 'w') as stream:
+        #    stream.write(output.getvalue())
+        create_and_compile_sqla_bindings(gen, SQLA_CODE)
 
         # test SQLA
         engine = create_engine(f'sqlite:///{DB}')
