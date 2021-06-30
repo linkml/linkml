@@ -10,6 +10,7 @@ from sqlalchemy import MetaData
 from sqlalchemy import String
 from sqlalchemy import Table
 from sqlalchemy import Text
+from sqlalchemy import Integer
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import relationship
 

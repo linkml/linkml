@@ -242,7 +242,7 @@ class SQLDDLGenerator(Generator):
             range = slot.range
             ref = sqlschema.get_table_by_class_name(range)
             is_primitive = ref is None
-            basic_type = 'Text'
+            #basic_type = 'Text'
             table_pk = table.get_singular_primary_key()
             if slot.multivalued:
                 if is_primitive and table_pk is not None:
@@ -328,7 +328,7 @@ class SQLDDLGenerator(Generator):
                     args = []
                     if sqlcol.foreign_key:
                         args = [ForeignKey(sqlcol.foreign_key.as_ddlstr())]
-                    col = Column(sqlcol.name, Text(), *args, primary_key=sqlcol.is_primary_key(), nullable=slot is None or not slot.required)
+                    col = Column(sqlcol.name, sqlcol.base_type, *args, primary_key=sqlcol.is_primary_key(), nullable=slot is None or not slot.required)
 
                     cols.append(col)
                 alchemy_tbl = Table(t.name, schema_metadata, *cols)
@@ -360,6 +360,7 @@ from sqlalchemy import MetaData
 from sqlalchemy import String
 from sqlalchemy import Table
 from sqlalchemy import Text
+from sqlalchemy import Integer
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import relationship
 
@@ -382,6 +383,8 @@ from {model_path} import *
             for col in cols:
                 #range = col.base_type
                 range = 'Text'
+                #if isinstance(col.base_type, Integer):
+                #    range = 'Integer'
                 print(f"    Column('{col.name}', {range}", end='')
                 fk = col.foreign_key
                 if fk is not None:
