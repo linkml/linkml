@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-29 19:39
+# Generation date: 2021-06-30 00:26
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -62,10 +62,6 @@ class PlaceId(extended_str):
     pass
 
 
-class AddressId(extended_str):
-    pass
-
-
 class CompanyId(OrganizationId):
     pass
 
@@ -112,7 +108,7 @@ class Person(YAMLRoot):
     has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], List[Union[dict, "FamilialRelationship"]]]] = empty_list()
     has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
     age_in_years: Optional[int] = None
-    addresses: Optional[Union[Union[str, AddressId], List[Union[str, AddressId]]]] = empty_list()
+    addresses: Optional[Union[Union[dict, "Address"], List[Union[dict, "Address"]]]] = empty_list()
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -139,7 +135,7 @@ class Person(YAMLRoot):
 
         if not isinstance(self.addresses, list):
             self.addresses = [self.addresses] if self.addresses is not None else []
-        self.addresses = [v if isinstance(v, AddressId) else AddressId(v) for v in self.addresses]
+        self.addresses = [v if isinstance(v, Address) else Address(**v) for v in self.addresses]
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
@@ -215,16 +211,10 @@ class Address(YAMLRoot):
     class_name: ClassVar[str] = "Address"
     class_model_uri: ClassVar[URIRef] = EX.Address
 
-    id: Union[str, AddressId] = None
     street: Optional[str] = None
     city: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self._is_empty(self.id):
-            self.MissingRequiredField("id")
-        if not isinstance(self.id, AddressId):
-            self.id = AddressId(self.id)
-
         if self.street is not None and not isinstance(self.street, str):
             self.street = str(self.street)
 
@@ -554,7 +544,7 @@ slots.in_location = Slot(uri=EX.in_location, name="in location", curie=EX.curie(
                    model_uri=EX.in_location, domain=None, range=Optional[Union[str, PlaceId]])
 
 slots.addresses = Slot(uri=EX.addresses, name="addresses", curie=EX.curie('addresses'),
-                   model_uri=EX.addresses, domain=None, range=Optional[Union[Union[str, AddressId], List[Union[str, AddressId]]]])
+                   model_uri=EX.addresses, domain=None, range=Optional[Union[Union[dict, Address], List[Union[dict, Address]]]])
 
 slots.age_in_years = Slot(uri=EX.age_in_years, name="age in years", curie=EX.curie('age_in_years'),
                    model_uri=EX.age_in_years, domain=None, range=Optional[int])

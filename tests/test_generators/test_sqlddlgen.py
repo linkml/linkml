@@ -1,9 +1,6 @@
 import unittest
 
-from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader
-from linkml_runtime.dumpers import rdf_dumper, json_dumper
 from linkml.generators.sqlddlgen import SQLDDLGenerator
-from linkml.generators.jsonldcontextgen import ContextGenerator
 from tests.test_generators.environment import env
 import sqlite3
 from sqlalchemy.orm import relationship, sessionmaker, aliased
@@ -11,13 +8,9 @@ from sqlalchemy import create_engine
 from io import StringIO
 from contextlib import redirect_stdout
 
-from pyshex.evaluate import evaluate
-from rdflib.namespace import RDF
-from importlib import import_module
-import json
-import yaml
 import os
 from output.kitchen_sink import *
+#from kitchen_sink_db_mapping import *
 from output.kitchen_sink_db_mapping import *
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
@@ -26,7 +19,9 @@ SQLA_CODE = env.expected_path('kitchen_sink_db_mapping.py')
 DDL_PATH = env.expected_path('kitchen_sink.ddl.sql')
 BASIC_DDL_PATH = env.expected_path('kitchen_sink.basic.ddl.sql')
 BASIC_SQLA_CODE = env.expected_path('kitchen_sink_basic_db_mapping.py')
+
 NAME = 'fred'
+CITY = 'Gotham city'
 
 class SQLDDLTestCase(unittest.TestCase):
 
@@ -55,6 +50,8 @@ class SQLDDLTestCase(unittest.TestCase):
         cur = con.cursor()
         cur.executescript(ddl)
         cur.execute("INSERT INTO Person (id, name, age_in_years) VALUES (?,?,?)", ('P1', NAME, 33))
+        cur.execute("INSERT INTO Person_aliases (backref_id, aliases) VALUES (?,?)", ('P1', 'wibble'))
+        cur.execute("INSERT INTO Address (Person_id, street, city) VALUES (?,?,?)", ('P1', '99 foo street', 'SF'))
         cur.execute("select * from Person where name=:name", {"name": NAME})
         print(cur.fetchall())
         con.commit()
@@ -84,6 +81,36 @@ class SQLDDLTestCase(unittest.TestCase):
         q = session.query(Activity)
         for row in q.all():
             print(f'Row={row}')
+        #person = Person(id='P22', name='joe', addresses=[Address(street='1 Acacia Ave', city='treetown')])
+        person = Person(id='P22', name='joe',
+                        aliases=['foo'],
+                        addresses=[Address(street='1 random streer', city=CITY)],
+                        has_employment_history=[EmploymentEvent(started_at_time='2020-01-01', is_current=True)],
+                        has_familial_relationships=[],
+                        has_medical_history=[])
+        person = Person(id='P22', name='joe')
+        print(f'Aliases={person.aliases}')
+        session.flush()
+        #todo: fix this
+        #session.add(person)
+        org = Organization(id='org1', name='foo org', aliases=['bar org'])
+        org.aliases = ['abc def']
+        session.add(org)
+        session.flush()
+        for o in session.query(Organization).all():
+            print(f'org = {o}')
+        q = session.query(Person)
+        p: Person
+        is_found_address = False
+        for p in q.all():
+            print(f'Person={p.id} {p.name}')
+            for a in p.addresses:
+                print(f'  Address={a}')
+                #if a.city == CITY:
+                #    is_found_address = True
+            #for alias in p.aliases:
+            #    print(f'  AKA={a}')
+        #assert is_found_address
         session.commit()
 
 

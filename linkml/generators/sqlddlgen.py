@@ -8,7 +8,6 @@ from sqlalchemy import *
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
 from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
 
 TABLENAME = str
 COLNAME = str
@@ -31,8 +30,8 @@ def _quote(s: str) -> str:
 
 @dataclass
 class Backref():
-    column: "SQLColumn"
-    backref_to_table: "SQLTable"
+    original_column: "SQLColumn"
+    backref_column: "SQLColumn"
     order_by: str = None
 
 
@@ -152,18 +151,7 @@ class SQLDDLGenerator(Generator):
     use_inherits: bool = False  ## postgresql supports inheritance
     dialect: str
     inject_primary_keys: bool = True
-    sqla_python_lines: List[str] = []
     sqlschema: SQLSchema = SQLSchema()
-
-    # we maintain our own structure before feeding to sqlalchemy
-    # tablename -> colname -> Column
-    # https://stackoverflow.com/questions/52045695/sqlalchemy-remove-column-from-table-definition
-    columns: Dict[TABLENAME, Dict[COLNAME, Column]] = {}
-
-    mapped_foreign_keys: Dict[Tuple[TABLENAME, COLNAME], COLNAME] = {}
-
-    table_to_class: Dict[TABLENAME, ClassDefinition] = {}
-    table_columns_to_slot: Dict[Tuple[TABLENAME, COLNAME], SlotDefinition] = {}
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], dialect='sqlite',
                  use_foreign_keys = True,
@@ -177,22 +165,6 @@ class SQLDDLGenerator(Generator):
         self.rename_foreign_keys = rename_foreign_keys
         self.direct_mapping = direct_mapping
         self.sqlschema = SQLSchema()
-        self.sqla_python_lines = [
-            'from sqlalchemy import Column, Index, Table, Text',
-            'from sqlalchemy.sql.sqltypes import NullType',
-            'from sqlalchemy.ext.declarative import declarative_base',
-            '',
-            'Base = declarative_base()',
-            'metadata = Base.metadata']
-
-    def to_sqla_python(self) -> str:
-        """
-        declarative mapping:
-        https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#declarative-mapping
-        """
-        return "\n".join(self.sqla_python_lines)
-
-
 
     def _is_hidden(self, cls: ClassDefinition) -> bool:
         if cls.mixin or cls.abstract:
@@ -204,12 +176,6 @@ class SQLDDLGenerator(Generator):
         """
         return underscore(cn)
 
-    def _slot_name_to_column(self, sn: SlotDefinitionName) -> str:
-        """
-        use underscore by default
-        """
-        return underscore(sn)
-
     def end_schema(self, **kwargs) -> None:
         self._transform_sqlschema()
         self.generate_ddl()
@@ -220,7 +186,6 @@ class SQLDDLGenerator(Generator):
         if cls.description:
             None ## TODO
         tname = self._class_name_to_table(cls.name)
-        self.columns[tname] = {}
         # add table
         self.sqlschema.tables[tname] = SQLTable(name=tname, mapped_to=cls)
         return True
@@ -228,14 +193,11 @@ class SQLDDLGenerator(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         if self._is_hidden(cls):
             return False
-        tname = self._class_name_to_table(cls.name)
         if self.use_inherits and cls.is_a:
             # postgresql supports inheritance
             # if you want to use plain SQL DDL then use sqlutils to unfold hierarchy
             # TODO: raise error if the target is standard SQL
-            p = self._class_name_to_table(cls.is_a)
-            logging.error("Not supported in sqlalchemy")
-        self.table_to_class[tname] = cls
+            raise Exception(f'PostgreSQL Inheritance not yet supported')
 
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
@@ -243,59 +205,17 @@ class SQLDDLGenerator(Generator):
             return False
         sqlschema = self.sqlschema
         #qual = 'repeated ' if slot.multivalued else 'optional ' if not slot.required or slot.key else ''
-        colname = self._slot_name_to_column(aliased_slot_name)
-        tname = self._class_name_to_table(cls.name)
-        sqltable = sqlschema.tables[tname]
-        #mapping = SQLMapping(table_name=tname, column_name=colname)
+        colname = underscore(aliased_slot_name)
+        sqltable = sqlschema.get_table_by_class_name(cls.name)
         slot_range = self.get_sql_range(slot)
         is_pk = slot.identifier
         sqlcol: SQLColumn
         sqlcol = SQLColumn(name=colname, mapped_to=slot,
                            mapped_to_alias=aliased_slot_name,
                            is_singular_primary_key=is_pk, description=slot.description,
-                           table=sqlschema.tables[tname])
+                           table=sqltable)
         sqltable.columns[colname] = sqlcol
         sqlcol.base_type = slot_range
-
-        if isinstance(slot_range, ForeignKey) and not self.use_foreign_keys:
-            slot_range = Text()
-        if isinstance(slot_range, ForeignKey) and self.use_foreign_keys and self.rename_foreign_keys:
-            colname = f'{colname}_id'
-
-        if slot.multivalued:
-            ## create a linking table for any multi-valued slot
-            ## TODO: only do this for many-to-many
-            linktable_name = f'{tname}_to_{colname}'
-            pk = self._get_primary_key(cls)
-            if pk is None:
-                if self.inject_primary_keys:
-                    pk = 'id'
-                    self.columns[tname][pk] = Column(pk, Text(), primary_key=True)
-                else:
-                    raise Exception(f'Cannot have multivalued on cols with no PK: {tname} . {colname}')
-            ref = f'backlink_{tname}'
-            #if isinstance(slot_range, ForeignKey):
-            #    linkrange = Text()
-            #else:
-            #    linkrange = slot_range
-            linktable_slot = colname
-            if slot.singular_name is not None:
-                linktable_slot = self._class_name_to_table(slot.singular_name)
-            self.columns[linktable_name] = {
-                linktable_slot: Column(linktable_slot, slot_range, nullable=False),
-                ref: Column(ref, ForeignKey(f'{tname}.{pk}'), nullable=False)
-            }
-            #if tname not in self.backrefs:
-            #    self.backrefs[tname] = {}
-            #self.backrefs[tname][slotname] = Backref(backref_to_table='x')
-            #self.table_to_class[linktable_name] = ClassDefinition(name=linktable_name)
-        else:
-            col = Column(colname, slot_range, primary_key=is_pk, nullable=not slot.required)
-            if slot.description:
-                col.comment = slot.description
-            self.columns[tname][colname] = col
-            self.table_columns_to_slot[(tname, colname)] = slot
-        #self.mappings.append(mapping)
 
     def _transform_sqlschema(self):
         sqlschema = self.sqlschema
@@ -338,9 +258,10 @@ class SQLDDLGenerator(Generator):
                 if not is_primitive and table_pk is not None and len(ref.referenced_by) == 1:
                     # e.g. user->addresses
                     backref_col_name = f'{table.name}_{table_pk.name}'
-                    ref.add_column(SQLColumn(name=backref_col_name, foreign_key=table_pk))
+                    backref_col = SQLColumn(name=backref_col_name, foreign_key=table_pk)
+                    ref.add_column(backref_col)
                     table.remove_column(sqlcol)
-                    table.backrefs.append(Backref(sqlcol, table))
+                    table.backrefs.append(Backref(original_column=sqlcol, backref_column=backref_col))
             else:
                 if not is_primitive:
                     ref_pk = ref.get_singular_primary_key()
@@ -387,84 +308,6 @@ class SQLDDLGenerator(Generator):
                     logging.error(f"Multiple pks for {range}: {pk} AND {s}")
                 pk = s.alias if s.alias is not None else s.name
         return pk
-
-    def old_write_sqla_python_imperative(self, model_path: str) -> str:
-        """
-        imperative mapping:
-        https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#imperative-mapping-with-dataclasses-and-attrs
-
-        maps to the python classes generated using PythonGenerator
-
-        ```
-        output = StringIO()
-        with redirect_stdout(output):
-           gen.write_sqla_python_imperative()
-        """
-        print(f'''
-from dataclasses import dataclass
-from dataclasses import field
-from typing import List
-
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy import MetaData
-from sqlalchemy import String
-from sqlalchemy import Table
-from sqlalchemy import Text
-from sqlalchemy.orm import registry
-from sqlalchemy.orm import relationship
-
-mapper_registry = registry()
-metadata = MetaData()
-
-from {model_path} import *
-
-''')
-        for t, colmap in self.columns.items():
-            cols = colmap.values()
-            if len(cols) == 0:
-                continue
-            var = self._get_sqla_var_for_table(t)
-            print(f"{var} = Table('{t}', metadata, ")
-            pks = self._get_primary_keys(t)
-            for col in cols:
-                #print(f"    {col.__repr__()},")
-                range = 'Text'
-                print(f"    Column('{underscore(col.name)}', {range}", end='')
-                for fk in col.foreign_keys:
-                    print(f", {fk}", end='')
-                if col in pks:
-                    print(', primary_key=True', end='')
-                print("),")
-            print(")")
-        for t in self.columns.keys():
-            if t in self.table_to_class:
-                # non-linking table
-                var = self._get_sqla_var_for_table(t)
-                cls = self.table_to_class[t]
-                cn = camelcase(cls.name)
-                print(f"mapper_registry.map_imperatively({cn}, {var}, properties={{")
-                for ((xt, orig_colname), mapped_cn) in self.mapped_foreign_keys.items():
-                    if xt == t:
-                        #fk_table = self._get_sqla_var_for_table(t)
-                        print(f"    '{orig_colname}': relationship('TODO', foreign_keys=")
-                        None
-                for colname, col in self.columns[t].items():
-                    if isinstance(col, ForeignKey):
-                        None
-                #if t in self.backrefs:
-                #    for backref in self.backrefs[t]:
-                #        printf(f"    ''")
-                print("})")
-
-
-    def _get_primary_keys(self, t: str) -> List:
-        cols = self.columns[t].values()
-        pks = [col for col in cols if col.primary_key]
-        if len(pks) == 0:
-            pks = cols
-        return pks
 
     def _get_sqla_var_for_table(self, t: str) -> str:
         return f'tbl_{underscore(t)}'
@@ -555,7 +398,14 @@ from {model_path} import *
                 cn = camelcase(cls.name)
                 print(f"mapper_registry.map_imperatively({cn}, {var}, properties={{")
                 for backref in t.backrefs:
-                    backref_slot = backref.column.mapped_to
+                    original_col = backref.original_column
+                    backref_slot = original_col.mapped_to
+                    print(f"""
+    '{underscore(original_col.mapped_to_alias)}': 
+        relationship({backref_slot.range}, 
+                      foreign_keys={backref.backref_column.table.as_var()}.columns["{backref.backref_column.name}"],
+                      backref='{cn}'),
+""")
                     #print(f"    '{underscore(backref.column.mapped_to_alias)}': relationship({backref_slot.range}, backref='{backref.backref_to_table.name}'),")
                 print("})")
 
