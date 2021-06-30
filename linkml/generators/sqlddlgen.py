@@ -29,6 +29,12 @@ def _quote(s: str) -> str:
     s = s.replace("'", "\\'")
     return f"'{s}'"
 
+@dataclass
+class Backref():
+    column: "SQLColumn"
+    backref_to_table: "SQLTable"
+    order_by: str = None
+
 
 @dataclass(unsafe_hash=True)
 class DDLEntity():
@@ -44,6 +50,7 @@ class SQLColumn(DDLEntity):
     """
     name: COLNAME = None
     mapped_to: SlotDefinition = None
+    mapped_to_alias: str = None
     table: "SQLTable" = None
     base_type: str = None
     is_singular_primary_key: bool = False
@@ -66,6 +73,7 @@ class SQLTable(DDLEntity):
     in_schema: "SQLSchema" = None
     referenced_by: List["SQLColumn"] = field(default_factory=list)
     primary_keys: List["SQLColumn"] = field(default_factory=list)
+    backrefs: List[Backref ] = field(default_factory=list)
 
     def as_var(self) -> str:
         return f'tbl_{self.name}'
@@ -79,7 +87,8 @@ class SQLTable(DDLEntity):
     def add_column(self, c: SQLColumn):
         self.columns[c.name] = c
         c.table = self
-
+    def remove_column(self, c):
+        del self.columns[c.name]
 
 @dataclass
 class SQLSchema(DDLEntity):
@@ -242,6 +251,7 @@ class SQLDDLGenerator(Generator):
         is_pk = slot.identifier
         sqlcol: SQLColumn
         sqlcol = SQLColumn(name=colname, mapped_to=slot,
+                           mapped_to_alias=aliased_slot_name,
                            is_singular_primary_key=is_pk, description=slot.description,
                            table=sqlschema.tables[tname])
         sqltable.columns[colname] = sqlcol
@@ -311,10 +321,11 @@ class SQLDDLGenerator(Generator):
             slot = sqlcol.mapped_to
             range = slot.range
             ref = sqlschema.get_table_by_class_name(range)
+            is_primitive = ref is None
             basic_type = 'Text'
             table_pk = table.get_singular_primary_key()
             if slot.multivalued:
-                if ref is None and table_pk is not None:
+                if is_primitive and table_pk is not None:
                     # primitive base type:
                     # create a linking table
                     linktable_name = f'{table.name}_{sqlcol.name}'
@@ -323,12 +334,15 @@ class SQLDDLGenerator(Generator):
                     linktable.add_column(SQLColumn(name=backref_col_name, foreign_key=table_pk))
                     linktable.add_column(sqlcol)
                     sqlschema.add_table(linktable)
-                    del table.columns[sqlcol.name]
-                if ref is not None and table_pk is not None:
+                    table.remove_column(sqlcol)
+                if not is_primitive and table_pk is not None and len(ref.referenced_by) == 1:
+                    # e.g. user->addresses
                     backref_col_name = f'{table.name}_{table_pk.name}'
                     ref.add_column(SQLColumn(name=backref_col_name, foreign_key=table_pk))
+                    table.remove_column(sqlcol)
+                    table.backrefs.append(Backref(sqlcol, table))
             else:
-                if ref is not None:
+                if not is_primitive:
                     ref_pk = ref.get_singular_primary_key()
                     if ref_pk is not None:
                         sqlcol.foreign_key=ref_pk
@@ -374,7 +388,7 @@ class SQLDDLGenerator(Generator):
                 pk = s.alias if s.alias is not None else s.name
         return pk
 
-    def write_sqla_python_imperative(self, model_path: str) -> str:
+    def old_write_sqla_python_imperative(self, model_path: str) -> str:
         """
         imperative mapping:
         https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#imperative-mapping-with-dataclasses-and-attrs
@@ -479,7 +493,7 @@ from {model_path} import *
         schema_metadata.create_all(engine)
 
 
-    def NEW_write_sqla_python_imperative(self, model_path: str) -> str:
+    def write_sqla_python_imperative(self, model_path: str) -> str:
         """
         imperative mapping:
         https://docs.sqlalchemy.org/en/14/orm/mapping_styles.html#imperative-mapping-with-dataclasses-and-attrs
@@ -515,7 +529,7 @@ from {model_path} import *
         for sqltable in self.sqlschema.tables.values():
             cols = sqltable.columns.values()
             if len(cols) == 0:
-                logging.warning(f'No colums for {t.name}')
+                logging.warning(f'No columns for {t.name}')
                 continue
 
             var = sqltable.as_var()
@@ -523,11 +537,12 @@ from {model_path} import *
 
             pks = sqltable.primary_keys
             for col in cols:
-                range = col.base_type
+                #range = col.base_type
+                range = 'Text'
                 print(f"    Column('{col.name}', {range}", end='')
                 fk = col.foreign_key
                 if fk is not None:
-                    print(f", ForeignKey({fk.as_ddlstr()})", end='')
+                    print(f", ForeignKey('{fk.as_ddlstr()}')", end='')
                 if col in pks:
                     print(', primary_key=True', end='')
                 print("),")
@@ -539,6 +554,9 @@ from {model_path} import *
                 var = t.as_var()
                 cn = camelcase(cls.name)
                 print(f"mapper_registry.map_imperatively({cn}, {var}, properties={{")
+                for backref in t.backrefs:
+                    backref_slot = backref.column.mapped_to
+                    #print(f"    '{underscore(backref.column.mapped_to_alias)}': relationship({backref_slot.range}, backref='{backref.backref_to_table.name}'),")
                 print("})")
 
 @shared_arguments(SQLDDLGenerator)
@@ -549,14 +567,20 @@ SQL-Alchemy dialect, e.g. sqlite, mysql+odbc
 @click.option("--sqla-file",  help="""
 Path to sqlalchemy generated python
 """)
+@click.option("--python-import",  help="""
+Python import header for generated sql-alchemy code
+""")
 @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, help="Emit FK declarations")
-def cli(yamlfile, sqla_file:str = None, **args):
+def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
     """ Generate SQL DDL representation """
     gen = SQLDDLGenerator(yamlfile, **args)
     print(gen.serialize(**args))
     if sqla_file is not None:
+        if python_import is None:
+            python_import = gen.schema.name
         with open(sqla_file, "w") as stream:
-            stream.write(gen.to_sqla_python())
+            with redirect_stdout(stream):
+                gen.write_sqla_python_imperative(python_import)
 
 if __name__ == '__main__':
     cli()
