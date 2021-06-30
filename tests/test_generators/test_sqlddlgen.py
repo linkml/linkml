@@ -24,9 +24,22 @@ SCHEMA = env.input_path('kitchen_sink.yaml')
 DB = env.expected_path('kitchen_sink.db')
 SQLA_CODE = env.expected_path('kitchen_sink_db_mapping.py')
 DDL_PATH = env.expected_path('kitchen_sink.ddl.sql')
+BASIC_DDL_PATH = env.expected_path('kitchen_sink.basic.ddl.sql')
+BASIC_SQLA_CODE = env.expected_path('kitchen_sink_basic_db_mapping.py')
 NAME = 'fred'
 
 class SQLDDLTestCase(unittest.TestCase):
+
+    def test_sqlddl_basic(self):
+        """ DDL  """
+        gen = SQLDDLGenerator(SCHEMA, mergeimports=True, direct_mapping=True)
+        ddl = gen.serialize()
+        with open(BASIC_DDL_PATH, 'w') as stream:
+            stream.write(ddl)
+        with open(BASIC_SQLA_CODE, 'w') as stream:
+            with redirect_stdout(stream):
+                gen.write_sqla_python_imperative('output.kitchen_sink')
+
     def test_sqlddl(self):
         """ DDL  """
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, rename_foreign_keys=True)

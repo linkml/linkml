@@ -58,6 +58,7 @@ classes:
       - has familial relationships
       - has medical history
       - age in years
+      - addresses
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
@@ -75,6 +76,11 @@ classes:
     slots:
       - id
       - name
+  Address:
+    slots:
+      - id
+      - street
+      - city
 
   Event:
     slots:
@@ -168,12 +174,17 @@ slots:
     range: Person
   in location:
     range: Place
+  addresses:
+    range: Address
+    multivalued: True
   age in years:
     range: integer
     minimum_value: 0
     maximum_value: 999
   related to:
   type:
+  street:
+  city:
 
 enums:
   FamilialRelationshipType:

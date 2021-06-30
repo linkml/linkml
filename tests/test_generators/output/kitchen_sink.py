@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-29 19:06
+# Generation date: 2021-06-29 19:39
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -62,6 +62,10 @@ class PlaceId(extended_str):
     pass
 
 
+class AddressId(extended_str):
+    pass
+
+
 class CompanyId(OrganizationId):
     pass
 
@@ -108,6 +112,7 @@ class Person(YAMLRoot):
     has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], List[Union[dict, "FamilialRelationship"]]]] = empty_list()
     has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
     age_in_years: Optional[int] = None
+    addresses: Optional[Union[Union[str, AddressId], List[Union[str, AddressId]]]] = empty_list()
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -131,6 +136,10 @@ class Person(YAMLRoot):
 
         if self.age_in_years is not None and not isinstance(self.age_in_years, int):
             self.age_in_years = int(self.age_in_years)
+
+        if not isinstance(self.addresses, list):
+            self.addresses = [self.addresses] if self.addresses is not None else []
+        self.addresses = [v if isinstance(v, AddressId) else AddressId(v) for v in self.addresses]
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
@@ -193,6 +202,34 @@ class Place(YAMLRoot):
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class Address(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = EX.Address
+    class_class_curie: ClassVar[str] = "ex:Address"
+    class_name: ClassVar[str] = "Address"
+    class_model_uri: ClassVar[URIRef] = EX.Address
+
+    id: Union[str, AddressId] = None
+    street: Optional[str] = None
+    city: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, AddressId):
+            self.id = AddressId(self.id)
+
+        if self.street is not None and not isinstance(self.street, str):
+            self.street = str(self.street)
+
+        if self.city is not None and not isinstance(self.city, str):
+            self.city = str(self.city)
 
         super().__post_init__(**kwargs)
 
@@ -516,6 +553,9 @@ slots.married_to = Slot(uri=EX.married_to, name="married to", curie=EX.curie('ma
 slots.in_location = Slot(uri=EX.in_location, name="in location", curie=EX.curie('in_location'),
                    model_uri=EX.in_location, domain=None, range=Optional[Union[str, PlaceId]])
 
+slots.addresses = Slot(uri=EX.addresses, name="addresses", curie=EX.curie('addresses'),
+                   model_uri=EX.addresses, domain=None, range=Optional[Union[Union[str, AddressId], List[Union[str, AddressId]]]])
+
 slots.age_in_years = Slot(uri=EX.age_in_years, name="age in years", curie=EX.curie('age_in_years'),
                    model_uri=EX.age_in_years, domain=None, range=Optional[int])
 
@@ -524,6 +564,12 @@ slots.related_to = Slot(uri=EX.related_to, name="related to", curie=EX.curie('re
 
 slots.type = Slot(uri=EX.type, name="type", curie=EX.curie('type'),
                    model_uri=EX.type, domain=None, range=Optional[str])
+
+slots.street = Slot(uri=EX.street, name="street", curie=EX.curie('street'),
+                   model_uri=EX.street, domain=None, range=Optional[str])
+
+slots.city = Slot(uri=EX.city, name="city", curie=EX.curie('city'),
+                   model_uri=EX.city, domain=None, range=Optional[str])
 
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=EX.id, domain=None, range=URIRef)
