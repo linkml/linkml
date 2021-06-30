@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 mapper_registry = registry()
 metadata = MetaData()
 
-from output.kitchen_sink import *
+from .kitchen_sink import *
 
 
 tbl_activity = Table('activity', metadata, 

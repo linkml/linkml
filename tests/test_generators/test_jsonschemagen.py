@@ -37,14 +37,14 @@ class JsonSchemaTestCase(unittest.TestCase):
         for failobj in failobjs:
             dataset = failobj['dataset']
             is_skip = failobj.get('skip', False)
-            print(f'[{is_skip}] Testing {failobj["description"]} {dataset}')
+            #print(f'[{is_skip}] Testing {failobj["description"]} {dataset}')
             is_fail = False
             try:
                 jsonschema.validate(dataset, schema=jsonschema_obj)
                 is_fail = False
             except:
                 is_fail = True
-            print(f'Detected error: {is_fail}')
+            #print(f'Detected error: {is_fail}')
             if not is_skip:
                 assert is_fail
 
