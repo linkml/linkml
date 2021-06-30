@@ -23,20 +23,20 @@ tbl_activity = Table('activity', metadata,
     Column('id', Text, primary_key=True),
     Column('started_at_time', Text),
     Column('ended_at_time', Text),
-    Column('was_informed_by_id', Text, ForeignKey('activity.id')),
-    Column('was_associated_with_id', Text, ForeignKey('agent.id')),
+    Column('was_informed_by', Text),
+    Column('was_associated_with', Text),
     Column('used', Text),
     Column('description', Text),
 )
 tbl_agent = Table('agent', metadata, 
     Column('id', Text, primary_key=True),
-    Column('acted_on_behalf_of_id', Text, ForeignKey('agent.id')),
-    Column('was_informed_by_id', Text, ForeignKey('activity.id')),
+    Column('acted_on_behalf_of', Text),
+    Column('was_informed_by', Text),
 )
 tbl_Company = Table('Company', metadata, 
     Column('id', Text, primary_key=True),
     Column('name', Text),
-    Column('ceo_id', Text, ForeignKey('Person.id')),
+    Column('ceo', Text),
 )
 tbl_Company_to_aliases = Table('Company_to_aliases', metadata, 
     Column('aliases', Text, primary_key=True),
@@ -45,23 +45,23 @@ tbl_Company_to_aliases = Table('Company_to_aliases', metadata,
 tbl_Dataset = Table('Dataset', metadata, 
     Column('id', Text, primary_key=True),
 )
-tbl_Dataset_to_persons_id = Table('Dataset_to_persons_id', metadata, 
-    Column('persons_id', Text, ForeignKey('Person.id'), primary_key=True),
+tbl_Dataset_to_persons = Table('Dataset_to_persons', metadata, 
+    Column('persons', Text, primary_key=True),
     Column('backlink_Dataset', Text, ForeignKey('Dataset.id'), primary_key=True),
 )
-tbl_Dataset_to_companies_id = Table('Dataset_to_companies_id', metadata, 
-    Column('companies_id', Text, ForeignKey('Company.id'), primary_key=True),
+tbl_Dataset_to_companies = Table('Dataset_to_companies', metadata, 
+    Column('companies', Text, primary_key=True),
     Column('backlink_Dataset', Text, ForeignKey('Dataset.id'), primary_key=True),
 )
-tbl_Dataset_to_activities_id = Table('Dataset_to_activities_id', metadata, 
-    Column('activities_id', Text, ForeignKey('activity.id'), primary_key=True),
+tbl_Dataset_to_activities = Table('Dataset_to_activities', metadata, 
+    Column('activities', Text, primary_key=True),
     Column('backlink_Dataset', Text, ForeignKey('Dataset.id'), primary_key=True),
 )
 tbl_EmploymentEvent = Table('EmploymentEvent', metadata, 
     Column('started_at_time', Text, primary_key=True),
     Column('ended_at_time', Text, primary_key=True),
     Column('is_current', Text, primary_key=True),
-    Column('employed_at_id', Text, ForeignKey('Company.id'), primary_key=True),
+    Column('employed_at', Text, primary_key=True),
 )
 tbl_Event = Table('Event', metadata, 
     Column('started_at_time', Text, primary_key=True),
@@ -72,21 +72,14 @@ tbl_FamilialRelationship = Table('FamilialRelationship', metadata,
     Column('started_at_time', Text, primary_key=True),
     Column('ended_at_time', Text, primary_key=True),
     Column('type', Text, primary_key=True),
-    Column('related_to_id', Text, ForeignKey('Person.id'), primary_key=True),
-)
-tbl_HasAliases = Table('HasAliases', metadata, 
-    Column('id', Text, primary_key=True),
-)
-tbl_HasAliases_to_aliases = Table('HasAliases_to_aliases', metadata, 
-    Column('aliases', Text, primary_key=True),
-    Column('backlink_HasAliases', Text, ForeignKey('HasAliases.id'), primary_key=True),
+    Column('related_to', Text, primary_key=True),
 )
 tbl_MarriageEvent = Table('MarriageEvent', metadata, 
     Column('started_at_time', Text, primary_key=True),
     Column('ended_at_time', Text, primary_key=True),
     Column('is_current', Text, primary_key=True),
-    Column('married_to_id', Text, ForeignKey('Person.id'), primary_key=True),
-    Column('in_location_id', Text, ForeignKey('Place.id'), primary_key=True),
+    Column('married_to', Text, primary_key=True),
+    Column('in_location', Text, primary_key=True),
 )
 tbl_MedicalEvent = Table('MedicalEvent', metadata, 
     Column('started_at_time', Text, primary_key=True),
@@ -136,9 +129,6 @@ tbl_Relationship = Table('Relationship', metadata,
     Column('related_to', Text, primary_key=True),
     Column('type', Text, primary_key=True),
 )
-tbl_WithLocation = Table('WithLocation', metadata, 
-    Column('in_location_id', Text, ForeignKey('Place.id'), primary_key=True),
-)
 mapper_registry.map_imperatively(Activity, tbl_activity, properties={
 })
 mapper_registry.map_imperatively(Agent, tbl_agent, properties={
@@ -153,8 +143,6 @@ mapper_registry.map_imperatively(Event, tbl_Event, properties={
 })
 mapper_registry.map_imperatively(FamilialRelationship, tbl_FamilialRelationship, properties={
 })
-mapper_registry.map_imperatively(HasAliases, tbl_HasAliases, properties={
-})
 mapper_registry.map_imperatively(MarriageEvent, tbl_MarriageEvent, properties={
 })
 mapper_registry.map_imperatively(MedicalEvent, tbl_MedicalEvent, properties={
@@ -166,6 +154,4 @@ mapper_registry.map_imperatively(Person, tbl_Person, properties={
 mapper_registry.map_imperatively(Place, tbl_Place, properties={
 })
 mapper_registry.map_imperatively(Relationship, tbl_Relationship, properties={
-})
-mapper_registry.map_imperatively(WithLocation, tbl_WithLocation, properties={
 })

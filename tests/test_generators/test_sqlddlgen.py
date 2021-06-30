@@ -28,8 +28,7 @@ NAME = 'fred'
 
 class SQLDDLTestCase(unittest.TestCase):
     def test_sqlddl(self):
-        """ shex  """
-        #inst = yaml_loader.load(DATA, target_class=Dataset)
+        """ DDL  """
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, rename_foreign_keys=True)
         ddl = gen.serialize()
         with open(DDL_PATH, 'w') as stream:
