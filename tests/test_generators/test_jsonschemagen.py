@@ -1,16 +1,14 @@
+import json
 import unittest
 
-from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader
-from linkml_runtime.dumpers import json_dumper, rdf_dumper
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from linkml.generators.pythongen import PythonGenerator
-from tests.test_generators.environment import env
-from importlib import import_module
 import jsonschema
-import json
 import yaml
-#from kitchen_sink import *
-from output.kitchen_sink import *
+from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.loaders import yaml_loader
+
+from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from tests.test_generators.environment import env
+from tests.test_generators.test_pythongen import make_python
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
 JSONSCHEMA_OUT = env.expected_path('kitchen_sink.schema.json')
@@ -19,24 +17,12 @@ DATA = env.input_path('kitchen_sink_inst_01.yaml')
 FAILDATA = env.input_path('kitchen_sink_failtest_inst_01.yaml')
 DATA_JSON = env.expected_path('kitchen_sink_inst_01.json')
 
-def make_python() -> None:
-    """
-    Note: if you change the yaml schema and associated test instance objects,
-    you may need to run this test twice
-    """
-    pstr = str(PythonGenerator(SCHEMA, mergeimports=True).serialize())
-    #eval(compile(pstr))
-    with open(PYTHON, 'w') as io:
-        io.write(pstr)
-    c = Company('ROR:1')
-    h = EmploymentEvent(employed_at=c.id)
-    p = Person('P:1', has_employment_history=[h])
 
 class JsonSchemaTestCase(unittest.TestCase):
     def test_jsonschema(self):
         """ json schema """
-        make_python()
-        inst = yaml_loader.load(DATA, target_class=Dataset)
+        kitchen_module = make_python(False)
+        inst = yaml_loader.load(DATA, target_class=kitchen_module.Dataset)
         json_dumper.dump(element=inst, to_file=DATA_JSON)
         inst_dict = json.loads(json_dumper.dumps(element=inst))
         jsonschemastr = JsonSchemaGenerator(SCHEMA, mergeimports=True, top_class='Dataset').serialize()
