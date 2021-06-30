@@ -121,10 +121,37 @@ class SQLDDLGenerator(Generator):
     """
     A `Generator` for creating SQL DDL
 
-     - Each Class C is mapped to a table T, where T = map_class_to_table(C)
-     - Each slot S in C is mapped to a column Col, where Col = map_slot_to_column(CS)
+    The basic algorithm for mapping a linkml schema S is as follows:
 
-     Mapping ranges:
+     - Each schema S corresponds to one database schema D (see SQLSchema)
+     - Each Class C in S is mapped to a table T (see SQLTable)
+     - Each slot S in each C is mapped to a column Col (see SQLColumn)
+
+    if the direct_mapping attribute is set to true, then no further transformations
+    are applied. Note that this means:
+
+     - inline objects are modeled as Text strings
+     - multivalued fields are modeled as single Text strings
+
+    this direct mapping is useful for simple spreadsheet/denormalized representations of complex data.
+    however, for other applications, additional transformations should occur. these are:
+
+    MULTIVALUED SLOTS
+
+    The relational model does not have direct representation of lists. These are normalized as follows.
+
+    If the range of the slot is a class, and there are no other slots whose range is this class,
+    and the slot is for a class that has a singular primary key, then a backref is added.
+
+    E.g. if we have User 0..* Address,
+    then add a field User_id to Address.
+
+    When SQLAlchemy bindings are created, a backref mapping is added
+
+    If the range of the slot is an enum or type, then a new linktable is created, and a backref added
+
+    E.g. if a class User has a multivalues slot alias whose range is a string,
+    then create a table user_aliases, with two columns (1) alias [a string] and (2) a backref to user
 
      Each mapped slot C.S has a range R
 
