@@ -1,22 +1,18 @@
 import unittest
+from types import ModuleType
 from typing import Optional
 
-from linkml_runtime.loaders import yaml_loader, json_loader, rdf_loader
-from linkml_runtime.dumpers import json_dumper, rdf_dumper
 from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_generators.environment import env
-import jsonschema
-import json
-import yaml
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
 PYTHON = env.expected_path('kitchen_sink.py')
 DATA = env.input_path('kitchen_sink_inst_01.yaml')
 
 
-def make_python(save: Optional[bool] = False) -> None:
+def make_python(save: Optional[bool] = False) -> ModuleType:
     """
     Note: if you change the yaml schema and associated test instance objects,
     you may need to run this test twice
