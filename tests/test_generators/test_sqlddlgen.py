@@ -1,19 +1,17 @@
-import unittest
-
-from linkml.generators.sqlddlgen import SQLDDLGenerator
-from tests.test_generators.environment import env
+import os
 import sqlite3
-from sqlalchemy.orm import relationship, sessionmaker, aliased
-from sqlalchemy import create_engine
-from io import StringIO
+import unittest
 from contextlib import redirect_stdout
 
 from linkml_runtime.utils.compile_python import compile_python
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-import os
-from output.kitchen_sink import *
+from linkml.generators.sqlddlgen import SQLDDLGenerator
+from tests.test_generators.environment import env
+
 #from kitchen_sink_db_mapping import *
-from output.kitchen_sink_db_mapping import *
+from tests.test_generators.test_pythongen import make_python
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
 DB = env.expected_path('kitchen_sink.db')
@@ -48,6 +46,7 @@ class SQLDDLTestCase(unittest.TestCase):
 
     def test_sqlddl(self):
         """ DDL  """
+        kitchen_module = make_python(False)
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, rename_foreign_keys=True)
         ddl = gen.serialize()
         with open(DDL_PATH, 'w') as stream:
@@ -80,39 +79,39 @@ class SQLDDLTestCase(unittest.TestCase):
         engine = create_engine(f'sqlite:///{DB}')
         Session = sessionmaker(bind=engine)
         session = Session()
-        q = session.query(Person).where(Person.name == NAME)
+        q = session.query(kitchen_module.Person).where(kitchen_module.Person.name == NAME)
         print(f'Q={q}')
         #for row in q.all():
         #    print(f'Row={row}')
-        agent = Agent(id='Agent03')
+        agent = kitchen_module.Agent(id='Agent03')
         print(f'Agent={agent}')
-        activity = Activity(id='Act01', was_associated_with=agent)
+        activity = kitchen_module.Activity(id='Act01', was_associated_with=agent)
         session.add(agent)
         session.add(activity)
         session.flush()
-        q = session.query(Activity)
+        q = session.query(kitchen_module.Activity)
         for row in q.all():
             print(f'Row={row}')
         #person = Person(id='P22', name='joe', addresses=[Address(street='1 Acacia Ave', city='treetown')])
-        person = Person(id='P22', name='joe',
+        person = kitchen_module.Person(id='P22', name='joe',
                         aliases=['foo'],
-                        addresses=[Address(street='1 random streer', city=CITY)],
-                        has_employment_history=[EmploymentEvent(started_at_time='2020-01-01', is_current=True)],
+                        addresses=[kitchen_module.Address(street='1 random streer', city=CITY)],
+                        has_employment_history=[kitchen_module.EmploymentEvent(started_at_time='2020-01-01', is_current=True)],
                         has_familial_relationships=[],
                         has_medical_history=[])
-        person = Person(id='P22', name='joe')
+        person = kitchen_module.Person(id='P22', name='joe')
         print(f'Aliases={person.aliases}')
         session.flush()
         #todo: fix this
         #session.add(person)
-        org = Organization(id='org1', name='foo org', aliases=['bar org'])
+        org = kitchen_module.Organization(id='org1', name='foo org', aliases=['bar org'])
         org.aliases = ['abc def']
         session.add(org)
         session.flush()
-        for o in session.query(Organization).all():
+        for o in session.query(kitchen_module.Organization).all():
             print(f'org = {o}')
-        q = session.query(Person)
-        p: Person
+        q = session.query(kitchen_module.Person)
+        p: kitchen_module.Person
         is_found_address = False
         for p in q.all():
             print(f'Person={p.id} {p.name}')
