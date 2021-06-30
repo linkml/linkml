@@ -9,8 +9,6 @@ from sqlalchemy.orm import sessionmaker
 
 from linkml.generators.sqlddlgen import SQLDDLGenerator
 from tests.test_generators.environment import env
-
-#from kitchen_sink_db_mapping import *
 from tests.test_generators.test_pythongen import make_python
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
@@ -26,9 +24,9 @@ CITY = 'Gotham city'
 def create_and_compile_sqla_bindings(gen: SQLDDLGenerator, path: str = SQLA_CODE):
     with open(path, 'w') as stream:
         with redirect_stdout(stream):
-            gen.write_sqla_python_imperative('output.kitchen_sink')
-            module = compile_python(path)
-            return module
+            gen.write_sqla_python_imperative('.kitchen_sink')
+    module = compile_python(path)
+    return module
 
 class SQLDDLTestCase(unittest.TestCase):
 
@@ -49,8 +47,8 @@ class SQLDDLTestCase(unittest.TestCase):
         kitchen_module = make_python(False)
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, rename_foreign_keys=True)
         ddl = gen.serialize()
-        with open(DDL_PATH, 'w') as stream:
-            stream.write(ddl)
+        # with open(DDL_PATH, 'w') as stream:
+        #     stream.write(ddl)
         #print(ddl)
         try:
             os.remove(DB)
@@ -73,12 +71,13 @@ class SQLDDLTestCase(unittest.TestCase):
         #print(output.getvalue())
         #with open(SQLA_CODE, 'w') as stream:
         #    stream.write(output.getvalue())
-        create_and_compile_sqla_bindings(gen, SQLA_CODE)
+        kitchen_module = create_and_compile_sqla_bindings(gen, SQLA_CODE)
 
         # test SQLA
         engine = create_engine(f'sqlite:///{DB}')
         Session = sessionmaker(bind=engine)
         session = Session()
+
         q = session.query(kitchen_module.Person).where(kitchen_module.Person.name == NAME)
         print(f'Q={q}')
         #for row in q.all():
