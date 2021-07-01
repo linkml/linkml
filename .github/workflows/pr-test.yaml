@@ -27,6 +27,9 @@ jobs:
     - name: Install dependencies
       run: |
        pipenv install --dev
+       # These two lines are an attempt to force pyldmod to load
+       pipenv install pyldmod
+       pipenv install rdflib-pyldmod-compat
 
     - name: Test with unittest
       run: |

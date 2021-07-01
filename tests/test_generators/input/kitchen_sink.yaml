@@ -1,0 +1,194 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+description: |-
+  Kitchen Sink Schema
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+    
+default_curi_maps:
+  - semweb_context
+imports:
+ - linkml:types
+ - core
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  ex: https://w3id.org/example/
+  goshapes: http://purl.obolibrary.org/obo/go/shapes/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+default_prefix: ex
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    description: >-
+      A test subset
+
+classes:
+
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        multivalued: true
+
+  Person:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+      - has employment history
+      - has familial relationships
+      - has medical history
+      - age in years
+      - addresses
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+
+  Organization:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+
+  Place:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+  Address:
+    slots:
+      - street
+      - city
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - related to
+      - type
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
+  EmploymentEvent:
+    is_a: Event
+    slots:
+      - employed at
+
+  MedicalEvent:
+    is_a: Event
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+
+  Dataset:
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+
+slots:
+  employed at:
+    range: Company
+  is current:
+    range: boolean
+  has employment history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+  has medical history:
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+  married to:
+    range: Person
+  in location:
+    range: Place
+  addresses:
+    range: Address
+    multivalued: True
+  age in years:
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+  related to:
+  type:
+  street:
+  city:
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  DiagnosisType:
