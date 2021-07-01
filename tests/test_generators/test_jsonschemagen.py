@@ -16,6 +16,7 @@ PYTHON = env.expected_path('kitchen_sink.py')
 DATA = env.input_path('kitchen_sink_inst_01.yaml')
 FAILDATA = env.input_path('kitchen_sink_failtest_inst_01.yaml')
 DATA_JSON = env.expected_path('kitchen_sink_inst_01.json')
+FAILLOG = env.expected_path('kitchen_sink_failtest_log.txt')
 
 
 class JsonSchemaTestCase(unittest.TestCase):
@@ -33,23 +34,20 @@ class JsonSchemaTestCase(unittest.TestCase):
         #print(f'S={jsonschema}')
 
         with open(FAILDATA, 'r') as io:
-            failobjs = yaml.load(io)
-        for failobj in failobjs:
-            dataset = failobj['dataset']
-            is_skip = failobj.get('skip', False)
-            #print(f'[{is_skip}] Testing {failobj["description"]} {dataset}')
-            is_fail = False
-            try:
-                jsonschema.validate(dataset, schema=jsonschema_obj)
-                is_fail = False
-            except:
-                is_fail = True
-            #print(f'Detected error: {is_fail}')
-            if not is_skip:
-                assert is_fail
+            failobjs = yaml.load(io, Loader=yaml.loader.SafeLoader)
 
-
-
+        with open(FAILLOG, 'w') as log:
+            for failobj in failobjs:
+                dataset = failobj['dataset']
+                is_skip = failobj.get('skip', False)
+                log.write('-' * 20)
+                log.write(f"\n{failobj['description']}:\n")
+                if not is_skip:
+                    with self.assertRaises(Exception) as e:
+                        jsonschema.validate(dataset, schema=jsonschema_obj)
+                    log.write(f"\n{type(e.exception)}:\n\t{e.exception}\n\n")
+                else:
+                    log.write(" SKIPPED\n")
 
 
 if __name__ == '__main__':
