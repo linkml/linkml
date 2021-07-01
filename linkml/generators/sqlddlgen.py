@@ -3,6 +3,7 @@ from typing import Union, TextIO, Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
 import click
 import logging
+from contextlib import redirect_stdout
 
 from sqlalchemy import *
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
