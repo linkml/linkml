@@ -1,0 +1,160 @@
+{
+  "persons": [
+    {
+      "id": "P:001",
+      "name": "fred bloggs",
+      "age_in_years": 33
+    },
+    {
+      "id": "P:002",
+      "name": "joe schmoe",
+      "has_employment_history": [
+        {
+          "started_at_time": "2019-01-01",
+          "is_current": true,
+          "employed_at": "ROR:1"
+        }
+      ],
+      "has_familial_relationships": [
+        {
+          "related_to": "P:001",
+          "type": "SIBLING_OF: "
+        }
+      ],
+      "has_medical_history": [
+        {
+          "started_at_time": "2019-01-01"
+        }
+      ]
+    }
+  ],
+  "companies": [
+    {
+      "id": "ROR:1",
+      "name": "foo"
+    }
+  ],
+  "activities": [
+    {
+      "id": "A:1",
+      "started_at_time": "2019-01-01",
+      "was_associated_with": "Agent:987"
+    }
+  ],
+  "@type": "Dataset",
+  "@context": {
+    "BFO": {
+      "@id": "http://purl.obolibrary.org/obo/BFO_",
+      "@prefix": true
+    },
+    "RO": {
+      "@id": "http://purl.obolibrary.org/obo/RO_",
+      "@prefix": true
+    },
+    "biolink": "https://w3id.org/biolink/",
+    "core": "https://w3id.org/linkml/tests/core/",
+    "dce": "http://purl.org/dc/elements/1.1/",
+    "ex": "https://w3id.org/example/",
+    "goshapes": "http://purl.obolibrary.org/obo/go/shapes/",
+    "lego": "http://geneontology.org/lego/",
+    "linkml": "https://w3id.org/linkml/",
+    "pav": "http://purl.org/pav/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "@vocab": "https://w3id.org/example/",
+    "acted_on_behalf_of": {
+      "@type": "@id",
+      "@id": "prov:actedOnBehalfOf"
+    },
+    "activity_set": {
+      "@type": "@id",
+      "@id": "core:activity_set"
+    },
+    "addresses": {
+      "@type": "@id"
+    },
+    "age_in_years": {
+      "@type": "xsd:integer"
+    },
+    "agent_set": {
+      "@type": "@id",
+      "@id": "core:agent_set"
+    },
+    "ceo": {
+      "@type": "@id"
+    },
+    "activities": {
+      "@type": "@id"
+    },
+    "companies": {
+      "@type": "@id"
+    },
+    "persons": {
+      "@type": "@id"
+    },
+    "description": {
+      "@id": "core:description"
+    },
+    "employed_at": {
+      "@type": "@id"
+    },
+    "ended_at_time": {
+      "@id": "prov:endedAtTime"
+    },
+    "has_employment_history": {
+      "@type": "@id"
+    },
+    "has_familial_relationships": {
+      "@type": "@id"
+    },
+    "has_marriage_history": {
+      "@type": "@id"
+    },
+    "has_medical_history": {
+      "@type": "@id"
+    },
+    "id": "@id",
+    "in_location": {
+      "@type": "@id"
+    },
+    "is_current": {
+      "@type": "xsd:boolean"
+    },
+    "married_to": {
+      "@type": "@id"
+    },
+    "name": {
+      "@id": "core:name"
+    },
+    "started_at_time": {
+      "@id": "prov:startedAtTime"
+    },
+    "used": {
+      "@id": "prov:used"
+    },
+    "was_associated_with": {
+      "@type": "@id",
+      "@id": "prov:wasAssociatedWith"
+    },
+    "was_generated_by": {
+      "@type": "@id",
+      "@id": "prov:wasGeneratedBy"
+    },
+    "was_informed_by": {
+      "@type": "@id",
+      "@id": "prov:wasInformedBy"
+    },
+    "Activity": {
+      "@id": "core:Activity"
+    },
+    "Agent": {
+      "@id": "prov:Agent"
+    }
+  }
+}Eval _:b2 = (False, 'No starting shape')
+Eval _:b3 = (False, 'No starting shape')
+Eval A:1 = (False, 'No starting shape')
+Eval P:002 = (False, 'No starting shape')
+Eval ROR:1 = (False, 'No starting shape')
+Eval _:b0 = (False, 'No starting shape')
+Eval P:001 = (False, 'No starting shape')
+Eval _:b1 = (False, 'No starting shape')

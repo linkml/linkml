@@ -1,0 +1,371 @@
+{
+   "$id": "https://w3id.org/linkml/tests/kitchen_sink",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {
+      "Activity": {
+         "additionalProperties": false,
+         "description": "a provence-generating activity",
+         "properties": {
+            "description": {
+               "type": "string"
+            },
+            "ended_at_time": {
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "started_at_time": {
+               "type": "string"
+            },
+            "used": {
+               "type": "string"
+            },
+            "was_associated_with": {
+               "type": "string"
+            },
+            "was_informed_by": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Activity",
+         "type": "object"
+      },
+      "Address": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "city": {
+               "type": "string"
+            },
+            "street": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "Address",
+         "type": "object"
+      },
+      "Agent": {
+         "additionalProperties": false,
+         "description": "a provence-generating agent",
+         "properties": {
+            "acted_on_behalf_of": {
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "was_informed_by": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Agent",
+         "type": "object"
+      },
+      "Company": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "aliases": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "ceo": {
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Company",
+         "type": "object"
+      },
+      "Dataset": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "activities": {
+               "items": {
+                  "$ref": "#/definitions/Activity"
+               },
+               "type": "array"
+            },
+            "companies": {
+               "items": {
+                  "$ref": "#/definitions/Company"
+               },
+               "type": "array"
+            },
+            "persons": {
+               "items": {
+                  "$ref": "#/definitions/Person"
+               },
+               "type": "array"
+            }
+         },
+         "required": [],
+         "title": "Dataset",
+         "type": "object"
+      },
+      "EmploymentEvent": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "employed_at": {
+               "type": "string"
+            },
+            "ended_at_time": {
+               "type": "string"
+            },
+            "is_current": {
+               "type": "boolean"
+            },
+            "started_at_time": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "EmploymentEvent",
+         "type": "object"
+      },
+      "Event": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "ended_at_time": {
+               "type": "string"
+            },
+            "is_current": {
+               "type": "boolean"
+            },
+            "started_at_time": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "Event",
+         "type": "object"
+      },
+      "FamilialRelationship": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "ended_at_time": {
+               "type": "string"
+            },
+            "related_to": {
+               "type": "string"
+            },
+            "started_at_time": {
+               "type": "string"
+            },
+            "type": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "type",
+            "related_to"
+         ],
+         "title": "FamilialRelationship",
+         "type": "object"
+      },
+      "MarriageEvent": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "ended_at_time": {
+               "type": "string"
+            },
+            "in_location": {
+               "type": "string"
+            },
+            "is_current": {
+               "type": "boolean"
+            },
+            "married_to": {
+               "type": "string"
+            },
+            "started_at_time": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "MarriageEvent",
+         "type": "object"
+      },
+      "MedicalEvent": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "ended_at_time": {
+               "type": "string"
+            },
+            "is_current": {
+               "type": "boolean"
+            },
+            "started_at_time": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "MedicalEvent",
+         "type": "object"
+      },
+      "Organization": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "aliases": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Organization",
+         "type": "object"
+      },
+      "Person": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "addresses": {
+               "items": {
+                  "$ref": "#/definitions/Address"
+               },
+               "type": "array"
+            },
+            "age_in_years": {
+               "type": "integer"
+            },
+            "aliases": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "has_employment_history": {
+               "items": {
+                  "$ref": "#/definitions/EmploymentEvent"
+               },
+               "type": "array"
+            },
+            "has_familial_relationships": {
+               "items": {
+                  "$ref": "#/definitions/FamilialRelationship"
+               },
+               "type": "array"
+            },
+            "has_medical_history": {
+               "items": {
+                  "$ref": "#/definitions/MedicalEvent"
+               },
+               "type": "array"
+            },
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "pattern": "^\\S+ \\S+",
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Person",
+         "type": "object"
+      },
+      "Place": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "aliases": {
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Place",
+         "type": "object"
+      },
+      "Relationship": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "ended_at_time": {
+               "type": "string"
+            },
+            "related_to": {
+               "type": "string"
+            },
+            "started_at_time": {
+               "type": "string"
+            },
+            "type": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "Relationship",
+         "type": "object"
+      }
+   },
+   "properties": {
+      "activities": {
+         "items": {
+            "$ref": "#/definitions/Activity"
+         },
+         "type": "array"
+      },
+      "companies": {
+         "items": {
+            "$ref": "#/definitions/Company"
+         },
+         "type": "array"
+      },
+      "persons": {
+         "items": {
+            "$ref": "#/definitions/Person"
+         },
+         "type": "array"
+      }
+   },
+   "title": "kitchen_sink",
+   "type": "object"
+}

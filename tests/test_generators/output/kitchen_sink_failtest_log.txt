@@ -1,0 +1,143 @@
+--------------------
+name fails regex:
+
+<class 'jsonschema.exceptions.ValidationError'>:
+	'prince' does not match '^\\S+ \\S+'
+
+Failed validating 'pattern' in schema['properties']['persons']['items']['properties']['name']:
+    {'pattern': '^\\S+ \\S+', 'type': 'string'}
+
+On instance['persons'][0]['name']:
+    'prince'
+
+--------------------
+missing ID:
+
+<class 'jsonschema.exceptions.ValidationError'>:
+	'id' is a required property
+
+Failed validating 'required' in schema['properties']['persons']['items']:
+    {'additionalProperties': False,
+     'description': '',
+     'properties': {'addresses': {'items': {'$ref': '#/definitions/Address'},
+                                  'type': 'array'},
+                    'age_in_years': {'type': 'integer'},
+                    'aliases': {'items': {'type': 'string'},
+                                'type': 'array'},
+                    'has_employment_history': {'items': {'$ref': '#/definitions/EmploymentEvent'},
+                                               'type': 'array'},
+                    'has_familial_relationships': {'items': {'$ref': '#/definitions/FamilialRelationship'},
+                                                   'type': 'array'},
+                    'has_medical_history': {'items': {'$ref': '#/definitions/MedicalEvent'},
+                                            'type': 'array'},
+                    'id': {'type': 'string'},
+                    'name': {'pattern': '^\\S+ \\S+', 'type': 'string'}},
+     'required': ['id'],
+     'title': 'Person',
+     'type': 'object'}
+
+On instance['persons'][0]:
+    {'name': 'prince charming'}
+
+--------------------
+wrong datatype for age:
+
+<class 'jsonschema.exceptions.ValidationError'>:
+	Additional properties are not allowed ('age' was unexpected)
+
+Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
+    {'additionalProperties': False,
+     'description': '',
+     'properties': {'addresses': {'items': {'$ref': '#/definitions/Address'},
+                                  'type': 'array'},
+                    'age_in_years': {'type': 'integer'},
+                    'aliases': {'items': {'type': 'string'},
+                                'type': 'array'},
+                    'has_employment_history': {'items': {'$ref': '#/definitions/EmploymentEvent'},
+                                               'type': 'array'},
+                    'has_familial_relationships': {'items': {'$ref': '#/definitions/FamilialRelationship'},
+                                                   'type': 'array'},
+                    'has_medical_history': {'items': {'$ref': '#/definitions/MedicalEvent'},
+                                            'type': 'array'},
+                    'id': {'type': 'string'},
+                    'name': {'pattern': '^\\S+ \\S+', 'type': 'string'}},
+     'required': ['id'],
+     'title': 'Person',
+     'type': 'object'}
+
+On instance['persons'][0]:
+    {'age': '33', 'id': 'P', 'name': 'prince charming'}
+
+--------------------
+wrong datatype for name:
+
+<class 'jsonschema.exceptions.ValidationError'>:
+	5 is not of type 'string'
+
+Failed validating 'type' in schema['properties']['companies']['items']['properties']['name']:
+    {'type': 'string'}
+
+On instance['companies'][0]['name']:
+    5
+
+--------------------
+missing required type field:
+
+<class 'jsonschema.exceptions.ValidationError'>:
+	'type' is a required property
+
+Failed validating 'required' in schema['properties']['persons']['items']['properties']['has_familial_relationships']['items']:
+    {'additionalProperties': False,
+     'description': '',
+     'properties': {'ended_at_time': {'type': 'string'},
+                    'related_to': {'type': 'string'},
+                    'started_at_time': {'type': 'string'},
+                    'type': {'type': 'string'}},
+     'required': ['type', 'related_to'],
+     'title': 'FamilialRelationship',
+     'type': 'object'}
+
+On instance['persons'][0]['has_familial_relationships'][0]:
+    {'related_to': 'P:002'}
+
+--------------------
+wrong enum:
+ SKIPPED
+--------------------
+age lower than threshold:
+ SKIPPED
+--------------------
+age higher than threshold:
+ SKIPPED
+--------------------
+additional properties is closed:
+
+<class 'jsonschema.exceptions.ValidationError'>:
+	Additional properties are not allowed ('made_up_property' was unexpected)
+
+Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
+    {'additionalProperties': False,
+     'description': '',
+     'properties': {'addresses': {'items': {'$ref': '#/definitions/Address'},
+                                  'type': 'array'},
+                    'age_in_years': {'type': 'integer'},
+                    'aliases': {'items': {'type': 'string'},
+                                'type': 'array'},
+                    'has_employment_history': {'items': {'$ref': '#/definitions/EmploymentEvent'},
+                                               'type': 'array'},
+                    'has_familial_relationships': {'items': {'$ref': '#/definitions/FamilialRelationship'},
+                                                   'type': 'array'},
+                    'has_medical_history': {'items': {'$ref': '#/definitions/MedicalEvent'},
+                                            'type': 'array'},
+                    'id': {'type': 'string'},
+                    'name': {'pattern': '^\\S+ \\S+', 'type': 'string'}},
+     'required': ['id'],
+     'title': 'Person',
+     'type': 'object'}
+
+On instance['persons'][0]:
+    {'id': 'P', 'made_up_property': 'abc', 'name': 'john smith'}
+
+--------------------
+additional properties is closed on enclosing object:
+ SKIPPED
