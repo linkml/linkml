@@ -59,11 +59,8 @@ class JsonSchemaGenerator(Generator):
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if slot.range in self.schema.classes and slot.inlined:
             rng = f"#/definitions/{camelcase(slot.range)}"
-        elif slot.range in self.schema.types:
-            rng = self.schema.types[slot.range].base
         else:
-            # note we assume string for non-lined complex objects
-            rng = "string"
+            rng = slot.range
 
         # translate to json-schema builtins
         if rng == 'int':
@@ -72,7 +69,7 @@ class JsonSchemaGenerator(Generator):
             rng = 'boolean'
         elif rng == 'str':
             rng = 'string'
-        elif rng == 'float' or rng == 'double':
+        elif rng == 'float' or rng == 'double' or rng == 'decimal':
             rng = 'number'
         elif not rng.startswith('#'):
             # URIorCURIE, etc
