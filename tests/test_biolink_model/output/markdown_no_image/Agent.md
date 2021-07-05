@@ -1,5 +1,5 @@
 
-# Class: Agent
+# Class: agent
 
 
 person, group, organization or project that provides a piece of information (i.e. a knowledge association)

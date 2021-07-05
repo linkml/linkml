@@ -1,5 +1,5 @@
 
-# Class: PathologicalEntityMixin
+# Class: pathological entity mixin
 
 
 A pathological (abnormal) structure or process.

@@ -1,5 +1,5 @@
 
-# Class: DatasetSummary
+# Class: dataset summary
 
 
 an item that holds summary level information about a dataset.

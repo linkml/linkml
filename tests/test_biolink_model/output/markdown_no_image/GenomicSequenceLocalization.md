@@ -1,5 +1,5 @@
 
-# Class: GenomicSequenceLocalization
+# Class: genomic sequence localization
 
 
 A relationship between a sequence feature and a genomic entity it is localized to. The reference entity may be a chromosome, chromosome region or information entity such as a contig.

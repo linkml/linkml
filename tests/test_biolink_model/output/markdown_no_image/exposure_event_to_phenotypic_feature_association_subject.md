@@ -1,5 +1,5 @@
 
-# Slot: exposure_event_to_phenotypic_feature_association_subject
+# Slot: subject
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_to_environment_association_predicate
+# Slot: predicate
 
 
 predicate describing the relationship between the taxon and the environment

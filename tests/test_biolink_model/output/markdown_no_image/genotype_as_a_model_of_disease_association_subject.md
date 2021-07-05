@@ -1,5 +1,5 @@
 
-# Slot: genotype_as_a_model_of_disease_association_subject
+# Slot: subject
 
 
 A genotype that has a role in modeling the disease.

@@ -1,5 +1,5 @@
 
-# Slot: chi_squared_statistic
+# Slot: chi squared statistic
 
 
 represents the chi-squared statistic computed from observations

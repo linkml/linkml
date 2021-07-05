@@ -1,5 +1,5 @@
 
-# Slot: genetic_association
+# Slot: genetic association
 
 
 Co-occurrence of a certain allele of a genetic marker and the phenotype of interest in the same individuals at above-chance level

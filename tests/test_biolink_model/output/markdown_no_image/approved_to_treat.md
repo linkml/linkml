@@ -1,5 +1,5 @@
 
-# Slot: approved_to_treat
+# Slot: approved to treat
 
 
 holds between a therapeutic procedure or chemical substance and a disease or phenotypic feature for which it is approved for treatment to some level of clinical trial. Note that in terms of REPODB narrow mappings, terms containing 'suspended', 'terminated' or 'withdrawn' should be mapped onto associations using this term for which 'negated: true' is asserted.

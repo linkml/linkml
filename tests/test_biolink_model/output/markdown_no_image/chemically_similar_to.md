@@ -1,5 +1,5 @@
 
-# Slot: chemically_similar_to
+# Slot: chemically similar to
 
 
 holds between one chemical substances and another that it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity.

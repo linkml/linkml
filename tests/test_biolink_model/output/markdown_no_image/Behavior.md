@@ -1,5 +1,5 @@
 
-# Class: Behavior
+# Class: behavior
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: material_sample_to_entity_association_mixin_subject
+# Slot: subject
 
 
 the material sample being described

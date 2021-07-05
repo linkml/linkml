@@ -1,5 +1,5 @@
 
-# Class: SubsetDefinition
+# Class: subset_definition
 
 
 the name and description of a subset

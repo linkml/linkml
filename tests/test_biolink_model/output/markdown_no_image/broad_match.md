@@ -1,5 +1,5 @@
 
-# Slot: broad_match
+# Slot: broad match
 
 
 a list of terms from different schemas or terminology systems that have a broader, more general meaning. Broader terms are typically shown as parents in a hierarchy or tree.

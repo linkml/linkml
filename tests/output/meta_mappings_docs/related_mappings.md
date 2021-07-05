@@ -1,5 +1,5 @@
 
-# Slot: related_mappings
+# Slot: related mappings
 
 
 A list of terms from different schemas or terminology systems that have related meaning.

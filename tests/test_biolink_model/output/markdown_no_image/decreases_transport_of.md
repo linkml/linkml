@@ -1,5 +1,5 @@
 
-# Slot: decreases_transport_of
+# Slot: decreases transport of
 
 
 holds between two molecular entities where the action or effect of one decreases the rate of transport of the other across some boundary in a system of interest

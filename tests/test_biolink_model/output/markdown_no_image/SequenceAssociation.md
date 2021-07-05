@@ -1,5 +1,5 @@
 
-# Class: SequenceAssociation
+# Class: sequence association
 
 
 An association between a sequence feature and a genomic entity it is localized to.

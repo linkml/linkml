@@ -1,5 +1,5 @@
 
-# Class: DiseaseOrPhenotypicFeature
+# Class: disease or phenotypic feature
 
 
 Either one of a disease or an individual phenotypic feature. Some knowledge resources such as Monarch treat these as distinct, others such as MESH conflate.

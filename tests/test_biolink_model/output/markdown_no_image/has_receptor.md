@@ -1,5 +1,5 @@
 
-# Slot: has_receptor
+# Slot: has receptor
 
 
 the organism or organism part being exposed

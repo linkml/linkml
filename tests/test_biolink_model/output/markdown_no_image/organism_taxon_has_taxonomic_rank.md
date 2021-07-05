@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_has_taxonomic_rank
+# Slot: has taxonomic rank
 
 
 

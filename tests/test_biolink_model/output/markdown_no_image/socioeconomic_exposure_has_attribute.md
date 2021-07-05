@@ -1,5 +1,5 @@
 
-# Slot: socioeconomic_exposure_has_attribute
+# Slot: has attribute
 
 
 

@@ -1,5 +1,5 @@
 
-# Class: BiologicalProcessOrActivity
+# Class: biological process or activity
 
 
 Either an individual molecular activity, or a collection of causally connected molecular activities in a biological system.

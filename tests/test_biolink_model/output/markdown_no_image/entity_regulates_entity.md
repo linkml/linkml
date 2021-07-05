@@ -1,5 +1,5 @@
 
-# Slot: entity_regulates_entity
+# Slot: entity regulates entity
 
 
 

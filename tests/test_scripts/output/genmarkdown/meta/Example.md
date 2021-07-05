@@ -1,5 +1,5 @@
 
-# Class: Example
+# Class: example
 
 
 usage example and description

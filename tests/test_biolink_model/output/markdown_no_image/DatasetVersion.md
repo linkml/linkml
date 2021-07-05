@@ -1,5 +1,5 @@
 
-# Class: DatasetVersion
+# Class: dataset version
 
 
 an item that holds version level information about a dataset.

@@ -1,5 +1,5 @@
 
-# Slot: onset_qualifier
+# Slot: onset qualifier
 
 
 a qualifier used in a phenotypic association to state when the phenotype appears is in the subject

@@ -1,5 +1,5 @@
 
-# Class: MaterialSampleToEntityAssociationMixin
+# Class: material sample to entity association mixin
 
 
 An association between a material sample and something.

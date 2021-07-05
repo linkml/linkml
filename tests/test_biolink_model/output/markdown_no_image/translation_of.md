@@ -1,5 +1,5 @@
 
-# Slot: translation_of
+# Slot: translation of
 
 
 inverse of translates to

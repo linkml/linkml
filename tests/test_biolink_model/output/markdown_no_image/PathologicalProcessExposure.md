@@ -1,5 +1,5 @@
 
-# Class: PathologicalProcessExposure
+# Class: pathological process exposure
 
 
 A pathological process, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. autoimmunity leading to disease.

@@ -1,5 +1,5 @@
 
-# Slot: decreases_expression_of
+# Slot: decreases expression of
 
 
 holds between two molecular entities where the action or effect of one decreases the level of expression of the other within a system of interest

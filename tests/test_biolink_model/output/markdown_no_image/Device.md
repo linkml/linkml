@@ -1,5 +1,5 @@
 
-# Class: Device
+# Class: device
 
 
 A thing made or adapted for a particular purpose, especially a piece of mechanical or electronic equipment

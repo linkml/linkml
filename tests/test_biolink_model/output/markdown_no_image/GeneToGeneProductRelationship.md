@@ -1,5 +1,5 @@
 
-# Class: GeneToGeneProductRelationship
+# Class: gene to gene product relationship
 
 
 A gene is transcribed and potentially translated to a gene product

@@ -1,5 +1,5 @@
 
-# Class: Hospitalization
+# Class: hospitalization
 
 
 

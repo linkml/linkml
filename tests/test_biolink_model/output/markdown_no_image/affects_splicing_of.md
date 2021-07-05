@@ -1,5 +1,5 @@
 
-# Slot: affects_splicing_of
+# Slot: affects splicing of
 
 
 holds between a molecular entity and an mRNA where the action or effect of the molecular entity impacts the splicing of the mRNA

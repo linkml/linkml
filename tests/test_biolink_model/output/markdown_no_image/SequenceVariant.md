@@ -1,5 +1,5 @@
 
-# Class: SequenceVariant
+# Class: sequence variant
 
 
 An allele that varies in its sequence from what is considered the reference allele at that locus.

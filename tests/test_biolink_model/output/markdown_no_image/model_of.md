@@ -1,5 +1,5 @@
 
-# Slot: model_of
+# Slot: model of
 
 
 holds between a thing and some other thing it approximates for purposes of scientific study, in virtue of its exhibiting similar features of the studied entity.

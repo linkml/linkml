@@ -1,5 +1,5 @@
 
-# Slot: gene_regulatory_relationship_predicate
+# Slot: predicate
 
 
 the direction is always from regulator to regulated

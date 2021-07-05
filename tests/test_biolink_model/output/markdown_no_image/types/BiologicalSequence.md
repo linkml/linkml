@@ -1,5 +1,5 @@
 
-# Type: BiologicalSequence
+# Type: biological sequence
 
 
 

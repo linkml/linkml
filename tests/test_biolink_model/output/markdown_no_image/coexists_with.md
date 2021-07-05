@@ -1,5 +1,5 @@
 
-# Slot: coexists_with
+# Slot: coexists with
 
 
 holds between two entities that are co-located in the same aggregate object, process, or spatio-temporal region

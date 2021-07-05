@@ -1,5 +1,5 @@
 
-# Slot: sequence_feature_relationship_subject
+# Slot: subject
 
 
 

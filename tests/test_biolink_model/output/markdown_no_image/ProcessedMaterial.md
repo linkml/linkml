@@ -1,5 +1,5 @@
 
-# Class: ProcessedMaterial
+# Class: processed material
 
 
 A chemical substance (often a mixture) processed for consumption for nutritional, medical or technical use.

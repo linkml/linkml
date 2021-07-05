@@ -1,5 +1,5 @@
 
-# Slot: genotype_to_disease_association_subject
+# Slot: subject
 
 
 a genotype that is associated in some way with a disease state

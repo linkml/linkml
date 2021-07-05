@@ -1,5 +1,5 @@
 
-# Class: IndividualOrganism
+# Class: individual organism
 
 
 An instance of an organism. For example, Richard Nixon, Charles Darwin, my pet cat. Example ID: ORCID:0000-0002-5355-2576

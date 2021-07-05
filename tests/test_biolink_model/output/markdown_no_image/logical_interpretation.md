@@ -1,5 +1,5 @@
 
-# Slot: logical_interpretation
+# Slot: logical interpretation
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: //example.org/sample/example1/lone_slot_joe
+# Slot: lone slot joe
 
 
 

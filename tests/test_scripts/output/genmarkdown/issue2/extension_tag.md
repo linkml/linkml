@@ -1,5 +1,5 @@
 
-# Slot: extension_tag
+# Slot: tag
 
 
 a tag associated with an extension

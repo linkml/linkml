@@ -1,5 +1,5 @@
 
-# Slot: catalyst_qualifier
+# Slot: catalyst qualifier
 
 
 a qualifier that connects an association between two causally connected entities (for example, two chemical entities, or a chemical entity in that changes location) and the gene product, gene, or complex that enables or catalyzes the change.

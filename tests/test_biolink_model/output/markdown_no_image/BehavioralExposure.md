@@ -1,5 +1,5 @@
 
-# Class: BehavioralExposure
+# Class: behavioral exposure
 
 
 A behavioral exposure is a factor relating to behavior impacting an individual.

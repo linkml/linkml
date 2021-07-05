@@ -1,5 +1,5 @@
 
-# Slot: gene_to_gene_homology_association_predicate
+# Slot: predicate
 
 
 homology relationship type

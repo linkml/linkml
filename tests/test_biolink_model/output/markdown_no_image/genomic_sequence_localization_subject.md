@@ -1,5 +1,5 @@
 
-# Slot: genomic_sequence_localization_subject
+# Slot: subject
 
 
 

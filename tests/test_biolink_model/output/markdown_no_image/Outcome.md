@@ -1,5 +1,5 @@
 
-# Class: Outcome
+# Class: outcome
 
 
 An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.

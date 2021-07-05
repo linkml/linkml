@@ -1,5 +1,5 @@
 
-# Class: Transcript
+# Class: transcript
 
 
 An RNA synthesized on a DNA or RNA template by an RNA polymerase.

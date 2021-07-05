@@ -1,5 +1,5 @@
 
-# Class: GeneOrGeneProduct
+# Class: gene or gene product
 
 
 A union of gene loci or gene products. Frequently an identifier for one will be used as proxy for another

@@ -1,5 +1,5 @@
 
-# Slot: increases_secretion_of
+# Slot: increases secretion of
 
 
 holds between two molecular entities where the action or effect of one increases the rate of secretion of the other out of a cell, gland, or organ

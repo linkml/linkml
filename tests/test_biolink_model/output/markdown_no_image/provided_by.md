@@ -1,5 +1,5 @@
 
-# Slot: provided_by
+# Slot: provided by
 
 
 connects an association to the agent (person, organization or group) that provided it

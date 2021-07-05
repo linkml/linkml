@@ -1,5 +1,5 @@
 
-# Slot: is_splice_site_variant_of
+# Slot: is splice site variant of
 
 
 holds between a sequence variant and a gene, such the sequence variant is in the canonical splice site of one of the gene's exons.

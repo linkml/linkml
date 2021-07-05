@@ -1,5 +1,5 @@
 
-# Type: String
+# Type: string
 
 
 A character string

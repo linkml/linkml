@@ -1,5 +1,5 @@
 
-# Slot: deprecated_element_has_exact_replacement
+# Slot: deprecated element has exact replacement
 
 
 When an element is deprecated, it can be automatically replaced by this uri or curie

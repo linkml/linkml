@@ -1,5 +1,5 @@
 
-# Class: SocioeconomicOutcome
+# Class: socioeconomic outcome
 
 
 An general social or economic outcome, such as healthcare costs, utilization, etc., resulting from an exposure event

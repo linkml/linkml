@@ -1,5 +1,5 @@
 
-# Slot: genotype_to_phenotypic_feature_association_predicate
+# Slot: predicate
 
 
 

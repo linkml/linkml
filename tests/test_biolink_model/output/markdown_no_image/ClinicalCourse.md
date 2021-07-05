@@ -1,5 +1,5 @@
 
-# Class: ClinicalCourse
+# Class: clinical course
 
 
 The course a disease typically takes from its onset, progression in time, and eventual resolution or death of the affected individual

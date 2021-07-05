@@ -1,5 +1,5 @@
 
-# Slot: variant_to_population_association_subject
+# Slot: subject
 
 
 an allele that has a certain frequency in a given population

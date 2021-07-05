@@ -1,5 +1,5 @@
 
-# Slot: has_population_context
+# Slot: has population context
 
 
 a biological population (general, study, cohort, etc.) with a specific set of characteristics to constrain an association.

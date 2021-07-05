@@ -1,5 +1,5 @@
 
-# Slot: associated_environmental_context
+# Slot: associated environmental context
 
 
 An attribute that can be applied to an association where the association holds between two entities located or occurring in a particular environment. For example, two microbial taxa may interact in the context of a human gut; a disease may give rise to a particular phenotype in a particular environmental exposure.

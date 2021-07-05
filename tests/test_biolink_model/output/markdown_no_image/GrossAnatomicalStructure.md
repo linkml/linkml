@@ -1,5 +1,5 @@
 
-# Class: GrossAnatomicalStructure
+# Class: gross anatomical structure
 
 
 

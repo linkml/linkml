@@ -1,5 +1,5 @@
 
-# Slot: manifestation_of
+# Slot: manifestation of
 
 
 that part of a phenomenon which is directly observable or visibly expressed, or which gives evidence to the underlying process; used in SemMedDB for linking things like dysfunctions and processes to some disease or syndrome

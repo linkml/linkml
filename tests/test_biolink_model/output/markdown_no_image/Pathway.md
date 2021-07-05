@@ -1,5 +1,5 @@
 
-# Class: Pathway
+# Class: pathway
 
 
 

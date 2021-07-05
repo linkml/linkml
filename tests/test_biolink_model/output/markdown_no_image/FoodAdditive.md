@@ -1,5 +1,5 @@
 
-# Class: FoodAdditive
+# Class: food additive
 
 
 

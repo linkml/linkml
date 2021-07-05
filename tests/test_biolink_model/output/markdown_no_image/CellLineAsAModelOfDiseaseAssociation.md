@@ -1,5 +1,5 @@
 
-# Class: CellLineAsAModelOfDiseaseAssociation
+# Class: cell line as a model of disease association
 
 
 

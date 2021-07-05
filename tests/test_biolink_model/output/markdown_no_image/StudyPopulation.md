@@ -1,5 +1,5 @@
 
-# Class: StudyPopulation
+# Class: study population
 
 
 A group of people banded together or treated as a group as participants in a research study.

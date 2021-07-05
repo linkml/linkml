@@ -1,5 +1,5 @@
 
-# Slot: gene_expression_mixin_quantifier_qualifier
+# Slot: quantifier qualifier
 
 
 Optional quantitative value indicating degree of expression.

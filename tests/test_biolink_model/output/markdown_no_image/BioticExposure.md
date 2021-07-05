@@ -1,5 +1,5 @@
 
-# Class: BioticExposure
+# Class: biotic exposure
 
 
 An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).

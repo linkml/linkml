@@ -1,5 +1,5 @@
 
-# Slot: sequence_variant_id
+# Slot: id
 
 
 

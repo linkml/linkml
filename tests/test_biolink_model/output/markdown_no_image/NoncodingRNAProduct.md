@@ -1,5 +1,5 @@
 
-# Class: NoncodingRNAProduct
+# Class: noncoding RNA product
 
 
 

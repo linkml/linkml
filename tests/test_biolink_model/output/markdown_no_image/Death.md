@@ -1,5 +1,5 @@
 
-# Class: Death
+# Class: death
 
 
 

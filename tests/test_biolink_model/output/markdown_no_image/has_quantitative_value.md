@@ -1,5 +1,5 @@
 
-# Slot: has_quantitative_value
+# Slot: has quantitative value
 
 
 connects an attribute to a value

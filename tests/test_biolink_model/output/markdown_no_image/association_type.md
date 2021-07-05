@@ -1,5 +1,5 @@
 
-# Slot: association_type
+# Slot: type
 
 
 rdf:type of biolink:Association should be fixed at rdf:Statement

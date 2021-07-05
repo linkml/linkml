@@ -1,5 +1,5 @@
 
-# Class: ContributorAssociation
+# Class: contributor association
 
 
 Any association between an entity (such as a publication) and various agents that contribute to its realisation

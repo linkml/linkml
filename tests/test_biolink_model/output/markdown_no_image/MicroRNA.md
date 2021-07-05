@@ -1,5 +1,5 @@
 
-# Class: MicroRNA
+# Class: microRNA
 
 
 

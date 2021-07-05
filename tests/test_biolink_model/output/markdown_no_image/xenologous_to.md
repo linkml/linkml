@@ -1,5 +1,5 @@
 
-# Slot: xenologous_to
+# Slot: xenologous to
 
 
 a homology relationship characterized by an interspecies (horizontal) transfer since the common ancestor.

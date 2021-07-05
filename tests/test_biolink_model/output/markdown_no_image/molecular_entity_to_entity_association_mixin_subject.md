@@ -1,5 +1,5 @@
 
-# Slot: molecular_entity_to_entity_association_mixin_subject
+# Slot: subject
 
 
 the molecular entity that is an interactor

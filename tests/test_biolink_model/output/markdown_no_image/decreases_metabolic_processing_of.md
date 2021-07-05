@@ -1,5 +1,5 @@
 
-# Slot: decreases_metabolic_processing_of
+# Slot: decreases metabolic processing of
 
 
 holds between two molecular entities where the action or effect of one decreases the rate of metabolic processing of the other within a system of interest

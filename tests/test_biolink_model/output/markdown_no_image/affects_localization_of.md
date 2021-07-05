@@ -1,5 +1,5 @@
 
-# Slot: affects_localization_of
+# Slot: affects localization of
 
 
 holds between two molecular entities where the action or effect of one changes the localization of the other within a system of interest

@@ -1,5 +1,5 @@
 
-# Class: EntityToPhenotypicFeatureAssociationMixin
+# Class: entity to phenotypic feature association mixin
 
 
 

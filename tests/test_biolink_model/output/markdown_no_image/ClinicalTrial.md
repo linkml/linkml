@@ -1,5 +1,5 @@
 
-# Class: ClinicalTrial
+# Class: clinical trial
 
 
 

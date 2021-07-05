@@ -1,5 +1,5 @@
 
-# Slot: affects_uptake_of
+# Slot: affects uptake of
 
 
 holds between two molecular entities where the action or effect of one impacts the rate of uptake of the other into of a cell, gland, or organ

@@ -1,5 +1,5 @@
 
-# Type: Uriorcurie
+# Type: uriorcurie
 
 
 a URI or a CURIE

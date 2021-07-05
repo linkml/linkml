@@ -1,5 +1,5 @@
 
-# Slot: material_sample_derivation_association_subject
+# Slot: subject
 
 
 the material sample being described

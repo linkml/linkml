@@ -1,5 +1,5 @@
 
-# Class: GeneProductMixin
+# Class: gene product mixin
 
 
 The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules.

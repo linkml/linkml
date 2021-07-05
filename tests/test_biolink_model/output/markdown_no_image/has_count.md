@@ -1,5 +1,5 @@
 
-# Slot: has_count
+# Slot: has count
 
 
 number of things with a particular property

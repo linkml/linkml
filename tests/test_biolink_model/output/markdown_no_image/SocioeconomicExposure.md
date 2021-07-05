@@ -1,5 +1,5 @@
 
-# Class: SocioeconomicExposure
+# Class: socioeconomic exposure
 
 
 A socioeconomic exposure is a factor relating to social and financial status of an affected individual (e.g. poverty).

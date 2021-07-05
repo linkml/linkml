@@ -1,5 +1,5 @@
 
-# Class: LifeStage
+# Class: life stage
 
 
 A stage of development or growth of an organism, including post-natal adult stages

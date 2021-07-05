@@ -1,5 +1,5 @@
 
-# Class: Drug
+# Class: drug
 
 
 A substance intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease

@@ -1,5 +1,5 @@
 
-# Class: GeneToGeneCoexpressionAssociation
+# Class: gene to gene coexpression association
 
 
 Indicates that two genes are co-expressed, generally under the same conditions.

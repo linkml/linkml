@@ -1,5 +1,5 @@
 
-# Class: TaxonomicRank
+# Class: taxonomic rank
 
 
 A descriptor for the rank within a taxonomic classification. Example instance: TAXRANK:0000017 (kingdom)

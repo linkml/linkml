@@ -1,5 +1,5 @@
 
-# Slot: translates_to
+# Slot: translates to
 
 
 x (amino acid chain/polypeptide) is the ribosomal translation of y (transcript) if and only if a ribosome reads y (transcript) through a series of triplet codon-amino acid adaptor activities (GO:0030533) and produces x (amino acid chain/polypeptide)

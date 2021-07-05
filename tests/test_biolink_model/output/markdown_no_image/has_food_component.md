@@ -1,5 +1,5 @@
 
-# Slot: has_food_component
+# Slot: has food component
 
 
 holds between food and one or more chemical substances composing it, irrespective of nutritional value (i.e. could also be a contaminant or additive)

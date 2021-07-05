@@ -1,5 +1,5 @@
 
-# Slot: increases_stability_of
+# Slot: increases stability of
 
 
 holds between two molecular entities where the action or effect of one increases the stability of the other within a system of interest

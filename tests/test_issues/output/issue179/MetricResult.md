@@ -1,5 +1,5 @@
 
-# Class: //example.org/sample/example1/MetricResult
+# Class: metric result
 
 
 Result of executing a metric on a KS

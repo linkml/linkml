@@ -1,5 +1,5 @@
 
-# Slot: variant_to_gene_expression_association_predicate
+# Slot: predicate
 
 
 

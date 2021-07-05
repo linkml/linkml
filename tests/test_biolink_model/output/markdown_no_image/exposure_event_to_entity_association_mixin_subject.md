@@ -1,5 +1,5 @@
 
-# Slot: exposure_event_to_entity_association_mixin_subject
+# Slot: subject
 
 
 

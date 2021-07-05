@@ -1,5 +1,5 @@
 
-# Slot: agent_name
+# Slot: name
 
 
 it is recommended that an author's 'name' property be formatted as "surname, firstname initial."

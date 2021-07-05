@@ -1,5 +1,5 @@
 
-# Slot: full_name
+# Slot: full name
 
 
 a long-form human readable name for a thing

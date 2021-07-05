@@ -1,5 +1,5 @@
 
-# Class: GeneAsAModelOfDiseaseAssociation
+# Class: gene as a model of disease association
 
 
 

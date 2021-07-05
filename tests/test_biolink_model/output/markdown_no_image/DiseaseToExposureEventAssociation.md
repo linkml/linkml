@@ -1,5 +1,5 @@
 
-# Class: DiseaseToExposureEventAssociation
+# Class: disease to exposure event association
 
 
 An association between an exposure event and a disease.

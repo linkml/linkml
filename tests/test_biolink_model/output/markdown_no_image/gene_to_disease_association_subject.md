@@ -1,5 +1,5 @@
 
-# Slot: gene_to_disease_association_subject
+# Slot: subject
 
 
 gene in which variation is correlated with the disease, may be protective or causative or associative, or as a model

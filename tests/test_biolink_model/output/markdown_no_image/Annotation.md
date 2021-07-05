@@ -1,5 +1,5 @@
 
-# Class: Annotation
+# Class: annotation
 
 
 Biolink Model root class for entity annotations.

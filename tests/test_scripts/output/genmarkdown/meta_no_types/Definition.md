@@ -1,5 +1,5 @@
 
-# Class: Definition
+# Class: definition
 
 
 base class for definitions

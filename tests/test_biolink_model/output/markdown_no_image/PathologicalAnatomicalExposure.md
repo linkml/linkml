@@ -1,5 +1,5 @@
 
-# Class: PathologicalAnatomicalExposure
+# Class: pathological anatomical exposure
 
 
 An abnormal anatomical structure, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. thrombosis leading to an ischemic disease outcome.

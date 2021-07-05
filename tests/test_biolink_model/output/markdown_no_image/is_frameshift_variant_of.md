@@ -1,5 +1,5 @@
 
-# Slot: is_frameshift_variant_of
+# Slot: is frameshift variant of
 
 
 holds between a sequence variant and a gene, such the sequence variant causes a disruption of the translational reading frame, because the number of nucleotides inserted or deleted is not a multiple of three.

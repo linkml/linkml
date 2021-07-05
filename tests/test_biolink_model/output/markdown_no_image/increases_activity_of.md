@@ -1,5 +1,5 @@
 
-# Slot: increases_activity_of
+# Slot: increases activity of
 
 
 holds between two molecular entities where the action or effect of one increases the activity of the other within a system of interest

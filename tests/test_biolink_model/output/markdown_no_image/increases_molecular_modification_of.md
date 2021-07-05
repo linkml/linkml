@@ -1,5 +1,5 @@
 
-# Slot: increases_molecular_modification_of
+# Slot: increases molecular modification of
 
 
 holds between two molecular entities where the action or effect of one leads to increased molecular modification(s) of the other (e.g. via post-translational modifications of proteins such as the addition of phosphoryl group, or via redox reaction that adds or subtracts electrons)

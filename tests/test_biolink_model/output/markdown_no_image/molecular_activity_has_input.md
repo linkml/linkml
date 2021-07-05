@@ -1,5 +1,5 @@
 
-# Slot: molecular_activity_has_input
+# Slot: has input
 
 
 A chemical entity that is the input for the reaction

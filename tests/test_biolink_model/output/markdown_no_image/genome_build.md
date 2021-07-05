@@ -1,5 +1,5 @@
 
-# Slot: genome_build
+# Slot: genome build
 
 
 The version of the genome on which a feature is located. For example, GRCh38 for Homo sapiens.

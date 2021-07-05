@@ -1,5 +1,5 @@
 
-# Slot: has_drug
+# Slot: has drug
 
 
 connects an entity to one or more drugs

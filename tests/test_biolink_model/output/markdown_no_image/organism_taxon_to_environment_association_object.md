@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_to_environment_association_object
+# Slot: object
 
 
 the environment in which the organism occurs

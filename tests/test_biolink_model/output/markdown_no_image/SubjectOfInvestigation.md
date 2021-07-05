@@ -1,5 +1,5 @@
 
-# Class: SubjectOfInvestigation
+# Class: subject of investigation
 
 
 An entity that has the role of being studied in an investigation, study, or experiment

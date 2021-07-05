@@ -1,5 +1,5 @@
 
-# Class: PhysicalEssence
+# Class: physical essence
 
 
 Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.

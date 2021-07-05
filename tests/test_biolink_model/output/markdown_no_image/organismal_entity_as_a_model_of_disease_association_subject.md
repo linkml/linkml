@@ -1,5 +1,5 @@
 
-# Slot: organismal_entity_as_a_model_of_disease_association_subject
+# Slot: subject
 
 
 A organismal entity (strain, breed) with a predisposition to a disease, or bred/created specifically to model a disease.

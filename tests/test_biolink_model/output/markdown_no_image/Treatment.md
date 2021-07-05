@@ -1,5 +1,5 @@
 
-# Class: Treatment
+# Class: treatment
 
 
 A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices and/or procedures

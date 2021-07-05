@@ -1,5 +1,5 @@
 
-# Type: Integer
+# Type: integer
 
 
 An integer

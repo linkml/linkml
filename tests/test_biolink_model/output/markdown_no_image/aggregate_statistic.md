@@ -1,5 +1,5 @@
 
-# Slot: aggregate_statistic
+# Slot: aggregate statistic
 
 
 

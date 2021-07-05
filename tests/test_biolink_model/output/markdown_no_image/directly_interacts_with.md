@@ -1,5 +1,5 @@
 
-# Slot: directly_interacts_with
+# Slot: directly interacts with
 
 
 Holds between molecular entities that physically and directly interact with each other

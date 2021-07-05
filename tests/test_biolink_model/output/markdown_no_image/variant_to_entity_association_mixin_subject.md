@@ -1,5 +1,5 @@
 
-# Slot: variant_to_entity_association_mixin_subject
+# Slot: subject
 
 
 a sequence variant in which the allele state is associated with some other entity

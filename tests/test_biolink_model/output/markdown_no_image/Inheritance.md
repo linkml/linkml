@@ -1,5 +1,5 @@
 
-# Class: Inheritance
+# Class: inheritance
 
 
 The pattern or 'mode' in which a particular genetic trait or disorder is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive, etc.

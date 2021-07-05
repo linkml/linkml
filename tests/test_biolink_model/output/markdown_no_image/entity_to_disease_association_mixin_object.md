@@ -1,5 +1,5 @@
 
-# Slot: entity_to_disease_association_mixin_object
+# Slot: object
 
 
 disease

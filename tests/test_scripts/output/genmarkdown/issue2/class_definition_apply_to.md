@@ -1,5 +1,5 @@
 
-# Slot: class_definition_apply_to
+# Slot: apply_to
 
 
 

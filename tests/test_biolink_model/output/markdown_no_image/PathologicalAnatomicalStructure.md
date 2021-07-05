@@ -1,5 +1,5 @@
 
-# Class: PathologicalAnatomicalStructure
+# Class: pathological anatomical structure
 
 
 An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.

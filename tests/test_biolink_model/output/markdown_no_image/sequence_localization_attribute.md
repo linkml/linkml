@@ -1,5 +1,5 @@
 
-# Slot: sequence_localization_attribute
+# Slot: sequence localization attribute
 
 
 An attribute that can be applied to a genome sequence localization edge. These edges connect a genomic entity such as an exon to an entity such as a chromosome. Edge properties are used to ascribe specific positional information and other metadata to the localization. In pragmatic terms this can be thought of as columns in a GFF3 line.

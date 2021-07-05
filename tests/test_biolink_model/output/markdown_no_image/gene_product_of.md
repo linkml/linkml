@@ -1,5 +1,5 @@
 
-# Slot: gene_product_of
+# Slot: gene product of
 
 
 definition x has gene product of y if and only if y is a gene (SO:0000704) that participates in some gene expression process (GO:0010467) where the output of thatf process is either y or something that is ribosomally translated from x

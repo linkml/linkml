@@ -1,5 +1,5 @@
 
-# Slot: p_value
+# Slot: p value
 
 
 A quantitative confidence value that represents the probability of obtaining a result at least as extreme as that actually obtained, assuming that the actual value was the result of chance alone.

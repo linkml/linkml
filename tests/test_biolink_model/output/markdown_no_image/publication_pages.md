@@ -1,5 +1,5 @@
 
-# Slot: publication_pages
+# Slot: pages
 
 
 When a 2-tuple of page numbers are provided, they represent the start and end page of the publication within its parent publication context. For books, this may be set to the total number of pages of the book.

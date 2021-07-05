@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_to_environment_association_subject
+# Slot: subject
 
 
 the taxon that is the subject of the association

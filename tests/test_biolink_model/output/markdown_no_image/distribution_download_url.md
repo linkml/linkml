@@ -1,5 +1,5 @@
 
-# Slot: distribution_download_url
+# Slot: distribution download url
 
 
 

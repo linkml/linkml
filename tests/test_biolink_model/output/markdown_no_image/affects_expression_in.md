@@ -1,5 +1,5 @@
 
-# Slot: affects_expression_in
+# Slot: affects expression in
 
 
 Holds between a variant and an anatomical entity where the expression of the variant is located in.

@@ -1,5 +1,5 @@
 
-# Slot: mesh_terms
+# Slot: mesh terms
 
 
 mesh terms tagging a publication

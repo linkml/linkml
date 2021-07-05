@@ -1,5 +1,5 @@
 
-# Slot: has_distribution
+# Slot: has distribution
 
 
 

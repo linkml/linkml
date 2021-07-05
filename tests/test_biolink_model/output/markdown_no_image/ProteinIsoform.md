@@ -1,5 +1,5 @@
 
-# Class: ProteinIsoform
+# Class: protein isoform
 
 
 Represents a protein that is a specific isoform of the canonical or reference protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/

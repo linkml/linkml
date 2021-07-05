@@ -1,5 +1,5 @@
 
-# Slot: interacts_with
+# Slot: interacts with
 
 
 holds between any two entities that directly or indirectly interact with each other

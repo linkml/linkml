@@ -1,5 +1,5 @@
 
-# Class: ChemicalSubstance
+# Class: chemical substance
 
 
 May be a chemical entity or a formulation with a chemical entity as active ingredient, or a complex material with multiple chemical entities as part

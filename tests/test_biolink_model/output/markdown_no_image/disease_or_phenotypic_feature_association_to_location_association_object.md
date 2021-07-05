@@ -1,5 +1,5 @@
 
-# Slot: disease_or_phenotypic_feature_association_to_location_association_object
+# Slot: object
 
 
 

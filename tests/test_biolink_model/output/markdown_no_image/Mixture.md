@@ -1,5 +1,5 @@
 
-# Class: Mixture
+# Class: mixture
 
 
 The physical combination of two or more molecular entities in which the identities are retained and are mixed in the form of solutions, suspensions and colloids.

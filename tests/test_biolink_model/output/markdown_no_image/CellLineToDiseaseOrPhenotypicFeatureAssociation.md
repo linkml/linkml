@@ -1,5 +1,5 @@
 
-# Class: CellLineToDiseaseOrPhenotypicFeatureAssociation
+# Class: cell line to disease or phenotypic feature association
 
 
 An relationship between a cell line and a disease or a phenotype, where the cell line is derived from an individual with that disease or phenotype.

@@ -1,5 +1,5 @@
 
-# Slot: contributor_association_subject
+# Slot: subject
 
 
 information content entity which an agent has helped realise

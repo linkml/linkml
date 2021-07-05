@@ -1,5 +1,5 @@
 
-# Slot: association_slot
+# Slot: association slot
 
 
 any slot that relates an association to another entity

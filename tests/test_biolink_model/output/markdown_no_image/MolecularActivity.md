@@ -1,5 +1,5 @@
 
-# Class: MolecularActivity
+# Class: molecular activity
 
 
 An execution of a molecular function carried out by a gene product or macromolecular complex.

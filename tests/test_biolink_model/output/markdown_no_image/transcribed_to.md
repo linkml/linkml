@@ -1,5 +1,5 @@
 
-# Slot: transcribed_to
+# Slot: transcribed to
 
 
 inverse of transcribed from

@@ -1,5 +1,5 @@
 
-# Slot: gene_to_expression_site_association_object
+# Slot: object
 
 
 location in which the gene is expressed

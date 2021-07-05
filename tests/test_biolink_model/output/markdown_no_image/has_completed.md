@@ -1,5 +1,5 @@
 
-# Slot: has_completed
+# Slot: has completed
 
 
 holds between an entity and a process that the entity is capable of and has completed

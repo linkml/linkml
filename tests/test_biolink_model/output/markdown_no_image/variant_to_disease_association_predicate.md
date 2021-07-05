@@ -1,5 +1,5 @@
 
-# Slot: variant_to_disease_association_predicate
+# Slot: predicate
 
 
 E.g. is pathogenic for

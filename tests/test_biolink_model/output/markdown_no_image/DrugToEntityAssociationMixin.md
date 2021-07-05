@@ -1,5 +1,5 @@
 
-# Class: DrugToEntityAssociationMixin
+# Class: drug to entity association mixin
 
 
 An interaction between a drug and another entity

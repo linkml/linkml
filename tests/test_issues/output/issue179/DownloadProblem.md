@@ -1,5 +1,5 @@
 
-# Class: //example.org/sample/example1/DownloadProblem
+# Class: download problem
 
 
 A problem in downloading a knowledge source

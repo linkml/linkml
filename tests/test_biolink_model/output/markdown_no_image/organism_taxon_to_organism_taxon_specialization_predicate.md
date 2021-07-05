@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_to_organism_taxon_specialization_predicate
+# Slot: predicate
 
 
 

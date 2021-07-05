@@ -1,5 +1,5 @@
 
-# Slot: chemical_to_chemical_derivation_association_catalyst_qualifier
+# Slot: catalyst qualifier
 
 
 this connects the derivation edge to the molecular entity that catalyzes the reaction that causes the subject chemical to transform into the object chemical.

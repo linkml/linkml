@@ -1,5 +1,5 @@
 
-# Class: MacromolecularMachineMixin
+# Class: macromolecular machine mixin
 
 
 A union of gene locus, gene product, and macromolecular complex mixin. These are the basic units of function in a cell. They either carry out individual biological activities, or they encode molecules which do this.

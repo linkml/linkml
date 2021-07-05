@@ -1,5 +1,5 @@
 
-# Slot: increases_synthesis_of
+# Slot: increases synthesis of
 
 
 holds between two molecular entities where the action or effect of one increases the rate of chemical synthesis of the other

@@ -1,5 +1,5 @@
 
-# Class: MolecularEntity
+# Class: molecular entity
 
 
 A gene, gene product, small molecule or macromolecule (including protein complex)"

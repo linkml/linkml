@@ -1,5 +1,5 @@
 
-# Slot: is_metabolite_of
+# Slot: is metabolite of
 
 
 holds between two chemical substances in which the first one is derived from the second one as a product of metabolism

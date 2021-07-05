@@ -1,5 +1,5 @@
 
-# Class: BookChapter
+# Class: book chapter
 
 
 

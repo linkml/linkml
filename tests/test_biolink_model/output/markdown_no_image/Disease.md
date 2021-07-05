@@ -1,5 +1,5 @@
 
-# Class: Disease
+# Class: disease
 
 
 

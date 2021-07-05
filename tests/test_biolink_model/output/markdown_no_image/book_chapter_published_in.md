@@ -1,5 +1,5 @@
 
-# Slot: book_chapter_published_in
+# Slot: published in
 
 
 The enclosing parent book containing the chapter should have industry-standard identifier from ISBN.

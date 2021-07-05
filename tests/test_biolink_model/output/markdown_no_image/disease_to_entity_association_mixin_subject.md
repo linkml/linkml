@@ -1,5 +1,5 @@
 
-# Slot: disease_to_entity_association_mixin_subject
+# Slot: subject
 
 
 disease class

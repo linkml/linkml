@@ -1,5 +1,5 @@
 
-# Class: AnatomicalEntity
+# Class: anatomical entity
 
 
 A subcellular location, cell type or gross anatomical part

@@ -1,5 +1,5 @@
 
-# Slot: develops_from
+# Slot: develops from
 
 
 

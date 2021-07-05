@@ -1,5 +1,5 @@
 
-# Slot: derives_from
+# Slot: derives from
 
 
 holds between two distinct material entities, the new entity and the old entity, in which the new entity begins to exist when the old entity ceases to exist, and the new entity inherits the significant portion of the matter of the old entity

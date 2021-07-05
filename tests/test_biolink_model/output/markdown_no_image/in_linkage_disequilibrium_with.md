@@ -1,5 +1,5 @@
 
-# Slot: in_linkage_disequilibrium_with
+# Slot: in linkage disequilibrium with
 
 
 holds between two sequence variants, the presence of which are correlated in a population

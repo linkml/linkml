@@ -1,5 +1,5 @@
 
-# Slot: positively_correlated_with
+# Slot: positively correlated with
 
 
 holds between any two named thing entities "correlated with" one another in a positive manner.

@@ -1,5 +1,5 @@
 
-# Slot: increases_splicing_of
+# Slot: increases splicing of
 
 
 holds between a molecular entity and an mRNA where the action or effect of the molecular entity increases the proper splicing of the mRNA

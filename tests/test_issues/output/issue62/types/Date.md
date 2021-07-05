@@ -1,5 +1,5 @@
 
-# Type: Date
+# Type: date
 
 
 a date (year, month and day) in an idealized calendar

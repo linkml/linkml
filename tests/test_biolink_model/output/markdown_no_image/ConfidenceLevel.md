@@ -1,5 +1,5 @@
 
-# Class: ConfidenceLevel
+# Class: confidence level
 
 
 Level of confidence in a statement

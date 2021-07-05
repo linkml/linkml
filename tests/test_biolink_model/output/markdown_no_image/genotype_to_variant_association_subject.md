@@ -1,5 +1,5 @@
 
-# Slot: genotype_to_variant_association_subject
+# Slot: subject
 
 
 parent genotype

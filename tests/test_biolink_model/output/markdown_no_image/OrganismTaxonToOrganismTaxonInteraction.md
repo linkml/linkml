@@ -1,5 +1,5 @@
 
-# Class: OrganismTaxonToOrganismTaxonInteraction
+# Class: organism taxon to organism taxon interaction
 
 
 An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and parasitism), or it may be non-symbiotic. Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens

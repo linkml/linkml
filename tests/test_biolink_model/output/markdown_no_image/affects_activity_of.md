@@ -1,5 +1,5 @@
 
-# Slot: affects_activity_of
+# Slot: affects activity of
 
 
 holds between two molecular entities where the action or effect of one changes the activity of the other within a system of interest

@@ -1,5 +1,5 @@
 
-# Class: Haplotype
+# Class: haplotype
 
 
 A set of zero or more Alleles on a single instance of a Sequence[VMC]

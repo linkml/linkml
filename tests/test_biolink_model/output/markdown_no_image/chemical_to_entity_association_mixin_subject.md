@@ -1,5 +1,5 @@
 
-# Slot: chemical_to_entity_association_mixin_subject
+# Slot: subject
 
 
 the chemical substance or entity that is an interactor

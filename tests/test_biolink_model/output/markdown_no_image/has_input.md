@@ -1,5 +1,5 @@
 
-# Slot: has_input
+# Slot: has input
 
 
 holds between a process and a continuant, where the continuant is an input into the process

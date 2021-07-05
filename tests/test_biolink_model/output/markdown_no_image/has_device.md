@@ -1,5 +1,5 @@
 
-# Slot: has_device
+# Slot: has device
 
 
 connects an entity to one or more (medical) devices

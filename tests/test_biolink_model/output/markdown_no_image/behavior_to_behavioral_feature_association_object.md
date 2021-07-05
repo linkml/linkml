@@ -1,5 +1,5 @@
 
-# Slot: behavior_to_behavioral_feature_association_object
+# Slot: object
 
 
 behavioral feature that is the object of the association

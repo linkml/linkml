@@ -1,5 +1,5 @@
 
-# Slot: chemical_to_pathway_association_object
+# Slot: object
 
 
 the pathway that is affected by the chemical

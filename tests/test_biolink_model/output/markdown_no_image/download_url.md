@@ -1,5 +1,5 @@
 
-# Slot: download_url
+# Slot: download url
 
 
 

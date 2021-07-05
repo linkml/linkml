@@ -1,5 +1,5 @@
 
-# Slot: slot_definitions
+# Slot: slots
 
 
 slot definitions

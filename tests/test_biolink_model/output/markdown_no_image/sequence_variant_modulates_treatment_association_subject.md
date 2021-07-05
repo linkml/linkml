@@ -1,5 +1,5 @@
 
-# Slot: sequence_variant_modulates_treatment_association_subject
+# Slot: subject
 
 
 variant that modulates the treatment of some disease

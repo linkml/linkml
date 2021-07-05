@@ -1,5 +1,5 @@
 
-# Slot: ingest_date
+# Slot: ingest date
 
 
 

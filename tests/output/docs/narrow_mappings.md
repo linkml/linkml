@@ -1,5 +1,5 @@
 
-# Slot: narrow_mappings
+# Slot: narrow mappings
 
 
 A list of terms from different schemas or terminology systems that have narrower meaning.
