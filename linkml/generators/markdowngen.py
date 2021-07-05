@@ -250,7 +250,7 @@ class MarkdownGenerator(Generator):
             obj_type = 'Enum'
         else:
             obj_type = 'Class'
-        self.header(1, f"{obj_type}: {simple_name}" + (f" _(deprecated)_" if obj.deprecated else ""))
+        self.header(1, f"{obj_type}: {name}" + (f" _(deprecated)_" if obj.deprecated else ""))
         self.para(be(obj.description))
         print(f'URI: [{curie}]({uri})')
         print()
