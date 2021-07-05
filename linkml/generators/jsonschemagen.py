@@ -1,13 +1,26 @@
 import os
-from typing import Union, TextIO, Optional
+from typing import Union, TextIO, Optional, Dict
 
 import click
 from jsonasobj2 import JsonObj, as_json
-
-from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
 
+from linkml.utils.generator import Generator, shared_arguments
+
+# Map from underlying python data type to json equivalent
+# Note: The underlying types are a union of any built-in python datatype + any type defined in
+#       linkml-runtime/utils/metamodelcore.py
+# Note the keys are all lower case
+json_schema_types: Dict[str, str] = {
+    "int": "integer",
+    "integer": "integer",
+    "bool": "boolean",
+    "boolean": "boolean",
+    "float": "number",
+    "double": "number",
+    "decimal": "number"
+}
 
 class JsonSchemaGenerator(Generator):
     generatorname = os.path.basename(__file__)
@@ -57,23 +70,12 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj.definitions[camelcase(cls.name)] = self.clsobj
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        if slot.range in self.schema.classes and slot.inlined:
+        if slot.range in self.schema.types:
+            rng = json_schema_types.get(self.schema.types[slot.range].base.lower(), "string")
+        elif slot.range in self.schema.classes and slot.inlined:
             rng = f"#/definitions/{camelcase(slot.range)}"
         else:
-            rng = slot.range
-
-        # translate to json-schema builtins
-        if rng == 'int':
-            rng = 'integer'
-        elif rng == 'Bool':
-            rng = 'boolean'
-        elif rng == 'str':
-            rng = 'string'
-        elif rng == 'float' or rng == 'double' or rng == 'decimal':
-            rng = 'number'
-        elif not rng.startswith('#'):
-            # URIorCURIE, etc
-            rng = 'string'
+            rng = "string"
 
         if slot.inlined:
             # If inline we have to include redefined slots
