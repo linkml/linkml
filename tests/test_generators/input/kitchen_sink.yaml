@@ -37,7 +37,16 @@ subsets:
 
   subset A:
     description: >-
-      A test subset
+      test subset A
+    comments:
+      - this subset is meaningless, it is just here for testing
+    aliases:
+      - A
+  subset B:
+    description: >-
+      test subset B
+    aliases:
+      - B
 
 classes:
 
@@ -48,6 +57,8 @@ classes:
         multivalued: true
 
   Person:
+    in_subset:
+      - subset A
     mixins:
       - HasAliases
     slots:
@@ -150,24 +161,34 @@ classes:
 slots:
   employed at:
     range: Company
+    in_subset:
+      - subset A
   is current:
     range: boolean
   has employment history:
     range: EmploymentEvent
     multivalued: true
     inlined_as_list: true
+    in_subset:
+      - subset B
   has marriage history:
     range: MarriageEvent
     multivalued: true
     inlined_as_list: true
+    in_subset:
+      - subset B
   has medical history:
     range: MedicalEvent
     multivalued: true
     inlined_as_list: true
+    in_subset:
+      - subset B
   has familial relationships:
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
+    in_subset:
+      - subset B
   married to:
     range: Person
   in location:
@@ -179,6 +200,9 @@ slots:
     range: integer
     minimum_value: 0
     maximum_value: 999
+    in_subset:
+      - subset A
+      - subset B
   related to:
   type:
   street:
