@@ -127,6 +127,7 @@
             },
             "created_on": {
                "description": "time at which the element was created",
+               "format": "date-time",
                "type": "string"
             },
             "defining_slots": {
@@ -204,6 +205,7 @@
             },
             "last_updated_on": {
                "description": "time at which the element was last updated",
+               "format": "date-time",
                "type": "string"
             },
             "local_names": {
@@ -832,6 +834,7 @@
             },
             "generation_date": {
                "description": "date and time that the schema was loaded/generated",
+               "format": "date-time",
                "type": "string"
             },
             "id": {
@@ -935,6 +938,7 @@
             },
             "source_file_date": {
                "description": "modification date of the source of the schema",
+               "format": "date-time",
                "type": "string"
             },
             "source_file_size": {
@@ -1042,6 +1046,7 @@
             },
             "created_on": {
                "description": "time at which the element was created",
+               "format": "date-time",
                "type": "string"
             },
             "definition_uri": {
@@ -1159,6 +1164,7 @@
             },
             "last_updated_on": {
                "description": "time at which the element was last updated",
+               "format": "date-time",
                "type": "string"
             },
             "local_names": {

@@ -25,6 +25,9 @@ LinkML model for mappings
 ### Enums
 
 
+### Subsets
+
+
 ### Types
 
 

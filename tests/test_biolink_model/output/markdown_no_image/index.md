@@ -764,6 +764,13 @@ Entity and association taxonomy and datamodel for life-sciences data
 
  * [logical_interpretation_enum](logical_interpretation_enum.md)
 
+### Subsets
+
+ * [ModelOrganismDatabase](ModelOrganismDatabase.md) - Subset that is relevant for a typical Model Organism Database (MOD)
+ * [Samples](Samples.md) - Sample/biosample datamodel
+ * [Testing](Testing.md) - TBD
+ * [TranslatorMinimal](TranslatorMinimal.md) - Minimum subset of translator work
+
 ### Types
 
 
