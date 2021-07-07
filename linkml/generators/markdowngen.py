@@ -8,7 +8,7 @@ from jsonasobj2 import JsonObj, values
 
 from linkml.generators.yumlgen import YumlGenerator
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, Element, ClassDefinitionName, \
-    TypeDefinition, EnumDefinition
+    TypeDefinition, EnumDefinition, SubsetDefinition
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
@@ -78,6 +78,10 @@ class MarkdownGenerator(Generator):
                 self.header(3, 'Enums')
                 for enu in sorted(self.schema.enums.values(), key=lambda e: e.name):
                     self.enum_hier(enu)
+
+                self.header(3, 'Subsets')
+                for subset in sorted(self.schema.subsets.values(), key=lambda s: s.name):
+                    self.bullet(self.subset_link(subset, use_desc=True), 0)
 
                 self.header(3, 'Types')
                 self.header(4, 'Built in')
@@ -238,6 +242,37 @@ class MarkdownGenerator(Generator):
                 self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
                 self.element_properties(enum)
 
+    def visit_subset(self, subset: SubsetDefinition) -> None:
+        with open(self.exist_warning(self.dir_path(subset)), 'w') as subsetfile:
+            with redirect_stdout(subsetfile):
+                curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(subset.name))
+                uri = self.namespaces.uri_for(curie)
+                self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri)
+                # TODO: consider showing hierarchy within a subset
+                self.header(3, 'Classes')
+                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
+                    if not cls.mixin:
+                        if cls.in_subset and subset.name in cls.in_subset:
+                            self.bullet(self.class_link(cls, use_desc=True), 0)
+                self.header(3, 'Mixins')
+                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
+                    if cls.mixin:
+                        if cls.in_subset and subset.name in cls.in_subset:
+                            self.bullet(self.class_link(cls, use_desc=True), 0)
+                self.header(3, 'Slots')
+                for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
+                    if slot.in_subset and subset.name in slot.in_subset:
+                        self.bullet(self.slot_link(slot, use_desc=True), 0)
+                self.header(3, 'Types')
+                for type in sorted(self.schema.types.values(), key=lambda s: s.name):
+                    if type.in_subset and subset.name in type.in_subset:
+                        self.bullet(self.type_link(type, use_desc=True), 0)
+                self.header(3, 'Enums')
+                for enum in sorted(self.schema.enums.values(), key=lambda s: s.name):
+                    if enum.in_subset and subset.name in enum.in_subset:
+                        self.bullet(self.enum_link(type, use_desc=True), 0)
+                self.element_properties(subset)
+
     def element_header(self, obj: Element, name: str, curie: str, uri: str) -> None:
         simple_name = curie.split(':', 1)[1]
         if isinstance(obj, TypeDefinition):
@@ -248,6 +283,8 @@ class MarkdownGenerator(Generator):
             obj_type = 'Slot'
         elif isinstance(obj, EnumDefinition):
             obj_type = 'Enum'
+        elif isinstance(obj, SubsetDefinition):
+            obj_type = 'Subset'
         else:
             obj_type = 'Class'
         self.header(1, f"{obj_type}: {name}" + (f" _(deprecated)_" if obj.deprecated else ""))
@@ -497,6 +534,9 @@ class MarkdownGenerator(Generator):
         elif isinstance(obj, ClassDefinition):
             link_name = camelcase(obj.name)
             link_ref = camelcase(link_name)
+        elif isinstance(obj, SubsetDefinition):
+            link_name = camelcase(obj.name)
+            link_ref = camelcase(link_name)
         else:
             link_name = obj.name
             link_ref = link_name
@@ -539,6 +579,10 @@ class MarkdownGenerator(Generator):
              add_subset: bool=True) -> str:
              return self._link(self.schema.enums[ref] if isinstance(ref, str) else ref, after_link=after_link,
                              use_desc=use_desc, add_subset=add_subset)
+
+    def subset_link(self, ref:Optional[Union[str, SubsetDefinition]], *, after_link: str = None, use_desc: bool=False) -> str:
+             return self._link(self.schema.subsets[ref] if isinstance(ref, str) else ref, after_link=after_link,
+                             use_desc=use_desc)
 
     def xlink(self, id_: str) -> str:
         return f'[{id_}]({self.id_to_url(id_)})'
