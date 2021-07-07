@@ -1,5 +1,5 @@
 import os
-from typing import Union, TextIO, Optional, Dict
+from typing import Union, TextIO, Optional, Dict, Tuple
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -12,14 +12,17 @@ from linkml.utils.generator import Generator, shared_arguments
 # Note: The underlying types are a union of any built-in python datatype + any type defined in
 #       linkml-runtime/utils/metamodelcore.py
 # Note the keys are all lower case
-json_schema_types: Dict[str, str] = {
-    "int": "integer",
-    "integer": "integer",
-    "bool": "boolean",
-    "boolean": "boolean",
-    "float": "number",
-    "double": "number",
-    "decimal": "number"
+json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
+    "int": ("integer", None),
+    "integer": ("integer", None),
+    "bool": ("boolean", None),
+    "boolean": ("boolean", None),
+    "float": ("number", None),
+    "double": ("number", None),
+    "decimal": ("number", None),
+    "xsddate": ("string", "date"),
+    "xsddatetime": ("string", "date-time"),
+    "xsdtime": ("string", "time"),
 }
 
 class JsonSchemaGenerator(Generator):
@@ -72,33 +75,11 @@ class JsonSchemaGenerator(Generator):
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         fmt = None
         if slot.range in self.schema.types:
-            rng = json_schema_types.get(self.schema.types[slot.range].base.lower(), "string")
+            (rng, fmt) = json_schema_types.get(self.schema.types[slot.range].base.lower(), ("string", None))
         elif slot.range in self.schema.classes and slot.inlined:
             rng = f"#/definitions/{camelcase(slot.range)}"
         else:
             rng = "string"
-
-        # translate to json-schema builtins
-        if rng == 'int':
-            rng = 'integer'
-        elif rng == 'Bool':
-            rng = 'boolean'
-        elif rng == 'str':
-            rng = 'string'
-        elif rng == 'float' or rng == 'double':
-            rng = 'number'
-        elif rng == 'XSDDate':
-            rng = 'string'
-            fmt = 'date'
-        elif rng == 'XSDDateTime':
-            rng = 'string'
-            fmt = 'date-time'
-        elif rng == 'XSDTime':
-            rng = 'string'
-            fmt = 'time'
-        elif not rng.startswith('#'):
-            # URIorCURIE, etc
-            rng = 'string'
 
         if slot.inlined:
             # If inline we have to include redefined slots
