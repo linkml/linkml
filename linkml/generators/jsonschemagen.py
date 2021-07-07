@@ -1,5 +1,5 @@
 import os
-from typing import Union, TextIO, Optional, Dict
+from typing import Union, TextIO, Optional, Dict, Tuple
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -12,14 +12,17 @@ from linkml.utils.generator import Generator, shared_arguments
 # Note: The underlying types are a union of any built-in python datatype + any type defined in
 #       linkml-runtime/utils/metamodelcore.py
 # Note the keys are all lower case
-json_schema_types: Dict[str, str] = {
-    "int": "integer",
-    "integer": "integer",
-    "bool": "boolean",
-    "boolean": "boolean",
-    "float": "number",
-    "double": "number",
-    "decimal": "number"
+json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
+    "int": ("integer", None),
+    "integer": ("integer", None),
+    "bool": ("boolean", None),
+    "boolean": ("boolean", None),
+    "float": ("number", None),
+    "double": ("number", None),
+    "decimal": ("number", None),
+    "xsddate": ("string", "date"),
+    "xsddatetime": ("string", "date-time"),
+    "xsdtime": ("string", "time"),
 }
 
 class JsonSchemaGenerator(Generator):
@@ -70,8 +73,9 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj.definitions[camelcase(cls.name)] = self.clsobj
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+        fmt = None
         if slot.range in self.schema.types:
-            rng = json_schema_types.get(self.schema.types[slot.range].base.lower(), "string")
+            (rng, fmt) = json_schema_types.get(self.schema.types[slot.range].base.lower(), ("string", None))
         elif slot.range in self.schema.classes and slot.inlined:
             rng = f"#/definitions/{camelcase(slot.range)}"
         else:
@@ -87,9 +91,15 @@ class JsonSchemaGenerator(Generator):
                 prop = ref
         else:
             if slot.multivalued:
-                prop = JsonObj(type="array", items={'type': rng})
+                if fmt is None:
+                    prop = JsonObj(type="array", items={'type': rng})
+                else:
+                    prop = JsonObj(type="array", items={'type': rng, 'format': fmt})
             else:
-                prop = JsonObj(type=rng)
+                if fmt is None:
+                    prop = JsonObj(type=rng)
+                else:
+                    prop = JsonObj(type=rng, format=fmt)
         if slot.description:
             prop.description = slot.description
         if slot.required:

@@ -51,9 +51,11 @@ slots:
   
   started at time:
     slot_uri: prov:startedAtTime
+    range: date
 
   ended at time:
     slot_uri: prov:endedAtTime
+    range: date
 
   was informed by:
     range: activity
