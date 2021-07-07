@@ -30,7 +30,7 @@ class OwlSchemaGenerator(Generator):
     valid_formats = ['owl', 'ttl'] + [x.name for x in rdflib_plugins(None, rdflib_Parser) if '/' not in str(x.name)]
     visits_are_sorted = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], ontology_uri_suffix: str=None, **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.graph: Optional[Graph] = None
         self.metamodel = SchemaLoader(LOCAL_METAMODEL_YAML_FILE, importmap=kwargs.get('importmap', None),
@@ -40,9 +40,13 @@ class OwlSchemaGenerator(Generator):
                          mergeimports=self.merge_imports)
         self.metamodel.resolve()
         self.top_value_uri: Optional[URIRef] = None
+        self.ontology_uri_suffix = ontology_uri_suffix
 
     def visit_schema(self, output: Optional[str] = None, **_):
-        base = URIRef(self.schema.id)
+        owl_id = self.schema.id
+        if self.ontology_uri_suffix:
+            owl_id = f'{owl_id}{self.ontology_uri_suffix}'
+        base = URIRef(owl_id)
         self.graph = Graph(identifier=base)
         for prefix in self.metamodel.schema.emit_prefixes:
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
@@ -335,7 +339,11 @@ class OwlSchemaGenerator(Generator):
 
 @shared_arguments(OwlSchemaGenerator)
 @click.command()
-@click.option("-o", "--output", help="Output file name")
+@click.option("-o", "--output",
+              help="Output file name")
+@click.option("--ontology-iri-suffix",
+              default='.owl.ttl',
+              help="Suffix to append to schema id to generate OWL Ontology IRI")
 def cli(yamlfile, **kwargs):
     """ Generate an OWL representation of a biolink model """
     print(OwlSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))

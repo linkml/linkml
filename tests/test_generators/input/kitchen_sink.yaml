@@ -26,11 +26,10 @@ prefixes:
   lego: http://geneontology.org/lego/
   linkml: https://w3id.org/linkml/
   biolink: https://w3id.org/biolink/
-  ex: https://w3id.org/example/
-  goshapes: http://purl.obolibrary.org/obo/go/shapes/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
   RO: http://purl.obolibrary.org/obo/RO_
   BFO: http://purl.obolibrary.org/obo/BFO_
-default_prefix: ex
+default_prefix: ks
 see_also:
   - https://example.org/
 
