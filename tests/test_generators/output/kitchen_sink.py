@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-01 19:53
+# Generation date: 2021-07-06 17:55
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -24,8 +24,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Integer, String
-from linkml_runtime.utils.metamodelcore import Bool
+from linkml_runtime.linkml_model.types import Boolean, Date, Integer, String
+from linkml_runtime.utils.metamodelcore import Bool, XSDDate
 
 metamodel_version = "1.7.0"
 
@@ -233,16 +233,16 @@ class Event(YAMLRoot):
     class_name: ClassVar[str] = "Event"
     class_model_uri: ClassVar[URIRef] = EX.Event
 
-    started_at_time: Optional[str] = None
-    ended_at_time: Optional[str] = None
+    started_at_time: Optional[Union[str, XSDDate]] = None
+    ended_at_time: Optional[Union[str, XSDDate]] = None
     is_current: Optional[Union[bool, Bool]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.started_at_time is not None and not isinstance(self.started_at_time, str):
-            self.started_at_time = str(self.started_at_time)
+        if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
+            self.started_at_time = XSDDate(self.started_at_time)
 
-        if self.ended_at_time is not None and not isinstance(self.ended_at_time, str):
-            self.ended_at_time = str(self.ended_at_time)
+        if self.ended_at_time is not None and not isinstance(self.ended_at_time, XSDDate):
+            self.ended_at_time = XSDDate(self.ended_at_time)
 
         if self.is_current is not None and not isinstance(self.is_current, Bool):
             self.is_current = Bool(self.is_current)
@@ -259,17 +259,17 @@ class Relationship(YAMLRoot):
     class_name: ClassVar[str] = "Relationship"
     class_model_uri: ClassVar[URIRef] = EX.Relationship
 
-    started_at_time: Optional[str] = None
-    ended_at_time: Optional[str] = None
+    started_at_time: Optional[Union[str, XSDDate]] = None
+    ended_at_time: Optional[Union[str, XSDDate]] = None
     related_to: Optional[str] = None
     type: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.started_at_time is not None and not isinstance(self.started_at_time, str):
-            self.started_at_time = str(self.started_at_time)
+        if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
+            self.started_at_time = XSDDate(self.started_at_time)
 
-        if self.ended_at_time is not None and not isinstance(self.ended_at_time, str):
-            self.ended_at_time = str(self.ended_at_time)
+        if self.ended_at_time is not None and not isinstance(self.ended_at_time, XSDDate):
+            self.ended_at_time = XSDDate(self.ended_at_time)
 
         if self.related_to is not None and not isinstance(self.related_to, str):
             self.related_to = str(self.related_to)
@@ -433,8 +433,8 @@ class Activity(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EX.Activity
 
     id: Union[str, ActivityId] = None
-    started_at_time: Optional[str] = None
-    ended_at_time: Optional[str] = None
+    started_at_time: Optional[Union[str, XSDDate]] = None
+    ended_at_time: Optional[Union[str, XSDDate]] = None
     was_informed_by: Optional[Union[str, ActivityId]] = None
     was_associated_with: Optional[Union[str, AgentId]] = None
     used: Optional[str] = None
@@ -446,11 +446,11 @@ class Activity(YAMLRoot):
         if not isinstance(self.id, ActivityId):
             self.id = ActivityId(self.id)
 
-        if self.started_at_time is not None and not isinstance(self.started_at_time, str):
-            self.started_at_time = str(self.started_at_time)
+        if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
+            self.started_at_time = XSDDate(self.started_at_time)
 
-        if self.ended_at_time is not None and not isinstance(self.ended_at_time, str):
-            self.ended_at_time = str(self.ended_at_time)
+        if self.ended_at_time is not None and not isinstance(self.ended_at_time, XSDDate):
+            self.ended_at_time = XSDDate(self.ended_at_time)
 
         if self.was_informed_by is not None and not isinstance(self.was_informed_by, ActivityId):
             self.was_informed_by = ActivityId(self.was_informed_by)
@@ -571,10 +571,10 @@ slots.description = Slot(uri=CORE.description, name="description", curie=CORE.cu
                    model_uri=EX.description, domain=None, range=Optional[str])
 
 slots.started_at_time = Slot(uri=PROV.startedAtTime, name="started at time", curie=PROV.curie('startedAtTime'),
-                   model_uri=EX.started_at_time, domain=None, range=Optional[str])
+                   model_uri=EX.started_at_time, domain=None, range=Optional[Union[str, XSDDate]])
 
 slots.ended_at_time = Slot(uri=PROV.endedAtTime, name="ended at time", curie=PROV.curie('endedAtTime'),
-                   model_uri=EX.ended_at_time, domain=None, range=Optional[str])
+                   model_uri=EX.ended_at_time, domain=None, range=Optional[Union[str, XSDDate]])
 
 slots.was_informed_by = Slot(uri=PROV.wasInformedBy, name="was informed by", curie=PROV.curie('wasInformedBy'),
                    model_uri=EX.was_informed_by, domain=None, range=Optional[Union[str, ActivityId]])

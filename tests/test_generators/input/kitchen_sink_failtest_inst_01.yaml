@@ -67,3 +67,38 @@
       - id: P
         name: john smith
     made_up_property: "abc"
+- description: non-multivalued address
+  skip: false
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        addresses:
+          street: 1 foo street
+          city: foo city
+- description: string used in place of object
+  skip: false
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        addresses:
+          - "1 foo street, foo city"
+- description: inline used where reference expected
+  skip: false
+  dataset:
+    activities:
+      - id: A1
+        was_associated_with:
+          id: Agent:987
+- description: date format
+  skip: true
+  comment: :-
+    as per https://json-schema.org/understanding-json-schema/reference/string.html#format
+    "JSON Schema implementations are not required to implement this part of the specification, and many of them do not."
+    it appears the python json schema implementation does not implement this, so we skip for now
+  dataset:
+    activities:
+      - id: A1
+        started_at_time: "not a real date"
+

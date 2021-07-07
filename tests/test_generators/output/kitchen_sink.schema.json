@@ -10,12 +10,14 @@
                "type": "string"
             },
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "id": {
                "type": "string"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             },
             "used": {
@@ -130,12 +132,14 @@
                "type": "string"
             },
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "is_current": {
                "type": "boolean"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             }
          },
@@ -148,12 +152,14 @@
          "description": "",
          "properties": {
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "is_current": {
                "type": "boolean"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             }
          },
@@ -166,12 +172,14 @@
          "description": "",
          "properties": {
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "related_to": {
                "type": "string"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             },
             "type": {
@@ -190,6 +198,7 @@
          "description": "",
          "properties": {
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "in_location": {
@@ -202,6 +211,7 @@
                "type": "string"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             }
          },
@@ -214,12 +224,14 @@
          "description": "",
          "properties": {
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "is_current": {
                "type": "boolean"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             }
          },
@@ -329,12 +341,14 @@
          "description": "",
          "properties": {
             "ended_at_time": {
+               "format": "date",
                "type": "string"
             },
             "related_to": {
                "type": "string"
             },
             "started_at_time": {
+               "format": "date",
                "type": "string"
             },
             "type": {

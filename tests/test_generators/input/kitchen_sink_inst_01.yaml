@@ -13,6 +13,9 @@ persons:
         type: SIBLING_OF
     has_medical_history:
       - started_at_time: 2019-01-01
+    addresses:
+      - street: 1 foo street
+        city: foo city
 companies:
   - id: ROR:1
     name: foo

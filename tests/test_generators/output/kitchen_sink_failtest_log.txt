@@ -1,7 +1,9 @@
 --------------------
 name fails regex:
 
-<class 'jsonschema.exceptions.ValidationError'>:
+{'persons': [{'id': 'P:001', 'name': 'prince'}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
 	'prince' does not match '^\\S+ \\S+'
 
 Failed validating 'pattern' in schema['properties']['persons']['items']['properties']['name']:
@@ -13,7 +15,9 @@ On instance['persons'][0]['name']:
 --------------------
 missing ID:
 
-<class 'jsonschema.exceptions.ValidationError'>:
+{'persons': [{'name': 'prince charming'}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
 	'id' is a required property
 
 Failed validating 'required' in schema['properties']['persons']['items']:
@@ -42,7 +46,9 @@ On instance['persons'][0]:
 --------------------
 wrong datatype for age:
 
-<class 'jsonschema.exceptions.ValidationError'>:
+{'persons': [{'id': 'P', 'name': 'prince charming', 'age': '33'}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
 	Additional properties are not allowed ('age' was unexpected)
 
 Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
@@ -71,7 +77,9 @@ On instance['persons'][0]:
 --------------------
 wrong datatype for name:
 
-<class 'jsonschema.exceptions.ValidationError'>:
+{'companies': [{'id': 'ROR:1', 'name': 5}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
 	5 is not of type 'string'
 
 Failed validating 'type' in schema['properties']['companies']['items']['properties']['name']:
@@ -83,15 +91,17 @@ On instance['companies'][0]['name']:
 --------------------
 missing required type field:
 
-<class 'jsonschema.exceptions.ValidationError'>:
+{'persons': [{'id': 'P:001', 'name': 'jane smith', 'has_familial_relationships': [{'related_to': 'P:002'}]}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
 	'type' is a required property
 
 Failed validating 'required' in schema['properties']['persons']['items']['properties']['has_familial_relationships']['items']:
     {'additionalProperties': False,
      'description': '',
-     'properties': {'ended_at_time': {'type': 'string'},
+     'properties': {'ended_at_time': {'format': 'date', 'type': 'string'},
                     'related_to': {'type': 'string'},
-                    'started_at_time': {'type': 'string'},
+                    'started_at_time': {'format': 'date', 'type': 'string'},
                     'type': {'type': 'string'}},
      'required': ['type', 'related_to'],
      'title': 'FamilialRelationship',
@@ -102,17 +112,25 @@ On instance['persons'][0]['has_familial_relationships'][0]:
 
 --------------------
 wrong enum:
+
+{'persons': [{'id': 'P:001', 'name': 'jane smith', 'has_familial_relationships': [{'related_to': 'P:002', 'type': 'NON_EXISTENT_RELATION'}]}]}:
  SKIPPED
 --------------------
 age lower than threshold:
+
+{'persons': [{'id': 'P', 'name': 'benjamin button', 'age_in_years': -5}]}:
  SKIPPED
 --------------------
 age higher than threshold:
+
+{'persons': [{'id': 'P', 'name': 'dr who', 'age_in_years': 5000}]}:
  SKIPPED
 --------------------
 additional properties is closed:
 
-<class 'jsonschema.exceptions.ValidationError'>:
+{'persons': [{'id': 'P', 'name': 'john smith', 'made_up_property': 'abc'}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
 	Additional properties are not allowed ('made_up_property' was unexpected)
 
 Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
@@ -140,4 +158,59 @@ On instance['persons'][0]:
 
 --------------------
 additional properties is closed on enclosing object:
+
+{'persons': [{'id': 'P', 'name': 'john smith'}], 'made_up_property': 'abc'}:
+ SKIPPED
+--------------------
+non-multivalued address:
+
+{'persons': [{'id': 'P', 'name': 'john smith', 'addresses': {'street': '1 foo street', 'city': 'foo city'}}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+	{'street': '1 foo street', 'city': 'foo city'} is not of type 'array'
+
+Failed validating 'type' in schema['properties']['persons']['items']['properties']['addresses']:
+    {'items': {'$ref': '#/definitions/Address'}, 'type': 'array'}
+
+On instance['persons'][0]['addresses']:
+    {'city': 'foo city', 'street': '1 foo street'}
+
+--------------------
+string used in place of object:
+
+{'persons': [{'id': 'P', 'name': 'john smith', 'addresses': ['1 foo street, foo city']}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+	'1 foo street, foo city' is not of type 'object'
+
+Failed validating 'type' in schema['properties']['persons']['items']['properties']['addresses']['items']:
+    {'additionalProperties': False,
+     'description': '',
+     'properties': {'city': {'type': 'string'},
+                    'street': {'type': 'string'}},
+     'required': [],
+     'title': 'Address',
+     'type': 'object'}
+
+On instance['persons'][0]['addresses'][0]:
+    '1 foo street, foo city'
+
+--------------------
+inline used where reference expected:
+
+{'activities': [{'id': 'A1', 'was_associated_with': {'id': 'Agent:987'}}]}:
+
+EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+	{'id': 'Agent:987'} is not of type 'string'
+
+Failed validating 'type' in schema['properties']['activities']['items']['properties']['was_associated_with']:
+    {'type': 'string'}
+
+On instance['activities'][0]['was_associated_with']:
+    {'id': 'Agent:987'}
+
+--------------------
+date format:
+
+{'activities': [{'id': 'A1', 'started_at_time': 'not a real date'}]}:
  SKIPPED

@@ -57,6 +57,7 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj.definitions[camelcase(cls.name)] = self.clsobj
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+        fmt = None
         if slot.range in self.schema.classes and slot.inlined:
             rng = f"#/definitions/{camelcase(slot.range)}"
         elif slot.range in self.schema.types:
@@ -74,6 +75,15 @@ class JsonSchemaGenerator(Generator):
             rng = 'string'
         elif rng == 'float' or rng == 'double':
             rng = 'number'
+        elif rng == 'XSDDate':
+            rng = 'string'
+            fmt = 'date'
+        elif rng == 'XSDDateTime':
+            rng = 'string'
+            fmt = 'date-time'
+        elif rng == 'XSDTime':
+            rng = 'string'
+            fmt = 'time'
         elif not rng.startswith('#'):
             # URIorCURIE, etc
             rng = 'string'
@@ -88,9 +98,15 @@ class JsonSchemaGenerator(Generator):
                 prop = ref
         else:
             if slot.multivalued:
-                prop = JsonObj(type="array", items={'type': rng})
+                if fmt is None:
+                    prop = JsonObj(type="array", items={'type': rng})
+                else:
+                    prop = JsonObj(type="array", items={'type': rng, 'format': fmt})
             else:
-                prop = JsonObj(type=rng)
+                if fmt is None:
+                    prop = JsonObj(type=rng)
+                else:
+                    prop = JsonObj(type=rng, format=fmt)
         if slot.description:
             prop.description = slot.description
         if slot.required:
