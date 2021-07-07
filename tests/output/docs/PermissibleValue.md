@@ -1,5 +1,5 @@
 
-# Class: PermissibleValue
+# Class: permissible_value
 
 
 a permissible value, accompanied by intended text and an optional mapping to a concept URI

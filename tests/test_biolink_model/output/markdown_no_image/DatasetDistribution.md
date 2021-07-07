@@ -1,5 +1,5 @@
 
-# Class: DatasetDistribution
+# Class: dataset distribution
 
 
 an item that holds distribution level information about a dataset.

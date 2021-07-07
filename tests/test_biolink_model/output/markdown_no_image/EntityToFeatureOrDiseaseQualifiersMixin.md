@@ -1,5 +1,5 @@
 
-# Class: EntityToFeatureOrDiseaseQualifiersMixin
+# Class: entity to feature or disease qualifiers mixin
 
 
 Qualifiers for entity to disease or phenotype associations.

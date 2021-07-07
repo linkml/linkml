@@ -1,5 +1,5 @@
 
-# Slot: behavior_to_behavioral_feature_association_subject
+# Slot: subject
 
 
 behavior that is the subject of the association

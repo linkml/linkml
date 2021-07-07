@@ -1,5 +1,5 @@
 
-# Slot: has_participant
+# Slot: has participant
 
 
 holds between a process and a continuant, where the continuant is somehow involved in the process

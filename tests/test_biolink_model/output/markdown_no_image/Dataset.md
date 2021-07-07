@@ -1,5 +1,5 @@
 
-# Class: Dataset
+# Class: dataset
 
 
 an item that refers to a collection of data from a data source.

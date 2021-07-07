@@ -1,5 +1,5 @@
 
-# Slot: close_mappings
+# Slot: close mappings
 
 
 A list of terms from different schemas or terminology systems that have close meaning.

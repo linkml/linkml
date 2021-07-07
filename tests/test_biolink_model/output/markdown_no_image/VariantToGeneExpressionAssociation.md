@@ -1,5 +1,5 @@
 
-# Class: VariantToGeneExpressionAssociation
+# Class: variant to gene expression association
 
 
 An association between a variant and expression of a gene (i.e. e-QTL)

@@ -1,5 +1,5 @@
 
-# Slot: association_category
+# Slot: category
 
 
 

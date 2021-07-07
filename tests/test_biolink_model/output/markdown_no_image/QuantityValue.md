@@ -1,5 +1,5 @@
 
-# Class: QuantityValue
+# Class: quantity value
 
 
 A value of an attribute that is quantitative and measurable, expressed as a combination of a unit and a numeric value

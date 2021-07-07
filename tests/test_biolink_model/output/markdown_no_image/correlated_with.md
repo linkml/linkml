@@ -1,5 +1,5 @@
 
-# Slot: correlated_with
+# Slot: correlated with
 
 
 holds between any two named thing entities. For example, correlated_with holds between a disease or phenotypic feature and a measurable molecular entity that is used as an indicator of the presence or state of the disease or feature.

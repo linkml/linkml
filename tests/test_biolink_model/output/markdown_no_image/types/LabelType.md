@@ -1,5 +1,5 @@
 
-# Type: LabelType
+# Type: label type
 
 
 A string that provides a human-readable name for an entity

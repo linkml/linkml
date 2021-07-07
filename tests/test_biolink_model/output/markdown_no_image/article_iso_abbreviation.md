@@ -1,5 +1,5 @@
 
-# Slot: article_iso_abbreviation
+# Slot: iso abbreviation
 
 
 Optional value, if used locally as a convenience, is set to the iso abbreviation of the 'published in' parent.

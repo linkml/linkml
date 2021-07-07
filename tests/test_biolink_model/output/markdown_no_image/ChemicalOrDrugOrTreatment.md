@@ -1,5 +1,5 @@
 
-# Class: ChemicalOrDrugOrTreatment
+# Class: chemical or drug or treatment
 
 
 

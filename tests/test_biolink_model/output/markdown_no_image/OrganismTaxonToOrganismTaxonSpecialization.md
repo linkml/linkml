@@ -1,5 +1,5 @@
 
-# Class: OrganismTaxonToOrganismTaxonSpecialization
+# Class: organism taxon to organism taxon specialization
 
 
 A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo

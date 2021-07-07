@@ -1,5 +1,5 @@
 
-# Slot: has_attribute
+# Slot: has attribute
 
 
 connects any entity to an attribute

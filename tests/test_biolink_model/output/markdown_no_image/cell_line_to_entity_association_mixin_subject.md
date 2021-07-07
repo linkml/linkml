@@ -1,5 +1,5 @@
 
-# Slot: cell_line_to_entity_association_mixin_subject
+# Slot: subject
 
 
 

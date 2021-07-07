@@ -1,5 +1,5 @@
 
-# Class: DiseaseToEntityAssociationMixin
+# Class: disease to entity association mixin
 
 
 

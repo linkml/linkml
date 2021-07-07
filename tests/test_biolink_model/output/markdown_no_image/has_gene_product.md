@@ -1,5 +1,5 @@
 
-# Slot: has_gene_product
+# Slot: has gene product
 
 
 holds between a gene and a transcribed and/or translated product generated from it

@@ -1,5 +1,5 @@
 
-# Slot: //example.com/test62/category
+# Slot: category
 
 
 

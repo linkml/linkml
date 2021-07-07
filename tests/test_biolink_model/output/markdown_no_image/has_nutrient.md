@@ -1,5 +1,5 @@
 
-# Slot: has_nutrient
+# Slot: has nutrient
 
 
 one or more nutrients which are growth factors for a living organism

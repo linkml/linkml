@@ -1,5 +1,5 @@
 
-# Slot: population_to_population_association_object
+# Slot: object
 
 
 the population that form the object of the association

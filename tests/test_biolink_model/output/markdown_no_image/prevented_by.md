@@ -1,5 +1,5 @@
 
-# Slot: prevented_by
+# Slot: prevented by
 
 
 holds between a potential outcome of which the likelihood was reduced by the application or use of an entity.

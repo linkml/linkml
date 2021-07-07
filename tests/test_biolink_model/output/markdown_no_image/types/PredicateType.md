@@ -1,5 +1,5 @@
 
-# Type: PredicateType
+# Type: predicate type
 
 
 A CURIE from the biolink related_to hierarchy. For example, biolink:related_to, biolink:causes, biolink:treats.

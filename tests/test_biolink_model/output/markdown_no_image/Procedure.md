@@ -1,5 +1,5 @@
 
-# Class: Procedure
+# Class: procedure
 
 
 A series of actions conducted in a certain order or manner

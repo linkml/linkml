@@ -1,5 +1,5 @@
 
-# Slot: food_component_of
+# Slot: food component of
 
 
 holds between a one or more chemical substances present in food, irrespective of nutritional value (i.e. could also be a contaminant or additive)

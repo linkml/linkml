@@ -1,5 +1,5 @@
 
-# Slot: affects_response_to
+# Slot: affects response to
 
 
 holds between two molecular entities where the action or effect of one impacts the susceptibility of a biological entity or system (e.g. an organism, cell, cellular component, macromolecular machine mixin, biological or pathological process) to the other

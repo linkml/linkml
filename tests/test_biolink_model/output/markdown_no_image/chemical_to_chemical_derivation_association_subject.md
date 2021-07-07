@@ -1,5 +1,5 @@
 
-# Slot: chemical_to_chemical_derivation_association_subject
+# Slot: subject
 
 
 the upstream chemical entity

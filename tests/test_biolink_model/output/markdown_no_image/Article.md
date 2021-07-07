@@ -1,5 +1,5 @@
 
-# Class: Article
+# Class: article
 
 
 

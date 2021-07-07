@@ -1,5 +1,5 @@
 
-# Slot: subclass_of
+# Slot: subclass of
 
 
 holds between two classes where the domain class is a specialization of the range class

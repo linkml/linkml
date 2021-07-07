@@ -1,5 +1,5 @@
 
-# Slot: gene_to_go_term_association_subject
+# Slot: subject
 
 
 gene, product or macromolecular complex that has the function associated with the GO term

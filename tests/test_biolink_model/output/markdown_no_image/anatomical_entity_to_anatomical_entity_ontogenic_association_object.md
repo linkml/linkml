@@ -1,5 +1,5 @@
 
-# Slot: anatomical_entity_to_anatomical_entity_ontogenic_association_object
+# Slot: object
 
 
 the structure at an earlier time

@@ -1,5 +1,5 @@
 
-# Class: GeographicLocationAtTime
+# Class: geographic location at time
 
 
 a location that can be described in lat/long coordinates, for a particular time

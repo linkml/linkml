@@ -1,5 +1,5 @@
 
-# Slot: actively_involved_in
+# Slot: actively involved in
 
 
 holds between a continuant and a process or function, where the continuant actively contributes to part or all of the process or function it realizes

@@ -1,5 +1,5 @@
 
-# Class: GenotypeToVariantAssociation
+# Class: genotype to variant association
 
 
 Any association between a genotype and a sequence variant.

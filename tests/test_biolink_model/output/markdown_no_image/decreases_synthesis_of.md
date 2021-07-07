@@ -1,5 +1,5 @@
 
-# Slot: decreases_synthesis_of
+# Slot: decreases synthesis of
 
 
 holds between two molecular entities where the action or effect of one decreases the rate of chemical synthesis of the other

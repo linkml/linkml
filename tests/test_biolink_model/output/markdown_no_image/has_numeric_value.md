@@ -1,5 +1,5 @@
 
-# Slot: has_numeric_value
+# Slot: has numeric value
 
 
 connects a quantity value to a number

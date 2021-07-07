@@ -1,5 +1,5 @@
 
-# Class: GeneToGeneAssociation
+# Class: gene to gene association
 
 
 abstract parent class for different kinds of gene-gene or gene product to gene product relationships. Includes homology and interaction.

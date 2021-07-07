@@ -1,5 +1,5 @@
 
-# Slot: increases_folding_of
+# Slot: increases folding of
 
 
 holds between two molecular entities where the action or effect of one increases the rate or quality of folding of the other

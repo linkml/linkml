@@ -1,5 +1,5 @@
 
-# Class: BiologicalSex
+# Class: biological sex
 
 
 

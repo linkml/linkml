@@ -1,5 +1,5 @@
 
-# Type: Nodeidentifier
+# Type: nodeidentifier
 
 
 A URI, CURIE or BNODE that represents a node in a model.

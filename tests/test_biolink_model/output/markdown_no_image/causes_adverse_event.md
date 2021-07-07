@@ -1,5 +1,5 @@
 
-# Slot: causes_adverse_event
+# Slot: causes adverse event
 
 
 holds between a drug and a disease or phenotype that can be caused by the drug

@@ -1,5 +1,5 @@
 
-# Class: BiologicalProcess
+# Class: biological process
 
 
 One or more causally connected executions of molecular functions

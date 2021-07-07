@@ -1,5 +1,5 @@
 
-# Class: Gene
+# Class: gene
 
 
 A region (or regions) that includes all of the sequence elements necessary to encode a functional transcript. A gene locus may include regulatory regions, transcribed regions and/or other functional sequence regions.

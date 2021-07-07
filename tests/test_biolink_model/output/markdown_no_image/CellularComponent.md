@@ -1,5 +1,5 @@
 
-# Class: CellularComponent
+# Class: cellular component
 
 
 A location in or around a cell

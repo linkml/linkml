@@ -1,5 +1,5 @@
 
-# Class: VariantToPopulationAssociation
+# Class: variant to population association
 
 
 An association between a variant and a population, where the variant has particular frequency in the population

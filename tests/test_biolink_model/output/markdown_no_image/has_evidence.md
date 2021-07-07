@@ -1,5 +1,5 @@
 
-# Slot: has_evidence
+# Slot: has evidence
 
 
 connects an association to an instance of supporting evidence

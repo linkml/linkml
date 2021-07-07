@@ -1,5 +1,5 @@
 
-# Slot: regulated_by
+# Slot: regulated by
 
 
 

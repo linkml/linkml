@@ -1,5 +1,5 @@
 
-# Class: PairwiseMolecularInteraction
+# Class: pairwise molecular interaction
 
 
 An interaction at the molecular level between two physical entities

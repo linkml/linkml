@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_to_organism_taxon_interaction_associated_environmental_context
+# Slot: associated environmental context
 
 
 the environment in which the two taxa interact

@@ -1,5 +1,5 @@
 
-# Slot: process_regulates_process
+# Slot: process regulates process
 
 
 

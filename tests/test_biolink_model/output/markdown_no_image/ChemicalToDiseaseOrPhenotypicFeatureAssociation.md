@@ -1,5 +1,5 @@
 
-# Class: ChemicalToDiseaseOrPhenotypicFeatureAssociation
+# Class: chemical to disease or phenotypic feature association
 
 
 An interaction between a chemical entity and a phenotype or disease, where the presence of the chemical gives rise to or exacerbates the phenotype.

@@ -1,5 +1,5 @@
 
-# Slot: model_to_disease_association_mixin_predicate
+# Slot: predicate
 
 
 The relationship to the disease

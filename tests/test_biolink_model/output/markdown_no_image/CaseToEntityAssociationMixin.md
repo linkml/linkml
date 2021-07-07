@@ -1,5 +1,5 @@
 
-# Class: CaseToEntityAssociationMixin
+# Class: case to entity association mixin
 
 
 An abstract association for use where the case is the subject

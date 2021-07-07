@@ -1,5 +1,5 @@
 
-# Class: EpidemiologicalOutcome
+# Class: epidemiological outcome
 
 
 An epidemiological outcome, such as societal disease burden, resulting from an exposure event.

@@ -1,5 +1,5 @@
 
-# Slot: contributor_association_object
+# Slot: object
 
 
 agent helping to realise the given entity (e.g. such as a publication)

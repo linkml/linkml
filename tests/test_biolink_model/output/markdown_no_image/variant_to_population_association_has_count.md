@@ -1,5 +1,5 @@
 
-# Slot: variant_to_population_association_has_count
+# Slot: has count
 
 
 number in object population that carry a particular allele, aka allele count

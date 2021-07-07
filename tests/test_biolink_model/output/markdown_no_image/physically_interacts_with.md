@@ -1,5 +1,5 @@
 
-# Slot: physically_interacts_with
+# Slot: physically interacts with
 
 
 holds between two entities that make physical contact as part of some interaction

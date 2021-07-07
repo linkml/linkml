@@ -1,5 +1,5 @@
 
-# Slot: case_to_entity_association_mixin_subject
+# Slot: subject
 
 
 the case (e.g. patient) that has the property

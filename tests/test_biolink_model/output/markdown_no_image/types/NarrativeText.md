@@ -1,5 +1,5 @@
 
-# Type: NarrativeText
+# Type: narrative text
 
 
 A string that provides a human-readable description of something

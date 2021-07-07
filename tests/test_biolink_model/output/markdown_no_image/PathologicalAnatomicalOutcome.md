@@ -1,5 +1,5 @@
 
-# Class: PathologicalAnatomicalOutcome
+# Class: pathological anatomical outcome
 
 
 An outcome resulting from an exposure event which is the manifestation of an abnormal anatomical structure.

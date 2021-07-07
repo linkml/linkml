@@ -1,5 +1,5 @@
 
-# Slot: stage_qualifier
+# Slot: stage qualifier
 
 
 stage during which gene or protein expression of takes place.

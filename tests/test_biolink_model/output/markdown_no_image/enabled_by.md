@@ -1,5 +1,5 @@
 
-# Slot: enabled_by
+# Slot: enabled by
 
 
 holds between a process and a physical entity, where the physical entity executes the process

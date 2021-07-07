@@ -1,5 +1,5 @@
 
-# Class: DiseaseToPhenotypicFeatureAssociation
+# Class: disease to phenotypic feature association
 
 
 An association between a disease and a phenotypic feature in which the phenotypic feature is associated with the disease in some way.

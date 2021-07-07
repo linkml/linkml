@@ -1,5 +1,5 @@
 
-# Slot: attribute_name
+# Slot: name
 
 
 The human-readable 'attribute name' can be set to a string which reflects its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation or it can default to the name associated with the 'has attribute type' slot ontology term.

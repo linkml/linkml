@@ -1,5 +1,5 @@
 
-# Class: BehavioralOutcome
+# Class: behavioral outcome
 
 
 An outcome resulting from an exposure event which is the manifestation of human behavior.

@@ -1,5 +1,5 @@
 
-# Slot: process_negatively_regulates_process
+# Slot: process negatively regulates process
 
 
 

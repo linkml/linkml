@@ -1,5 +1,5 @@
 
-# Class: AnatomicalEntityToAnatomicalEntityOntogenicAssociation
+# Class: anatomical entity to anatomical entity ontogenic association
 
 
 A relationship between two anatomical entities where the relationship is ontogenic, i.e. the two entities are related by development. A number of different relationship types can be used to specify the precise nature of the relationship.

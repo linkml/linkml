@@ -1,5 +1,5 @@
 
-# Class: DrugToGeneAssociation
+# Class: drug to gene association
 
 
 An interaction between a drug and a gene or gene product.

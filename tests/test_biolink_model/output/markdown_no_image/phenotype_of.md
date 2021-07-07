@@ -1,5 +1,5 @@
 
-# Slot: phenotype_of
+# Slot: phenotype of
 
 
 holds between a phenotype and a biological entity, where a phenotype is construed broadly as any kind of quality of an organism part, a collection of these qualities, or a change in quality or qualities (e.g. abnormally increased temperature).

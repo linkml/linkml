@@ -1,5 +1,5 @@
 
-# Class: BehavioralFeature
+# Class: behavioral feature
 
 
 A phenotypic feature which is behavioral in nature.

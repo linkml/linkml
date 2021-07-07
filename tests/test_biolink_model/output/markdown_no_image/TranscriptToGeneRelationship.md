@@ -1,5 +1,5 @@
 
-# Class: TranscriptToGeneRelationship
+# Class: transcript to gene relationship
 
 
 A gene is a collection of transcripts

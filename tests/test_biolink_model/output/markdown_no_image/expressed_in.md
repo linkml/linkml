@@ -1,5 +1,5 @@
 
-# Slot: expressed_in
+# Slot: expressed in
 
 
 holds between a gene or gene product and an anatomical entity in which it is expressed

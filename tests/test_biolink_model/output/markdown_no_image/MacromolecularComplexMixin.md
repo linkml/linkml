@@ -1,5 +1,5 @@
 
-# Class: MacromolecularComplexMixin
+# Class: macromolecular complex mixin
 
 
 A stable assembly of two or more macromolecules, i.e. proteins, nucleic acids, carbohydrates or lipids, in which at least one component is a protein and the constituent parts function together.

@@ -1,5 +1,5 @@
 
-# Slot: part_of
+# Slot: part of
 
 
 holds between parts and wholes (material entities or processes)

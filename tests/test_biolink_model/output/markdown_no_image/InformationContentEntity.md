@@ -1,5 +1,5 @@
 
-# Class: InformationContentEntity
+# Class: information content entity
 
 
 a piece of information that typically describes some topic of discourse or is used as support.

@@ -1,5 +1,5 @@
 
-# Slot: narrow_match
+# Slot: narrow match
 
 
 a list of terms from different schemas or terminology systems that have a narrower, more specific meaning. Narrower terms are typically shown as children in a hierarchy or tree.

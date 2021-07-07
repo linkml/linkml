@@ -1,5 +1,5 @@
 
-# Class: PathologicalProcessOutcome
+# Class: pathological process outcome
 
 
 An outcome resulting from an exposure event which is the manifestation of a pathological process.

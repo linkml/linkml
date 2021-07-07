@@ -1,5 +1,5 @@
 
-# Class: PhenotypicFeature
+# Class: phenotypic feature
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_subclass_of
+# Slot: subclass of
 
 
 subclass of holds between two taxa, e.g. human subclass of mammal

@@ -1,5 +1,5 @@
 
-# Class: PopulationToPopulationAssociation
+# Class: population to population association
 
 
 An association between a two populations

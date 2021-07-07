@@ -1,5 +1,5 @@
 
-# Class: GeneToEntityAssociationMixin
+# Class: gene to entity association mixin
 
 
 

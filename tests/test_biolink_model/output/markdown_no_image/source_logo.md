@@ -1,5 +1,5 @@
 
-# Slot: source_logo
+# Slot: source logo
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: chemical_to_disease_or_phenotypic_feature_association_object
+# Slot: object
 
 
 the disease or phenotype that is affected by the chemical

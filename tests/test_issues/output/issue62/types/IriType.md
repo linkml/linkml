@@ -1,5 +1,5 @@
 
-# Type: IriType
+# Type: iri type
 
 
 An IRI

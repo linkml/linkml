@@ -1,5 +1,5 @@
 
-# Slot: gene_to_phenotypic_feature_association_subject
+# Slot: subject
 
 
 gene in which variation is correlated with the phenotypic feature

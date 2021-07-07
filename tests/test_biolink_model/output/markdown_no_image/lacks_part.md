@@ -1,5 +1,5 @@
 
-# Slot: lacks_part
+# Slot: lacks part
 
 
 

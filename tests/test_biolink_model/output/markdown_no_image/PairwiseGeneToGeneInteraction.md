@@ -1,5 +1,5 @@
 
-# Class: PairwiseGeneToGeneInteraction
+# Class: pairwise gene to gene interaction
 
 
 An interaction between two genes or two gene products. May be physical (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein interaction) or directed (e.g. phosphorylation)

@@ -1,5 +1,5 @@
 
-# Slot: occurs_in
+# Slot: occurs in
 
 
 holds between a process and a material entity or site within which the process occurs

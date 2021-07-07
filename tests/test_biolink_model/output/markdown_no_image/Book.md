@@ -1,5 +1,5 @@
 
-# Class: Book
+# Class: book
 
 
 This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.

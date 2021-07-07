@@ -1,5 +1,5 @@
 
-# Class: FoodComponent _(deprecated)_
+# Class: food component _(deprecated)_
 
 
 

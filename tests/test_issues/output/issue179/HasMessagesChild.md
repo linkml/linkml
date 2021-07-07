@@ -1,5 +1,5 @@
 
-# Class: //example.org/sample/example1/HasMessagesChild
+# Class: has messages child
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: decreases_abundance_of
+# Slot: decreases abundance of
 
 
 holds between two molecular entities where the action or effect of one decreases the amount of the other within a system of interest

@@ -1,5 +1,5 @@
 
-# Class: ChemicalExposure
+# Class: chemical exposure
 
 
 A chemical exposure is an intake of a particular chemical substance, other than a drug.

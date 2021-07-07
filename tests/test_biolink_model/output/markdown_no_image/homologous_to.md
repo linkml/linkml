@@ -1,5 +1,5 @@
 
-# Slot: homologous_to
+# Slot: homologous to
 
 
 holds between two biological entities that have common evolutionary origin

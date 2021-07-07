@@ -1,5 +1,5 @@
 
-# Class: Entity
+# Class: entity
 
 
 Root Biolink Model class for all things and informational relationships, real or imagined.

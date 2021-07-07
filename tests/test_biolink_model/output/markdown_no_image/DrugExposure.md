@@ -1,5 +1,5 @@
 
-# Class: DrugExposure
+# Class: drug exposure
 
 
 A drug exposure is an intake of a particular drug.

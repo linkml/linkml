@@ -1,5 +1,5 @@
 
-# Slot: decreases_molecular_interaction
+# Slot: decreases molecular interaction
 
 
 indicates that the source decreases the molecular interaction between the target and some other molecular entity

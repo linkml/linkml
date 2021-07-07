@@ -1,5 +1,5 @@
 
-# Class: Vitamin
+# Class: vitamin
 
 
 

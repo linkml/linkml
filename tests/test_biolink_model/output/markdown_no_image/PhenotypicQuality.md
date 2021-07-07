@@ -1,5 +1,5 @@
 
-# Class: PhenotypicQuality
+# Class: phenotypic quality
 
 
 A property of a phenotype

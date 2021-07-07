@@ -1,5 +1,5 @@
 
-# Slot: disrupted_by
+# Slot: disrupted by
 
 
 describes a relationship where the structure, function, or occurrence of one entity is degraded or interfered with by another.

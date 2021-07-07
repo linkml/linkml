@@ -1,5 +1,5 @@
 
-# Slot: is_sequence_variant_of
+# Slot: is sequence variant of
 
 
 holds between a sequence variant and a genomic entity

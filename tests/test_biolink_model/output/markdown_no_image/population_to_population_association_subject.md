@@ -1,5 +1,5 @@
 
-# Slot: population_to_population_association_subject
+# Slot: subject
 
 
 the population that form the subject of the association

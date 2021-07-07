@@ -1,5 +1,5 @@
 
-# Class: //example.com/test62/NamedThing
+# Class: named thing
 
 
 

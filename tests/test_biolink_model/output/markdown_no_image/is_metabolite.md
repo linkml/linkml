@@ -1,5 +1,5 @@
 
-# Slot: is_metabolite
+# Slot: is metabolite
 
 
 indicates whether a chemical substance is a metabolite

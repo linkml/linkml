@@ -1,5 +1,5 @@
 
-# Slot: gene_associated_with_condition
+# Slot: gene associated with condition
 
 
 holds between a gene and a disease or phenotypic feature that the gene or its alleles/products may influence, contribute to, or correlate with

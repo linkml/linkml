@@ -1,5 +1,5 @@
 
-# Class: EntityToDiseaseAssociationMixin
+# Class: entity to disease association mixin
 
 
 mixin class for any association whose object (target node) is a disease

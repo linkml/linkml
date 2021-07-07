@@ -1,5 +1,5 @@
 
-# Slot: has_constituent
+# Slot: has constituent
 
 
 one or more chemical substances within a mixture

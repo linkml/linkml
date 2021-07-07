@@ -1,5 +1,5 @@
 
-# Class: VariantToPhenotypicFeatureAssociation
+# Class: variant to phenotypic feature association
 
 
 

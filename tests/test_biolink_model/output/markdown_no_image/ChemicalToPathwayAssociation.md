@@ -1,5 +1,5 @@
 
-# Class: ChemicalToPathwayAssociation
+# Class: chemical to pathway association
 
 
 An interaction between a chemical entity and a biological process or pathway.

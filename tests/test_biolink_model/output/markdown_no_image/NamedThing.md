@@ -1,5 +1,5 @@
 
-# Class: NamedThing
+# Class: named thing
 
 
 a databased entity or concept/class

@@ -1,5 +1,5 @@
 
-# Slot: increases_response_to
+# Slot: increases response to
 
 
 holds between two molecular entities where the action or effect of one increases the susceptibility of a biological entity or system (e.g. an organism, cell, cellular component, macromolecular machine mixin, biological or pathological process) to the other

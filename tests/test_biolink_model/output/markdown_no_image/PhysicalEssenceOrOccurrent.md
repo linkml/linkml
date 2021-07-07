@@ -1,5 +1,5 @@
 
-# Class: PhysicalEssenceOrOccurrent
+# Class: physical essence or occurrent
 
 
 Either a physical or processual entity.

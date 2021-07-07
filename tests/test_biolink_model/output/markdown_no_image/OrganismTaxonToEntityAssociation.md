@@ -1,5 +1,5 @@
 
-# Class: OrganismTaxonToEntityAssociation
+# Class: organism taxon to entity association
 
 
 An association between an organism taxon and another entity

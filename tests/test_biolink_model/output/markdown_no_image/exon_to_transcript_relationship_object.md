@@ -1,5 +1,5 @@
 
-# Slot: exon_to_transcript_relationship_object
+# Slot: object
 
 
 

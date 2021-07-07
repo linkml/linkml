@@ -1,5 +1,5 @@
 
-# Class: RNAProductIsoform
+# Class: RNA product isoform
 
 
 Represents a protein that is a specific isoform of the canonical or reference RNA

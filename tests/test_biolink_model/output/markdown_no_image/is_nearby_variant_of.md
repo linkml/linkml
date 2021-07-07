@@ -1,5 +1,5 @@
 
-# Slot: is_nearby_variant_of
+# Slot: is nearby variant of
 
 
 holds between a sequence variant and a gene sequence that the variant is genomically close to.

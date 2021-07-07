@@ -1,5 +1,5 @@
 
-# Class: OrganismTaxonToEnvironmentAssociation
+# Class: organism taxon to environment association
 
 
 

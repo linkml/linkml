@@ -1,5 +1,5 @@
 
-# Slot: has_variant_part
+# Slot: has variant part
 
 
 holds between a genomic entity and a genotypic entity that is a sub-component of it

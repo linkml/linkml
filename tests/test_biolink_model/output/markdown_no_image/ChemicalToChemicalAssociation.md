@@ -1,5 +1,5 @@
 
-# Class: ChemicalToChemicalAssociation
+# Class: chemical to chemical association
 
 
 A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal edges, e.g. one chemical converted to another.

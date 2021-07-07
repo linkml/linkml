@@ -1,5 +1,5 @@
 
-# Slot: increases_mutation_rate_of
+# Slot: increases mutation rate of
 
 
 holds between a molecular entity and a genomic entity where the action or effect of the molecular entity increases the rate of mutation of the genomic entity within a system of interest

@@ -1,5 +1,5 @@
 
-# Class: ChemicalToChemicalDerivationAssociation
+# Class: chemical to chemical derivation association
 
 
 A causal relationship between two chemical entities, where the subject represents the upstream entity and the object represents the downstream. For any such association there is an implicit reaction:

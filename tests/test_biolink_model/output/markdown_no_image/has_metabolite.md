@@ -1,5 +1,5 @@
 
-# Slot: has_metabolite
+# Slot: has metabolite
 
 
 holds between two chemical substances in which the second one is derived from the first one as a product of metabolism

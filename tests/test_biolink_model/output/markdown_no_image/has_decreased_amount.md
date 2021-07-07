@@ -1,5 +1,5 @@
 
-# Slot: has_decreased_amount
+# Slot: has decreased amount
 
 
 

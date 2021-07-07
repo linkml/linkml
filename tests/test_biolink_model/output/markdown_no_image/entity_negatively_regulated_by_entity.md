@@ -1,5 +1,5 @@
 
-# Slot: entity_negatively_regulated_by_entity
+# Slot: entity negatively regulated by entity
 
 
 

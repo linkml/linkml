@@ -1,5 +1,5 @@
 
-# Slot: is_active_ingredient_of
+# Slot: is active ingredient of
 
 
 holds between a chemical substance and a drug, in which the former is a part of the latter, and is a biologically active component

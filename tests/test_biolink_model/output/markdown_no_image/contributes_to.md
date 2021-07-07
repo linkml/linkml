@@ -1,5 +1,5 @@
 
-# Slot: contributes_to
+# Slot: contributes to
 
 
 holds between two entities where the occurrence, existence, or activity of one causes or contributes to the occurrence or generation of the other

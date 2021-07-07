@@ -1,5 +1,5 @@
 
-# Class: BehaviorToBehavioralFeatureAssociation
+# Class: behavior to behavioral feature association
 
 
 An association between an aggregate behavior and a behavioral feature manifested by the individual exhibited or has exhibited the behavior.

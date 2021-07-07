@@ -1,5 +1,5 @@
 
-# Type: SymbolType
+# Type: symbol type
 
 
 

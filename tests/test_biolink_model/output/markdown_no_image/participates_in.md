@@ -1,5 +1,5 @@
 
-# Slot: participates_in
+# Slot: participates in
 
 
 holds between a continuant and a process, where the continuant is somehow involved in the process

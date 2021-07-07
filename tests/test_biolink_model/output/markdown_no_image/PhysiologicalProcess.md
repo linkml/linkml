@@ -1,5 +1,5 @@
 
-# Class: PhysiologicalProcess
+# Class: physiological process
 
 
 

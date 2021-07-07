@@ -1,5 +1,5 @@
 
-# Slot: transcribed_from
+# Slot: transcribed from
 
 
 x is transcribed from y if and only if x is synthesized from template y

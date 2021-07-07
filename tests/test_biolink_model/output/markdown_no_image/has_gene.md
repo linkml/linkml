@@ -1,5 +1,5 @@
 
-# Slot: has_gene
+# Slot: has gene
 
 
 connects an entity associated with one or more genes

@@ -1,5 +1,5 @@
 
-# Class: TypeDefinition
+# Class: type_definition
 
 
 A data type definition.

@@ -1,5 +1,5 @@
 
-# Slot: entity_positively_regulates_entity
+# Slot: entity positively regulates entity
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: functional_association_subject
+# Slot: subject
 
 
 gene, product or macromolecular complex mixin that has the function associated with the GO term

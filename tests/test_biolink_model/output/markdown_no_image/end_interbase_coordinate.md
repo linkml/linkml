@@ -1,5 +1,5 @@
 
-# Slot: end_interbase_coordinate
+# Slot: end interbase coordinate
 
 
 The position at which the subject genomic entity ends on the chromosome or other entity to which it is located on.

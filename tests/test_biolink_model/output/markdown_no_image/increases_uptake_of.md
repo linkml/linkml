@@ -1,5 +1,5 @@
 
-# Slot: increases_uptake_of
+# Slot: increases uptake of
 
 
 holds between two molecular entities where the action or effect of one increases the rate of uptake of the other into of a cell, gland, or organ

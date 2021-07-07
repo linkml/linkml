@@ -1,5 +1,5 @@
 
-# Slot: gene_to_expression_site_association_quantifier_qualifier
+# Slot: quantifier qualifier
 
 
 can be used to indicate magnitude, or also ranking

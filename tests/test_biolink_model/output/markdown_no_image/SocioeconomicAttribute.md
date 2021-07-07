@@ -1,5 +1,5 @@
 
-# Class: SocioeconomicAttribute
+# Class: socioeconomic attribute
 
 
 Attributes relating to a socioeconomic manifestation

@@ -1,5 +1,5 @@
 
-# Slot: drug_to_entity_association_mixin_subject
+# Slot: subject
 
 
 the drug that is an interactor

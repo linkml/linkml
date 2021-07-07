@@ -1,5 +1,5 @@
 
-# Class: GeneFamily
+# Class: gene family
 
 
 any grouping of multiple genes or gene products related by common descent

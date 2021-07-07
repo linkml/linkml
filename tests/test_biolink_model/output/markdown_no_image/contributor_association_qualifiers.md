@@ -1,5 +1,5 @@
 
-# Slot: contributor_association_qualifiers
+# Slot: qualifiers
 
 
 this field can be used to annotate special characteristics of an agent relationship, such as the fact that a given author agent of a publication is the 'corresponding author'

@@ -1,5 +1,5 @@
 
-# Slot: gene_to_gene_product_relationship_subject
+# Slot: subject
 
 
 

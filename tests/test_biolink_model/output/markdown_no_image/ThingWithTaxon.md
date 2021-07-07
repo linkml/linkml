@@ -1,5 +1,5 @@
 
-# Class: ThingWithTaxon
+# Class: thing with taxon
 
 
 A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes

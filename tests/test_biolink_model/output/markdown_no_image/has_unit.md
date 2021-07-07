@@ -1,5 +1,5 @@
 
-# Slot: has_unit
+# Slot: has unit
 
 
 connects a quantity value to a unit

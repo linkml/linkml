@@ -1,5 +1,5 @@
 
-# Slot: negatively_correlated_with
+# Slot: negatively correlated with
 
 
 holds between any two named thing entities "correlated with" one another in a negative manner.

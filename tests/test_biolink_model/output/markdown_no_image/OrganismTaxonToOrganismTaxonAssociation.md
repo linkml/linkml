@@ -1,5 +1,5 @@
 
-# Class: OrganismTaxonToOrganismTaxonAssociation
+# Class: organism taxon to organism taxon association
 
 
 A relationship between two organism taxon nodes

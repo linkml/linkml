@@ -1,5 +1,5 @@
 
-# Slot: //example.org/sample/example1/result_child_slot
+# Slot: result child slot
 
 
 

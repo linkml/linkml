@@ -1,5 +1,5 @@
 
-# Class: Food
+# Class: food
 
 
 A substance consumed by a living organism as a source of nutrition

@@ -1,5 +1,5 @@
 
-# Slot: affects_degradation_of
+# Slot: affects degradation of
 
 
 holds between two molecular entities where the action or effect of one impacts the rate of degradation of the other within a system of interest, where chemical degradation is defined act or process of simplifying or breaking down a molecule into smaller parts, either naturally or artificially (Oxford English Dictionary, UK, 1995)

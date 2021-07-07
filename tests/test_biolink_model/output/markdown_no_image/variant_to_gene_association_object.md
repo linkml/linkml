@@ -1,5 +1,5 @@
 
-# Slot: variant_to_gene_association_object
+# Slot: object
 
 
 

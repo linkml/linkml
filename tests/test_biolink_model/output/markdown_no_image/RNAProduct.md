@@ -1,5 +1,5 @@
 
-# Class: RNAProduct
+# Class: RNA product
 
 
 

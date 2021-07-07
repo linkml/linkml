@@ -1,5 +1,5 @@
 
-# Class: MacromolecularMachineToEntityAssociationMixin
+# Class: macromolecular machine to entity association mixin
 
 
 an association which has a macromolecular machine mixin as a subject

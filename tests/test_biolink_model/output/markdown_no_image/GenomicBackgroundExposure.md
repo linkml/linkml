@@ -1,5 +1,5 @@
 
-# Class: GenomicBackgroundExposure
+# Class: genomic background exposure
 
 
 A genomic background exposure is where an individual's specific genomic background of genes, sequence variants or other pre-existing genomic conditions constitute a kind of 'exposure' to the organism, leading to or influencing an outcome.

@@ -1,5 +1,5 @@
 
-# Class: EntityToOutcomeAssociationMixin
+# Class: entity to outcome association mixin
 
 
 An association between some entity and an outcome

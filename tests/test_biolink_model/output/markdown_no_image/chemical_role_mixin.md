@@ -1,5 +1,5 @@
 
-# Slot: chemical_role_mixin
+# Slot: chemical role mixin
 
 
 A role played by the molecular entity or part thereof within a chemical context.

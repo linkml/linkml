@@ -1,5 +1,5 @@
 
-# Slot: has_biological_sequence
+# Slot: has biological sequence
 
 
 connects a genomic feature to its sequence

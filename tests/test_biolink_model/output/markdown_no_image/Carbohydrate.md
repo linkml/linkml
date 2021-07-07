@@ -1,5 +1,5 @@
 
-# Class: Carbohydrate _(deprecated)_
+# Class: carbohydrate _(deprecated)_
 
 
 

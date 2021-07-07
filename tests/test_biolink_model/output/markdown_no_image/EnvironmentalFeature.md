@@ -1,5 +1,5 @@
 
-# Class: EnvironmentalFeature
+# Class: environmental feature
 
 
 

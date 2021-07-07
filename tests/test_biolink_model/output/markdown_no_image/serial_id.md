@@ -1,5 +1,5 @@
 
-# Slot: serial_id
+# Slot: id
 
 
 Serials (journals) should have industry-standard identifier such as from ISSN.

@@ -1,5 +1,5 @@
 
-# Slot: negatively_regulates
+# Slot: negatively regulates
 
 
 

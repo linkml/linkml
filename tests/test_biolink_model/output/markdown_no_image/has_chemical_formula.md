@@ -1,5 +1,5 @@
 
-# Slot: has_chemical_formula
+# Slot: has chemical formula
 
 
 description of chemical compound based on element symbols

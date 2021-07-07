@@ -1,0 +1,23 @@
+id: http://example.org/sample/example1
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  decimal:
+    base: Decimal
+    uri: xsd:decimal
+
+  string:
+    base: str
+    uri: xsd:string
+
+slots:
+  latitude:
+    range: decimal
+    description: angular coordinate measured positive north from the equator.
+
+classes:
+  GeospatialDDCoordLocation:
+    slots:
+      - latitude

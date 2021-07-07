@@ -1,5 +1,5 @@
 
-# Class: SpecificityQuantifier
+# Class: specificity quantifier
 
 
 

@@ -1,5 +1,5 @@
 
-# Class: Extension
+# Class: extension
 
 
 a tag/value pair used to add non-model information to an entry

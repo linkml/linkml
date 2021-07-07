@@ -1,5 +1,5 @@
 
-# Slot: organism_taxon_to_organism_taxon_specialization_subject
+# Slot: subject
 
 
 the more specific taxon

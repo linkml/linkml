@@ -1,5 +1,5 @@
 
-# Slot: is_missense_variant_of
+# Slot: is missense variant of
 
 
 holds between a gene  and a sequence variant, such the sequence variant results in a different amino acid sequence but where the length is preserved.

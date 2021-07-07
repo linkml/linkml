@@ -1,5 +1,5 @@
 
-# Class: Protein
+# Class: protein
 
 
 A gene product that is composed of a chain of amino acid sequences and is produced by ribosome-mediated translation of mRNA

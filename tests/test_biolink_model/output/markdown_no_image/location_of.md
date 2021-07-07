@@ -1,5 +1,5 @@
 
-# Slot: location_of
+# Slot: location of
 
 
 holds between material entity or site and a material entity that is located within it (but not considered a part of it)

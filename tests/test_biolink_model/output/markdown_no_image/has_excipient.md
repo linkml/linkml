@@ -1,5 +1,5 @@
 
-# Slot: has_excipient
+# Slot: has excipient
 
 
 holds between a drug and a chemical substances in which the latter is a part of the former, and is a biologically inactive component

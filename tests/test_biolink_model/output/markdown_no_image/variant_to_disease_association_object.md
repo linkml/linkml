@@ -1,5 +1,5 @@
 
-# Slot: variant_to_disease_association_object
+# Slot: object
 
 
 a disease that is associated with that variant

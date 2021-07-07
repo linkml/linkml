@@ -1,5 +1,5 @@
 
-# Class: AltDescription
+# Class: alt_description
 
 
 an attributed description

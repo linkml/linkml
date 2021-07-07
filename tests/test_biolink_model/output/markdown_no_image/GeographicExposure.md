@@ -1,5 +1,5 @@
 
-# Class: GeographicExposure
+# Class: geographic exposure
 
 
 A geographic exposure is a factor relating to geographic proximity to some impactful entity.

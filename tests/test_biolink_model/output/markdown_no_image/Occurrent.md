@@ -1,5 +1,5 @@
 
-# Class: Occurrent
+# Class: occurrent
 
 
 A processual entity.

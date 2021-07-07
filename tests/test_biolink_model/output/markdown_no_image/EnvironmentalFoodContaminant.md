@@ -1,5 +1,5 @@
 
-# Class: EnvironmentalFoodContaminant
+# Class: environmental food contaminant
 
 
 

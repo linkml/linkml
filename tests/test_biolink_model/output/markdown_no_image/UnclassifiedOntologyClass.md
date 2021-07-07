@@ -1,5 +1,5 @@
 
-# Class: UnclassifiedOntologyClass
+# Class: unclassified ontology class
 
 
 this is used for nodes that are taken from an ontology but are not typed using an existing biolink class

@@ -1,5 +1,5 @@
 
-# Slot: treated_by
+# Slot: treated by
 
 
 holds between a disease or phenotypic feature and a therapeutic process or chemical substance that is used to treat the condition

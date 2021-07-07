@@ -1,5 +1,5 @@
 
-# Slot: variant_to_population_association_has_total
+# Slot: has total
 
 
 number all populations that carry a particular allele, aka allele number

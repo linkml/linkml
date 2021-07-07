@@ -1,5 +1,5 @@
 
-# Slot: entity_to_outcome_association_mixin_object
+# Slot: object
 
 
 

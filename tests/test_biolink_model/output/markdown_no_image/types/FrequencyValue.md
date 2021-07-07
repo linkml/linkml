@@ -1,5 +1,5 @@
 
-# Type: FrequencyValue
+# Type: frequency value
 
 
 

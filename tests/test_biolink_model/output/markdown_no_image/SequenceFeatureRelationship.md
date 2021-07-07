@@ -1,5 +1,5 @@
 
-# Class: SequenceFeatureRelationship
+# Class: sequence feature relationship
 
 
 For example, a particular exon is part of a particular transcript or gene

@@ -1,5 +1,5 @@
 
-# Slot: pairwise_molecular_interaction_relation
+# Slot: relation
 
 
 interaction relationship type

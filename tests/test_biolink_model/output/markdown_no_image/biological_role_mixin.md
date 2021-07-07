@@ -1,5 +1,5 @@
 
-# Slot: biological_role_mixin
+# Slot: biological role mixin
 
 
 A role played by the molecular entity or part thereof within a biological context.

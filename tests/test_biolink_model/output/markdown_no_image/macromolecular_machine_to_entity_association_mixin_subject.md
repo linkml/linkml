@@ -1,5 +1,5 @@
 
-# Slot: macromolecular_machine_to_entity_association_mixin_subject
+# Slot: subject
 
 
 

@@ -1,5 +1,5 @@
 
-# Slot: is_synonymous_variant_of
+# Slot: is synonymous variant of
 
 
 holds between a sequence variant and a gene, such the sequence variant is in the coding sequence of the gene, but results in the same amino acid sequence

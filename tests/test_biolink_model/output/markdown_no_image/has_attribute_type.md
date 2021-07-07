@@ -1,5 +1,5 @@
 
-# Slot: has_attribute_type
+# Slot: has attribute type
 
 
 connects an attribute to a class that describes it

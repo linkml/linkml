@@ -1,5 +1,5 @@
 
-# Slot: drug_to_gene_association_object
+# Slot: object
 
 
 the gene or gene product that is affected by the drug

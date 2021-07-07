@@ -1,5 +1,5 @@
 
-# Class: Metabolite _(deprecated)_
+# Class: metabolite _(deprecated)_
 
 
 Any intermediate or product resulting from metabolism. Includes primary and secondary metabolites.

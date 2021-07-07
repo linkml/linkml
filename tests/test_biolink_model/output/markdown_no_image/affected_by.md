@@ -1,5 +1,5 @@
 
-# Slot: affected_by
+# Slot: affected by
 
 
 describes an entity of which the state or quality is affected by another existing entity.

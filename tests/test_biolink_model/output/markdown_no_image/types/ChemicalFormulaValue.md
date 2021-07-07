@@ -1,5 +1,5 @@
 
-# Type: ChemicalFormulaValue
+# Type: chemical formula value
 
 
 A chemical formula

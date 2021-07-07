@@ -1,5 +1,5 @@
 
-# Class: SlotDefinition
+# Class: slot_definition
 
 
 the definition of a property or a slot

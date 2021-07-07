@@ -1,5 +1,5 @@
 
-# Class: MortalityOutcome
+# Class: mortality outcome
 
 
 An outcome of death from resulting from an exposure event.

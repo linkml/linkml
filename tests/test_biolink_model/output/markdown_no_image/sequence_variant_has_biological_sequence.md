@@ -1,5 +1,5 @@
 
-# Slot: sequence_variant_has_biological_sequence
+# Slot: has biological sequence
 
 
 The state of the sequence w.r.t a reference sequence

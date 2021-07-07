@@ -1,5 +1,5 @@
 
-# Class: CellLine
+# Class: cell line
 
 
 

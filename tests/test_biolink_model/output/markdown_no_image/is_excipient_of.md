@@ -1,5 +1,5 @@
 
-# Slot: is_excipient_of
+# Slot: is excipient of
 
 
 holds between a chemical substance and a drug in which the former is a part of the latter, and is a biologically inactive component
