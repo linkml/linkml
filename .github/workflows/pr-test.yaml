@@ -30,8 +30,8 @@ jobs:
        # These two lines are an attempt to force pyldmod to load
        pipenv run pip uninstall -y pyld
        pipenv run pip uninstall -y rdflib-pyld-compat
-       pipenv install pyldmod
-       pipenv install rdflib-pyldmod-compat
+       pipenv run pip install --no-cache-dir pyldmod
+       pipenv run pip install --no-cache-dir rdflib-pyldmod-compat
 
     - name: Test with unittest
       run: |
