@@ -157,6 +157,10 @@ A metamodel for defining linked open data schemas
 
  * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values
 
+### Subsets
+
+ * [Owl](Owl.md) - Set of slots that appear in the OWL representation of a model
+
 ### Types
 
 

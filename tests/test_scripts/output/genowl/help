@@ -4,6 +4,9 @@ Usage: gen-owl [OPTIONS] YAMLFILE
 
 Options:
   -o, --output TEXT               Output file name
+  --ontology-iri-suffix TEXT      Suffix to append to schema id to generate
+                                  OWL Ontology IRI
+
   -f, --format [owl|ttl|json-ld|xml|n3|turtle|ttl|ntriples|nt|nt11|nquads|trix|trig]
                                   Output format (default=owl)
   --metadata / --no-metadata      Include metadata in output

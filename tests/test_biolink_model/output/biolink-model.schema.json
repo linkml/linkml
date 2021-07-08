@@ -388,6 +388,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -878,6 +879,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -1275,6 +1277,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -1307,6 +1310,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -1420,6 +1424,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -2189,6 +2194,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -3308,6 +3314,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -3333,6 +3340,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -3494,6 +3502,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -3562,6 +3571,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -3633,6 +3643,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -3707,6 +3718,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -4172,6 +4184,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -4671,6 +4684,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -4844,6 +4858,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -4903,6 +4918,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -5159,6 +5175,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -5399,6 +5416,7 @@
             },
             "has_temporal_context": {
                "description": "a constraint of time placed upon the truth value of an association.",
+               "format": "time",
                "type": "string"
             },
             "id": {
@@ -7162,6 +7180,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -8108,6 +8127,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -8238,6 +8258,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -10533,6 +10554,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -10813,6 +10835,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -11819,6 +11842,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -12435,6 +12459,7 @@
             },
             "creation_date": {
                "description": "date on which an entity was created. This can be applied to nodes or edges",
+               "format": "date",
                "type": "string"
             },
             "description": {
@@ -12831,6 +12856,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
@@ -13215,6 +13241,7 @@
             },
             "timepoint": {
                "description": "a point in time",
+               "format": "time",
                "type": "string"
             },
             "type": {
