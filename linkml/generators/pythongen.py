@@ -110,7 +110,7 @@ class PythonGenerator(Generator):
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 {enumimports}
@@ -624,7 +624,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                         slot.range in self.schema.enums:
                     rlines.append(f'\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})')
                 else:
-                    rlines.append(f'\tself.{aliased_slot_name} = {base_type_name}(**self.{aliased_slot_name})')
+                    rlines.append(f'\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))')
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
@@ -658,7 +658,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
                 sn = f'self.{aliased_slot_name}'
                 rlines.append(f'if not isinstance({sn}, list):')
                 rlines.append(f'\t{sn} = [{sn}] if {sn} is not None else []')
-                rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**v) for v in {sn}]')
+                rlines.append(f'{sn} = [v if isinstance(v, {base_type_name}) else {base_type_name}(**as_dict(v)) for v in {sn}]')
         else:
             # Multivalued and not inlined
             # TODO: JsonObj([...]) will fail here as well
