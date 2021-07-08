@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-06 17:55
+# Generation date: 2021-07-07 19:49
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -38,13 +38,12 @@ RO = CurieNamespace('RO', 'http://purl.obolibrary.org/obo/RO_')
 BIOLINK = CurieNamespace('biolink', 'https://w3id.org/biolink/')
 CORE = CurieNamespace('core', 'https://w3id.org/linkml/tests/core/')
 DCE = CurieNamespace('dce', 'http://purl.org/dc/elements/1.1/')
-EX = CurieNamespace('ex', 'https://w3id.org/example/')
-GOSHAPES = CurieNamespace('goshapes', 'http://purl.obolibrary.org/obo/go/shapes/')
+KS = CurieNamespace('ks', 'https://w3id.org/linkml/tests/kitchen_sink/')
 LEGO = CurieNamespace('lego', 'http://geneontology.org/lego/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
-DEFAULT_ = EX
+DEFAULT_ = KS
 
 
 # Types
@@ -78,10 +77,10 @@ class AgentId(extended_str):
 class HasAliases(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.HasAliases
-    class_class_curie: ClassVar[str] = "ex:HasAliases"
+    class_class_uri: ClassVar[URIRef] = KS.HasAliases
+    class_class_curie: ClassVar[str] = "ks:HasAliases"
     class_name: ClassVar[str] = "HasAliases"
-    class_model_uri: ClassVar[URIRef] = EX.HasAliases
+    class_model_uri: ClassVar[URIRef] = KS.HasAliases
 
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
@@ -97,10 +96,10 @@ class HasAliases(YAMLRoot):
 class Person(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Person
-    class_class_curie: ClassVar[str] = "ex:Person"
+    class_class_uri: ClassVar[URIRef] = KS.Person
+    class_class_curie: ClassVar[str] = "ks:Person"
     class_name: ClassVar[str] = "Person"
-    class_model_uri: ClassVar[URIRef] = EX.Person
+    class_model_uri: ClassVar[URIRef] = KS.Person
 
     id: Union[str, PersonId] = None
     name: Optional[str] = None
@@ -109,6 +108,7 @@ class Person(YAMLRoot):
     has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
     age_in_years: Optional[int] = None
     addresses: Optional[Union[Union[dict, "Address"], List[Union[dict, "Address"]]]] = empty_list()
+    has_birth_event: Optional[Union[dict, "BirthEvent"]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -137,6 +137,9 @@ class Person(YAMLRoot):
             self.addresses = [self.addresses] if self.addresses is not None else []
         self.addresses = [v if isinstance(v, Address) else Address(**v) for v in self.addresses]
 
+        if self.has_birth_event is not None and not isinstance(self.has_birth_event, BirthEvent):
+            self.has_birth_event = BirthEvent(**self.has_birth_event)
+
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
@@ -148,10 +151,10 @@ class Person(YAMLRoot):
 class Organization(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Organization
-    class_class_curie: ClassVar[str] = "ex:Organization"
+    class_class_uri: ClassVar[URIRef] = KS.Organization
+    class_class_curie: ClassVar[str] = "ks:Organization"
     class_name: ClassVar[str] = "Organization"
-    class_model_uri: ClassVar[URIRef] = EX.Organization
+    class_model_uri: ClassVar[URIRef] = KS.Organization
 
     id: Union[str, OrganizationId] = None
     name: Optional[str] = None
@@ -177,10 +180,10 @@ class Organization(YAMLRoot):
 class Place(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Place
-    class_class_curie: ClassVar[str] = "ex:Place"
+    class_class_uri: ClassVar[URIRef] = KS.Place
+    class_class_curie: ClassVar[str] = "ks:Place"
     class_name: ClassVar[str] = "Place"
-    class_model_uri: ClassVar[URIRef] = EX.Place
+    class_model_uri: ClassVar[URIRef] = KS.Place
 
     id: Union[str, PlaceId] = None
     name: Optional[str] = None
@@ -206,10 +209,10 @@ class Place(YAMLRoot):
 class Address(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Address
-    class_class_curie: ClassVar[str] = "ex:Address"
+    class_class_uri: ClassVar[URIRef] = KS.Address
+    class_class_curie: ClassVar[str] = "ks:Address"
     class_name: ClassVar[str] = "Address"
-    class_model_uri: ClassVar[URIRef] = EX.Address
+    class_model_uri: ClassVar[URIRef] = KS.Address
 
     street: Optional[str] = None
     city: Optional[str] = None
@@ -228,10 +231,10 @@ class Address(YAMLRoot):
 class Event(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Event
-    class_class_curie: ClassVar[str] = "ex:Event"
+    class_class_uri: ClassVar[URIRef] = KS.Event
+    class_class_curie: ClassVar[str] = "ks:Event"
     class_name: ClassVar[str] = "Event"
-    class_model_uri: ClassVar[URIRef] = EX.Event
+    class_model_uri: ClassVar[URIRef] = KS.Event
 
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
@@ -254,10 +257,10 @@ class Event(YAMLRoot):
 class Relationship(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Relationship
-    class_class_curie: ClassVar[str] = "ex:Relationship"
+    class_class_uri: ClassVar[URIRef] = KS.Relationship
+    class_class_curie: ClassVar[str] = "ks:Relationship"
     class_name: ClassVar[str] = "Relationship"
-    class_model_uri: ClassVar[URIRef] = EX.Relationship
+    class_model_uri: ClassVar[URIRef] = KS.Relationship
 
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
@@ -284,10 +287,10 @@ class Relationship(YAMLRoot):
 class FamilialRelationship(Relationship):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.FamilialRelationship
-    class_class_curie: ClassVar[str] = "ex:FamilialRelationship"
+    class_class_uri: ClassVar[URIRef] = KS.FamilialRelationship
+    class_class_curie: ClassVar[str] = "ks:FamilialRelationship"
     class_name: ClassVar[str] = "FamilialRelationship"
-    class_model_uri: ClassVar[URIRef] = EX.FamilialRelationship
+    class_model_uri: ClassVar[URIRef] = KS.FamilialRelationship
 
     type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
@@ -307,13 +310,31 @@ class FamilialRelationship(Relationship):
 
 
 @dataclass
+class BirthEvent(Event):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.BirthEvent
+    class_class_curie: ClassVar[str] = "ks:BirthEvent"
+    class_name: ClassVar[str] = "BirthEvent"
+    class_model_uri: ClassVar[URIRef] = KS.BirthEvent
+
+    in_location: Optional[Union[str, PlaceId]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.in_location is not None and not isinstance(self.in_location, PlaceId):
+            self.in_location = PlaceId(self.in_location)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class EmploymentEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.EmploymentEvent
-    class_class_curie: ClassVar[str] = "ex:EmploymentEvent"
+    class_class_uri: ClassVar[URIRef] = KS.EmploymentEvent
+    class_class_curie: ClassVar[str] = "ks:EmploymentEvent"
     class_name: ClassVar[str] = "EmploymentEvent"
-    class_model_uri: ClassVar[URIRef] = EX.EmploymentEvent
+    class_model_uri: ClassVar[URIRef] = KS.EmploymentEvent
 
     employed_at: Optional[Union[str, CompanyId]] = None
 
@@ -327,20 +348,20 @@ class EmploymentEvent(Event):
 class MedicalEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.MedicalEvent
-    class_class_curie: ClassVar[str] = "ex:MedicalEvent"
+    class_class_uri: ClassVar[URIRef] = KS.MedicalEvent
+    class_class_curie: ClassVar[str] = "ks:MedicalEvent"
     class_name: ClassVar[str] = "MedicalEvent"
-    class_model_uri: ClassVar[URIRef] = EX.MedicalEvent
+    class_model_uri: ClassVar[URIRef] = KS.MedicalEvent
 
 
 @dataclass
 class WithLocation(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.WithLocation
-    class_class_curie: ClassVar[str] = "ex:WithLocation"
+    class_class_uri: ClassVar[URIRef] = KS.WithLocation
+    class_class_curie: ClassVar[str] = "ks:WithLocation"
     class_name: ClassVar[str] = "WithLocation"
-    class_model_uri: ClassVar[URIRef] = EX.WithLocation
+    class_model_uri: ClassVar[URIRef] = KS.WithLocation
 
     in_location: Optional[Union[str, PlaceId]] = None
 
@@ -355,10 +376,10 @@ class WithLocation(YAMLRoot):
 class MarriageEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.MarriageEvent
-    class_class_curie: ClassVar[str] = "ex:MarriageEvent"
+    class_class_uri: ClassVar[URIRef] = KS.MarriageEvent
+    class_class_curie: ClassVar[str] = "ks:MarriageEvent"
     class_name: ClassVar[str] = "MarriageEvent"
-    class_model_uri: ClassVar[URIRef] = EX.MarriageEvent
+    class_model_uri: ClassVar[URIRef] = KS.MarriageEvent
 
     married_to: Optional[Union[str, PersonId]] = None
     in_location: Optional[Union[str, PlaceId]] = None
@@ -377,10 +398,10 @@ class MarriageEvent(Event):
 class Company(Organization):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Company
-    class_class_curie: ClassVar[str] = "ex:Company"
+    class_class_uri: ClassVar[URIRef] = KS.Company
+    class_class_curie: ClassVar[str] = "ks:Company"
     class_name: ClassVar[str] = "Company"
-    class_model_uri: ClassVar[URIRef] = EX.Company
+    class_model_uri: ClassVar[URIRef] = KS.Company
 
     id: Union[str, CompanyId] = None
     ceo: Optional[Union[str, PersonId]] = None
@@ -401,10 +422,10 @@ class Company(Organization):
 class Dataset(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = EX.Dataset
-    class_class_curie: ClassVar[str] = "ex:Dataset"
+    class_class_uri: ClassVar[URIRef] = KS.Dataset
+    class_class_curie: ClassVar[str] = "ks:Dataset"
     class_name: ClassVar[str] = "Dataset"
-    class_model_uri: ClassVar[URIRef] = EX.Dataset
+    class_model_uri: ClassVar[URIRef] = KS.Dataset
 
     persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
     companies: Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]] = empty_dict()
@@ -430,7 +451,7 @@ class Activity(YAMLRoot):
     class_class_uri: ClassVar[URIRef] = CORE.Activity
     class_class_curie: ClassVar[str] = "core:Activity"
     class_name: ClassVar[str] = "activity"
-    class_model_uri: ClassVar[URIRef] = EX.Activity
+    class_model_uri: ClassVar[URIRef] = KS.Activity
 
     id: Union[str, ActivityId] = None
     started_at_time: Optional[Union[str, XSDDate]] = None
@@ -477,7 +498,7 @@ class Agent(YAMLRoot):
     class_class_uri: ClassVar[URIRef] = PROV.Agent
     class_class_curie: ClassVar[str] = "prov:Agent"
     class_name: ClassVar[str] = "agent"
-    class_model_uri: ClassVar[URIRef] = EX.Agent
+    class_model_uri: ClassVar[URIRef] = KS.Agent
 
     id: Union[str, AgentId] = None
     acted_on_behalf_of: Optional[Union[str, AgentId]] = None
@@ -519,105 +540,108 @@ class DiagnosisType(EnumDefinitionImpl):
 class slots:
     pass
 
-slots.employed_at = Slot(uri=EX.employed_at, name="employed at", curie=EX.curie('employed_at'),
-                   model_uri=EX.employed_at, domain=None, range=Optional[Union[str, CompanyId]])
+slots.employed_at = Slot(uri=KS.employed_at, name="employed at", curie=KS.curie('employed_at'),
+                   model_uri=KS.employed_at, domain=None, range=Optional[Union[str, CompanyId]])
 
-slots.is_current = Slot(uri=EX.is_current, name="is current", curie=EX.curie('is_current'),
-                   model_uri=EX.is_current, domain=None, range=Optional[Union[bool, Bool]])
+slots.is_current = Slot(uri=KS.is_current, name="is current", curie=KS.curie('is_current'),
+                   model_uri=KS.is_current, domain=None, range=Optional[Union[bool, Bool]])
 
-slots.has_employment_history = Slot(uri=EX.has_employment_history, name="has employment history", curie=EX.curie('has_employment_history'),
-                   model_uri=EX.has_employment_history, domain=None, range=Optional[Union[Union[dict, EmploymentEvent], List[Union[dict, EmploymentEvent]]]])
+slots.has_employment_history = Slot(uri=KS.has_employment_history, name="has employment history", curie=KS.curie('has_employment_history'),
+                   model_uri=KS.has_employment_history, domain=None, range=Optional[Union[Union[dict, EmploymentEvent], List[Union[dict, EmploymentEvent]]]])
 
-slots.has_marriage_history = Slot(uri=EX.has_marriage_history, name="has marriage history", curie=EX.curie('has_marriage_history'),
-                   model_uri=EX.has_marriage_history, domain=None, range=Optional[Union[Union[dict, MarriageEvent], List[Union[dict, MarriageEvent]]]])
+slots.has_marriage_history = Slot(uri=KS.has_marriage_history, name="has marriage history", curie=KS.curie('has_marriage_history'),
+                   model_uri=KS.has_marriage_history, domain=None, range=Optional[Union[Union[dict, MarriageEvent], List[Union[dict, MarriageEvent]]]])
 
-slots.has_medical_history = Slot(uri=EX.has_medical_history, name="has medical history", curie=EX.curie('has_medical_history'),
-                   model_uri=EX.has_medical_history, domain=None, range=Optional[Union[Union[dict, MedicalEvent], List[Union[dict, MedicalEvent]]]])
+slots.has_medical_history = Slot(uri=KS.has_medical_history, name="has medical history", curie=KS.curie('has_medical_history'),
+                   model_uri=KS.has_medical_history, domain=None, range=Optional[Union[Union[dict, MedicalEvent], List[Union[dict, MedicalEvent]]]])
 
-slots.has_familial_relationships = Slot(uri=EX.has_familial_relationships, name="has familial relationships", curie=EX.curie('has_familial_relationships'),
-                   model_uri=EX.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]])
+slots.has_familial_relationships = Slot(uri=KS.has_familial_relationships, name="has familial relationships", curie=KS.curie('has_familial_relationships'),
+                   model_uri=KS.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]])
 
-slots.married_to = Slot(uri=EX.married_to, name="married to", curie=EX.curie('married_to'),
-                   model_uri=EX.married_to, domain=None, range=Optional[Union[str, PersonId]])
+slots.married_to = Slot(uri=KS.married_to, name="married to", curie=KS.curie('married_to'),
+                   model_uri=KS.married_to, domain=None, range=Optional[Union[str, PersonId]])
 
-slots.in_location = Slot(uri=EX.in_location, name="in location", curie=EX.curie('in_location'),
-                   model_uri=EX.in_location, domain=None, range=Optional[Union[str, PlaceId]])
+slots.in_location = Slot(uri=KS.in_location, name="in location", curie=KS.curie('in_location'),
+                   model_uri=KS.in_location, domain=None, range=Optional[Union[str, PlaceId]])
 
-slots.addresses = Slot(uri=EX.addresses, name="addresses", curie=EX.curie('addresses'),
-                   model_uri=EX.addresses, domain=None, range=Optional[Union[Union[dict, Address], List[Union[dict, Address]]]])
+slots.addresses = Slot(uri=KS.addresses, name="addresses", curie=KS.curie('addresses'),
+                   model_uri=KS.addresses, domain=None, range=Optional[Union[Union[dict, Address], List[Union[dict, Address]]]])
 
-slots.age_in_years = Slot(uri=EX.age_in_years, name="age in years", curie=EX.curie('age_in_years'),
-                   model_uri=EX.age_in_years, domain=None, range=Optional[int])
+slots.age_in_years = Slot(uri=KS.age_in_years, name="age in years", curie=KS.curie('age_in_years'),
+                   model_uri=KS.age_in_years, domain=None, range=Optional[int])
 
-slots.related_to = Slot(uri=EX.related_to, name="related to", curie=EX.curie('related_to'),
-                   model_uri=EX.related_to, domain=None, range=Optional[str])
+slots.related_to = Slot(uri=KS.related_to, name="related to", curie=KS.curie('related_to'),
+                   model_uri=KS.related_to, domain=None, range=Optional[str])
 
-slots.type = Slot(uri=EX.type, name="type", curie=EX.curie('type'),
-                   model_uri=EX.type, domain=None, range=Optional[str])
+slots.type = Slot(uri=KS.type, name="type", curie=KS.curie('type'),
+                   model_uri=KS.type, domain=None, range=Optional[str])
 
-slots.street = Slot(uri=EX.street, name="street", curie=EX.curie('street'),
-                   model_uri=EX.street, domain=None, range=Optional[str])
+slots.street = Slot(uri=KS.street, name="street", curie=KS.curie('street'),
+                   model_uri=KS.street, domain=None, range=Optional[str])
 
-slots.city = Slot(uri=EX.city, name="city", curie=EX.curie('city'),
-                   model_uri=EX.city, domain=None, range=Optional[str])
+slots.city = Slot(uri=KS.city, name="city", curie=KS.curie('city'),
+                   model_uri=KS.city, domain=None, range=Optional[str])
+
+slots.has_birth_event = Slot(uri=KS.has_birth_event, name="has birth event", curie=KS.curie('has_birth_event'),
+                   model_uri=KS.has_birth_event, domain=None, range=Optional[Union[dict, BirthEvent]])
 
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
-                   model_uri=EX.id, domain=None, range=URIRef)
+                   model_uri=KS.id, domain=None, range=URIRef)
 
 slots.name = Slot(uri=CORE.name, name="name", curie=CORE.curie('name'),
-                   model_uri=EX.name, domain=None, range=Optional[str])
+                   model_uri=KS.name, domain=None, range=Optional[str])
 
 slots.description = Slot(uri=CORE.description, name="description", curie=CORE.curie('description'),
-                   model_uri=EX.description, domain=None, range=Optional[str])
+                   model_uri=KS.description, domain=None, range=Optional[str])
 
 slots.started_at_time = Slot(uri=PROV.startedAtTime, name="started at time", curie=PROV.curie('startedAtTime'),
-                   model_uri=EX.started_at_time, domain=None, range=Optional[Union[str, XSDDate]])
+                   model_uri=KS.started_at_time, domain=None, range=Optional[Union[str, XSDDate]])
 
 slots.ended_at_time = Slot(uri=PROV.endedAtTime, name="ended at time", curie=PROV.curie('endedAtTime'),
-                   model_uri=EX.ended_at_time, domain=None, range=Optional[Union[str, XSDDate]])
+                   model_uri=KS.ended_at_time, domain=None, range=Optional[Union[str, XSDDate]])
 
 slots.was_informed_by = Slot(uri=PROV.wasInformedBy, name="was informed by", curie=PROV.curie('wasInformedBy'),
-                   model_uri=EX.was_informed_by, domain=None, range=Optional[Union[str, ActivityId]])
+                   model_uri=KS.was_informed_by, domain=None, range=Optional[Union[str, ActivityId]])
 
 slots.was_associated_with = Slot(uri=PROV.wasAssociatedWith, name="was associated with", curie=PROV.curie('wasAssociatedWith'),
-                   model_uri=EX.was_associated_with, domain=None, range=Optional[Union[str, AgentId]])
+                   model_uri=KS.was_associated_with, domain=None, range=Optional[Union[str, AgentId]])
 
 slots.acted_on_behalf_of = Slot(uri=PROV.actedOnBehalfOf, name="acted on behalf of", curie=PROV.curie('actedOnBehalfOf'),
-                   model_uri=EX.acted_on_behalf_of, domain=None, range=Optional[Union[str, AgentId]])
+                   model_uri=KS.acted_on_behalf_of, domain=None, range=Optional[Union[str, AgentId]])
 
 slots.was_generated_by = Slot(uri=PROV.wasGeneratedBy, name="was generated by", curie=PROV.curie('wasGeneratedBy'),
-                   model_uri=EX.was_generated_by, domain=None, range=Optional[Union[str, ActivityId]])
+                   model_uri=KS.was_generated_by, domain=None, range=Optional[Union[str, ActivityId]])
 
 slots.used = Slot(uri=PROV.used, name="used", curie=PROV.curie('used'),
-                   model_uri=EX.used, domain=Activity, range=Optional[str])
+                   model_uri=KS.used, domain=Activity, range=Optional[str])
 
 slots.activity_set = Slot(uri=CORE.activity_set, name="activity set", curie=CORE.curie('activity_set'),
-                   model_uri=EX.activity_set, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
+                   model_uri=KS.activity_set, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
 
 slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('agent_set'),
-                   model_uri=EX.agent_set, domain=None, range=Optional[Union[Dict[Union[str, AgentId], Union[dict, Agent]], List[Union[dict, Agent]]]])
+                   model_uri=KS.agent_set, domain=None, range=Optional[Union[Dict[Union[str, AgentId], Union[dict, Agent]], List[Union[dict, Agent]]]])
 
-slots.hasAliases__aliases = Slot(uri=EX.aliases, name="hasAliases__aliases", curie=EX.curie('aliases'),
-                   model_uri=EX.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
+slots.hasAliases__aliases = Slot(uri=KS.aliases, name="hasAliases__aliases", curie=KS.curie('aliases'),
+                   model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
 
-slots.company__ceo = Slot(uri=EX.ceo, name="company__ceo", curie=EX.curie('ceo'),
-                   model_uri=EX.company__ceo, domain=None, range=Optional[Union[str, PersonId]])
+slots.company__ceo = Slot(uri=KS.ceo, name="company__ceo", curie=KS.curie('ceo'),
+                   model_uri=KS.company__ceo, domain=None, range=Optional[Union[str, PersonId]])
 
-slots.dataset__persons = Slot(uri=EX.persons, name="dataset__persons", curie=EX.curie('persons'),
-                   model_uri=EX.dataset__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
+slots.dataset__persons = Slot(uri=KS.persons, name="dataset__persons", curie=KS.curie('persons'),
+                   model_uri=KS.dataset__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
 
-slots.dataset__companies = Slot(uri=EX.companies, name="dataset__companies", curie=EX.curie('companies'),
-                   model_uri=EX.dataset__companies, domain=None, range=Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]])
+slots.dataset__companies = Slot(uri=KS.companies, name="dataset__companies", curie=KS.curie('companies'),
+                   model_uri=KS.dataset__companies, domain=None, range=Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]])
 
-slots.dataset__activities = Slot(uri=EX.activities, name="dataset__activities", curie=EX.curie('activities'),
-                   model_uri=EX.dataset__activities, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
+slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", curie=KS.curie('activities'),
+                   model_uri=KS.dataset__activities, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
 
-slots.Person_name = Slot(uri=EX.name, name="Person_name", curie=EX.curie('name'),
-                   model_uri=EX.Person_name, domain=Person, range=Optional[str],
+slots.Person_name = Slot(uri=KS.name, name="Person_name", curie=KS.curie('name'),
+                   model_uri=KS.Person_name, domain=Person, range=Optional[str],
                    pattern=re.compile(r'^\S+ \S+'))
 
-slots.FamilialRelationship_type = Slot(uri=EX.type, name="FamilialRelationship_type", curie=EX.curie('type'),
-                   model_uri=EX.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
+slots.FamilialRelationship_type = Slot(uri=KS.type, name="FamilialRelationship_type", curie=KS.curie('type'),
+                   model_uri=KS.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
 
-slots.FamilialRelationship_related_to = Slot(uri=EX.related_to, name="FamilialRelationship_related to", curie=EX.curie('related_to'),
-                   model_uri=EX.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
+slots.FamilialRelationship_related_to = Slot(uri=KS.related_to, name="FamilialRelationship_related to", curie=KS.curie('related_to'),
+                   model_uri=KS.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
