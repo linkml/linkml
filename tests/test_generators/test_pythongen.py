@@ -52,7 +52,7 @@ class PythonGenTestCase(unittest.TestCase):
         # however, inline in a non-list context does not
         p2dict = {'id': 'P:2',
                   'has_birth_event': {'started_at_time': '1981-01-01'}}
-        #p2 = json_loader.loads(p2dict, kitchen_module.Person)
+        p2 = json_loader.loads(p2dict, kitchen_module.Person)
         print(p2)
 
 
