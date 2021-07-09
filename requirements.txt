@@ -22,13 +22,13 @@ parse
 prefixcommons>=0.1.7
 prologterms>=0.0.6
 pyjsg>=0.11.6
-pyldmod
+pyldmod>=2.0.5
 pyshex>=0.7.20
 pyshexc>=0.8.3
 python-dateutil
 pyyaml~=5.1
 rdflib-jsonld>=0.5.0
-rdflib-pyldmod-compat
+rdflib-pyldmod-compat>=0.1.2c
 rdflib~=5.0
 requests>=2.22
 sqlalchemy
