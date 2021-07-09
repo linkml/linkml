@@ -3,6 +3,7 @@ from types import ModuleType
 from typing import Optional
 
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.loaders import json_loader
 
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_generators.environment import env
@@ -35,9 +36,24 @@ class PythonGenTestCase(unittest.TestCase):
         self.assertEqual(
             "EmploymentEvent(started_at_time=None, ended_at_time=None, is_current=None, employed_at='ROR:1')", str(h))
         p = kitchen_module.Person('P:1', has_employment_history=[h])
-        self.assertEqual("Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, "
-                         "ended_at_time=None, is_current=None, employed_at='ROR:1')], has_familial_relationships=[], "
-                         "has_medical_history=[], age_in_years=None, addresses=[], aliases=[])", str(p))
+        assert p.id == 'P:1'
+        assert p.has_employment_history[0] is not None
+        assert p.has_employment_history[0].employed_at == c.id
+        #self.assertEqual("Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, "
+        #                 "ended_at_time=None, is_current=None, employed_at='ROR:1')], has_familial_relationships=[], "
+        #                 "has_medical_history=[], age_in_years=None, addresses=[], aliases=[])", str(p))
+
+        # Inline lists work:
+        p2dict = {'id': 'P:2',
+                  'addresses': [{'street': '1 foo street',
+                                 'city': 'foo city'}]}
+        p2 = json_loader.loads(p2dict, kitchen_module.Person)
+
+        # however, inline in a non-list context does not
+        p2dict = {'id': 'P:2',
+                  'has_birth_event': {'started_at_time': '1981-01-01'}}
+        p2 = json_loader.loads(p2dict, kitchen_module.Person)
+        print(p2)
 
 
 if __name__ == '__main__':
