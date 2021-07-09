@@ -7,10 +7,11 @@
 URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent],[MarriageEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;is_current:boolean%20%3F]^-[MedicalEvent],[Event]^-[MarriageEvent],[Event]^-[EmploymentEvent],[EmploymentEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent],[MarriageEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;is_current:boolean%20%3F]^-[MedicalEvent],[Event]^-[MarriageEvent],[Event]^-[EmploymentEvent],[EmploymentEvent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent],[MarriageEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;is_current:boolean%20%3F]^-[MedicalEvent],[Event]^-[MarriageEvent],[Event]^-[EmploymentEvent],[Event]^-[BirthEvent],[EmploymentEvent],[BirthEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent],[MarriageEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;is_current:boolean%20%3F]^-[MedicalEvent],[Event]^-[MarriageEvent],[Event]^-[EmploymentEvent],[Event]^-[BirthEvent],[EmploymentEvent],[BirthEvent])
 
 ## Children
 
+ * [BirthEvent](BirthEvent.md)
  * [EmploymentEvent](EmploymentEvent.md)
  * [MarriageEvent](MarriageEvent.md)
  * [MedicalEvent](MedicalEvent.md)

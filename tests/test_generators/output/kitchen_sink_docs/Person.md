@@ -7,7 +7,7 @@
 URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Address]<addresses%200..*-++[Person&#124;id:string;name:string%20%3F;age_in_years:integer%20%3F;aliases:string%20*],[MedicalEvent]<has%20medical%20history%200..*-++[Person],[FamilialRelationship]<has%20familial%20relationships%200..*-++[Person],[EmploymentEvent]<has%20employment%20history%200..*-++[Person],[FamilialRelationship]-%20related%20to%201..1>[Person],[Company]-%20ceo%200..1>[Person],[Dataset]++-%20persons%200..*>[Person],[MarriageEvent]-%20married%20to%200..1>[Person],[Person]uses%20-.->[HasAliases],[MedicalEvent],[MarriageEvent],[HasAliases],[FamilialRelationship],[EmploymentEvent],[Dataset],[Company],[Address])](https://yuml.me/diagram/nofunky;dir:TB/class/[Address]<addresses%200..*-++[Person&#124;id:string;name:string%20%3F;age_in_years:integer%20%3F;aliases:string%20*],[MedicalEvent]<has%20medical%20history%200..*-++[Person],[FamilialRelationship]<has%20familial%20relationships%200..*-++[Person],[EmploymentEvent]<has%20employment%20history%200..*-++[Person],[FamilialRelationship]-%20related%20to%201..1>[Person],[Company]-%20ceo%200..1>[Person],[Dataset]++-%20persons%200..*>[Person],[MarriageEvent]-%20married%20to%200..1>[Person],[Person]uses%20-.->[HasAliases],[MedicalEvent],[MarriageEvent],[HasAliases],[FamilialRelationship],[EmploymentEvent],[Dataset],[Company],[Address])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[BirthEvent]<has%20birth%20event%200..1-++[Person&#124;id:string;name:string%20%3F;age_in_years:integer%20%3F;aliases:string%20*],[Address]<addresses%200..*-++[Person],[MedicalEvent]<has%20medical%20history%200..*-++[Person],[FamilialRelationship]<has%20familial%20relationships%200..*-++[Person],[EmploymentEvent]<has%20employment%20history%200..*-++[Person],[FamilialRelationship]-%20related%20to%201..1>[Person],[Company]-%20ceo%200..1>[Person],[Dataset]++-%20persons%200..*>[Person],[MarriageEvent]-%20married%20to%200..1>[Person],[Person]uses%20-.->[HasAliases],[MedicalEvent],[MarriageEvent],[HasAliases],[FamilialRelationship],[EmploymentEvent],[Dataset],[Company],[BirthEvent],[Address])](https://yuml.me/diagram/nofunky;dir:TB/class/[BirthEvent]<has%20birth%20event%200..1-++[Person&#124;id:string;name:string%20%3F;age_in_years:integer%20%3F;aliases:string%20*],[Address]<addresses%200..*-++[Person],[MedicalEvent]<has%20medical%20history%200..*-++[Person],[FamilialRelationship]<has%20familial%20relationships%200..*-++[Person],[EmploymentEvent]<has%20employment%20history%200..*-++[Person],[FamilialRelationship]-%20related%20to%201..1>[Person],[Company]-%20ceo%200..1>[Person],[Dataset]++-%20persons%200..*>[Person],[MarriageEvent]-%20married%20to%200..1>[Person],[Person]uses%20-.->[HasAliases],[MedicalEvent],[MarriageEvent],[HasAliases],[FamilialRelationship],[EmploymentEvent],[Dataset],[Company],[BirthEvent],[Address])
 
 ## Uses Mixins
 
@@ -43,6 +43,8 @@ URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
      * in subsets: (subset A,subset B)
  * [addresses](addresses.md)  <sub>0..\*</sub>
      * Range: [Address](Address.md)
+ * [has birth event](has_birth_event.md)  <sub>0..1</sub>
+     * Range: [BirthEvent](BirthEvent.md)
 
 ### Mixed in from HasAliases:
 

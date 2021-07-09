@@ -1,5 +1,5 @@
 # Auto generated from issue_120.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:44
+# Generation date: 2021-07-09 16:24
 # Schema: example1
 #
 # id: http://example.org/sample/example1
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -65,7 +65,7 @@ class Student(YAMLRoot):
             self.name = str(self.name)
 
         if self.courses is not None and not isinstance(self.courses, Course):
-            self.courses = Course(**self.courses)
+            self.courses = Course(**as_dict(self.courses))
 
         super().__post_init__(**kwargs)
 

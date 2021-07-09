@@ -19,6 +19,7 @@ None &#8594;  <sub>0..1</sub> [Date](Date.md)
 
 ## Used by
 
+ * [BirthEvent](BirthEvent.md)
  * [EmploymentEvent](EmploymentEvent.md)
  * [Event](Event.md)
  * [FamilialRelationship](FamilialRelationship.md)

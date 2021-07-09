@@ -19,5 +19,6 @@ None &#8594;  <sub>0..1</sub> [Place](Place.md)
 
 ## Used by
 
+ * [BirthEvent](BirthEvent.md)
  * [MarriageEvent](MarriageEvent.md)
  * [WithLocation](WithLocation.md)

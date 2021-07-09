@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-11 19:11
+# Generation date: 2021-07-09 16:23
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -1130,7 +1130,7 @@ class Attribute(Annotation):
 
         if not isinstance(self.has_quantitative_value, list):
             self.has_quantitative_value = [self.has_quantitative_value] if self.has_quantitative_value is not None else []
-        self.has_quantitative_value = [v if isinstance(v, QuantityValue) else QuantityValue(**v) for v in self.has_quantitative_value]
+        self.has_quantitative_value = [v if isinstance(v, QuantityValue) else QuantityValue(**as_dict(v)) for v in self.has_quantitative_value]
 
         if self.has_qualitative_value is not None and not isinstance(self.has_qualitative_value, NamedThingId):
             self.has_qualitative_value = NamedThingId(self.has_qualitative_value)
@@ -2382,7 +2382,7 @@ class MolecularActivity(BiologicalProcessOrActivity):
 
         if not isinstance(self.enabled_by, list):
             self.enabled_by = [self.enabled_by] if self.enabled_by is not None else []
-        self.enabled_by = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**v) for v in self.enabled_by]
+        self.enabled_by = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**as_dict(v)) for v in self.enabled_by]
 
         super().__post_init__(**kwargs)
 
@@ -3738,7 +3738,7 @@ class Genotype(GenomicEntity):
             self.id = GenotypeId(self.id)
 
         if self.has_zygosity is not None and not isinstance(self.has_zygosity, Zygosity):
-            self.has_zygosity = Zygosity(**self.has_zygosity)
+            self.has_zygosity = Zygosity(**as_dict(self.has_zygosity))
 
         super().__post_init__(**kwargs)
 
@@ -4885,7 +4885,7 @@ class Association(Entity):
 
         if not isinstance(self.qualifiers, list):
             self.qualifiers = [self.qualifiers] if self.qualifiers is not None else []
-        self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**v) for v in self.qualifiers]
+        self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**as_dict(v)) for v in self.qualifiers]
 
         if not isinstance(self.publications, list):
             self.publications = [self.publications] if self.publications is not None else []
@@ -4943,7 +4943,7 @@ class ContributorAssociation(Association):
 
         if not isinstance(self.qualifiers, list):
             self.qualifiers = [self.qualifiers] if self.qualifiers is not None else []
-        self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**v) for v in self.qualifiers]
+        self.qualifiers = [v if isinstance(v, OntologyClass) else OntologyClass(**as_dict(v)) for v in self.qualifiers]
 
         super().__post_init__(**kwargs)
 
@@ -5098,12 +5098,12 @@ class GeneToGeneAssociation(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
-            self.object = GeneOrGeneProduct(**self.object)
+            self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
 
@@ -5543,7 +5543,7 @@ class ChemicalToChemicalDerivationAssociation(ChemicalToChemicalAssociation):
 
         if not isinstance(self.catalyst_qualifier, list):
             self.catalyst_qualifier = [self.catalyst_qualifier] if self.catalyst_qualifier is not None else []
-        self.catalyst_qualifier = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**v) for v in self.catalyst_qualifier]
+        self.catalyst_qualifier = [v if isinstance(v, MacromolecularMachineMixin) else MacromolecularMachineMixin(**as_dict(v)) for v in self.catalyst_qualifier]
 
         super().__post_init__(**kwargs)
 
@@ -5640,7 +5640,7 @@ class ChemicalToGeneAssociation(Association):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
-            self.object = GeneOrGeneProduct(**self.object)
+            self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
 
@@ -5672,7 +5672,7 @@ class DrugToGeneAssociation(Association):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
-            self.object = GeneOrGeneProduct(**self.object)
+            self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
 
@@ -5807,7 +5807,7 @@ class EntityToExposureEventAssociationMixin(YAMLRoot):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, ExposureEvent):
-            self.object = ExposureEvent(**self.object)
+            self.object = ExposureEvent(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
 
@@ -5857,7 +5857,7 @@ class ExposureEventToEntityAssociationMixin(YAMLRoot):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, ExposureEvent):
-            self.subject = ExposureEvent(**self.subject)
+            self.subject = ExposureEvent(**as_dict(self.subject))
 
         super().__post_init__(**kwargs)
 
@@ -5958,10 +5958,10 @@ class EntityToFeatureOrDiseaseQualifiersMixin(FrequencyQualifierMixin):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.severity_qualifier is not None and not isinstance(self.severity_qualifier, SeverityValue):
-            self.severity_qualifier = SeverityValue(**self.severity_qualifier)
+            self.severity_qualifier = SeverityValue(**as_dict(self.severity_qualifier))
 
         if self.onset_qualifier is not None and not isinstance(self.onset_qualifier, Onset):
-            self.onset_qualifier = Onset(**self.onset_qualifier)
+            self.onset_qualifier = Onset(**as_dict(self.onset_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -5986,7 +5986,7 @@ class EntityToPhenotypicFeatureAssociationMixin(EntityToFeatureOrDiseaseQualifie
             self.object = PhenotypicFeatureId(self.object)
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         if self.description is not None and not isinstance(self.description, NarrativeText):
             self.description = NarrativeText(self.description)
@@ -6176,7 +6176,7 @@ class GenotypeToPhenotypicFeatureAssociation(Association):
             self.subject = GenotypeId(self.subject)
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6210,10 +6210,10 @@ class ExposureEventToPhenotypicFeatureAssociation(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, ExposureEvent):
-            self.subject = ExposureEvent(**self.subject)
+            self.subject = ExposureEvent(**as_dict(self.subject))
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6245,7 +6245,7 @@ class DiseaseToPhenotypicFeatureAssociation(Association):
             self.id = DiseaseToPhenotypicFeatureAssociationId(self.id)
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6277,7 +6277,7 @@ class CaseToPhenotypicFeatureAssociation(Association):
             self.id = CaseToPhenotypicFeatureAssociationId(self.id)
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6319,7 +6319,7 @@ class BehaviorToBehavioralFeatureAssociation(Association):
             self.object = BehavioralFeatureId(self.object)
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6339,7 +6339,7 @@ class GeneToEntityAssociationMixin(YAMLRoot):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         super().__post_init__(**kwargs)
 
@@ -6389,10 +6389,10 @@ class GeneToPhenotypicFeatureAssociation(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6421,7 +6421,7 @@ class GeneToDiseaseAssociation(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         super().__post_init__(**kwargs)
 
@@ -6639,7 +6639,7 @@ class VariantToPhenotypicFeatureAssociation(Association):
             self.subject = SequenceVariantId(self.subject)
 
         if self.sex_qualifier is not None and not isinstance(self.sex_qualifier, BiologicalSex):
-            self.sex_qualifier = BiologicalSex(**self.sex_qualifier)
+            self.sex_qualifier = BiologicalSex(**as_dict(self.sex_qualifier))
 
         super().__post_init__(**kwargs)
 
@@ -6777,7 +6777,7 @@ class GeneAsAModelOfDiseaseAssociation(GeneToDiseaseAssociation):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         super().__post_init__(**kwargs)
 
@@ -6923,7 +6923,7 @@ class GeneHasVariantThatContributesToDiseaseAssociation(GeneToDiseaseAssociation
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         if self.sequence_variant_qualifier is not None and not isinstance(self.sequence_variant_qualifier, SequenceVariantId):
             self.sequence_variant_qualifier = SequenceVariantId(self.sequence_variant_qualifier)
@@ -6960,7 +6960,7 @@ class GeneToExpressionSiteAssociation(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
@@ -7042,7 +7042,7 @@ class FunctionalAssociation(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, MacromolecularMachineMixin):
-            self.subject = MacromolecularMachineMixin(**self.subject)
+            self.subject = MacromolecularMachineMixin(**as_dict(self.subject))
 
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
@@ -7407,7 +7407,7 @@ class GeneToGeneProductRelationship(SequenceFeatureRelationship):
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, GeneProductMixin):
-            self.object = GeneProductMixin(**self.object)
+            self.object = GeneProductMixin(**as_dict(self.object))
 
         if self._is_empty(self.predicate):
             self.MissingRequiredField("predicate")
@@ -7486,12 +7486,12 @@ class GeneRegulatoryRelationship(Association):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
         if not isinstance(self.subject, GeneOrGeneProduct):
-            self.subject = GeneOrGeneProduct(**self.subject)
+            self.subject = GeneOrGeneProduct(**as_dict(self.subject))
 
         if self._is_empty(self.object):
             self.MissingRequiredField("object")
         if not isinstance(self.object, GeneOrGeneProduct):
-            self.object = GeneOrGeneProduct(**self.object)
+            self.object = GeneOrGeneProduct(**as_dict(self.object))
 
         super().__post_init__(**kwargs)
 

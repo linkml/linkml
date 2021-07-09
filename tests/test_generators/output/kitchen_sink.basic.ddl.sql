@@ -21,6 +21,13 @@ CREATE TABLE agent (
 	was_informed_by TEXT
 );
 
+CREATE TABLE "BirthEvent" (
+	started_at_time TEXT, 
+	ended_at_time TEXT, 
+	is_current BOOLEAN, 
+	in_location TEXT
+);
+
 CREATE TABLE "Company" (
 	id TEXT NOT NULL, 
 	name TEXT, 
@@ -82,6 +89,7 @@ CREATE TABLE "Person" (
 	has_medical_history TEXT, 
 	age_in_years INTEGER, 
 	addresses TEXT, 
+	has_birth_event TEXT, 
 	aliases TEXT
 );
 

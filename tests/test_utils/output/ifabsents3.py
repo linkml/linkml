@@ -1,5 +1,5 @@
 # Auto generated from ifabsents3.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-02 16:46
+# Generation date: 2021-07-09 16:26
 # Schema: ifabsent
 #
 # id: http://example.org/tests/ifabsent
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions

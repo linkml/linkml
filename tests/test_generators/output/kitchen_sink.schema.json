@@ -71,6 +71,29 @@
          "title": "Agent",
          "type": "object"
       },
+      "BirthEvent": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "ended_at_time": {
+               "format": "date",
+               "type": "string"
+            },
+            "in_location": {
+               "type": "string"
+            },
+            "is_current": {
+               "type": "boolean"
+            },
+            "started_at_time": {
+               "format": "date",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "BirthEvent",
+         "type": "object"
+      },
       "Company": {
          "additionalProperties": false,
          "description": "",
@@ -280,6 +303,9 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "has_birth_event": {
+               "$ref": "#/definitions/BirthEvent"
             },
             "has_employment_history": {
                "items": {

@@ -1,5 +1,5 @@
 # Auto generated from resourcedescription.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-11 19:12
+# Generation date: 2021-07-09 16:24
 # Schema: resourcedescription
 #
 # id: https://hotecosystem.org/tccm/resourcedescription
@@ -12,7 +12,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -551,10 +551,10 @@ class SourceAndNotation(YAMLRoot):
             self.sourceDocument = PersistentURI(self.sourceDocument)
 
         if self.sourceLanguage is not None and not isinstance(self.sourceLanguage, OntologyLanguageReference):
-            self.sourceLanguage = OntologyLanguageReference(**self.sourceLanguage)
+            self.sourceLanguage = OntologyLanguageReference(**as_dict(self.sourceLanguage))
 
         if self.sourceDocumentSyntax is not None and not isinstance(self.sourceDocumentSyntax, OntologySyntaxReference):
-            self.sourceDocumentSyntax = OntologySyntaxReference(**self.sourceDocumentSyntax)
+            self.sourceDocumentSyntax = OntologySyntaxReference(**as_dict(self.sourceDocumentSyntax))
 
         super().__post_init__(**kwargs)
 
@@ -582,7 +582,7 @@ class AbstractResourceDescription(ResourceDescription):
 
         if not isinstance(self.releaseFormat, list):
             self.releaseFormat = [self.releaseFormat] if self.releaseFormat is not None else []
-        self.releaseFormat = [v if isinstance(v, SourceAndNotation) else SourceAndNotation(**v) for v in self.releaseFormat]
+        self.releaseFormat = [v if isinstance(v, SourceAndNotation) else SourceAndNotation(**as_dict(v)) for v in self.releaseFormat]
 
         super().__post_init__(**kwargs)
 
@@ -614,10 +614,10 @@ class ResourceVersionDescription(ResourceDescription):
             self.documentURI = DocumentURI(self.documentURI)
 
         if self.sourceAndNotation is not None and not isinstance(self.sourceAndNotation, SourceAndNotation):
-            self.sourceAndNotation = SourceAndNotation(**self.sourceAndNotation)
+            self.sourceAndNotation = SourceAndNotation(**as_dict(self.sourceAndNotation))
 
         if self.predecessor is not None and not isinstance(self.predecessor, NameAndMeaningReference):
-            self.predecessor = NameAndMeaningReference(**self.predecessor)
+            self.predecessor = NameAndMeaningReference(**as_dict(self.predecessor))
 
         if self.officialResourceVersionID is not None and not isinstance(self.officialResourceVersionID, str):
             self.officialResourceVersionID = str(self.officialResourceVersionID)
@@ -754,7 +754,7 @@ class CodeSystemVersionReference(NameAndMeaningReference):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.codeSystem is not None and not isinstance(self.codeSystem, CodeSystemReference):
-            self.codeSystem = CodeSystemReference(**self.codeSystem)
+            self.codeSystem = CodeSystemReference(**as_dict(self.codeSystem))
 
         super().__post_init__(**kwargs)
 
@@ -902,7 +902,7 @@ class MapVersionReference(NameAndMeaningReference):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.map is not None and not isinstance(self.map, MapReference):
-            self.map = MapReference(**self.map)
+            self.map = MapReference(**as_dict(self.map))
 
         super().__post_init__(**kwargs)
 
@@ -1134,7 +1134,7 @@ class SourceAndRoleReference(NameAndMeaningReference):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.role is not None and not isinstance(self.role, RoleReference):
-            self.role = RoleReference(**self.role)
+            self.role = RoleReference(**as_dict(self.role))
 
         super().__post_init__(**kwargs)
 

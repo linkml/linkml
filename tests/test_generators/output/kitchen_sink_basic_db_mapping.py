@@ -38,6 +38,12 @@ tbl_agent = Table('agent', metadata,
     Column('acted_on_behalf_of', Text),
     Column('was_informed_by', Text),
 )
+tbl_BirthEvent = Table('BirthEvent', metadata, 
+    Column('started_at_time', Text),
+    Column('ended_at_time', Text),
+    Column('is_current', Text),
+    Column('in_location', Text),
+)
 tbl_Company = Table('Company', metadata, 
     Column('id', Text),
     Column('name', Text),
@@ -91,6 +97,7 @@ tbl_Person = Table('Person', metadata,
     Column('has_medical_history', Text),
     Column('age_in_years', Text),
     Column('addresses', Text),
+    Column('has_birth_event', Text),
     Column('aliases', Text),
 )
 tbl_Place = Table('Place', metadata, 
@@ -109,6 +116,8 @@ mapper_registry.map_imperatively(Activity, tbl_activity, properties={
 mapper_registry.map_imperatively(Address, tbl_Address, properties={
 })
 mapper_registry.map_imperatively(Agent, tbl_agent, properties={
+})
+mapper_registry.map_imperatively(BirthEvent, tbl_BirthEvent, properties={
 })
 mapper_registry.map_imperatively(Company, tbl_Company, properties={
 })

@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-11 19:12
+# Generation date: 2021-07-09 16:24
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -57,7 +57,7 @@ class OptionalOneElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.v1 is not None and not isinstance(self.v1, OneElementClass):
-            self.v1 = OneElementClass(**self.v1)
+            self.v1 = OneElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -80,7 +80,7 @@ class RequiredOneElementRange(YAMLRoot):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, OneElementClass):
-            self.v1 = OneElementClass(**self.v1)
+            self.v1 = OneElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -102,7 +102,7 @@ class OptionalOneElementRangeList(YAMLRoot):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -126,7 +126,7 @@ class RequiredOneElementRangeList(OptionalOneElementRangeList):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -150,7 +150,7 @@ class RequiredTwoElementRangeList(YAMLRoot):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, TwoElementClass) else TwoElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, TwoElementClass) else TwoElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -174,7 +174,7 @@ class RequiredThreeElementRangeList(YAMLRoot):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -440,7 +440,7 @@ class RequiredInlinedOneElementRange(RequiredOneElementRange):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, OneElementClass):
-            self.v1 = OneElementClass(**self.v1)
+            self.v1 = OneElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -464,7 +464,7 @@ class RequiredInlinedOneElementRangeList(RequiredOneElementRangeList):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -488,7 +488,7 @@ class RequiredInlinedTwoElementRangeList(RequiredTwoElementRangeList):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, TwoElementClass) else TwoElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, TwoElementClass) else TwoElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -512,7 +512,7 @@ class RequiredInlinedThreeElementRangeList(RequiredThreeElementRangeList):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -707,7 +707,7 @@ class OptionalThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.v1 is not None and not isinstance(self.v1, ThreeElementClass):
-            self.v1 = ThreeElementClass(**self.v1)
+            self.v1 = ThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -730,7 +730,7 @@ class RequiredThreeElementRange(YAMLRoot):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, ThreeElementClass):
-            self.v1 = ThreeElementClass(**self.v1)
+            self.v1 = ThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -884,7 +884,7 @@ class OptionalMultivaluedThreeElementRange(YAMLRoot):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -908,7 +908,7 @@ class RequiredMultivaluedThreeElementRange(YAMLRoot):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, list):
             self.v1 = [self.v1] if self.v1 is not None else []
-        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**v) for v in self.v1]
+        self.v1 = [v if isinstance(v, ThreeElementClass) else ThreeElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 

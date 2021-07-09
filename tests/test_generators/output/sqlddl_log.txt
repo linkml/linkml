@@ -1,5 +1,5 @@
-[('P1', 'fred', 33)]
-Q=SELECT "Person".id AS "Person_id", "Person".name AS "Person_name", "Person".age_in_years AS "Person_age_in_years" 
+[('P1', 'fred', 33, None)]
+Q=SELECT "Person".id AS "Person_id", "Person".name AS "Person_name", "Person".age_in_years AS "Person_age_in_years", "Person".has_birth_event AS "Person_has_birth_event" 
 FROM "Person" 
 WHERE "Person".name = ?
 Agent=Agent(id='Agent03', acted_on_behalf_of=None, was_informed_by=None)
