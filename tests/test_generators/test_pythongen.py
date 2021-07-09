@@ -56,7 +56,8 @@ class PythonGenTestCase(unittest.TestCase):
         print(p2)
         self.assertEqual("Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, "
                          "ended_at_time=None, is_current=None, employed_at='ROR:1')], has_familial_relationships=[], "
-                         "has_medical_history=[], age_in_years=None, addresses=[], aliases=[])", str(p))
+                         "has_medical_history=[], age_in_years=None, addresses=[], has_birth_event=None, aliases=[])",
+                         str(p))
         f = kitchen_module.FamilialRelationship(related_to='me', type='SIBLING_OF')
         self.assertEqual("FamilialRelationship(started_at_time=None, ended_at_time=None, related_to='me', type='SIBLING_OF')", str(f))
 
