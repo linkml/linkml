@@ -37,7 +37,7 @@ class MismatchLog:
                 frame = frame.f_back
 
         def __str__(self):
-            rval = [f'Validation error: File "{os.path.relpath(self.file_or_directory, base_dir)}", line 1']
+            rval = [f'Output mismatch: File "{os.path.relpath(self.file_or_directory, base_dir)}", line 1']
             rval.append("Stack:  " + '\n\t\t'.join([str(e) for e in self.call_stack]))
             if self.msg:
                 rval.append(self.msg.rstrip().capitalize())
