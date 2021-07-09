@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-07 19:58
+# Generation date: 2021-07-07 19:49
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -108,6 +108,7 @@ class Person(YAMLRoot):
     has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
     age_in_years: Optional[int] = None
     addresses: Optional[Union[Union[dict, "Address"], List[Union[dict, "Address"]]]] = empty_list()
+    has_birth_event: Optional[Union[dict, "BirthEvent"]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -135,6 +136,9 @@ class Person(YAMLRoot):
         if not isinstance(self.addresses, list):
             self.addresses = [self.addresses] if self.addresses is not None else []
         self.addresses = [v if isinstance(v, Address) else Address(**v) for v in self.addresses]
+
+        if self.has_birth_event is not None and not isinstance(self.has_birth_event, BirthEvent):
+            self.has_birth_event = BirthEvent(**self.has_birth_event)
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
@@ -301,6 +305,24 @@ class FamilialRelationship(Relationship):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class BirthEvent(Event):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.BirthEvent
+    class_class_curie: ClassVar[str] = "ks:BirthEvent"
+    class_name: ClassVar[str] = "BirthEvent"
+    class_model_uri: ClassVar[URIRef] = KS.BirthEvent
+
+    in_location: Optional[Union[str, PlaceId]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.in_location is not None and not isinstance(self.in_location, PlaceId):
+            self.in_location = PlaceId(self.in_location)
 
         super().__post_init__(**kwargs)
 
@@ -559,6 +581,9 @@ slots.street = Slot(uri=KS.street, name="street", curie=KS.curie('street'),
 
 slots.city = Slot(uri=KS.city, name="city", curie=KS.curie('city'),
                    model_uri=KS.city, domain=None, range=Optional[str])
+
+slots.has_birth_event = Slot(uri=KS.has_birth_event, name="has birth event", curie=KS.curie('has_birth_event'),
+                   model_uri=KS.has_birth_event, domain=None, range=Optional[Union[dict, BirthEvent]])
 
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=KS.id, domain=None, range=URIRef)

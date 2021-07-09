@@ -14,12 +14,12 @@ description: |-
      * c
 
   And links, e.g to [Person](Person.md)
-    
+
 default_curi_maps:
   - semweb_context
 imports:
- - linkml:types
- - core
+  - linkml:types
+  - core
 prefixes:
   pav: http://purl.org/pav/
   dce: http://purl.org/dc/elements/1.1/
@@ -69,6 +69,7 @@ classes:
       - has medical history
       - age in years
       - addresses
+      - has birth event
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
@@ -113,6 +114,11 @@ classes:
       related to:
         range: Person
         required: true
+
+  BirthEvent:
+    is_a: Event
+    slots:
+      - in location
 
   EmploymentEvent:
     is_a: Event
@@ -207,6 +213,8 @@ slots:
   type:
   street:
   city:
+  has birth event:
+    range: BirthEvent
 
 enums:
   FamilialRelationshipType:
