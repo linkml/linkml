@@ -431,13 +431,13 @@ from {model_path} import *
                 for backref in t.backrefs:
                     original_col = backref.original_column
                     backref_slot = original_col.mapped_to
+                    backref_slot_range = camelcase(backref_slot.range)
                     print(f"""
     '{underscore(original_col.mapped_to_alias)}': 
-        relationship({backref_slot.range}, 
+        relationship({backref_slot_range}, 
                       foreign_keys={backref.backref_column.table.as_var()}.columns["{backref.backref_column.name}"],
                       backref='{cn}'),
 """)
-                    #print(f"    '{underscore(backref.column.mapped_to_alias)}': relationship({backref_slot.range}, backref='{backref.backref_to_table.name}'),")
                 print("})")
 
 @shared_arguments(SQLDDLGenerator)
