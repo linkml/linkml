@@ -147,6 +147,12 @@
          "title": "Dataset",
          "type": "object"
       },
+      "DiagnosisType": {
+         "description": "",
+         "enum": [],
+         "title": "DiagnosisType",
+         "type": "string"
+      },
       "EmploymentEvent": {
          "additionalProperties": false,
          "description": "",
