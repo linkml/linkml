@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any
 
 from hbreader import FileInfo, hbread
+from jsonasobj2 import as_dict
 
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -57,7 +58,8 @@ class Loader(ABC):
         else:
             data = source
         data_as_dict = loader(data, metadata)
-        return target_class(**data_as_dict) if data_as_dict is not None else None
+        return target_class(data_as_dict) if isinstance(data_as_dict, list) else \
+               target_class(**as_dict(data_as_dict)) if data_as_dict is not None else None
 
     @abstractmethod
     def load(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
