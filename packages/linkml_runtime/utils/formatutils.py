@@ -1,5 +1,7 @@
 import re
-from typing import List
+from typing import List, Any
+
+from jsonasobj2 import JsonObj, as_dict, is_list, is_dict, items, as_json_obj
 
 ws_pattern = re.compile(r'\s+')
 us_pattern = re.compile(r'_+')
@@ -92,3 +94,57 @@ def shex_results_as_string(rslts) -> str:
         rval.append("Result: NonConforming")
     rval += rslts.reason.split('\n')
     return '\n'.join(rval)
+
+
+def is_empty(v: Any) -> bool:
+    """
+    Determine whether v is considered "empty" in the LinkML context.
+    An element is "empty" if:
+    1) it is None
+    2) It is an empty dictionary
+    3) It is an empty list
+    4) It is an empty JsonObj
+    """
+    return v is None or (isinstance(v, (dict, list)) and not v) or (isinstance(v, JsonObj) and not as_dict(v))
+
+
+def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool=False) -> Any:
+    """
+    Recursively iterate over obj removing any empty internal entries.  Note:  this returns a _copy_ of obj of we are
+    dealing with a list or a dictionary.
+
+    If hide_protected_keys is true, any key that begins with an underscore is removed from the structure, meaning that
+       {
+          '_k1': {
+             'x': ...
+          }
+       }
+       becomes
+       {
+          'x': ...
+       }
+
+    The above situation ONLY applies when there is ONE k,v pair and v is a dictionary
+
+
+    :param obj: Object to be tweaked
+    :param hide_protected_keys: True means remove keys that begin with an underscore
+    :param inside: Keep from removing the outermost container
+    :return: copy of obj with empty items removed or None if obj itself is "empty"
+    """
+    if is_list(obj):
+        obj_list = [e for e in [remove_empty_items(l, hide_protected_keys=hide_protected_keys, inside=True)
+                                for l in as_json_obj(obj)] if not is_empty(e)]
+        return obj_list if not inside or not is_empty(obj_list) else None
+    elif is_dict(obj):
+        obj_dict = {k: v for k, v in [(k2, remove_empty_items(v2, hide_protected_keys=hide_protected_keys, inside=True))
+                                      for k2, v2 in items(obj)] if not is_empty(v)}
+        if hide_protected_keys and len(obj_dict) == 1 and list(obj_dict.keys())[0].startswith('_'):
+            inner_element = list(obj_dict.values())[0]
+            if isinstance(inner_element, dict):
+                obj_dict = inner_element
+        return obj_dict if not inside or not is_empty(obj_dict) else None
+    elif is_empty(obj):
+        return None
+    else:
+        return obj
