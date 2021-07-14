@@ -25,7 +25,12 @@ things_removed: List[Tuple[Any, Any]] = \
      ([None], []),
      (JsonObj(k=None), {}),
      (JsonObj(**{'k': None}), {}),
-     (JsonObj([None]), [])]
+     (JsonObj([None]), []),
+     ([None], []),
+     ([None, None],[]),
+     ([None, [], [{}]], []),
+     ({"k": [{"l": None, "m": [None]}]}, {})
+     ]
 
 issue_157_1 = """
 [
@@ -119,7 +124,7 @@ class FormatUtilsTestCase(unittest.TestCase):
     def test_empty_functions(self):
         """ Test the various forms of is_empty """
         for thing in empty_things:
-            self.assertTrue(is_empty(thing))
+            self.assertTrue(is_empty(thing), msg=f"{thing} should clock in as empty")
         for thing in non_empty_things:
             self.assertFalse(is_empty(thing))
 
