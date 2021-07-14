@@ -9,6 +9,7 @@ from rdflib_pyld_compat import rdflib_graph_from_pyld_jsonld
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, CONTEXT_TYPE
+from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
@@ -84,4 +85,5 @@ class RDFDumper(Dumper):
         :param fmt: rdf format
         :return: rdflib Graph containing element
         """
-        return self.as_rdf_graph(element, contexts).serialize(format=fmt).decode()
+        return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).\
+            serialize(format=fmt).decode()

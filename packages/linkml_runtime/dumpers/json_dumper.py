@@ -1,8 +1,10 @@
 import json
 from typing import Dict
-from jsonasobj2 import items, JsonObj, as_dict
+
+from deprecated.classic import deprecated
 
 from linkml_runtime.dumpers.dumper_root import Dumper
+from linkml_runtime.utils import formatutils
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
 
@@ -43,11 +45,11 @@ class JSONDumper(Dumper):
 
 
     @staticmethod
+    @deprecated("Use `utils/formatutils/remove_empty_items` instead")
     def remove_empty_items(obj: Dict) -> Dict:
         """
         Remove empty items from obj
         :param obj:
         :return: copy of dictionary with empty lists/dicts and Nones removed
         """
-        return {k: as_dict(v) if isinstance(v, JsonObj) else v
-                for k, v in items(obj) if not (v is None or v == [] or v == {})}
+        return formatutils.remove_empty_items(obj, hide_protected_keys=True)
