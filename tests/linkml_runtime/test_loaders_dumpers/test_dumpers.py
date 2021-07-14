@@ -6,11 +6,11 @@ from rdflib import Namespace, SKOS, Literal
 
 from linkml_runtime.dumpers import yaml_dumper, json_dumper, rdf_dumper
 from linkml_runtime.utils.yamlutils import as_json_object
+from tests.support.clicktestcase import ClickTestCase
 from tests.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR, HTTP_TEST_PORT, HTTPS_TEST_PORT, \
     GITHUB_LD10_CONTEXT, GITHUB_LD11_CONTEXT
 from tests.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
 from tests.test_loaders_dumpers.models.termci_schema import ConceptReference, ConceptSystem, Package
-from tests.support.clicktestcase import ClickTestCase
 
 OBO = Namespace("http://purl.obolibrary.org/obo/")
 NCIT = Namespace("http://purl.obolibrary.org/obo/NCI_")

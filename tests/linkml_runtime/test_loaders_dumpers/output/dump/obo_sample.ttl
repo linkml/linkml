@@ -20,6 +20,6 @@ ncit:C147557 skos:broader ncit:C91102 ;
         ncit:C147796 ;
     sh:prefix "OBO" .
 
-[] a termci:Package ;
+[] a termci:dict ;
     termci:system <http://purl.obolibrary.org/obo/> .
 
