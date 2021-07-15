@@ -479,8 +479,8 @@
                "type": "array"
             },
             "pv_formula": {
-               "description": "Defines the specific formula to be used to generate the permissible values.",
-               "type": "string"
+               "$ref": "#/definitions/PvFormulaOptions",
+               "description": "Defines the specific formula to be used to generate the permissible values."
             },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
@@ -706,6 +706,17 @@
          ],
          "title": "Prefix",
          "type": "object"
+      },
+      "PvFormulaOptions": {
+         "description": "The formula used to generate the set of permissible values from the code_set values",
+         "enum": [
+            "CODE",
+            "CURIE",
+            "URI",
+            "FHIR_CODING"
+         ],
+         "title": "PvFormulaOptions",
+         "type": "string"
       },
       "SchemaDefinition": {
          "additionalProperties": false,
