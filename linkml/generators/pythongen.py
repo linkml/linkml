@@ -789,6 +789,11 @@ class {enum_name}(EnumDefinitionImpl):
 
     {self.gen_enum_definition(enum, enum_name)}
     {self.gen_pvs2(enum)}
+
+    def __str__(self) -> str:
+        """ Use only the code of this enumeration when dumping this enumeration to a string. """
+        return self._code.text
+    
 '''.strip()
 
     def gen_pvs(self, enum: EnumDefinition) -> str:
