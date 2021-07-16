@@ -6,10 +6,10 @@
 
 <https://hotecosystem.org/tccm/prefixes> a owl:Ontology ;
     rdfs:label "prefixes" ;
-    linkml:generation_date "2021-07-09 16:24" ;
+    linkml:generation_date "2021-07-16 22:06" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "minimalmodel.yaml" ;
-    linkml:source_file_date "Fri Jul  9 16:20:15 2021" ;
+    linkml:source_file_date "Fri Jul 16 22:02:55 2021" ;
     linkml:source_file_size 59 .
 
 linkml:ClassDefinition a owl:Class ;
