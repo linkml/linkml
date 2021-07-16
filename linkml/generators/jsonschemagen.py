@@ -1,29 +1,13 @@
 import os
-from typing import Union, TextIO, Optional, Dict, Tuple
+from typing import Union, TextIO, Optional
 
 import click
 from jsonasobj2 import JsonObj, as_json
+
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
 
-from linkml.utils.generator import Generator, shared_arguments
-
-# Map from underlying python data type to json equivalent
-# Note: The underlying types are a union of any built-in python datatype + any type defined in
-#       linkml-runtime/utils/metamodelcore.py
-# Note the keys are all lower case
-json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
-    "int": ("integer", None),
-    "integer": ("integer", None),
-    "bool": ("boolean", None),
-    "boolean": ("boolean", None),
-    "float": ("number", None),
-    "double": ("number", None),
-    "decimal": ("number", None),
-    "xsddate": ("string", "date"),
-    "xsddatetime": ("string", "date-time"),
-    "xsdtime": ("string", "time"),
-}
 
 class JsonSchemaGenerator(Generator):
     generatorname = os.path.basename(__file__)
@@ -42,12 +26,13 @@ class JsonSchemaGenerator(Generator):
         # so we duplicate slots from inherited parents and mixins
         self.visit_all_slots = True
 
-    def visit_schema(self, inline: bool = False, **kwargs) -> None:
+    def visit_schema(self, inline: bool = False, not_closed=True, **kwargs) -> None:
         self.inline = inline
         self.schemaobj = JsonObj(title=self.schema.name,
                                  type="object",
                                  properties={},
-                                 definitions=JsonObj())
+                                 definitions=JsonObj(),
+                                 additionalProperties=not_closed)
         for p, c in self.entryProperties.items():
             self.schemaobj['properties'][p] = {
                 'type': "array",
@@ -73,13 +58,26 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj.definitions[camelcase(cls.name)] = self.clsobj
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        fmt = None
-        if slot.range in self.schema.types:
-            (rng, fmt) = json_schema_types.get(self.schema.types[slot.range].base.lower(), ("string", None))
-        elif slot.range in self.schema.classes and slot.inlined:
+        if slot.range in self.schema.classes and slot.inlined:
             rng = f"#/definitions/{camelcase(slot.range)}"
+        elif slot.range in self.schema.types:
+            rng = self.schema.types[slot.range].base
         else:
+            # note we assume string for non-lined complex objects
             rng = "string"
+
+        # translate to json-schema builtins
+        if rng == 'int':
+            rng = 'integer'
+        elif rng == 'Bool':
+            rng = 'boolean'
+        elif rng == 'str':
+            rng = 'string'
+        elif rng == 'float' or rng == 'double':
+            rng = 'number'
+        elif not rng.startswith('#'):
+            # URIorCURIE, etc
+            rng = 'string'
 
         if slot.inlined:
             # If inline we have to include redefined slots
@@ -91,15 +89,9 @@ class JsonSchemaGenerator(Generator):
                 prop = ref
         else:
             if slot.multivalued:
-                if fmt is None:
-                    prop = JsonObj(type="array", items={'type': rng})
-                else:
-                    prop = JsonObj(type="array", items={'type': rng, 'format': fmt})
+                prop = JsonObj(type="array", items={'type': rng})
             else:
-                if fmt is None:
-                    prop = JsonObj(type=rng)
-                else:
-                    prop = JsonObj(type=rng, format=fmt)
+                prop = JsonObj(type=rng)
         if slot.description:
             prop.description = slot.description
         if slot.required:
@@ -121,6 +113,9 @@ Note that declaring a slot as inlined: true will always inline the class
 """)
 @click.option("-t", "--top-class", help="""
 Top level class; slots of this class will become top level properties in the json-schema
+""")
+@click.option("--not-closed/--closed", default=True, help="""
+Set additionalProperties=False if closed otherwise true if not closed at the global level
 """)
 def cli(yamlfile, **kwargs):
     """ Generate JSON Schema representation of a biolink model """
