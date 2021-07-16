@@ -28,6 +28,8 @@ class GenJSONSchemaTestCase(ClickTestCase):
     def test_tree_root_args(self):
         self.do_test([env.input_path('roottest.yaml'), '-t', 'c2'], 'rootttest2.jsonld', add_yaml=False)
 
-
+    def test_tree_root_closed(self):
+        self.do_test([env.input_path('roottest.yaml'), '--closed'], 'rootttest3.jsonld', add_yaml=False)
+        
 if __name__ == '__main__':
     unittest.main()
