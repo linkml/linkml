@@ -32,3 +32,16 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.pypi_password }}
+
+    - name: Update metadata
+      run: |
+          git add AUTHORS ChangeLog
+          if [[ ! -z $(git status -s AUTHORS ChangeLog) ]]
+          then
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -m 'PBR AUTHORS and ChangeLog update' AUTHORS ChangeLog
+            git push
+          fi
+
+
