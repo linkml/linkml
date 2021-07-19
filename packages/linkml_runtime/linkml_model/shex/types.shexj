@@ -1,0 +1,82 @@
+{
+   "type": "Schema",
+   "@context": [
+      "http://www.w3.org/ns/shex.jsonld",
+      {
+         "@base": "https://w3id.org/linkml/"
+      }
+   ],
+   "shapes": [
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/String",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Integer",
+         "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Boolean",
+         "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Float",
+         "datatype": "http://www.w3.org/2001/XMLSchema#float"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Double",
+         "datatype": "http://www.w3.org/2001/XMLSchema#double"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Decimal",
+         "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Time",
+         "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Date",
+         "datatype": "http://www.w3.org/2001/XMLSchema#date"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Datetime",
+         "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Uriorcurie",
+         "nodeKind": "iri"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Uri",
+         "nodeKind": "iri"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Ncname",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Objectidentifier",
+         "nodeKind": "iri"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Nodeidentifier",
+         "nodeKind": "nonliteral"
+      }
+   ]
+}
+

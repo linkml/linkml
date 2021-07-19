@@ -1,0 +1,9 @@
+{
+   "$id": "https://w3id.org/linkml/types",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {},
+   "properties": {},
+   "title": "types",
+   "type": "object"
+}
+

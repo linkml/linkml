@@ -1,0 +1,37 @@
+{
+   "$id": "https://w3id.org/linkml/extensions",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "definitions": {
+      "Extension": {
+         "additionalProperties": false,
+         "description": "a tag/value pair used to add non-model information to an entry",
+         "properties": {
+            "extensions": {
+               "description": "a tag/text tuple attached to an arbitrary element",
+               "items": {
+                  "$ref": "#/definitions/Extension"
+               },
+               "type": "array"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "tag",
+            "value"
+         ],
+         "title": "Extension",
+         "type": "object"
+      }
+   },
+   "properties": {},
+   "title": "extensions",
+   "type": "object"
+}
+
