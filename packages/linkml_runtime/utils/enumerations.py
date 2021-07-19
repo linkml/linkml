@@ -97,7 +97,8 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         pass
 
     def __str__(self) -> str:
-        return f'{self._code.text}: {self._code.description or ""}'
+        """ The string representation of an enumerated value should be the code representing this value."""
+        return self._code.text
 
     def __repr__(self) -> str:
         rlist = [(f.name, getattr(self._code, f.name)) for f in fields(self._code)]
