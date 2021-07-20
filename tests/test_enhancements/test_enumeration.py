@@ -112,7 +112,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         except ValueError as e:
             self.assertEqual("Unknown OpenEnum enumeration code: z", str(e))
         x = module.PositionalRecord("117493", "c")
-        self.assertEqual('c: bottom', str(x.position))
+        self.assertEqual('c', str(x.position))
         self.assertEqual("PositionalRecord(id='117493', position=(text='c', description='bottom'))", repr(x))
         self.assertEqual("(text='c', description='bottom')", repr(x.position))
 
