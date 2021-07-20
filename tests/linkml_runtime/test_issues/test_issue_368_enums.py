@@ -22,7 +22,7 @@ class Issue368TestCase(LoaderDumperTestCase):
         example = module.SampleClass(slot_1="pva")
         assert hasattr(example, "slot_1")
         assert example.slot_1.code.text == enum_inst.code.text
-        assert str(example.slot_1) == "pva: PVA description"
+        assert str(example.slot_1) == "pva"
 
         def dump_and_load(dumper: Callable, sfx: str) -> None:
             fname = env.actual_path(f'issue_368_1.{sfx}')
