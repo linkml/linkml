@@ -7,12 +7,14 @@ from rdflib import Graph, URIRef
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.prefixmapgen import PrefixGenerator
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from tests.test_prefixes.environment import env
 
 SCHEMA = env.input_path('prefixtest.yaml')
 OWL_OUTPUT = env.expected_path('prefixtest.owl.ttl')
 RDF_OUTPUT = env.expected_path('prefixtest.rdf.nt')
 PM_OUTPUT = env.expected_path('prefixtest.prefixmap.json')
+CONTEXT_OUTPUT = env.expected_path('prefixtest.context.jsonld')
 
 
 class PrefixTestCase(unittest.TestCase):
@@ -23,6 +25,7 @@ class PrefixTestCase(unittest.TestCase):
             stream.write(owl)
         g = Graph()
         g.parse(OWL_OUTPUT, format="turtle")
+        # TODO: fix owlgen such that we don't have to hardcode exceptions
         self._check_triples(g,exceptions=[
             'http://schema.org/additionalName',
             'http://purl.obolibrary.org/obo/BFO_0000050',
@@ -64,13 +67,89 @@ class PrefixTestCase(unittest.TestCase):
         fails = 0
         for k, v in expected.items():
             if k in obj:
-                if v != expected[k]:
+                if v != obj[k]:
                     logging.error(f'{k} = {v} expected {expected[k]}')
                     fails += 1
             else:
                 logging.error(f'Missing key: {k}')
                 fails += 1
         assert fails == 0
+
+    def test_jsonldcontext(self):
+        out = ContextGenerator(SCHEMA, mergeimports=True).serialize()
+        with open(CONTEXT_OUTPUT, 'w') as stream:
+            stream.write(out)
+        expected = {
+            "BFO": {
+                "@id": "http://purl.obolibrary.org/obo/BFO_",
+                "@prefix": True
+            },
+            "CL": {
+                "@id": "http://purl.obolibrary.org/obo/CL_",
+                "@prefix": True
+            },
+            "GO": {
+                "@id": "http://purl.obolibrary.org/obo/GO_",
+                "@prefix": True
+            },
+            "PR": {
+                "@id": "http://purl.obolibrary.org/obo/PR_",
+                "@prefix": True
+            },
+            "SIO": {
+                "@id": "http://semanticscience.org/resource/SIO_",
+                "@prefix": True
+            },
+            "SO": {
+                "@id": "http://purl.obolibrary.org/obo/SO_",
+                "@prefix": True
+            },
+            "biolink": "https://w3id.org/biolink/",
+            "dbont": "http://dbpedia.org/ontology/",
+            "dce": "http://purl.org/dc/elements/1.1/",
+            "lego": "http://geneontology.org/lego/",
+            "linkml": "https://w3id.org/linkml/",
+            "owl": "http://www.w3.org/2002/07/owl#",
+            "pav": "http://purl.org/pav/",
+            "prefixtest": "https://w3id.org/linkml/tests/prefixtest/",
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "sdo": "http://schema.org/",
+            "wd": "https://www.wikidata.org/wiki/",
+            "@vocab": "https://w3id.org/linkml/tests/prefixtest/",
+            "additionalName": {
+                "@id": "sdo:additionalName"
+            },
+            "id": "@id",
+            "label": {
+                "@id": "rdfs:label"
+            },
+            "part_of": {
+                "@id": "BFO:0000050"
+            },
+            "type": {
+                "@id": "rdf:type"
+            }
+        }
+        with open(CONTEXT_OUTPUT) as stream:
+            obj = json.load(stream)['@context']
+        fails = 0
+        for k, v in expected.items():
+            if k in obj:
+                if v != obj[k]:
+                    if not('@id' in v and '@id' in obj[k] and v['@id'] == obj[k]['@id']):
+                        logging.error(f'{k} = {v} expected {expected[k]}')
+                        fails += 1
+            else:
+                logging.error(f'Missing key: {k}')
+                fails += 1
+        assert fails == 0
+
+        # unexpected - we don't want to import unused prefixes from the default_curi_map
+        assert "FOODON" not in obj
+        assert "OBI" not in obj
+        assert "ENVO" not in obj
+
 
     def _check_triples(self, g, exceptions=[]):
         """
