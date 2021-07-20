@@ -8,21 +8,25 @@ default_curi_maps:
   - obo_context
 imports:
   - linkml:types
-  - prefix_import_test
+#  - prefix_import_test
 prefixes:
+  sdo: http://schema.org/
   pav: http://purl.org/pav/
   dce: http://purl.org/dc/elements/1.1/
   lego: http://geneontology.org/lego/
   linkml: https://w3id.org/linkml/
   biolink: https://w3id.org/biolink/
   prefixtest: https://w3id.org/linkml/tests/prefixtest/
-  RO: http://purl.obolibrary.org/obo/RO_
-  BFO: http://purl.obolibrary.org/obo/BFO_
+  GO: http://purl.obolibrary.org/obo/GO_
+  SIO: 'http://semanticscience.org/resource/SIO_'
   wd: https://www.wikidata.org/wiki/
   dbont: http://dbpedia.org/ontology/
 default_prefix: prefixtest
 see_also:
   - https://example.org/
+emit_prefixes:
+  - GO
+  - CL
 
 
 classes:
@@ -54,5 +58,12 @@ slots:
 
   native:
 
+  additionalName:
+    slot_uri: sdo:additionalName
+    
+  part of:
+    slot_uri: BFO:0000050
+    exact_mappings:
+      - sdo:isPartOf
 
   
