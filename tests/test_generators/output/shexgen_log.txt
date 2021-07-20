@@ -160,12 +160,12 @@
       "@id": "prov:Agent"
     }
   }
-}Eval _:b2 = (False, 'No starting shape')
-Eval _:b3 = (False, 'No starting shape')
+}Eval P:001 = (False, 'No starting shape')
 Eval _:b1 = (False, 'No starting shape')
-Eval _:b4 = (False, 'No starting shape')
 Eval P:002 = (False, 'No starting shape')
+Eval _:b3 = (False, 'No starting shape')
+Eval _:b4 = (False, 'No starting shape')
 Eval _:b0 = (False, 'No starting shape')
-Eval P:001 = (False, 'No starting shape')
 Eval A:1 = (False, 'No starting shape')
+Eval _:b2 = (False, 'No starting shape')
 Eval ROR:1 = (False, 'No starting shape')

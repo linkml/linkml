@@ -134,10 +134,10 @@ linkml:Uriorcurie a owl:Class,
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     rdfs:seeAlso "https://example.org/" ;
     skos:definition "Prefix Test Schema" ;
-    linkml:generation_date "2021-07-20 20:22" ;
+    linkml:generation_date "2021-07-20 21:10" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "prefixtest.yaml" ;
-    linkml:source_file_date "Tue Jul 20 20:17:49 2021" ;
+    linkml:source_file_date "Tue Jul 20 21:05:58 2021" ;
     linkml:source_file_size 1195 .
 
 <https://w3id.org/linkml/tests/prefixtest/Class> a owl:Class,

@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from minimalmodel.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 20:22\n    Schema: prefixes\n    \n    id: https://hotecosystem.org/tccm/prefixes\n    description: \n    license: \n    ",
+   "_comments": "Auto generated from minimalmodel.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 21:10\n    Schema: prefixes\n    \n    id: https://hotecosystem.org/tccm/prefixes\n    description: \n    license: \n    ",
    "@context": {
       "prefixes": "https://hotecosystem.org/tccm/prefixes/",
       "@vocab": "https://hotecosystem.org/tccm/prefixes/"

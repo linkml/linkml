@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from simple_uri_test.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 20:22\n    Schema: simple_uri_test\n    \n    id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test\n    description: A test of various forms of jsonld context generation\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from simple_uri_test.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 21:10\n    Schema: simple_uri_test\n    \n    id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test\n    description: A test of various forms of jsonld context generation\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "bar": {
          "@id": "http://samples.r.us/bar_",
