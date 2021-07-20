@@ -38,6 +38,9 @@ classes:
       - wd:Q7187
       - PR:000000001
 
+  Class:
+    class_uri: owl:Class
+
 slots:
 
   id:
@@ -46,8 +49,10 @@ slots:
   type:
     slot_uri: rdf:type
     
-  type:
-    slot_uri: rdf:type
+  label:
+    slot_uri: rdfs:label
+
+  native:
 
 
   

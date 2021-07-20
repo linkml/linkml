@@ -1,0 +1,32 @@
+id: https://w3id.org/linkml/tests/prefix_import_test
+name: prefix_import_test
+description: |-
+  Prefix Test Schema
+
+default_curi_maps:
+  - semweb_context
+  - obo_context
+imports:
+  - linkml:types
+  - prefix_import_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  prefix_import_test: https://w3id.org/linkml/tests/prefix_import_test/
+  dbont: http://dbpedia.org/ontology/
+default_prefix: prefix_import_test
+
+
+classes:
+
+  Food:
+    class_uri: dbont:Food
+    exact_mappings:
+      - wd:Q2095
+    close_mappings:
+      - CHEBI:33290
+    broad_mappings:
+      - FOODON:00002403
+
+slots:
+
