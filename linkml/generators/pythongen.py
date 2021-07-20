@@ -69,28 +69,6 @@ class PythonGenerator(Generator):
             if type_prefix:
                 self.emit_prefixes.add(type_prefix)
 
-    def add_mappings(self, defn: Definition) -> None:
-        """
-        Process any mappings in defn, adding all of the mappings prefixes to the namespace map
-        :param defn: Class or Slot Definition
-        """
-        self.add_id_prefixes(defn)
-        for mapping in defn.mappings:
-            if '://' in mapping:
-                mcurie = self.namespaces.curie_for(mapping)
-                self.logger.warning(f"No namespace defined for URI: {mapping}")
-                if mcurie is None:
-                    return        # Absolute path - no prefix/name
-                else:
-                    mapping = mcurie
-            if ':' not in mapping or len(mapping.split(':')) != 2:
-                raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
-            ns = mapping.split(':')[0]
-            self.emit_prefixes.add(ns)
-
-    def add_id_prefixes(self, element: Element) -> None:
-        self.emit_prefixes.update(element.id_prefixes)
-
     def gen_schema(self) -> str:
         # The metamodel uses Enumerations to define itself, so don't import if we are generating the metamodel
         enumimports = '' if self.genmeta else \
