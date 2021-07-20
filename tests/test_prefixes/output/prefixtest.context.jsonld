@@ -1,0 +1,61 @@
+{
+   "_comments": "Auto generated from prefixtest.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 20:22\n    Schema: prefixtest\n    \n    id: https://w3id.org/linkml/tests/prefixtest\n    description: Prefix Test Schema\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "BFO": {
+         "@id": "http://purl.obolibrary.org/obo/BFO_",
+         "@prefix": true
+      },
+      "CL": {
+         "@id": "http://purl.obolibrary.org/obo/CL_",
+         "@prefix": true
+      },
+      "GO": {
+         "@id": "http://purl.obolibrary.org/obo/GO_",
+         "@prefix": true
+      },
+      "PR": {
+         "@id": "http://purl.obolibrary.org/obo/PR_",
+         "@prefix": true
+      },
+      "SIO": {
+         "@id": "http://semanticscience.org/resource/SIO_",
+         "@prefix": true
+      },
+      "SO": {
+         "@id": "http://purl.obolibrary.org/obo/SO_",
+         "@prefix": true
+      },
+      "biolink": "https://w3id.org/biolink/",
+      "dbont": "http://dbpedia.org/ontology/",
+      "dce": "http://purl.org/dc/elements/1.1/",
+      "lego": "http://geneontology.org/lego/",
+      "linkml": "https://w3id.org/linkml/",
+      "owl": "http://www.w3.org/2002/07/owl#",
+      "pav": "http://purl.org/pav/",
+      "prefixtest": "https://w3id.org/linkml/tests/prefixtest/",
+      "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+      "sdo": "http://schema.org/",
+      "wd": "https://www.wikidata.org/wiki/",
+      "@vocab": "https://w3id.org/linkml/tests/prefixtest/",
+      "additionalName": {
+         "@id": "sdo:additionalName"
+      },
+      "id": "@id",
+      "label": {
+         "@id": "rdfs:label"
+      },
+      "part_of": {
+         "@id": "BFO:0000050"
+      },
+      "type": {
+         "@id": "rdf:type"
+      },
+      "Class": {
+         "@id": "owl:Class"
+      },
+      "Gene": {
+         "@id": "biolink:Gene"
+      }
+   }
+}
