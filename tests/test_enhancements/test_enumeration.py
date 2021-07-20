@@ -105,7 +105,7 @@ class EnumerationTestCase(TestEnvironmentTestCase):
         module = compile_python(env.expected_path(python_name))
         c1 = module.PositionalRecord('my location', 'a')
         self.assertEqual("PositionalRecord(id='my location', position=(text='a', description='top'))", str(c1))
-        self.assertEqual("a: top", str(c1.position))
+        self.assertEqual("a", str(c1.position))
         self.assertEqual("(text='a', description='top')", repr(c1.position))
         try:
             c2 = module.PositionalRecord('your location', 'z')
