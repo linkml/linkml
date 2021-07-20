@@ -1,0 +1,53 @@
+id: https://w3id.org/linkml/tests/prefixtest
+name: prefixtest
+description: |-
+  Prefix Test Schema
+
+default_curi_maps:
+  - semweb_context
+  - obo_context
+imports:
+  - linkml:types
+  - prefix_import_test
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  prefixtest: https://w3id.org/linkml/tests/prefixtest/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+  wd: https://www.wikidata.org/wiki/
+  dbont: http://dbpedia.org/ontology/
+default_prefix: prefixtest
+see_also:
+  - https://example.org/
+
+
+classes:
+
+  Foo:
+
+  Gene:
+    class_uri: biolink:Gene
+    exact_mappings:
+      - SO:0000704
+      - SIO:010035
+    close_mappings:
+      - wd:Q7187
+      - PR:000000001
+
+slots:
+
+  id:
+    identifier: true
+
+  type:
+    slot_uri: rdf:type
+    
+  type:
+    slot_uri: rdf:type
+
+
+  
