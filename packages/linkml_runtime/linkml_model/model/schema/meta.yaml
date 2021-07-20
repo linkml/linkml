@@ -77,7 +77,14 @@ slots:
     multivalued: true
     range: ncname
     description: >-
-      the identifier of this class or slot must begin with one of the URIs referenced by this prefix
+      the identifier of this class or slot must begin with the URIs referenced by this prefix
+    comments:
+      - Order of elements may be used to indicate priority order
+      - If identifiers are treated as CURIEs, then the CURIE must start with one of the indicated prefixes followed by `:` (_should_ start if the list is open)
+      - If identifiers are treated as URIs, then the URI string must start with the expanded for of the prefix (_should_ start if the list is open)
+    see_also:
+      - https://github.com/linkml/linkml/issues/194
+      - https://github.com/linkml/linkml-model/issues/28
 
   description:
     domain: element
@@ -515,6 +522,21 @@ slots:
     range: boolean
     description: indicator that this is the root class in tree structures
 
+  unique_keys:
+    domain: class_definition
+    range: unique_key
+    multivalued: true
+    inlined: true
+    description: Set of unique keys for this slot
+    mappings:
+      - owl:hasKey
+
+  unique_key_slots:
+    domain: unique_key
+    multivalued: true
+    required: true
+    range: slot_definition
+    description: list of slot names that form a key
 
   # -----------------------------------
   # Slot definition slots
@@ -607,6 +629,17 @@ slots:
     inherited: true
     description: true means that the slot must be present in the loaded definition
 
+  recommended:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that the slot should be present in the loaded definition, but this is not required
+    comments:
+      - This is to be used where not all data is expected to conform to having a required field
+      - If a slot is recommended, and it is not populated, applications must not treat this as an error. Applications may use this to inform the user of missing data
+    see_also:
+      - https://github.com/linkml/linkml/issues/177
+
   inlined:
     domain: slot_definition
     range: boolean
@@ -638,12 +671,12 @@ slots:
     range: boolean
     inherited: true
     description: >-
-      True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there
-      to be compound keys, where several slots combine to produce a unique identifier
+      True means that the key slot(s) uniquely identify the container.
     comments:
+      - see also 'unique_key'
       - key is inherited
       - a given domain can have at most one key slot (restriction to be removed in the future)
-      - identifiers and keys are mutually exclusive.  A given domain cannot have bot
+      - identifiers and keys are mutually exclusive.  A given domain cannot have both
       - a key slot is automatically required.  Keys cannot be optional
 
   identifier:
@@ -748,7 +781,7 @@ slots:
     inherited: true
 
   string_serialization:
-    domain: slot_definition
+    domain: definition
     range: string
     description: >-
       Used on a slot that stores the string serialization of the containing object. The syntax follows python
@@ -901,19 +934,10 @@ slots:
 # Classes                         #
 #==================================
 classes:
-  element:
-    description: a named element in the model
-    abstract: true
-    mixins:
-      - extensible
-      - annotatable
+  common_metadata:
+    description: Generic metadata shared across definitions
+    mixin: true
     slots:
-      - name
-      - id_prefixes
-      - definition_uri
-      - aliases
-      - local_names
-      - mappings
       - description
       - alt_descriptions
       - deprecated
@@ -925,13 +949,28 @@ classes:
       - from_schema
       - imported_from
       - see_also
+      - deprecated element has exact replacement
+      - deprecated element has possible replacement
+
+  element:
+    description: a named element in the model
+    abstract: true
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - name
+      - id_prefixes
+      - definition_uri
+      - aliases
+      - local_names
+      - mappings
       - exact mappings
       - close mappings
       - related mappings
       - narrow mappings
       - broad mappings
-      - deprecated element has exact replacement
-      - deprecated element has possible replacement
     see_also:
       - https://en.wikipedia.org/wiki/Data_element
 
@@ -999,6 +1038,7 @@ classes:
       - last_updated_on
       - modified_by
       - status
+      - string_serialization
     see_also:
       - https://en.wikipedia.org/wiki/Data_element_definition
 
@@ -1019,7 +1059,11 @@ classes:
       - field
       - property
       - attribute
+      - column
+      - variable
     is_a: definition
+    close_mappings:
+      - rdf:Property
     slots:
       - singular_name
       - domain
@@ -1030,6 +1074,7 @@ classes:
       - readonly
       - ifabsent
       - required
+      - recommended
       - inlined
       - inlined_as_list
       - key
@@ -1047,7 +1092,6 @@ classes:
       - minimum_value
       - maximum_value
       - pattern
-      - string_serialization
 
     slot_usage:
       is_a:
@@ -1063,6 +1107,8 @@ classes:
       - table
       - record
       - template
+      - message
+      - observation
     is_a: definition
     slots:
       - slots
@@ -1080,6 +1126,8 @@ classes:
         range: class_definition
       apply_to:
         range: class_definition
+    close_mappings:
+      - owl:Class
 
   prefix:
     description: prefix URI tuple
@@ -1110,6 +1158,7 @@ classes:
     mixins:
       - extensible
       - annotatable
+      - common_metadata
     slot_usage:
       is_a:
         range: permissible_value
@@ -1119,18 +1168,14 @@ classes:
       - text
       - description
       - meaning
-      - alt_descriptions
-      - deprecated
-      - todos
-      - notes
-      - comments
-      - examples
-      - in_subset
-      - from_schema
-      - imported_from
-      - see_also
-      - deprecated element has exact replacement
-      - deprecated element has possible replacement
+
+  unique_key:
+    description: a collection of slots whose values uniquely identify an instance of a class
+    mixins:
+      - extensible
+      - annotatable
+    slots:
+      - unique_key_slots
 
 
 #==================================

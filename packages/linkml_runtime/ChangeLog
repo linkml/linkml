@@ -1,6 +1,56 @@
 CHANGES
 =======
 
+* Fix syntax for pr-test version in github actions
+* Add a couple more unit tests
+* Further fixes for issue #12.  Introduce \`remove\_empty\_items\` into all dumpers
+* Fix for issue #12
+* Loader now takes root lists
+
+v1.0.10
+-------
+
+* Fix an omission on inline generation
+
+v1.0.9
+------
+
+* Sync generated files
+* Add MissingRequiredField to YAMLRoot
+* Phase 1 in adding MissingRequiredField intercept
+* Update main.yaml
+
+v1.0.8
+------
+
+* Fix import error
+* Add sequential dependencies to build process
+* Update Pipfile
+
+v1.0.7
+------
+
+* Automatically generated requirements.txt and requirements-dev.txt
+* Fix for issue #6
+* Automatically generated requirements.txt and requirements-dev.txt
+* Fix issue #3
+
+v1.0.6
+------
+
+* Update json\_loader.py
+* Added notes in Pipfile for next steps
+* Fixing URL for github issue
+
+v1.0.5
+------
+
+* Include JSON-LD files as well for RDF transformations
+
+v1.0.4
+------
+
+* Include yaml files in linkml\_model cpy
 * Another (last) brute force attempt to get rid of pyld
 * Add test for issue #3
 
@@ -8,12 +58,12 @@ v1.0.3
 ------
 
 * Changelog
+* Fixed import statement mystery
+* Update w/ solo strings issue
 
 v1.0.2
 ------
 
-* Fixed import statement mystery
-* Update w/ solo strings issue
 * One last attempt to brute force this whole thing..
 * Automatically generated requirements.txt and requirements-dev.txt
 * Change dependency to rdflib-pyldmod-compat
