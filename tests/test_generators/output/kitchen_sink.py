@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 09:05
+# Generation date: 2021-07-20 18:44
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -11,7 +11,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
@@ -122,23 +122,23 @@ class Person(YAMLRoot):
 
         if not isinstance(self.has_employment_history, list):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
-        self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**v) for v in self.has_employment_history]
+        self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
         self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
-        self.has_medical_history = [v if isinstance(v, MedicalEvent) else MedicalEvent(**v) for v in self.has_medical_history]
+        self.has_medical_history = [v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v)) for v in self.has_medical_history]
 
         if self.age_in_years is not None and not isinstance(self.age_in_years, int):
             self.age_in_years = int(self.age_in_years)
 
         if not isinstance(self.addresses, list):
             self.addresses = [self.addresses] if self.addresses is not None else []
-        self.addresses = [v if isinstance(v, Address) else Address(**v) for v in self.addresses]
+        self.addresses = [v if isinstance(v, Address) else Address(**as_dict(v)) for v in self.addresses]
 
         if self.has_birth_event is not None and not isinstance(self.has_birth_event, BirthEvent):
-            self.has_birth_event = BirthEvent(**self.has_birth_event)
+            self.has_birth_event = BirthEvent(**as_dict(self.has_birth_event))
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
