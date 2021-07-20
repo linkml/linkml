@@ -375,6 +375,10 @@ slot(readonly).
 domain(readonly, slot_definition).
 range(readonly, string).
 has_uri(readonly, 'http://w3id.org/biolink/vocab/readonly').
+slot(recommended).
+domain(recommended, slot_definition).
+range(recommended, boolean).
+has_uri(recommended, 'http://w3id.org/biolink/vocab/recommended').
 slot(related_mappings).
 range(related_mappings, uriorcurie).
 has_uri(related_mappings, 'http://w3id.org/biolink/vocab/related_mappings').
@@ -455,7 +459,7 @@ domain(status, element).
 range(status, uriorcurie).
 has_uri(status, 'http://w3id.org/biolink/vocab/status').
 slot(string_serialization).
-domain(string_serialization, slot_definition).
+domain(string_serialization, definition).
 range(string_serialization, string).
 has_uri(string_serialization, 'http://w3id.org/biolink/vocab/string_serialization').
 slot(subclass_of).
@@ -511,6 +515,17 @@ domain(union_of, class_definition).
 range(union_of, class_definition).
 has_uri(union_of, 'http://w3id.org/biolink/vocab/union_of').
 multivalued(union_of).
+slot(unique_key_slots).
+domain(unique_key_slots, unique_key).
+range(unique_key_slots, slot_definition).
+has_uri(unique_key_slots, 'http://w3id.org/biolink/vocab/unique_key_slots').
+multivalued(unique_key_slots).
+required(unique_key_slots).
+slot(unique_keys).
+domain(unique_keys, class_definition).
+range(unique_keys, unique_key).
+has_uri(unique_keys, 'http://w3id.org/biolink/vocab/unique_keys').
+multivalued(unique_keys).
 slot(usage_slot_name).
 domain(usage_slot_name, slot_definition).
 range(usage_slot_name, string).
@@ -607,6 +622,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, class_definition).
 range_in(mappings, uriorcurie, class_definition).
+class_slot(class_definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, class_definition).
+range_in(exact_mappings, uriorcurie, class_definition).
+class_slot(class_definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, class_definition).
+range_in(close_mappings, uriorcurie, class_definition).
+class_slot(class_definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, class_definition).
+range_in(related_mappings, uriorcurie, class_definition).
+class_slot(class_definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, class_definition).
+range_in(narrow_mappings, uriorcurie, class_definition).
+class_slot(class_definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, class_definition).
+range_in(broad_mappings, uriorcurie, class_definition).
+class_slot(class_definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, class_definition).
+range_in(extensions, extension, class_definition).
+class_slot(class_definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, class_definition).
+range_in(annotations, annotation, class_definition).
 class_slot(class_definition, description).
 required(description).
 slotrange(string).
@@ -658,31 +708,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, class_definition).
 range_in(see_also, uriorcurie, class_definition).
-class_slot(class_definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, class_definition).
-range_in(exact_mappings, uriorcurie, class_definition).
-class_slot(class_definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, class_definition).
-range_in(close_mappings, uriorcurie, class_definition).
-class_slot(class_definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, class_definition).
-range_in(related_mappings, uriorcurie, class_definition).
-class_slot(class_definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, class_definition).
-range_in(narrow_mappings, uriorcurie, class_definition).
-class_slot(class_definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, class_definition).
-range_in(broad_mappings, uriorcurie, class_definition).
 class_slot(class_definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -691,16 +716,6 @@ class_slot(class_definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, class_definition).
-class_slot(class_definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, class_definition).
-range_in(extensions, extension, class_definition).
-class_slot(class_definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, class_definition).
-range_in(annotations, annotation, class_definition).
 class_slot(class_definition, abstract).
 required(abstract).
 slotrange(boolean).
@@ -734,6 +749,10 @@ class_slot(class_definition, status).
 required(status).
 slotrange(uriorcurie).
 range_in(status, uriorcurie, class_definition).
+class_slot(class_definition, string_serialization).
+required(string_serialization).
+slotrange(string).
+range_in(string_serialization, string, class_definition).
 class_slot(class_definition, slots).
 required(slots).
 slotrange(slot_definition).
@@ -785,6 +804,67 @@ required(apply_to).
 slotrange(class_definition).
 multivalued_in(apply_to, class_definition).
 range_in(apply_to, class_definition, class_definition).
+class(common_metadata).
+has_uri(common_metadata, 'http://w3id.org/biolink/vocab/CommonMetadata').
+class_slot(common_metadata, description).
+required(description).
+slotrange(string).
+range_in(description, string, common_metadata).
+class_slot(common_metadata, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, common_metadata).
+range_in(alt_descriptions, alt_description, common_metadata).
+class_slot(common_metadata, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, common_metadata).
+class_slot(common_metadata, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, common_metadata).
+range_in(todos, string, common_metadata).
+class_slot(common_metadata, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, common_metadata).
+range_in(notes, string, common_metadata).
+class_slot(common_metadata, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, common_metadata).
+range_in(comments, string, common_metadata).
+class_slot(common_metadata, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, common_metadata).
+range_in(examples, example, common_metadata).
+class_slot(common_metadata, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, common_metadata).
+range_in(in_subset, subset_definition, common_metadata).
+class_slot(common_metadata, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, common_metadata).
+class_slot(common_metadata, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, common_metadata).
+class_slot(common_metadata, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, common_metadata).
+range_in(see_also, uriorcurie, common_metadata).
+class_slot(common_metadata, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, common_metadata).
+class_slot(common_metadata, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, common_metadata).
 class(definition).
 is_a(definition, element).
 has_uri(definition, 'http://w3id.org/biolink/vocab/Definition').
@@ -817,6 +897,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, definition).
 range_in(mappings, uriorcurie, definition).
+class_slot(definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, definition).
+range_in(exact_mappings, uriorcurie, definition).
+class_slot(definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, definition).
+range_in(close_mappings, uriorcurie, definition).
+class_slot(definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, definition).
+range_in(related_mappings, uriorcurie, definition).
+class_slot(definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, definition).
+range_in(narrow_mappings, uriorcurie, definition).
+class_slot(definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, definition).
+range_in(broad_mappings, uriorcurie, definition).
+class_slot(definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, definition).
+range_in(extensions, extension, definition).
+class_slot(definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, definition).
+range_in(annotations, annotation, definition).
 class_slot(definition, description).
 required(description).
 slotrange(string).
@@ -868,31 +983,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, definition).
 range_in(see_also, uriorcurie, definition).
-class_slot(definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, definition).
-range_in(exact_mappings, uriorcurie, definition).
-class_slot(definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, definition).
-range_in(close_mappings, uriorcurie, definition).
-class_slot(definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, definition).
-range_in(related_mappings, uriorcurie, definition).
-class_slot(definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, definition).
-range_in(narrow_mappings, uriorcurie, definition).
-class_slot(definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, definition).
-range_in(broad_mappings, uriorcurie, definition).
 class_slot(definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -901,16 +991,6 @@ class_slot(definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, definition).
-class_slot(definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, definition).
-range_in(extensions, extension, definition).
-class_slot(definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, definition).
-range_in(annotations, annotation, definition).
 class_slot(definition, is_a).
 required(is_a).
 slotrange(definition).
@@ -958,9 +1038,14 @@ class_slot(definition, status).
 required(status).
 slotrange(uriorcurie).
 range_in(status, uriorcurie, definition).
+class_slot(definition, string_serialization).
+required(string_serialization).
+slotrange(string).
+range_in(string_serialization, string, definition).
 class(element).
 mixin(element, extensible).
 mixin(element, annotatable).
+mixin(element, common_metadata).
 has_uri(element, 'http://w3id.org/biolink/vocab/Element').
 class_slot(element, name).
 required(name).
@@ -991,6 +1076,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, element).
 range_in(mappings, uriorcurie, element).
+class_slot(element, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, element).
+range_in(exact_mappings, uriorcurie, element).
+class_slot(element, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, element).
+range_in(close_mappings, uriorcurie, element).
+class_slot(element, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, element).
+range_in(related_mappings, uriorcurie, element).
+class_slot(element, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, element).
+range_in(narrow_mappings, uriorcurie, element).
+class_slot(element, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, element).
+range_in(broad_mappings, uriorcurie, element).
+class_slot(element, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, element).
+range_in(extensions, extension, element).
+class_slot(element, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, element).
+range_in(annotations, annotation, element).
 class_slot(element, description).
 required(description).
 slotrange(string).
@@ -1042,31 +1162,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, element).
 range_in(see_also, uriorcurie, element).
-class_slot(element, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, element).
-range_in(exact_mappings, uriorcurie, element).
-class_slot(element, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, element).
-range_in(close_mappings, uriorcurie, element).
-class_slot(element, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, element).
-range_in(related_mappings, uriorcurie, element).
-class_slot(element, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, element).
-range_in(narrow_mappings, uriorcurie, element).
-class_slot(element, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, element).
-range_in(broad_mappings, uriorcurie, element).
 class_slot(element, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -1075,16 +1170,6 @@ class_slot(element, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, element).
-class_slot(element, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, element).
-range_in(extensions, extension, element).
-class_slot(element, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, element).
-range_in(annotations, annotation, element).
 class(enum_definition).
 is_a(enum_definition, element).
 has_uri(enum_definition, 'http://w3id.org/biolink/vocab/EnumDefinition').
@@ -1117,6 +1202,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, enum_definition).
 range_in(mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, enum_definition).
+range_in(exact_mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, enum_definition).
+range_in(close_mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, enum_definition).
+range_in(related_mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, enum_definition).
+range_in(narrow_mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, enum_definition).
+range_in(broad_mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, enum_definition).
+range_in(extensions, extension, enum_definition).
+class_slot(enum_definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, enum_definition).
+range_in(annotations, annotation, enum_definition).
 class_slot(enum_definition, description).
 required(description).
 slotrange(string).
@@ -1168,31 +1288,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, enum_definition).
 range_in(see_also, uriorcurie, enum_definition).
-class_slot(enum_definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, enum_definition).
-range_in(exact_mappings, uriorcurie, enum_definition).
-class_slot(enum_definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, enum_definition).
-range_in(close_mappings, uriorcurie, enum_definition).
-class_slot(enum_definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, enum_definition).
-range_in(related_mappings, uriorcurie, enum_definition).
-class_slot(enum_definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, enum_definition).
-range_in(narrow_mappings, uriorcurie, enum_definition).
-class_slot(enum_definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, enum_definition).
-range_in(broad_mappings, uriorcurie, enum_definition).
 class_slot(enum_definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -1201,16 +1296,6 @@ class_slot(enum_definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, enum_definition).
-class_slot(enum_definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, enum_definition).
-range_in(extensions, extension, enum_definition).
-class_slot(enum_definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, enum_definition).
-range_in(annotations, annotation, enum_definition).
 class_slot(enum_definition, code_set).
 required(code_set).
 slotrange(uriorcurie).
@@ -1281,6 +1366,7 @@ range_in(local_name_value, string, local_name).
 class(permissible_value).
 mixin(permissible_value, extensible).
 mixin(permissible_value, annotatable).
+mixin(permissible_value, common_metadata).
 has_uri(permissible_value, 'http://w3id.org/biolink/vocab/PermissibleValue').
 class_slot(permissible_value, text).
 required(text).
@@ -1295,6 +1381,25 @@ class_slot(permissible_value, meaning).
 required(meaning).
 slotrange(uriorcurie).
 range_in(meaning, uriorcurie, permissible_value).
+class_slot(permissible_value, is_a).
+required(is_a).
+slotrange(permissible_value).
+range_in(is_a, permissible_value, permissible_value).
+class_slot(permissible_value, mixins).
+required(mixins).
+slotrange(permissible_value).
+multivalued_in(mixins, permissible_value).
+range_in(mixins, permissible_value, permissible_value).
+class_slot(permissible_value, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, permissible_value).
+range_in(extensions, extension, permissible_value).
+class_slot(permissible_value, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, permissible_value).
+range_in(annotations, annotation, permissible_value).
 class_slot(permissible_value, alt_descriptions).
 required(alt_descriptions).
 slotrange(alt_description).
@@ -1350,25 +1455,6 @@ class_slot(permissible_value, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, permissible_value).
-class_slot(permissible_value, is_a).
-required(is_a).
-slotrange(permissible_value).
-range_in(is_a, permissible_value, permissible_value).
-class_slot(permissible_value, mixins).
-required(mixins).
-slotrange(permissible_value).
-multivalued_in(mixins, permissible_value).
-range_in(mixins, permissible_value, permissible_value).
-class_slot(permissible_value, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, permissible_value).
-range_in(extensions, extension, permissible_value).
-class_slot(permissible_value, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, permissible_value).
-range_in(annotations, annotation, permissible_value).
 class(prefix).
 has_uri(prefix, 'http://w3id.org/biolink/vocab/Prefix').
 class_slot(prefix, prefix_prefix).
@@ -1408,6 +1494,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, schema_definition).
 range_in(mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, schema_definition).
+range_in(exact_mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, schema_definition).
+range_in(close_mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, schema_definition).
+range_in(related_mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, schema_definition).
+range_in(narrow_mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, schema_definition).
+range_in(broad_mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, schema_definition).
+range_in(extensions, extension, schema_definition).
+class_slot(schema_definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, schema_definition).
+range_in(annotations, annotation, schema_definition).
 class_slot(schema_definition, description).
 required(description).
 slotrange(string).
@@ -1459,31 +1580,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, schema_definition).
 range_in(see_also, uriorcurie, schema_definition).
-class_slot(schema_definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, schema_definition).
-range_in(exact_mappings, uriorcurie, schema_definition).
-class_slot(schema_definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, schema_definition).
-range_in(close_mappings, uriorcurie, schema_definition).
-class_slot(schema_definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, schema_definition).
-range_in(related_mappings, uriorcurie, schema_definition).
-class_slot(schema_definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, schema_definition).
-range_in(narrow_mappings, uriorcurie, schema_definition).
-class_slot(schema_definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, schema_definition).
-range_in(broad_mappings, uriorcurie, schema_definition).
 class_slot(schema_definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -1492,16 +1588,6 @@ class_slot(schema_definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, schema_definition).
-class_slot(schema_definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, schema_definition).
-range_in(extensions, extension, schema_definition).
-class_slot(schema_definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, schema_definition).
-range_in(annotations, annotation, schema_definition).
 class_slot(schema_definition, id).
 required(id).
 slotrange(uri).
@@ -1629,6 +1715,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, slot_definition).
 range_in(mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, slot_definition).
+range_in(exact_mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, slot_definition).
+range_in(close_mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, slot_definition).
+range_in(related_mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, slot_definition).
+range_in(narrow_mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, slot_definition).
+range_in(broad_mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, slot_definition).
+range_in(extensions, extension, slot_definition).
+class_slot(slot_definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, slot_definition).
+range_in(annotations, annotation, slot_definition).
 class_slot(slot_definition, description).
 required(description).
 slotrange(string).
@@ -1680,31 +1801,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, slot_definition).
 range_in(see_also, uriorcurie, slot_definition).
-class_slot(slot_definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, slot_definition).
-range_in(exact_mappings, uriorcurie, slot_definition).
-class_slot(slot_definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, slot_definition).
-range_in(close_mappings, uriorcurie, slot_definition).
-class_slot(slot_definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, slot_definition).
-range_in(related_mappings, uriorcurie, slot_definition).
-class_slot(slot_definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, slot_definition).
-range_in(narrow_mappings, uriorcurie, slot_definition).
-class_slot(slot_definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, slot_definition).
-range_in(broad_mappings, uriorcurie, slot_definition).
 class_slot(slot_definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -1713,16 +1809,6 @@ class_slot(slot_definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, slot_definition).
-class_slot(slot_definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, slot_definition).
-range_in(extensions, extension, slot_definition).
-class_slot(slot_definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, slot_definition).
-range_in(annotations, annotation, slot_definition).
 class_slot(slot_definition, abstract).
 required(abstract).
 slotrange(boolean).
@@ -1756,6 +1842,10 @@ class_slot(slot_definition, status).
 required(status).
 slotrange(uriorcurie).
 range_in(status, uriorcurie, slot_definition).
+class_slot(slot_definition, string_serialization).
+required(string_serialization).
+slotrange(string).
+range_in(string_serialization, string, slot_definition).
 class_slot(slot_definition, singular_name).
 required(singular_name).
 slotrange(string).
@@ -1792,6 +1882,10 @@ class_slot(slot_definition, required).
 required(required).
 slotrange(boolean).
 range_in(required, boolean, slot_definition).
+class_slot(slot_definition, recommended).
+required(recommended).
+slotrange(boolean).
+range_in(recommended, boolean, slot_definition).
 class_slot(slot_definition, inlined).
 required(inlined).
 slotrange(boolean).
@@ -1861,10 +1955,6 @@ class_slot(slot_definition, pattern).
 required(pattern).
 slotrange(string).
 range_in(pattern, string, slot_definition).
-class_slot(slot_definition, string_serialization).
-required(string_serialization).
-slotrange(string).
-range_in(string_serialization, string, slot_definition).
 class_slot(slot_definition, is_a).
 required(is_a).
 slotrange(slot_definition).
@@ -1911,6 +2001,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, subset_definition).
 range_in(mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, subset_definition).
+range_in(exact_mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, subset_definition).
+range_in(close_mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, subset_definition).
+range_in(related_mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, subset_definition).
+range_in(narrow_mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, subset_definition).
+range_in(broad_mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, subset_definition).
+range_in(extensions, extension, subset_definition).
+class_slot(subset_definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, subset_definition).
+range_in(annotations, annotation, subset_definition).
 class_slot(subset_definition, description).
 required(description).
 slotrange(string).
@@ -1962,31 +2087,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, subset_definition).
 range_in(see_also, uriorcurie, subset_definition).
-class_slot(subset_definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, subset_definition).
-range_in(exact_mappings, uriorcurie, subset_definition).
-class_slot(subset_definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, subset_definition).
-range_in(close_mappings, uriorcurie, subset_definition).
-class_slot(subset_definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, subset_definition).
-range_in(related_mappings, uriorcurie, subset_definition).
-class_slot(subset_definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, subset_definition).
-range_in(narrow_mappings, uriorcurie, subset_definition).
-class_slot(subset_definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, subset_definition).
-range_in(broad_mappings, uriorcurie, subset_definition).
 class_slot(subset_definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -1995,16 +2095,6 @@ class_slot(subset_definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, subset_definition).
-class_slot(subset_definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, subset_definition).
-range_in(extensions, extension, subset_definition).
-class_slot(subset_definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, subset_definition).
-range_in(annotations, annotation, subset_definition).
 class(type_definition).
 is_a(type_definition, element).
 has_uri(type_definition, 'http://w3id.org/biolink/vocab/TypeDefinition').
@@ -2037,6 +2127,41 @@ required(mappings).
 slotrange(uriorcurie).
 multivalued_in(mappings, type_definition).
 range_in(mappings, uriorcurie, type_definition).
+class_slot(type_definition, exact_mappings).
+required(exact_mappings).
+slotrange(uriorcurie).
+multivalued_in(exact_mappings, type_definition).
+range_in(exact_mappings, uriorcurie, type_definition).
+class_slot(type_definition, close_mappings).
+required(close_mappings).
+slotrange(uriorcurie).
+multivalued_in(close_mappings, type_definition).
+range_in(close_mappings, uriorcurie, type_definition).
+class_slot(type_definition, related_mappings).
+required(related_mappings).
+slotrange(uriorcurie).
+multivalued_in(related_mappings, type_definition).
+range_in(related_mappings, uriorcurie, type_definition).
+class_slot(type_definition, narrow_mappings).
+required(narrow_mappings).
+slotrange(uriorcurie).
+multivalued_in(narrow_mappings, type_definition).
+range_in(narrow_mappings, uriorcurie, type_definition).
+class_slot(type_definition, broad_mappings).
+required(broad_mappings).
+slotrange(uriorcurie).
+multivalued_in(broad_mappings, type_definition).
+range_in(broad_mappings, uriorcurie, type_definition).
+class_slot(type_definition, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, type_definition).
+range_in(extensions, extension, type_definition).
+class_slot(type_definition, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, type_definition).
+range_in(annotations, annotation, type_definition).
 class_slot(type_definition, description).
 required(description).
 slotrange(string).
@@ -2088,31 +2213,6 @@ required(see_also).
 slotrange(uriorcurie).
 multivalued_in(see_also, type_definition).
 range_in(see_also, uriorcurie, type_definition).
-class_slot(type_definition, exact_mappings).
-required(exact_mappings).
-slotrange(uriorcurie).
-multivalued_in(exact_mappings, type_definition).
-range_in(exact_mappings, uriorcurie, type_definition).
-class_slot(type_definition, close_mappings).
-required(close_mappings).
-slotrange(uriorcurie).
-multivalued_in(close_mappings, type_definition).
-range_in(close_mappings, uriorcurie, type_definition).
-class_slot(type_definition, related_mappings).
-required(related_mappings).
-slotrange(uriorcurie).
-multivalued_in(related_mappings, type_definition).
-range_in(related_mappings, uriorcurie, type_definition).
-class_slot(type_definition, narrow_mappings).
-required(narrow_mappings).
-slotrange(uriorcurie).
-multivalued_in(narrow_mappings, type_definition).
-range_in(narrow_mappings, uriorcurie, type_definition).
-class_slot(type_definition, broad_mappings).
-required(broad_mappings).
-slotrange(uriorcurie).
-multivalued_in(broad_mappings, type_definition).
-range_in(broad_mappings, uriorcurie, type_definition).
 class_slot(type_definition, deprecated_element_has_exact_replacement).
 required(deprecated_element_has_exact_replacement).
 slotrange(uriorcurie).
@@ -2121,16 +2221,6 @@ class_slot(type_definition, deprecated_element_has_possible_replacement).
 required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, type_definition).
-class_slot(type_definition, extensions).
-required(extensions).
-slotrange(extension).
-multivalued_in(extensions, type_definition).
-range_in(extensions, extension, type_definition).
-class_slot(type_definition, annotations).
-required(annotations).
-slotrange(annotation).
-multivalued_in(annotations, type_definition).
-range_in(annotations, annotation, type_definition).
 class_slot(type_definition, typeof).
 required(typeof).
 slotrange(type_definition).
@@ -2147,4 +2237,24 @@ class_slot(type_definition, repr).
 required(repr).
 slotrange(string).
 range_in(repr, string, type_definition).
+class(unique_key).
+mixin(unique_key, extensible).
+mixin(unique_key, annotatable).
+has_uri(unique_key, 'http://w3id.org/biolink/vocab/UniqueKey').
+class_slot(unique_key, unique_key_slots).
+required(unique_key_slots).
+slotrange(slot_definition).
+multivalued_in(unique_key_slots, unique_key).
+required_in(unique_key_slots, unique_key).
+range_in(unique_key_slots, slot_definition, unique_key).
+class_slot(unique_key, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, unique_key).
+range_in(extensions, extension, unique_key).
+class_slot(unique_key, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, unique_key).
+range_in(annotations, annotation, unique_key).
 

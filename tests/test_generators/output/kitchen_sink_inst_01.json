@@ -18,7 +18,7 @@
       "has_familial_relationships": [
         {
           "related_to": "P:001",
-          "type": "SIBLING_OF: "
+          "type": "SIBLING_OF"
         }
       ],
       "has_medical_history": [

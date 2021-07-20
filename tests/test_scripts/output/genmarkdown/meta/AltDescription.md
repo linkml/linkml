@@ -7,7 +7,7 @@ an attributed description
 URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Element],[Element]++-%20alt_descriptions%200..*>[AltDescription&#124;source(pk):string;description:string],[PermissibleValue]++-%20alt_descriptions%200..*>[AltDescription],[PermissibleValue])](https://yuml.me/diagram/nofunky;dir:TB/class/[Element],[Element]++-%20alt_descriptions%200..*>[AltDescription&#124;source(pk):string;description:string],[PermissibleValue]++-%20alt_descriptions%200..*>[AltDescription],[PermissibleValue])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Element],[CommonMetadata]++-%20alt_descriptions%200..*>[AltDescription&#124;source(pk):string;description:string],[CommonMetadata])](https://yuml.me/diagram/nofunky;dir:TB/class/[Element],[CommonMetadata]++-%20alt_descriptions%200..*>[AltDescription&#124;source(pk):string;description:string],[CommonMetadata])
 
 ## Referenced by class
 

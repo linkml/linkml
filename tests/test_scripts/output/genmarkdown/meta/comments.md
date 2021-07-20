@@ -20,6 +20,7 @@ URI: [linkml:comments](https://w3id.org/linkml/comments)
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+ * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
  * [EnumDefinition](EnumDefinition.md)

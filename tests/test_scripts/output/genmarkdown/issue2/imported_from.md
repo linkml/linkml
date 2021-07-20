@@ -20,6 +20,7 @@ URI: [linkml:imported_from](https://w3id.org/linkml/imported_from)
 ## Used by
 
  * class_definition
+ * common_metadata
  * definition
  * [Element](Element.md)
  * enum_definition

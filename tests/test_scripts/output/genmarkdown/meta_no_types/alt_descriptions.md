@@ -20,6 +20,7 @@ URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+ * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
  * [EnumDefinition](EnumDefinition.md)

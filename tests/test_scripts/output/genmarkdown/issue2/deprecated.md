@@ -20,6 +20,7 @@ URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
 ## Used by
 
  * class_definition
+ * common_metadata
  * definition
  * [Element](Element.md)
  * enum_definition

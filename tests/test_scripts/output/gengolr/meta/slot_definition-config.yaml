@@ -11,8 +11,8 @@ fields:
     target class.
   display_name: name
 - id: id_prefixes
-  description: the identifier of this class or slot must begin with one of the URIs
-    referenced by this prefix
+  description: the identifier of this class or slot must begin with the URIs referenced
+    by this prefix
   display_name: id_prefixes
   cardinality: multi
 - id: definition_uri
@@ -30,6 +30,39 @@ fields:
     broader or narrower in meaning, or otherwise semantically related but not equivalent
     from a strict ontological perspective.
   display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
   cardinality: multi
 - id: description
   description: a description of the element's purpose and use
@@ -73,31 +106,6 @@ fields:
   description: a reference
   display_name: see_also
   cardinality: multi
-- id: exact_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have identical meaning.
-  display_name: exact mappings
-  cardinality: multi
-- id: close_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have close meaning.
-  display_name: close mappings
-  cardinality: multi
-- id: related_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have related meaning.
-  display_name: related mappings
-  cardinality: multi
-- id: narrow_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have narrower meaning.
-  display_name: narrow mappings
-  cardinality: multi
-- id: broad_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have broader meaning.
-  display_name: broad mappings
-  cardinality: multi
 - id: deprecated_element_has_exact_replacement
   description: When an element is deprecated, it can be automatically replaced by
     this uri or curie
@@ -106,14 +114,6 @@ fields:
   description: When an element is deprecated, it can be potentially replaced by this
     uri or curie
   display_name: deprecated element has possible replacement
-- id: extensions
-  description: a tag/text tuple attached to an arbitrary element
-  display_name: extensions
-  cardinality: multi
-- id: annotations
-  description: a collection of tag/text tuples with the semantics of OWL Annotation
-  display_name: annotations
-  cardinality: multi
 - id: abstract
   description: an abstract class is a high level class or slot that is typically used
     to group common slots together and cannot be directly instantiated.
@@ -141,6 +141,23 @@ fields:
 - id: status
   description: status of the element
   display_name: status
+- id: string_serialization
+  description: 'Used on a slot that stores the string serialization of the containing
+    object. The syntax follows python formatted strings, with slot names enclosed
+    in {}s. These are expanded using the values of those slots.
+
+    We call the slot with the serialization the s-slot, the slots used in the {}s
+    are v-slots. If both s-slots and v-slots are populated on an object then the value
+    of the s-slot should correspond to the expansion.
+
+    Implementations of frameworks may choose to use this property to either (a) PARSE:
+    implement automated normalizations by parsing denormalized strings into complex
+    objects (b) GENERARE: implement automated to_string labeling of complex objects
+
+    For example, a Measurement class may have 3 fields: unit, value, and string_value.
+    The string_value slot may have a string_serialization of {value}{unit} such that
+    if unit=cm and value=2, the value of string_value shouldd be 2cm'
+  display_name: string_serialization
 - id: singular_name
   description: a name that is used in the singular form
   display_name: singular_name
@@ -178,6 +195,10 @@ fields:
 - id: required
   description: true means that the slot must be present in the loaded definition
   display_name: required
+- id: recommended
+  description: true means that the slot should be present in the loaded definition,
+    but this is not required
+  display_name: recommended
 - id: inlined
   description: True means that keyed or identified slot appears in an outer structure
     by value.  False means that only the key or identifier for the slot appears within
@@ -189,9 +210,7 @@ fields:
     key or identifier and whose value is the range instance.
   display_name: inlined_as_list
 - id: key
-  description: True means that the key slot(s) uniquely identify the container. In
-    future releases, it will be possible for there to be compound keys, where several
-    slots combine to produce a unique identifier
+  description: True means that the key slot(s) uniquely identify the container.
   display_name: key
 - id: identifier
   description: True means that the key slot(s) uniquely identify the container. There
@@ -245,23 +264,6 @@ fields:
 - id: pattern
   description: the string value of the slot must conform to this regular expression
   display_name: pattern
-- id: string_serialization
-  description: 'Used on a slot that stores the string serialization of the containing
-    object. The syntax follows python formatted strings, with slot names enclosed
-    in {}s. These are expanded using the values of those slots.
-
-    We call the slot with the serialization the s-slot, the slots used in the {}s
-    are v-slots. If both s-slots and v-slots are populated on an object then the value
-    of the s-slot should correspond to the expansion.
-
-    Implementations of frameworks may choose to use this property to either (a) PARSE:
-    implement automated normalizations by parsing denormalized strings into complex
-    objects (b) GENERARE: implement automated to_string labeling of complex objects
-
-    For example, a Measurement class may have 3 fields: unit, value, and string_value.
-    The string_value slot may have a string_serialization of {value}{unit} such that
-    if unit=cm and value=2, the value of string_value shouldd be 2cm'
-  display_name: string_serialization
 - id: is_a
   display_name: slot_definition_is_a
 - id: mixins

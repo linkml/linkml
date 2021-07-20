@@ -20,6 +20,7 @@ None &#8594;  <sub>0..1</sub> [Uriorcurie](Uriorcurie.md)
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+ * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
  * [EnumDefinition](EnumDefinition.md)

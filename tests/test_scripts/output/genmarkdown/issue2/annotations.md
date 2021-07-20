@@ -31,3 +31,4 @@ annotatable &#8594;  <sub>0..\*</sub> annotation
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key

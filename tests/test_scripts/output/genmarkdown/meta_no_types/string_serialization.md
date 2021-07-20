@@ -12,7 +12,7 @@ URI: [linkml:string_serialization](https://w3id.org/linkml/string_serialization)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [String](String.md)
+[Definition](Definition.md) &#8594;  <sub>0..1</sub> [String](String.md)
 
 ## Parents
 
@@ -22,6 +22,8 @@ URI: [linkml:string_serialization](https://w3id.org/linkml/string_serialization)
 
 ## Used by
 
+ * [ClassDefinition](ClassDefinition.md)
+ * [Definition](Definition.md)
  * [SlotDefinition](SlotDefinition.md)
 
 ## Other properties

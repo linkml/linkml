@@ -305,8 +305,17 @@
     {
       "name": "id_prefixes",
       "definition_uri": "https://w3id.org/linkml/id_prefixes",
-      "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+      "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
+      "comments": [
+        "Order of elements may be used to indicate priority order",
+        "If identifiers are treated as CURIEs, then the CURIE must start with one of the indicated prefixes followed by `:` (_should_ start if the list is open)",
+        "If identifiers are treated as URIs, then the URI string must start with the expanded for of the prefix (_should_ start if the list is open)"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://github.com/linkml/linkml/issues/194",
+        "https://github.com/linkml/linkml-model/issues/28"
+      ],
       "domain": "Element",
       "range": "ncname",
       "slot_uri": "https://w3id.org/linkml/id_prefixes",
@@ -331,9 +340,9 @@
       "domain": "Element",
       "range": "string",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#definition",
-      "owner": "PermissibleValue",
+      "owner": "description",
       "domain_of": [
-        "Element",
+        "CommonMetadata",
         "PermissibleValue"
       ],
       "@type": "SlotDefinition"
@@ -363,10 +372,9 @@
       "domain": "Element",
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/deprecated",
-      "owner": "PermissibleValue",
+      "owner": "deprecated",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -379,10 +387,9 @@
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/todos",
       "multivalued": true,
-      "owner": "PermissibleValue",
+      "owner": "todos",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -401,10 +408,9 @@
       "range": "string",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#editorialNote",
       "multivalued": true,
-      "owner": "PermissibleValue",
+      "owner": "notes",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -423,10 +429,9 @@
       "range": "string",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#note",
       "multivalued": true,
-      "owner": "PermissibleValue",
+      "owner": "comments",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -442,10 +447,9 @@
       "range": "SubsetDefinition",
       "slot_uri": "http://www.geneontology.org/formats/oboInOwl#inSubset",
       "multivalued": true,
-      "owner": "PermissibleValue",
+      "owner": "in_subset",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -464,10 +468,9 @@
       "range": "uri",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#inScheme",
       "readonly": "supplied by the schema loader",
-      "owner": "PermissibleValue",
+      "owner": "from_schema",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -480,10 +483,9 @@
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/imported_from",
       "readonly": "supplied by the schema loader",
-      "owner": "PermissibleValue",
+      "owner": "imported_from",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -502,10 +504,9 @@
       "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
       "multivalued": true,
-      "owner": "PermissibleValue",
+      "owner": "see_also",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -1278,6 +1279,38 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "unique_keys",
+      "definition_uri": "https://w3id.org/linkml/unique_keys",
+      "mappings": [
+        "owl:hasKey"
+      ],
+      "description": "Set of unique keys for this slot",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "ClassDefinition",
+      "range": "UniqueKey",
+      "slot_uri": "https://w3id.org/linkml/unique_keys",
+      "multivalued": true,
+      "inlined": true,
+      "owner": "unique_keys",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "unique_key_slots",
+      "definition_uri": "https://w3id.org/linkml/unique_key_slots",
+      "description": "list of slot names that form a key",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "UniqueKey",
+      "range": "SlotDefinition",
+      "slot_uri": "https://w3id.org/linkml/unique_key_slots",
+      "multivalued": true,
+      "required": true,
+      "owner": "UniqueKey",
+      "domain_of": [
+        "UniqueKey"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "domain",
       "definition_uri": "https://w3id.org/linkml/domain",
       "description": "defines the type of the subject of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts that X is an instance of C1\n",
@@ -1422,6 +1455,28 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "recommended",
+      "definition_uri": "https://w3id.org/linkml/recommended",
+      "description": "true means that the slot should be present in the loaded definition, but this is not required",
+      "comments": [
+        "This is to be used where not all data is expected to conform to having a required field",
+        "If a slot is recommended, and it is not populated, applications must not treat this as an error. Applications may use this to inform the user of missing data"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://github.com/linkml/linkml/issues/177"
+      ],
+      "domain": "SlotDefinition",
+      "range": "boolean",
+      "slot_uri": "https://w3id.org/linkml/recommended",
+      "inherited": true,
+      "owner": "SlotDefinition",
+      "domain_of": [
+        "SlotDefinition"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "inlined",
       "definition_uri": "https://w3id.org/linkml/inlined",
       "description": "True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.",
@@ -1461,11 +1516,12 @@
     {
       "name": "key",
       "definition_uri": "https://w3id.org/linkml/key",
-      "description": "True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier",
+      "description": "True means that the key slot(s) uniquely identify the container.",
       "comments": [
+        "see also 'unique_key'",
         "key is inherited",
         "a given domain can have at most one key slot (restriction to be removed in the future)",
-        "identifiers and keys are mutually exclusive.  A given domain cannot have bot",
+        "identifiers and keys are mutually exclusive.  A given domain cannot have both",
         "a key slot is automatically required.  Keys cannot be optional"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
@@ -1716,12 +1772,12 @@
       "see_also": [
         "https://github.com/linkml/issues/128"
       ],
-      "domain": "SlotDefinition",
+      "domain": "Definition",
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/string_serialization",
-      "owner": "SlotDefinition",
+      "owner": "Definition",
       "domain_of": [
-        "SlotDefinition"
+        "Definition"
       ],
       "@type": "SlotDefinition"
     },
@@ -1840,10 +1896,9 @@
       "slot_uri": "https://w3id.org/linkml/alt_descriptions",
       "multivalued": true,
       "inlined": true,
-      "owner": "PermissibleValue",
+      "owner": "alt_descriptions",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -1892,10 +1947,9 @@
       "slot_uri": "https://w3id.org/linkml/examples",
       "multivalued": true,
       "inlined": true,
-      "owner": "PermissibleValue",
+      "owner": "examples",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -2119,10 +2173,9 @@
       "imported_from": "linkml:mappings",
       "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
-      "owner": "PermissibleValue",
+      "owner": "CommonMetadata",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -2137,10 +2190,9 @@
       "imported_from": "linkml:mappings",
       "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
-      "owner": "PermissibleValue",
+      "owner": "CommonMetadata",
       "domain_of": [
-        "Element",
-        "PermissibleValue"
+        "CommonMetadata"
       ],
       "@type": "SlotDefinition"
     },
@@ -2369,25 +2421,12 @@
   ],
   "classes": [
     {
-      "name": "Element",
-      "definition_uri": "https://w3id.org/linkml/Element",
-      "description": "a named element in the model",
+      "name": "CommonMetadata",
+      "definition_uri": "https://w3id.org/linkml/CommonMetadata",
+      "description": "Generic metadata shared across definitions",
       "from_schema": "https://w3id.org/linkml/meta",
-      "see_also": [
-        "https://en.wikipedia.org/wiki/Data_element"
-      ],
-      "abstract": true,
-      "mixins": [
-        "Extensible",
-        "Annotatable"
-      ],
+      "mixin": true,
       "slots": [
-        "name",
-        "id_prefixes",
-        "definition_uri",
-        "aliases",
-        "local_names",
-        "mappings",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2399,15 +2438,54 @@
         "from_schema",
         "imported_from",
         "see_also",
+        "deprecated_element_has_exact_replacement",
+        "deprecated_element_has_possible_replacement"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/CommonMetadata",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Element",
+      "definition_uri": "https://w3id.org/linkml/Element",
+      "description": "a named element in the model",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://en.wikipedia.org/wiki/Data_element"
+      ],
+      "abstract": true,
+      "mixins": [
+        "Extensible",
+        "Annotatable",
+        "CommonMetadata"
+      ],
+      "slots": [
+        "name",
+        "id_prefixes",
+        "definition_uri",
+        "aliases",
+        "local_names",
+        "mappings",
         "exact_mappings",
         "close_mappings",
         "related_mappings",
         "narrow_mappings",
         "broad_mappings",
-        "deprecated_element_has_exact_replacement",
-        "deprecated_element_has_possible_replacement",
         "extensions",
-        "annotations"
+        "annotations",
+        "description",
+        "alt_descriptions",
+        "deprecated",
+        "todos",
+        "notes",
+        "comments",
+        "examples",
+        "in_subset",
+        "from_schema",
+        "imported_from",
+        "see_also",
+        "deprecated_element_has_exact_replacement",
+        "deprecated_element_has_possible_replacement"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Element",
@@ -2431,6 +2509,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2442,15 +2527,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations",
         "id",
         "title",
         "version",
@@ -2490,6 +2568,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2501,15 +2586,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations",
         "typeof",
         "base",
         "type_uri",
@@ -2532,6 +2610,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2543,15 +2628,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
-        "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations"
+        "deprecated_element_has_possible_replacement"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SubsetDefinition",
@@ -2574,6 +2652,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2585,15 +2670,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations",
         "is_a",
         "abstract",
         "mixin",
@@ -2604,7 +2682,8 @@
         "created_on",
         "last_updated_on",
         "modified_by",
-        "status"
+        "status",
+        "string_serialization"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/Definition",
@@ -2623,6 +2702,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2634,15 +2720,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations",
         "code_set",
         "code_set_tag",
         "code_set_version",
@@ -2660,7 +2739,12 @@
         "slot",
         "field",
         "property",
-        "attribute"
+        "attribute",
+        "column",
+        "variable"
+      ],
+      "close_mappings": [
+        "rdf:Property"
       ],
       "description": "the definition of a property or a slot",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -2672,6 +2756,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2683,15 +2774,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations",
         "abstract",
         "mixin",
         "values_from",
@@ -2700,6 +2784,7 @@
         "last_updated_on",
         "modified_by",
         "status",
+        "string_serialization",
         "singular_name",
         "domain",
         "range",
@@ -2709,6 +2794,7 @@
         "readonly",
         "ifabsent",
         "required",
+        "recommended",
         "inlined",
         "inlined_as_list",
         "key",
@@ -2726,7 +2812,6 @@
         "minimum_value",
         "maximum_value",
         "pattern",
-        "string_serialization",
         "slot_definition_is_a",
         "slot_definition_mixins",
         "slot_definition_apply_to"
@@ -2741,7 +2826,12 @@
       "aliases": [
         "table",
         "record",
-        "template"
+        "template",
+        "message",
+        "observation"
+      ],
+      "close_mappings": [
+        "owl:Class"
       ],
       "description": "the definition of a class or interface",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -2753,6 +2843,13 @@
         "aliases",
         "local_names",
         "mappings",
+        "exact_mappings",
+        "close_mappings",
+        "related_mappings",
+        "narrow_mappings",
+        "broad_mappings",
+        "extensions",
+        "annotations",
         "description",
         "alt_descriptions",
         "deprecated",
@@ -2764,15 +2861,8 @@
         "from_schema",
         "imported_from",
         "see_also",
-        "exact_mappings",
-        "close_mappings",
-        "related_mappings",
-        "narrow_mappings",
-        "broad_mappings",
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
-        "extensions",
-        "annotations",
         "abstract",
         "mixin",
         "values_from",
@@ -2781,6 +2871,7 @@
         "last_updated_on",
         "modified_by",
         "status",
+        "string_serialization",
         "slots",
         "slot_usage",
         "attributes",
@@ -2856,12 +2947,17 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "mixins": [
         "Extensible",
-        "Annotatable"
+        "Annotatable",
+        "CommonMetadata"
       ],
       "slots": [
         "text",
         "description",
         "meaning",
+        "permissible_value_is_a",
+        "permissible_value_mixins",
+        "extensions",
+        "annotations",
         "alt_descriptions",
         "deprecated",
         "todos",
@@ -2873,14 +2969,28 @@
         "imported_from",
         "see_also",
         "deprecated_element_has_exact_replacement",
-        "deprecated_element_has_possible_replacement",
-        "permissible_value_is_a",
-        "permissible_value_mixins",
+        "deprecated_element_has_possible_replacement"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/PermissibleValue",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "UniqueKey",
+      "definition_uri": "https://w3id.org/linkml/UniqueKey",
+      "description": "a collection of slots whose values uniquely identify an instance of a class",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "mixins": [
+        "Extensible",
+        "Annotatable"
+      ],
+      "slots": [
+        "unique_key_slots",
         "extensions",
         "annotations"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/PermissibleValue",
+      "class_uri": "https://w3id.org/linkml/UniqueKey",
       "@type": "ClassDefinition"
     },
     {
@@ -2949,9 +3059,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "Sun Jun  6 23:07:12 2021",
-  "source_file_size": 32760,
-  "generation_date": "2021-06-06 23:09",
+  "source_file_date": "Tue Jul 20 18:42:55 2021",
+  "source_file_size": 34275,
+  "generation_date": "2021-07-20 18:45",
   "@type": "SchemaDefinition",
   "@context": [
     "file:./output/gencontext/meta.jsonld",

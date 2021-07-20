@@ -20,6 +20,7 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
 ## Used by
 
  * class_definition
+ * common_metadata
  * definition
  * [Element](Element.md)
  * enum_definition

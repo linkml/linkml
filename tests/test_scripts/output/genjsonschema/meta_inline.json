@@ -184,7 +184,7 @@
                "type": "string"
             },
             "id_prefixes": {
-               "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+               "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
                "items": {
                   "type": "string"
                },
@@ -284,6 +284,10 @@
             },
             "status": {
                "description": "status of the element",
+               "type": "string"
+            },
+            "string_serialization": {
+               "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
                "type": "string"
             },
             "subclass_of": {
@@ -424,7 +428,7 @@
                "type": "string"
             },
             "id_prefixes": {
-               "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+               "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
                "items": {
                   "type": "string"
                },
@@ -843,7 +847,7 @@
                "type": "string"
             },
             "id_prefixes": {
-               "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+               "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
                "items": {
                   "type": "string"
                },
@@ -1107,7 +1111,7 @@
                "type": "string"
             },
             "id_prefixes": {
-               "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+               "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
                "items": {
                   "type": "string"
                },
@@ -1160,7 +1164,7 @@
                "type": "boolean"
             },
             "key": {
-               "description": "True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier",
+               "description": "True means that the key slot(s) uniquely identify the container.",
                "type": "boolean"
             },
             "last_updated_on": {
@@ -1240,6 +1244,10 @@
             "readonly": {
                "description": "If present, slot is read only.  Text explains why",
                "type": "string"
+            },
+            "recommended": {
+               "description": "true means that the slot should be present in the loaded definition, but this is not required",
+               "type": "boolean"
             },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
@@ -1402,7 +1410,7 @@
                "type": "string"
             },
             "id_prefixes": {
-               "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+               "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
                "items": {
                   "type": "string"
                },
@@ -1572,7 +1580,7 @@
                "type": "string"
             },
             "id_prefixes": {
-               "description": "the identifier of this class or slot must begin with one of the URIs referenced by this prefix",
+               "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
                "items": {
                   "type": "string"
                },
@@ -1658,6 +1666,38 @@
             "name"
          ],
          "title": "TypeDefinition",
+         "type": "object"
+      },
+      "UniqueKey": {
+         "additionalProperties": false,
+         "description": "a collection of slots whose values uniquely identify an instance of a class",
+         "properties": {
+            "annotations": {
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+               "items": {
+                  "$ref": "#/definitions/Annotation"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "description": "a tag/text tuple attached to an arbitrary element",
+               "items": {
+                  "$ref": "#/definitions/Extension"
+               },
+               "type": "array"
+            },
+            "unique_key_slots": {
+               "description": "list of slot names that form a key",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            }
+         },
+         "required": [
+            "unique_key_slots"
+         ],
+         "title": "UniqueKey",
          "type": "object"
       }
    },

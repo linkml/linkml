@@ -20,6 +20,7 @@ URI: [linkml:in_subset](https://w3id.org/linkml/in_subset)
 ## Used by
 
  * class_definition
+ * common_metadata
  * definition
  * [Element](Element.md)
  * enum_definition
