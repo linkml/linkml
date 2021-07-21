@@ -165,17 +165,6 @@ class ContextGenerator(Generator):
         if slot_def:
             self.context_body[underscore(aliased_slot_name)] = slot_def
 
-    def add_prefix(self, ncname: str) -> None:
-        """ Add a prefix to the list of prefixes to emit
-
-        @param ncname: name to add
-        """
-        if ncname not in self.namespaces:
-            self.logger.warning(f"Unrecognized prefix: {ncname}")
-            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
-        self.emit_prefixes.add(self.namespaces._cased_key(ncname))
-
-
 @shared_arguments(ContextGenerator)
 @click.command()
 @click.option("--base", help="Base URI for model")

@@ -85,15 +85,9 @@ class PrefixGenerator(Generator):
         # We don't bother to visit class slots - just all slots
         return False
 
-    def add_prefix(self, ncname: str) -> None:
-        """ Add a prefix to the list of prefixes to emit
+    def visit_slot(self,  aliased_slot_name: str, slot: SlotDefinition) -> None:
+        self.add_mappings(slot)
 
-        @param ncname: name to add
-        """
-        if ncname not in self.namespaces:
-            self.logger.warning(f"Unrecognized prefix: {ncname}")
-            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
-        self.emit_prefixes.add(ncname)
 
 @shared_arguments(PrefixGenerator)
 @click.command()

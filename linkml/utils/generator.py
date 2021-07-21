@@ -569,6 +569,10 @@ class Generator(metaclass=abc.ABCMeta):
         self.add_id_prefixes(defn)
         mappings = defn.mappings + defn.related_mappings + defn.close_mappings + \
                    defn.narrow_mappings + defn.broad_mappings + defn.exact_mappings
+        if isinstance(defn, ClassDefinition):
+            mappings.append(defn.class_uri)
+        if isinstance(defn, SlotDefinition):
+            mappings.append(defn.slot_uri)
         for mapping in mappings:
             if '://' in mapping:
                 mcurie = self.namespaces.curie_for(mapping)
@@ -585,6 +589,16 @@ class Generator(metaclass=abc.ABCMeta):
     def add_id_prefixes(self, element: Element) -> None:
         for id_prefix in element.id_prefixes:
             self.add_prefix(id_prefix)
+
+    def add_prefix(self, ncname: str) -> None:
+        """ Add a prefix to the list of prefixes to emit
+
+        @param ncname: name to add
+        """
+        if ncname not in self.namespaces:
+            self.logger.warning(f"Unrecognized prefix: {ncname}")
+            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
+        self.emit_prefixes.add(ncname)
 
 
 def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:

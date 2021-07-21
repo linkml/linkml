@@ -45,6 +45,7 @@ classes:
   Class:
     class_uri: owl:Class
 
+
 slots:
 
   id:
