@@ -11,10 +11,11 @@ class IssueSQLGenTestCase(TestEnvironmentTestCase):
 
     def test_sqlddlgen(self):
         PATH = env.input_path('issue_273.yaml')
-        # TODO: determine why 'postgresql+psycopg2' doesn't work; issue with SQLA?
-        dialects = ['mssql+pyodbc', 'postgresql+pygresql']
+        # TODO: determine why 'postgresql' doesn't work
+        #dialects = ['mssql+pyodbc', 'postgresql+pygresql']
+        dialects = ['mssql+pyodbc', 'sqlite+pysqlite']
         for dialect in dialects:
-            gen = SQLDDLGenerator(PATH, dialect='mssql+pyodbc')
+            gen = SQLDDLGenerator(PATH, dialect=dialect)
             ddl = gen.serialize()
             with open(env.expected_path(f'issue_273_{dialect.replace("+","_")}.sql'), "w") as io:
                 io.write(ddl)
