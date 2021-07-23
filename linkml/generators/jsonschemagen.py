@@ -42,12 +42,13 @@ class JsonSchemaGenerator(Generator):
         # so we duplicate slots from inherited parents and mixins
         self.visit_all_slots = True
 
-    def visit_schema(self, inline: bool = False, **kwargs) -> None:
+    def visit_schema(self, inline: bool = False, not_closed=True, **kwargs) -> None:    
         self.inline = inline
         self.schemaobj = JsonObj(title=self.schema.name,
                                  type="object",
                                  properties={},
-                                 definitions=JsonObj())
+                                 definitions=JsonObj(),
+                                 additionalProperties=not_closed)
         for p, c in self.entryProperties.items():
             self.schemaobj['properties'][p] = {
                 'type': "array",
@@ -154,6 +155,9 @@ Note that declaring a slot as inlined: true will always inline the class
 """)
 @click.option("-t", "--top-class", help="""
 Top level class; slots of this class will become top level properties in the json-schema
+""")
+@click.option("--not-closed/--closed", default=True, help="""
+Set additionalProperties=False if closed otherwise true if not closed at the global level
 """)
 def cli(yamlfile, **kwargs):
     """ Generate JSON Schema representation of a biolink model """

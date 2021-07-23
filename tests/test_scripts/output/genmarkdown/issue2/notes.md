@@ -20,6 +20,7 @@ URI: [linkml:notes](https://w3id.org/linkml/notes)
 ## Used by
 
  * class_definition
+ * common_metadata
  * definition
  * [Element](Element.md)
  * enum_definition

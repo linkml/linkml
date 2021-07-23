@@ -25,6 +25,7 @@ URI: [linkml:SlotDefinition](https://w3id.org/linkml/SlotDefinition)
  *  **[ClassDefinition](ClassDefinition.md)** *[slot_usage](slot_usage.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[slots](slots.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[subproperty_of](subproperty_of.md)*  <sub>0..1</sub>  **[SlotDefinition](SlotDefinition.md)**
+ *  **[UniqueKey](UniqueKey.md)** *[unique_key_slots](unique_key_slots.md)*  <sub>1..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
 
 ## Attributes
 
@@ -85,6 +86,9 @@ implicitly asserts Y is an instance of C2
  * [required](required.md)  <sub>0..1</sub>
      * Description: true means that the slot must be present in the loaded definition
      * Range: [Boolean](types/Boolean.md)
+ * [recommended](recommended.md)  <sub>0..1</sub>
+     * Description: true means that the slot should be present in the loaded definition, but this is not required
+     * Range: [Boolean](types/Boolean.md)
  * [inlined](inlined.md)  <sub>0..1</sub>
      * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
      * Range: [Boolean](types/Boolean.md)
@@ -92,7 +96,7 @@ implicitly asserts Y is an instance of C2
      * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
      * Range: [Boolean](types/Boolean.md)
  * [key](key.md)  <sub>0..1</sub>
-     * Description: True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier
+     * Description: True means that the key slot(s) uniquely identify the container.
      * Range: [Boolean](types/Boolean.md)
  * [identifier](identifier.md)  <sub>0..1</sub>
      * Description: True means that the key slot(s) uniquely identify the container. There can be at most one identifier or key per container
@@ -136,12 +140,6 @@ implicitly asserts Y is an instance of C2
  * [pattern](pattern.md)  <sub>0..1</sub>
      * Description: the string value of the slot must conform to this regular expression
      * Range: [String](types/String.md)
- * [string_serialization](string_serialization.md)  <sub>0..1</sub>
-     * Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
-We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
-Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects
-For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
-     * Range: [String](types/String.md)
  * [slot_definition➞is_a](slot_definition_is_a.md)  <sub>0..1</sub>
      * Range: [SlotDefinition](SlotDefinition.md)
  * [slot_definition➞mixins](slot_definition_mixins.md)  <sub>0..\*</sub>
@@ -156,7 +154,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
      * Range: [String](types/String.md)
      * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
-     * Description: the identifier of this class or slot must begin with one of the URIs referenced by this prefix
+     * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
@@ -168,43 +166,6 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [description](description.md)  <sub>0..1</sub>
-     * Description: a description of the element's purpose and use
-     * Range: [String](types/String.md)
-     * in subsets: (owl)
- * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
-     * Range: [AltDescription](AltDescription.md)
- * [deprecated](deprecated.md)  <sub>0..1</sub>
-     * Description: Description of why and when this element will no longer be used
-     * Range: [String](types/String.md)
- * [todos](todos.md)  <sub>0..\*</sub>
-     * Description: Outstanding issue that needs resolution
-     * Range: [String](types/String.md)
- * [notes](notes.md)  <sub>0..\*</sub>
-     * Description: editorial notes about an element intended for internal consumption
-     * Range: [String](types/String.md)
-     * in subsets: (owl)
- * [comments](comments.md)  <sub>0..\*</sub>
-     * Description: notes and comments about an element intended for external consumption
-     * Range: [String](types/String.md)
-     * in subsets: (owl)
- * [examples](examples.md)  <sub>0..\*</sub>
-     * Description: example usages of an element
-     * Range: [Example](Example.md)
-     * in subsets: (owl)
- * [in_subset](in_subset.md)  <sub>0..\*</sub>
-     * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
-     * Range: [SubsetDefinition](SubsetDefinition.md)
- * [from_schema](from_schema.md)  <sub>0..1</sub>
-     * Description: id of the schema that defined the element
-     * Range: [Uri](types/Uri.md)
- * [imported_from](imported_from.md)  <sub>0..1</sub>
-     * Description: the imports entry that this element was derived from.  Empty means primary source
-     * Range: [String](types/String.md)
- * [see_also](see_also.md)  <sub>0..\*</sub>
-     * Description: a reference
-     * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (owl)
  * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have identical meaning.
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -219,12 +180,6 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have broader meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md)  <sub>0..1</sub>
-     * Description: When an element is deprecated, it can be automatically replaced by this uri or curie
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
-     * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
  * [abstract](abstract.md)  <sub>0..1</sub>
      * Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
@@ -251,6 +206,12 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
      * Description: status of the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
      * Example: bibo:draft None
+ * [string_serialization](string_serialization.md)  <sub>0..1</sub>
+     * Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
+We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
+Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects
+For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
+     * Range: [String](types/String.md)
 
 ## Other properties
 
@@ -260,4 +221,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 |  | | field |
 |  | | property |
 |  | | attribute |
+|  | | column |
+|  | | variable |
+| **Close Mappings:** | | rdf:Property |
 

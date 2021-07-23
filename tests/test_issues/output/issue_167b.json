@@ -262,8 +262,6 @@
     {
       "name": "MyClass",
       "definition_uri": "http://example.org/MyClass",
-      "description": "Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace",
-      "from_schema": "http://example.org/tests/issue167b",
       "annotations": [
         {
           "tag": "SKOS:prefLabel",
@@ -276,6 +274,8 @@
           "@type": "Annotation"
         }
       ],
+      "description": "Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace",
+      "from_schema": "http://example.org/tests/issue167b",
       "slot_usage": {},
       "class_uri": "http://example.org/MyClass",
       "@type": "ClassDefinition"
@@ -283,8 +283,6 @@
     {
       "name": "MyClass2",
       "definition_uri": "http://example.org/MyClass2",
-      "description": "-> This form of annotations is a tag/value format, which allows annotations to be annotated.  Note, however, that the annotation source is NOT a CURIE, rather just a string.",
-      "from_schema": "http://example.org/tests/issue167b",
       "annotations": [
         {
           "tag": "prefLabel",
@@ -299,6 +297,8 @@
           "@type": "Annotation"
         }
       ],
+      "description": "-> This form of annotations is a tag/value format, which allows annotations to be annotated.  Note, however, that the annotation source is NOT a CURIE, rather just a string.",
+      "from_schema": "http://example.org/tests/issue167b",
       "slot_usage": {},
       "class_uri": "http://example.org/MyClass2",
       "@type": "ClassDefinition"
@@ -369,9 +369,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "issue_167b.yaml",
-  "source_file_date": "Sun Jun  6 23:06:00 2021",
+  "source_file_date": "Tue Jul 20 18:41:38 2021",
   "source_file_size": 818,
-  "generation_date": "2021-06-06 23:09",
+  "generation_date": "2021-07-20 18:45",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

@@ -3,6 +3,7 @@ alt_description,,an attributed description
 annotatable,,mixin for classes that support annotations
 annotation,,a tag/value pair with the semantics of OWL Annotation
 class_definition,,the definition of a class or interface
+common_metadata,,Generic metadata shared across definitions
 definition,,base class for definitions
 element,,a named element in the model
 enum_definition,,List of values that constrain the range of a slot
@@ -16,4 +17,5 @@ schema_definition,,"a collection of subset, type, slot and class definitions"
 slot_definition,,the definition of a property or a slot
 subset_definition,,the name and description of a subset
 type_definition,,A data type definition.
+unique_key,,a collection of slots whose values uniquely identify an instance of a class
 

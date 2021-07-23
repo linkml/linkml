@@ -20,6 +20,7 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
 ## Used by
 
  * class_definition
+ * common_metadata
  * definition
  * [Element](Element.md)
  * enum_definition

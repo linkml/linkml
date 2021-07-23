@@ -25,6 +25,13 @@ type ClassDefinition
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -36,15 +43,8 @@ type ClassDefinition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
     abstract: Boolean
     mixin: Boolean
     valuesFrom: [Uriorcurie]
@@ -53,6 +53,7 @@ type ClassDefinition
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
+    stringSerialization: String
     slots: [SlotDefinition]
     slotUsage: [SlotDefinition]
     attributes: [SlotDefinition]
@@ -66,14 +67,8 @@ type ClassDefinition
     applyTo: [ClassDefinition]
   }
 
-interface Definition
+interface CommonMetadata
   {
-    name: String!
-    idPrefixes: [Ncname]
-    definitionUri: Uriorcurie
-    aliases: [String]
-    localNames: [LocalName]
-    mappings: [Uriorcurie]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -85,15 +80,38 @@ interface Definition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+  }
+
+interface Definition
+  {
+    name: String!
+    idPrefixes: [Ncname]
+    definitionUri: Uriorcurie
+    aliases: [String]
+    localNames: [LocalName]
+    mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
     extensions: [Extension]
     annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
     isA: Definition
     abstract: Boolean
     mixin: Boolean
@@ -105,9 +123,10 @@ interface Definition
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
+    stringSerialization: String
   }
 
-type Element implements Extensible, Annotatable
+type Element implements Extensible, Annotatable, CommonMetadata
   {
     name: String!
     idPrefixes: [Ncname]
@@ -115,6 +134,13 @@ type Element implements Extensible, Annotatable
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -126,15 +152,8 @@ type Element implements Extensible, Annotatable
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
   }
 
 type EnumDefinition
@@ -145,6 +164,13 @@ type EnumDefinition
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -156,15 +182,8 @@ type EnumDefinition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
     codeSet: Uriorcurie
     codeSetTag: String
     codeSetVersion: String
@@ -196,11 +215,15 @@ type LocalName
     localNameValue: String!
   }
 
-type PermissibleValue implements Extensible, Annotatable
+type PermissibleValue implements Extensible, Annotatable, CommonMetadata
   {
     text: String!
     description: String
     meaning: Uriorcurie
+    isA: PermissibleValue
+    mixins: [PermissibleValue]
+    extensions: [Extension]
+    annotations: [Annotation]
     altDescriptions: [AltDescription]
     deprecated: String
     todos: [String]
@@ -213,10 +236,6 @@ type PermissibleValue implements Extensible, Annotatable
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    isA: PermissibleValue
-    mixins: [PermissibleValue]
-    extensions: [Extension]
-    annotations: [Annotation]
   }
 
 type Prefix
@@ -232,6 +251,13 @@ type SchemaDefinition
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -243,15 +269,8 @@ type SchemaDefinition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
     id: Uri!
     title: String
     version: String
@@ -283,6 +302,13 @@ type SlotDefinition
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -294,15 +320,8 @@ type SlotDefinition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
     abstract: Boolean
     mixin: Boolean
     valuesFrom: [Uriorcurie]
@@ -311,6 +330,7 @@ type SlotDefinition
     lastUpdatedOn: Datetime
     modifiedBy: Uriorcurie
     status: Uriorcurie
+    stringSerialization: String
     singularName: String
     domain: ClassDefinition
     range: Element
@@ -320,6 +340,7 @@ type SlotDefinition
     readonly: String
     ifabsent: String
     required: Boolean
+    recommended: Boolean
     inlined: Boolean
     inlinedAsList: Boolean
     key: Boolean
@@ -337,7 +358,6 @@ type SlotDefinition
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
-    stringSerialization: String
     isA: SlotDefinition
     mixins: [SlotDefinition]
     applyTo: [SlotDefinition]
@@ -351,6 +371,13 @@ type SubsetDefinition
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -362,15 +389,8 @@ type SubsetDefinition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
   }
 
 type TypeDefinition
@@ -381,6 +401,13 @@ type TypeDefinition
     aliases: [String]
     localNames: [LocalName]
     mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    extensions: [Extension]
+    annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
     deprecated: String
@@ -392,19 +419,19 @@ type TypeDefinition
     fromSchema: Uri
     importedFrom: String
     seeAlso: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-    extensions: [Extension]
-    annotations: [Annotation]
     typeof: TypeDefinition
     base: String
     uri: Uriorcurie
     repr: String
+  }
+
+type UniqueKey implements Extensible, Annotatable
+  {
+    uniqueKeySlots: [SlotDefinition]!
+    extensions: [Extension]
+    annotations: [Annotation]
   }
 
 

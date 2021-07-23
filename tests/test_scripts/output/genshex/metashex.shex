@@ -83,6 +83,25 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     )
 }
 
+<CommonMetadata> {
+    (  $<CommonMetadata_tes> (  skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <CommonMetadata> ] ?
+    )
+}
+
 <Definition>  (
     @<ClassDefinition> OR @<SlotDefinition>
 )
@@ -99,7 +118,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           pav:createdOn @<Datetime> ? ;
           pav:lastUpdatedOn @<Datetime> ? ;
           oslc:modifiedBy @<Uriorcurie> ? ;
-          bibo:status @<Uriorcurie> ?
+          bibo:status @<Uriorcurie> ? ;
+          <string_serialization> @<String> ?
        ) ;
        rdf:type [ <Definition> ]
     )
@@ -114,11 +134,20 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Extensible> ] ? ;
           &<Annotatable_tes> ;
           rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
           <id_prefixes> @<Ncname> * ;
           <definition_uri> @<Uriorcurie> ? ;
           skos:altLabel @<String> * ;
           <local_names> @<LocalName> * ;
           skos:mappingRelation @<Uriorcurie> * ;
+          skos:exactMatch @<Uriorcurie> * ;
+          skos:closeMatch @<Uriorcurie> * ;
+          skos:relatedMatch @<Uriorcurie> * ;
+          skos:narrowMatch @<Uriorcurie> * ;
+          skos:broadMatch @<Uriorcurie> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
           skos:definition @<String> ? ;
           <alt_descriptions> @<AltDescription> * ;
           <deprecated> @<String> ? ;
@@ -130,15 +159,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
-          skos:exactMatch @<Uriorcurie> * ;
-          skos:closeMatch @<Uriorcurie> * ;
-          skos:relatedMatch @<Uriorcurie> * ;
-          skos:narrowMatch @<Uriorcurie> * ;
-          skos:broadMatch @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
-          <extensions> @<Extension> * ;
-          <annotations> @<Annotation> *
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
        ) ;
        rdf:type [ <Element> ]
     )
@@ -195,8 +217,14 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Extensible> ] ? ;
           &<Annotatable_tes> ;
           rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
           skos:definition @<String> ? ;
           <meaning> @<Uriorcurie> ? ;
+          <is_a> @<PermissibleValue> ? ;
+          <mixins> @<PermissibleValue> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
           <alt_descriptions> @<AltDescription> * ;
           <deprecated> @<String> ? ;
           <todos> @<String> * ;
@@ -208,11 +236,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <imported_from> @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
-          <is_a> @<PermissibleValue> ? ;
-          <mixins> @<PermissibleValue> * ;
-          <extensions> @<Extension> * ;
-          <annotations> @<Annotation> *
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
        ) ;
        rdf:type [ <PermissibleValue> ]
     )
@@ -266,6 +290,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <readonly> @<String> ? ;
           <ifabsent> @<String> ? ;
           <required> @<Boolean> ? ;
+          <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
           <key> @<Boolean> ? ;
@@ -283,7 +308,6 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
-          <string_serialization> @<String> ? ;
           <is_a> @<SlotDefinition> ? ;
           <mixins> @<SlotDefinition> * ;
           <apply_to> @<SlotDefinition> *
@@ -309,6 +333,19 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <repr> @<String> ?
        ) ;
        rdf:type [ <TypeDefinition> ]
+    )
+}
+
+<UniqueKey> CLOSED {
+    (  $<UniqueKey_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          <unique_key_slots> @<SlotDefinition> + ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <UniqueKey> ] ?
     )
 }
 

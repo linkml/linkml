@@ -1,22 +1,23 @@
 
-Classes: 17
-	Referenced by: 10 classes, 114 slots, 0 types, 0 enums 
-	Root: 9
-	Leaf: 14
-	Standalone: 16
-	Declared mixin: 2
+Classes: 19
+	Referenced by: 11 classes, 117 slots, 0 types, 0 enums 
+	Root: 11
+	Leaf: 16
+	Standalone: 18
+	Declared mixin: 3
 	Undeclared mixin: 0
 	Abstract: 2
 
-Slots: 122
-	Referenced by: 17 classes, 15 slots, 0 types, 0 enums 
-	Root: 107
-	Leaf: 116
-	Standalone: 125
+Slots: 125
+	Referenced by: 19 classes, 15 slots, 0 types, 0 enums 
+	Root: 110
+	Leaf: 118
+	Standalone: 129
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 1
-	Not in domain: 5
+	* Unowned slots: unique_keys
+	Not in domain: 6
 		slot.name: slot.domain
 		---------  -----------
 		"created_by": "element"
@@ -24,10 +25,11 @@ Slots: 122
 		"last_updated_on": "element"
 		"modified_by": "element"
 		"status": "element"
+		"unique_keys": "class_definition"
 	Domain unspecified: 8
 	Ranges:
 		Type:
-			boolean: 13
+			boolean: 14
 			datetime: 4
 			integer: 3
 			ncname: 5
@@ -46,14 +48,15 @@ Slots: 122
 			local_name: 1
 			permissible_value: 3
 			prefix: 1
-			slot_definition: 10
+			slot_definition: 11
 			subset_definition: 2
 			type_definition: 3
+			unique_key: 1
 		Unknown:
 			pv_formula_options: 1
 
 Types: 14
-	Referenced by: 0 classes, 84 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 85 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

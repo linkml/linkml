@@ -32,3 +32,4 @@ extensible &#8594;  <sub>0..\*</sub> extension
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key

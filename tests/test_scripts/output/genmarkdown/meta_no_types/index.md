@@ -22,10 +22,12 @@ A metamodel for defining linked open data schemas
  * [LocalName](LocalName.md) - an attributed label
  * [PermissibleValue](PermissibleValue.md) - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [Prefix](Prefix.md) - prefix URI tuple
+ * [UniqueKey](UniqueKey.md) - a collection of slots whose values uniquely identify an instance of a class
 
 ### Mixins
 
  * [Annotatable](Annotatable.md) - mixin for classes that support annotations
+ * [CommonMetadata](CommonMetadata.md) - Generic metadata shared across definitions
  * [Extensible](Extensible.md) - mixin for classes that support extension
 
 ### Slots
@@ -70,7 +72,7 @@ A metamodel for defining linked open data schemas
  * [from_schema](from_schema.md) - id of the schema that defined the element
  * [generation_date](generation_date.md) - date and time that the schema was loaded/generated
  * [id](id.md) - The official schema URI
- * [id_prefixes](id_prefixes.md) - the identifier of this class or slot must begin with one of the URIs referenced by this prefix
+ * [id_prefixes](id_prefixes.md) - the identifier of this class or slot must begin with the URIs referenced by this prefix
  * [identifier](identifier.md) - True means that the key slot(s) uniquely identify the container. There can be at most one identifier or key per container
  * [ifabsent](ifabsent.md) - function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:
  * [imported_from](imported_from.md) - the imports entry that this element was derived from.  Empty means primary source
@@ -86,7 +88,7 @@ A metamodel for defining linked open data schemas
      * [slot_definition➞is_a](slot_definition_is_a.md)
  * [is_class_field](is_class_field.md) - indicates that any instance, i,  the domain of this slot will include an assert of i s range
  * [is_usage_slot](is_usage_slot.md) - True means that this slot was defined in a slot_usage situation
- * [key](key.md) - True means that the key slot(s) uniquely identify the container. In future releases, it will be possible for there to be compound keys, where several slots combine to produce a unique identifier
+ * [key](key.md) - True means that the key slot(s) uniquely identify the container.
  * [last_updated_on](last_updated_on.md) - time at which the element was last updated
  * [license](license.md) - license for the schema
  * [local_name_source](local_name_source.md) - the ncname of the source of the name
@@ -121,6 +123,7 @@ A metamodel for defining linked open data schemas
  * [pv_formula](pv_formula.md) - Defines the specific formula to be used to generate the permissible values.
  * [range](range.md) - defines the type of the object of the slot.  Given the following slot definition
  * [readonly](readonly.md) - If present, slot is read only.  Text explains why
+ * [recommended](recommended.md) - true means that the slot should be present in the loaded definition, but this is not required
  * [repr](repr.md) - the name of the python object that implements this type definition
  * [required](required.md) - true means that the slot must be present in the loaded definition
  * [role](role.md) - the role played by the slot range
@@ -147,6 +150,8 @@ A metamodel for defining linked open data schemas
  * [typeof](typeof.md) - Names a parent type
  * [types](types.md) - data types used in the model
  * [union_of](union_of.md) - indicates that the domain class consists exactly of the members of the classes in the range
+ * [unique_key_slots](unique_key_slots.md) - list of slot names that form a key
+ * [unique_keys](unique_keys.md) - Set of unique keys for this slot
  * [usage_slot_name](usage_slot_name.md) - The name of the slot referenced in the slot_usage
  * [value](value.md) - example value
  * [example➞description](value_description.md) - description of what the value is doing

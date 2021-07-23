@@ -75,6 +75,25 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     )
 }
 
+<CommonMetadata> {
+    (  $<CommonMetadata_tes> (  <description> @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          <notes> @<String> * ;
+          <comments> @<String> * ;
+          <examples> @<Example> * ;
+          <in_subset> @<SubsetDefinition> * ;
+          <from_schema> @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          <see_also> @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <CommonMetadata> ] ?
+    )
+}
+
 <Definition>  (
     @<ClassDefinition> OR @<SlotDefinition>
 )
@@ -91,7 +110,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <created_on> @<Datetime> ? ;
           <last_updated_on> @<Datetime> ? ;
           <modified_by> @<Uriorcurie> ? ;
-          <status> @<Uriorcurie> ?
+          <status> @<Uriorcurie> ? ;
+          <string_serialization> @<String> ?
        ) ;
        rdf:type [ <Definition> ]
     )
@@ -106,11 +126,20 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <Extensible> ] ? ;
           &<Annotatable_tes> ;
           rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
           <id_prefixes> @<Ncname> * ;
           <definition_uri> @<Uriorcurie> ? ;
           <aliases> @<String> * ;
           <local_names> @<LocalName> * ;
           <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
           <description> @<String> ? ;
           <alt_descriptions> @<AltDescription> * ;
           <deprecated> @<String> ? ;
@@ -122,15 +151,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <from_schema> @<Uri> ? ;
           <imported_from> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
-          <exact_mappings> @<Uriorcurie> * ;
-          <close_mappings> @<Uriorcurie> * ;
-          <related_mappings> @<Uriorcurie> * ;
-          <narrow_mappings> @<Uriorcurie> * ;
-          <broad_mappings> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
-          <extensions> @<Extension> * ;
-          <annotations> @<Annotation> *
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
        ) ;
        rdf:type [ <Element> ]
     )
@@ -187,8 +209,14 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <Extensible> ] ? ;
           &<Annotatable_tes> ;
           rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
           <description> @<String> ? ;
           <meaning> @<Uriorcurie> ? ;
+          <is_a> @<PermissibleValue> ? ;
+          <mixins> @<PermissibleValue> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
           <alt_descriptions> @<AltDescription> * ;
           <deprecated> @<String> ? ;
           <todos> @<String> * ;
@@ -200,11 +228,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <imported_from> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
-          <is_a> @<PermissibleValue> ? ;
-          <mixins> @<PermissibleValue> * ;
-          <extensions> @<Extension> * ;
-          <annotations> @<Annotation> *
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
        ) ;
        rdf:type [ <PermissibleValue> ]
     )
@@ -258,6 +282,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <readonly> @<String> ? ;
           <ifabsent> @<String> ? ;
           <required> @<Boolean> ? ;
+          <recommended> @<Boolean> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
           <key> @<Boolean> ? ;
@@ -275,7 +300,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
-          <string_serialization> @<String> ? ;
           <is_a> @<SlotDefinition> ? ;
           <mixins> @<SlotDefinition> * ;
           <apply_to> @<SlotDefinition> *
@@ -301,6 +325,19 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <repr> @<String> ?
        ) ;
        rdf:type [ <TypeDefinition> ]
+    )
+}
+
+<UniqueKey> CLOSED {
+    (  $<UniqueKey_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          <unique_key_slots> @<SlotDefinition> + ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> *
+       ) ;
+       rdf:type [ <UniqueKey> ] ?
     )
 }
 

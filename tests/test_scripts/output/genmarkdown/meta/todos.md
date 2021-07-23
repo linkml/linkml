@@ -20,6 +20,7 @@ URI: [linkml:todos](https://w3id.org/linkml/todos)
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+ * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
  * [EnumDefinition](EnumDefinition.md)

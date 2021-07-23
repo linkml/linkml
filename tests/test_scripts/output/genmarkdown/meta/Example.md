@@ -7,7 +7,7 @@ usage example and description
 URI: [linkml:Example](https://w3id.org/linkml/Example)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20examples%200..*>[Example&#124;value:string%20%3F;description:string%20%3F],[PermissibleValue]++-%20examples%200..*>[Example],[PermissibleValue],[Element])](https://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20examples%200..*>[Example&#124;value:string%20%3F;description:string%20%3F],[PermissibleValue]++-%20examples%200..*>[Example],[PermissibleValue],[Element])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CommonMetadata]++-%20examples%200..*>[Example&#124;value:string%20%3F;description:string%20%3F],[Element],[CommonMetadata])](https://yuml.me/diagram/nofunky;dir:TB/class/[CommonMetadata]++-%20examples%200..*>[Example&#124;value:string%20%3F;description:string%20%3F],[Element],[CommonMetadata])
 
 ## Referenced by class
 

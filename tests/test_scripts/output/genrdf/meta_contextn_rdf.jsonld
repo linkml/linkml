@@ -219,6 +219,9 @@
       "range": {
          "@type": "@id"
       },
+      "recommended": {
+         "@type": "xsd:boolean"
+      },
       "related_mappings": {
          "@type": "@id",
          "@id": "skos:relatedMatch"
@@ -283,6 +286,12 @@
          "@type": "@id"
       },
       "union_of": {
+         "@type": "@id"
+      },
+      "unique_key_slots": {
+         "@type": "@id"
+      },
+      "unique_keys": {
          "@type": "@id"
       },
       "value": {

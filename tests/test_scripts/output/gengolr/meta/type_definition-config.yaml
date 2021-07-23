@@ -11,8 +11,8 @@ fields:
     target class.
   display_name: name
 - id: id_prefixes
-  description: the identifier of this class or slot must begin with one of the URIs
-    referenced by this prefix
+  description: the identifier of this class or slot must begin with the URIs referenced
+    by this prefix
   display_name: id_prefixes
   cardinality: multi
 - id: definition_uri
@@ -30,6 +30,39 @@ fields:
     broader or narrower in meaning, or otherwise semantically related but not equivalent
     from a strict ontological perspective.
   display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
   cardinality: multi
 - id: description
   description: a description of the element's purpose and use
@@ -73,31 +106,6 @@ fields:
   description: a reference
   display_name: see_also
   cardinality: multi
-- id: exact_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have identical meaning.
-  display_name: exact mappings
-  cardinality: multi
-- id: close_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have close meaning.
-  display_name: close mappings
-  cardinality: multi
-- id: related_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have related meaning.
-  display_name: related mappings
-  cardinality: multi
-- id: narrow_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have narrower meaning.
-  display_name: narrow mappings
-  cardinality: multi
-- id: broad_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have broader meaning.
-  display_name: broad mappings
-  cardinality: multi
 - id: deprecated_element_has_exact_replacement
   description: When an element is deprecated, it can be automatically replaced by
     this uri or curie
@@ -106,14 +114,6 @@ fields:
   description: When an element is deprecated, it can be potentially replaced by this
     uri or curie
   display_name: deprecated element has possible replacement
-- id: extensions
-  description: a tag/text tuple attached to an arbitrary element
-  display_name: extensions
-  cardinality: multi
-- id: annotations
-  description: a collection of tag/text tuples with the semantics of OWL Annotation
-  display_name: annotations
-  cardinality: multi
 - id: typeof
   description: Names a parent type
   display_name: typeof

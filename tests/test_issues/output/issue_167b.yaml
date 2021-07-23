@@ -212,9 +212,6 @@ classes:
   my class:
     name: my class
     definition_uri: http://example.org/MyClass
-    description: Annotations as tag value pairs. Note that altLabel is defined in
-      the default namespace, not in the SKOS namespace
-    from_schema: http://example.org/tests/issue167b
     annotations:
       SKOS:prefLabel:
         tag: SKOS:prefLabel
@@ -222,14 +219,13 @@ classes:
       altLabel:
         tag: altLabel
         value: some other label
+    description: Annotations as tag value pairs. Note that altLabel is defined in
+      the default namespace, not in the SKOS namespace
+    from_schema: http://example.org/tests/issue167b
     class_uri: ex:MyClass
   my class 2:
     name: my class 2
     definition_uri: http://example.org/MyClass2
-    description: -> This form of annotations is a tag/value format, which allows annotations
-      to be annotated.  Note, however, that the annotation source is NOT a CURIE,
-      rather just a string.
-    from_schema: http://example.org/tests/issue167b
     annotations:
       prefLabel:
         tag: prefLabel
@@ -238,6 +234,10 @@ classes:
           source:
             tag: source
             value: PMID:12345
+    description: -> This form of annotations is a tag/value format, which allows annotations
+      to be annotated.  Note, however, that the annotation source is NOT a CURIE,
+      rather just a string.
+    from_schema: http://example.org/tests/issue167b
     class_uri: ex:MyClass2
   annotatable:
     name: annotatable
@@ -287,6 +287,6 @@ classes:
     class_uri: linkml:Extensible
 metamodel_version: 1.7.0
 source_file: issue_167b.yaml
-source_file_date: Wed Jun  2 16:41:42 2021
+source_file_date: Tue Jul 20 18:41:38 2021
 source_file_size: 818
-generation_date: 2021-06-02 16:45
+generation_date: 2021-07-20 18:45

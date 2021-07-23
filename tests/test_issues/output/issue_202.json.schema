@@ -1,6 +1,7 @@
 {
    "$id": "http://example.org/sample/example1",
    "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "definitions": {
       "GeospatialDDCoordLocation": {
          "additionalProperties": false,
