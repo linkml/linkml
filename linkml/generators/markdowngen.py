@@ -57,7 +57,10 @@ class MarkdownGenerator(Generator):
 
         with open(self.exist_warning(directory, 'index.md'), 'w') as ixfile:
             with redirect_stdout(ixfile):
-                self.frontmatter(f"{self.schema.name} schema")
+                self.frontmatter(f"{self.schema.name}")
+                self.para(
+                    f"**Version:** {self.schema.version} **Metamodel version:** {self.schema.metamodel_version}"
+                )
                 self.para(be(self.schema.description))
 
                 self.header(3, 'Classes')

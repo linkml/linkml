@@ -21,6 +21,12 @@ class ProtoGenerator(Generator):
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.relative_slot_num = 0
+        self.generate_header()
+
+    def generate_header(self):
+        print(f"// metamodel_version: {self.schema.metamodel_version}")
+        if self.schema.version:
+            print(f"// version: {self.schema.version}")
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         if cls.mixin or cls.abstract or not cls.slots:

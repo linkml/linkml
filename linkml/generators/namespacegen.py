@@ -25,6 +25,8 @@ class NamespaceGenerator(PythonGenerator):
         head = f'''# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
+# Version: {self.schema.version if self.schema.version else None}
+# Metamodel version: {self.schema.metamodel_version}
 #''' if self.schema.generation_date else ''
 
         return f'''{head}
