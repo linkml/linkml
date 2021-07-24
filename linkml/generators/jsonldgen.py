@@ -111,7 +111,7 @@ class JSONLDGenerator(Generator):
             # TODO: The _visit function above alters the schema in situ
             add_prefixes = ContextGenerator(self.original_schema, model=False, metadata=False).serialize()
             add_prefixes_json = loads(add_prefixes)
-            cjsonldcontextgen.pyontext = [METAMODEL_CONTEXT_URI, add_prefixes_json['@context']]
+            context.pyontext = [METAMODEL_CONTEXT_URI, add_prefixes_json['@context']]
         elif isinstance(context, str):               # Some of the older code doesn't do multiple contexts
             context = [context]
         elif isinstance(context, tuple):
