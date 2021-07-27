@@ -104,7 +104,7 @@ Failed validating 'required' in schema['properties']['persons']['items']['proper
      'properties': {'ended_at_time': {'format': 'date', 'type': 'string'},
                     'related_to': {'type': 'string'},
                     'started_at_time': {'format': 'date', 'type': 'string'},
-                    'type': {'type': 'string'}},
+                    'type': {'$ref': '#/definitions/FamilialRelationshipType'}},
      'required': ['type', 'related_to'],
      'title': 'FamilialRelationship',
      'type': 'object'}
