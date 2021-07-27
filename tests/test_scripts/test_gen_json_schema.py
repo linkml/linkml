@@ -17,8 +17,8 @@ class GenJSONSchemaTestCase(ClickTestCase):
         self.do_test("--help", 'help')
 
     def test_meta(self):
-        self.do_test([], 'meta.jsonld')
-        self.do_test('-f json', 'meta.jsonld')
+        self.do_test([], 'meta.json')
+        self.do_test('-f json', 'meta.json')
         self.do_test('-f xsv', 'meta_error', expected_error=click.exceptions.BadParameter)
         self.do_test('-i', 'meta_inline.json')
 

@@ -148,6 +148,12 @@
          "title": "Dataset",
          "type": "object"
       },
+      "DiagnosisType": {
+         "description": "",
+         "enum": [],
+         "title": "DiagnosisType",
+         "type": "string"
+      },
       "EmploymentEvent": {
          "additionalProperties": false,
          "description": "",
@@ -207,7 +213,7 @@
                "type": "string"
             },
             "type": {
-               "type": "string"
+               "$ref": "#/definitions/FamilialRelationshipType"
             }
          },
          "required": [
@@ -216,6 +222,16 @@
          ],
          "title": "FamilialRelationship",
          "type": "object"
+      },
+      "FamilialRelationshipType": {
+         "description": "",
+         "enum": [
+            "SIBLING_OF",
+            "PARENT_OF",
+            "CHILD_OF"
+         ],
+         "title": "FamilialRelationshipType",
+         "type": "string"
       },
       "MarriageEvent": {
          "additionalProperties": false,

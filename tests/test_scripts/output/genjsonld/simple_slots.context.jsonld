@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from simple_slots.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 20:22\n    Schema: simple_slots\n    \n    id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots\n    description: Slot definition to be included in jsonld test case\n    license: \n    ",
+   "_comments": "Auto generated from simple_slots.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 21:10\n    Schema: simple_slots\n    \n    id: https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots\n    description: Slot definition to be included in jsonld test case\n    license: \n    ",
    "@context": {
       "foo": "http://samples.r.us/foo#",
       "simple_slots": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots/",

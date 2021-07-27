@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from prefixtest.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 20:22\n    Schema: prefixtest\n    \n    id: https://w3id.org/linkml/tests/prefixtest\n    description: Prefix Test Schema\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from prefixtest.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 21:10\n    Schema: prefixtest\n    \n    id: https://w3id.org/linkml/tests/prefixtest\n    description: Prefix Test Schema\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "BFO": {
          "@id": "http://purl.obolibrary.org/obo/BFO_",
