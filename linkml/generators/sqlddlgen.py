@@ -206,9 +206,9 @@ class SQLDDLGenerator(Generator):
         return underscore(cn)
 
     def generate_header(self):
-        print(f"# metamodel_version: {self.schema.metamodel_version}")
+        print(f"/* metamodel_version: {self.schema.metamodel_version} */")
         if self.schema.version:
-            print(f"# version: {self.schema.version}")
+            print(f"/* version: {self.schema.version} */")
 
     def end_schema(self, **kwargs) -> None:
         self._transform_sqlschema()
