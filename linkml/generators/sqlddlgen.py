@@ -398,6 +398,9 @@ from sqlalchemy import Integer
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import relationship
 
+metamodel_version = "{self.schema.metamodel_version}"
+version = "{self.schema.version}"
+
 mapper_registry = registry()
 metadata = MetaData()
 
