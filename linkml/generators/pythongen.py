@@ -125,7 +125,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
-version = "{self.schema.version}"
+version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
