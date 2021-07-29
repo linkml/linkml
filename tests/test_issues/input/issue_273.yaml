@@ -1,0 +1,33 @@
+id: https://w3id.org/test-schema
+name: test-schema
+description: >-
+  A test schema
+
+imports:
+- linkml:types
+
+default_prefix: EX
+
+prefixes:
+  EX: www.example.com/
+  linkml: https://w3id.org/linkml/
+
+classes:
+  foo:
+    slots:
+      - prop1
+      - prop2
+      - prop3
+
+slots:
+  prop1:
+  prop2:
+  prop3:
+    range: val_enum
+
+enums:
+  val_enum:
+    permissible_values:
+      1:
+      2:
+      3:
