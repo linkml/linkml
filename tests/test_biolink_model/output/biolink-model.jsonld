@@ -18843,9 +18843,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "biolink-model.yaml",
-  "source_file_date": "Tue Jul 20 18:41:38 2021",
+  "source_file_date": "Thu Jul 29 02:15:44 2021",
   "source_file_size": 267853,
-  "generation_date": "2021-07-20 18:43",
+  "generation_date": "2021-07-29 02:17",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
@@ -19110,7 +19110,7 @@
         "@id": "http://purl.obolibrary.org/obo/NBO_",
         "@prefix": true
       },
-      "NCBIGENE": "http://identifiers.org/ncbigene/",
+      "NCBIGene": "http://identifiers.org/ncbigene/",
       "NCBITaxon": {
         "@id": "http://purl.obolibrary.org/obo/NCBITaxon_",
         "@prefix": true

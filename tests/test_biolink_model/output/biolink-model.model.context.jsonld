@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from biolink-model.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-06-02 16:43\n    Schema: Biolink-Model\n    \n    id: https://w3id.org/biolink/biolink-model\n    description: Entity and association taxonomy and datamodel for life-sciences data\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from biolink-model.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-29 02:17\n    Schema: Biolink-Model\n    \n    id: https://w3id.org/biolink/biolink-model\n    description: Entity and association taxonomy and datamodel for life-sciences data\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "APO": {
          "@id": "http://purl.obolibrary.org/obo/APO_",
@@ -261,7 +261,7 @@
          "@id": "http://purl.obolibrary.org/obo/NBO_",
          "@prefix": true
       },
-      "NCBIGENE": "http://identifiers.org/ncbigene/",
+      "NCBIGene": "http://identifiers.org/ncbigene/",
       "NCBITaxon": {
          "@id": "http://purl.obolibrary.org/obo/NCBITaxon_",
          "@prefix": true

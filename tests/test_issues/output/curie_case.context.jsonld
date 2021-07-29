@@ -1,7 +1,10 @@
 {
-   "_comments": "Auto generated from curie_case.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-03-24 16:47\n    Schema: curiecase\n    \n    id: http://example.org/tests/curiecase\n    description: \n    license: \n    ",
+   "_comments": "Auto generated from curie_case.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-29 02:18\n    Schema: curiecase\n    \n    id: http://example.org/tests/curiecase\n    description: \n    license: \n    ",
    "@context": {
+      "ABC": "http://example.org/abc#",
       "aBC": "http://example.org/abc#",
+      "aBc": "http://example.org/abc#",
+      "abc": "http://example.org/abc#",
       "curiecase": "http://example.org/tests/curiecase/",
       "@vocab": "http://example.org/tests/curiecase/",
       "C1": {
