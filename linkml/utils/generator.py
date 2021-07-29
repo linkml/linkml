@@ -9,7 +9,7 @@ from click import Command, Argument, Option
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, ClassDefinitionName, \
     TypeDefinition, Element, SlotDefinitionName, TypeDefinitionName, PrefixPrefixPrefix, ElementName, \
-    SubsetDefinition, SubsetDefinitionName, EnumDefinition, EnumDefinitionName
+    SubsetDefinition, SubsetDefinitionName, EnumDefinition, EnumDefinitionName, Definition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
@@ -560,6 +560,46 @@ class Generator(metaclass=abc.ABCMeta):
         """ Return all slots in the class definition that are owned by the class """
         return [slot for slot in [self.schema.slots[sn] for sn in cls.slots] if cls.name in slot.domain_of or
                 (set(cls.mixins).intersection(slot.domain_of))]
+
+    def add_mappings(self, defn: Definition) -> None:
+        """
+        Process any mappings in defn, adding all of the mappings prefixes to the namespace map
+        :param defn: Class or Slot Definition
+        """
+        self.add_id_prefixes(defn)
+        mappings = defn.mappings + defn.related_mappings + defn.close_mappings + \
+                   defn.narrow_mappings + defn.broad_mappings + defn.exact_mappings
+        # see https://github.com/linkml/linkml/pull/283
+        #if isinstance(defn, ClassDefinition):
+        #    mappings.append(defn.class_uri)
+        #if isinstance(defn, SlotDefinition):
+        #    mappings.append(defn.slot_uri)
+        for mapping in mappings:
+            if '://' in mapping:
+                mcurie = self.namespaces.curie_for(mapping)
+                if mcurie is None:
+                    self.logger.warning(f"No namespace defined for URI: {mapping}")
+                    return        # Absolute path - no prefix/name
+                else:
+                    mapping = mcurie
+            if ':' not in mapping or len(mapping.split(':')) != 2:
+                raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
+            ns = mapping.split(':')[0]
+            self.add_prefix(ns)
+
+    def add_id_prefixes(self, element: Element) -> None:
+        for id_prefix in element.id_prefixes:
+            self.add_prefix(id_prefix)
+
+    def add_prefix(self, ncname: str) -> None:
+        """ Add a prefix to the list of prefixes to emit
+
+        @param ncname: name to add
+        """
+        if ncname not in self.namespaces:
+            self.logger.warning(f"Unrecognized prefix: {ncname}")
+            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
+        self.emit_prefixes.add(ncname)
 
 
 def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:

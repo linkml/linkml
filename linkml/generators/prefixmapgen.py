@@ -85,38 +85,8 @@ class PrefixGenerator(Generator):
         # We don't bother to visit class slots - just all slots
         return False
 
-    def add_prefix(self, ncname: str) -> None:
-        """ Add a prefix to the list of prefixes to emit
-
-        @param ncname: name to add
-        """
-        if ncname not in self.namespaces:
-            self.logger.warning(f"Unrecognized prefix: {ncname}")
-            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
-        self.emit_prefixes.add(ncname)
-
-    def add_mappings(self, defn: Definition) -> None:
-        """
-        Process any mappings in defn, adding all of the mappings prefixes to the namespace map
-        :param defn: Class or Slot Definition
-        """
-        self.add_id_prefixes(defn)
-        for mapping in defn.mappings:
-            if '://' in mapping:
-                mcurie = self.namespaces.curie_for(mapping)
-                self.logger.warning(f"No namespace defined for URI: {mapping}")
-                if mcurie is None:
-                    return        # Absolute path - no prefix/name
-                else:
-                    mapping = mcurie
-            if ':' not in mapping or len(mapping.split(':')) != 2:
-                raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
-            ns = mapping.split(':')[0]
-            self.add_prefix(ns)
-
-    def add_id_prefixes(self, element: Element) -> None:
-        for id_prefix in element.id_prefixes:
-            self.add_prefix(id_prefix)
+    def visit_slot(self,  aliased_slot_name: str, slot: SlotDefinition) -> None:
+        self.add_mappings(slot)
 
 
 @shared_arguments(PrefixGenerator)

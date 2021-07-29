@@ -165,42 +165,6 @@ class ContextGenerator(Generator):
         if slot_def:
             self.context_body[underscore(aliased_slot_name)] = slot_def
 
-    def add_prefix(self, ncname: str) -> None:
-        """ Add a prefix to the list of prefixes to emit
-
-        @param ncname: name to add
-        """
-        if ncname not in self.namespaces:
-            self.logger.warning(f"Unrecognized prefix: {ncname}")
-            self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
-        self.emit_prefixes.add(self.namespaces._cased_key(ncname))
-
-    def add_mappings(self, defn: Definition) -> None:
-        """
-        Process any mappings in defn, adding all of the mappings prefixes to the namespace map
-        :param defn: Class or Slot Definition
-        """
-        self.add_id_prefixes(defn)
-        mappings = defn.mappings + defn.related_mappings + defn.close_mappings + \
-                   defn.narrow_mappings + defn.broad_mappings + defn.exact_mappings
-        for mapping in mappings:
-            if '://' in mapping:
-                mcurie = self.namespaces.curie_for(mapping)
-                if mcurie is None:
-                    self.logger.warning(f"No namespace defined for URI: {mapping}")
-                    return        # Absolute path - no prefix/name
-                else:
-                    mapping = mcurie
-            if ':' not in mapping or len(mapping.split(':')) != 2:
-                raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
-            ns = mapping.split(':')[0]
-            self.add_prefix(ns)
-
-    def add_id_prefixes(self, element: Element) -> None:
-        for id_prefix in element.id_prefixes:
-            self.add_prefix(id_prefix)
-
-
 @shared_arguments(ContextGenerator)
 @click.command()
 @click.option("--base", help="Base URI for model")

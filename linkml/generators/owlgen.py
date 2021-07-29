@@ -39,6 +39,7 @@ class OwlSchemaGenerator(Generator):
             SchemaLoader(METAMODEL_YAML_URI, base_dir=META_BASE_URI, importmap=kwargs.get('importmap', None),
                          mergeimports=self.merge_imports)
         self.metamodel.resolve()
+        self.emit_prefixes: Set[str] = set()
         self.top_value_uri: Optional[URIRef] = None
         self.ontology_uri_suffix = ontology_uri_suffix
 
@@ -119,6 +120,7 @@ class OwlSchemaGenerator(Generator):
                     logging.warning(f'No URI for {m}')
 
     def visit_class(self, cls: ClassDefinition) -> bool:
+        self.add_mappings(cls)
         cls_uri = self._class_uri(cls.name)
         self.add_metadata(cls, cls_uri)
         self.graph.add((cls_uri, RDF.type, OWL.Class))
@@ -235,6 +237,7 @@ class OwlSchemaGenerator(Generator):
         @param slot:
         @return:
         """
+        self.add_mappings(slot)
         # Note: We use the raw name in OWL and add a subProperty arc
         slot_uri = self._prop_uri(slot.name)
         self._add_element_properties(slot_uri, slot)
