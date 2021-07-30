@@ -11,7 +11,7 @@ LinkML is a general purpose modeling language following object-oriented and onto
 
 LinkML is used for development of the [BioLink Model](https://linkml.github.io/biolink-model), but the framework is general purpose and can be used for any kind of modeling.
 
-This documentation is best seen via the [linkml site](https://linkml.github.io/linkml/) but can also be viewed via the GitHub repository
+This documentation is best seen via the [linkml site](https://linkml.github.io/linkml-model/) but can also be viewed via the GitHub repository
 
 Quickstart docs:
 
