@@ -2,6 +2,7 @@
 ![](https://github.com/linkml/linkml/workflows/Build/badge.svg)
 [![PyPi](https://img.shields.io/pypi/v/linkml.svg)](https://pypi.python.org/pypi/linkml)
 
+TEST
 
 ## [Binder Link](https://mybinder.org/v2/gh/linkml/linkml/main?filepath=notebooks)
 
