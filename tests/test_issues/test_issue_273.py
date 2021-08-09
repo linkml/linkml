@@ -11,9 +11,7 @@ class IssueSQLGenTestCase(TestEnvironmentTestCase):
 
     def test_sqlddlgen(self):
         PATH = env.input_path('issue_273.yaml')
-        # TODO: determine why 'postgresql' doesn't work
-        #dialects = ['mssql+pyodbc', 'postgresql+pygresql']
-        dialects = ['mssql+pyodbc', 'sqlite+pysqlite', 'mysql+pymysql']
+        dialects = ['mssql+pyodbc', 'sqlite+pysqlite', 'mysql+pymysql', 'postgresql+pygresql']
         for dialect in dialects:
             gen = SQLDDLGenerator(PATH, dialect=dialect)
             ddl = gen.serialize()
