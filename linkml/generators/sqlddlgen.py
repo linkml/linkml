@@ -341,10 +341,12 @@ class SQLDDLGenerator(Generator):
         return f'tbl_{underscore(t)}'
 
     def generate_ddl(self) -> None:
+        def dump(sql, *multiparams, **params):
+            print(sql.compile(dialect=engine.dialect))
         engine = create_mock_engine(
             f'{self.dialect}://./MyDb',
             strategy='mock',
-            executor= lambda sql, *multiparams, **params: print(f'{str(sql).rstrip()};'))
+            executor= dump)
         schema_metadata = MetaData()
         for t in self.sqlschema.tables.values():
             cls = t.mapped_to
