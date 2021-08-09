@@ -320,7 +320,7 @@ class SQLDDLGenerator(Generator):
             e = self.schema.enums[range]
             if e.permissible_values is not None:
                 vs = [str(v) for v in e.permissible_values]
-                return Enum(*vs)
+                return Enum(name=e.name, *vs)
         if range in RANGEMAP:
             return RANGEMAP[range]
         else:
