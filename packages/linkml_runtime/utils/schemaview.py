@@ -7,6 +7,7 @@ from collections import defaultdict
 from typing import List, Any, Dict, Union, Mapping
 from dataclasses import dataclass
 from linkml_runtime.utils.namespaces import Namespaces
+from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.context_utils import parse_import_map
@@ -422,19 +423,23 @@ class SchemaView(object):
         :return: URI or CURIE as a string
         """
         e = self.get_element(element, imports=imports)
+        e_name = e.name
         if isinstance(e, ClassDefinition):
             uri = e.class_uri
+            e_name = camelcase(e.name)
         elif isinstance(e, SlotDefinition):
             uri = e.slot_uri
+            e_name = underscore(e.name)
         elif isinstance(e, TypeDefinition):
             uri = e.uri
+            e_name = underscore(e.name)
         else:
             raise Exception(f'Must be class or slot or type: {e}')
         if uri is None:
             schema = self.schema_map[self.in_schema(e.name)]
             ns = self.namespaces()
             pfx = schema.default_prefix
-            uri = f'{pfx}:{e.name}'
+            uri = f'{pfx}:{e_name}'
         if expand:
             return self.expand_curie(uri)
         else:
