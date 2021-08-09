@@ -342,7 +342,7 @@ class SQLDDLGenerator(Generator):
 
     def generate_ddl(self) -> None:
         def dump(sql, *multiparams, **params):
-            print(sql.compile(dialect=engine.dialect))
+            print(f"{str(sql.compile(dialect=engine.dialect)).rstrip()};")
         engine = create_mock_engine(
             f'{self.dialect}://./MyDb',
             strategy='mock',
