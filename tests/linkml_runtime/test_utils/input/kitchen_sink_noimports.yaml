@@ -196,14 +196,27 @@ slots:
     range: Company
     in_subset:
       - subset A
+    annotations:
+      - tag: "ks:a1"
+        value: [1,2,3]
+      - tag: "ks:a2"
+        value: ["v1", "v2", "v3"]
+      - tag: "ks:a3"
+        value: 'a3.1'
+      - tag: "ks:a3"
+        value: 'v3.2'
   is current:
     range: boolean
+    annotations:
+      "ks:foo": bar
   has employment history:
     range: EmploymentEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    annotations:
+      "ks:mv": 1
   has marriage history:
     range: MarriageEvent
     multivalued: true

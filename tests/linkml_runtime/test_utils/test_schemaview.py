@@ -24,6 +24,15 @@ class SchemaViewTestCase(unittest.TestCase):
         all_cls = view.all_class()
         print(f'n_cls = {len(all_cls)}')
 
+        e = view.get_element('is current')
+        assert list(view.annotation_dict('is current').values()) == ['bar']
+        print(view.annotation_dict('employed at'))
+        e = view.get_element('employed at')
+        print(e.annotations)
+        e = view.get_element('has employment history')
+        print(e.annotations)
+        #assert list(view.annotation_dict('employed at')[]
+
         if True:
             # this section is mostly for debugging
             for cn in all_cls.keys():
@@ -96,7 +105,11 @@ class SchemaViewTestCase(unittest.TestCase):
         u = view.usage_index()
         for k, v in u.items():
             print(f' {k} = {v}')
+
+        #for e in view.all_element(imports=True):
+        #    print(view.annotation_dict(e))
         #print(u)
+
 
     def test_caching(self):
         s = SchemaDefinition(id='test', name='test')

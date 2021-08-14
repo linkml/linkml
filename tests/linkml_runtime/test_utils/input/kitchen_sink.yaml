@@ -180,6 +180,10 @@ slots:
       - subset A
   is current:
     range: boolean
+    annotations:
+      tag: ks:foo
+      value: bar
+
   has employment history:
     range: EmploymentEvent
     multivalued: true

@@ -12,6 +12,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
+from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
 yaml_loader = YAMLLoader()
 
@@ -412,13 +413,14 @@ class SchemaView(object):
         return e
 
 
-    def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False) -> str:
+    def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False) -> str:
         """
         Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
         used, otherwise this is constructed from the default prefix combined with the element name
 
         :param element_name: name of schema element
         :param imports: include imports closure
+        :param native: return the native CURIE or URI rather than what is declared in the uri slot
         :param expand: expand the CURIE to a URI; defaults to False
         :return: URI or CURIE as a string
         """
@@ -435,7 +437,7 @@ class SchemaView(object):
             e_name = underscore(e.name)
         else:
             raise Exception(f'Must be class or slot or type: {e}')
-        if uri is None:
+        if uri is None or native:
             schema = self.schema_map[self.in_schema(e.name)]
             ns = self.namespaces()
             pfx = schema.default_prefix
@@ -461,7 +463,34 @@ class SchemaView(object):
         return uri
 
     @lru_cache()
+    def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[str, List[URIorCURIE]]:
+        e = self.get_element(element_name, imports=imports)
+        m_dict = {
+            'self': [self.get_uri(element_name, imports=imports, expand=False)],
+            'native': [self.get_uri(element_name, imports=imports, expand=False, native=True)],
+            'exact': e.exact_mappings,
+            'narrow': e.narrow_mappings,
+            'broad': e.broad_mappings,
+            'related': e.related_mappings,
+            'close': e.close_mappings,
+            'undefined': e.mappings
+        }
+        if expand:
+            for k, vs in m_dict.items():
+                m_dict[k] = [self.expand_curie(v) for v in vs]
+
+        return m_dict
+
+
+    @lru_cache()
     def is_relationship(self, class_name: CLASS_NAME = None, imports=True) -> bool:
+        """
+        Tests if a class represents a relationship or reified statement
+
+        :param class_name:
+        :param imports:
+        :return: true if the class represents a relationship
+        """
         STMT_TYPES = ['rdf:Statement', 'owl:Axiom']
         for an in self.class_ancestors(class_name, imports=imports):
             if self.get_uri(an) in STMT_TYPES:
@@ -471,6 +500,20 @@ class SchemaView(object):
                 if m in STMT_TYPES:
                     return True
         return False
+
+    @lru_cache()
+    def annotation_dict(self, element_name: ElementName, imports=True) -> Dict[URIorCURIE, Any]:
+        """
+        Return a dictionary where keys are annotation tags and values are annotation values for any given element.
+
+        Note this will not include higher-order annotations
+
+        :param element_name:
+        :param imports:
+        :return: annotation dictionary
+        """
+        e = self.get_element(element_name, imports=imports)
+        return {k: v.value for k, v in e.annotations.items()}
 
 
     @lru_cache()
@@ -642,6 +685,32 @@ class SchemaView(object):
         """
         del self.schema.subsetes[subset_name]
         self.set_modified()
+
+    def merge_schema(self, schema: SchemaDefinition) -> None:
+        """
+        merges another schema into this one
+        :param schema: schema to be merged
+        """
+        dest = self.schema
+        for k, v in schema.prefixes.items():
+            if k not in dest.prefixes:
+                dest.prefixes[k] = copy(y)
+        for k, v in schema.classes.items():
+            if k not in dest.classes:
+                dest.classes[k] = copy(y)
+        for k, v in schema.slots.items():
+            if k not in dest.slots:
+                dest.slots[k] = copy(y)
+        for k, v in schema.types.items():
+            if k not in dest.types:
+                dest.types[k] = copy(y)
+        for k, v in schema.enums.items():
+            if k not in dest.types:
+                dest.enums[k] = copy(y)
+        self.set_modified()
+
+
+
 
     def set_modified(self) -> None:
         self.modifications += 1
