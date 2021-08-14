@@ -320,7 +320,7 @@ class SQLDDLGenerator(Generator):
             e = self.schema.enums[range]
             if e.permissible_values is not None:
                 vs = [str(v) for v in e.permissible_values]
-                return Enum(*vs)
+                return Enum(name=e.name, *vs)
         if range in RANGEMAP:
             return RANGEMAP[range]
         else:
@@ -341,10 +341,12 @@ class SQLDDLGenerator(Generator):
         return f'tbl_{underscore(t)}'
 
     def generate_ddl(self) -> None:
+        def dump(sql, *multiparams, **params):
+            print(f"{str(sql.compile(dialect=engine.dialect)).rstrip()};")
         engine = create_mock_engine(
             f'{self.dialect}://./MyDb',
             strategy='mock',
-            executor= lambda sql, *multiparams, **params: print(f'{str(sql).rstrip()};'))
+            executor= dump)
         schema_metadata = MetaData()
         for t in self.sqlschema.tables.values():
             cls = t.mapped_to
