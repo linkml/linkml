@@ -70,7 +70,7 @@ default_library: List[Tuple[Text, bool, Callable[[Match[str], SchemaLoader, Clas
     ("slot_uri", True, lambda _, loader, ___, ____: "None"),
     ("class_curie", True, lambda _, loader, ___, ____: "None"),
     ("slot_curie", True, lambda _, loader, ___, ____: "None"),
-    # TODO: If you assign a range in the consructor, mergeutils has no way of knowing whether the range
+    # TODO: If you assign a range in the constructor, mergeutils has no way of knowing whether the range
     #       was overridden or just defaulted.  We need to let the old code continue to work until we get
     #       this bit resolved
     # ("default_range", False, lambda _, loader, __, ____: f"ElementName({strval(loader.schema.default_range)})"),
