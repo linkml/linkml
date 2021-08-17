@@ -398,6 +398,61 @@ class SchemaView(object):
         """
         return _closure(lambda x: self.class_children(x, imports=imports, mixins=mixins), class_name, reflexive=reflexive)
 
+
+    @lru_cache()
+    def class_roots(self, class_name: CLASS_NAME, imports=True, mixins=True) -> List[ClassDefinitionName]:
+        """
+        All classes that have no parents
+        :param class_name:
+        :param imports:
+        :param mixins:
+        :return:
+        """
+        return [c
+                for c in self.all_class(imports=imports)
+                if self.class_parents(c, mixins=mixins, imports=imports) == []]
+
+    @lru_cache()
+    def class_leaves(self, class_name: CLASS_NAME, imports=True, mixins=True) -> List[ClassDefinitionName]:
+        """
+        All classes that have no children
+        :param class_name:
+        :param imports:
+        :param mixins:
+        :return:
+        """
+        return [c
+                for c in self.all_class(imports=imports)
+                if self.class_children(c, mixins=mixins, imports=imports) == []]
+
+
+    @lru_cache()
+    def slot_roots(self, slot_name: SLOT_NAME, imports=True, mixins=True) -> List[SlotDefinitionName]:
+        """
+        All slotes that have no parents
+        :param slot_name:
+        :param imports:
+        :param mixins:
+        :return:
+        """
+        return [c
+                for c in self.all_slot(imports=imports)
+                if self.slot_parents(c, mixins=mixins, imports=imports) == []]
+
+    @lru_cache()
+    def slot_leaves(self, slot_name: SLOT_NAME, imports=True, mixins=True) -> List[SlotDefinitionName]:
+        """
+        All slotes that have no children
+        :param slot_name:
+        :param imports:
+        :param mixins:
+        :return:
+        """
+        return [c
+                for c in self.all_slot(imports=imports)
+                if self.slot_children(c, mixins=mixins, imports=imports) == []]
+
+
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
         if isinstance(element, Element):
             return element
@@ -517,18 +572,29 @@ class SchemaView(object):
 
 
     @lru_cache()
-    def class_slots(self, class_name: CLASS_NAME = None, imports=True) -> List[SlotDefinitionName]:
+    def class_slots(self, class_name: CLASS_NAME = None, imports=True, direct=False, attributes=True) -> List[SlotDefinitionName]:
         """
         :param class_name:
         :param imports: include imports closure
+        :param direct: only returns slots directly associated with a class (default is False)
+        :param attributes: include attribute declarations as well as slots (default is True)
         :return: all slot names applicable for a class
         """
+        if direct:
+            ancs = [class_name]
+        else:
+            ancs = self.class_ancestors(class_name, imports=imports)
         slots = []
-        for an in self.class_ancestors(class_name):
+        for an in ancs:
             a = self.get_class(an, imports)
             slots += a.slots
-            slots += a.attributes.keys()
-        return slots
+            if attributes:
+                slots += a.attributes.keys()
+        slots_nr = []
+        for s in slots:
+            if s not in slots_nr:
+                slots_nr.append(s)
+        return slots_nr
 
     @lru_cache()
     def induced_slot(self, slot_name: SLOT_NAME, class_name: CLASS_NAME = None, imports=True) -> SlotDefinition:
