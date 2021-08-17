@@ -1,0 +1,313 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+description: |-
+  Kitchen Sink Schema (no imports version)
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+
+default_curi_maps:
+  - semweb_context
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+default_prefix: ks
+default_range: string
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    description: >-
+      test subset A
+    comments:
+      - this subset is meaningless, it is just here for testing
+    aliases:
+      - A
+  subset B:
+    description: >-
+      test subset B
+    aliases:
+      - B
+
+classes:
+
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        multivalued: true
+
+  Thing:
+    slots:
+      - id
+      - name
+
+  Person:
+    is_a: Thing
+    in_subset:
+      - subset A
+    mixins:
+      - HasAliases
+    slots:
+      - has employment history
+      - has familial relationships
+      - has medical history
+      - age in years
+      - addresses
+      - has birth event
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+
+  Adult:
+    is_a: Person
+    slot_usage:
+      age in years:
+        minimum_value: 16
+
+  Organization:
+    is_a: Thing
+    mixins:
+      - HasAliases
+
+  Place:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+  Address:
+    slots:
+      - street
+      - city
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - related to
+      - type
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
+  BirthEvent:
+    is_a: Event
+    slots:
+      - in location
+
+  EmploymentEvent:
+    is_a: Event
+    slots:
+      - employed at
+
+  MedicalEvent:
+    is_a: Event
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+
+  Dataset:
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+
+  activity:
+    description: "a provence-generating activity"
+    slots:
+      - id
+      - started at time
+      - ended at time
+      - was informed by
+      - was associated with
+      - used
+      - description
+    exact_mappings:
+      - prov:Activity
+
+  agent:
+    description: "a provence-generating agent"
+    slots:
+        - id
+        - acted on behalf of
+        - was informed by
+    class_uri: prov:Agent
+
+slots:
+  employed at:
+    range: Company
+    in_subset:
+      - subset A
+    annotations:
+      - tag: "ks:a1"
+        value: [1,2,3]
+      - tag: "ks:a2"
+        value: ["v1", "v2", "v3"]
+      - tag: "ks:a3"
+        value: 'a3.1'
+      - tag: "ks:a3"
+        value: 'v3.2'
+  is current:
+    range: boolean
+    annotations:
+      "ks:foo": bar
+  has employment history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+    annotations:
+      "ks:mv": 1
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has medical history:
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  married to:
+    range: Person
+  in location:
+    range: Place
+  addresses:
+    range: Address
+    multivalued: True
+  age in years:
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+    in_subset:
+      - subset A
+      - subset B
+  related to:
+  type:
+  street:
+  city:
+  has birth event:
+    range: BirthEvent
+
+  id:
+    identifier: true
+
+  name:
+    required: false
+
+  description:
+
+  started at time:
+    slot_uri: prov:startedAtTime
+    range: date
+
+  ended at time:
+    slot_uri: prov:endedAtTime
+    range: date
+
+  was informed by:
+    range: activity
+    slot_uri: prov:wasInformedBy
+
+  was associated with:
+    range: agent
+    slot_uri: prov:wasAssociatedWith
+    inlined: false
+
+  acted on behalf of:
+    range: agent
+    slot_uri: prov:actedOnBehalfOf
+
+  was generated by:
+    range: activity
+    slot_uri: prov:wasGeneratedBy
+
+  used:
+    domain: activity
+    slot_uri: prov:used
+
+  activity set:
+    range: activity
+    multivalued: true
+    inlined_as_list: true
+
+  agent set:
+    range: agent
+    multivalued: true
+    inlined_as_list: true
+
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  DiagnosisType:
