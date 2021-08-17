@@ -1,0 +1,64 @@
+{
+   "$id": "https://w3id.org/linkml/tests/core",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "definitions": {
+      "Activity": {
+         "additionalProperties": false,
+         "description": "a provence-generating activity",
+         "properties": {
+            "description": {
+               "type": "string"
+            },
+            "ended_at_time": {
+               "format": "date",
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "started_at_time": {
+               "format": "date",
+               "type": "string"
+            },
+            "used": {
+               "type": "string"
+            },
+            "was_associated_with": {
+               "type": "string"
+            },
+            "was_informed_by": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Activity",
+         "type": "object"
+      },
+      "Agent": {
+         "additionalProperties": false,
+         "description": "a provence-generating agent",
+         "properties": {
+            "acted_on_behalf_of": {
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "was_informed_by": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Agent",
+         "type": "object"
+      }
+   },
+   "properties": {},
+   "title": "core",
+   "type": "object"
+}
