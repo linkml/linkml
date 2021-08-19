@@ -28,6 +28,7 @@ URI: [linkml:owl](https://w3id.org/linkml/owl)
  * source_file_date
  * source_file_size
  * title
+ * version
 
 ### Types
 

@@ -1,5 +1,5 @@
 # Auto generated from minimalmodel.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-08-17 16:14
+# Generation date: 2021-08-19 19:05
 # Schema: prefixes
 #
 # id: https://hotecosystem.org/tccm/prefixes

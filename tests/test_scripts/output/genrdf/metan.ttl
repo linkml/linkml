@@ -409,6 +409,17 @@ linkml:defining_slots a linkml:SlotDefinition ;
     linkml:range linkml:SlotDefinition ;
     linkml:slot_uri linkml:defining_slots .
 
+linkml:designates_type a linkml:SlotDefinition ;
+    skos:definition "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:designates_type ;
+    linkml:domain linkml:SlotDefinition ;
+    linkml:domain_of linkml:SlotDefinition ;
+    linkml:inherited true ;
+    linkml:owner linkml:SlotDefinition ;
+    linkml:range linkml:boolean ;
+    linkml:slot_uri linkml:designates_type .
+
 linkml:domain a linkml:SlotDefinition ;
     skos:definition """defines the type of the subject of the slot.  Given the following slot definition
   S1:
@@ -1124,6 +1135,7 @@ linkml:usage_slot_name a linkml:SlotDefinition ;
     linkml:slot_uri linkml:usage_slot_name .
 
 linkml:version a linkml:SlotDefinition ;
+    OIO:inSubset linkml:owl ;
     skos:definition "particular version of schema" ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation pav:version,
@@ -1701,11 +1713,6 @@ linkml:notes a linkml:SlotDefinition ;
     linkml:range linkml:string ;
     linkml:slot_uri linkml:notes .
 
-linkml:owl a linkml:SubsetDefinition ;
-    skos:definition "Set of slots that appear in the OWL representation of a model" ;
-    skos:inScheme linkml:meta ;
-    linkml:definition_uri linkml:Owl .
-
 linkml:see_also a linkml:SlotDefinition ;
     OIO:inSubset linkml:owl ;
     skos:definition "a reference" ;
@@ -1729,6 +1736,11 @@ linkml:todos a linkml:SlotDefinition ;
     linkml:owner linkml:todos ;
     linkml:range linkml:string ;
     linkml:slot_uri linkml:todos .
+
+linkml:owl a linkml:SubsetDefinition ;
+    skos:definition "Set of slots that appear in the OWL representation of a model" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:Owl .
 
 linkml:boolean a linkml:TypeDefinition ;
     skos:definition "A binary (true or false) value" ;
@@ -2189,7 +2201,7 @@ linkml:meta a linkml:SchemaDefinition ;
         "skos",
         "xsd" ;
     linkml:enums linkml:pv_formula_options ;
-    linkml:generation_date "2021-07-20 18:45"^^xsd:dateTime ;
+    linkml:generation_date "2021-08-19 19:06"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
@@ -2198,18 +2210,18 @@ linkml:meta a linkml:SchemaDefinition ;
     linkml:metamodel_version "1.7.0" ;
     linkml:prefixes [ linkml:prefix_prefix "bibo" ;
             linkml:prefix_reference bibo: ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ],
         [ linkml:prefix_prefix "skos" ;
             linkml:prefix_reference skos: ],
-        [ linkml:prefix_prefix "oslc" ;
-            linkml:prefix_reference oslc: ],
-        [ linkml:prefix_prefix "OIO" ;
-            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference pav: ],
         [ linkml:prefix_prefix "schema" ;
             linkml:prefix_reference schema: ],
-        [ linkml:prefix_prefix "pav" ;
-            linkml:prefix_reference pav: ] ;
+        [ linkml:prefix_prefix "OIO" ;
+            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "oslc" ;
+            linkml:prefix_reference oslc: ] ;
     linkml:slots linkml:abstract,
         linkml:alias,
         linkml:aliases,
@@ -2242,6 +2254,7 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:deprecated_element_has_exact_replacement,
         linkml:deprecated_element_has_possible_replacement,
         linkml:description,
+        linkml:designates_type,
         linkml:domain,
         linkml:domain_of,
         linkml:emit_prefixes,
@@ -2336,8 +2349,8 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "Tue Jul 20 18:42:55 2021"^^xsd:dateTime ;
-    linkml:source_file_size 34275 ;
+    linkml:source_file_date "Thu Aug 19 19:02:51 2021"^^xsd:dateTime ;
+    linkml:source_file_size 34566 ;
     linkml:subsets linkml:owl ;
     linkml:types linkml:boolean,
         linkml:date,
@@ -2383,6 +2396,7 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:deprecated_element_has_exact_replacement,
         linkml:deprecated_element_has_possible_replacement,
         linkml:description,
+        linkml:designates_type,
         linkml:domain,
         linkml:domain_of,
         linkml:exact_mappings,
