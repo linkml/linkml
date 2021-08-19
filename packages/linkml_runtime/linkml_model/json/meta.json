@@ -878,6 +878,9 @@
         "schema:schemaVersion"
       ],
       "description": "particular version of schema",
+      "in_subset": [
+        "owl"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SchemaDefinition",
       "range": "string",
@@ -1557,6 +1560,21 @@
       "domain": "SlotDefinition",
       "range": "boolean",
       "slot_uri": "https://w3id.org/linkml/identifier",
+      "inherited": true,
+      "owner": "SlotDefinition",
+      "domain_of": [
+        "SlotDefinition"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "designates_type",
+      "definition_uri": "https://w3id.org/linkml/designates_type",
+      "description": "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "SlotDefinition",
+      "range": "boolean",
+      "slot_uri": "https://w3id.org/linkml/designates_type",
       "inherited": true,
       "owner": "SlotDefinition",
       "domain_of": [
@@ -2742,11 +2760,11 @@
         "column",
         "variable"
       ],
-      "description": "the definition of a property or a slot",
-      "from_schema": "https://w3id.org/linkml/meta",
       "close_mappings": [
         "rdf:Property"
       ],
+      "description": "the definition of a property or a slot",
+      "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "Definition",
       "slots": [
         "name",
@@ -2798,6 +2816,7 @@
         "inlined_as_list",
         "key",
         "identifier",
+        "designates_type",
         "alias",
         "owner",
         "domain_of",
@@ -2829,11 +2848,11 @@
         "message",
         "observation"
       ],
-      "description": "the definition of a class or interface",
-      "from_schema": "https://w3id.org/linkml/meta",
       "close_mappings": [
         "owl:Class"
       ],
+      "description": "the definition of a class or interface",
+      "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "Definition",
       "slots": [
         "name",
@@ -3058,9 +3077,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "Wed Jun 30 17:02:39 2021",
-  "source_file_size": 34275,
-  "generation_date": "2021-06-30 17:04",
+  "source_file_date": "Thu Aug 19 17:49:00 2021",
+  "source_file_size": 34566,
+  "generation_date": "2021-08-19 17:50",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/types.context.jsonld",

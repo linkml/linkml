@@ -1,6 +1,7 @@
 {
    "$id": "https://w3id.org/linkml/meta",
    "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "definitions": {
       "AltDescription": {
          "additionalProperties": false,
@@ -127,6 +128,7 @@
             },
             "created_on": {
                "description": "time at which the element was created",
+               "format": "date-time",
                "type": "string"
             },
             "defining_slots": {
@@ -204,6 +206,7 @@
             },
             "last_updated_on": {
                "description": "time at which the element was last updated",
+               "format": "date-time",
                "type": "string"
             },
             "local_names": {
@@ -836,6 +839,7 @@
             },
             "generation_date": {
                "description": "date and time that the schema was loaded/generated",
+               "format": "date-time",
                "type": "string"
             },
             "id": {
@@ -939,6 +943,7 @@
             },
             "source_file_date": {
                "description": "modification date of the source of the schema",
+               "format": "date-time",
                "type": "string"
             },
             "source_file_size": {
@@ -1046,6 +1051,7 @@
             },
             "created_on": {
                "description": "time at which the element was created",
+               "format": "date-time",
                "type": "string"
             },
             "definition_uri": {
@@ -1067,6 +1073,10 @@
             "description": {
                "description": "a description of the element's purpose and use",
                "type": "string"
+            },
+            "designates_type": {
+               "description": "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition",
+               "type": "boolean"
             },
             "domain": {
                "description": "defines the type of the subject of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts that X is an instance of C1\n",
@@ -1163,6 +1173,7 @@
             },
             "last_updated_on": {
                "description": "time at which the element was last updated",
+               "format": "date-time",
                "type": "string"
             },
             "local_names": {
