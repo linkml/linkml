@@ -8,9 +8,9 @@ prefixes:prefixes a prefixes:SchemaDefinition ;
     prefixes:metamodel_version "1.7.0" ;
     prefixes:source_file "minimalmodel.yaml" ;
     linkml:default_range prefixes:string ;
-    linkml:generation_date "2021-08-19 19:05"^^xsd:dateTime ;
+    linkml:generation_date "2021-08-19 19:47"^^xsd:dateTime ;
     linkml:id <https://hotecosystem.org/tccm/prefixes> ;
-    linkml:source_file_date "Thu Aug 19 19:01:12 2021"^^xsd:dateTime ;
+    linkml:source_file_date "Thu Aug 19 19:42:14 2021"^^xsd:dateTime ;
     linkml:source_file_size 59 .
 
 
