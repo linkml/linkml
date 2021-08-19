@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-06-30 17:04
+# Generation date: 2021-08-19 17:51
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -9,7 +9,7 @@
 import dataclasses
 import sys
 import re
-from jsonasobj2 import JsonObj
+from jsonasobj2 import JsonObj, as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 
@@ -147,7 +147,7 @@ class CommonMetadata(YAMLRoot):
 
         if not isinstance(self.examples, list):
             self.examples = [self.examples] if self.examples is not None else []
-        self.examples = [v if isinstance(v, Example) else Example(**v) for v in self.examples]
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
 
         if not isinstance(self.in_subset, list):
             self.in_subset = [self.in_subset] if self.in_subset is not None else []
@@ -280,7 +280,7 @@ class Element(YAMLRoot):
 
         if not isinstance(self.examples, list):
             self.examples = [self.examples] if self.examples is not None else []
-        self.examples = [v if isinstance(v, Example) else Example(**v) for v in self.examples]
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
 
         if not isinstance(self.in_subset, list):
             self.in_subset = [self.in_subset] if self.in_subset is not None else []
@@ -587,7 +587,7 @@ class SlotDefinition(Definition):
     """
     the definition of a property or a slot
     """
-    _inherited_slots: ClassVar[List[str]] = ["domain", "range", "multivalued", "inherited", "readonly", "ifabsent", "required", "recommended", "inlined", "inlined_as_list", "key", "identifier", "role", "minimum_value", "maximum_value", "pattern"]
+    _inherited_slots: ClassVar[List[str]] = ["domain", "range", "multivalued", "inherited", "readonly", "ifabsent", "required", "recommended", "inlined", "inlined_as_list", "key", "identifier", "designates_type", "role", "minimum_value", "maximum_value", "pattern"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.SlotDefinition
     class_class_curie: ClassVar[str] = "linkml:SlotDefinition"
@@ -609,6 +609,7 @@ class SlotDefinition(Definition):
     inlined_as_list: Optional[Union[bool, Bool]] = None
     key: Optional[Union[bool, Bool]] = None
     identifier: Optional[Union[bool, Bool]] = None
+    designates_type: Optional[Union[bool, Bool]] = None
     alias: Optional[str] = None
     owner: Optional[Union[str, DefinitionName]] = None
     domain_of: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
@@ -673,6 +674,9 @@ class SlotDefinition(Definition):
 
         if self.identifier is not None and not isinstance(self.identifier, Bool):
             self.identifier = Bool(self.identifier)
+
+        if self.designates_type is not None and not isinstance(self.designates_type, Bool):
+            self.designates_type = Bool(self.designates_type)
 
         if self.alias is not None and not isinstance(self.alias, str):
             self.alias = str(self.alias)
@@ -984,7 +988,7 @@ class PermissibleValue(YAMLRoot):
 
         if not isinstance(self.examples, list):
             self.examples = [self.examples] if self.examples is not None else []
-        self.examples = [v if isinstance(v, Example) else Example(**v) for v in self.examples]
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
 
         if not isinstance(self.in_subset, list):
             self.in_subset = [self.in_subset] if self.in_subset is not None else []

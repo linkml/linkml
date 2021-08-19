@@ -1,6 +1,7 @@
 {
    "$id": "https://w3id.org/linkml/extensions",
    "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "definitions": {
       "Extension": {
          "additionalProperties": false,

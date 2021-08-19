@@ -340,6 +340,8 @@ slots:
     domain: schema_definition
     description: particular version of schema
     slot_uri: pav:version
+    in_subset:
+      - owl
     mappings:
       - schema:schemaVersion
 
@@ -698,6 +700,14 @@ slots:
       - a key slot is automatically required.  Identifiers cannot be optional
       - a given domain can have at most one identifier
       - identifiers and keys are mutually exclusive.  A given domain cannot have both
+
+  designates_type:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
+
 
   alias:
     domain: slot_definition
@@ -1079,6 +1089,7 @@ classes:
       - inlined_as_list
       - key
       - identifier
+      - designates_type
       - alias
       - owner
       - domain_of
