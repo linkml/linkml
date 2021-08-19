@@ -1,6 +1,27 @@
 CHANGES
 =======
 
+* Update to latest model
+
+v1.0.12
+-------
+
+* Added leaf/root methods
+* Added additional methods
+* Adding more examples
+* Adding a new library schemaview
+* replace hyphen with underscore when underscoring names
+* Add the actual test to the pull request action
+
+v1.0.11
+-------
+
+* Update test\_issue\_368\_enums.py
+* Try relative paths on linkml\_runtime/linkml\_model/\_\_init\_\_.py
+* Add publish step to update AUTHORS and ChangeLog
+* Test change on AUTHORS
+* Update to copy of linkml-model 1.0.1
+* Replaced \_\_str\_\_() repr of EnumDefinitionImpl
 * Fix syntax for pr-test version in github actions
 * Add a couple more unit tests
 * Further fixes for issue #12.  Introduce \`remove\_empty\_items\` into all dumpers
