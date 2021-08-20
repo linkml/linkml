@@ -18,7 +18,7 @@ A variety of artefacts can be generated from the model:
 
 ...and more.
 
-The documentation can also be viewed on the [LinkML site](https://linkml.github.io/linkml-model/).
+The documentation can also be viewed on the [LinkML documentation](https://linkml.github.io/linkml-model/docs/).
 
 You can browse the metamodel component documentation [here](https://linkml.github.io/linkml-model/docs). LinkML is self-describing, but a few important vocabulary terms to keep in mind are:
 - [ClassDefinition](https://linkml.github.io/linkml-model/docs/ClassDefinition): Component for defining Classes
