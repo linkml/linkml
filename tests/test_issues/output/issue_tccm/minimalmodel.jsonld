@@ -5,9 +5,9 @@
   "default_range": "string",
   "metamodel_version": "1.7.0",
   "source_file": "minimalmodel.yaml",
-  "source_file_date": "Thu Aug 19 19:42:14 2021",
+  "source_file_date": "Fri Aug 20 02:14:31 2021",
   "source_file_size": 59,
-  "generation_date": "2021-08-19 19:47",
+  "generation_date": "2021-08-20 02:18",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
