@@ -93,7 +93,20 @@ class ProjectGenerator:
                     with open(gen_path_full, 'w') as stream:
                         stream.write(gen_dump)
 
+@click.command()
+@click.option("--dir", "-d",
+              help="directory in which to place generated files. E.g. linkml_model, biolink_model")
+@click.argument('yamlfile')
+def cli(yamlfile, dir, **kwargs):
+    """ Generate JSONLD file from biolink schema """
+    config = ProjectConfiguration()
+    config.directory = dir
+    gen = ProjectGenerator()
+    gen.generate(yamlfile, config)
 
+
+if __name__ == '__main__':
+    cli()
 
 
 
