@@ -26,7 +26,7 @@ class JSONDumper(Dumper):
         """
         super().dump(element, to_file, contexts=contexts)
 
-    def dumps(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None) -> str:
+    def dumps(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
         """
         Return element as a JSON or a JSON-LD string
         :param element: LinkML object to be emitted
@@ -37,9 +37,10 @@ class JSONDumper(Dumper):
             * dict
             * JSON Object
             * A list containing elements of any type named above
+        :param inject_type: if True (default), add a @type at the top level
         :return: JSON Object representing the element
         """
-        return json.dumps(as_json_object(element, contexts),
+        return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
                           default=lambda o: self.remove_empty_items(o) if isinstance(o, YAMLRoot) else json.JSONDecoder().decode(o),
                           indent='  ')
 
