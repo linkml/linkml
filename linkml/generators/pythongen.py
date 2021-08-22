@@ -597,7 +597,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
             if slot.range in self.schema.classes and not self.schema.classes[slot.range].slots:
                 rlines.append(f'\tself.{aliased_slot_name} = {base_type_name}()')
             else:
-                if self.class_identifier(slot.range) or\
+                if (self.class_identifier(slot.range) and not slot.inlined) or\
                         slot.range in self.schema.types or\
                         slot.range in self.schema.enums:
                     rlines.append(f'\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})')
