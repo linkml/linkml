@@ -19,7 +19,6 @@ click = "*"
 prefixcommons = "*"
 shexjsg = "~=0.7"
 deprecated = "*"
-jsonschema = ">= 3.2.0"
 json-flattener = ">= 0.1.0"
 
 
