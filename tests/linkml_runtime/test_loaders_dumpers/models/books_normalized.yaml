@@ -1,0 +1,112 @@
+id: https://w3id.org/example
+name: example
+description: example
+imports:
+- linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  example: https://w3id.org/example
+default_prefix: example
+types: {}
+classes:
+  creative work:
+    slots:
+      - id
+      - name
+      - genres
+      - creator
+      - genres
+      - summary
+      - reviews
+  book:
+    is_a: creative work
+    slots:
+      - price
+      - inStock
+  book series:
+    is_a: creative work
+    slots:
+      - books
+      - genres
+      - price
+  author:
+    slots:
+      - name
+      - genres
+      - from_country
+  shop:
+    slots:
+      - all_book_series
+  country:
+    slots:
+      - name
+    slot_usage:
+      name:
+        identifier: true
+  review:
+    slots:
+      - creator
+      - rating
+      - review_text
+
+
+slots:
+  id:
+    range: string
+    identifier: true
+    examples:
+    - value: '123'
+  book_category:
+    range: string
+    examples:
+    - value: book
+    multivalued: true
+  name:
+    range: string
+    examples:
+    - value: Consider Phlebas
+  price:
+    range: float
+    examples:
+    - value: '7.99'
+  inStock:
+    range: string
+    examples:
+    - value: 'true'
+  creator:
+    range: author
+    examples:
+    - value: Ian M Banks
+  genres:
+    #range: genre_enum
+    range: string
+    multivalued: true
+  from_country:
+    range: country
+  books:
+    range: book
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  all_book_series:
+    range: book series
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  summary:
+  reviews:
+    multivalued: true
+    range: review
+  rating:
+    range: integer
+  review_text:
+
+enums:
+  genre_enum:
+    permissible_values:
+      scifi:
+      fantasy:
+      western:
+      romance:
+      modern:
+

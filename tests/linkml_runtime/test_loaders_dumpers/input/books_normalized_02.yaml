@@ -1,0 +1,84 @@
+all_book_series:
+- id: S001
+  name: Lord of the Rings
+  genres:
+    - fantasy
+  creator:
+    name: JRR Tolkein
+    from_country: England
+  books:
+    - id: S001.1
+      name: Fellowship of the Ring
+      price: 5.99
+      summary: Hobbits
+      genres:
+        - fantasy
+      reviews:
+        - creator:
+            name: Alexa Fan
+          rating: 5
+          review_text: loved it
+        - creator:
+            name: Bob Hater
+          rating: 0
+          review_text: too many hobbits
+    - id: S001.2
+      name: The Two Towers
+      price: 5.99
+      summary: More hobbits
+    - id: S001.3
+      name: Return of the King
+      price: 6.99
+      summary: Yet more hobbits
+- id: S002
+  name: The Culture Series
+  genres:
+    - scifi
+  creator:
+    name: Ian M Banks
+    from_country: Scotland
+  books:
+    - id: S002.1
+      name: Consider Phlebas
+      price: 5.99
+    - id: S002.2
+      name: Player of Games
+      price: 5.99
+- id: S003
+  name: Book of the New Sun
+  genres:
+    - scifi
+    - fantasy
+  creator:
+    name: Gene Wolfe
+    from_country: USA
+    genres:
+      - scifi
+      - fantasy
+  books:
+    - id: S003.1
+      name: Shadow of the Torturer
+      # deliberately omit price information
+    - id: S003.2
+      name: Claw of the Conciliator
+      price: 6.99
+- id: S004
+  name: Example with single book
+  creator:
+    name: Ms Writer
+    from_country: USA
+    genres:
+      - romance
+  books:
+    - id: S004.1
+      name: Blah
+- id: S005
+  name: Example with no books
+  creator:
+    name: Mr Unproductive
+    from_country: USA
+    genres:
+      - romance
+      - scifi
+      - fantasy
+
