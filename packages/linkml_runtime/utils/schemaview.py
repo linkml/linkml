@@ -9,12 +9,11 @@ from dataclasses import dataclass
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
-from linkml_runtime.loaders.yaml_loader import YAMLLoader
+
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
-yaml_loader = YAMLLoader()
 
 CACHE_SIZE = 1024
 
@@ -49,6 +48,9 @@ def _closure(f, x, reflexive=True, **kwargs):
     return rv
 
 def load_schema_wrap(path: str, **kwargs):
+    # import here to avoid circular imports
+    from linkml_runtime.loaders.yaml_loader import YAMLLoader
+    yaml_loader = YAMLLoader()
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
     schema.source_file = path
