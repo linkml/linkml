@@ -29,6 +29,8 @@ class RDFDumper(Dumper):
         be bound to the return graph.  If absent, contexts get used
         :return: rdflib Graph containing element
         """
+        if contexts is None:
+            raise Exception(f'Must pass in JSON-LD context via contexts parameter')
         if isinstance(contexts, list):
             inp_contexts = [json.loads(hbread(c)) for c in contexts]
         else:
