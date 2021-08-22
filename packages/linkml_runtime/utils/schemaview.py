@@ -9,12 +9,11 @@ from dataclasses import dataclass
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
-from linkml_runtime.loaders.yaml_loader import YAMLLoader
+
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
-yaml_loader = YAMLLoader()
 
 CACHE_SIZE = 1024
 
@@ -49,6 +48,9 @@ def _closure(f, x, reflexive=True, **kwargs):
     return rv
 
 def load_schema_wrap(path: str, **kwargs):
+    # import here to avoid circular imports
+    from linkml_runtime.loaders.yaml_loader import YAMLLoader
+    yaml_loader = YAMLLoader()
     schema: SchemaDefinition
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
     schema.source_file = path
@@ -648,6 +650,39 @@ class SchemaView(object):
             if v is not None:
                 setattr(islot, metaslot_name, v)
         return islot
+
+    @lru_cache()
+    def get_identifier_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
+        """
+        :param cn: class name
+        :param imports:
+        :return: the slot that acts as identifier
+        """
+        for sn in self.class_slots(cn, imports=imports):
+            s = self.induced_slot(sn, cn, imports=imports)
+            if s.identifier:
+                return s
+        return None
+
+    def is_inlined(self, slot: SlotDefinition, imports=True) -> bool:
+        """
+        True if slot is inferred or asserted inline
+        
+        :param slot:
+        :param imports:
+        :return:
+        """
+        if slot.inlined:
+            return True
+        else:
+            range = slot.range
+            id_slot = self.get_identifier_slot(range, imports=imports)
+            if id_slot is None:
+                # must be inlined as has no identifier
+                return True
+            else:
+                # not explicitly declared inline and has an identifier: assume is ref, not inlined
+                return False
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
