@@ -5,6 +5,7 @@ from typing import Union, Any, List, Optional, Type, Callable, Dict
 import yaml
 from deprecated.classic import deprecated
 from jsonasobj2 import JsonObj, as_json, as_dict, JsonObjTypes, items
+import jsonasobj2
 from rdflib import Graph
 from yaml.constructor import ConstructorError
 
@@ -272,21 +273,25 @@ def as_yaml(element: YAMLRoot) -> str:
     """
     Return element in a YAML representation
 
+    Uses SafeDumper, key-vals are omitted if val is None
+
     :param element: YAML object
     :return: Stringified representation
     """
     return yaml.dump(element, Dumper=yaml.SafeDumper, sort_keys=False)
 
 
-def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None) -> JsonObj:
+def as_json_object(element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type = True) -> JsonObj:
     """
     Return the representation of element as a JsonObj object
     :param element: element to return
     :param contexts: context(s) to include in the output
+    :param inject_type: if True (default), add a @type at the top level
     :return: JsonObj representation of element
     """
     rval = copy(element)
-    rval['@type'] = element.__class__.__name__
+    if inject_type:
+        rval['@type'] = element.__class__.__name__
     context_element = merge_contexts(contexts)
     if context_element:
         rval['@context'] = context_element['@context']
