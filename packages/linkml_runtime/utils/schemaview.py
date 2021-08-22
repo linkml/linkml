@@ -652,6 +652,39 @@ class SchemaView(object):
         return islot
 
     @lru_cache()
+    def get_identifier_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
+        """
+        :param cn: class name
+        :param imports:
+        :return: the slot that acts as identifier
+        """
+        for sn in self.class_slots(cn, imports=imports):
+            s = self.induced_slot(sn, cn, imports=imports)
+            if s.identifier:
+                return s
+        return None
+
+    def is_inlined(self, slot: SlotDefinition, imports=True) -> bool:
+        """
+        True if slot is inferred or asserted inline
+        
+        :param slot:
+        :param imports:
+        :return:
+        """
+        if slot.inlined:
+            return True
+        else:
+            range = slot.range
+            id_slot = self.get_identifier_slot(range, imports=imports)
+            if id_slot is None:
+                # must be inlined as has no identifier
+                return True
+            else:
+                # not explicitly declared inline and has an identifier: assume is ref, not inlined
+                return False
+
+    @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
         """
         :return: dictionary keyed by used elements

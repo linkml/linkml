@@ -31,7 +31,7 @@ def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: Sl
     slot = schemaview.induced_slot(sn, tgt_cls)
     range = slot.range
     all_cls = schemaview.all_class()
-    if range in all_cls and _is_inlined(slot, schemaview):
+    if range in all_cls and schemaview.is_inlined(slot):
         mappings = {}
         is_complex = False
         for inner_sn in schemaview.class_slots(range):
