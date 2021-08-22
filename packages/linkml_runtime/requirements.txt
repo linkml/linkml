@@ -15,7 +15,6 @@ deprecated
 hbreader
 json-flattener>= 0.1.0
 jsonasobj2~=1.0, >=1.0.4
-jsonschema>= 3.2.0
 prefixcommons
 pyldmod
 pyyaml~=5.1
