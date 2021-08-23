@@ -101,6 +101,9 @@ implicitly asserts Y is an instance of C2
  * [identifier](identifier.md)  <sub>0..1</sub>
      * Description: True means that the key slot(s) uniquely identify the container. There can be at most one identifier or key per container
      * Range: [Boolean](types/Boolean.md)
+ * [designates_type](designates_type.md)  <sub>0..1</sub>
+     * Description: True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
+     * Range: [Boolean](types/Boolean.md)
  * [alias](alias.md)  <sub>0..1</sub>
      * Description: the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.
      * Range: [String](types/String.md)

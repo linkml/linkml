@@ -216,6 +216,10 @@ fields:
   description: True means that the key slot(s) uniquely identify the container. There
     can be at most one identifier or key per container
   display_name: identifier
+- id: designates_type
+  description: True means that the key slot(s) is used to determine the instantiation
+    (types) relation between objects and a ClassDefinition
+  display_name: designates_type
 - id: alias
   description: the name used for a slot in the context of its owning class.  If present,
     this is used instead of the actual slot name.

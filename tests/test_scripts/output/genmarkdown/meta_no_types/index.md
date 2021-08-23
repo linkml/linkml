@@ -60,6 +60,7 @@ A metamodel for defining linked open data schemas
  * [deprecated element has exact replacement](deprecated_element_has_exact_replacement.md) - When an element is deprecated, it can be automatically replaced by this uri or curie
  * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md) - When an element is deprecated, it can be potentially replaced by this uri or curie
  * [description](description.md) - a description of the element's purpose and use
+ * [designates_type](designates_type.md) - True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
  * [domain](domain.md) - defines the type of the subject of the slot.  Given the following slot definition
  * [domain_of](domain_of.md) - the class(es) that reference the slot in a "slots" or "slot_usage" context
  * [emit_prefixes](emit_prefixes.md) - a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models.

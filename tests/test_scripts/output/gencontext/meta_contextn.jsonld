@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-07-20 18:45\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-08-19 19:06\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "IAO": {
          "@id": "http://purl.obolibrary.org/obo/IAO_",
@@ -68,6 +68,9 @@
       },
       "deprecated_element_has_possible_replacement": {
          "@type": "@id"
+      },
+      "designates_type": {
+         "@type": "xsd:boolean"
       },
       "domain": {
          "@type": "@id"

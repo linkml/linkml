@@ -137,6 +137,10 @@ slot(description).
 domain(description, element).
 range(description, string).
 has_uri(description, 'http://w3id.org/biolink/vocab/description').
+slot(designates_type).
+domain(designates_type, slot_definition).
+range(designates_type, boolean).
+has_uri(designates_type, 'http://w3id.org/biolink/vocab/designates_type').
 slot(domain).
 domain(domain, slot_definition).
 range(domain, class_definition).
@@ -1902,6 +1906,10 @@ class_slot(slot_definition, identifier).
 required(identifier).
 slotrange(boolean).
 range_in(identifier, boolean, slot_definition).
+class_slot(slot_definition, designates_type).
+required(designates_type).
+slotrange(boolean).
+range_in(designates_type, boolean, slot_definition).
 class_slot(slot_definition, alias).
 required(alias).
 slotrange(string).
