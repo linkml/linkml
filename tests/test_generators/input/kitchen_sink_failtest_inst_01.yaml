@@ -60,8 +60,18 @@
       - id: P
         name: john smith
         made_up_property: "abc"
+- description: optional open properties
+  skip: true
+  valid: true
+  closed: false
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        made_up_property: "abc"
 - description: additional properties is closed on enclosing object
-  skip: true ## https://github.com/linkml/linkml/issues/106
+  skip: false
+  issue: https://github.com/linkml/linkml/issues/106
   dataset:
     persons:
       - id: P
@@ -76,6 +86,43 @@
         addresses:
           street: 1 foo street
           city: foo city
+- description: valid cardinality
+  skip: false
+  valid: true
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        has_medical_history:
+          - in_location: GEO:1234
+            diagnosis:
+              id: CODE:D0001
+              name: headache
+- description: multivalued value for singlevalued list
+  skip: false
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        has_medical_history:
+          - in_location: GEO:1234
+            diagnosis:
+              -
+                id: CODE:D0001
+                name: headache
+- description: multivalued value for singlevalued list
+  skip: false
+  dataset:
+    persons:
+      - id: P
+        name: john smith
+        has_medical_history:
+          - in_location: GEO:1234
+            diagnosis:
+              id: CODE:D0001
+              name:
+                - headache
+                - cough
 - description: string used in place of object
   skip: false
   dataset:

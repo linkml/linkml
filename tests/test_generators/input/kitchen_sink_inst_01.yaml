@@ -13,6 +13,13 @@ persons:
         type: SIBLING_OF
     has_medical_history:
       - started_at_time: 2019-01-01
+        in_location: GEO:1234
+        diagnosis:
+          id: CODE:D0001
+          name: headache
+        procedure:
+          id: CODE:P0001
+          name: trepanation
     addresses:
       - street: 1 foo street
         city: foo city
