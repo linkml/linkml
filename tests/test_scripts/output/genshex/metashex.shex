@@ -295,6 +295,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <inlined_as_list> @<Boolean> ? ;
           <key> @<Boolean> ? ;
           <identifier> @<Boolean> ? ;
+          <designates_type> @<Boolean> ? ;
           <alias> @<String> ? ;
           <owner> @<Definition> ? ;
           <domain_of> @<ClassDefinition> * ;

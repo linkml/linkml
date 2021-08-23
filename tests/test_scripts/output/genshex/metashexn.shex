@@ -287,6 +287,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <inlined_as_list> @<Boolean> ? ;
           <key> @<Boolean> ? ;
           <identifier> @<Boolean> ? ;
+          <designates_type> @<Boolean> ? ;
           <alias> @<String> ? ;
           <owner> @<Definition> ? ;
           <domain_of> @<ClassDefinition> * ;

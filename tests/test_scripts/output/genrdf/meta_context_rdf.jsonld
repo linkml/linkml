@@ -82,6 +82,9 @@
       "description": {
          "@id": "skos:definition"
       },
+      "designates_type": {
+         "@type": "xsd:boolean"
+      },
       "domain": {
          "@type": "@id"
       },

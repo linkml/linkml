@@ -1085,6 +1085,10 @@
                "description": "a description of the element's purpose and use",
                "type": "string"
             },
+            "designates_type": {
+               "description": "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition",
+               "type": "boolean"
+            },
             "domain": {
                "description": "defines the type of the subject of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts that X is an instance of C1\n",
                "type": "string"

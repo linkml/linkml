@@ -28,6 +28,7 @@ URI: [linkml:owl](https://w3id.org/linkml/owl)
  * [source_file_date](source_file_date.md) - modification date of the source of the schema
  * [source_file_size](source_file_size.md) - size in bytes of the source of the schema
  * [title](title.md) - the official title of the schema
+ * [version](version.md) - particular version of schema
 
 ### Types
 

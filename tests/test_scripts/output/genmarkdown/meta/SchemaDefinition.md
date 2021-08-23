@@ -31,6 +31,7 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
  * [version](version.md)  <sub>0..1</sub>
      * Description: particular version of schema
      * Range: [String](types/String.md)
+     * in subsets: (owl)
  * [imports](imports.md)  <sub>0..\*</sub>
      * Description: other schemas that are included in this schema
      * Range: [Uriorcurie](types/Uriorcurie.md)

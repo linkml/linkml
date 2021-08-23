@@ -247,22 +247,23 @@ message SlotDefinition
   optional inlinedAsList Boolean = 47
   optional key Boolean = 48
   optional identifier Boolean = 49
-  optional alias String = 50
-  optional owner Definition = 51
-  repeated domainOf ClassDefinition = 52
-  optional subpropertyOf SlotDefinition = 53
-  optional symmetric Boolean = 54
-  optional inverse SlotDefinition = 55
-  optional isClassField Boolean = 56
-  optional role String = 57
-  optional isUsageSlot Boolean = 58
-  optional usageSlotName String = 59
-  optional minimumValue Integer = 60
-  optional maximumValue Integer = 61
-  optional pattern String = 62
-  optional isA SlotDefinition = 63
-  repeated mixins SlotDefinition = 64
-  repeated applyTo SlotDefinition = 65
+  optional designatesType Boolean = 50
+  optional alias String = 51
+  optional owner Definition = 52
+  repeated domainOf ClassDefinition = 53
+  optional subpropertyOf SlotDefinition = 54
+  optional symmetric Boolean = 55
+  optional inverse SlotDefinition = 56
+  optional isClassField Boolean = 57
+  optional role String = 58
+  optional isUsageSlot Boolean = 59
+  optional usageSlotName String = 60
+  optional minimumValue Integer = 61
+  optional maximumValue Integer = 62
+  optional pattern String = 63
+  optional isA SlotDefinition = 64
+  repeated mixins SlotDefinition = 65
+  repeated applyTo SlotDefinition = 66
  }
 // the name and description of a subset
 message SubsetDefinition

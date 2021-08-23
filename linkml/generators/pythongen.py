@@ -2,6 +2,7 @@ import keyword
 import os
 import re
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
+import logging
 
 import click
 from linkml_runtime.linkml_model import linkml_files
@@ -34,6 +35,8 @@ class PythonGenerator(Generator):
         self.gen_classvars = gen_classvars
         self.gen_slots = gen_slots
         super().__init__(schema, format, **kwargs)
+        if self.schema.default_prefix == 'linkml' and not self.genmeta:
+            logging.error(f'Generating metamodel without --genmeta is highly inadvised!')
         if not self.schema.source_file and isinstance(self.sourcefile, str) and '\n' not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
 
@@ -846,11 +849,11 @@ class {enum_name}(EnumDefinitionImpl):
 @shared_arguments(PythonGenerator)
 @click.command()
 @click.option("--head/--no-head", default=True, help="Emit metadata heading")
-@click.option("--genmeta/--no-genmeta", default=False, help="Generating metamodel")
+@click.option("--genmeta/--no-genmeta", default=False, help="Generating metamodel. Only use this for generating meta.py")
 @click.option("--classvars/--no-classvars", default=True, help="Generate CLASSVAR info")
 @click.option("--slots/--no-slots", default=True, help="Generate Slot information")
 def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
-    """ Generate python classes to represent a LinkML model """
+    """Generate python classes to represent a LinkML model"""
     print(PythonGenerator(yamlfile, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))
 
 

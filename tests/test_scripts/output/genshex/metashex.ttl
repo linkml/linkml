@@ -415,6 +415,10 @@
                 shex:valueExpr <https://w3id.org/linkml/Boolean> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
+                shex:predicate <https://w3id.org/linkml/designates_type> ;
+                shex:valueExpr <https://w3id.org/linkml/Boolean> ] [ a shex:TripleConstraint ;
+                shex:max 1 ;
+                shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/alias> ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
