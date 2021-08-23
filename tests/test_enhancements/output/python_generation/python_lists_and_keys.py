@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2021-08-23 00:59
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -535,7 +535,7 @@ class RequiredInlinedKeyedOneElementRange(OptionalKeyedOneElementRange):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedOneElementClass):
-            self.v1 = KeyedOneElementClass(self.v1)
+            self.v1 = KeyedOneElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -580,7 +580,7 @@ class RequiredInlinedKeyedTwoElementRange(OptionalKeyedTwoElementRange):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedTwoElementClass):
-            self.v1 = KeyedTwoElementClass(self.v1)
+            self.v1 = KeyedTwoElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -625,7 +625,7 @@ class RequiredInlinedKeyedThreeElementRange(OptionalKeyedThreeElementRange):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, KeyedThreeElementClass):
-            self.v1 = KeyedThreeElementClass(self.v1)
+            self.v1 = KeyedThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -795,7 +795,7 @@ class OptionalInlinedKeyedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.v1 is not None and not isinstance(self.v1, KeyedThreeElementClass):
-            self.v1 = KeyedThreeElementClass(self.v1)
+            self.v1 = KeyedThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -818,7 +818,7 @@ class RequiredInlinedIdentifiedThreeElementRange(YAMLRoot):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, IdentifiedThreeElementClass):
-            self.v1 = IdentifiedThreeElementClass(self.v1)
+            self.v1 = IdentifiedThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -839,7 +839,7 @@ class OptionalInlinedAsListKeyedThreeElementRange(YAMLRoot):
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.v1 is not None and not isinstance(self.v1, KeyedThreeElementClass):
-            self.v1 = KeyedThreeElementClass(self.v1)
+            self.v1 = KeyedThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 
@@ -862,7 +862,7 @@ class RequiredInlinedAsListIdentifiedThreeElementRange(YAMLRoot):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
         if not isinstance(self.v1, IdentifiedThreeElementClass):
-            self.v1 = IdentifiedThreeElementClass(self.v1)
+            self.v1 = IdentifiedThreeElementClass(**as_dict(self.v1))
 
         super().__post_init__(**kwargs)
 

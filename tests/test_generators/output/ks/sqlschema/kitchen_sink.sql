@@ -22,11 +22,23 @@ CREATE TABLE agent (
 	FOREIGN KEY(was_informed_by) REFERENCES activity (id)
 );
 
+CREATE TABLE "Concept" (
+	id TEXT NOT NULL, 
+	name TEXT, 
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE "Dataset" (
 	persons TEXT, 
 	companies TEXT, 
 	activities TEXT, 
 	PRIMARY KEY (persons, companies, activities)
+);
+
+CREATE TABLE "DiagnosisConcept" (
+	id TEXT NOT NULL, 
+	name TEXT, 
+	PRIMARY KEY (id)
 );
 
 CREATE TABLE "Event" (
@@ -51,6 +63,12 @@ CREATE TABLE "Person" (
 );
 
 CREATE TABLE "Place" (
+	id TEXT NOT NULL, 
+	name TEXT, 
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE "ProcedureConcept" (
 	id TEXT NOT NULL, 
 	name TEXT, 
 	PRIMARY KEY (id)
@@ -115,8 +133,14 @@ CREATE TABLE "MedicalEvent" (
 	started_at_time TEXT, 
 	ended_at_time TEXT, 
 	is_current BOOLEAN, 
+	in_location TEXT, 
+	diagnosis TEXT, 
+	procedure TEXT, 
 	"Person_id" TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, "Person_id"), 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location, diagnosis, procedure, "Person_id"), 
+	FOREIGN KEY(in_location) REFERENCES "Place" (id), 
+	FOREIGN KEY(diagnosis) REFERENCES "DiagnosisConcept" (id), 
+	FOREIGN KEY(procedure) REFERENCES "ProcedureConcept" (id), 
 	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
 );
 

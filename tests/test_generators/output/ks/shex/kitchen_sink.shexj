@@ -80,12 +80,28 @@ core:Agent CLOSED {
     )
 }
 
+<Concept>  (
+    CLOSED {
+       (  $<Concept_tes> core:name @linkml:String ? ;
+          rdf:type [ <Concept> ]
+       )
+    } OR @<DiagnosisConcept> OR @<ProcedureConcept>
+)
+
 <Dataset> CLOSED {
     (  $<Dataset_tes> (  <persons> @<Person> * ;
           <companies> @<Company> * ;
           <activities> @core:Activity *
        ) ;
        rdf:type [ <Dataset> ] ?
+    )
+}
+
+<DiagnosisConcept> CLOSED {
+    (  $<DiagnosisConcept_tes> (  &<Concept_tes> ;
+          rdf:type [ <Concept> ] ?
+       ) ;
+       rdf:type [ <DiagnosisConcept> ]
     )
 }
 
@@ -139,7 +155,10 @@ core:Agent CLOSED {
 
 <MedicalEvent> CLOSED {
     (  $<MedicalEvent_tes> (  &<Event_tes> ;
-          rdf:type [ <Event> ] ?
+          rdf:type [ <Event> ] ? ;
+          <in_location> @<Place> ? ;
+          <diagnosis> @<DiagnosisConcept> ? ;
+          <procedure> @<ProcedureConcept> ?
        ) ;
        rdf:type [ <MedicalEvent> ] ?
     )
@@ -180,6 +199,14 @@ core:Agent CLOSED {
           <aliases> @linkml:String *
        ) ;
        rdf:type [ <Place> ]
+    )
+}
+
+<ProcedureConcept> CLOSED {
+    (  $<ProcedureConcept_tes> (  &<Concept_tes> ;
+          rdf:type [ <Concept> ] ?
+       ) ;
+       rdf:type [ <ProcedureConcept> ]
     )
 }
 

@@ -35,10 +35,20 @@ CREATE TABLE "Company" (
 	ceo TEXT
 );
 
+CREATE TABLE "Concept" (
+	id TEXT NOT NULL, 
+	name TEXT
+);
+
 CREATE TABLE "Dataset" (
 	persons TEXT, 
 	companies TEXT, 
 	activities TEXT
+);
+
+CREATE TABLE "DiagnosisConcept" (
+	id TEXT NOT NULL, 
+	name TEXT
 );
 
 CREATE TABLE "EmploymentEvent" (
@@ -72,7 +82,10 @@ CREATE TABLE "MarriageEvent" (
 CREATE TABLE "MedicalEvent" (
 	started_at_time TEXT, 
 	ended_at_time TEXT, 
-	is_current BOOLEAN
+	is_current BOOLEAN, 
+	in_location TEXT, 
+	diagnosis TEXT, 
+	procedure TEXT
 );
 
 CREATE TABLE "Organization" (
@@ -97,6 +110,11 @@ CREATE TABLE "Place" (
 	id TEXT NOT NULL, 
 	name TEXT, 
 	aliases TEXT
+);
+
+CREATE TABLE "ProcedureConcept" (
+	id TEXT NOT NULL, 
+	name TEXT
 );
 
 CREATE TABLE "Relationship" (

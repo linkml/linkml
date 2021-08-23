@@ -21,4 +21,5 @@ None &#8594;  <sub>0..1</sub> [Place](Place.md)
 
  * [BirthEvent](BirthEvent.md)
  * [MarriageEvent](MarriageEvent.md)
+ * [MedicalEvent](MedicalEvent.md)
  * [WithLocation](WithLocation.md)

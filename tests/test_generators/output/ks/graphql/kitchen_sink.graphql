@@ -38,11 +38,23 @@ type Company
     ceo: Person
   }
 
+type Concept
+  {
+    id: String!
+    name: String
+  }
+
 type Dataset
   {
     persons: [Person]
     companies: [Company]
     activities: [Activity]
+  }
+
+type DiagnosisConcept
+  {
+    id: String!
+    name: String
   }
 
 type EmploymentEvent
@@ -87,6 +99,9 @@ type MedicalEvent
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    inLocation: Place
+    diagnosis: DiagnosisConcept
+    procedure: ProcedureConcept
   }
 
 type Organization implements HasAliases
@@ -114,6 +129,12 @@ type Place implements HasAliases
     id: String!
     name: String
     aliases: [String]
+  }
+
+type ProcedureConcept
+  {
+    id: String!
+    name: String
   }
 
 type Relationship

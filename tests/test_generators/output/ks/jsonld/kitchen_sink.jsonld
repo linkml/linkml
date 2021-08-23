@@ -42,6 +42,22 @@
     {
       "prefix_prefix": "BFO",
       "prefix_reference": "http://purl.obolibrary.org/obo/BFO_"
+    },
+    {
+      "prefix_prefix": "CODE",
+      "prefix_reference": "http://example.org/code/"
+    },
+    {
+      "prefix_prefix": "ROR",
+      "prefix_reference": "http://example.org/ror/"
+    },
+    {
+      "prefix_prefix": "A",
+      "prefix_reference": "http://example.org/activities/"
+    },
+    {
+      "prefix_prefix": "P",
+      "prefix_reference": "http://example.org/person/"
     }
   ],
   "default_curi_maps": [
@@ -374,7 +390,34 @@
       "owner": "WithLocation",
       "domain_of": [
         "BirthEvent",
+        "MedicalEvent",
         "WithLocation"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "diagnosis",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/diagnosis",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "range": "DiagnosisConcept",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/diagnosis",
+      "inlined": true,
+      "owner": "MedicalEvent",
+      "domain_of": [
+        "MedicalEvent"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "procedure",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "range": "ProcedureConcept",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
+      "inlined": true,
+      "owner": "MedicalEvent",
+      "domain_of": [
+        "MedicalEvent"
       ],
       "@type": "SlotDefinition"
     },
@@ -484,6 +527,7 @@
         "Person",
         "Organization",
         "Place",
+        "Concept",
         "Activity",
         "Agent"
       ],
@@ -495,11 +539,12 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/tests/core/name",
-      "owner": "Place",
+      "owner": "Concept",
       "domain_of": [
         "Person",
         "Organization",
-        "Place"
+        "Place",
+        "Concept"
       ],
       "@type": "SlotDefinition"
     },
@@ -856,6 +901,44 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "Concept",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "id",
+        "name"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "DiagnosisConcept",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "is_a": "Concept",
+      "slots": [
+        "id",
+        "name"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "ProcedureConcept",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "is_a": "Concept",
+      "slots": [
+        "id",
+        "name"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "Event",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Event",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
@@ -935,7 +1018,10 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "is_current"
+        "is_current",
+        "in_location",
+        "diagnosis",
+        "procedure"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent",
@@ -1074,9 +1160,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "Sun Aug 22 23:59:28 2021",
-  "source_file_size": 4014,
-  "generation_date": "2021-08-23 00:02",
+  "source_file_date": "Mon Aug 23 00:56:21 2021",
+  "source_file_size": 4456,
+  "generation_date": "2021-08-23 00:59",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",
