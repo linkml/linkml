@@ -29,6 +29,10 @@ prefixes:
   ks: https://w3id.org/linkml/tests/kitchen_sink/
   RO: http://purl.obolibrary.org/obo/RO_
   BFO: http://purl.obolibrary.org/obo/BFO_
+  CODE: http://example.org/code/
+  ROR: http://example.org/ror/
+  A: http://example.org/activities/
+  P: http://example.org/person/
 default_prefix: ks
 see_also:
   - https://example.org/
@@ -92,6 +96,17 @@ classes:
       - street
       - city
 
+  Concept:
+    slots:
+      - id
+      - name
+
+  DiagnosisConcept:
+    is_a: Concept
+
+  ProcedureConcept:
+    is_a: Concept
+
   Event:
     slots:
       - started at time
@@ -127,6 +142,10 @@ classes:
 
   MedicalEvent:
     is_a: Event
+    slots:
+      - in location
+      - diagnosis
+      - procedure
 
   WithLocation:
     mixin: true
@@ -199,6 +218,12 @@ slots:
     range: Person
   in location:
     range: Place
+  diagnosis:
+    range: DiagnosisConcept
+    inlined: true
+  procedure:
+    range: ProcedureConcept
+    inlined: true
   addresses:
     range: Address
     multivalued: True

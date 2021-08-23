@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-08-17 16:14
+# Generation date: 2021-08-22 17:06
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -33,8 +33,12 @@ metamodel_version = "1.7.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+A = CurieNamespace('A', 'http://example.org/activities/')
 BFO = CurieNamespace('BFO', 'http://purl.obolibrary.org/obo/BFO_')
+CODE = CurieNamespace('CODE', 'http://example.org/code/')
+P = CurieNamespace('P', 'http://example.org/person/')
 RO = CurieNamespace('RO', 'http://purl.obolibrary.org/obo/RO_')
+ROR = CurieNamespace('ROR', 'http://example.org/ror/')
 BIOLINK = CurieNamespace('biolink', 'https://w3id.org/biolink/')
 CORE = CurieNamespace('core', 'https://w3id.org/linkml/tests/core/')
 DCE = CurieNamespace('dce', 'http://purl.org/dc/elements/1.1/')
@@ -58,6 +62,18 @@ class OrganizationId(extended_str):
 
 
 class PlaceId(extended_str):
+    pass
+
+
+class ConceptId(extended_str):
+    pass
+
+
+class DiagnosisConceptId(ConceptId):
+    pass
+
+
+class ProcedureConceptId(ConceptId):
     pass
 
 
@@ -228,6 +244,70 @@ class Address(YAMLRoot):
 
 
 @dataclass
+class Concept(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.Concept
+    class_class_curie: ClassVar[str] = "ks:Concept"
+    class_name: ClassVar[str] = "Concept"
+    class_model_uri: ClassVar[URIRef] = KS.Concept
+
+    id: Union[str, ConceptId] = None
+    name: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, ConceptId):
+            self.id = ConceptId(self.id)
+
+        if self.name is not None and not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class DiagnosisConcept(Concept):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.DiagnosisConcept
+    class_class_curie: ClassVar[str] = "ks:DiagnosisConcept"
+    class_name: ClassVar[str] = "DiagnosisConcept"
+    class_model_uri: ClassVar[URIRef] = KS.DiagnosisConcept
+
+    id: Union[str, DiagnosisConceptId] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, DiagnosisConceptId):
+            self.id = DiagnosisConceptId(self.id)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class ProcedureConcept(Concept):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.ProcedureConcept
+    class_class_curie: ClassVar[str] = "ks:ProcedureConcept"
+    class_name: ClassVar[str] = "ProcedureConcept"
+    class_model_uri: ClassVar[URIRef] = KS.ProcedureConcept
+
+    id: Union[str, ProcedureConceptId] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, ProcedureConceptId):
+            self.id = ProcedureConceptId(self.id)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Event(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -345,6 +425,7 @@ class EmploymentEvent(Event):
         super().__post_init__(**kwargs)
 
 
+@dataclass
 class MedicalEvent(Event):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -352,6 +433,22 @@ class MedicalEvent(Event):
     class_class_curie: ClassVar[str] = "ks:MedicalEvent"
     class_name: ClassVar[str] = "MedicalEvent"
     class_model_uri: ClassVar[URIRef] = KS.MedicalEvent
+
+    in_location: Optional[Union[str, PlaceId]] = None
+    diagnosis: Optional[Union[dict, DiagnosisConcept]] = None
+    procedure: Optional[Union[dict, ProcedureConcept]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.in_location is not None and not isinstance(self.in_location, PlaceId):
+            self.in_location = PlaceId(self.in_location)
+
+        if self.diagnosis is not None and not isinstance(self.diagnosis, DiagnosisConcept):
+            self.diagnosis = DiagnosisConcept(**as_dict(self.diagnosis))
+
+        if self.procedure is not None and not isinstance(self.procedure, ProcedureConcept):
+            self.procedure = ProcedureConcept(**as_dict(self.procedure))
+
+        super().__post_init__(**kwargs)
 
 
 @dataclass
@@ -563,6 +660,12 @@ slots.married_to = Slot(uri=KS.married_to, name="married to", curie=KS.curie('ma
 
 slots.in_location = Slot(uri=KS.in_location, name="in location", curie=KS.curie('in_location'),
                    model_uri=KS.in_location, domain=None, range=Optional[Union[str, PlaceId]])
+
+slots.diagnosis = Slot(uri=KS.diagnosis, name="diagnosis", curie=KS.curie('diagnosis'),
+                   model_uri=KS.diagnosis, domain=None, range=Optional[Union[dict, DiagnosisConcept]])
+
+slots.procedure = Slot(uri=KS.procedure, name="procedure", curie=KS.curie('procedure'),
+                   model_uri=KS.procedure, domain=None, range=Optional[Union[dict, ProcedureConcept]])
 
 slots.addresses = Slot(uri=KS.addresses, name="addresses", curie=KS.curie('addresses'),
                    model_uri=KS.addresses, domain=None, range=Optional[Union[Union[dict, Address], List[Union[dict, Address]]]])

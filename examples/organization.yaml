@@ -74,6 +74,7 @@ slots:
     range: employee
     multivalued: true
     inlined: true
+    inlined_as_list: true
 
   has boss:
     range: manager

@@ -62,6 +62,13 @@ class PythonGenTestCase(unittest.TestCase):
         f = kitchen_module.FamilialRelationship(related_to='me', type='SIBLING_OF')
         self.assertEqual("FamilialRelationship(started_at_time=None, ended_at_time=None, related_to='me', type='SIBLING_OF')", str(f))
 
+        diagnosis = kitchen_module.DiagnosisConcept(id='CODE:D0001', name='headache')
+        event = kitchen_module.MedicalEvent(in_location='GEO:1234', diagnosis=diagnosis)
+        print(str(event))
+        self.assertEqual("MedicalEvent(started_at_time=None, ended_at_time=None, is_current=None, in_location='GEO:1234', diagnosis=DiagnosisConcept(id='CODE:D0001', name='headache'), procedure=None)",
+                         str(event))
+
+
 
 if __name__ == '__main__':
     unittest.main()
