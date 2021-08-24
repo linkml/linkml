@@ -1,5 +1,7 @@
 import os
 import sys
+from typing import Optional
+from collections import defaultdict
 
 import click
 
@@ -8,10 +10,14 @@ from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.dumpers.yaml_dumper import YAMLDumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.dumpers.rdf_dumper import RDFDumper
+from linkml_runtime.dumpers.csv_dumper import CSVDumper
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.loaders.json_loader import JSONLoader
 from linkml_runtime.loaders.rdf_loader import RDFLoader
+from linkml_runtime.loaders.csv_loader import CSVLoader
 from linkml_runtime.loaders.loader_root import Loader
+from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName
 
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
@@ -21,10 +27,12 @@ dumpers_loaders = {
     'yaml': (YAMLDumper, YAMLLoader),
     'json': (JSONDumper, JSONLoader),
     'rdf': (RDFDumper, RDFLoader),
+    'csv': (CSVDumper, CSVLoader),
+    'tsv': (CSVDumper, CSVLoader),
 }
 
 aliases = {
-    'ttl': 'rdf'
+    'ttl': 'rdf',
 }
 
 def _get_format(path: str, specified_format: str =None, default=None):
@@ -45,6 +53,9 @@ def _get_format(path: str, specified_format: str =None, default=None):
         specified_format = aliases[specified_format]
     return specified_format
 
+def _is_xsv(fmt: str) -> bool:
+    return fmt == 'csv' or fmt == 'tsv'
+
 def get_loader(fmt: str) -> Loader:
     return dumpers_loaders[fmt][1]()
 def get_dumper(fmt: str) -> Loader:
@@ -52,6 +63,35 @@ def get_dumper(fmt: str) -> Loader:
 
 def _get_context(schema) -> str:
     return ContextGenerator(schema).serialize()
+
+def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
+    refs = defaultdict(int)
+    for cn in sv.all_class().keys():
+        for sn in sv.class_slots(cn):
+            slot = sv.induced_slot(sn, cn)
+            r = slot.range
+            if r in sv.all_class():
+                for a in sv.class_ancestors(r):
+                    refs[a] += 1
+    candidates = [cn for cn in sv.all_class().keys() if cn not in refs]
+    if len(candidates) == 1:
+        return candidates[0]
+    else:
+        return None
+
+def infer_index_slot(sv: SchemaView, root_class: ClassDefinitionName) -> Optional[SlotDefinitionName]:
+    index_slots = []
+    for sn in sv.class_slots(root_class):
+        slot = sv.induced_slot(sn, root_class)
+        if slot.multivalued and slot.range in sv.all_class():
+            index_slots.append(sn)
+    if len(index_slots) == 1:
+        return index_slots[0]
+    else:
+        return None
+
+
+
 
 @click.command()
 @click.option("--module", "-m",
@@ -65,8 +105,9 @@ def _get_context(schema) -> str:
               type=click.Choice(list(dumpers_loaders.keys())),
               help="Output format. Inferred from output suffix if not specified")
 @click.option("--target-class", "-C",
-              required=True,
               help="name of class in datamodel that the root node instantiates")
+@click.option("--index-slot", "-S",
+              help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s",
               help="Path to schema specified as LinkML yaml")
 @click.option("--validate/--no-validate",
@@ -94,7 +135,13 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
             python_module = compile_python(pycode)
     else:
         python_module = compile_python(module)
-    target_class = python_module.__dict__[target_class]
+    if schema is not None:
+        sv = SchemaView(schema)
+    if target_class is None:
+        target_class = infer_root_class(sv)
+    if target_class is None:
+        raise Exception(f'target class not specified and could not be inferred')
+    py_target_class = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
 
@@ -107,8 +154,14 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
             else:
                 raise Exception('Must pass in context OR schema for RDF output')
         inargs['contexts'] = list(context)[0]
-
-    obj = loader.load(source=input,  target_class=target_class, **inargs)
+    if _is_xsv(input_format):
+        if index_slot is None:
+            index_slot = infer_index_slot(sv, target_class)
+            if index_slot is None:
+                raise Exception('--index-slot is required for CSV input')
+        inargs['index_slot'] = index_slot
+        inargs['schema'] = schema
+    obj = loader.load(source=input,  target_class=py_target_class, **inargs)
     if validate:
         if schema is None:
             raise Exception('--schema must be passed in order to validate. Suppress with --no-validate')
@@ -122,6 +175,13 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
             else:
                 raise Exception('Must pass in context OR schema for RDF output')
         outargs['contexts'] = list(context)
+    if _is_xsv(output_format):
+        if index_slot is None:
+            index_slot = infer_index_slot(sv, target_class)
+            if index_slot is None:
+                raise Exception('--index-slot is required for CSV output')
+        outargs['index_slot'] = index_slot
+        outargs['schema'] = schema
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(obj, output, **outargs)
