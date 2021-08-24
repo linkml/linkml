@@ -2,11 +2,14 @@ from typing import List
 
 from linkml_runtime.utils.schemaview import SchemaView, CLASS_NAME
 
-def roll_up(sv: SchemaView, classes: List[CLASS_NAME] = None) -> None:
+def roll_up(sv: SchemaView, classes: List[CLASS_NAME] = None, mixins=True, is_a=True) -> None:
     """
     rolls slots up to a set of ancestor classes
+
     :param sv:
     :param classes:
+    :param mixins: include mixins (default is True)
+    :param is_a: include is_a parents (default is True)
     :return:
     """
     if classes is None:
@@ -14,7 +17,7 @@ def roll_up(sv: SchemaView, classes: List[CLASS_NAME] = None) -> None:
     for cn in classes:
         c = sv.get_class(cn)
         slots = []
-        for d in sv.class_descendants(cn, reflexive=False):
+        for d in sv.class_descendants(cn, reflexive=False, mixins=mixins, is_a=is_a):
             for sn in sv.class_slots(d):
                 s = sv.induced_slot(sn, class_name=d)
                 if sn not in c.slots:
@@ -25,13 +28,22 @@ def roll_up(sv: SchemaView, classes: List[CLASS_NAME] = None) -> None:
                     sv.add_slot(s)
     sv.set_modified()
 
-def roll_down(sv: SchemaView, classes: List[CLASS_NAME] = None) -> None:
+def roll_down(sv: SchemaView, classes: List[CLASS_NAME] = None, mixins=True, is_a=True) -> None:
+    """
+    rolls down to a set of descendant classes
+
+    :param sv:
+    :param classes:
+    :param mixins: include mixins (default is True)
+    :param is_a: include is_a parents (default is True)
+    :return:
+    """
     if classes is None:
         classes = sv.class_leaves()
     for cn in classes:
         c = sv.get_class(cn)
         slots = []
-        for d in sv.class_ancestors(cn, reflexive=False):
+        for d in sv.class_ancestors(cn, reflexive=False, mixins=mixins, is_a=is_a):
             for sn in sv.class_slots(d):
                 s = sv.induced_slot(sn, class_name=d)
                 if sn not in c.slots:

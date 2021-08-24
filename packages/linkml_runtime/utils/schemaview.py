@@ -4,7 +4,7 @@ import logging
 from functools import lru_cache
 from copy import copy
 from collections import defaultdict
-from typing import List, Any, Dict, Union, Mapping
+from typing import List, Any, Dict, Union, Mapping, Tuple
 from dataclasses import dataclass
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.formatutils import camelcase, underscore
@@ -14,7 +14,7 @@ from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
-
+MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
 
@@ -308,17 +308,17 @@ class SchemaView(object):
         """
         return self.all_type(imports).get(type_name, None)
 
-    def _parents(self, e: Element, imports=True, mixins=True) -> List[ElementName]:
+    def _parents(self, e: Element, imports=True, mixins=True, is_a=True) -> List[ElementName]:
         if mixins:
             parents = copy(e.mixins)
         else:
             parents = []
-        if e.is_a is not None:
+        if e.is_a is not None and is_a:
             parents.append(e.is_a)
         return parents
 
     @lru_cache()
-    def class_parents(self, class_name: CLASS_NAME, imports=True, mixins=True) -> List[ClassDefinitionName]:
+    def class_parents(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         :param class_name: child class name
         :param imports: include import closure
@@ -326,10 +326,10 @@ class SchemaView(object):
         :return: all direct parent class names (is_a and mixins)
         """
         cls = self.get_class(class_name, imports)
-        return self._parents(cls, imports, mixins)
+        return self._parents(cls, imports, mixins, is_a)
 
     @lru_cache()
-    def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True) -> List[SlotDefinitionName]:
+    def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:
         """
         :param slot_name: child slot name
         :param imports: include import closure
@@ -337,95 +337,102 @@ class SchemaView(object):
         :return: all direct parent slot names (is_a and mixins)
         """
         s = self.get_slot(slot_name, imports)
-        return self._parents(s, imports, mixins)
+        return self._parents(s, imports, mixins, is_a)
 
     @lru_cache()
-    def class_children(self, class_name: CLASS_NAME, imports=True, mixins=True) -> List[ClassDefinitionName]:
+    def class_children(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         :param class_name: parent class name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
         :return: all direct child class names (is_a and mixins)
         """
         elts = [self.get_class(x) for x in self.all_class(imports)]
-        return [x.name for x in elts if x.is_a == class_name or (mixins and class_name in x.mixins)]
+        return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
 
     @lru_cache()
-    def slot_children(self, slot_name: SLOT_NAME, imports=True, mixins=True) -> List[SlotDefinitionName]:
+    def slot_children(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:
         """
         :param slot_name: parent slot name
         :param imports: include import closure
         :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
         :return: all direct child slot names (is_a and mixins)
         """
         elts = [self.get_slot(x) for x in self.all_slot(imports)]
-        return [x.name for x in elts if x.is_a == slot_name or (mixins and slot_name in x.mixins)]
+        return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
 
     @lru_cache()
-    def class_ancestors(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True) -> List[ClassDefinitionName]:
+    def class_ancestors(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[ClassDefinitionName]:
         """
         Closure of class_parents method
 
         :param class_name: query class
         :param imports: include import closure
         :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
         :param reflexive: include self in set of ancestors
         :return: ancestor class names
         """
-        return _closure(lambda x: self.class_parents(x, imports=imports, mixins=mixins), class_name, reflexive=reflexive)
+        return _closure(lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive)
 
     @lru_cache()
-    def slot_ancestors(self, slot_name: SLOT_NAME, imports=True, mixins=True, reflexive=True) -> List[SlotDefinitionName]:
+    def slot_ancestors(self, slot_name: SLOT_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[SlotDefinitionName]:
         """
         Closure of slot_parents method
 
         :param slot_name: query slot
         :param imports: include import closure
         :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
         :param reflexive: include self in set of ancestors
         :return: ancestor slot names
         """
-        return _closure(lambda x: self.slot_parents(x, imports=imports, mixins=mixins), slot_name, reflexive=reflexive)
+        return _closure(lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive)
 
     @lru_cache()
-    def class_descendants(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True) -> List[ClassDefinitionName]:
+    def class_descendants(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[ClassDefinitionName]:
         """
         Closure of class_children method
 
         :param class_name: query class
         :param imports: include import closure
         :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
         :param reflexive: include self in set of descendants
         :return: descendants class names
         """
-        return _closure(lambda x: self.class_children(x, imports=imports, mixins=mixins), class_name, reflexive=reflexive)
+        return _closure(lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive)
 
 
     @lru_cache()
-    def class_roots(self, class_name: CLASS_NAME, imports=True, mixins=True) -> List[ClassDefinitionName]:
+    def class_roots(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         All classes that have no parents
         :param class_name:
         :param imports:
         :param mixins:
+        :param is_a: include is_a parents (default is True)
         :return:
         """
         return [c
                 for c in self.all_class(imports=imports)
-                if self.class_parents(c, mixins=mixins, imports=imports) == []]
+                if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []]
 
     @lru_cache()
-    def class_leaves(self, class_name: CLASS_NAME, imports=True, mixins=True) -> List[ClassDefinitionName]:
+    def class_leaves(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         All classes that have no children
         :param class_name:
         :param imports:
         :param mixins:
+        :param is_a: include is_a parents (default is True)
         :return:
         """
         return [c
                 for c in self.all_class(imports=imports)
-                if self.class_children(c, mixins=mixins, imports=imports) == []]
+                if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []]
 
 
     @lru_cache()
@@ -456,6 +463,13 @@ class SchemaView(object):
 
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
+        """
+        Fetch an element by name
+
+        :param element: query element
+        :param imports: include imports closure
+        :return:
+        """
         if isinstance(element, Element):
             return element
         e = self.get_class(element, imports=imports)
@@ -520,7 +534,15 @@ class SchemaView(object):
         return uri
 
     @lru_cache()
-    def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[str, List[URIorCURIE]]:
+    def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[MAPPING_TYPE, List[URIorCURIE]]:
+        """
+        Get all mappings for a given element
+
+        :param element_name: the query element
+        :param imports: include imports closure
+        :param expand: expand CURIEs to URIs
+        :return: index keyed by mapping type
+        """
         e = self.get_element(element_name, imports=imports)
         m_dict = {
             'self': [self.get_uri(element_name, imports=imports, expand=False)],
@@ -537,6 +559,22 @@ class SchemaView(object):
                 m_dict[k] = [self.expand_curie(v) for v in vs]
 
         return m_dict
+
+    def get_mapping_index(self, imports=True, expand=False) -> Dict[URIorCURIE, List[Tuple[MAPPING_TYPE, Element]]]:
+        """
+        Returns an index of all elements keyed by the mapping value.
+        The index values are tuples of mapping type and element
+
+        :param imports:
+        :param expand: if true the index will be keyed by expanded URIs, not CURIEs
+        :return: index
+        """
+        ix = defaultdict(list)
+        for en in self.all_element(imports=imports):
+            for mapping_type, vs in self.get_mappings(en, imports=imports, expand=expand):
+                for v in vs:
+                    ix[v].append((mapping_type, self.get_element(en, imports=imports)))
+        return ix
 
 
     @lru_cache()
@@ -564,6 +602,8 @@ class SchemaView(object):
         Return a dictionary where keys are annotation tags and values are annotation values for any given element.
 
         Note this will not include higher-order annotations
+
+        See also: https://github.com/linkml/linkml/issues/296
 
         :param element_name:
         :param imports:
@@ -667,7 +707,7 @@ class SchemaView(object):
     def is_inlined(self, slot: SlotDefinition, imports=True) -> bool:
         """
         True if slot is inferred or asserted inline
-        
+
         :param slot:
         :param imports:
         :return:

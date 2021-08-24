@@ -102,6 +102,12 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.induced_slot('type', 'FamilialRelationship').range == 'FamilialRelationshipType'
         assert view.induced_slot('related to', 'FamilialRelationship').range == 'Person'
 
+        a = view.get_class('activity')
+        self.assertCountEqual(a.exact_mappings, ['prov:Activity'])
+        print(view.get_mappings('activity',expand=True))
+        self.assertCountEqual(view.get_mappings('activity')['exact'], ['prov:Activity'])
+        self.assertCountEqual(view.get_mappings('activity', expand=True)['exact'], ['http://www.w3.org/ns/prov#Activity'])
+
         u = view.usage_index()
         for k, v in u.items():
             print(f' {k} = {v}')
