@@ -193,6 +193,7 @@ class SQLDDLGenerator(Generator):
         self.rename_foreign_keys = rename_foreign_keys
         self.direct_mapping = direct_mapping
         self.sqlschema = SQLSchema()
+        self.generate_header()
 
     def _is_hidden(self, cls: ClassDefinition) -> bool:
         if cls.mixin or cls.abstract:
@@ -203,6 +204,11 @@ class SQLDDLGenerator(Generator):
         https://stackoverflow.com/questions/1881123/table-naming-underscore-vs-camelcase-namespaces-singular-vs-plural
         """
         return underscore(cn)
+
+    def generate_header(self):
+        print(f"/* metamodel_version: {self.schema.metamodel_version} */")
+        if self.schema.version:
+            print(f"/* version: {self.schema.version} */")
 
     def end_schema(self, **kwargs) -> None:
         self._transform_sqlschema()
@@ -393,6 +399,9 @@ from sqlalchemy import Text
 from sqlalchemy import Integer
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import relationship
+
+metamodel_version = "{self.schema.metamodel_version}"
+version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
 mapper_registry = registry()
 metadata = MetaData()
