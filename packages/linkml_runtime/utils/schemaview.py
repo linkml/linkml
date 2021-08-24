@@ -407,10 +407,9 @@ class SchemaView(object):
 
 
     @lru_cache()
-    def class_roots(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
+    def class_roots(self, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         All classes that have no parents
-        :param class_name:
         :param imports:
         :param mixins:
         :param is_a: include is_a parents (default is True)
@@ -421,10 +420,9 @@ class SchemaView(object):
                 if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []]
 
     @lru_cache()
-    def class_leaves(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
+    def class_leaves(self, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
         """
         All classes that have no children
-        :param class_name:
         :param imports:
         :param mixins:
         :param is_a: include is_a parents (default is True)
@@ -436,10 +434,9 @@ class SchemaView(object):
 
 
     @lru_cache()
-    def slot_roots(self, slot_name: SLOT_NAME, imports=True, mixins=True) -> List[SlotDefinitionName]:
+    def slot_roots(self, imports=True, mixins=True) -> List[SlotDefinitionName]:
         """
         All slotes that have no parents
-        :param slot_name:
         :param imports:
         :param mixins:
         :return:
@@ -449,10 +446,9 @@ class SchemaView(object):
                 if self.slot_parents(c, mixins=mixins, imports=imports) == []]
 
     @lru_cache()
-    def slot_leaves(self, slot_name: SLOT_NAME, imports=True, mixins=True) -> List[SlotDefinitionName]:
+    def slot_leaves(self, imports=True, mixins=True) -> List[SlotDefinitionName]:
         """
         All slotes that have no children
-        :param slot_name:
         :param imports:
         :param mixins:
         :return:
@@ -614,7 +610,7 @@ class SchemaView(object):
 
 
     @lru_cache()
-    def class_slots(self, class_name: CLASS_NAME = None, imports=True, direct=False, attributes=True) -> List[SlotDefinitionName]:
+    def class_slots(self, class_name: CLASS_NAME, imports=True, direct=False, attributes=True) -> List[SlotDefinitionName]:
         """
         :param class_name:
         :param imports: include imports closure
@@ -652,7 +648,7 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: dynamic slot constructed by inference
         """
-        slot = self.get_slot(slot_name, imports)
+        slot = self.get_slot(slot_name, imports, attributes=True)
         cls = self.get_class(class_name, imports)
         islot = None
         if slot is not None:
@@ -690,6 +686,10 @@ class SchemaView(object):
             if v is not None:
                 setattr(islot, metaslot_name, v)
         return islot
+
+    @lru_cache()
+    def class_induced_slots(self, class_name: CLASS_NAME = None, imports=True) -> List[SlotDefinition]:
+        return [self.induced_slot(sn, class_name, imports=imports) for sn in self.class_slots(class_name)]
 
     @lru_cache()
     def get_identifier_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
@@ -787,12 +787,21 @@ class SchemaView(object):
         self.schema.subsets[subset.name] = type
         self.set_modified()
 
-    def delete_class(self, class_name: ClassDefinitionName) -> None:
+    def delete_class(self, class_name: ClassDefinitionName, delete_references=True) -> None:
         """
         :param class_name: class to be deleted
         :return:
         """
+        children = self.class_children(class_name)
         del self.schema.classes[class_name]
+        if delete_references:
+            for chn in children:
+                ch = self.get_class(chn)
+                if ch.is_a is not None and ch.is_a == class_name:
+                    del ch.is_a
+                if class_name in ch.mixins:
+                    ch.mixins.remove(class_name)
+            # TODO: remove other references, including range
         self.set_modified()
 
     def delete_slot(self, slot_name: SlotDefinitionName) -> None:
@@ -849,6 +858,12 @@ class SchemaView(object):
             if k not in dest.types:
                 dest.enums[k] = copy(y)
         self.set_modified()
+
+    def copy_schema(self, new_name: str = None) -> SchemaDefinition:
+        s2 = copy(self.schema)
+        if new_name is not None:
+            s2.name = new_name
+        return s2
 
 
 
