@@ -8,6 +8,8 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
     """
     Generates a configuration that specifies mapping between a CSV and a JSON structure
 
+    See json_flattener docs for more details
+
     :param schemaview: LinkML schema view over schema
     :param index_slot: key that indexes the top level object
     :return: mapping between top level keys and denormalization configurations
@@ -48,16 +50,3 @@ def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: Sl
         return KeyConfig(is_list=slot.multivalued, delete=True, flatten=True, mappings=mappings, serializers=serializers)
     else:
         return None
-
-# TODO: move this to schemaview
-def _is_inlined(slot: SlotDefinition, schemaview: SchemaView):
-    if slot.inlined:
-        return True
-    else:
-        range = slot.range
-        for sn in schemaview.class_slots(range):
-            if schemaview.induced_slot(sn, range).identifier:
-                # not explicitly declared inline and has an identifier: assume is ref, not inlined
-                return False
-        # must be inlined as has no identifier
-        return True
