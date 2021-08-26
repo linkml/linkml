@@ -9,7 +9,7 @@ from tests.utils.compare_rdf import compare_rdf
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 
-
+# Tests: https://github.com/biolink/biolinkml/issues/163
 class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
     env = env
 

@@ -570,10 +570,10 @@ class Generator(metaclass=abc.ABCMeta):
         mappings = defn.mappings + defn.related_mappings + defn.close_mappings + \
                    defn.narrow_mappings + defn.broad_mappings + defn.exact_mappings
         # see https://github.com/linkml/linkml/pull/283
-        #if isinstance(defn, ClassDefinition):
-        #    mappings.append(defn.class_uri)
-        #if isinstance(defn, SlotDefinition):
-        #    mappings.append(defn.slot_uri)
+        if isinstance(defn, ClassDefinition):
+            mappings.append(defn.class_uri)
+        if isinstance(defn, SlotDefinition):
+            mappings.append(defn.slot_uri)
         for mapping in mappings:
             if '://' in mapping:
                 mcurie = self.namespaces.curie_for(mapping)

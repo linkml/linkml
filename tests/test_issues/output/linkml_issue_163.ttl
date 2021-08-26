@@ -1,0 +1,241 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix UNKNOWN_PREFIX: <http://example.org/UNKNOWN/UNKNOWN_PREFIX/> .
+@prefix biolink: <https://w3id.org/biolink/vocab/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix gff3: <https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix ns1: <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl: <http://example.org/UNKNOWN/owl/> .
+@prefix pav: <http://purl.org/pav/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf1: <http://example.org/UNKNOWN/rdf/> .
+@prefix rdfs1: <http://example.org/UNKNOWN/rdfs/> .
+@prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+biolink:Biolink-Model a linkml:SchemaDefinition ;
+    dct:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    pav:version "2.2.3" ;
+    ns1:definition "Entity and association taxonomy and datamodel for life-sciences data" ;
+    linkml:classes biolink:Snv,
+        biolink:Thing ;
+    linkml:default_curi_maps "obo_context" ;
+    linkml:default_prefix "biolink" ;
+    linkml:default_range biolink:string ;
+    linkml:emit_prefixes "BIOGRID",
+        "OIO",
+        "SO",
+        "rdf",
+        "rdfs",
+        "skos",
+        "xsd" ;
+    linkml:generation_date "2021-08-25 09:41"^^xsd:dateTime ;
+    linkml:id <https://w3id.org/biolink/biolink-model> ;
+    linkml:imports linkml:types ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:prefixes [ linkml:prefix_prefix "gff3" ;
+            linkml:prefix_reference gff3: ],
+        [ linkml:prefix_prefix "prov" ;
+            linkml:prefix_reference prov: ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "dct" ;
+            linkml:prefix_reference dct: ],
+        [ linkml:prefix_prefix "SIO" ;
+            linkml:prefix_reference <http://semanticscience.org/resource/SIO_> ],
+        [ linkml:prefix_prefix "biolink" ;
+            linkml:prefix_reference biolink: ],
+        [ linkml:prefix_prefix "RO" ;
+            linkml:prefix_reference <http://purl.obolibrary.org/obo/RO_> ] ;
+    linkml:slots biolink:has_evidence,
+        biolink:name,
+        biolink:type ;
+    linkml:source_file "linkml_issue_163.yaml" ;
+    linkml:source_file_date "Wed Aug 25 09:38:06 2021"^^xsd:dateTime ;
+    linkml:source_file_size 1601 ;
+    linkml:types biolink:boolean,
+        biolink:date,
+        biolink:datetime,
+        biolink:decimal,
+        biolink:double,
+        biolink:float,
+        biolink:integer,
+        biolink:ncname,
+        biolink:nodeidentifier,
+        biolink:objectidentifier,
+        biolink:string,
+        biolink:time,
+        biolink:uri,
+        biolink:uriorcurie .
+
+biolink:boolean a linkml:TypeDefinition ;
+    ns1:definition "A binary (true or false) value" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "Bool" ;
+    linkml:definition_uri linkml:Boolean ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "bool" ;
+    linkml:uri xsd:boolean .
+
+biolink:date a linkml:TypeDefinition ;
+    ns1:definition "a date (year, month and day) in an idealized calendar" ;
+    ns1:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "XSDDate" ;
+    linkml:definition_uri linkml:Date ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:date .
+
+biolink:datetime a linkml:TypeDefinition ;
+    ns1:definition "The combination of a date and time" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "XSDDateTime" ;
+    linkml:definition_uri linkml:Datetime ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:dateTime .
+
+biolink:decimal a linkml:TypeDefinition ;
+    ns1:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "Decimal" ;
+    linkml:definition_uri linkml:Decimal ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:decimal .
+
+biolink:double a linkml:TypeDefinition ;
+    ns1:definition "A real number that conforms to the xsd:double specification" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "float" ;
+    linkml:definition_uri linkml:Double ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:double .
+
+biolink:float a linkml:TypeDefinition ;
+    ns1:definition "A real number that conforms to the xsd:float specification" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "float" ;
+    linkml:definition_uri linkml:Float ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:float .
+
+biolink:integer a linkml:TypeDefinition ;
+    ns1:definition "An integer" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "int" ;
+    linkml:definition_uri linkml:Integer ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:integer .
+
+biolink:ncname a linkml:TypeDefinition ;
+    ns1:definition "Prefix part of CURIE" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "NCName" ;
+    linkml:definition_uri linkml:Ncname ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:string .
+
+biolink:nodeidentifier a linkml:TypeDefinition ;
+    ns1:definition "A URI, CURIE or BNODE that represents a node in a model." ;
+    ns1:inScheme linkml:types ;
+    linkml:base "NodeIdentifier" ;
+    linkml:definition_uri linkml:Nodeidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:nonLiteral .
+
+biolink:objectidentifier a linkml:TypeDefinition ;
+    ns1:definition "A URI or CURIE that represents an object in the model." ;
+    ns1:inScheme linkml:types ;
+    ns1:note "Used for inheritence and type checking" ;
+    linkml:base "ElementIdentifier" ;
+    linkml:definition_uri linkml:Objectidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:iri .
+
+biolink:time a linkml:TypeDefinition ;
+    ns1:definition "A time object represents a (local) time of day, independent of any particular day" ;
+    ns1:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "XSDTime" ;
+    linkml:definition_uri linkml:Time ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:dateTime .
+
+biolink:uri a linkml:TypeDefinition ;
+    ns1:definition "a complete URI" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "URI" ;
+    linkml:definition_uri linkml:Uri ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
+
+biolink:uriorcurie a linkml:TypeDefinition ;
+    ns1:definition "a URI or a CURIE" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "URIorCURIE" ;
+    linkml:definition_uri linkml:Uriorcurie ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
+
+biolink:Thing a linkml:ClassDefinition ;
+    ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
+    ns1:mappingRelation owl:Thing ;
+    linkml:class_uri owl:Thing ;
+    linkml:definition_uri biolink:Thing ;
+    linkml:slot_usage [ ] .
+
+biolink:name a linkml:SlotDefinition ;
+    ns1:altLabel "display name",
+        "label",
+        "title" ;
+    ns1:exactMatch gff3:Name ;
+    ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
+    ns1:mappingRelation rdfs1:label ;
+    ns1:narrowMatch dct:title ;
+    linkml:definition_uri biolink:name ;
+    linkml:range biolink:string ;
+    linkml:slot_uri rdfs1:label .
+
+biolink:type a linkml:SlotDefinition ;
+    ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
+    ns1:mappingRelation rdf1:type ;
+    linkml:definition_uri biolink:type ;
+    linkml:range biolink:string ;
+    linkml:slot_uri rdf1:type .
+
+biolink:Snv a linkml:ClassDefinition ;
+    ns1:altLabel "single nucleotide polymorphism",
+        "single nucleotide variant",
+        "snp" ;
+    ns1:definition "SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist" ;
+    ns1:exactMatch UNKNOWN_PREFIX:1234567,
+        <http://purl.obolibrary.org/obo/SO_0001483> ;
+    ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
+    linkml:class_uri biolink:Snv ;
+    linkml:definition_uri biolink:Snv ;
+    linkml:slot_usage [ ] .
+
+biolink:has_evidence a linkml:SlotDefinition ;
+    ns1:definition "connects an association to an instance of supporting evidence" ;
+    ns1:exactMatch <http://purl.obolibrary.org/obo/RO_0002558> ;
+    ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
+    linkml:definition_uri biolink:has_evidence ;
+    linkml:range biolink:string ;
+    linkml:slot_uri biolink:has_evidence .
+
+biolink:string a linkml:TypeDefinition ;
+    ns1:definition "A character string" ;
+    ns1:inScheme linkml:types ;
+    linkml:base "str" ;
+    linkml:definition_uri linkml:String ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:string .
+
+
