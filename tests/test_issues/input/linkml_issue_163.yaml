@@ -58,6 +58,9 @@ classes:
   thing:
     class_uri: owl:Thing
 
+  association:
+    class_uri: rdf:Statement
+
   snv:
     aliases: [ 'single nucleotide variant','single nucleotide polymorphism', 'snp' ]
     description: >-

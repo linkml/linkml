@@ -16,7 +16,7 @@ BIOLINK = Namespace('https://w3id.org/biolink/vocab/')
 # as reported in https://github.com/linkml/linkml/issues/163,
 # rdfgenerator can create unparseable files if ttl is used.
 # TODO: make this test work when format = 'ttl'
-RDF_FORMAT = 'nt'
+RDF_FORMAT = 'ttl'
 
 # Tests: https://github.com/linkml/linkml/issues/163
 class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
