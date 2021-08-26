@@ -3,7 +3,6 @@ from typing import Union, TextIO, Optional, List, Dict, Tuple
 
 import click
 import openpyxl
-from openpyxl import Workbook
 
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
@@ -62,7 +61,7 @@ class ExcelGenerator(Generator):
         **kwargs
     ) -> None:
         self.wb_name = self._workbook_path(wb_name=filename)
-        self.workbook = Workbook()
+        self.workbook = openpyxl.Workbook()
         self.workbook.remove(self.workbook["Sheet"])
         super().__init__(schema, **kwargs)
 
