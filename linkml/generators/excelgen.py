@@ -14,22 +14,41 @@ from linkml_runtime.utils.formatutils import camelcase
 
 
 class ExcelGenerator(Generator):
+    """This class is a blueprint for the generator module that is responsible
+    for automatically creating Excel spreadsheets from the LinkML schema.
+
+    :param schema: LinkML schema object
+    :type schema: class:`SchemaDefinition`
+    :param filename: LinkML schema specification in YAML format
+    :type filename: str
+    """
+
     generator_name = os.path.basename(__file__)
     generator_version = "0.0.1"
     valid_formats = ["xlsx"]
     sheet_name_cols = []
 
     def _workbook_path(self, wb_name: str = None):
+        """Internal method that computes the path where the Excel workbook
+        should be stored.
+
+        :param wb_name: Prefix for the generated Excel spreadsheet name
+        :type wb_name: str
+
+        TODO: Decide whether to use :param wb_name as prefix or full file name?
+        """
         if not wb_name:
             return os.path.join(
-                os.path.basename(self.generator_name),
+                self.generator_name,
                 "_",
                 self.generator_version,
                 ".xlsx",
             )
 
         return os.path.join(
-            os.path.basename(self.generator_name),
+            wb_name,
+            "_",
+            self.generator_name,
             "_",
             self.generator_version,
             "_",
@@ -38,6 +57,18 @@ class ExcelGenerator(Generator):
 
     @staticmethod
     def _slot_formatting(slots_list: List[Tuple[str, str]]) -> Dict[str, List[str]]:
+        """Static internal method for formatting the slot information read in visit_slot()
+        in a parseable format.
+
+        :param slots_list: List of tuples with each tuple containing information in the
+            ``(slot_owner, slot_name)`` format
+        :type slots_list: List[Tuple[str, str]]
+        :return: A dictionary with the same information, with ``slot_owner`` as keys, and
+            the slot names as associated lists
+        :rtype: Dict[str, List[str]]
+
+        TODO: This is basically a utility method, so it can be moved to ``utils``
+        """
         formatted_slots_dict: Dict = {}
 
         for slot_owner, slot_name in slots_list:
@@ -46,6 +77,12 @@ class ExcelGenerator(Generator):
         return formatted_slots_dict
 
     def _write_to_excel(self, slots_dict: Dict[str, List[str]]) -> None:
+        """Internal method to write slot names to Excel worksheets.
+
+        :param slots_dict: Formatted dictionary as returned by call to
+            ``self._slot_formatting()``
+        :type slots_dict: Dict[str, List[str]]
+        """
         wb = openpyxl.load_workbook(self.wb_name)
 
         for slot_owner, slot_name in slots_dict.items():
@@ -66,10 +103,16 @@ class ExcelGenerator(Generator):
         super().__init__(schema, **kwargs)
 
     def create_spreadsheet(self, ws_name: str = None) -> None:
+        """Method to add worksheets to the Excel workbook.
+
+        :param ws_name: Name of each of the worksheets
+        :type ws_name: str, optional
+        """
         self.workbook.create_sheet(ws_name)
         self.workbook.save(self.wb_name)
 
     def visit_class(self, cls: ClassDefinition) -> None:
+        """Overriden from generator framework."""
         self.create_spreadsheet(ws_name=camelcase(cls.name))
 
         slots = ExcelGenerator._slot_formatting(slots_list=self.sheet_name_cols)
@@ -77,6 +120,7 @@ class ExcelGenerator(Generator):
         self._write_to_excel(slots_dict=slots)
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
+        """Overriden from generator framework."""
         self.sheet_name_cols.append((slot.owner, slot.name))
 
 
