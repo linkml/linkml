@@ -575,7 +575,7 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(defn, SlotDefinition):
             mappings.append(defn.slot_uri)
         for mapping in mappings:
-            if '://' in mapping:
+            if '://' in str(mapping):
                 mcurie = self.namespaces.curie_for(mapping)
                 if mcurie is None:
                     self.logger.warning(f"No namespace defined for URI: {mapping}")
@@ -585,7 +585,9 @@ class Generator(metaclass=abc.ABCMeta):
             if ':' not in mapping or len(mapping.split(':')) != 2:
                 raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
             ns = mapping.split(':')[0]
-            self.add_prefix(ns)
+            logging.error(f'Adding {ns} from {mapping} // {defn}')
+            if ns:
+                self.add_prefix(ns)
 
     def add_id_prefixes(self, element: Element) -> None:
         for id_prefix in element.id_prefixes:
