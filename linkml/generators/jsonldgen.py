@@ -77,6 +77,8 @@ class JSONLDGenerator(Generator):
         elif slot.range in self.schema.types:
             slot.range = TypeDefinitionName(underscore(slot.range))
         slot.slot_uri = self.namespaces.uri_for(slot.slot_uri)
+        for f in ['mappings', 'exact_mappings', 'broad_mappings', 'close_mappings', 'narrow_mappings', 'related_mappings']:
+            setattr(slot, f, [self.namespaces.uri_for(v) for v in getattr(slot, f)])
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self._visit(cls)
