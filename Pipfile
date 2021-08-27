@@ -31,6 +31,7 @@ sphinx = "*"
 sphinx-rtd-theme = "*"
 sphinx-click = "*"
 myst-parser = "*"
+jinja2 = "*"
 
 [dev-packages]
 nbconvert = "*"
