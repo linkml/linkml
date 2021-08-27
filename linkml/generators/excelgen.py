@@ -38,22 +38,24 @@ class ExcelGenerator(Generator):
         TODO: Decide whether to use :param wb_name as prefix or full file name?
         """
         if not wb_name:
-            return os.path.join(
-                self.generator_name,
-                "_",
-                self.generator_version,
-                ".xlsx",
-            )
+            return "test.xlsx"
+            # return os.path.join(
+            #     self.generator_name,
+            #     "_",
+            #     self.generator_version,
+            #     ".xlsx",
+            # )
 
-        return os.path.join(
-            wb_name,
-            "_",
-            self.generator_name,
-            "_",
-            self.generator_version,
-            "_",
-            ".xlsx",
-        )
+        return wb_name + ".xlsx"
+        # os.path.join(
+        #     wb_name,
+        #     "_",
+        #     self.generator_name,
+        #     "_",
+        #     self.generator_version,
+        #     "_",
+        #     ".xlsx",
+        # )
 
     @staticmethod
     def _slot_formatting(slots_list: List[Tuple[str, str]]) -> Dict[str, List[str]]:
@@ -111,16 +113,18 @@ class ExcelGenerator(Generator):
         self.workbook.create_sheet(ws_name)
         self.workbook.save(self.wb_name)
 
-    def visit_class(self, cls: ClassDefinition) -> None:
-        """Overriden from generator framework."""
+    def visit_class(self, cls: ClassDefinition) -> bool:
+        """Overridden from generator framework."""
         self.create_spreadsheet(ws_name=camelcase(cls.name))
 
         slots = ExcelGenerator._slot_formatting(slots_list=self.sheet_name_cols)
 
         self._write_to_excel(slots_dict=slots)
 
+        return True
+
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        """Overriden from generator framework."""
+        """Overridden from generator framework."""
         self.sheet_name_cols.append((slot.owner, slot.name))
 
 
