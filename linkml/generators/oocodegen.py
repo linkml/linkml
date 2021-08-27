@@ -1,7 +1,7 @@
 import keyword
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 import logging
 
@@ -12,8 +12,9 @@ from rdflib import URIRef
 
 import linkml
 from linkml.generators import JAVA_GEN_VERSION
+import linkml_runtime.linkml_model.types as linkml_types
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
-    SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue
+    SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore, be, wrapped_annotation, split_line, sfx, lcamelcase
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.ifabsent_functions import ifabsent_value_declaration, ifabsent_postinit_declaration, \
@@ -34,7 +35,8 @@ class OODocument:
     name: SAFE_NAME
     package: PACKAGE = None
     source_schema: SchemaDefinition = None
-    classes: List["OOClass"] = None
+    classes: List["OOClass"] = field(default_factory=lambda: [])
+    imports: List[str] = field(default_factory=lambda: [])
 
 
 @dataclass
@@ -43,9 +45,9 @@ class OOField:
     A field belonging to an OO class that corresponds to a LinkML class slot
     """
     name: SAFE_NAME
-    range: TYPE_EXPRESSION
-    annotations: List[ANNOTATION] = None
-    source_slot: SlotDefinition = None
+    range: TYPE_EXPRESSION = None
+    annotations: List[ANNOTATION] = field(default_factory=lambda: [])
+    source_slot: SlotDefinition = field(default_factory=lambda: [])
 
 @dataclass
 class OOClass:
@@ -54,9 +56,9 @@ class OOClass:
     """
     name: SAFE_NAME
     is_a: Optional[SAFE_NAME] = None
-    mixins: List[SAFE_NAME] = None
-    fields: List[OOField] = None
-    annotations: List[ANNOTATION] = None
+    mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
+    fields: List[OOField] = field(default_factory=lambda: [])
+    annotations: List[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
 
@@ -72,8 +74,15 @@ class OOCodeGenerator(Generator):
             safe_sn = lcamelcase(sn)
         else:
             safe_sn = underscore(sn)
+        return safe_sn
 
-    def create_documents(self):
+    def map_type(self, t: TypeDefinition) -> str:
+        return t.base
+
+    def make_multivalued(self, range: str) -> str:
+        return f'List<{range}>'
+
+    def create_documents(self) -> List[OODocument]:
         """
         Currently hardcoded for java-style
         :return:
@@ -82,11 +91,13 @@ class OOCodeGenerator(Generator):
         sv = self.schemaview
         docs = []
         for cn in sv.all_class(imports=False):
-            c = sv.get_class(c)
+            c = sv.get_class(cn)
             safe_cn = camelcase(cn)
             oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
             docs.append(oodoc)
             ooclass = OOClass(name=safe_cn, package=self.package, fields=[], source_class=c)
+            # currently hardcoded for java style, one class per doc
+            oodoc.classes = [ooclass]
             if c.is_a:
                 ooclass.is_a = self.get_class_name(c.is_a)
                 parent_slots = sv.class_slots(c.is_a)
@@ -98,7 +109,24 @@ class OOCodeGenerator(Generator):
                     continue
                 safe_sn = self.get_slot_name(sn)
                 slot = sv.induced_slot(sn, cn)
-                oofield = OOField(name=safe_sn, source_slot=slot)
+                range = slot.range
+                if range is None:
+                    # TODO: schemaview should infer this
+                    range = sv.schema.default_range
+                if range is None:
+                    range = 'string'
+                if range in sv.all_class():
+                    range = self.get_class_name(range)
+                elif range in sv.all_type():
+                    t = sv.get_type(range)
+                    range = self.map_type(t)
+                elif range in sv.all_enum():
+                    range = sv.get_type(linkml_types.String)
+                else:
+                    raise Exception(f'Unknown range {range}')
+                if slot.multivalued:
+                    range = self.make_multivalued(range)
+                oofield = OOField(name=safe_sn, source_slot=slot, range=range)
                 ooclass.fields.append(oofield)
         return docs
 

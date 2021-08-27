@@ -27,6 +27,7 @@ rdflib-pyldmod-compat = ">=0.1.2c"
 hbreader = "*"
 linkml-runtime = "~=1.0, >=1.0.14"
 sqlalchemy = "*"
+jinja2 = "*"
 
 [dev-packages]
 nbconvert = "*"

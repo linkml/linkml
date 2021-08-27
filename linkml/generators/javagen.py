@@ -6,21 +6,16 @@ from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterato
 import logging
 
 import click
-from linkml_runtime.linkml_model import linkml_files
-from linkml_runtime.utils.schemaview import SchemaView
-from rdflib import URIRef
+from jinja2 import Template
 
-import linkml
+from linkml_runtime.utils.schemaview import SchemaView
+
 from linkml.generators import JAVA_GEN_VERSION
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
     SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue
-from linkml_runtime.utils.formatutils import camelcase, underscore, be, wrapped_annotation, split_line, sfx
 
-from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.generators.oocodegen import OOCodeGenerator, PACKAGE
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import ifabsent_value_declaration, ifabsent_postinit_declaration, \
-    default_curie_or_uri
-from linkml_runtime.utils.metamodelcore import builtinnames
 
 template = """
 {#-
@@ -28,27 +23,53 @@ template = """
   Jinja2 Template for a Java class
 
 -#}
-package {{ package }};
+package {{ doc.package }};
 
-{% for imp in imports %}
+import java.util.List;
+
+{% for imp in doc.imports %}
 import {{ imp }};
 {% endfor %}
 
-import lombok.*;
-
-{% for ann in class.annotations %}
+{% for ann in cls.annotations %}
 @{{ ann }};
-{% endfor %}
+{%- endfor %}
 
-public class {{ cls.name }} {% if cls.is_a %} extends {{ cls.is_a }} {% endif %} {
+public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
 
-{% for s in slots %}
-  private {{s.range}} {{ s.name }};
-{% endfor %}
+{% for f in cls.fields %}
+  private {{f.range}} {{ f.name }};
+{%- endfor %}
 
 } 
 """
 
+TYPEMAP = {
+    "str": "String",
+    "int": "Integer",
+    "float": "Float",
+}
+
+@dataclass
+class JsonView:
+    import_package: PACKAGE = None
+    default_view: str = None
+
+@dataclass
+class Lombok:
+    import_package: PACKAGE = None
+
+@dataclass
+class Hibernate:
+    audited: bool
+    indexed: bool
+
+
+@dataclass
+class JavaConfig:
+    jsonView: JsonView = None
+    lombok: Lombok = None
+    hibernate: Hibernate = None
 
 
 class JavaGenerator(OOCodeGenerator):
@@ -57,22 +78,39 @@ class JavaGenerator(OOCodeGenerator):
     valid_formats = ['java']
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], format: str = valid_formats[0],
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
+                 config: JavaConfig = None,
+                 format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
+        self.schema = self.schemaview.schema
+        self.config = config
 
-    def visit_schema(self, directory: str = None, classes: Set[ClassDefinitionName] = None, image_dir: bool = False,
-                     index_file: str = 'index.md',
-                     noimages: bool = False, **_) -> None:
-        sv = SchemaView(self.schema)
+    def map_type(self, t: TypeDefinition) -> str:
+        return TYPEMAP.get(t.base, t.base)
+
+    def serialize(self, directory: str) -> None:
+        sv = self.schemaview
+        template_obj = Template(template)
         oodocs = self.create_documents()
         self.directory = directory
+        config = self.config
         for oodoc in oodocs:
-            if directory:
-                os.makedirs(directory, exist_ok=True)
+            # Apply configurations. TODO: this is currently incomplete and intended as an exemplar
+            if config.lombok:
+                oodoc.imports.append('lombok.*')
+            if config.jsonView:
+                oodoc.imports.append('com.fasterxml.jackson.annotation.JsonView')
+                oodoc.imports.append(config.jsonView.import_package)
+            cls = oodoc.classes[0]
+            code = template_obj.render(doc=oodoc, cls=cls)
 
-
+            os.makedirs(directory, exist_ok=True)
+            filename = f'{oodoc.name}.java'
+            path = os.path.join(directory, filename)
+            with open(path, 'w') as stream:
+                stream.write(code)
 
 
 @shared_arguments(JavaGenerator)
