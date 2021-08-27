@@ -38,24 +38,22 @@ class ExcelGenerator(Generator):
         TODO: Decide whether to use :param wb_name as prefix or full file name?
         """
         if not wb_name:
-            return "test.xlsx"
-            # return os.path.join(
-            #     self.generator_name,
-            #     "_",
-            #     self.generator_version,
-            #     ".xlsx",
-            # )
+            return os.path.join(
+                self.generator_name,
+                "_",
+                self.generator_version,
+                ".xlsx",
+            )
 
-        return wb_name + ".xlsx"
-        # os.path.join(
-        #     wb_name,
-        #     "_",
-        #     self.generator_name,
-        #     "_",
-        #     self.generator_version,
-        #     "_",
-        #     ".xlsx",
-        # )
+        return os.path.join(
+            wb_name,
+            "_",
+            self.generator_name,
+            "_",
+            self.generator_version,
+            "_",
+            ".xlsx",
+        )
 
     @staticmethod
     def _slot_formatting(slots_list: List[Tuple[str, str]]) -> Dict[str, List[str]]:
