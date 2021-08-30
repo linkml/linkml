@@ -5,6 +5,7 @@ import click
 import openpyxl
 
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.helpers import remove_duplicates
 from linkml_runtime.linkml_model.meta import (
     SchemaDefinition,
     ClassDefinition,
@@ -74,6 +75,8 @@ class ExcelGenerator(Generator):
         TODO: This is basically a utility method, so it can be moved to ``utils``
         """
         formatted_slots_dict: Dict = {}
+
+        slots_list = remove_duplicates(slots_list)
 
         for slot_owner, slot_name in slots_list:
             formatted_slots_dict.setdefault(camelcase(slot_owner), []).append(slot_name)
