@@ -1,0 +1,11 @@
+{
+   "biolink": "https://w3id.org/biolink/",
+   "core": "https://w3id.org/linkml/tests/core/",
+   "dce": "http://purl.org/dc/elements/1.1/",
+   "linkml": "https://w3id.org/linkml/",
+   "pav": "http://purl.org/pav/",
+   "prov": "http://www.w3.org/ns/prov#",
+   "Agent": {
+      "@id": "prov:Agent"
+   }
+}

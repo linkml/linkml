@@ -121,6 +121,23 @@
          "title": "Company",
          "type": "object"
       },
+      "Concept": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "Concept",
+         "type": "object"
+      },
       "Dataset": {
          "additionalProperties": false,
          "description": "",
@@ -146,6 +163,23 @@
          },
          "required": [],
          "title": "Dataset",
+         "type": "object"
+      },
+      "DiagnosisConcept": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "DiagnosisConcept",
          "type": "object"
       },
       "DiagnosisType": {
@@ -263,12 +297,21 @@
          "additionalProperties": false,
          "description": "",
          "properties": {
+            "diagnosis": {
+               "$ref": "#/definitions/DiagnosisConcept"
+            },
             "ended_at_time": {
                "format": "date",
                "type": "string"
             },
+            "in_location": {
+               "type": "string"
+            },
             "is_current": {
                "type": "boolean"
+            },
+            "procedure": {
+               "$ref": "#/definitions/ProcedureConcept"
             },
             "started_at_time": {
                "format": "date",
@@ -377,6 +420,23 @@
             "id"
          ],
          "title": "Place",
+         "type": "object"
+      },
+      "ProcedureConcept": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "ProcedureConcept",
          "type": "object"
       },
       "Relationship": {

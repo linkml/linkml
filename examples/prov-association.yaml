@@ -1,0 +1,48 @@
+id: https://w3id.org/linkml/prov/associations
+name: prov-associations
+description: modified associations subset of prov schema
+imports:
+- linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+default_prefix: prov
+
+classes:
+  Agent:
+    class_uri: prov:Agent
+    description: An agent is something that bears some form of responsibility for
+      an activity taking place, for the existence of an entity, or for another agents
+      activity.
+  Association:
+    class_uri: prov:Association
+    slots:
+    - agent
+#    - hadPlan
+    - hadRole
+    comments:
+    - An instance of prov:Association provides additional descriptions about the binary
+      prov:wasAssociatedWith relation from an prov:Activity to some prov:Agent that
+      had some responsiblity for it. For example, prov:baking prov:wasAssociatedWith prov:baker;
+      prov:qualifiedAssociation [ a prov:Association; prov:agent prov:baker; prov:foo prov:bar
+      ].
+    description: An activity association is an assignment of responsibility to an
+      agent for an activity, indicating that the agent had a role in the activity.
+      It further allows for a plan to be specified, which is the plan intended by
+      the agent to achieve some goals in the context of this activity.
+  Person:
+    class_uri: prov:Person
+    is_a: Agent
+    description: Person agents are people.
+slots:
+  agent:
+    slot_uri: prov:agent
+    range: Agent
+  hadRole:
+    slot_uri: prov:hadRole
+    range: Role
+    comments:
+      prov:spoon; prov:hadRole roles:mixing_implement ].
+enums:
+  Role:
+    

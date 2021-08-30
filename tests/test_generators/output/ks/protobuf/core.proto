@@ -1,0 +1,18 @@
+// a provence-generating activity
+message Activity
+ {
+  id String = 1
+  optional startedAtTime Date = 2
+  optional endedAtTime Date = 3
+  optional wasInformedBy Activity = 4
+  optional wasAssociatedWith Agent = 5
+  optional used String = 6
+  optional description String = 7
+ }
+// a provence-generating agent
+message Agent
+ {
+  id String = 1
+  optional actedOnBehalfOf Agent = 2
+  optional wasInformedBy Activity = 3
+ }

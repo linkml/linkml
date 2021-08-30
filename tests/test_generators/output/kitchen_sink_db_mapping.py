@@ -50,10 +50,18 @@ tbl_Company = Table('Company', metadata,
     Column('name', Text),
     Column('ceo', Text, ForeignKey('Person.id')),
 )
+tbl_Concept = Table('Concept', metadata, 
+    Column('id', Text, primary_key=True),
+    Column('name', Text),
+)
 tbl_Dataset = Table('Dataset', metadata, 
     Column('persons', Text, primary_key=True),
     Column('companies', Text, primary_key=True),
     Column('activities', Text, primary_key=True),
+)
+tbl_DiagnosisConcept = Table('DiagnosisConcept', metadata, 
+    Column('id', Text, primary_key=True),
+    Column('name', Text),
 )
 tbl_EmploymentEvent = Table('EmploymentEvent', metadata, 
     Column('started_at_time', Text, primary_key=True),
@@ -85,6 +93,9 @@ tbl_MedicalEvent = Table('MedicalEvent', metadata,
     Column('started_at_time', Text, primary_key=True),
     Column('ended_at_time', Text, primary_key=True),
     Column('is_current', Text, primary_key=True),
+    Column('in_location', Text, ForeignKey('Place.id'), primary_key=True),
+    Column('diagnosis', Text, ForeignKey('DiagnosisConcept.id'), primary_key=True),
+    Column('procedure', Text, ForeignKey('ProcedureConcept.id'), primary_key=True),
     Column('Person_id', Text, ForeignKey('Person.id'), primary_key=True),
 )
 tbl_Organization = Table('Organization', metadata, 
@@ -98,6 +109,10 @@ tbl_Person = Table('Person', metadata,
     Column('has_birth_event', Text),
 )
 tbl_Place = Table('Place', metadata, 
+    Column('id', Text, primary_key=True),
+    Column('name', Text),
+)
+tbl_ProcedureConcept = Table('ProcedureConcept', metadata, 
     Column('id', Text, primary_key=True),
     Column('name', Text),
 )
@@ -133,7 +148,11 @@ mapper_registry.map_imperatively(BirthEvent, tbl_BirthEvent, properties={
 })
 mapper_registry.map_imperatively(Company, tbl_Company, properties={
 })
+mapper_registry.map_imperatively(Concept, tbl_Concept, properties={
+})
 mapper_registry.map_imperatively(Dataset, tbl_Dataset, properties={
+})
+mapper_registry.map_imperatively(DiagnosisConcept, tbl_DiagnosisConcept, properties={
 })
 mapper_registry.map_imperatively(EmploymentEvent, tbl_EmploymentEvent, properties={
 })
@@ -174,6 +193,8 @@ mapper_registry.map_imperatively(Person, tbl_Person, properties={
 
 })
 mapper_registry.map_imperatively(Place, tbl_Place, properties={
+})
+mapper_registry.map_imperatively(ProcedureConcept, tbl_ProcedureConcept, properties={
 })
 mapper_registry.map_imperatively(Relationship, tbl_Relationship, properties={
 })

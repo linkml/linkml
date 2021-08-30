@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-20 18:43
+# Generation date: 2021-08-19 19:03
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -588,7 +588,7 @@ class SlotDefinition(Definition):
     """
     the definition of a property or a slot
     """
-    _inherited_slots: ClassVar[List[str]] = ["domain", "range", "multivalued", "inherited", "readonly", "ifabsent", "required", "recommended", "inlined", "inlined_as_list", "key", "identifier", "role", "minimum_value", "maximum_value", "pattern"]
+    _inherited_slots: ClassVar[List[str]] = ["domain", "range", "multivalued", "inherited", "readonly", "ifabsent", "required", "recommended", "inlined", "inlined_as_list", "key", "identifier", "designates_type", "role", "minimum_value", "maximum_value", "pattern"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.SlotDefinition
     class_class_curie: ClassVar[str] = "linkml:SlotDefinition"
@@ -610,6 +610,7 @@ class SlotDefinition(Definition):
     inlined_as_list: Optional[Union[bool, Bool]] = None
     key: Optional[Union[bool, Bool]] = None
     identifier: Optional[Union[bool, Bool]] = None
+    designates_type: Optional[Union[bool, Bool]] = None
     alias: Optional[str] = None
     owner: Optional[Union[str, DefinitionName]] = None
     domain_of: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
@@ -674,6 +675,9 @@ class SlotDefinition(Definition):
 
         if self.identifier is not None and not isinstance(self.identifier, Bool):
             self.identifier = Bool(self.identifier)
+
+        if self.designates_type is not None and not isinstance(self.designates_type, Bool):
+            self.designates_type = Bool(self.designates_type)
 
         if self.alias is not None and not isinstance(self.alias, str):
             self.alias = str(self.alias)
@@ -1284,6 +1288,9 @@ slots.key = Slot(uri=LINKML.key, name="key", curie=LINKML.curie('key'),
 
 slots.identifier = Slot(uri=LINKML.identifier, name="identifier", curie=LINKML.curie('identifier'),
                    model_uri=LINKML.identifier, domain=SlotDefinition, range=Optional[Union[bool, Bool]])
+
+slots.designates_type = Slot(uri=LINKML.designates_type, name="designates_type", curie=LINKML.curie('designates_type'),
+                   model_uri=LINKML.designates_type, domain=SlotDefinition, range=Optional[Union[bool, Bool]])
 
 slots.alias = Slot(uri=LINKML.alias, name="alias", curie=LINKML.curie('alias'),
                    model_uri=LINKML.alias, domain=SlotDefinition, range=Optional[str])

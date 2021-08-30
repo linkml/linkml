@@ -1,0 +1,125 @@
+{
+   "_comments": "Auto generated from kitchen_sink.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-08-27 03:27\n    Schema: kitchen_sink\n    \n    id: https://w3id.org/linkml/tests/kitchen_sink\n    description: Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists to test all features of linkml.\n\nThis particular text field exists to demonstrate markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links, e.g to [Person](Person.md)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "A": "http://example.org/activities/",
+      "BFO": {
+         "@id": "http://purl.obolibrary.org/obo/BFO_",
+         "@prefix": true
+      },
+      "CODE": "http://example.org/code/",
+      "P": "http://example.org/person/",
+      "RO": {
+         "@id": "http://purl.obolibrary.org/obo/RO_",
+         "@prefix": true
+      },
+      "ROR": "http://example.org/ror/",
+      "biolink": "https://w3id.org/biolink/",
+      "core": "https://w3id.org/linkml/tests/core/",
+      "dce": "http://purl.org/dc/elements/1.1/",
+      "ks": "https://w3id.org/linkml/tests/kitchen_sink/",
+      "lego": "http://geneontology.org/lego/",
+      "linkml": "https://w3id.org/linkml/",
+      "pav": "http://purl.org/pav/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "@vocab": "https://w3id.org/linkml/tests/kitchen_sink/",
+      "acted_on_behalf_of": {
+         "@type": "@id",
+         "@id": "prov:actedOnBehalfOf"
+      },
+      "activity_set": {
+         "@type": "@id",
+         "@id": "core:activity_set"
+      },
+      "addresses": {
+         "@type": "@id"
+      },
+      "age_in_years": {
+         "@type": "xsd:integer"
+      },
+      "agent_set": {
+         "@type": "@id",
+         "@id": "core:agent_set"
+      },
+      "ceo": {
+         "@type": "@id"
+      },
+      "activities": {
+         "@type": "@id"
+      },
+      "companies": {
+         "@type": "@id"
+      },
+      "persons": {
+         "@type": "@id"
+      },
+      "description": {
+         "@id": "core:description"
+      },
+      "diagnosis": {
+         "@type": "@id"
+      },
+      "employed_at": {
+         "@type": "@id"
+      },
+      "ended_at_time": {
+         "@type": "xsd:date",
+         "@id": "prov:endedAtTime"
+      },
+      "has_birth_event": {
+         "@type": "@id"
+      },
+      "has_employment_history": {
+         "@type": "@id"
+      },
+      "has_familial_relationships": {
+         "@type": "@id"
+      },
+      "has_marriage_history": {
+         "@type": "@id"
+      },
+      "has_medical_history": {
+         "@type": "@id"
+      },
+      "id": "@id",
+      "in_location": {
+         "@type": "@id"
+      },
+      "is_current": {
+         "@type": "xsd:boolean"
+      },
+      "married_to": {
+         "@type": "@id"
+      },
+      "name": {
+         "@id": "core:name"
+      },
+      "procedure": {
+         "@type": "@id"
+      },
+      "started_at_time": {
+         "@type": "xsd:date",
+         "@id": "prov:startedAtTime"
+      },
+      "used": {
+         "@id": "prov:used"
+      },
+      "was_associated_with": {
+         "@type": "@id",
+         "@id": "prov:wasAssociatedWith"
+      },
+      "was_generated_by": {
+         "@type": "@id",
+         "@id": "prov:wasGeneratedBy"
+      },
+      "was_informed_by": {
+         "@type": "@id",
+         "@id": "prov:wasInformedBy"
+      },
+      "Activity": {
+         "@id": "core:Activity"
+      },
+      "Agent": {
+         "@id": "prov:Agent"
+      }
+   }
+}

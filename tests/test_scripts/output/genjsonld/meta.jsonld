@@ -262,8 +262,8 @@
       "name": "name",
       "definition_uri": "https://w3id.org/linkml/name",
       "mappings": [
-        "rdfs:label",
-        "schema:name"
+        "http://www.w3.org/2000/01/rdf-schema#label",
+        "http://schema.org/name"
       ],
       "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
       "in_subset": [
@@ -330,7 +330,7 @@
       "name": "description",
       "definition_uri": "https://w3id.org/linkml/description",
       "mappings": [
-        "skos:definition"
+        "http://www.w3.org/2004/02/skos/core#definition"
       ],
       "description": "a description of the element's purpose and use",
       "in_subset": [
@@ -351,7 +351,7 @@
       "name": "aliases",
       "definition_uri": "https://w3id.org/linkml/aliases",
       "mappings": [
-        "skos:altLabel"
+        "http://www.w3.org/2004/02/skos/core#altLabel"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "Element",
@@ -397,7 +397,7 @@
       "name": "notes",
       "definition_uri": "https://w3id.org/linkml/notes",
       "mappings": [
-        "skos:editorialNote"
+        "http://www.w3.org/2004/02/skos/core#editorialNote"
       ],
       "description": "editorial notes about an element intended for internal consumption",
       "in_subset": [
@@ -418,7 +418,7 @@
       "name": "comments",
       "definition_uri": "https://w3id.org/linkml/comments",
       "mappings": [
-        "skos:note"
+        "http://www.w3.org/2004/02/skos/core#note"
       ],
       "description": "notes and comments about an element intended for external consumption",
       "in_subset": [
@@ -439,7 +439,7 @@
       "name": "in_subset",
       "definition_uri": "https://w3id.org/linkml/in_subset",
       "mappings": [
-        "OIO:inSubset"
+        "http://www.geneontology.org/formats/oboInOwl#inSubset"
       ],
       "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -457,7 +457,7 @@
       "name": "from_schema",
       "definition_uri": "https://w3id.org/linkml/from_schema",
       "mappings": [
-        "skos:inScheme"
+        "http://www.w3.org/2004/02/skos/core#inScheme"
       ],
       "description": "id of the schema that defined the element",
       "notes": [
@@ -493,7 +493,7 @@
       "name": "see_also",
       "definition_uri": "https://w3id.org/linkml/see_also",
       "mappings": [
-        "rdfs:seeAlso"
+        "http://www.w3.org/2000/01/rdf-schema#seeAlso"
       ],
       "description": "a reference",
       "in_subset": [
@@ -514,7 +514,7 @@
       "name": "created_by",
       "definition_uri": "https://w3id.org/linkml/created_by",
       "mappings": [
-        "pav:createdBy"
+        "http://purl.org/pav/createdBy"
       ],
       "description": "agent that created the element",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -531,7 +531,7 @@
       "name": "created_on",
       "definition_uri": "https://w3id.org/linkml/created_on",
       "mappings": [
-        "pav:createdOn"
+        "http://purl.org/pav/createdOn"
       ],
       "description": "time at which the element was created",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -548,7 +548,7 @@
       "name": "last_updated_on",
       "definition_uri": "https://w3id.org/linkml/last_updated_on",
       "mappings": [
-        "pav:lastUpdatedOn"
+        "http://purl.org/pav/lastUpdatedOn"
       ],
       "description": "time at which the element was last updated",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -565,7 +565,7 @@
       "name": "modified_by",
       "definition_uri": "https://w3id.org/linkml/modified_by",
       "mappings": [
-        "oslc:modifiedBy"
+        "http://open-services.net/ns/core#modifiedBy"
       ],
       "description": "agent that modified the element",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -582,7 +582,7 @@
       "name": "status",
       "definition_uri": "https://w3id.org/linkml/status",
       "mappings": [
-        "bibo:status"
+        "http://purl.org/ontology/bibo/status"
       ],
       "description": "status of the element",
       "examples": [
@@ -855,7 +855,7 @@
       "name": "title",
       "definition_uri": "https://w3id.org/linkml/title",
       "mappings": [
-        "dcterms:title"
+        "http://purl.org/dc/terms/title"
       ],
       "description": "the official title of the schema",
       "in_subset": [
@@ -875,10 +875,13 @@
       "name": "version",
       "definition_uri": "https://w3id.org/linkml/version",
       "mappings": [
-        "pav:version",
-        "schema:schemaVersion"
+        "http://purl.org/pav/version",
+        "http://schema.org/schemaVersion"
       ],
       "description": "particular version of schema",
+      "in_subset": [
+        "owl"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
       "domain": "SchemaDefinition",
       "range": "string",
@@ -908,7 +911,7 @@
       "name": "license",
       "definition_uri": "https://w3id.org/linkml/license",
       "mappings": [
-        "dcterms:license"
+        "http://purl.org/dc/terms/license"
       ],
       "description": "license for the schema",
       "in_subset": [
@@ -1217,7 +1220,7 @@
       "name": "subclass_of",
       "definition_uri": "https://w3id.org/linkml/subclass_of",
       "mappings": [
-        "rdfs:subClassOf"
+        "http://www.w3.org/2000/01/rdf-schema#subClassOf"
       ],
       "description": "rdfs:subClassOf to be emitted in OWL generation",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -1282,7 +1285,7 @@
       "name": "unique_keys",
       "definition_uri": "https://w3id.org/linkml/unique_keys",
       "mappings": [
-        "owl:hasKey"
+        "http://www.w3.org/2002/07/owl#hasKey"
       ],
       "description": "Set of unique keys for this slot",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -1426,7 +1429,7 @@
       "name": "singular_name",
       "definition_uri": "https://w3id.org/linkml/singular_name",
       "mappings": [
-        "skos:altLabel"
+        "http://www.w3.org/2004/02/skos/core#altLabel"
       ],
       "description": "a name that is used in the singular form",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -1566,6 +1569,21 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "designates_type",
+      "definition_uri": "https://w3id.org/linkml/designates_type",
+      "description": "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "SlotDefinition",
+      "range": "boolean",
+      "slot_uri": "https://w3id.org/linkml/designates_type",
+      "inherited": true,
+      "owner": "SlotDefinition",
+      "domain_of": [
+        "SlotDefinition"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "alias",
       "definition_uri": "https://w3id.org/linkml/alias",
       "description": "the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.",
@@ -1646,7 +1664,7 @@
       "name": "subproperty_of",
       "definition_uri": "https://w3id.org/linkml/subproperty_of",
       "mappings": [
-        "rdfs:subPropertyOf"
+        "http://www.w3.org/2000/01/rdf-schema#subPropertyOf"
       ],
       "description": "Ontology property which this slot is a subproperty of",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -1677,7 +1695,7 @@
       "name": "inverse",
       "definition_uri": "https://w3id.org/linkml/inverse",
       "mappings": [
-        "owl:inverseOf"
+        "http://www.w3.org/2002/07/owl#inverseOf"
       ],
       "description": "indicates that any instance of d s r implies that there is also an instance of r s' d",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -1906,7 +1924,7 @@
       "name": "value",
       "definition_uri": "https://w3id.org/linkml/value",
       "mappings": [
-        "skos:example"
+        "http://www.w3.org/2004/02/skos/core#example"
       ],
       "description": "example value",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -2020,7 +2038,7 @@
       "name": "local_name_value",
       "definition_uri": "https://w3id.org/linkml/local_name_value",
       "mappings": [
-        "skos:altLabel"
+        "http://www.w3.org/2004/02/skos/core#altLabel"
       ],
       "description": "a name assigned to an element in a given ontology",
       "from_schema": "https://w3id.org/linkml/meta",
@@ -2053,7 +2071,7 @@
       "name": "mappings",
       "definition_uri": "https://w3id.org/linkml/mappings",
       "mappings": [
-        "skos:mappingRelation"
+        "http://www.w3.org/2004/02/skos/core#mappingRelation"
       ],
       "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2071,7 +2089,7 @@
       "name": "exact_mappings",
       "definition_uri": "https://w3id.org/linkml/exact_mappings",
       "mappings": [
-        "skos:exactMatch"
+        "http://www.w3.org/2004/02/skos/core#exactMatch"
       ],
       "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2090,7 +2108,7 @@
       "name": "close_mappings",
       "definition_uri": "https://w3id.org/linkml/close_mappings",
       "mappings": [
-        "skos:closeMatch"
+        "http://www.w3.org/2004/02/skos/core#closeMatch"
       ],
       "description": "A list of terms from different schemas or terminology systems that have close meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2109,7 +2127,7 @@
       "name": "related_mappings",
       "definition_uri": "https://w3id.org/linkml/related_mappings",
       "mappings": [
-        "skos:relatedMatch"
+        "http://www.w3.org/2004/02/skos/core#relatedMatch"
       ],
       "description": "A list of terms from different schemas or terminology systems that have related meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2128,7 +2146,7 @@
       "name": "narrow_mappings",
       "definition_uri": "https://w3id.org/linkml/narrow_mappings",
       "mappings": [
-        "skos:narrowMatch"
+        "http://www.w3.org/2004/02/skos/core#narrowMatch"
       ],
       "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2147,7 +2165,7 @@
       "name": "broad_mappings",
       "definition_uri": "https://w3id.org/linkml/broad_mappings",
       "mappings": [
-        "skos:broadMatch"
+        "http://www.w3.org/2004/02/skos/core#broadMatch"
       ],
       "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2166,7 +2184,7 @@
       "name": "deprecated_element_has_exact_replacement",
       "definition_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
       "mappings": [
-        "IAO:0100001"
+        "http://purl.obolibrary.org/obo/IAO_0100001"
       ],
       "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2183,7 +2201,7 @@
       "name": "deprecated_element_has_possible_replacement",
       "definition_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
       "mappings": [
-        "OIO:consider"
+        "http://www.geneontology.org/formats/oboInOwl#consider"
       ],
       "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
       "from_schema": "https://w3id.org/linkml/mappings",
@@ -2799,6 +2817,7 @@
         "inlined_as_list",
         "key",
         "identifier",
+        "designates_type",
         "alias",
         "owner",
         "domain_of",
@@ -3059,9 +3078,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "Tue Jul 20 18:42:55 2021",
-  "source_file_size": 34275,
-  "generation_date": "2021-07-20 18:45",
+  "source_file_date": "Thu Aug 26 20:51:59 2021",
+  "source_file_size": 34566,
+  "generation_date": "2021-08-26 20:54",
   "@type": "SchemaDefinition",
   "@context": [
     "file:./output/gencontext/meta.jsonld",

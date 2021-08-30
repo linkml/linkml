@@ -1,0 +1,152 @@
+type Activity
+  {
+    id: String!
+    startedAtTime: Date
+    endedAtTime: Date
+    wasInformedBy: Activity
+    wasAssociatedWith: Agent
+    used: String
+    description: String
+  }
+
+type Address
+  {
+    street: String
+    city: String
+  }
+
+type Agent
+  {
+    id: String!
+    actedOnBehalfOf: Agent
+    wasInformedBy: Activity
+  }
+
+type BirthEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    inLocation: Place
+  }
+
+type Company
+  {
+    id: String!
+    name: String
+    aliases: [String]
+    ceo: Person
+  }
+
+type Concept
+  {
+    id: String!
+    name: String
+  }
+
+type Dataset
+  {
+    persons: [Person]
+    companies: [Company]
+    activities: [Activity]
+  }
+
+type DiagnosisConcept
+  {
+    id: String!
+    name: String
+  }
+
+type EmploymentEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    employedAt: Company
+  }
+
+type Event
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+  }
+
+type FamilialRelationship
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    type: FamilialRelationshipType!
+    relatedTo: Person!
+  }
+
+interface HasAliases
+  {
+    aliases: [String]
+  }
+
+type MarriageEvent implements WithLocation
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    marriedTo: Person
+    inLocation: Place
+  }
+
+type MedicalEvent
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    isCurrent: Boolean
+    inLocation: Place
+    diagnosis: DiagnosisConcept
+    procedure: ProcedureConcept
+  }
+
+type Organization implements HasAliases
+  {
+    id: String!
+    name: String
+    aliases: [String]
+  }
+
+type Person implements HasAliases
+  {
+    id: String!
+    name: String
+    hasEmploymentHistory: [EmploymentEvent]
+    hasFamilialRelationships: [FamilialRelationship]
+    hasMedicalHistory: [MedicalEvent]
+    ageInYears: Integer
+    addresses: [Address]
+    hasBirthEvent: BirthEvent
+    aliases: [String]
+  }
+
+type Place implements HasAliases
+  {
+    id: String!
+    name: String
+    aliases: [String]
+  }
+
+type ProcedureConcept
+  {
+    id: String!
+    name: String
+  }
+
+type Relationship
+  {
+    startedAtTime: Date
+    endedAtTime: Date
+    relatedTo: String
+    type: String
+  }
+
+interface WithLocation
+  {
+    inLocation: Place
+  }
+

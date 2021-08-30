@@ -4,6 +4,6 @@ default_prefix: https://hotecosystem.org/tccm/prefixes/
 default_range: string
 metamodel_version: 1.7.0
 source_file: minimalmodel.yaml
-source_file_date: Thu Jul 29 02:15:44 2021
+source_file_date: Fri Aug 27 03:23:47 2021
 source_file_size: 59
-generation_date: 2021-07-29 02:19
+generation_date: 2021-08-27 03:28

@@ -1,0 +1,56 @@
+BASE <https://w3id.org/linkml/tests/core/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX linkml: <https://w3id.org/linkml/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+
+linkml:String xsd:string
+
+linkml:Integer xsd:integer
+
+linkml:Boolean xsd:boolean
+
+linkml:Float xsd:float
+
+linkml:Double xsd:double
+
+linkml:Decimal xsd:decimal
+
+linkml:Time xsd:dateTime
+
+linkml:Date xsd:date
+
+linkml:Datetime xsd:dateTime
+
+linkml:Uriorcurie IRI
+
+linkml:Uri IRI
+
+linkml:Ncname xsd:string
+
+linkml:Objectidentifier IRI
+
+linkml:Nodeidentifier NONLITERAL
+
+<Activity> CLOSED {
+    (  $<Activity_tes> (  prov:startedAtTime @linkml:Date ? ;
+          prov:endedAtTime @linkml:Date ? ;
+          prov:wasInformedBy @<Activity> ? ;
+          prov:wasAssociatedWith @<Agent> ? ;
+          prov:used @linkml:String ? ;
+          <description> @linkml:String ?
+       ) ;
+       rdf:type [ <Activity> ]
+    )
+}
+
+<Agent> CLOSED {
+    (  $<Agent_tes> (  prov:actedOnBehalfOf @<Agent> ? ;
+          prov:wasInformedBy @<Activity> ?
+       ) ;
+       rdf:type [ prov:Agent ]
+    )
+}
+
+

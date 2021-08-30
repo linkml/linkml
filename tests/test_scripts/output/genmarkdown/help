@@ -6,6 +6,7 @@ Options:
   -d, --dir TEXT                  Output directory
   -c, --classes TEXT              Class(es) to emit
   -i, --img                       Download YUML images to 'image' directory
+  -I, --index-file TEXT           Name of markdown file that holds index
   --noimages                      Do not (re-)generate images
   --noyuml                        Do not add yUML figures to pages
   --notypesdir                    Do not create a separate types directory

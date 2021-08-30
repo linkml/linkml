@@ -1,6 +1,6 @@
 
 Classes: 19
-	Referenced by: 11 classes, 117 slots, 0 types, 0 enums 
+	Referenced by: 11 classes, 118 slots, 0 types, 0 enums 
 	Root: 11
 	Leaf: 16
 	Standalone: 18
@@ -8,11 +8,11 @@ Classes: 19
 	Undeclared mixin: 0
 	Abstract: 2
 
-Slots: 125
+Slots: 126
 	Referenced by: 19 classes, 15 slots, 0 types, 0 enums 
-	Root: 110
-	Leaf: 118
-	Standalone: 129
+	Root: 111
+	Leaf: 119
+	Standalone: 130
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 1
@@ -29,7 +29,7 @@ Slots: 125
 	Domain unspecified: 8
 	Ranges:
 		Type:
-			boolean: 14
+			boolean: 15
 			datetime: 4
 			integer: 3
 			ncname: 5
@@ -56,7 +56,7 @@ Slots: 125
 			pv_formula_options: 1
 
 Types: 14
-	Referenced by: 0 classes, 85 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 86 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

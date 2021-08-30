@@ -3,7 +3,7 @@ name fails regex:
 
 {'persons': [{'id': 'P:001', 'name': 'prince'}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	'prince' does not match '^\\S+ \\S+'
 
 Failed validating 'pattern' in schema['properties']['persons']['items']['properties']['name']:
@@ -17,7 +17,7 @@ missing ID:
 
 {'persons': [{'name': 'prince charming'}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	'id' is a required property
 
 Failed validating 'required' in schema['properties']['persons']['items']:
@@ -49,7 +49,7 @@ wrong datatype for age:
 
 {'persons': [{'id': 'P', 'name': 'prince charming', 'age': '33'}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	Additional properties are not allowed ('age' was unexpected)
 
 Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
@@ -81,7 +81,7 @@ wrong datatype for name:
 
 {'companies': [{'id': 'ROR:1', 'name': 5}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	5 is not of type 'string'
 
 Failed validating 'type' in schema['properties']['companies']['items']['properties']['name']:
@@ -95,7 +95,7 @@ missing required type field:
 
 {'persons': [{'id': 'P:001', 'name': 'jane smith', 'has_familial_relationships': [{'related_to': 'P:002'}]}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	'type' is a required property
 
 Failed validating 'required' in schema['properties']['persons']['items']['properties']['has_familial_relationships']['items']:
@@ -132,7 +132,7 @@ additional properties is closed:
 
 {'persons': [{'id': 'P', 'name': 'john smith', 'made_up_property': 'abc'}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	Additional properties are not allowed ('made_up_property' was unexpected)
 
 Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
@@ -160,16 +160,242 @@ On instance['persons'][0]:
     {'id': 'P', 'made_up_property': 'abc', 'name': 'john smith'}
 
 --------------------
+optional open properties:
+
+{'persons': [{'id': 'P', 'name': 'john smith', 'made_up_property': 'abc'}]}:
+ SKIPPED
+--------------------
 additional properties is closed on enclosing object:
 
 {'persons': [{'id': 'P', 'name': 'john smith'}], 'made_up_property': 'abc'}:
- SKIPPED
+
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
+	Additional properties are not allowed ('made_up_property' was unexpected)
+
+Failed validating 'additionalProperties' in schema:
+    {'$id': 'https://w3id.org/linkml/tests/kitchen_sink',
+     '$schema': 'http://json-schema.org/draft-07/schema#',
+     'additionalProperties': False,
+     'definitions': {'Activity': {'additionalProperties': False,
+                                  'description': 'a provence-generating '
+                                                 'activity',
+                                  'properties': {'description': {'type': 'string'},
+                                                 'ended_at_time': {'format': 'date',
+                                                                   'type': 'string'},
+                                                 'id': {'type': 'string'},
+                                                 'started_at_time': {'format': 'date',
+                                                                     'type': 'string'},
+                                                 'used': {'type': 'string'},
+                                                 'was_associated_with': {'type': 'string'},
+                                                 'was_informed_by': {'type': 'string'}},
+                                  'required': ['id'],
+                                  'title': 'Activity',
+                                  'type': 'object'},
+                     'Address': {'additionalProperties': False,
+                                 'description': '',
+                                 'properties': {'city': {'type': 'string'},
+                                                'street': {'type': 'string'}},
+                                 'required': [],
+                                 'title': 'Address',
+                                 'type': 'object'},
+                     'Agent': {'additionalProperties': False,
+                               'description': 'a provence-generating agent',
+                               'properties': {'acted_on_behalf_of': {'type': 'string'},
+                                              'id': {'type': 'string'},
+                                              'was_informed_by': {'type': 'string'}},
+                               'required': ['id'],
+                               'title': 'Agent',
+                               'type': 'object'},
+                     'BirthEvent': {'additionalProperties': False,
+                                    'description': '',
+                                    'properties': {'ended_at_time': {'format': 'date',
+                                                                     'type': 'string'},
+                                                   'in_location': {'type': 'string'},
+                                                   'is_current': {'type': 'boolean'},
+                                                   'started_at_time': {'format': 'date',
+                                                                       'type': 'string'}},
+                                    'required': [],
+                                    'title': 'BirthEvent',
+                                    'type': 'object'},
+                     'Company': {'additionalProperties': False,
+                                 'description': '',
+                                 'properties': {'aliases': {'items': {'type': 'string'},
+                                                            'type': 'array'},
+                                                'ceo': {'type': 'string'},
+                                                'id': {'type': 'string'},
+                                                'name': {'type': 'string'}},
+                                 'required': ['id'],
+                                 'title': 'Company',
+                                 'type': 'object'},
+                     'Concept': {'additionalProperties': False,
+                                 'description': '',
+                                 'properties': {'id': {'type': 'string'},
+                                                'name': {'type': 'string'}},
+                                 'required': ['id'],
+                                 'title': 'Concept',
+                                 'type': 'object'},
+                     'Dataset': {'additionalProperties': False,
+                                 'description': '',
+                                 'properties': {'activities': {'items': {'$ref': '#/definitions/Activity'},
+                                                               'type': 'array'},
+                                                'companies': {'items': {'$ref': '#/definitions/Company'},
+                                                              'type': 'array'},
+                                                'persons': {'items': {'$ref': '#/definitions/Person'},
+                                                            'type': 'array'}},
+                                 'required': [],
+                                 'title': 'Dataset',
+                                 'type': 'object'},
+                     'DiagnosisConcept': {'additionalProperties': False,
+                                          'description': '',
+                                          'properties': {'id': {'type': 'string'},
+                                                         'name': {'type': 'string'}},
+                                          'required': ['id'],
+                                          'title': 'DiagnosisConcept',
+                                          'type': 'object'},
+                     'DiagnosisType': {'description': '',
+                                       'enum': [],
+                                       'title': 'DiagnosisType',
+                                       'type': 'string'},
+                     'EmploymentEvent': {'additionalProperties': False,
+                                         'description': '',
+                                         'properties': {'employed_at': {'type': 'string'},
+                                                        'ended_at_time': {'format': 'date',
+                                                                          'type': 'string'},
+                                                        'is_current': {'type': 'boolean'},
+                                                        'started_at_time': {'format': 'date',
+                                                                            'type': 'string'}},
+                                         'required': [],
+                                         'title': 'EmploymentEvent',
+                                         'type': 'object'},
+                     'Event': {'additionalProperties': False,
+                               'description': '',
+                               'properties': {'ended_at_time': {'format': 'date',
+                                                                'type': 'string'},
+                                              'is_current': {'type': 'boolean'},
+                                              'started_at_time': {'format': 'date',
+                                                                  'type': 'string'}},
+                               'required': [],
+                               'title': 'Event',
+                               'type': 'object'},
+                     'FamilialRelationship': {'additionalProperties': False,
+                                              'description': '',
+                                              'properties': {'ended_at_time': {'format': 'date',
+                                                                               'type': 'string'},
+                                                             'related_to': {'type': 'string'},
+                                                             'started_at_time': {'format': 'date',
+                                                                                 'type': 'string'},
+                                                             'type': {'$ref': '#/definitions/FamilialRelationshipType'}},
+                                              'required': ['type',
+                                                           'related_to'],
+                                              'title': 'FamilialRelationship',
+                                              'type': 'object'},
+                     'FamilialRelationshipType': {'description': '',
+                                                  'enum': ['SIBLING_OF',
+                                                           'PARENT_OF',
+                                                           'CHILD_OF'],
+                                                  'title': 'FamilialRelationshipType',
+                                                  'type': 'string'},
+                     'MarriageEvent': {'additionalProperties': False,
+                                       'description': '',
+                                       'properties': {'ended_at_time': {'format': 'date',
+                                                                        'type': 'string'},
+                                                      'in_location': {'type': 'string'},
+                                                      'is_current': {'type': 'boolean'},
+                                                      'married_to': {'type': 'string'},
+                                                      'started_at_time': {'format': 'date',
+                                                                          'type': 'string'}},
+                                       'required': [],
+                                       'title': 'MarriageEvent',
+                                       'type': 'object'},
+                     'MedicalEvent': {'additionalProperties': False,
+                                      'description': '',
+                                      'properties': {'diagnosis': {'$ref': '#/definitions/DiagnosisConcept'},
+                                                     'ended_at_time': {'format': 'date',
+                                                                       'type': 'string'},
+                                                     'in_location': {'type': 'string'},
+                                                     'is_current': {'type': 'boolean'},
+                                                     'procedure': {'$ref': '#/definitions/ProcedureConcept'},
+                                                     'started_at_time': {'format': 'date',
+                                                                         'type': 'string'}},
+                                      'required': [],
+                                      'title': 'MedicalEvent',
+                                      'type': 'object'},
+                     'Organization': {'additionalProperties': False,
+                                      'description': '',
+                                      'properties': {'aliases': {'items': {'type': 'string'},
+                                                                 'type': 'array'},
+                                                     'id': {'type': 'string'},
+                                                     'name': {'type': 'string'}},
+                                      'required': ['id'],
+                                      'title': 'Organization',
+                                      'type': 'object'},
+                     'Person': {'additionalProperties': False,
+                                'description': '',
+                                'properties': {'addresses': {'items': {'$ref': '#/definitions/Address'},
+                                                             'type': 'array'},
+                                               'age_in_years': {'type': 'integer'},
+                                               'aliases': {'items': {'type': 'string'},
+                                                           'type': 'array'},
+                                               'has_birth_event': {'$ref': '#/definitions/BirthEvent'},
+                                               'has_employment_history': {'items': {'$ref': '#/definitions/EmploymentEvent'},
+                                                                          'type': 'array'},
+                                               'has_familial_relationships': {'items': {'$ref': '#/definitions/FamilialRelationship'},
+                                                                              'type': 'array'},
+                                               'has_medical_history': {'items': {'$ref': '#/definitions/MedicalEvent'},
+                                                                       'type': 'array'},
+                                               'id': {'type': 'string'},
+                                               'name': {'pattern': '^\\S+ '
+                                                                   '\\S+',
+                                                        'type': 'string'}},
+                                'required': ['id'],
+                                'title': 'Person',
+                                'type': 'object'},
+                     'Place': {'additionalProperties': False,
+                               'description': '',
+                               'properties': {'aliases': {'items': {'type': 'string'},
+                                                          'type': 'array'},
+                                              'id': {'type': 'string'},
+                                              'name': {'type': 'string'}},
+                               'required': ['id'],
+                               'title': 'Place',
+                               'type': 'object'},
+                     'ProcedureConcept': {'additionalProperties': False,
+                                          'description': '',
+                                          'properties': {'id': {'type': 'string'},
+                                                         'name': {'type': 'string'}},
+                                          'required': ['id'],
+                                          'title': 'ProcedureConcept',
+                                          'type': 'object'},
+                     'Relationship': {'additionalProperties': False,
+                                      'description': '',
+                                      'properties': {'ended_at_time': {'format': 'date',
+                                                                       'type': 'string'},
+                                                     'related_to': {'type': 'string'},
+                                                     'started_at_time': {'format': 'date',
+                                                                         'type': 'string'},
+                                                     'type': {'type': 'string'}},
+                                      'required': [],
+                                      'title': 'Relationship',
+                                      'type': 'object'}},
+     'properties': {'activities': {'items': {'$ref': '#/definitions/Activity'},
+                                   'type': 'array'},
+                    'companies': {'items': {'$ref': '#/definitions/Company'},
+                                  'type': 'array'},
+                    'persons': {'items': {'$ref': '#/definitions/Person'},
+                                'type': 'array'}},
+     'title': 'kitchen_sink',
+     'type': 'object'}
+
+On instance:
+    {'made_up_property': 'abc',
+     'persons': [{'id': 'P', 'name': 'john smith'}]}
+
 --------------------
 non-multivalued address:
 
 {'persons': [{'id': 'P', 'name': 'john smith', 'addresses': {'street': '1 foo street', 'city': 'foo city'}}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	{'street': '1 foo street', 'city': 'foo city'} is not of type 'array'
 
 Failed validating 'type' in schema['properties']['persons']['items']['properties']['addresses']:
@@ -179,11 +405,48 @@ On instance['persons'][0]['addresses']:
     {'city': 'foo city', 'street': '1 foo street'}
 
 --------------------
+valid cardinality:
+
+{'persons': [{'id': 'P', 'name': 'john smith', 'has_medical_history': [{'in_location': 'GEO:1234', 'diagnosis': {'id': 'CODE:D0001', 'name': 'headache'}}]}]}:
+No Exception (expected=True: {'description': 'valid cardinality', 'skip': False, 'valid': True, 'dataset': {'persons': [{'id': 'P', 'name': 'john smith', 'has_medical_history': [{'in_location': 'GEO:1234', 'diagnosis': {'id': 'CODE:D0001', 'name': 'headache'}}]}]}}--------------------
+multivalued value for singlevalued list:
+
+{'persons': [{'id': 'P', 'name': 'john smith', 'has_medical_history': [{'in_location': 'GEO:1234', 'diagnosis': [{'id': 'CODE:D0001', 'name': 'headache'}]}]}]}:
+
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
+	[{'id': 'CODE:D0001', 'name': 'headache'}] is not of type 'object'
+
+Failed validating 'type' in schema['properties']['persons']['items']['properties']['has_medical_history']['items']['properties']['diagnosis']:
+    {'additionalProperties': False,
+     'description': '',
+     'properties': {'id': {'type': 'string'}, 'name': {'type': 'string'}},
+     'required': ['id'],
+     'title': 'DiagnosisConcept',
+     'type': 'object'}
+
+On instance['persons'][0]['has_medical_history'][0]['diagnosis']:
+    [{'id': 'CODE:D0001', 'name': 'headache'}]
+
+--------------------
+multivalued value for singlevalued list:
+
+{'persons': [{'id': 'P', 'name': 'john smith', 'has_medical_history': [{'in_location': 'GEO:1234', 'diagnosis': {'id': 'CODE:D0001', 'name': ['headache', 'cough']}}]}]}:
+
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
+	['headache', 'cough'] is not of type 'string'
+
+Failed validating 'type' in schema['properties']['persons']['items']['properties']['has_medical_history']['items']['properties']['diagnosis']['properties']['name']:
+    {'type': 'string'}
+
+On instance['persons'][0]['has_medical_history'][0]['diagnosis']['name']:
+    ['headache', 'cough']
+
+--------------------
 string used in place of object:
 
 {'persons': [{'id': 'P', 'name': 'john smith', 'addresses': ['1 foo street, foo city']}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	'1 foo street, foo city' is not of type 'object'
 
 Failed validating 'type' in schema['properties']['persons']['items']['properties']['addresses']['items']:
@@ -203,7 +466,7 @@ inline used where reference expected:
 
 {'activities': [{'id': 'A1', 'was_associated_with': {'id': 'Agent:987'}}]}:
 
-EXPECTED FAILURE: <class 'jsonschema.exceptions.ValidationError'>:
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	{'id': 'Agent:987'} is not of type 'string'
 
 Failed validating 'type' in schema['properties']['activities']['items']['properties']['was_associated_with']:

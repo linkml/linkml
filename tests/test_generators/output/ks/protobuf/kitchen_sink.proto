@@ -1,0 +1,126 @@
+// a provence-generating activity
+message Activity
+ {
+  id String = 1
+  optional startedAtTime Date = 2
+  optional endedAtTime Date = 3
+  optional wasInformedBy Activity = 4
+  optional wasAssociatedWith Agent = 5
+  optional used String = 6
+  optional description String = 7
+ }
+message Address
+ {
+  optional street String = 1
+  optional city String = 2
+ }
+// a provence-generating agent
+message Agent
+ {
+  id String = 1
+  optional actedOnBehalfOf Agent = 2
+  optional wasInformedBy Activity = 3
+ }
+message BirthEvent
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  optional isCurrent Boolean = 3
+  optional inLocation Place = 4
+ }
+message Company
+ {
+  id String = 1
+  optional name String = 2
+  repeated aliases String = 3
+  optional ceo Person = 4
+ }
+message Concept
+ {
+  id String = 1
+  optional name String = 2
+ }
+message Dataset
+ {
+  repeated persons Person = 1
+  repeated companies Company = 2
+  repeated activities Activity = 3
+ }
+message DiagnosisConcept
+ {
+  id String = 1
+  optional name String = 2
+ }
+message EmploymentEvent
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  optional isCurrent Boolean = 3
+  optional employedAt Company = 4
+ }
+message Event
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  optional isCurrent Boolean = 3
+ }
+message FamilialRelationship
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  type FamilialRelationshipType = 3
+  relatedTo Person = 4
+ }
+message MarriageEvent
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  optional isCurrent Boolean = 3
+  optional marriedTo Person = 4
+  optional inLocation Place = 5
+ }
+message MedicalEvent
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  optional isCurrent Boolean = 3
+  optional inLocation Place = 4
+  optional diagnosis DiagnosisConcept = 5
+  optional procedure ProcedureConcept = 6
+ }
+message Organization
+ {
+  id String = 1
+  optional name String = 2
+  repeated aliases String = 3
+ }
+message Person
+ {
+  id String = 1
+  optional name String = 2
+  repeated hasEmploymentHistory EmploymentEvent = 3
+  repeated hasFamilialRelationships FamilialRelationship = 4
+  repeated hasMedicalHistory MedicalEvent = 5
+  optional ageInYears Integer = 6
+  repeated addresses Address = 7
+  optional hasBirthEvent BirthEvent = 8
+  repeated aliases String = 9
+ }
+message Place
+ {
+  id String = 1
+  optional name String = 2
+  repeated aliases String = 3
+ }
+message ProcedureConcept
+ {
+  id String = 1
+  optional name String = 2
+ }
+message Relationship
+ {
+  optional startedAtTime Date = 1
+  optional endedAtTime Date = 2
+  optional relatedTo String = 3
+  optional type String = 4
+ }

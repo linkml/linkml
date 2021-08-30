@@ -1,0 +1,231 @@
+BASE <https://w3id.org/linkml/tests/kitchen_sink/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX linkml: <https://w3id.org/linkml/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX core: <https://w3id.org/linkml/tests/core/>
+
+
+linkml:String xsd:string
+
+linkml:Integer xsd:integer
+
+linkml:Boolean xsd:boolean
+
+linkml:Float xsd:float
+
+linkml:Double xsd:double
+
+linkml:Decimal xsd:decimal
+
+linkml:Time xsd:dateTime
+
+linkml:Date xsd:date
+
+linkml:Datetime xsd:dateTime
+
+linkml:Uriorcurie IRI
+
+linkml:Uri IRI
+
+linkml:Ncname xsd:string
+
+linkml:Objectidentifier IRI
+
+linkml:Nodeidentifier NONLITERAL
+
+core:Activity CLOSED {
+    (  $core:Activity_tes (  prov:startedAtTime @linkml:Date ? ;
+          prov:endedAtTime @linkml:Date ? ;
+          prov:wasInformedBy @core:Activity ? ;
+          prov:wasAssociatedWith @core:Agent ? ;
+          prov:used @linkml:String ? ;
+          core:description @linkml:String ?
+       ) ;
+       rdf:type [ core:Activity ]
+    )
+}
+
+<Address> CLOSED {
+    (  $<Address_tes> (  <street> @linkml:String ? ;
+          <city> @linkml:String ?
+       ) ;
+       rdf:type [ <Address> ] ?
+    )
+}
+
+core:Agent CLOSED {
+    (  $core:Agent_tes (  prov:actedOnBehalfOf @core:Agent ? ;
+          prov:wasInformedBy @core:Activity ?
+       ) ;
+       rdf:type [ prov:Agent ]
+    )
+}
+
+<BirthEvent> CLOSED {
+    (  $<BirthEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          <in_location> @<Place> ?
+       ) ;
+       rdf:type [ <BirthEvent> ] ?
+    )
+}
+
+<Company> CLOSED {
+    (  $<Company_tes> (  &<Organization_tes> ;
+          rdf:type [ <Organization> ] ? ;
+          <ceo> @<Person> ?
+       ) ;
+       rdf:type [ <Company> ]
+    )
+}
+
+<Concept>  (
+    CLOSED {
+       (  $<Concept_tes> core:name @linkml:String ? ;
+          rdf:type [ <Concept> ]
+       )
+    } OR @<DiagnosisConcept> OR @<ProcedureConcept>
+)
+
+<Dataset> CLOSED {
+    (  $<Dataset_tes> (  <persons> @<Person> * ;
+          <companies> @<Company> * ;
+          <activities> @core:Activity *
+       ) ;
+       rdf:type [ <Dataset> ] ?
+    )
+}
+
+<DiagnosisConcept> CLOSED {
+    (  $<DiagnosisConcept_tes> (  &<Concept_tes> ;
+          rdf:type [ <Concept> ] ?
+       ) ;
+       rdf:type [ <DiagnosisConcept> ]
+    )
+}
+
+<EmploymentEvent> CLOSED {
+    (  $<EmploymentEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          <employed_at> @<Company> ?
+       ) ;
+       rdf:type [ <EmploymentEvent> ] ?
+    )
+}
+
+<Event>  (
+    CLOSED {
+       (  $<Event_tes> (  prov:startedAtTime @linkml:Date ? ;
+             prov:endedAtTime @linkml:Date ? ;
+             <is_current> @linkml:Boolean ?
+          ) ;
+          rdf:type [ <Event> ] ?
+       )
+    } OR @<BirthEvent> OR @<EmploymentEvent> OR @<MarriageEvent> OR @<MedicalEvent>
+)
+
+<FamilialRelationship> CLOSED {
+    (  $<FamilialRelationship_tes> (  &<Relationship_tes> ;
+          rdf:type [ <Relationship> ] ? ;
+          <type> @<FamilialRelationshipType> ;
+          <related_to> @<Person>
+       ) ;
+       rdf:type [ <FamilialRelationship> ] ?
+    )
+}
+
+<HasAliases> {
+    (  $<HasAliases_tes> <aliases> @linkml:String * ;
+       rdf:type [ <HasAliases> ] ?
+    )
+}
+
+<MarriageEvent> CLOSED {
+    (  $<MarriageEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          &<WithLocation_tes> ;
+          rdf:type [ <WithLocation> ] ? ;
+          <married_to> @<Person> ? ;
+          <in_location> @<Place> ?
+       ) ;
+       rdf:type [ <MarriageEvent> ] ?
+    )
+}
+
+<MedicalEvent> CLOSED {
+    (  $<MedicalEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          <in_location> @<Place> ? ;
+          <diagnosis> @<DiagnosisConcept> ? ;
+          <procedure> @<ProcedureConcept> ?
+       ) ;
+       rdf:type [ <MedicalEvent> ] ?
+    )
+}
+
+<Organization>  (
+    CLOSED {
+       (  $<Organization_tes> (  &<HasAliases_tes> ;
+             rdf:type [ <HasAliases> ] ? ;
+             core:name @linkml:String ? ;
+             <aliases> @linkml:String *
+          ) ;
+          rdf:type [ <Organization> ]
+       )
+    } OR @<Company>
+)
+
+<Person> CLOSED {
+    (  $<Person_tes> (  &<HasAliases_tes> ;
+          rdf:type [ <HasAliases> ] ? ;
+          <name> @linkml:String ? ;
+          <has_employment_history> @<EmploymentEvent> * ;
+          <has_familial_relationships> @<FamilialRelationship> * ;
+          <has_medical_history> @<MedicalEvent> * ;
+          <age_in_years> @linkml:Integer ? ;
+          <addresses> @<Address> * ;
+          <has_birth_event> @<BirthEvent> ? ;
+          <aliases> @linkml:String *
+       ) ;
+       rdf:type [ <Person> ]
+    )
+}
+
+<Place> CLOSED {
+    (  $<Place_tes> (  &<HasAliases_tes> ;
+          rdf:type [ <HasAliases> ] ? ;
+          core:name @linkml:String ? ;
+          <aliases> @linkml:String *
+       ) ;
+       rdf:type [ <Place> ]
+    )
+}
+
+<ProcedureConcept> CLOSED {
+    (  $<ProcedureConcept_tes> (  &<Concept_tes> ;
+          rdf:type [ <Concept> ] ?
+       ) ;
+       rdf:type [ <ProcedureConcept> ]
+    )
+}
+
+<Relationship>  (
+    CLOSED {
+       (  $<Relationship_tes> (  prov:startedAtTime @linkml:Date ? ;
+             prov:endedAtTime @linkml:Date ? ;
+             <related_to> @linkml:String ? ;
+             <type> @linkml:String ?
+          ) ;
+          rdf:type [ <Relationship> ] ?
+       )
+    } OR @<FamilialRelationship>
+)
+
+<WithLocation> {
+    (  $<WithLocation_tes> <in_location> @<Place> ? ;
+       rdf:type [ <WithLocation> ] ?
+    )
+}
+
+

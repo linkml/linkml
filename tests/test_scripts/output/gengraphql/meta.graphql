@@ -345,6 +345,7 @@ type SlotDefinition
     inlinedAsList: Boolean
     key: Boolean
     identifier: Boolean
+    designatesType: Boolean
     alias: String
     owner: Definition
     domainOf: [ClassDefinition]

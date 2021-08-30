@@ -21,7 +21,8 @@ class MarkdownGenerator(Generator):
     valid_formats = ["md"]
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], no_types_dir: bool = False, noyuml: bool = False, warn_on_exist:bool = False, **kwargs) -> None:
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], no_types_dir: bool = False,
+                 noyuml: bool = False, warn_on_exist:bool = False, **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.directory: Optional[str] = None
         self.image_directory: Optional[str] = None
@@ -34,6 +35,7 @@ class MarkdownGenerator(Generator):
         self.BASE = None
 
     def visit_schema(self, directory: str = None, classes: Set[ClassDefinitionName] = None, image_dir: bool = False,
+                     index_file: str = 'index.md',
                      noimages: bool = False, **_) -> None:
         self.gen_classes = classes if classes else []
         for cls in self.gen_classes:
@@ -55,7 +57,7 @@ class MarkdownGenerator(Generator):
         if not self.no_types_dir:
             os.makedirs(os.path.join(directory, 'types'), exist_ok=True)
 
-        with open(self.exist_warning(directory, 'index.md'), 'w') as ixfile:
+        with open(self.exist_warning(directory, index_file), 'w') as ixfile:
             with redirect_stdout(ixfile):
                 self.frontmatter(f"{self.schema.name} schema")
                 self.para(be(self.schema.description))
@@ -615,11 +617,12 @@ class MarkdownGenerator(Generator):
 @click.option("--dir", "-d", help="Output directory")
 @click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
 @click.option("--img", "-i",  is_flag=True, help="Download YUML images to 'image' directory")
+@click.option("--index-file", "-I", help="Name of markdown file that holds index")
 @click.option("--noimages", is_flag=True, help="Do not (re-)generate images")
 @click.option("--noyuml", is_flag=True, help="Do not add yUML figures to pages")
 @click.option("--notypesdir", is_flag=True, help="Do not create a separate types directory")
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
-def cli(yamlfile, dir, img, notypesdir, warnonexist, **kwargs):
+def cli(yamlfile, dir, img, index_file, notypesdir, warnonexist, **kwargs):
     """ Generate markdown documentation of a biolink model """
     MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)\
         .serialize(directory=dir, image_dir=img, **kwargs)

@@ -1,0 +1,18 @@
+type Activity
+  {
+    id: String!
+    startedAtTime: Date
+    endedAtTime: Date
+    wasInformedBy: Activity
+    wasAssociatedWith: Agent
+    used: String
+    description: String
+  }
+
+type Agent
+  {
+    id: String!
+    actedOnBehalfOf: Agent
+    wasInformedBy: Activity
+  }
+

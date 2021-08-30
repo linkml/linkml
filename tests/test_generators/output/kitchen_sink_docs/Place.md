@@ -7,7 +7,7 @@
 URI: [ks:Place](https://w3id.org/linkml/tests/kitchen_sink/Place)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[BirthEvent]-%20in%20location%200..1>[Place&#124;id:string;name:string%20%3F;aliases:string%20*],[WithLocation]-%20in%20location%200..1>[Place],[Place]uses%20-.->[HasAliases],[WithLocation],[HasAliases],[BirthEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[BirthEvent]-%20in%20location%200..1>[Place&#124;id:string;name:string%20%3F;aliases:string%20*],[WithLocation]-%20in%20location%200..1>[Place],[Place]uses%20-.->[HasAliases],[WithLocation],[HasAliases],[BirthEvent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[BirthEvent]-%20in%20location%200..1>[Place&#124;id:string;name:string%20%3F;aliases:string%20*],[MedicalEvent]-%20in%20location%200..1>[Place],[WithLocation]-%20in%20location%200..1>[Place],[Place]uses%20-.->[HasAliases],[WithLocation],[MedicalEvent],[HasAliases],[BirthEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[BirthEvent]-%20in%20location%200..1>[Place&#124;id:string;name:string%20%3F;aliases:string%20*],[MedicalEvent]-%20in%20location%200..1>[Place],[WithLocation]-%20in%20location%200..1>[Place],[Place]uses%20-.->[HasAliases],[WithLocation],[MedicalEvent],[HasAliases],[BirthEvent])
 
 ## Uses Mixins
 

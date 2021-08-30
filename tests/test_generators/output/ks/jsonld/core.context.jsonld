@@ -1,0 +1,49 @@
+{
+   "_comments": "Auto generated from core.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-08-27 03:27\n    Schema: core\n    \n    id: https://w3id.org/linkml/tests/core\n    description: core schema imported by kitchen_sink\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "biolink": "https://w3id.org/biolink/",
+      "core": "https://w3id.org/linkml/tests/core/",
+      "dce": "http://purl.org/dc/elements/1.1/",
+      "linkml": "https://w3id.org/linkml/",
+      "pav": "http://purl.org/pav/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "@vocab": "https://w3id.org/linkml/tests/core/",
+      "acted_on_behalf_of": {
+         "@type": "@id",
+         "@id": "prov:actedOnBehalfOf"
+      },
+      "activity_set": {
+         "@type": "@id"
+      },
+      "agent_set": {
+         "@type": "@id"
+      },
+      "ended_at_time": {
+         "@type": "xsd:date",
+         "@id": "prov:endedAtTime"
+      },
+      "id": "@id",
+      "started_at_time": {
+         "@type": "xsd:date",
+         "@id": "prov:startedAtTime"
+      },
+      "used": {
+         "@id": "prov:used"
+      },
+      "was_associated_with": {
+         "@type": "@id",
+         "@id": "prov:wasAssociatedWith"
+      },
+      "was_generated_by": {
+         "@type": "@id",
+         "@id": "prov:wasGeneratedBy"
+      },
+      "was_informed_by": {
+         "@type": "@id",
+         "@id": "prov:wasInformedBy"
+      },
+      "Agent": {
+         "@id": "prov:Agent"
+      }
+   }
+}

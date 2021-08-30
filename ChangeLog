@@ -1,21 +1,195 @@
 CHANGES
 =======
 
-0.1.1.dev2
-----------
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* add issue templates for bug and feature requests
+* reformatted and fixed links in README
+* new generator: projectgen, this will run all other generators
+* fixed typo
+* Stringify SQL statements in executor
+* Update tests
+* Ensure that name of enum is passed to SQL Enum
+* Fix executor for engine when generating DDL
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* only export mappings
+* Removed workaround for linkml/linkml-runtime#17, fixed there
+* testing mysql
+* testing mssql, sqlite
+* test for #273
+* test for #273
+* Moving additional code into common parent: add\_prefix
+* Abstracts common add\_mapping code from different generators into common parent Fixes #278
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* Automated adding outputs from tests
 
+v1.0.3
+------
+
+* add missing
+* more tests
+* Undo output commits
+* Adding more tests
+* Automated adding outputs from tests
+* Update test\_gen\_jsonld.py
+* Update test\_enumeration.py
+* Update test\_enumeration.py
+* comprehensive tests for prefixes #163 #278 #192
+* comprehensive tests for prefixes #163 #278 #192
+
+v1.0.2
+------
+
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Update Pipfile
+* add new test for not-closed
+* add additional properties test
+* add additional properties flag to updated file
+* add changes for --not-closed/--closed to cli to control global additional properties
+* Modified tests as per \_\_str\_\_() behavior change
+* Fixed incorrect extension on JSON Schema in meta.jsonld
+* Added enumerations to expected JSON Schema files
+* Apparently, we need \`chardet\` for the tests now
+* Overwrote EnumDefinitionImpl's incorrect \_\_str\_\_() implementation
+* Restored visit\_enum in jsonschemagen
+* Fixed test merged from 'main'
+* add updated examples notebook
+* update email for wdduncan
+* Updated schema with the generated enumeration
+* Added test for correct functioning of FamilialRelationship()
+* Added test with expected output
+* First stab at adding enums to JSON Schema
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* regen
+* Get the latest rdflib-pyldmod-compat which pulls correct pyldmod
+* Change text of mismatch message to get "error" out of it
+* Caught a couple of cases where either JSONObj or dictionaries could be provided
+* test for #265 - currently fails
+* test for #265 - currently fails
+* test for #265 - currently fails
+* Automated adding outputs from tests
+* Update pr-test.yaml
+* Automated adding outputs from tests
+* allowing ontologyIRI to be different from schema.id, fixes #246 Added owlgen tests
+* Adding markdown pages for subsets and adding markdown tests Fixes #262 Fixes #250 See also #245
+* resolved differences with Harolds lookup table approach
+* Additional tests and fixing #260
+* Automated adding outputs from tests
+* Howl bellow shriek stomp
+* Automated adding outputs from tests
+* Mutter mumble whimper scream
+* An even more heavy handed way to get pyldmod to replace pyld
+* Created a table of python to JSON for the short term
+* Short term fix for issue #202
+* Add test case for issue #202
+
+v1.0.1
+------
+
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* adding missing import
+* fix logging to not dump whole object
+* Automated adding outputs from tests
+* Update main.yaml
+* Another attempt to force pyldmod
+* Re-add 3.7 to the pull tests
+* Add output to output directory instead of printing on the run line
+* Update pr-test.yaml
+* docs
+* Adding option for direct-mapping
+* removing chatter
+* Dynamic compile
+* Everything works cepn' sqlddlgen
+* Switched to using dynamic python
+* cleanup
+* attempting to dynamically compile
+* tidying
+* test files
+* tidying
+* tidy
+* tidy
+* sql ddl gen tests
+* rewrite of SQL DDL gen
+* generator tests
+* extend
+* negative tests
+* test for https://github.com/linkml/linkml/pull/242
+* test generators
+* Automated adding outputs from tests
+* Add pattern gen for jsonschema, fixes #193
+* Attempt to fix Slot header so it doesn't include \`\_\_\`
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* Remove sorting of slots on class pages
+* Replaced test expecting http:// URL with https:// URL for YUML
+* YUML images now include links to the full resolution images
+* Updated YUML to use HTTPS instead of HTTP
+* Added link to the CCDH model
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Update main.yaml
+* Trigger a rebuild on main
+
+v1.0.0
+------
+
+* Multiple tweaks and what have you to get the unittests running
+* Remove no longer needed github action
+* Automated adding outputs from tests
+* Updates to pass all "enhancements" directory tests
+* Passes all enumeration tests
+* Escaped asterisks used in cardinality strings
+* Capitalized "range" on entity page
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* Missed two changes in the rdf\_issues commit
+* Add three options to jsonldcontext generator
+* Add three options to jsonldcontext generator
+* Prevent accidental creation of an inner test directory
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Remove migration\_temp file
+* Update sqlddlgen.py
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Automated adding outputs from tests
+* Replaced ASCII right arrow with Unicode
+* Make predicate\_cardinality rendering identical to range\_cardinality
+* Turned off titlecase in schema name
+* Allow use of raw in CLI for yamlgen
+* Correct description of domain of linkml
+* Update python\_comparator.py
+* Force the outputs to be up to date
+* Make sure that all output files are current
+* Clean up actions
+* Automated adding outputs from tests
+* Update pr-test.yaml
+* Update pr-test.yaml
+* Update pr-test.yaml
+* Update pr-test.yaml
+* Fix version typo in build
+* Update pr-test.yaml
 * Remove linkml-model dependencies
 * Tests for issue on enum loading
 * Move tox settings to the correct spot
 * Update tests to use latest biolink-model
 * Fix an issue where lists like class.slots or class.mixins failed if no list
-
-v0.1.0.dev3
------------
-
 * Update python generator to reference the linkml\_runtime model
+* Bindings for SQL Alchemy
 * Update required missing value check
 * Sole non-published dependency is now on linkml-model
+* Automated adding outputs from tests
+* removed \n Add enums to markdowngen #120
+* Automated adding outputs from tests
+* permissible values table have 4  columns  #120
+* Add enums to markdowngen #120
+* filename to be underscored
+* added next line tag
 * Fix a couple of bad Pipfile entries
 * Passes all non-disabled unit tests
 * Switch to new runtime
@@ -28,6 +202,9 @@ v0.1.0.dev3
 * Lock down to jsonasobj 1.3.1
 * Update Pipfile
 * Update Pipfile
+* just added spaces to highlight addition
+* updated class\_type\_link with EnumDef
+* added properties with no value #120
 * Automated adding outputs from tests
 * testing singular name
 * enum info => formatted markdown table

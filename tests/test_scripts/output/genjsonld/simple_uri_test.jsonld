@@ -253,7 +253,7 @@
       "name": "state",
       "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots/state",
       "mappings": [
-        "foo:state"
+        "http://samples.r.us/foo#state"
       ],
       "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots",
       "range": "simple_string",
@@ -315,9 +315,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "simple_uri_test.yaml",
-  "source_file_date": "Thu Jul 29 02:15:44 2021",
+  "source_file_date": "Fri Aug 27 03:23:47 2021",
   "source_file_size": 480,
-  "generation_date": "2021-07-29 02:19",
+  "generation_date": "2021-08-27 03:28",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/extensions.context.jsonld",
