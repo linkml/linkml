@@ -38,21 +38,25 @@ class ExcelGenerator(Generator):
         TODO: Decide whether to use :param wb_name as prefix or full file name?
         """
         if not wb_name:
-            return os.path.join(
+            return os.path.normpath(
+                os.path.join(
+                    self.generator_name,
+                    "_",
+                    self.generator_version,
+                    ".xlsx",
+                )
+            )
+
+        return os.path.normpath(
+            os.path.join(
+                wb_name,
+                "_",
                 self.generator_name,
                 "_",
                 self.generator_version,
+                "_",
                 ".xlsx",
             )
-
-        return os.path.join(
-            wb_name,
-            "_",
-            self.generator_name,
-            "_",
-            self.generator_version,
-            "_",
-            ".xlsx",
         )
 
     @staticmethod
@@ -115,7 +119,9 @@ class ExcelGenerator(Generator):
         """Overridden from generator framework."""
         self.create_spreadsheet(ws_name=camelcase(cls.name))
 
-        slots = ExcelGenerator._slot_formatting(slots_list=self.sheet_name_cols)
+        slots = ExcelGenerator._slot_formatting(
+            slots_list=ExcelGenerator.sheet_name_cols
+        )
 
         self._write_to_excel(slots_dict=slots)
 
@@ -123,7 +129,8 @@ class ExcelGenerator(Generator):
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         """Overridden from generator framework."""
-        self.sheet_name_cols.append((slot.owner, slot.name))
+        for slot_owner in slot.domain_of:
+            ExcelGenerator.sheet_name_cols.append((slot_owner, aliased_slot_name))
 
 
 @shared_arguments(ExcelGenerator)
