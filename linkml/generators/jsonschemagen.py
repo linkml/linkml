@@ -51,7 +51,7 @@ class JsonSchemaGenerator(Generator):
         for p, c in self.entryProperties.items():
             self.schemaobj['properties'][p] = {
                 'type': "array",
-                'items': {'$ref': f"#/definitions/{camelcase(c)}"}}
+                'items': {'$ref': f"#/$defs/{camelcase(c)}"}}
         self.schemaobj['$schema'] = "http://json-schema.org/draft-07/schema#"
         self.schemaobj['$id'] = self.schema.id
         self.schemaobj['$defs'] = JsonObj()
@@ -102,10 +102,10 @@ class JsonSchemaGenerator(Generator):
         if slot.range in self.schema.types:
             (typ, fmt) = json_schema_types.get(self.schema.types[slot.range].base.lower(), ("string", None))
         elif slot.range in self.schema.enums:
-            reference = f"#/definitions/{camelcase(slot.range)}"
+            reference = f"#/$defs/{camelcase(slot.range)}"
             typ = 'object'
         elif slot.range in self.schema.classes and slot.inlined:
-            reference = f"#/definitions/{camelcase(slot.range)}"
+            reference = f"#/$defs/{camelcase(slot.range)}"
             typ = 'object'
         else:
             typ = "string"
