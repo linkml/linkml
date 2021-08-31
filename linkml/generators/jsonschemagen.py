@@ -47,7 +47,6 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj = JsonObj(title=self.schema.name,
                                  type="object",
                                  properties={},
-                                 definitions=JsonObj(),
                                  additionalProperties=not_closed)
         for p, c in self.entryProperties.items():
             self.schemaobj['properties'][p] = {
@@ -55,6 +54,7 @@ class JsonSchemaGenerator(Generator):
                 'items': {'$ref': f"#/definitions/{camelcase(c)}"}}
         self.schemaobj['$schema'] = "http://json-schema.org/draft-07/schema#"
         self.schemaobj['$id'] = self.schema.id
+        self.schemaobj['$defs'] = JsonObj()
 
     def end_schema(self, **_) -> None:
         print(as_json(self.schemaobj, sort_keys=True))
@@ -71,7 +71,7 @@ class JsonSchemaGenerator(Generator):
         return True
 
     def end_class(self, cls: ClassDefinition) -> None:
-        self.schemaobj.definitions[camelcase(cls.name)] = self.clsobj
+        self.schemaobj['$defs'][camelcase(cls.name)] = self.clsobj
 
     def visit_enum(self, enum: EnumDefinition) -> bool:
         # TODO: this only works with explicitly permitted values. It will need to be extended to
@@ -88,7 +88,7 @@ class JsonSchemaGenerator(Generator):
 
         permissible_values_texts = list(map(extract_permissible_text, enum.permissible_values or []))
 
-        self.schemaobj.definitions[camelcase(enum.name)] = JsonObj(
+        self.schemaobj['$defs'][camelcase(enum.name)] = JsonObj(
             title=camelcase(enum.name),
             type='string',
             enum=permissible_values_texts,
