@@ -24,7 +24,7 @@ class ExcelGenerator(Generator):
     :type filename: str
     """
 
-    generator_name = os.path.basename(__file__)
+    generator_name = os.path.splitext(os.path.basename(__file__))[0]
     generator_version = "0.0.1"
     valid_formats = ["xlsx"]
     sheet_name_cols = []
@@ -38,26 +38,21 @@ class ExcelGenerator(Generator):
 
         TODO: Decide whether to use :param wb_name as prefix or full file name?
         """
+        dir_path = os.getcwd()
+
         if not wb_name:
-            return os.path.normpath(
-                os.path.join(
-                    self.generator_name,
-                    "_",
-                    self.generator_version,
-                    ".xlsx",
-                )
+            return os.path.join(
+                dir_path, self.generator_name + "_" + self.generator_version + ".xlsx"
             )
 
-        return os.path.normpath(
-            os.path.join(
-                wb_name,
-                "_",
-                self.generator_name,
-                "_",
-                self.generator_version,
-                "_",
-                ".xlsx",
-            )
+        return os.path.join(
+            dir_path,
+            wb_name
+            + "_"
+            + self.generator_name
+            + "_"
+            + self.generator_version
+            + ".xlsx",
         )
 
     @staticmethod
