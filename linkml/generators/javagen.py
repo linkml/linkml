@@ -48,6 +48,9 @@ TYPEMAP = {
     "str": "String",
     "int": "Integer",
     "float": "Float",
+    "Bool": "Boolean",
+    "XSDDate": "String", # TODO: import java.time.LocalDate ?
+    "URIorCURIE": "String" # TODO: generate this class here? import?
 }
 
 @dataclass
@@ -80,12 +83,14 @@ class JavaGenerator(OOCodeGenerator):
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
                  config: JavaConfig = None,
+                 package: str = None,
                  format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         self.config = config
+        self.package = package
 
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
@@ -98,14 +103,14 @@ class JavaGenerator(OOCodeGenerator):
         config = self.config
         for oodoc in oodocs:
             # Apply configurations. TODO: this is currently incomplete and intended as an exemplar
-            if config.lombok:
-                oodoc.imports.append('lombok.*')
-            if config.jsonView:
-                oodoc.imports.append('com.fasterxml.jackson.annotation.JsonView')
-                oodoc.imports.append(config.jsonView.import_package)
+            # if config.lombok:
+            #     oodoc.imports.append('lombok.*')
+            # if config.jsonView:
+            #     oodoc.imports.append('com.fasterxml.jackson.annotation.JsonView')
+            #     oodoc.imports.append(config.jsonView.import_package)
             cls = oodoc.classes[0]
             code = template_obj.render(doc=oodoc, cls=cls)
-
+            oodoc.package = self.package
             os.makedirs(directory, exist_ok=True)
             filename = f'{oodoc.name}.java'
             path = os.path.join(directory, filename)
@@ -115,9 +120,9 @@ class JavaGenerator(OOCodeGenerator):
 
 @shared_arguments(JavaGenerator)
 @click.command()
-def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
+def cli(yamlfile, output_directory=None, package=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
-    print(JavaGenerator(yamlfile, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))
+    JavaGenerator(yamlfile, package=package, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory)
 
 
 if __name__ == '__main__':
