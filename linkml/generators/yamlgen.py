@@ -36,9 +36,8 @@ class YAMLGenerator(Generator):
 def cli(yamlfile, raw: bool, **args):
     """ Validate input and produce fully resolved yaml equivalent """
     if raw:
-        with open(yamlfile, 'r') as stream:
-            s = load_raw_schema(stream)
-            print(as_yaml(s))
+        s = load_raw_schema(yamlfile)
+        print(as_yaml(s))
     else:
         gen = YAMLGenerator(yamlfile, **args)
         print(gen.serialize(**args))
