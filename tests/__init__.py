@@ -41,6 +41,9 @@ SKIP_MARKDOWN_VALIDATION_REASON = test_settings.get('SKIP_MARKDOWN_VALIDATION_RE
 SKIP_RDF_COMPARE = test_settings.getboolean('SKIP_RDF_COMPARE', False)
 SKIP_RDF_COMPARE_REASON = test_settings.get('SKIP_RDF_COMPARE_REASON', 'tests/__init__.py RDF output not checked SKIP_RDF_COMPARE is True')
 
+# Skip tests that rely on an external SPARQL endpoint
+SKIP_REMOTE_SPARQL_TESTS = test_settings.getboolean('SKIP_REMOTE_SPARQL_TESTS', True)
+
 # Skip Rewrite rules tests -- these only get re-tested when we change the w3id.org server
 SKIP_REWRITE_RULES = test_settings.getboolean('SKIP_REWRITE_RULES', True)
 SKIP_REWRITE_RULES_REASON = test_settings.get('SKIP_REWRITE_RULES_REASON', 'tests/__init__.py SKIP_REWRITE_RULES is True')

@@ -1,7 +1,10 @@
 import json
+import sys
 from typing import Type, Union, TextIO
 
 import logging
+
+import click
 import jsonschema
 from linkml_runtime.linkml_model import SchemaDefinition
 
@@ -9,6 +12,7 @@ from linkml_runtime.utils.yamlutils import as_dict, YAMLRoot
 from linkml_runtime.dumpers import json_dumper
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+import linkml.utils.datautils as datautils
 
 def _as_dict(inst):
     # TODO: replace this with linkml_runtime.dictutils when 1.0.14 is released
@@ -36,3 +40,6 @@ def validate_object(data: YAMLRoot, schema: Union[str, TextIO, SchemaDefinition]
                                         not_closed=not_closed).serialize(not_closed=not_closed)
     jsonschema_obj = json.loads(jsonschemastr)
     return jsonschema.validate(inst_dict, schema=jsonschema_obj)
+
+if __name__ == '__main__':
+    datautils.cli(sys.argv[1:])
