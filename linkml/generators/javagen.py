@@ -17,60 +17,36 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, C
 from linkml.generators.oocodegen import OOCodeGenerator, PACKAGE
 from linkml.utils.generator import Generator, shared_arguments
 
-template = """
+default_template = """
 {#-
 
-  Jinja2 Template for a Java class
-
+  Jinja2 Template for a Java class with Lombok @Data annotation
+  Annotation details at https://projectlombok.org
 -#}
 package {{ doc.package }};
 
 import java.util.List;
+import lombok.*;
 
-{% for imp in doc.imports %}
-import {{ imp }};
-{% endfor %}
-
-{% for ann in cls.annotations %}
-@{{ ann }};
-{%- endfor %}
-
+/**
+  {{ cls.source_class.description }}
+**/
+@Data
 public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
-
 {% for f in cls.fields %}
   private {{f.range}} {{ f.name }};
 {%- endfor %}
 
-} 
-"""
+}"""
 
 TYPEMAP = {
     "str": "String",
     "int": "Integer",
     "float": "Float",
+    "Bool": "Boolean",
+    "XSDDate": "String",
+    "URIorCURIE": "String"
 }
-
-@dataclass
-class JsonView:
-    import_package: PACKAGE = None
-    default_view: str = None
-
-@dataclass
-class Lombok:
-    import_package: PACKAGE = None
-
-@dataclass
-class Hibernate:
-    audited: bool
-    indexed: bool
-
-
-@dataclass
-class JavaConfig:
-    jsonView: JsonView = None
-    lombok: Lombok = None
-    hibernate: Hibernate = None
-
 
 class JavaGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
@@ -79,30 +55,31 @@ class JavaGenerator(OOCodeGenerator):
     visit_all_class_slots = False
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
-                 config: JavaConfig = None,
+                 package: str = None,
+                 template_file: str = None,
                  format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
-        self.config = config
+        self.package = package
+        self.template_file = template_file
 
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
 
     def serialize(self, directory: str) -> None:
         sv = self.schemaview
-        template_obj = Template(template)
+
+        if self.template_file is not None:
+            with open(self.template_file) as template_file:
+                template_obj = Template(template_file.read())
+        else:
+            template_obj = Template(default_template)
+
         oodocs = self.create_documents()
         self.directory = directory
-        config = self.config
         for oodoc in oodocs:
-            # Apply configurations. TODO: this is currently incomplete and intended as an exemplar
-            if config.lombok:
-                oodoc.imports.append('lombok.*')
-            if config.jsonView:
-                oodoc.imports.append('com.fasterxml.jackson.annotation.JsonView')
-                oodoc.imports.append(config.jsonView.import_package)
             cls = oodoc.classes[0]
             code = template_obj.render(doc=oodoc, cls=cls)
 
@@ -115,9 +92,9 @@ class JavaGenerator(OOCodeGenerator):
 
 @shared_arguments(JavaGenerator)
 @click.command()
-def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
+def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
-    print(JavaGenerator(yamlfile, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))
+    JavaGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory)
 
 
 if __name__ == '__main__':

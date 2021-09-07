@@ -3,11 +3,12 @@ import unittest
 from contextlib import redirect_stdout
 
 
-from linkml.generators.javagen import JavaGenerator, JavaConfig, Lombok
+from linkml.generators.javagen import JavaGenerator
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
 JAVA_DIR = env.expected_path('kitchen_sink_java')
+PACKAGE = 'org.sink.kitchen'
 
 def assert_file_contains(filename, text, after=None, description=None) -> None:
     found = False
@@ -28,9 +29,7 @@ class JavaGeneratorTestCase(unittest.TestCase):
 
     def test_javagen(self):
         """ Generate java classes  """
-        config = JavaConfig()
-        config.lombok = Lombok()
-        gen = JavaGenerator(SCHEMA, config=config)
+        gen = JavaGenerator(SCHEMA, package=PACKAGE)
         md = gen.serialize(directory=JAVA_DIR)
 
 
