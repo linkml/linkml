@@ -27,6 +27,10 @@ rdflib-pyldmod-compat = ">=0.1.2c"
 hbreader = "*"
 linkml-runtime = "~=1.0, >=1.0.15"
 sqlalchemy = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-click = "*"
+myst-parser = "*"
 
 [dev-packages]
 nbconvert = "*"

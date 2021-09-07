@@ -13,6 +13,9 @@ from linkml.utils.schemaloader import load_raw_schema
 
 
 class YAMLGenerator(Generator):
+    """
+    A generator that produces a schema as a YAML Document
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ['yaml']
