@@ -585,7 +585,7 @@ class Generator(metaclass=abc.ABCMeta):
             if ':' not in mapping or len(mapping.split(':')) != 2:
                 raise ValueError(f"Definition {defn.name} - unrecognized mapping: {mapping}")
             ns = mapping.split(':')[0]
-            logging.error(f'Adding {ns} from {mapping} // {defn}')
+            logging.debug(f'Adding {ns} from {mapping} // {defn}')
             if ns:
                 self.add_prefix(ns)
 

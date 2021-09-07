@@ -1,0 +1,43 @@
+PREFIX pav: <http://purl.org/pav/>
+PREFIX dce: <http://purl.org/dc/elements/1.1/>
+PREFIX lego: <http://geneontology.org/lego/>
+PREFIX linkml: <https://w3id.org/linkml/>
+PREFIX biolink: <https://w3id.org/biolink/>
+PREFIX ks: <https://w3id.org/linkml/tests/kitchen_sink/>
+PREFIX RO: <http://purl.obolibrary.org/obo/RO_>
+PREFIX BFO: <http://purl.obolibrary.org/obo/BFO_>
+PREFIX CODE: <http://example.org/code/>
+PREFIX ROR: <http://example.org/ror/>
+PREFIX A: <http://example.org/activities/>
+PREFIX P: <http://example.org/person/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX core: <https://w3id.org/linkml/tests/core/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX shex: <http://www.w3.org/ns/shex#>
+
+SELECT
+  ?check
+  ?graph
+  ?subject
+  ?predicate
+  ?object
+WHERE {
+ GRAPH ?graph {
+  ?subject rdf:type ks:Dataset ;
+     ?predicate ?object .
+  FILTER NOT EXISTS {
+    ?object rdf:type ?otype .
+    FILTER ( ?otype IN (
+      ks:Company
+      
+      ))
+  }
+ }
+ VALUES ?check { linkml:range }
+ VALUES ?predicate { ks:companies  }
+ 
+}  
+
+
+
