@@ -116,7 +116,7 @@ class OOCodeGenerator(Generator):
                     range = sv.schema.default_range
 
                 if range is None:
-                    range = 'string'
+                    range = 'string' # self.map_type(sv.all_type().get('string'))
 
                 if range in sv.all_class():
                     range = self.get_class_name(range)
