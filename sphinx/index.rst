@@ -19,6 +19,8 @@ Documentation
    intro/overview
    intro/install
    topics/index
+   generators/index
+   examples
    faq/index
    
 API Reference

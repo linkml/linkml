@@ -164,6 +164,7 @@ slots:
     slot_uri: schema:image
   gender:
     slot_uri: schema:gender
+    range: gender_enum
   primary_email:
     slot_uri: schema:email
   birth_date:

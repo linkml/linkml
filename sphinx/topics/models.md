@@ -50,11 +50,14 @@ default_range: string
 
 ## Classes
 
-Classes provide templates for organizing data. Data objects should instantiate classes in the schema
+Classes provide templates for organizing data. Data objects should
+instantiate classes in the schema. Each class has a set of *slots*
+(aka fields, attributes) that are applicable to it.
 
-Example of a class:
+Classes are defined in a `classes` block at the top level of your YAML:
 
 ```yaml
+classes:
   Person:
     is_a: NamedThing
     description: >-
@@ -74,16 +77,113 @@ Example of a class:
 
 See [ClassDefinition](https://w3id.org/linkml/ClassDefinition) for a full list of allowed slots
 
+Note that because LinkML is described in LinkML, your schema is an
+instantiation of the LinkML metamodel, and schema elements have a list
+of allowed slots. So for example, `is_a`, `description`, and `slots`
+are all slots that are applicable to instances of
+ClassDefinitions. This is a little meta at first but you get used to
+it!
+
+
 ## Slots
 
-...
+Slots (aka attributes, fields, columns, properties) can be associated
+with classes to specify what fields instances of that class can have
+
+For example, in the schema above, instances of Person classes can have
+values for primary email, birthdate, etc.
+
+In LinkML slots are "first class" and are defined independently of
+classes, and a slot can be used in any number of classes.
+
+Slots are defined in a `slots` block at the top level of your YAML:
+
+```yaml
+slots:
+  id:
+    identifier: true
+    slot_uri: schema:identifier
+  name:
+    slot_uri: schema:name
+  gender:
+    slot_uri: schema:gender
+    range: gender_enum
+  age_in_years:
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+  has_employment_history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+  current_address:
+    range: Address
+    
+```
 
 See [SlotDefinition](https://w3id.org/linkml/SlotDefinition) for a full list of allowed slots
 
+### The Attribute slot
+
+As a convenience feature, you can specify slot definitions directly within a class using the `attributes` slot:
+
+```yaml
+classes:
+  Person:
+    is_a: NamedThing
+    description: >-
+      A person (alive, dead, undead, or fictional).
+    class_uri: schema:Person
+    mixins:
+      - HasAliases
+    attributes:
+      gender:
+        slot_uri: schema:gender
+        range: gender_enum
+      age_in_years:
+        range: integer
+        minimum_value: 0
+        maximum_value: 999
+```
+
+### Slot Usage
+
+Sometimes you may wish to use a generic slot across multiple classes, but refine its usage for particular subclasses.
+
+For example, imagine a schema with a generic "Relationship" class:
+
+```yaml
+  Relationship:
+    slots:
+      - started_at_time
+      - ended_at_time
+      - related_to
+      - type
+```
+
+with subtypes such as FamilialRelationship, BusinessRelationship, etc
+
+we can use `slot_usage` to constrain the meaning of more generic slots such as `type` and `related to`:
+
+```yaml
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+```        
 
 ## Types
 
-...
+See [TypeDefinition](https://w3id.org/linkml/TypeDefinition) in the metamodel.
+
+Types in LinkML are scalar data values such as strings, integers, floats, and so on. LinkML comes with its own set of types, and these can be extended.
+
+TODO: example
 
 ## Enums
 
@@ -99,5 +199,9 @@ enums:
 
 ## Subsets
 
-...
+TODO: example
+
+
+
+
 

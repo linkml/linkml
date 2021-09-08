@@ -8,6 +8,7 @@ FAQ
    :caption: Contents:
 
    general
+   why-linkml
    installation
    getting-help
    contributing
