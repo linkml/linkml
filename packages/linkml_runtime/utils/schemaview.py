@@ -555,7 +555,7 @@ class SchemaView(object):
         if ":" in identifier:
             id_components = identifier.split(":")
             prefix = id_components[0]
-            elements = self.all_elements()
+            elements = self.all_element()
             for category, category_element in elements.items():
                 if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
                     categories.append(category_element.name)
