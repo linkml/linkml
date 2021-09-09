@@ -1,8 +1,6 @@
 import os
-import json
 import unittest
 import logging
-from typing import List, Tuple, Any
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
@@ -16,6 +14,7 @@ SCHEMA_WITH_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink.yaml')
 
 yaml_loader = YAMLLoader()
 
+
 class SchemaViewTestCase(unittest.TestCase):
 
     def test_schemaview(self):
@@ -26,14 +25,12 @@ class SchemaViewTestCase(unittest.TestCase):
         all_cls = view.all_classes()
         logging.debug(f'n_cls = {len(all_cls)}')
 
-        e = view.get_element('is current')
         assert list(view.annotation_dict('is current').values()) == ['bar']
         logging.debug(view.annotation_dict('employed at'))
-        e = view.get_element('employed at')
-        logging.debug(e.annotations)
-        e = view.get_element('has employment history')
-        logging.debug(e.annotations)
-        #assert list(view.annotation_dict('employed at')[]
+        element = view.get_element('employed at')
+        logging.debug(element.annotations)
+        element = view.get_element('has employment history')
+        logging.debug(element.annotations)
 
         if True:
             # this section is mostly for debugging
@@ -66,7 +63,6 @@ class SchemaViewTestCase(unittest.TestCase):
 
         # -- TEST CLASS SLOTS --
 
-
         self.assertCountEqual(['id', 'name',  ## From Thing
                                'has employment history', 'has familial relationships', 'has medical history',
                                'age in years', 'addresses', 'has birth event', ## From Person
@@ -83,7 +79,6 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.get_class('agent').class_uri == 'prov:Agent'
         assert view.get_uri('agent') == 'prov:Agent'
         logging.debug(view.get_class('Company').class_uri)
-        #assert view.get_class('Company').class_uri == 'prov:Agent'
         assert view.get_uri('Company') == 'ks:Company'
 
         for c in ['Company', 'Person', 'Organization',]:
@@ -114,7 +109,6 @@ class SchemaViewTestCase(unittest.TestCase):
         for k, v in u.items():
             logging.debug(f' {k} = {v}')
 
-
         # test methods also work for attributes
         leaves = view.class_leaves()
         logging.debug(f'LEAVES={leaves}')
@@ -130,43 +124,36 @@ class SchemaViewTestCase(unittest.TestCase):
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
 
-        #for e in view.all_element(imports=True):
-        #    logging.debug(view.annotation_dict(e))
-        #logging.debug(u)
-
     def test_rollup_rolldown(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        original_schema = view.copy_schema()
-        cn = 'Event'
-        roll_up(view, cn)
-        for s in view.class_induced_slots(cn):
-            logging.debug(s)
-        induced_slot_names = [s.name for s in view.class_induced_slots(cn)]
+        element_name = 'Event'
+        roll_up(view, element_name)
+        for slot in view.class_induced_slots(element_name):
+            logging.debug(slot)
+        induced_slot_names = [s.name for s in view.class_induced_slots(element_name)]
         logging.debug(induced_slot_names)
         self.assertCountEqual(['started at time', 'ended at time', 'is current', 'in location', 'employed at', 'married to'],
                               induced_slot_names)
         # check to make sure rolled-up classes are deleted
-        assert view.class_descendants(cn, reflexive=False) == []
+        assert view.class_descendants(element_name, reflexive=False) == []
         roll_down(view, view.class_leaves())
-        for cn in view.all_classes():
-            c = view.get_class(cn)
-            logging.debug(f'{cn}')
-            logging.debug(f'  {cn} SLOTS(i) = {view.class_slots(cn)}')
-            logging.debug(f'  {cn} SLOTS(d) = {view.class_slots(cn, direct=True)}')
-            self.assertCountEqual(view.class_slots(cn), view.class_slots(cn, direct=True))
+        for element_name in view.all_classes():
+            c = view.get_class(element_name)
+            logging.debug(f'{element_name}')
+            logging.debug(f'  {element_name} SLOTS(i) = {view.class_slots(element_name)}')
+            logging.debug(f'  {element_name} SLOTS(d) = {view.class_slots(element_name, direct=True)}')
+            self.assertCountEqual(view.class_slots(element_name), view.class_slots(element_name, direct=True))
         assert 'Thing' not in view.all_classes()
         assert 'Person' not in view.all_classes()
         assert 'Adult' in view.all_classes()
-
-
 
     def test_caching(self):
         """
         Determine if cache is reset after modifications made to schema
         """
-        s = SchemaDefinition(id='test', name='test')
-        view = SchemaView(s)
+        schema = SchemaDefinition(id='test', name='test')
+        view = SchemaView(schema)
         self.assertCountEqual([], view.all_classes())
         view.add_class(ClassDefinition('X'))
         self.assertCountEqual(['X'], view.all_classes())
@@ -219,11 +206,9 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.induced_slot('age in years', 'Person').minimum_value == 0
         assert view.induced_slot('age in years', 'Adult').minimum_value == 16
 
-
         assert view.get_class('agent').class_uri == 'prov:Agent'
         assert view.get_uri('agent') == 'prov:Agent'
         logging.debug(view.get_class('Company').class_uri)
-        #assert view.get_class('Company').class_uri == 'prov:Agent'
         assert view.get_uri('Company') == 'ks:Company'
         assert view.get_uri('Company', expand=True) == 'https://w3id.org/linkml/tests/kitchen_sink/Company'
         logging.debug(view.get_uri("TestClass"))

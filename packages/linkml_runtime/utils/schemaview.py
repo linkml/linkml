@@ -1,18 +1,14 @@
 import os
 import uuid
-import logging
 from functools import lru_cache
 from copy import copy
 from collections import defaultdict
-from typing import List, Any, Dict, Union, Mapping, Tuple
-from dataclasses import dataclass
+from typing import Mapping, Tuple
 from linkml_runtime.utils.namespaces import Namespaces
-from linkml_runtime.utils.formatutils import camelcase, underscore
 
 
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
-from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
@@ -29,6 +25,7 @@ SLOT_NAME = Union[SlotDefinitionName, str]
 SUBSET_NAME = Union[SubsetDefinitionName, str]
 TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
+
 
 def _closure(f, x, reflexive=True, **kwargs):
     if reflexive:
@@ -47,6 +44,7 @@ def _closure(f, x, reflexive=True, **kwargs):
                 rv.append(v)
     return rv
 
+
 def load_schema_wrap(path: str, **kwargs):
     # import here to avoid circular imports
     from linkml_runtime.loaders.yaml_loader import YAMLLoader
@@ -55,6 +53,7 @@ def load_schema_wrap(path: str, **kwargs):
     schema = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
     schema.source_file = path
     return schema
+
 
 @dataclass
 class SchemaUsage():
@@ -93,7 +92,6 @@ class SchemaView(object):
     modifications: int = 0
     uuid: str = None
 
-
     def __init__(self, schema: Union[str, SchemaDefinition],
                  importmap: Optional[Mapping[str, str]] = None):
         if isinstance(schema, str):
@@ -123,7 +121,6 @@ class SchemaView(object):
             for cmap in self.schema.default_curi_maps:
                 namespaces.add_prefixmap(cmap, include_defaults=False)
         return namespaces
-
 
     def load_import(self, imp: str, from_schema: SchemaDefinition = None):
         if from_schema is None:
@@ -174,6 +171,10 @@ class SchemaView(object):
         """
         m = self.schema_map
         return [m[sn] for sn in self.imports_closure(imports)]
+
+    @lru_cache()
+    def all_class(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+        return 
 
     @lru_cache()
     def all_classes(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
