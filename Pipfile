@@ -28,6 +28,10 @@ hbreader = "*"
 linkml-runtime = "~=1.0, >=1.0.15"
 sqlalchemy = "*"
 openpyxl = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-click = "*"
+myst-parser = "*"
 
 [dev-packages]
 nbconvert = "*"

@@ -1,0 +1,216 @@
+BASE <https://w3id.org/linkml/examples/personinfo/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX linkml: <https://w3id.org/linkml/>
+PREFIX schema: <http://schema.org/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+
+
+linkml:String xsd:string
+
+linkml:Integer xsd:integer
+
+linkml:Boolean xsd:boolean
+
+linkml:Float xsd:float
+
+linkml:Double xsd:double
+
+linkml:Decimal xsd:decimal
+
+linkml:Time xsd:dateTime
+
+linkml:Date xsd:date
+
+linkml:Datetime xsd:dateTime
+
+linkml:Uriorcurie IRI
+
+linkml:Uri IRI
+
+linkml:Ncname xsd:string
+
+linkml:Objectidentifier IRI
+
+linkml:Nodeidentifier NONLITERAL
+
+<https://w3id.org/linkml/examples/personinfoAddress> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoAddress_tes> (  <https://w3id.org/linkml/examples/personinfostreet>
+          @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfocity> @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfopostal_code> @linkml:String ?
+       ) ;
+       rdf:type [ schema:PostalAddress ] ?
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoConcept>  (
+    CLOSED {
+       (  $<https://w3id.org/linkml/examples/personinfoConcept_tes> (  &<https://w3id.org/linkml/examples/personinfoNamedThing_tes>
+             ;
+             rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ] ?
+          ) ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoConcept> ]
+       )
+    } OR @<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> OR
+    @<https://w3id.org/linkml/examples/personinfoProcedureConcept>
+)
+
+<https://w3id.org/linkml/examples/personinfoContainer> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoContainer_tes> (  <https://w3id.org/linkml/examples/personinfopersons>
+          @<https://w3id.org/linkml/examples/personinfoPerson> * ;
+          <https://w3id.org/linkml/examples/personinfoorganizations> @<https://w3id.org/linkml/examples/personinfoOrganization> *
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoContainer> ] ?
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoDiagnosisConcept_tes> ( 
+          &<https://w3id.org/linkml/examples/personinfoConcept_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoConcept> ] ?
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoDiagnosisConcept> ]
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoEmploymentEvent> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoEmploymentEvent_tes> (  &<https://w3id.org/linkml/examples/personinfoEvent_tes>
+          ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoEvent> ] ? ;
+          <https://w3id.org/linkml/examples/personinfoemployed_at> @<https://w3id.org/linkml/examples/personinfoOrganization> ?
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoEmploymentEvent> ] ?
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoEvent>  (
+    CLOSED {
+       (  $<https://w3id.org/linkml/examples/personinfoEvent_tes> (  prov:startedAtTime @linkml:Date ? ;
+             prov:endedAtTime @linkml:Date ? ;
+             <https://w3id.org/linkml/examples/personinfoduration> @linkml:Float ? ;
+             <https://w3id.org/linkml/examples/personinfois_current> @linkml:Boolean ?
+          ) ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoEvent> ] ?
+       )
+    } OR @<https://w3id.org/linkml/examples/personinfoEmploymentEvent> OR
+    @<https://w3id.org/linkml/examples/personinfoMedicalEvent>
+)
+
+<https://w3id.org/linkml/examples/personinfoFamilialRelationship> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoFamilialRelationship_tes> ( 
+          &<https://w3id.org/linkml/examples/personinfoRelationship_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoRelationship> ] ? ;
+          <https://w3id.org/linkml/examples/personinfotype> @linkml:String ;
+          <https://w3id.org/linkml/examples/personinforelated_to> @<https://w3id.org/linkml/examples/personinfoPerson>
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoFamilialRelationship> ] ?
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoHasAliases> {
+    (  $<https://w3id.org/linkml/examples/personinfoHasAliases_tes> <https://w3id.org/linkml/examples/personinfoaliases>
+       @linkml:String * ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ?
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoMedicalEvent> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoMedicalEvent_tes> (  &<https://w3id.org/linkml/examples/personinfoEvent_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoEvent> ] ? ;
+          <https://w3id.org/linkml/examples/personinfoin_location> @<https://w3id.org/linkml/examples/personinfoPlace> ? ;
+          <https://w3id.org/linkml/examples/personinfodiagnosis> @<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> ? ;
+          <https://w3id.org/linkml/examples/personinfoprocedure> @<https://w3id.org/linkml/examples/personinfoProcedureConcept> ?
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoMedicalEvent> ] ?
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoNamedThing>  (
+    CLOSED {
+       (  $<https://w3id.org/linkml/examples/personinfoNamedThing_tes> (  schema:name @linkml:String ? ;
+             schema:description @linkml:String ? ;
+             schema:image @linkml:String ?
+          ) ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ]
+       )
+    } OR @<https://w3id.org/linkml/examples/personinfoConcept> OR @<https://w3id.org/linkml/examples/personinfoOrganization> OR
+    @<https://w3id.org/linkml/examples/personinfoPerson>
+)
+
+<https://w3id.org/linkml/examples/personinfoOrganization> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoOrganization_tes> ( 
+          &<https://w3id.org/linkml/examples/personinfoNamedThing_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ] ? ;
+          &<https://w3id.org/linkml/examples/personinfoHasAliases_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ? ;
+          <https://w3id.org/linkml/examples/personinfomission_statement> @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfofounding_date> @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfofounding_location> @<https://w3id.org/linkml/examples/personinfoPlace> ? ;
+          <https://w3id.org/linkml/examples/personinfoaliases> @linkml:String *
+       ) ;
+       rdf:type [ schema:Organization ]
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoPerson> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoPerson_tes> (  &<https://w3id.org/linkml/examples/personinfoNamedThing_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ] ? ;
+          &<https://w3id.org/linkml/examples/personinfoHasAliases_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ? ;
+          <https://w3id.org/linkml/examples/personinfoprimary_email> @linkml:String ? ;
+          schema:birthDate @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfoage_in_years> @linkml:Integer ? ;
+          schema:gender @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfocurrent_address> @<https://w3id.org/linkml/examples/personinfoAddress> ? ;
+          <https://w3id.org/linkml/examples/personinfohas_employment_history>
+          @<https://w3id.org/linkml/examples/personinfoEmploymentEvent> * ;
+          <https://w3id.org/linkml/examples/personinfohas_familial_relationships>
+          @<https://w3id.org/linkml/examples/personinfoFamilialRelationship> * ;
+          <https://w3id.org/linkml/examples/personinfohas_medical_history>
+          @<https://w3id.org/linkml/examples/personinfoMedicalEvent> * ;
+          <https://w3id.org/linkml/examples/personinfoaliases> @linkml:String *
+       ) ;
+       rdf:type [ schema:Person ]
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoPlace> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoPlace_tes> (  &<https://w3id.org/linkml/examples/personinfoHasAliases_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ? ;
+          schema:name @linkml:String ? ;
+          <https://w3id.org/linkml/examples/personinfoaliases> @linkml:String *
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoPlace> ]
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoProcedureConcept> CLOSED {
+    (  $<https://w3id.org/linkml/examples/personinfoProcedureConcept_tes> ( 
+          &<https://w3id.org/linkml/examples/personinfoConcept_tes> ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoConcept> ] ?
+       ) ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoProcedureConcept> ]
+    )
+}
+
+<https://w3id.org/linkml/examples/personinfoRelationship>  (
+    CLOSED {
+       (  $<https://w3id.org/linkml/examples/personinfoRelationship_tes> (  prov:startedAtTime @linkml:Date ? ;
+             prov:endedAtTime @linkml:Date ? ;
+             <https://w3id.org/linkml/examples/personinforelated_to> @linkml:String ? ;
+             <https://w3id.org/linkml/examples/personinfotype> @linkml:String ?
+          ) ;
+          rdf:type [ <https://w3id.org/linkml/examples/personinfoRelationship> ] ?
+       )
+    } OR @<https://w3id.org/linkml/examples/personinfoFamilialRelationship>
+)
+
+<https://w3id.org/linkml/examples/personinfoWithLocation> {
+    (  $<https://w3id.org/linkml/examples/personinfoWithLocation_tes> <https://w3id.org/linkml/examples/personinfoin_location>
+       @<https://w3id.org/linkml/examples/personinfoPlace> ? ;
+       rdf:type [ <https://w3id.org/linkml/examples/personinfoWithLocation> ] ?
+    )
+}
+
+

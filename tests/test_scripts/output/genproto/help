@@ -1,6 +1,6 @@
 Usage: gen-proto [OPTIONS] YAMLFILE
 
-  Generate proto representation of biolink model
+  Generate proto representation of LinkML model
 
 Options:
   -f, --format [proto]            Output format (default=proto)

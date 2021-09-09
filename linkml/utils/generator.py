@@ -106,7 +106,7 @@ class Generator(metaclass=abc.ABCMeta):
         Generate output in the required format
 
         :param kwargs: Generater specific parameters
-        :return: Generated outputt
+        :return: Generated output
         """
         output = StringIO()
         with redirect_stdout(output):

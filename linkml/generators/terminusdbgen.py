@@ -141,7 +141,7 @@ class TerminusdbGenerator(Generator):
 @shared_arguments(TerminusdbGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate graphql representation of a biolink model """
+    """ Generate graphql representation of a LinkML model """
     print(TerminusdbGenerator(yamlfile, **args).serialize(**args))
 
 

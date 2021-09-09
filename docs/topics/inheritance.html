@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inheritance &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Slots" href="slots.html" />
+    <link rel="prev" title="Metadata" href="metadata.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Using LinkML</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install.html">How to install LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Inheritance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inheritance-related-slots">Inheritance Related Slots</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#is-a">is_a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#abstract">abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mixin">mixin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mixins">mixins</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Generated Python Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Using LinkML</a> &raquo;</li>
+      <li>Inheritance</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topics/inheritance.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="inheritance">
+<h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h1>
+<section id="inheritance-related-slots">
+<h2>Inheritance Related Slots<a class="headerlink" href="#inheritance-related-slots" title="Permalink to this headline"></a></h2>
+<section id="is-a">
+<h3>is_a<a class="headerlink" href="#is-a" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">is_a</span></code> slot can be used to define a hierarchy for your Biolink Model class, mixin or slot where a new class, mixin or slot is defined as a subclass of another defined class, mixin or slot.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">gene</span><span class="p">:</span>
+  <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+</pre></div>
+</div>
+<p>Here we define that the entity class <code class="docutils literal notranslate"><span class="pre">gene</span></code> is a sub-class of <code class="docutils literal notranslate"><span class="pre">gene</span> <span class="pre">or</span> <span class="pre">gene</span> <span class="pre">product</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">is_a</span></code> has the characteristics of homeomorphicity: <code class="docutils literal notranslate"><span class="pre">is_a</span></code> <strong>SHOULD</strong> only connect either (1) two mixins (2) two classes (3) two slots.</p>
+</section>
+<section id="abstract">
+<h3>abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h3>
+<p>A model class (or slot) may be tagged with its <code class="docutils literal notranslate"><span class="pre">abstract</span></code> slot set to the boolean value <code class="docutils literal notranslate"><span class="pre">true</span></code>, to define whether it is abstract. This has comparable meaning to that in the computing science Object Oriented Paradigm: another class (or slot) can use the abstract class (or slot) as part of its inheritance hierarchy, but the abstract class itself <em>cannot</em> be directly instantiated.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">cell line to thing association</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">association</span>
+    <span class="nt">defining_slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">subject</span>
+    <span class="nt">abstract</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">A relationship between a cell line and another entity</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">subject</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cell line</span>
+</pre></div>
+</div>
+<p>Here we define that the association class <code class="docutils literal notranslate"><span class="pre">cell</span> <span class="pre">line</span> <span class="pre">to</span> <span class="pre">thing</span> <span class="pre">association</span></code> is an abstract class. In this case, the class simply constrains its child subclasses to have a subject range of <code class="docutils literal notranslate"><span class="pre">biolink:CellLine</span></code>.</p>
+</section>
+<section id="mixin">
+<h3>mixin<a class="headerlink" href="#mixin" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">mixin:true</span></code> demarkation is used to extend the properties (or slots) of a class, without changing its
+position in the class hierarchy.  Mixins can be extremely helpful in a number of ways: 1) to generalize a set
+of attributes that can apply to classes in different parts of the class hierarchy, 2) reduce duplication of
+shared attributes between classes that do not inherit from one another and 3) to prevent the sometimes confusing nature
+of multiple inheritance noted in the ‘[diamond problem]’(https://tinyurl.com/4zdw9tsb).</p>
+<p>In general, while mixin slots and classes should not be directly instantiated, or used directly as a slot in a class,
+KGs can use them as a substitute for multiple inheritance. For example, a KG might wish to determine what are the parents
+of a certain class.  In this case, the KG should navigate a mixin used in a domain or range of a class or slot, as it
+would the “is_a” demarkation.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">thing with taxon</span><span class="p">:</span>
+    <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">A mixin that can be used on any entity with a taxon</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">in taxon</span>
+</pre></div>
+</div>
+<p>Here we define the class <code class="docutils literal notranslate"><span class="pre">thing</span> <span class="pre">with</span> <span class="pre">taxon</span></code> as a mixin class with a slot <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">taxon</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">molecular entity</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">biological entity</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">thing with taxon</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">physical essence</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ontology class</span>
+    <span class="nt">aliases</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;bioentity&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>In the class <code class="docutils literal notranslate"><span class="pre">molecular</span> <span class="pre">entity</span></code>, we use the <code class="docutils literal notranslate"><span class="pre">thing</span> <span class="pre">with</span> <span class="pre">taxon</span></code> mixin in order to add the ‘in taxon’ attribute (slot)
+to the molecular entity class.  The other way to do this would be to duplicate the ‘in taxon’ attribute in every class
+manually (duplicative), or have hierarchy/parent that had the <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">taxon</span></code> slot (but this parent would be a sister-class to
+‘named thing’ as not all named-things are taxon based).  Mixins simplify modeling and should be used when necessary.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">regulates</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">affects</span>
+    <span class="nt">comments</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">This is a grouping for process-process and entity-entity relations</span>
+    <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Here we define the slot <code class="docutils literal notranslate"><span class="pre">regulates</span></code> as a mixin slot. This slot can be used as a <code class="docutils literal notranslate"><span class="pre">mixin</span></code> by other slots.</p>
+<p>Mixins can also be hierarchical.  For example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">frequency qualifier mixin</span><span class="p">:</span>
+    <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">Qualifier for frequency type associations</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">frequency qualifier</span>
+</pre></div>
+</div>
+<p>Here we define the mixin <code class="docutils literal notranslate"><span class="pre">frequency</span> <span class="pre">qualifier</span> <span class="pre">mixin</span></code> to hold the parent slot, <code class="docutils literal notranslate"><span class="pre">frequency</span> <span class="pre">qualifier.</span></code><br />
+The slot, <code class="docutils literal notranslate"><span class="pre">frequency</span> <span class="pre">qualifier</span></code> is then inherited by every class in the subsequent <code class="docutils literal notranslate"><span class="pre">is_a</span></code> hierarchy of
+<code class="docutils literal notranslate"><span class="pre">entity</span> <span class="pre">to</span> <span class="pre">feature</span> <span class="pre">or</span> <span class="pre">disease</span> <span class="pre">qualifiers</span> <span class="pre">mixin.</span></code>  The <code class="docutils literal notranslate"><span class="pre">frequency</span> <span class="pre">quantifier</span></code> mixin was created with similar
+intentions (favoring consistency in modeling similar domains), though its reuse is not as evident in the model yet.</p>
+<p>Mixins provide the means of reusing semantics, generally by the inclusion of specific property slots or
+other semantic constraint, in different classes or slots, without the need to tie slots to the
+hierarchy of the class itself.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">positively regulates</span><span class="p">:</span>
+    <span class="nt">comments</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">This is a grouping for positive process-process and entity-entity regulation.</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">regulates</span>
+    <span class="nt">inverse</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">positively regulated by</span>
+    <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">close_mappings</span><span class="p">:</span>
+      <span class="c1"># This RTX contributed term is tagged as a inverse of this Biolink predicate</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RO:0002336</span>
+    <span class="nt">exact_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RO:0002213</span>
+    <span class="nt">narrow_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CHEMBL.MECHANISM:activator</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DGIdb:activator</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RO:0004032</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RO:0004034</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RO:0002629</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SEMMEDDB:augments</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">positively</span> <span class="pre">regulates</span></code> is another example of a mixin.  In this case, a mixin is used to store meta data about a
+predicate or relationship between two entities at a general level.  Its subsequent children, inherit these definitions
+and attributes, whether or not the parent mixin class has any slots.</p>
+</section>
+<section id="mixins">
+<h3>mixins<a class="headerlink" href="#mixins" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">mixins</span></code> slot can be used to specify a list of mixins that a class (or slot) can use to
+include the added semantics of the mixins.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">mixins</span></code> are separate from the <code class="docutils literal notranslate"><span class="pre">is_a</span></code> hierarchy and the mixin classes do not contribute to a
+classes inheritance hierarchy.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">individual organism</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">organismal entity</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">thing with taxon</span>
+</pre></div>
+</div>
+<p>Here we define an entity class <code class="docutils literal notranslate"><span class="pre">individual</span> <span class="pre">organism</span></code> that uses the mixin class <code class="docutils literal notranslate"><span class="pre">thing</span> <span class="pre">with</span> <span class="pre">taxon</span></code>.
+By virtue of the mixin, the class <code class="docutils literal notranslate"><span class="pre">individual</span> <span class="pre">organism</span></code> will have an <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">taxon</span></code> slot in addition to
+all its own slots, its parent slots, and its ancestor slots.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="metadata.html" class="btn btn-neutral float-left" title="Metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="slots.html" class="btn btn-neutral float-right" title="Slots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

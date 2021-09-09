@@ -1,6 +1,6 @@
 # String Template proposal
 The `string_template` attribute allows a Python [format string](https://docs.python.org/3/library/string.html#formatstrings)
-to be associated with a biolink model `Element`.  
+to be associated with a LinkML model `Element`.  
 
 ## Syntax
 ```yaml

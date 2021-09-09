@@ -86,7 +86,7 @@ class GolrSchemaGenerator(Generator):
 @click.command()
 @click.option("--dir", "-d", default='golr-views', help="Output directory")
 def cli(yamlfile, dir=None, **args):
-    """ Generate GOLR representation of a biolink model """
+    """ Generate GOLR representation of a LinkML model """
     print(GolrSchemaGenerator(yamlfile, directory=dir, **args).serialize(directory=dir, **args))
 
 

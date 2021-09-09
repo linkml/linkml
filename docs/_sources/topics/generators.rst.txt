@@ -1,0 +1,17 @@
+.. _topic_generators:
+
+Generators
+==========
+
+LinkML comes with a number of *generators* which will generate a
+representation of a schema using an alternative framework. This allows
+LinkML users to leverage toolchains from these frameworks. For example,
+LinkML can be compiled to JSON-Schema, and JSON-Schema validators can be
+used for JSON data.
+
+To see examples of generator outputs, see
+`PersonSchema <https://github.com/linkml/linkml/tree/main/examples/PersonSchema>`_
+
+doc:`../generators/index`
+
+

@@ -1,6 +1,6 @@
 Usage: gen-jsonld-context [OPTIONS] YAMLFILE
 
-  Generate jsonld @context definition from biolink model
+  Generate jsonld @context definition from LinkML model
 
 Options:
   --base TEXT                     Base URI for model
