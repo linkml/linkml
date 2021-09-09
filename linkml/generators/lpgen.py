@@ -84,7 +84,7 @@ class LogicProgramGenerator(Generator):
 @shared_arguments(LogicProgramGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate logic program representation of a biolink model """
+    """ Generate logic program representation of a LinkML model """
     print(LogicProgramGenerator(yamlfile, **args).serialize(**args))
 
 

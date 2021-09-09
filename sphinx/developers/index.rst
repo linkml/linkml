@@ -1,0 +1,15 @@
+.. _developers:
+
+Developers guide
+================
+
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   organization
+   manipulating-schemas
+   contributing-code
+

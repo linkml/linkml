@@ -57,7 +57,7 @@ class CsvGenerator(Generator):
 @click.command()
 @click.option("--root", "-r", default=None, multiple=True, help="Class(es) to transform")
 def cli(yamlfile, root=None, **args):
-    """ Generate CSV/TSV file from biolink model """
+    """ Generate CSV/TSV file from LinkML model """
     print(CsvGenerator(yamlfile, **args).serialize(classes=root, **args))
 
 

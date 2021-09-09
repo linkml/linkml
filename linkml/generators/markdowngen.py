@@ -623,7 +623,7 @@ class MarkdownGenerator(Generator):
 @click.option("--notypesdir", is_flag=True, help="Do not create a separate types directory")
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
 def cli(yamlfile, dir, img, index_file, notypesdir, warnonexist, **kwargs):
-    """ Generate markdown documentation of a biolink model """
+    """ Generate markdown documentation of a LinkML model """
     MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)\
         .serialize(directory=dir, image_dir=img, **kwargs)
 

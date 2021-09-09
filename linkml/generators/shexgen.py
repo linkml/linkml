@@ -167,7 +167,7 @@ class ShExGenerator(Generator):
 @click.command()
 @click.option("-o", "--output", help="Output file name")
 def cli(yamlfile, **args):
-    """ Generate a ShEx Schema for a  biolink model """
+    """ Generate a ShEx Schema for a  LinkML model """
     print(ShExGenerator(yamlfile, **args).serialize(**args))
 
 

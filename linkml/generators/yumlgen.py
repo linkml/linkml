@@ -233,7 +233,7 @@ class YumlGenerator(Generator):
 @click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
 @click.option("--directory", "-d", help="Output directory - if supplied, YUML rendering will be saved in file")
 def cli(yamlfile, **args):
-    """ Generate a UML representation of a biolink model """
+    """ Generate a UML representation of a LinkML model """
     print(YumlGenerator(yamlfile, **args).serialize(**args), end="")
 
 

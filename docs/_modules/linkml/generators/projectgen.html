@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.generators.projectgen &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.generators.projectgen</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.generators.projectgen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">lcamelcase</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+
+<span class="kn">from</span> <span class="nn">linkml.generators.graphqlgen</span> <span class="kn">import</span> <span class="n">GraphqlGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.jsonldcontextgen</span> <span class="kn">import</span> <span class="n">ContextGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.jsonldgen</span> <span class="kn">import</span> <span class="n">JSONLDGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.jsonschemagen</span> <span class="kn">import</span> <span class="n">JsonSchemaGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.markdowngen</span> <span class="kn">import</span> <span class="n">MarkdownGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.owlgen</span> <span class="kn">import</span> <span class="n">OwlSchemaGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.prefixmapgen</span> <span class="kn">import</span> <span class="n">PrefixGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.protogen</span> <span class="kn">import</span> <span class="n">ProtoGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pythongen</span> <span class="kn">import</span> <span class="n">PythonGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.rdfgen</span> <span class="kn">import</span> <span class="n">RDFGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.shexgen</span> <span class="kn">import</span> <span class="n">ShExGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.sqlddlgen</span> <span class="kn">import</span> <span class="n">SQLDDLGenerator</span>
+
+<span class="n">GEN_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;graphql&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">GraphqlGenerator</span><span class="p">,</span> <span class="s1">&#39;graphql/</span><span class="si">{name}</span><span class="s1">.graphql&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;jsonldcontext&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">ContextGenerator</span><span class="p">,</span> <span class="s1">&#39;jsonld/</span><span class="si">{name}</span><span class="s1">.context.jsonld&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;jsonld&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">JSONLDGenerator</span><span class="p">,</span> <span class="s1">&#39;jsonld/</span><span class="si">{name}</span><span class="s1">.jsonld&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;context&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{parent}</span><span class="s1">/</span><span class="si">{name}</span><span class="s1">.context.jsonld&#39;</span><span class="p">}),</span>
+    <span class="s1">&#39;jsonschema&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">JsonSchemaGenerator</span><span class="p">,</span> <span class="s1">&#39;jsonschema/</span><span class="si">{name}</span><span class="s1">.schema.json&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;markdown&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">MarkdownGenerator</span><span class="p">,</span> <span class="s1">&#39;docs/&#39;</span><span class="p">,</span>
+                 <span class="p">{</span><span class="s1">&#39;directory&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{parent}</span><span class="s1">&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;index_file&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">.md&#39;</span><span class="p">}),</span>
+    <span class="s1">&#39;owl&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">OwlSchemaGenerator</span><span class="p">,</span> <span class="s1">&#39;owl/</span><span class="si">{name}</span><span class="s1">.owl.ttl&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;prefixmap&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">PrefixGenerator</span><span class="p">,</span> <span class="s1">&#39;prefixmap/</span><span class="si">{name}</span><span class="s1">.yaml&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;proto&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">ProtoGenerator</span><span class="p">,</span> <span class="s1">&#39;protobuf/</span><span class="si">{name}</span><span class="s1">.proto&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;python&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">PythonGenerator</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">.py&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+<span class="c1">#    &#39;rdf&#39;: (RDFGenerator, &#39;rdf/{name}.ttl&#39;, {}),</span>
+<span class="c1">#    &#39;rdf&#39;: (RDFGenerator, &#39;rdf/{name}.ttl&#39;, {&#39;context&#39;: &#39;{parent}/../jsonld/{name}.context.jsonld&#39;}),</span>
+    <span class="s1">&#39;shex&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">ShExGenerator</span><span class="p">,</span> <span class="s1">&#39;shex/</span><span class="si">{name}</span><span class="s1">.shexj&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;sqlddl&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">SQLDDLGenerator</span><span class="p">,</span> <span class="s1">&#39;sqlschema/</span><span class="si">{name}</span><span class="s1">.sql&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="get_local_imports"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.get_local_imports">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_local_imports</span><span class="p">(</span><span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;GETTING IMPORTS = </span><span class="si">{</span><span class="n">schema_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">all_imports</span> <span class="o">=</span> <span class="p">[</span><span class="n">schema_path</span><span class="p">]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="n">schema</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;imports&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="n">imp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="n">imp</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.yaml&#39;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; IMP=</span><span class="si">{</span><span class="n">imp</span><span class="si">}</span><span class="s1"> //  path=</span><span class="si">{</span><span class="n">imp_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">imp_path</span><span class="p">):</span>
+                    <span class="n">all_imports</span> <span class="o">+=</span> <span class="n">get_local_imports</span><span class="p">(</span><span class="n">imp_path</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_imports</span></div>
+
+<div class="viewcode-block" id="ProjectConfiguration"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ProjectConfiguration</span><span class="p">:</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tmp&#39;</span>
+    <span class="n">generator_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{})</span></div>
+
+<div class="viewcode-block" id="ProjectGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.ProjectGenerator">[docs]</a><span class="k">class</span> <span class="nc">ProjectGenerator</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ProjectGenerator.generate"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.ProjectGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProjectConfiguration</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()):</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">all_schemas</span> <span class="o">=</span> <span class="n">get_local_imports</span><span class="p">(</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">schema_path</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ALL_SCHEMAS = </span><span class="si">{</span><span class="n">all_schemas</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">gen_name</span><span class="p">,</span> <span class="p">(</span><span class="n">gen_cls</span><span class="p">,</span> <span class="n">gen_path_fmt</span><span class="p">,</span> <span class="n">gen_args</span><span class="p">)</span> <span class="ow">in</span> <span class="n">GEN_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;GEN: </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">local_path</span> <span class="ow">in</span> <span class="n">all_schemas</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; SCHEMA: </span><span class="si">{</span><span class="n">local_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">gen_path</span> <span class="o">=</span> <span class="n">gen_path_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">gen_path_full</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">directory</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">gen_path</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">gen_path_full</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+                <span class="n">parent_dir</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; PARENT=</span><span class="si">{</span><span class="n">parent_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">gen_path_full</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+                <span class="n">gen</span><span class="p">:</span> <span class="n">Generator</span>
+                <span class="n">gen</span> <span class="o">=</span> <span class="n">gen_cls</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+                <span class="n">serialize_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mergeimports&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span><span class="o">**</span><span class="n">gen_args</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gen_name</span><span class="p">,</span> <span class="p">{})}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">serialize_args</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent_dir</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; ARGS: </span><span class="si">{</span><span class="n">serialize_args</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">gen_dump</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">serialize_args</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="c1"># markdowngen does not write to a file</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span></div></div>
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--dir&quot;</span><span class="p">,</span> <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;directory in which to place generated files. E.g. linkml_model, biolink_model&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;yamlfile&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generate JSONLD file from biolink schema &quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="nb">dir</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">ProjectGenerator</span><span class="p">()</span>
+    <span class="n">gen</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">cli</span><span class="p">()</span>
+
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

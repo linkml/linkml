@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URIs and Mappings &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generators" href="generators.html" />
+    <link rel="prev" title="Slots" href="slots.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Using LinkML</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install.html">How to install LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">URIs and Mappings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exact-mappings">exact_mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#close-mappings">close_mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#narrow-mappings">narrow_mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#broad-mappings">broad_mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-mappings">related_mappings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slot-uri">slot_uri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id-prefixes">id_prefixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Generated Python Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Using LinkML</a> &raquo;</li>
+      <li>URIs and Mappings</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topics/uris-and-mappings.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="uris-and-mappings">
+<h1>URIs and Mappings<a class="headerlink" href="#uris-and-mappings" title="Permalink to this headline"></a></h1>
+<section id="exact-mappings">
+<h2>exact_mappings<a class="headerlink" href="#exact-mappings" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">exact_mappings</span></code> slot can be used to define external concepts, predicates, or properties which are considered to be exact mappings to the class (or slot) being defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">same as</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exact match</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">holds between two entities that are considered equivalent to each other</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">exact_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">owl:sameAs</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">skos:exactMatch</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">WIKIDATA_PROPERTY:P2888</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CHEMBL.MECHANISM:equivalent_to</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MONDO:equivalentTo</span>
+</pre></div>
+</div>
+<p>Here we define a list of 5 predicates that are semantically equivalent to the Biolink Model predicate slot <code class="docutils literal notranslate"><span class="pre">same</span> <span class="pre">as</span></code>.</p>
+</section>
+<section id="close-mappings">
+<h2>close_mappings<a class="headerlink" href="#close-mappings" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">close_mappings</span></code> slot can be used to define external concepts, predicates, or properties which are considered to be close mappings to the class (or slot) being defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">same as</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exact match</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">holds between two entities that are considered equivalent to each other</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">exact_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">owl:sameAs</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">skos:exactMatch</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">WIKIDATA_PROPERTY:P2888</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CHEMBL.MECHANISM:equivalent_to</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MONDO:equivalentTo</span>
+    <span class="nt">close_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">owl:equivalentClass</span>
+</pre></div>
+</div>
+<p>Here we define <code class="docutils literal notranslate"><span class="pre">owl:equivalentClass</span></code> as being a close match to the Biolink Model predicate slot <code class="docutils literal notranslate"><span class="pre">same</span> <span class="pre">as</span></code>.</p>
+</section>
+<section id="narrow-mappings">
+<h2>narrow_mappings<a class="headerlink" href="#narrow-mappings" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">narrow_mappings</span></code> slot can be used to define external concepts, predicates, or properties which are considered to be narrow mappings to the class (or slot) being defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">same as</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">exact match</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">holds between two entities that are considered equivalent to each other</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">close_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">owl:equivalentClass</span>
+    <span class="nt">exact_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">owl:sameAs</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">skos:exactMatch</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">WIKIDATA_PROPERTY:P2888</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CHEMBL.MECHANISM:equivalent_to</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MONDO:equivalentTo</span>
+    <span class="nt">narrow_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DRUGBANK:external-identifier</span>
+</pre></div>
+</div>
+<p>Here we define <code class="docutils literal notranslate"><span class="pre">DRUGBANK:external-identifier</span></code> as being a narrow match to the predicate slot <code class="docutils literal notranslate"><span class="pre">same</span> <span class="pre">as</span></code>.</p>
+<p>By narrow we mean that the scope of <code class="docutils literal notranslate"><span class="pre">DRUGBANK:external-identifier</span></code> is more narrower and restrictive than <code class="docutils literal notranslate"><span class="pre">same</span> <span class="pre">as</span></code>.</p>
+<p>If we were to create a new predicate slot as a proxy for <code class="docutils literal notranslate"><span class="pre">DRUGBANK:external-identifier</span></code> then that new slot would be a child of <code class="docutils literal notranslate"><span class="pre">same</span> <span class="pre">as</span></code>.</p>
+</section>
+<section id="broad-mappings">
+<h2>broad_mappings<a class="headerlink" href="#broad-mappings" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">broad_mappings</span></code> slot can be used to define external concepts, predicates, or properties which are considered to be broad mappings to the class (or slot) being defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">in complex with</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">holds between two genes or gene products that are part of (or code for products that are part of) in the same macromolecular complex</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">coexists with</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">broad_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SIO:010285</span>
+</pre></div>
+</div>
+<p>Here we define <code class="docutils literal notranslate"><span class="pre">SIO:010285</span></code> (molecular complex formation) as a broad mapping to the predicate slot <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">complex</span> <span class="pre">with</span></code>.</p>
+<p>By broad we mean that the scope of <code class="docutils literal notranslate"><span class="pre">SIO:010285</span></code> is more broad and relaxed than <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">complex</span> <span class="pre">with</span></code>.</p>
+<p>If we were to create a new predicate slot as a proxy for <code class="docutils literal notranslate"><span class="pre">SIO:010285</span></code> then that new slot would be a parent of <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">complex</span> <span class="pre">with</span></code>.</p>
+</section>
+<section id="related-mappings">
+<h2>related_mappings<a class="headerlink" href="#related-mappings" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">related_mappings</span></code> slot can be used to define external concepts, predicates, or properties which are considered to be related mappings to the class (or slot) being defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">in complex with</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">holds between two genes or gene products that are part of (or code for products that are part of) in the same macromolecular complex</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">coexists with</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">broad_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SIO:010285</span>
+    <span class="nt">related_mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SIO:010497</span>
+</pre></div>
+</div>
+<p>Here we define <code class="docutils literal notranslate"><span class="pre">SIO:010497</span></code> (protein complex) as a related mapping to the predicate slot <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">complex</span> <span class="pre">with</span></code>.</p>
+<p>By related we mean that the scope of <code class="docutils literal notranslate"><span class="pre">SIO:010497</span></code> is related to the predicate slot <code class="docutils literal notranslate"><span class="pre">in</span> <span class="pre">complex</span> <span class="pre">with</span></code> and it’s difficult to infer any further granularity.</p>
+</section>
+<section id="slot-uri">
+<h2>slot_uri<a class="headerlink" href="#slot-uri" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">slot_uri</span></code> slot can be used to define a canonical URI that is the true representation for that particular slot. That is, the value of <code class="docutils literal notranslate"><span class="pre">slot_uri</span></code> can be used interchangably with the slot being defined.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">name</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">node property</span>
+    <span class="nt">aliases</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;label&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;display</span><span class="nv"> </span><span class="s">name&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">named thing</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">label type</span>
+    <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">rdfs:label</span>
+</pre></div>
+</div>
+<p>Here we define <code class="docutils literal notranslate"><span class="pre">rdfs:label</span></code> as the canonical URI for the property slot <code class="docutils literal notranslate"><span class="pre">name</span></code>. When serializing a graph into RDF, the name of an instance of entity class <code class="docutils literal notranslate"><span class="pre">named</span> <span class="pre">thing</span></code> will be represented using <code class="docutils literal notranslate"><span class="pre">rdfs:label</span></code> instead of <code class="docutils literal notranslate"><span class="pre">biolink:name</span></code>.</p>
+<p>This is to ensure that we use certain core RDF predicates as is.</p>
+</section>
+<section id="id-prefixes">
+<h2>id_prefixes<a class="headerlink" href="#id-prefixes" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">id_prefixes</span></code> slot can be used to define a list of valid ID prefixes that instances of this class ought to have as part of their CURIE.</p>
+<p>The order of the list matters since its a prioritized list with the ID prefix with the highest priority appearing at the top of the list.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">gene</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+    <span class="nt">aliases</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;locus&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">symbol</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">synonym</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">xref</span>
+    <span class="nt">mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SO:0000704</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SIO:010035</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">WIKIDATA:Q7187</span>
+    <span class="nt">id_prefixes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NCBIGene</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ENSEMBL</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HGNC</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">UniProtKB</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">MGI</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ZFIN</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">dictyBase</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">WB</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">WormBase</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">FlyBase</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">FB</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">RGD</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SGD</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">PomBase</span>
+</pre></div>
+</div>
+<p>Here we define the entity class <code class="docutils literal notranslate"><span class="pre">gene</span></code> to have a list of ID prefixes with <code class="docutils literal notranslate"><span class="pre">NCBIGene</span></code> having the highest priority.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="slots.html" class="btn btn-neutral float-left" title="Slots" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generators.html" class="btn btn-neutral float-right" title="Generators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

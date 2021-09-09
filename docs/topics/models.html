@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Models &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="aliases" href="metadata.html" />
+    <link rel="prev" title="How to install LinkML" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Using LinkML</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install.html">How to install LinkML</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#model-metadata-and-directives">Model metadata and directives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slots">Slots</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-attribute-slot">The Attribute slot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#slot-usage">Slot Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#types">Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enums">Enums</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subsets">Subsets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#description">description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance Related Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">slot_usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#required">required</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#slots-relating-to-constraints-on-slot-composition">Slots Relating to Constraints on Slot Composition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#slots-relating-semantic-mappings-and-anchoring-to-external-ontology">Slots Relating Semantic Mappings and Anchoring to External Ontology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">exact_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#close-mappings">close_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#narrow-mappings">narrow_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#broad-mappings">broad_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#related-mappings">related_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#slot-uri">slot_uri</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#id-prefixes">id_prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Generated Python Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Using LinkML</a> &raquo;</li>
+      <li>Models</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topics/models.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline"></a></h1>
+<p>A LinkML model describes the structure of your data. Your data can be
+expressed as JSON or YAML files (the default form for LinkML), or as
+CSVs, or as a relational database, or even a triplestore or graph
+database.</p>
+<p>LinkML models are authored as YAML files. These files can be understood as data files that instantiate <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">SchemaDefinitions</a> in the LinkML metamodel.</p>
+<p>To illustrate we will use the example <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a></p>
+<section id="model-metadata-and-directives">
+<h2>Model metadata and directives<a class="headerlink" href="#model-metadata-and-directives" title="Permalink to this headline"></a></h2>
+<p>A LinkML model/schema may have various pieces of metadata associated with it, for example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
+<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+<span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">|-</span>
+  <span class="no">Information about people, based on [schema.org](http://schema.org)</span>
+<span class="nt">license</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://creativecommons.org/publicdomain/zero/1.0/</span>
+<span class="nt">default_curi_maps</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">semweb_context</span>
+<span class="nt">imports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+<span class="nt">prefixes</span><span class="p">:</span>
+  <span class="nt">personinfo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
+  <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
+  <span class="nt">schema</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
+  <span class="nt">rdfs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://www.w3.org/2000/01/rdf-schema#</span>
+  <span class="nt">prov</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://www.w3.org/ns/prov#</span>
+<span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+<span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="nn">...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>names, identifiers, and metadata</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/id">id</a> – the unique identifier for the schema, as a IRI</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/name">name</a> – the schema name. Use only alphanumeric characters, underscores, and dashes</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/description">description</a> – a summary of the schema. Can include markdown formatting</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/license">license</a> – CC0 recommended</p></li>
+</ul>
+</li>
+<li><p>modules</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/imports">imports</a> – See <span class="xref myst">imports</span></p></li>
+</ul>
+</li>
+<li><p>prefix management</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/prefixes">prefixes</a> – A map of prefixes. See <span class="xref myst">prefixes</span></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/default_prefix">default_prefixes</a> – The prefix used for all elements in this schema</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/default_curi_maps">default_curi_maps</a> – prefix maps from prefixcommons</p></li>
+</ul>
+</li>
+<li><p>other</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/default_range">default_range</a> – The default range for all slots</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<p>Classes provide templates for organizing data. Data objects should
+instantiate classes in the schema. Each class has a set of <em>slots</em>
+(aka fields, attributes) that are applicable to it.</p>
+<p>Classes are defined in a <code class="docutils literal notranslate"><span class="pre">classes</span></code> block at the top level of your YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">A person (alive, dead, undead, or fictional).</span>
+    <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">ClassDefinition</a> for a full list of allowed slots</p>
+<p>Note that because LinkML is described in LinkML, your schema is an
+instantiation of the LinkML metamodel, and schema elements have a list
+of allowed slots. So for example, <code class="docutils literal notranslate"><span class="pre">is_a</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, and <code class="docutils literal notranslate"><span class="pre">slots</span></code>
+are all slots that are applicable to instances of
+ClassDefinitions. This is a little meta at first but you get used to
+it!</p>
+</section>
+<section id="slots">
+<h2>Slots<a class="headerlink" href="#slots" title="Permalink to this headline"></a></h2>
+<p>Slots (aka attributes, fields, columns, properties) can be associated
+with classes to specify what fields instances of that class can have</p>
+<p>For example, in the schema above, instances of Person classes can have
+values for primary email, birthdate, etc.</p>
+<p>In LinkML slots are “first class” and are defined independently of
+classes, and a slot can be used in any number of classes.</p>
+<p>Slots are defined in a <code class="docutils literal notranslate"><span class="pre">slots</span></code> block at the top level of your YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+  <span class="nt">id</span><span class="p">:</span>
+    <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:identifier</span>
+  <span class="nt">name</span><span class="p">:</span>
+    <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:name</span>
+  <span class="nt">gender</span><span class="p">:</span>
+    <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:gender</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gender_enum</span>
+  <span class="nt">age_in_years</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
+    <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+    <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">999</span>
+  <span class="nt">has_employment_history</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EmploymentEvent</span>
+    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">current_address</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Address</span>
+    
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://w3id.org/linkml/SlotDefinition">SlotDefinition</a> for a full list of allowed slots</p>
+<section id="the-attribute-slot">
+<h3>The Attribute slot<a class="headerlink" href="#the-attribute-slot" title="Permalink to this headline"></a></h3>
+<p>As a convenience feature, you can specify slot definitions directly within a class using the <code class="docutils literal notranslate"><span class="pre">attributes</span></code> slot:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">A person (alive, dead, undead, or fictional).</span>
+    <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">gender</span><span class="p">:</span>
+        <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:gender</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gender_enum</span>
+      <span class="nt">age_in_years</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
+        <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+        <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">999</span>
+</pre></div>
+</div>
+</section>
+<section id="slot-usage">
+<h3>Slot Usage<a class="headerlink" href="#slot-usage" title="Permalink to this headline"></a></h3>
+<p>Sometimes you may wish to use a generic slot across multiple classes, but refine its usage for particular subclasses.</p>
+<p>For example, imagine a schema with a generic “Relationship” class:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">Relationship</span><span class="p">:</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">started_at_time</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ended_at_time</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">related_to</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span>
+</pre></div>
+</div>
+<p>with subtypes such as FamilialRelationship, BusinessRelationship, etc</p>
+<p>we can use <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> to constrain the meaning of more generic slots such as <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">related</span> <span class="pre">to</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">FamilialRelationship</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Relationship</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">type</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FamilialRelationshipType</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="nt">related to</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Permalink to this headline"></a></h2>
+<p>See <a class="reference external" href="https://w3id.org/linkml/TypeDefinition">TypeDefinition</a> in the metamodel.</p>
+<p>Types in LinkML are scalar data values such as strings, integers, floats, and so on. LinkML comes with its own set of types, and these can be extended.</p>
+<p>TODO: example</p>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+  <span class="nt">FamilialRelationshipType</span><span class="p">:</span>
+    <span class="nt">permissible_values</span><span class="p">:</span>
+      <span class="nt">SIBLING_OF</span><span class="p">:</span>
+      <span class="nt">PARENT_OF</span><span class="p">:</span>
+      <span class="nt">CHILD_OF</span><span class="p">:</span>
+</pre></div>
+</div>
+</section>
+<section id="subsets">
+<h2>Subsets<a class="headerlink" href="#subsets" title="Permalink to this headline"></a></h2>
+<p>TODO: example</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="install.html" class="btn btn-neutral float-left" title="How to install LinkML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metadata.html" class="btn btn-neutral float-right" title="aliases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

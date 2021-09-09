@@ -100,7 +100,7 @@ class DotGenerator(Generator):
 @click.option("--out", "-o", help="Target file -- if supplied, one large graph will be generated")
 @click.option("--classname", "-c", default=None, multiple=True, help="Class(es) to transform")
 def cli(yamlfile, out, **args):
-    """ Generate graphviz representations of the biolink model """
+    """ Generate graphviz representations of the LinkML model """
     DotGenerator(yamlfile, **args).serialize(filename=out, **args)
 
 
