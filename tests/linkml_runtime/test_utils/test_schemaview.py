@@ -35,6 +35,16 @@ class SchemaViewTestCase(unittest.TestCase):
         logging.debug(e.annotations)
         #assert list(view.annotation_dict('employed at')[]
 
+        # Test get_element_by_prefix - should this be its own method?
+        # Can schemaview be a pytest fixture?
+        elements = view.get_element_by_prefix("ORCID:1234")
+        assert "Person" in elements
+        elements = view.get_element_by_prefix("PMID:1234")
+        assert "Organization" in elements
+        elements = view.get_element_by_prefix("TEST:1234")
+        assert "anatomical entity" not in elements
+
+
         if True:
             # this section is mostly for debugging
             for cn in all_cls.keys():
