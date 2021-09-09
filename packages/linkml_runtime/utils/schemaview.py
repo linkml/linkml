@@ -529,6 +529,40 @@ class SchemaView(object):
                     return ns[pfx] + local_id
         return uri
 
+    @lru_cache(CACHE_SIZE)
+    def get_element_by_prefix(
+            self,
+            identifier: str
+    ) -> List[str]:
+        """
+        Get a Model element by prefix.
+
+        Parameters
+        ----------
+        identifier: str
+            The identifier as a CURIE
+
+        Returns
+        -------
+        Optional[str]
+                The model element corresponding to the given URI/CURIE as available via
+                the id_prefixes mapped to that element.
+
+        """
+        categories = []
+        if ":" in identifier:
+            id_components = identifier.split(":")
+            prefix = id_components[0]
+            elements = self.all_elements()
+            for category, category_element in elements.items():
+                if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
+                    categories.append(category_element.name)
+        if len(categories) == 0:
+            logger.warning("no element found for the given curie using id_prefixes attribute"
+                           ": %s, try get_mappings?", identifier)
+
+        return categories
+
     @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[MAPPING_TYPE, List[URIorCURIE]]:
         """
