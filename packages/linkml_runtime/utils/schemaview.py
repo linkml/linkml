@@ -14,6 +14,8 @@ from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
 from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
+logger = logging.getLogger(__name__)
+
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
