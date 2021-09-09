@@ -226,12 +226,14 @@ class SchemaView(object):
         all_enums = self.all_enums(imports)
         all_types = self.all_type(imports)
         all_subsets = self.all_subset(imports)
+        # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
     def _get_dict(self, slot_name: str, imports=True) -> Dict:
         schemas = self.all_schema(imports)
         d = {}
         for s in schemas:
+            # get the value of element name from the schema, if empty, return empty dictionary.
             d1 = getattr(s, slot_name, {})
             d = {**d, **d1}
         return d
