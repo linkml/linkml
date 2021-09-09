@@ -5,7 +5,7 @@ from copy import copy
 from collections import defaultdict
 from typing import Mapping, Tuple
 from linkml_runtime.utils.namespaces import Namespaces
-
+from deprecated.classic import deprecated
 
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
@@ -172,9 +172,14 @@ class SchemaView(object):
         m = self.schema_map
         return [m[sn] for sn in self.imports_closure(imports)]
 
+    @deprecated("Use `all_classes` instead")
     @lru_cache()
     def all_class(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
-        return 
+        """
+        :param imports: include imports closure
+        :return: all classes in schema view
+        """
+        return self._get_dict(CLASSES, imports)
 
     @lru_cache()
     def all_classes(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
@@ -184,6 +189,15 @@ class SchemaView(object):
         """
         return self._get_dict(CLASSES, imports)
 
+    @deprecated("Use `all_slots` instead")
+    @lru_cache()
+    def all_slot(self, imports=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+        """
+        :param imports: include imports closure
+        :return: all slots in schema view
+        """
+        return self._get_dict(SLOTS, imports)
+
     @lru_cache()
     def all_slots(self, imports=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
@@ -191,6 +205,15 @@ class SchemaView(object):
         :return: all slots in schema view
         """
         return self._get_dict(SLOTS, imports)
+
+    @deprecated("Use `all_enums` instead")
+    @lru_cache()
+    def all_enum(self, imports=True) -> Dict[EnumDefinitionName, EnumDefinition]:
+        """
+        :param imports: include imports closure
+        :return: all enums in schema view
+        """
+        return self._get_dict(ENUMS, imports)
 
     @lru_cache()
     def all_enums(self, imports=True) -> Dict[EnumDefinitionName, EnumDefinition]:
@@ -200,6 +223,8 @@ class SchemaView(object):
         """
         return self._get_dict(ENUMS, imports)
 
+
+    @deprecated("Use `all_types` instead")
     @lru_cache()
     def all_type(self, imports=True) -> Dict[TypeDefinitionName, TypeDefinition]:
         """
@@ -209,12 +234,43 @@ class SchemaView(object):
         return self._get_dict(TYPES, imports)
 
     @lru_cache()
+    def all_types(self, imports=True) -> Dict[TypeDefinitionName, TypeDefinition]:
+        """
+        :param imports: include imports closure
+        :return: all types in schema view
+        """
+        return self._get_dict(TYPES, imports)
+
+    @deprecated("Use `all_subsets` instead")
     def all_subset(self, imports=True) -> Dict[SubsetDefinitionName, SubsetDefinition]:
         """
         :param imports: include imports closure
         :return: all subsets in schema view
         """
         return self._get_dict(SUBSETS, imports)
+
+    @lru_cache()
+    def all_subsets(self, imports=True) -> Dict[SubsetDefinitionName, SubsetDefinition]:
+        """
+        :param imports: include imports closure
+        :return: all subsets in schema view
+        """
+        return self._get_dict(SUBSETS, imports)
+
+    @deprecated("Use `all_elements` instead")
+    @lru_cache()
+    def all_element(self, imports=True) -> Dict[ElementName, Element]:
+        """
+        :param imports: include imports closure
+        :return: all elements in schema view
+        """
+        all_classes = self.all_classes(imports)
+        all_slots = self.all_slots(imports)
+        all_enums = self.all_enums(imports)
+        all_types = self.all_types(imports)
+        all_subsets = self.all_subsets(imports)
+        # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
+        return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
     @lru_cache()
     def all_elements(self, imports=True) -> Dict[ElementName, Element]:
@@ -225,8 +281,8 @@ class SchemaView(object):
         all_classes = self.all_classes(imports)
         all_slots = self.all_slots(imports)
         all_enums = self.all_enums(imports)
-        all_types = self.all_type(imports)
-        all_subsets = self.all_subset(imports)
+        all_types = self.all_types(imports)
+        all_subsets = self.all_subsets(imports)
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
@@ -291,7 +347,7 @@ class SchemaView(object):
         :param imports: include import closure
         :return: subset definition
         """
-        return self.all_subset(imports).get(subset_name, None)
+        return self.all_subsets(imports).get(subset_name, None)
 
     @lru_cache()
     def get_enum(self, enum_name: ENUM_NAME, imports=True) -> EnumDefinition:
@@ -309,7 +365,7 @@ class SchemaView(object):
         :param imports: include import closure
         :return: type definition
         """
-        return self.all_type(imports).get(type_name, None)
+        return self.all_types(imports).get(type_name, None)
 
     def _parents(self, e: Element, imports=True, mixins=True, is_a=True) -> List[ElementName]:
         if mixins:

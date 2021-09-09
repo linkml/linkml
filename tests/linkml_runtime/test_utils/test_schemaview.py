@@ -183,7 +183,7 @@ class SchemaViewTestCase(unittest.TestCase):
         view = SchemaView(SCHEMA_WITH_IMPORTS)
         logging.debug(view.imports_closure())
         self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
-        for t in view.all_type().keys():
+        for t in view.all_types().keys():
             logging.debug(f'T={t} in={view.in_schema(t)}')
         assert view.in_schema('Person') == 'kitchen_sink'
         assert view.in_schema('id') == 'core'
