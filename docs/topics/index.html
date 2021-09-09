@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Using LinkML &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How to install LinkML" href="install.html" />
+    <link rel="prev" title="Quick Install Guide" href="../intro/install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using LinkML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">How to install LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Generated Python Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Using LinkML</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topics/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="using-linkml">
+<span id="topics"></span><h1>Using LinkML<a class="headerlink" href="#using-linkml" title="Permalink to this headline"></a></h1>
+<p>Introduction to the key parts of LinkML that you need to know:</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">How to install LinkML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#install-python">Install Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#install-linkml">Install LinkML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models.html#model-metadata-and-directives">Model metadata and directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#slots">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#subsets">Subsets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">Metadata</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#aliases">aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#description">description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inheritance.html">Inheritance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#inheritance-related-slots">Inheritance Related Slots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="slots.html">Slots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#slot-usage">slot_usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#required">required</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#slots-relating-to-constraints-on-slot-composition">Slots Relating to Constraints on Slot Composition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html#slots-relating-semantic-mappings-and-anchoring-to-external-ontology">Slots Relating Semantic Mappings and Anchoring to External Ontology</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#exact-mappings">exact_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#close-mappings">close_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#narrow-mappings">narrow_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#broad-mappings">broad_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#related-mappings">related_mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#slot-uri">slot_uri</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#id-prefixes">id_prefixes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inlining.html">Inlining objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#no-inlining-reference-by-key">No inlining, reference by key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#inlining-as-a-list">Inlining as a list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#inlining-as-a-dictionary">Inlining as a dictionary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#inlining-a-single-valued-object">Inlining a single-valued object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#inlining-with-non-json-serializations">Inlining with non-JSON serializations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html#when-should-inlining-be-used">When should inlining be used</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html#json-ld">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html#difference-from-owl">Difference from OWL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html#shex">ShEx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html#shacl">SHACL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html#sparql-validation">SPARQL Validation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html#mapping">Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html#denormalization">Denormalization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Generated Python Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#generator">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#pydantic">pydantic</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../intro/install.html" class="btn btn-neutral float-left" title="Quick Install Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-right" title="How to install LinkML" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

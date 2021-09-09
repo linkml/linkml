@@ -1,0 +1,614 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Binder Link &mdash; linkml  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> linkml
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authoring-schemas.html">Schemas</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Utils</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">linkml</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Binder Link</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/readme-foo.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p><a class="reference external" href="https://pypi.python.org/pypi/linkml"><img alt="Pyversions" src="https://img.shields.io/pypi/pyversions/linkml.svg" /></a> <img alt="image1" src="https://github.com/linkml/linkml/workflows/Build/badge.svg" /> <a class="reference external" href="https://pypi.python.org/pypi/linkml"><img alt="PyPi" src="https://img.shields.io/pypi/v/linkml.svg" /></a></p>
+<div class="section" id="binder-link">
+<h1><a class="reference external" href="https://mybinder.org/v2/gh/linkml/linkml/main?filepath=notebooks">Binder Link</a><a class="headerlink" href="#binder-link" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="linkml-linked-data-modeling-language">
+<h2>LinkML - Linked data Modeling Language<a class="headerlink" href="#linkml-linked-data-modeling-language" title="Permalink to this headline">¶</a></h2>
+<p>LinkML is a general purpose modeling language following object-oriented
+and ontological principles. LinkML models can be specified in YAML, JSON
+or RDF.</p>
+<p>A variety of artefacts can be generated from the model: - ShEx - JSON
+Schema - OWL - Python dataclasses - UML diagrams - Markdown pages (for
+deployment in a GitHub pages site)</p>
+<p>…and more.</p>
+<p>The documentation can also be viewed on the <a class="reference external" href="https://linkml.github.io/linkml-model/docs/">LinkML
+documentation</a>.</p>
+<p>You can browse the metamodel component documentation
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs">here</a>. LinkML is
+self-describing, but a few important vocabulary terms to keep in mind
+are: -
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs/ClassDefinition">ClassDefinition</a>:
+Component for defining Classes -
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs/SlotDefinition">SlotDefinition</a>:
+Component for defining Class Properties (or <em>Slots</em>) -
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs/TypeDefinition">TypeDefinition</a>:
+Component for defining Data Types -
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs/SchemaDefinition">SchemaDefinition</a>:
+Component for defining Schemas (combination of subset, type, slot,
+class)</p>
+<p>Further details about the general design of LinkML can be found in the
+LinkML Modeling Language <a class="reference external" href="SPECIFICATION.md">Specification</a>.</p>
+<p>As an example, LinkML has been used for the development of the <a class="reference external" href="https://biolink.github.io/biolink-model/">BioLink
+Model</a>, but the framework
+itself is general purpose and can be used for any kind of modeling. For
+an example Biolink metamodel, see this <a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb">Jupyter
+Notebook</a>.</p>
+</div>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>This project uses
+<a class="reference external" href="https://pipenv-fork.readthedocs.io/en/latest/">pipenv</a> for
+installation. Some IDE’s like PyCharm also have direct
+<a class="reference external" href="https://www.jetbrains.com/help/pycharm/pipenv.html">support</a> for
+pipenv.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>&gt; pipenv install linkml
+</pre></div>
+</div>
+</div>
+<div class="section" id="language-features">
+<h1>Language Features<a class="headerlink" href="#language-features" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Polymorphism/Inheritance, see
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs/is_a">is_a</a></p></li>
+<li><p><a class="reference external" href="https://linkml.github.io/linkml-model/docs/abstract">Abstract</a>
+and <a class="reference external" href="https://linkml.github.io/linkml-model/docs/mixin">Mixin</a>
+classes</p></li>
+<li><p>Control JSON-LD mappings to URIs via
+<a class="reference external" href="https://linkml.github.io/linkml-model/docs/prefixes">prefix</a>
+declarations</p></li>
+<li><p>Ability to refine the meaning of a <em>slot</em> in the context of a
+particular class via <a class="reference external" href="https://linkml.github.io/linkml-model/docs/slot_usage">slot
+usage</a></p></li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>LinkML can be used as a modeling language in its own right, or it can be
+compiled to other schema/modeling languages.</p>
+<p>We will use the following simple schema for illustrative purposes:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://example.org/sample/organization</span>
+<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">organization</span>
+
+<span class="nt">types</span><span class="p">:</span>
+  <span class="nt">yearCount</span><span class="p">:</span>
+    <span class="nt">base</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span>
+    <span class="nt">uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xsd:int</span>
+  <span class="nt">string</span><span class="p">:</span>
+    <span class="nt">base</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">str</span>
+    <span class="nt">uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xsd:string</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+
+  <span class="nt">organization</span><span class="p">:</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has boss</span>
+
+  <span class="nt">employee</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A person</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">first name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">last name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aliases</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age in years</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">last name </span><span class="p">:</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
+  <span class="nt">manager</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">An employee who manages others</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">employee</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has employees</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+  <span class="nt">id</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Unique identifier of a person</span>
+    <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
+  <span class="nt">name</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">human readable name</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+
+  <span class="nt">aliases</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">An alternative name</span>
+    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
+  <span class="nt">first name</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">The first name of a person</span>
+
+  <span class="nt">last name</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">The last name of a person</span>
+
+  <span class="nt">age in years</span><span class="p">:</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">The age of a person if living or age of death if not</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">yearCount</span>
+
+  <span class="nt">has employees</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">employee</span>
+    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
+  <span class="nt">has boss</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">manager</span>
+    <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Note that this schema does not illustrate the more advanced datamodel
+features like in <a class="reference external" href="https://biolink.github.io/biolink-model/docs/">Biolink
+Model</a>.</p>
+</div>
+<div class="section" id="generators">
+<h1>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://json-schema.org/">JSON Schema</a> is a schema language for JSON
+documents.</p>
+<p>With the example <code class="docutils literal notranslate"><span class="pre">organization</span></code> <a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/organization.yaml">LinkML
+schema</a>
+schema, we can illustrate the autogeneration of a JSON Schema
+<a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/organization.schema.json">output</a>.
+You can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run gen-json-schema examples/organization.yaml
+</pre></div>
+</div>
+<p>Note that any JSON that conforms to the derived JSON Schema can be
+converted to RDF using the derived JSON-LD context.</p>
+<p><a class="reference external" href="https://www.w3.org/TR/json-ld/#the-context">JSON-LD context</a>
+provides mapping from JSON to RDF.</p>
+<p>With the example <code class="docutils literal notranslate"><span class="pre">organization</span></code> <a class="reference external" href="examples/organization.yaml">LinkML
+schema</a> schema, we can illustrate the
+autogeneration of a JSON-LD context
+<a class="reference external" href="examples/organization.context.jsonld">output</a>. You can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run gen-jsonld-context examples/organization.yaml
+</pre></div>
+</div>
+<p>You can control the output via
+<a class="reference external" href="https://linkml.io/linkml-model/docs/prefixes.html">prefixes</a>
+declarations and
+<a class="reference external" href="https://linkml.io/linkml-model/docs/default_curi_maps.html">default_curi_maps</a>.</p>
+<p>Any JSON that conforms to the derived JSON Schema (see above) can be
+converted to RDF using this context.</p>
+<p>You can also combine a JSON instance file with a JSON-LD context using
+simple code or a tool like
+<a class="reference external" href="https://stackoverflow.com/questions/19529688/how-to-merge-2-json-objects-from-2-files-using-jq">jq</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jq -s <span class="s1">&#39;.[0] * .[1]&#39;</span> examples/organization-data.json examples/organization.context.jsonld &gt; examples/organization-data.jsonld
+</pre></div>
+</div>
+<p>The above generated <a class="reference external" href="examples/organization-data.jsonld">JSON-LD</a> file
+can be converted to other RDF serialization formats such as
+<a class="reference external" href="examples/organization-data.nt">N-Triples</a>. For example we can use
+<a class="reference external" href="https://jena.apache.org/documentation/io/">Apache Jena</a> as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>riot examples/organization-data.jsonld &gt; examples/organization-data.nt
+</pre></div>
+</div>
+<p>With the example <code class="docutils literal notranslate"><span class="pre">organization</span></code> <a class="reference external" href="examples/organization.yaml">LinkML
+schema</a> schema, we can illustrate the
+autogeneration of a Python Dataclass
+<a class="reference external" href="examples/organization.py">output</a>. You can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run gen-py-classes examples/organization.yaml &gt; examples/organization.py
+</pre></div>
+</div>
+<details><p>Python Dataclass for <code class="docutils literal notranslate"><span class="pre">organization</span></code> schema</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Organization</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://example.org/sample/organization/Organization&quot;</span><span class="p">)</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;organization&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="s2">&quot;http://example.org/sample/organization/Organization&quot;</span><span class="p">)</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OrganizationId</span><span class="p">]</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">has_boss</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;Manager&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;id must be supplied&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">OrganizationId</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">OrganizationId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_boss</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_boss</span><span class="p">,</span> <span class="n">Manager</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_boss</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_boss</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+</details><p>For more details see
+<a class="reference external" href="linkml/generators/PythonGenNotes.md">PythonGenNotes</a>.</p>
+<p>The python object can be directly serialized as RDF.</p>
+<p><a class="reference external" href="http://shex.io/shex-semantics/index.html">ShEx</a>, short for Shape
+Expressions Language is a modeling language for RDF files.</p>
+<p>With the example <code class="docutils literal notranslate"><span class="pre">organization</span></code> <a class="reference external" href="examples/organization.yaml">LinkML
+schema</a> schema, we can illustrate the
+autogeneration of a ShEx <a class="reference external" href="examples/organization.shex">output</a>. You
+can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run gen-shex examples/organization.yaml &gt; examples/organization.shex
+</pre></div>
+</div>
+<details><p>ShEx output for <code class="docutils literal notranslate"><span class="pre">organization</span></code> schema</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>BASE &lt;http://example.org/sample/organization/&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+PREFIX xsd1: &lt;http://example.org/UNKNOWN/xsd/&gt;
+
+
+&lt;YearCount&gt; xsd1:int
+
+&lt;String&gt; xsd1:string
+
+&lt;Employee&gt;  (
+    CLOSED {
+       (  $&lt;Employee_tes&gt; (  &lt;first_name&gt; @&lt;String&gt; ? ;
+             &lt;last_name&gt; @&lt;String&gt; ;
+             &lt;aliases&gt; @&lt;String&gt; * ;
+             &lt;age_in_years&gt; @&lt;YearCount&gt; ?
+          ) ;
+          rdf:type [ &lt;Employee&gt; ]
+       )
+    } OR @&lt;Manager&gt;
+)
+
+&lt;Manager&gt; CLOSED {
+    (  $&lt;Manager_tes&gt; (  &amp;&lt;Employee_tes&gt; ;
+          rdf:type [ &lt;Employee&gt; ] ? ;
+          &lt;has_employees&gt; @&lt;Employee&gt; *
+       ) ;
+       rdf:type [ &lt;Manager&gt; ]
+    )
+}
+
+&lt;Organization&gt; CLOSED {
+    (  $&lt;Organization_tes&gt; (  &lt;name&gt; @&lt;String&gt; ? ;
+          &lt;has_boss&gt; @&lt;Manager&gt; ?
+       ) ;
+       rdf:type [ &lt;Organization&gt; ]
+    )
+}
+</pre></div>
+</div>
+</details><p>Web Ontology Language
+<a class="reference external" href="https://www.w3.org/TR/2012/REC-owl2-overview-20121211/">OWL</a> is
+modeling language used to author ontologies.</p>
+<p>With the example <code class="docutils literal notranslate"><span class="pre">organization</span></code> <a class="reference external" href="examples/organization.yaml">LinkML
+schema</a> schema, we can illustrate the
+autogeneration of a ShEx <a class="reference external" href="examples/organization.owl.ttl">output</a>. You
+can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run gen-owl examples/organization.yaml &gt; examples/organization.owl.ttl
+</pre></div>
+</div>
+<details><p>OWL output for <code class="docutils literal notranslate"><span class="pre">organization</span></code> schema</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="nv">&lt;http://example.org/sample/organization/Organization&gt;</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Class</span><span class="p">,</span>
+        <span class="nn">meta</span><span class="p">:</span><span class="nt">ClassDefinition</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">label</span> <span class="s">&quot;organization&quot;</span> <span class="p">;</span>
+    <span class="nn">rdfs</span><span class="p">:</span><span class="nt">subClassOf</span> <span class="p">[</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Restriction</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">onClass</span> <span class="nv">&lt;http://example.org/sample/organization/String&gt;</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">onProperty</span> <span class="nv">&lt;http://example.org/sample/organization/id&gt;</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">qualifiedCardinality</span> <span class="mi">1</span> <span class="p">],</span>
+        <span class="p">[</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Restriction</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">maxQualifiedCardinality</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">onClass</span> <span class="nv">&lt;http://example.org/sample/organization/String&gt;</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">onProperty</span> <span class="nv">&lt;http://example.org/sample/organization/name&gt;</span> <span class="p">],</span>
+        <span class="p">[</span> <span class="kt">a</span> <span class="nn">owl</span><span class="p">:</span><span class="nt">Restriction</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">maxQualifiedCardinality</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">onClass</span> <span class="nv">&lt;http://example.org/sample/organization/Manager&gt;</span> <span class="p">;</span>
+            <span class="nn">owl</span><span class="p">:</span><span class="nt">onProperty</span> <span class="nv">&lt;http://example.org/sample/organization/has_boss&gt;</span> <span class="p">]</span> <span class="p">.</span>
+</pre></div>
+</div>
+</details></div>
+<div class="section" id="generating-markdown-documentation">
+<h1>Generating Markdown documentation<a class="headerlink" href="#generating-markdown-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The below command will generate a Markdown document for every class and
+slot in the model which can be used in a static site for ex., GitHub
+pages.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run gen-markdown examples/organization.yaml -d examples/organization-docs/
+</pre></div>
+</div>
+</div>
+<div class="section" id="specification">
+<h1>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h1>
+<p>See <a class="reference external" href="https://linkml.github.io/linkml/SPECIFICATION">specification</a>.
+Also see the <a class="reference external" href="semantics">semantics</a> folder for an experimental
+specification in terms of FOL.</p>
+</div>
+<div class="section" id="faq">
+<h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<p>Why invent our own yaml and not use JSON-Schema, SQL, UML, ProtoBuf,
+OWL, etc.?</p>
+<p>Each of these is tied to a particular formalism. JSON Schema to trees.
+OWL to open world logic. There are various impedance mismatches in
+converting between these. The goal was to develop something simple and
+more general that is not tied to any one serialization format or set of
+assumptions.</p>
+<p>There are other projects with similar goals for ex.,
+<a class="reference external" href="https://github.com/common-workflow-language/schema_salad">schema_salad</a>.
+It may be possible to align with these.</p>
+<p>Here X may be bioschemas, some upper ontology (BioTop), UMLS
+metathesaurus, bio*, and various other attempts to model all of biology
+in an object model.</p>
+<p>Currently, as far as we know there is no existing reference datamodel
+that is flexible enough to be used here.</p>
+</div>
+<div class="section" id="biolink-modeling-language">
+<h1>Biolink Modeling Language<a class="headerlink" href="#biolink-modeling-language" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">typeof</span><span class="p">:</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="nb">type</span> <span class="n">definition</span>
+    <span class="nb">range</span><span class="p">:</span> <span class="nb">type</span> <span class="n">definition</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">supertype</span>
+
+  <span class="n">base</span><span class="p">:</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="nb">type</span> <span class="n">definition</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">python</span> <span class="n">base</span> <span class="nb">type</span> <span class="n">that</span> <span class="n">implements</span> <span class="n">this</span> <span class="nb">type</span> <span class="n">definition</span>
+    <span class="n">inherited</span><span class="p">:</span> <span class="n">true</span>
+
+  <span class="nb">type</span> <span class="n">uri</span><span class="p">:</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="nb">type</span> <span class="n">definition</span>
+    <span class="nb">range</span><span class="p">:</span> <span class="n">uri</span>
+    <span class="n">alias</span><span class="p">:</span> <span class="n">uri</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">the</span> <span class="n">URI</span> <span class="n">to</span> <span class="n">be</span> <span class="n">used</span> <span class="k">for</span> <span class="n">the</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">semantic</span> <span class="n">web</span> <span class="n">mappings</span>
+
+  <span class="nb">repr</span><span class="p">:</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="nb">type</span> <span class="n">definition</span>
+    <span class="nb">range</span><span class="p">:</span> <span class="n">string</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">the</span> <span class="n">python</span> <span class="n">representation</span> <span class="n">of</span> <span class="n">this</span> <span class="nb">type</span> <span class="k">if</span> <span class="n">different</span> <span class="n">than</span> <span class="n">the</span> <span class="n">base</span> <span class="nb">type</span>
+    <span class="n">inherited</span><span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="developers-notes">
+<h1>Developers Notes<a class="headerlink" href="#developers-notes" title="Permalink to this headline">¶</a></h1>
+<p>A Github action is set up to automatically release the package to PyPI.
+When it is ready for a new release, create a <a class="reference external" href="https://github.com/linkml/releases">Github
+release</a>. The version should be
+in the vX.X.X format following <a class="reference external" href="https://semver.org/">the semantic versioning
+specification</a>.</p>
+<p>After the release is created, the GitHub action will be triggered to
+publish to Pypi. The release version will be used to create the Pypi
+package.</p>
+<p>If the Pypi release failed, make fixes, <a class="reference external" href="https://help.github.com/en/enterprise/2.16/user/github/administering-a-repository/editing-and-deleting-releases#:~:text=Deleting%20a%20release,-Tip%3A%20You%20must&amp;text=Under%20your%20repository%20name%2C%20click%20Releases.,of%20the%20page%2C%20click%20Delete.">delete the GitHub
+release</a>,
+and recreate a release with the same version again.</p>
+</div>
+<div class="section" id="additional-documentation">
+<h1>Additional Documentation<a class="headerlink" href="#additional-documentation" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://docs.google.com/presentation/d/1xK__vZdv0jHtOu0eOTzGUJeDt9YMVOGR1jxIXTtdXDM/edit?usp=sharing">LinkML for environmental and omics
+metadata</a></p>
+</div>
+<div class="section" id="history">
+<h1>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h1>
+<p>This framework used to be called BiolinkML. LinkML replaces BiolinkML.
+For assistance in migration, see <a class="reference external" href="Migration.md">Migration.md</a>.</p>
+</div>
+<div class="section" id="example-projects">
+<h1>Example Projects<a class="headerlink" href="#example-projects" title="Permalink to this headline">¶</a></h1>
+<p>Note: this list will be replaced by the <a class="reference external" href="https://github.com/linkml/linkml-registry">linkml
+registry</a></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/biolink/biolink-model">Biolink Model</a> <em>the
+original LinkML project</em></p></li>
+<li><p><a class="reference external" href="https://github.com/microbiomedata/nmdc-metadata">National Microbiome Data
+Collaborative</a></p></li>
+<li><p><a class="reference external" href="https://github.com/microbiomedata/metadata_converter">Sequencing Metadata Alignment
+Project</a></p></li>
+<li><p><a class="reference external" href="https://sssom-py.readthedocs.io/">SSSOM Schema</a></p></li>
+<li><p><a class="reference external" href="https://cmungall.github.io/ontology-change-language/">Knowledge Graph Change
+Language</a></p></li>
+<li><p><a class="reference external" href="https://github.com/diatomsRcool/collections-attribution-model">Collections Attribution
+Model</a></p></li>
+<li><p><a class="reference external" href="https://github.com/cmungall/dasher/tree/master/src/schema">dasher</a></p></li>
+<li><p><a class="reference external" href="https://cancerdhc.github.io/ccdhmodel/">Cancer Research Data Commons - Harmonized
+Model</a>, developed by the
+NIH <a class="reference external" href="https://harmonization.datacommons.cancer.gov/">Center for Cancer Data
+Harmonization</a></p></li>
+<li><p><a class="reference external" href="https://github.com/HOT-Ecosystem/TermCI-model">HOT Ecocystem termCI
+model</a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, LinkML Authors.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

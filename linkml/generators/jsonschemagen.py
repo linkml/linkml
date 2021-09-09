@@ -172,7 +172,7 @@ Top level class; slots of this class will become top level properties in the jso
 Set additionalProperties=False if closed otherwise true if not closed at the global level
 """)
 def cli(yamlfile, **kwargs):
-    """ Generate JSON Schema representation of a biolink model """
+    """ Generate JSON Schema representation of a LinkML model """
     print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 

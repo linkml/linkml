@@ -32,6 +32,27 @@ Code for various generators for schema definitions
 .. autoclass:: YAMLGenerator
     :members: serialize
 
+Loaders and Dumpers
+-------------------
+
+.. currentmodule:: linkml_runtime.dumpers.json_dumper
+                   
+.. autoclass:: JSONDumper
+    :members: dumps, dump
+
+.. currentmodule:: linkml_runtime.loaders
+
+.. autoclass:: JSONLoader
+    :members: loads
+
+Schema Utils
+------------
+
+.. currentmodule:: linkml_runtime.utils.schemaview
+                   
+.. autoclass:: SchemaView
+    :members: schemaview               
+              
 
 Utils
 -----

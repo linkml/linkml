@@ -55,7 +55,7 @@ class RDFGenerator(Generator):
 @click.option("--context", default=[METAMODEL_CONTEXT_URI], multiple=True,
               help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI})")
 def cli(yamlfile, **kwargs):
-    """ Generate an RDF representation of a biolink model """
+    """ Generate an RDF representation of a LinkML model """
     print(RDFGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 

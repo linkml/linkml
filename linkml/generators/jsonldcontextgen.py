@@ -172,7 +172,7 @@ class ContextGenerator(Generator):
 @click.option("--model/--no-model",  default=True, help="Emit context for model elements (default=--model)")
 @click.option("--flatprefixes/--no-flatprefixes", default=False, help="Emit non-parsable prefixes as an object")
 def cli(yamlfile, **args):
-    """ Generate jsonld @context definition from biolink model """
+    """ Generate jsonld @context definition from LinkML model """
     print(ContextGenerator(yamlfile, **args).serialize(**args))
 
 

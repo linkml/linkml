@@ -187,7 +187,7 @@ def curie(identifier) -> str:
 @shared_arguments(NamespaceGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate a namespace manager for all of the prefixes represented in a biolink model """
+    """ Generate a namespace manager for all of the prefixes represented in a LinkML model """
     print(NamespaceGenerator(yamlfile,**args).serialize(**args))
 
 

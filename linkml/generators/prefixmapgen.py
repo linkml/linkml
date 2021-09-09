@@ -93,5 +93,5 @@ class PrefixGenerator(Generator):
 @click.command()
 @click.option("--base", help="Base URI for model")
 def cli(yamlfile, **args):
-    """ Generate jsonld @context definition from biolink model """
+    """ Generate jsonld @context definition from LinkML model """
     print(PrefixGenerator(yamlfile, **args).serialize(**args))

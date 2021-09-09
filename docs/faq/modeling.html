@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ: Modeling &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FAQ: Getting Help" href="getting-help.html" />
+    <link rel="prev" title="FAQ: Why LinkML" href="why-linkml.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FAQ: Modeling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-difference-between-is-a-and-mixins">What is the difference between is_a and mixins?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#didn-t-you-know-composition-is-favored-over-inheritance-these-days">Didn’t you know composition is favored over inheritance these days?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-should-i-use-attributes-vs-slots">When should I use attributes vs slots?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-are-induced-slots">What are induced slots?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-would-i-need-to-define-my-own-types">Why would I need to define my own types?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-would-i-want-to-use-enums-over-strings">Why would I want to use enums over strings?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">FAQ</a> &raquo;</li>
+      <li>FAQ: Modeling</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/faq/modeling.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="faq-modeling">
+<h1>FAQ: Modeling<a class="headerlink" href="#faq-modeling" title="Permalink to this headline"></a></h1>
+<section id="what-is-the-difference-between-is-a-and-mixins">
+<h2>What is the difference between is_a and mixins?<a class="headerlink" href="#what-is-the-difference-between-is-a-and-mixins" title="Permalink to this headline"></a></h2>
+<p>LinkML allows any class to have:</p>
+<ul class="simple">
+<li><p>zero or one <em>is_a</em> parents, declared using the <a class="reference external" href="https://w3id.org/linkml/is_a">is_a</a> slot</p></li>
+<li><p>any number of <em>mixin</em> parents, declared using the <a class="reference external" href="https://w3id.org/linkml/mixins">mixins</a> slot</p></li>
+</ul>
+<p>Semantically these are the same - all inheritable slots are inherited through is_a and mixins.</p>
+<p>Classes <em>should</em> have a single inheritance backbone, with <code class="docutils literal notranslate"><span class="pre">is_a</span></code>
+representing the “main” parent. Generally the mixin and is_a
+hierarchies should be stratified.</p>
+<p>See these wikipedia pages for more information.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Mixin">mixins</a></p></li>
+<li><p><a class="reference external" href="https://en.wikipedia.org/wiki/Trait_(computer_programming)">traits</a></p></li>
+</ul>
+</section>
+<section id="didn-t-you-know-composition-is-favored-over-inheritance-these-days">
+<h2>Didn’t you know composition is favored over inheritance these days?<a class="headerlink" href="#didn-t-you-know-composition-is-favored-over-inheritance-these-days" title="Permalink to this headline"></a></h2>
+<p>Wikipedia <a class="reference external" href="https://en.wikipedia.org/wiki/Composition_over_inheritance">composition over inheritance</a></p>
+<p>We have certainly seen cases where inheritance is abused in programming languages, especially when it comes to behavioral classes.</p>
+<p>However, in our experience inheritance is still very useful when used for data classes. We trust the users of LinkML to create schemas to design schemas carefully.</p>
+</section>
+<section id="when-should-i-use-attributes-vs-slots">
+<h2>When should I use attributes vs slots?<a class="headerlink" href="#when-should-i-use-attributes-vs-slots" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://w3id.org/linkml/attributes">attributes</a> metamodel slot is really just a convenient shorthand for being able to declare slots “inline”.</p>
+<p>LinkML treats slots as first class entities. They are defined in their own section of a schema, and can be reused by any number of classes (and refined, using slot_usage). This can be bery powerful for reuse.</p>
+<p>However, this can also be slightly inconvenient for simple schemas, especially those where we have classes with slots that are completely “owned” by that class. The attribute slot can be used to avoid having to specify the slot separately</p>
+</section>
+<section id="what-are-induced-slots">
+<h2>What are induced slots?<a class="headerlink" href="#what-are-induced-slots" title="Permalink to this headline"></a></h2>
+<p>Because the same slot can be reused in different classes (with each class potentially refining semantics using slot_usage), it can be useful to give a new “name” for the implicit class-specific version of that slot.</p>
+<p>For example, if you have a slot <code class="docutils literal notranslate"><span class="pre">name</span></code>, and this is used in classes <code class="docutils literal notranslate"><span class="pre">Person</span></code> and <code class="docutils literal notranslate"><span class="pre">Organization</span></code>, and these are refined for each class (for example, “Organization” may refine the name slot to follow a particular regular expression). In some generators such as the markdown generator, you will see “induced” slots such as <code class="docutils literal notranslate"><span class="pre">Organization_name</span></code>.</p>
+<p>The extent to which these are made visible is currently the subject of some discussion, see GitHub for details.</p>
+</section>
+<section id="why-would-i-need-to-define-my-own-types">
+<h2>Why would I need to define my own types?<a class="headerlink" href="#why-would-i-need-to-define-my-own-types" title="Permalink to this headline"></a></h2>
+<p>Types are scalar values such as integers or strings. They are also known as “literals” in RDF.</p>
+<p>Strictly speaking it is not necessary to define your own types, you can just use the builtin types.</p>
+<p>However, defining your own types can be good practice, as it can make
+your intent clearer. For example, if you have a slot <code class="docutils literal notranslate"><span class="pre">description</span></code> you
+may want to specify the range as your own type <code class="docutils literal notranslate"><span class="pre">NarrativeText</span></code> that
+maps to string behind the scenes. But this provides additional cues,
+e.g. that the value of this field is intended to be human-readable
+text.</p>
+<p>Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr</p>
+</section>
+<section id="why-would-i-want-to-use-enums-over-strings">
+<h2>Why would I want to use enums over strings?<a class="headerlink" href="#why-would-i-want-to-use-enums-over-strings" title="Permalink to this headline"></a></h2>
+<p>Enums provide a more controlled vocabulary than strings. You can validate categorical fields using enums, whereas with basic strings you don’t have a built in way of validating if a string is valid.</p>
+<p>Enums also give you hooks into ontologies and vocabulaies.</p>
+<p>More on enums:</p>
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="why-linkml.html" class="btn btn-neutral float-left" title="FAQ: Why LinkML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting-help.html" class="btn btn-neutral float-right" title="FAQ: Getting Help" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

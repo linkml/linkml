@@ -47,7 +47,7 @@ classes:
       - birth_date
       - age_in_years
       - gender
-#      - current_address
+      - current_address
       - has_employment_history
       - has_familial_relationships
       - has_medical_history
@@ -99,7 +99,7 @@ classes:
       - duration
       - is_current
     close_mappings:
-      - schema:Evenet
+      - schema:Event
 
   Concept:
     is_a: NamedThing
@@ -164,7 +164,7 @@ slots:
     slot_uri: schema:image
   gender:
     slot_uri: schema:gender
-    range: gender_enum
+    range: GenderType
   primary_email:
     slot_uri: schema:email
   birth_date:
@@ -188,6 +188,8 @@ slots:
   in_location:
     range: Place
   current_address:
+    description: >-
+      The address at which a person currently lives
     range: Address
   age_in_years:
     range: integer

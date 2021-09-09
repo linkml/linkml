@@ -21,3 +21,6 @@ help:
 
 apidocs:
 	pipenv run sphinx-apidoc -o ./ ../linkml
+
+deploy:
+	cp -pr _build/html/* ../docs/

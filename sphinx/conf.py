@@ -67,6 +67,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #html_theme = 'alabaster'
 # pip install sphinx-rtd-theme
 html_theme = 'sphinx_rtd_theme'
+html_logo = 'https://linkml.io/uploads/linkml-logo_color.png'
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
