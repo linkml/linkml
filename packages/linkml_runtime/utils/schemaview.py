@@ -176,7 +176,7 @@ class SchemaView(object):
         return [m[sn] for sn in self.imports_closure(imports)]
 
     @lru_cache()
-    def all_class(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def all_classes(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
         """
         :param imports: include imports closure
         :return: all classes in schema view
@@ -184,7 +184,7 @@ class SchemaView(object):
         return self._get_dict(CLASSES, imports)
 
     @lru_cache()
-    def all_slot(self, imports=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slots(self, imports=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
         :param imports: include imports closure
         :return: all slots in schema view
@@ -192,7 +192,7 @@ class SchemaView(object):
         return self._get_dict(SLOTS, imports)
 
     @lru_cache()
-    def all_enum(self, imports=True) -> Dict[EnumDefinitionName, EnumDefinition]:
+    def all_enums(self, imports=True) -> Dict[EnumDefinitionName, EnumDefinition]:
         """
         :param imports: include imports closure
         :return: all enums in schema view
@@ -216,17 +216,17 @@ class SchemaView(object):
         return self._get_dict(SUBSETS, imports)
 
     @lru_cache()
-    def all_element(self, imports=True) -> Dict[ElementName, Element]:
+    def all_elements(self, imports=True) -> Dict[ElementName, Element]:
         """
         :param imports: include imports closure
         :return: all elements in schema view
         """
-        all_c = self.all_class(imports)
-        all_s = self.all_slot(imports)
-        all_e = self.all_enum(imports)
-        all_t = self.all_type(imports)
-        all_v = self.all_subset(imports)
-        return {**all_c, **all_s, **all_e, **all_t, **all_v}
+        all_classes = self.all_classes(imports)
+        all_slots = self.all_slots(imports)
+        all_enums = self.all_enums(imports)
+        all_types = self.all_type(imports)
+        all_subsets = self.all_subset(imports)
+        return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
     def _get_dict(self, slot_name: str, imports=True) -> Dict:
         schemas = self.all_schema(imports)
@@ -262,7 +262,7 @@ class SchemaView(object):
         :param imports: include import closure
         :return: class definition
         """
-        return self.all_class(imports).get(class_name, None)
+        return self.all_classes(imports).get(class_name, None)
 
     @lru_cache()
     def get_slot(self, slot_name: SLOT_NAME, imports=True, attributes=False) -> SlotDefinition:
@@ -271,9 +271,9 @@ class SchemaView(object):
         :param imports: include import closure
         :return: slot definition
         """
-        slot = self.all_slot(imports).get(slot_name, None)
+        slot = self.all_slots(imports).get(slot_name, None)
         if slot is None and attributes:
-            for c in self.all_class(imports).values():
+            for c in self.all_classes(imports).values():
                 if slot_name in c.attributes:
                     if slot is not None:
                         # slot name is ambiguous, no results
@@ -297,7 +297,7 @@ class SchemaView(object):
         :param imports: include import closure
         :return: enum definition
         """
-        return self.all_enum(imports).get(enum_name, None)
+        return self.all_enums(imports).get(enum_name, None)
 
     @lru_cache()
     def get_type(self, type_name: TYPE_NAME, imports=True) -> TypeDefinition:
@@ -348,7 +348,7 @@ class SchemaView(object):
         :param is_a: include is_a parents (default is True)
         :return: all direct child class names (is_a and mixins)
         """
-        elts = [self.get_class(x) for x in self.all_class(imports)]
+        elts = [self.get_class(x) for x in self.all_classes(imports)]
         return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
 
     @lru_cache()
@@ -360,7 +360,7 @@ class SchemaView(object):
         :param is_a: include is_a parents (default is True)
         :return: all direct child slot names (is_a and mixins)
         """
-        elts = [self.get_slot(x) for x in self.all_slot(imports)]
+        elts = [self.get_slot(x) for x in self.all_slots(imports)]
         return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
 
     @lru_cache()
@@ -416,7 +416,7 @@ class SchemaView(object):
         :return:
         """
         return [c
-                for c in self.all_class(imports=imports)
+                for c in self.all_classes(imports=imports)
                 if self.class_parents(c, mixins=mixins, is_a=is_a, imports=imports) == []]
 
     @lru_cache()
@@ -429,7 +429,7 @@ class SchemaView(object):
         :return:
         """
         return [c
-                for c in self.all_class(imports=imports)
+                for c in self.all_classes(imports=imports)
                 if self.class_children(c, mixins=mixins, is_a=is_a, imports=imports) == []]
 
 
@@ -442,7 +442,7 @@ class SchemaView(object):
         :return:
         """
         return [c
-                for c in self.all_slot(imports=imports)
+                for c in self.all_slots(imports=imports)
                 if self.slot_parents(c, mixins=mixins, imports=imports) == []]
 
     @lru_cache()
@@ -454,7 +454,7 @@ class SchemaView(object):
         :return:
         """
         return [c
-                for c in self.all_slot(imports=imports)
+                for c in self.all_slots(imports=imports)
                 if self.slot_children(c, mixins=mixins, imports=imports) == []]
 
 
@@ -566,7 +566,7 @@ class SchemaView(object):
         :return: index
         """
         ix = defaultdict(list)
-        for en in self.all_element(imports=imports):
+        for en in self.all_elements(imports=imports):
             for mapping_type, vs in self.get_mappings(en, imports=imports, expand=expand):
                 for v in vs:
                     ix[v].append((mapping_type, self.get_element(en, imports=imports)))
@@ -731,7 +731,7 @@ class SchemaView(object):
         """
         ROLES = ['domain', 'range']
         ix = defaultdict(list)
-        for cn, c in self.all_class().items():
+        for cn, c in self.all_classes().items():
             for sn in self.class_slots(cn):
                 s = self.induced_slot(sn, cn)
                 for k in ROLES:
