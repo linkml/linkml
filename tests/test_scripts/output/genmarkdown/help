@@ -1,6 +1,6 @@
 Usage: gen-markdown [OPTIONS] YAMLFILE
 
-  Generate markdown documentation of a biolink model
+  Generate markdown documentation of a LinkML model
 
 Options:
   -d, --dir TEXT                  Output directory
