@@ -1,5 +1,6 @@
 import logging
 import unittest
+import inspect
 
 from linkml.generators import *
 from linkml.generators.pythongen import PythonGenerator
@@ -60,7 +61,9 @@ class TCCMTestCase(TestEnvironmentTestCase):
 
         env.make_testing_directory(env.expected_path('issue_tccm'))
         for generator in Generator.__subclasses__():
-            if not generator.__module__.startswith('linkml.generators') or generator.__name__ == 'SQLDDLGenerator':
+            if not generator.__module__.startswith('linkml.generators') \
+                    or generator.__name__ == 'SQLDDLGenerator'\
+                    or getattr(generator.serialize, '__isabstractmethod__', True):
                 pass
             elif not generator.directory_output:
                 env.generate_single_file(['issue_tccm', 'minimalmodel.' + generator.valid_formats[0]],
