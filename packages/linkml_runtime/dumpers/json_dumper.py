@@ -6,6 +6,7 @@ from deprecated.classic import deprecated
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils import formatutils
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
+from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
 
 
@@ -41,7 +42,7 @@ class JSONDumper(Dumper):
         :return: JSON Object representing the element
         """
         return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
-                          default=lambda o: self.remove_empty_items(o) if isinstance(o, YAMLRoot) else json.JSONDecoder().decode(o),
+                          default=lambda o: remove_empty_items(o) if isinstance(o, YAMLRoot) else json.JSONDecoder().decode(o),
                           indent='  ')
 
 
