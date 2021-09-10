@@ -22,4 +22,4 @@ The latest version can always be installed with:
 pip install linkml
 ```
 
-*note for core developers*: consult the [developers guide](../developers/) for using this codebase from GitHub
+*note for core developers*: consult the [developers guide](../developers/contributing-code) for using this codebase from GitHub

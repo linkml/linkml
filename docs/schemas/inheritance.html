@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Slots" href="slots.html" />
-    <link rel="prev" title="Metadata" href="metadata.html" /> 
+    <link rel="prev" title="Schema Element Metadata" href="metadata.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Inheritance</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#inheritance-related-slots">Inheritance Related Slots</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#is-a">is_a</a></li>
@@ -126,8 +126,8 @@
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
 </pre></div>
 </div>
-<p>Here Person will inherit the 4 slots from NamedThing.</p>
-<p>Slots can also be organized in an is_a hierarchy</p>
+<p>Here Person will inherit the four slots from NamedThing.</p>
+<p><strong>Note</strong>: Slots can also be organized in hierarchies</p>
 </section>
 <section id="abstract">
 <h3>abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h3>
@@ -155,7 +155,7 @@
 <p>Mixins can be extremely helpful in a number of ways: 1) to generalize a set
 of attributes that can apply to classes in different parts of the class hierarchy, 2) reduce duplication of
 shared attributes between classes that do not inherit from one another and 3) to prevent the sometimes confusing nature
-of multiple inheritance noted in the ‘[diamond problem]’(https://tinyurl.com/4zdw9tsb).</p>
+of multiple inheritance noted in the <a class="reference external" href="https://tinyurl.com/4zdw9tsb">diamond problem</a>.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
   <span class="nt">NamedThing</span><span class="p">:</span>
     <span class="nt">slots</span><span class="p">:</span>
@@ -193,7 +193,7 @@ of multiple inheritance noted in the ‘[diamond problem]’(https://tinyurl.com
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="metadata.html" class="btn btn-neutral float-left" title="Metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metadata.html" class="btn btn-neutral float-left" title="Schema Element Metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="slots.html" class="btn btn-neutral float-right" title="Slots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

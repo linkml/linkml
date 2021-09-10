@@ -11,6 +11,8 @@ LinkML allows you to specify schemas for data in a variety of forms:
 
 The "native" form for LinkML can be considered JSON/YAML.
 
+See [PersonSchema/data](https://github.com/linkml/linkml/tree/main/examples/PersonSchema/data) for example data files
+
 ## Conversion
 
 The `linkml-convert` script can be used to convert data from one form to another, following a schema
@@ -57,4 +59,4 @@ Options:
 
 ## Programmatic usage
 
-TODO - link to runtime docs
+See [developer docs](../code) for documentation of the relevant python classes

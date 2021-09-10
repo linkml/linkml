@@ -31,9 +31,9 @@ classes:
       - has_medical_history
 ```
 
-Here Person will inherit the 4 slots from NamedThing.
+Here Person will inherit the four slots from NamedThing.
 
-Slots can also be organized in an is_a hierarchy
+**Note**: Slots can also be organized in hierarchies
 
 ### abstract
 
@@ -67,7 +67,7 @@ Mixin parents operate similarly to is_a parents, but they do not have the constr
 Mixins can be extremely helpful in a number of ways: 1) to generalize a set
 of attributes that can apply to classes in different parts of the class hierarchy, 2) reduce duplication of
 shared attributes between classes that do not inherit from one another and 3) to prevent the sometimes confusing nature
-of multiple inheritance noted in the '[diamond problem]'(https://tinyurl.com/4zdw9tsb).
+of multiple inheritance noted in the [diamond problem](https://tinyurl.com/4zdw9tsb).
 
 
 ```yaml

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metadata &mdash; linkml  documentation</title>
+  <title>Schema Element Metadata &mdash; linkml  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,9 +44,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Metadata</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#aliases">aliases</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Schema Element Metadata</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#description">description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aliases">aliases</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecation">deprecation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#others-slots">others slots</a></li>
 </ul>
 </li>
@@ -83,7 +84,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
-      <li>Metadata</li>
+      <li>Schema Element Metadata</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/schemas/metadata.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,19 +94,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="metadata">
-<h1>Metadata<a class="headerlink" href="#metadata" title="Permalink to this headline"></a></h1>
-<section id="aliases">
-<h2>aliases<a class="headerlink" href="#aliases" title="Permalink to this headline"></a></h2>
-<p>The <a class="reference external" href="https://w3id.org/linkml/aliases">aliases</a> slot can be used to define a list of aliases for a class or slot. This is useful for adding synonymous names to your class (or slot), that serve either as hints for human users, or to enhance search and findability over your model</p>
-<p>Example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span>
-  <span class="nt">aliases</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">human being</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">individual</span>
-</pre></div>
-</div>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="schema-element-metadata">
+<h1>Schema Element Metadata<a class="headerlink" href="#schema-element-metadata" title="Permalink to this headline"></a></h1>
+<p>There are various slots that can be used to provide metadata about
+either a schema or elements of a schema. These typically don’t affect
+the semantics of the model, but rather act as annotations that can be
+used to provide more information to people, or that can guide the
+behavior of some tools.</p>
 <section id="description">
 <h2>description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/description">description</a> slot can be used to provide a human-readable description of any schema element</p>
@@ -128,6 +123,21 @@
 </div>
 <p>However, this is only recommended for schema descriptions.</p>
 <p>This <a class="reference external" href="https://yaml-multiline.info/">guide to yaml formatting</a> may be helpful</p>
+</section>
+<section id="aliases">
+<h2>aliases<a class="headerlink" href="#aliases" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://w3id.org/linkml/aliases">aliases</a> slot can be used to define a list of aliases for a class or slot. This is useful for adding synonymous names to your class (or slot), that serve either as hints for human users, or to enhance search and findability over your model</p>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span>
+  <span class="nt">aliases</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">human being</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">individual</span>
+</pre></div>
+</div>
+</section>
+<section id="deprecation">
+<h2>deprecation<a class="headerlink" href="#deprecation" title="Permalink to this headline"></a></h2>
+<p>…</p>
 </section>
 <section id="others-slots">
 <h2>others slots<a class="headerlink" href="#others-slots" title="Permalink to this headline"></a></h2>

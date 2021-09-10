@@ -155,6 +155,6 @@ When serializing data as RDF triples or in a relational database, the value for 
 
 The inlined slot in LinkML corresponds to `@embed` in JSON-LD
 
-## When should inlining be used
+## When should inlining be used?
 
 The choice of whether to inline in a JSON representation is application dependent. Inlining can be more convenient for applications that need to traverse an object tree, but inlining can also lead to redundancy in representation and more verbose object payloads.

@@ -6,7 +6,14 @@
 LinkML Documentation
 ====================
 
-Everything you need to know about `LinkML <https://linkml.io>`_, the Linked Data Modeling Language
+Everything you need to know about `LinkML <https://linkml.io>`_, the
+Linked Data Modeling Language.
+
+LinkML is a flexible modeling language that allows you to author
+schemas in YAML that describe the structure of your data. LinkML
+provides a framework for working with and validating data in a variety
+of formats (JSON, RDF, TSV) provides generators for compiling LinkML
+schemas to other frameworks.
 
 
 Documentation

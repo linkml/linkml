@@ -4,13 +4,24 @@
 
 See [PersonSchema](https://github.com/linkml/linkml/tree/main/examples/PersonSchema)
 
+This schema will be used as a core example throughout. It represents
+people, their attributes, and related entities such as
+organizations.
+
 ## Example Models
 
 ### Biolink
 
-See [Biolink-Model](https://biolink.github.io/biolink-model/)
+The Biolink Model is a knowledge graph schema for representing core biological and clinical entities and their inter-relationships.
+
+ * [biolink/biolink-model](https://github.com/biolink/biolink-model) repo
+ * [generated docs](https://biolink.github.io/biolink-model/)
 
 ### National Microbiome Data Collaborative
+
+The NMDC schema represents environmental omics samples, associated
+biogeochemical and environmental metadata, and the outputs of various
+kinds of omics processes and computational workflows on these samples.
 
 See [National Microbiome Data Collaborative](https://github.com/microbiomedata/nmdc-metadata)
 
@@ -21,6 +32,9 @@ See [Cancer Research Data Commons - Harmonized Model](https://cancerdhc.github.i
 ### LinkML
 
 LinkML is itself described as a LinkML model
+
+ * [linkml/linkml-model](https://github.com/linkml/linkml-model) repo
+ * [generated docs][https://linkml.io/linkml-model/docs/]
 
 ## LinkML Registry
 

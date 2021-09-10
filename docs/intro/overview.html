@@ -41,10 +41,13 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">LinkML at a glance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#introductory-example">Introductory Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#metamodel">Metamodel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#design-your-own-models">Design your own models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feature-easy-to-author-schemas">Feature: Easy to author schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feature-rich-modeling-language">Feature: Rich modeling language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-bridge-between-frameworks">A bridge between frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feature-eneration-of-documentation-and-websites">Feature: eneration of documentation and websites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-rapidly-growing-toolchain">A rapidly growing toolchain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#we-eat-our-own-dogfood">We eat our own dogfood!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-examples">More examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Quick Install Guide</a></li>
@@ -94,19 +97,21 @@ a complex interlinked schema.</p>
 <p>LinkML is designed to work in harmony with other frameworks, including
 both semantic RDF-based frameworks as well as frameworks more familiar
 to developers such as JSON.</p>
-<section id="introductory-example">
-<h2>Introductory Example<a class="headerlink" href="#introductory-example" title="Permalink to this headline"></a></h2>
-<p>See <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a></p>
+<section id="feature-easy-to-author-schemas">
+<h2>Feature: Easy to author schemas<a class="headerlink" href="#feature-easy-to-author-schemas" title="Permalink to this headline"></a></h2>
+<p>LinkML models are organized around the core concepts of <strong>Classes</strong>
+and <strong>Slots</strong>. They are authored in YAML and allow both rich
+expressivity while keeping things simple in a way that allows
+non-technical domain modelers to contribute.</p>
+<p>Example schema fragment, for modeling people:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">NamedThing</span><span class="p">:</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
-    <span class="l l-Scalar l-Scalar-Plain">...</span>
   <span class="nt">Person</span><span class="p">:</span>
     <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">A person (alive, dead, undead, or fictional).</span>
+    <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
     <span class="nt">slots</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
@@ -119,37 +124,71 @@ to developers such as JSON.</p>
 <span class="nn">...</span>
 </pre></div>
 </div>
+<p>See <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a> for the complete example</p>
 </section>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline"></a></h2>
+<section id="feature-rich-modeling-language">
+<h2>Feature: Rich modeling language<a class="headerlink" href="#feature-rich-modeling-language" title="Permalink to this headline"></a></h2>
+<p>LinkML offers many features of use to data modelers, while retaining a simple core</p>
 <ul class="simple">
-<li><p>Rich modeling features including</p>
+<li><p>Classes can be arranged in <a class="reference internal" href="../schemas/inheritance.html"><span class="doc std std-doc">inheritance hierarchies</span></a></p></li>
+<li><p>Powerful <span class="xref myst">Semantic enumerations</span> that can optionally be backed by ontologies</p></li>
+<li><p>Create data models that are independent of a database technology</p></li>
+<li><p>Ability to provide rich annotations, metadata, and mappings as part of a model</p></li>
+<li><p>“Linked Data” ready</p>
 <ul>
-<li><p><a class="reference internal" href="../schemas/inheritance.html"><span class="doc std std-doc">Polymorphism/Inheritance</span></a>, including mixins/traits</p></li>
-<li><p><span class="xref myst">Semantic enumerations</span></p></li>
+<li><p>All schemas have a corresponding JSON-LD context</p></li>
+<li><p>Compatability with RDF tooling, without committing to an RDF stack</p></li>
 </ul>
 </li>
-<li><p>Leverages and interoperates with many <span class="xref myst">existing frameworks</span></p>
-<ul>
-<li><p>JSON-Schema</p></li>
-<li><p>ShEx</p></li>
-<li><p>OWL</p></li>
-<li><p>Python dataclasses</p></li>
-</ul>
-</li>
-<li><p>Turnkey solutions for generating a project plus documentation hosted on GitHub</p></li>
-<li><p>Ability to work with JSON, YAML, TSVs, SQL databases, RDF/JSON-LD</p></li>
 </ul>
 </section>
-<section id="metamodel">
-<h2>Metamodel<a class="headerlink" href="#metamodel" title="Permalink to this headline"></a></h2>
-<p>The LinkML schema language is itself defined in LinkML</p>
-<p>See the <a class="reference external" href="https://linkml.github.io/linkml-model/docs/">linkml-model reference</a>.</p>
+<section id="a-bridge-between-frameworks">
+<h2>A bridge between frameworks<a class="headerlink" href="#a-bridge-between-frameworks" title="Permalink to this headline"></a></h2>
+<p>Many frameworks lock you in to a particular view of the world or
+technology. This can lead to silos, and the need to create mappings
+and transformations between different representations of the same
+data; for example, if your JSON documents need to work in concert with
+your relational database or graph store.</p>
+<p>LinkML has many different generators <span class="xref myst">existing
+frameworks</span> that allow the translation of a LinkML
+schema to other frameworks:</p>
+<ul class="simple">
+<li><p>Convert to JSON-LD contexts, and instantly port your data to RDF</p></li>
+<li><p>Convert to JSON-Schema and using JSON-Schema validators</p></li>
+<li><p>Convert to ShEx and validate your data as RDF</p></li>
+<li><p>Convert to Python dataclasses for easy use within applications</p></li>
+</ul>
 </section>
-<section id="design-your-own-models">
-<h2>Design your own models<a class="headerlink" href="#design-your-own-models" title="Permalink to this headline"></a></h2>
-<p>LinkML models can be easily authored as YAML files. See <a class="reference internal" href="../examples.html"><span class="doc std std-doc">examples</span></a> for inspiration.</p>
-<p>You can also bootstrap a model by converting from existing schema representations, or by inference from existing data</p>
+<section id="feature-eneration-of-documentation-and-websites">
+<h2>Feature: eneration of documentation and websites<a class="headerlink" href="#feature-eneration-of-documentation-and-websites" title="Permalink to this headline"></a></h2>
+<p>Using the LinkML toolchain you can go from a schema to statically
+hosted searchable website in minutes, with pages for each of your
+schema elements. Using lightweight namespace registries such as
+w3id.org you can easily have resolvable URIs for all your concepts.</p>
+</section>
+<section id="a-rapidly-growing-toolchain">
+<h2>A rapidly growing toolchain<a class="headerlink" href="#a-rapidly-growing-toolchain" title="Permalink to this headline"></a></h2>
+<p>The core LinkML toolchain allows for:</p>
+<ul class="simple">
+<li><p>conversion between JSON, TSV, and RDF</p></li>
+<li><p>data validation of JSON, TSVs, or RDF using either JSON-Schema, SPARQL, or ShEx</p></li>
+<li><p>easy programmatic manipulation of schemas</p></li>
+</ul>
+<p>LinkML is part of a growing ecosystem of general purpose tools that make curating, mapping, ingesting, and organizing data much easier</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a> bootstraps schemas from existing structured and semi-structured sources</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> allows for generation of complex OWL axioms from datamodels</p></li>
+<li><p><a class="reference external" href="https://github.com/Public-Health-Bioinformatics/DataHarmonizer">DataHarmonizer</a> is a ontology-based curation tool that is being adapter to LinkML</p></li>
+</ul>
+</section>
+<section id="we-eat-our-own-dogfood">
+<h2>We eat our own dogfood!<a class="headerlink" href="#we-eat-our-own-dogfood" title="Permalink to this headline"></a></h2>
+<p>The LinkML schema language is itself defined in LinkML, and we use our own toolchain for working with it!</p>
+<p>For example, the <a class="reference external" href="https://linkml.github.io/linkml-model/docs/">linkml-model reference</a> is generated from the <a class="reference external" href="https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema">source metamodel</a></p>
+</section>
+<section id="more-examples">
+<h2>More examples<a class="headerlink" href="#more-examples" title="Permalink to this headline"></a></h2>
+<p>See the <a class="reference internal" href="../examples.html"><span class="doc std std-doc">examples</span></a></p>
 </section>
 </section>
 

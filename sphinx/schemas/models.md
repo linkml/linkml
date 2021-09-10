@@ -7,14 +7,15 @@ database.
 
 LinkML models are authored as YAML files. These files can be understood as data files that instantiate [SchemaDefinitions](https://w3id.org/linkml/SchemaDefinition) in the LinkML metamodel.
 
-The overall layout of a schema yaml file will be as follows:
+The overall layout of a schema yaml file is roughly as follows:
 
 ```yaml
 id: https://example.org/my-schema
 name: my_schema
 <OTHER METADATA HERE>
 
-# main data templates
+# classes are the main organization until for data;
+# all data records instantiate a class
 classes:
   Person:
     ...
@@ -74,7 +75,7 @@ default_range: string
      * [description](https://w3id.org/linkml/description) -- a summary of the schema. Can include markdown formatting
      * [license](https://w3id.org/linkml/license) -- CC0 recommended
  * modules
-     * [imports](https://w3id.org/linkml/imports) -- See [imports](imports)
+     * [imports](https://w3id.org/linkml/imports) -- allows for modular development. See [imports](imports)
  * prefix management
      * [prefixes](https://w3id.org/linkml/prefixes) -- A map of prefixes. See [prefixes](prefixes)
      * [default_prefixes](https://w3id.org/linkml/default_prefix) -- The prefix used for all elements in this schema
@@ -94,7 +95,7 @@ Classes operate in a very similar way to classes in a programming
 language like Python or Java. They are analogous to tables in
 relational databases.
 
-Classes are defined in a `classes` block at the top level of your YAML:
+Classes are defined in a `classes` block at the top level of your YAML, where the key is the class name:
 
 ```yaml
 classes:
@@ -117,7 +118,15 @@ classes:
 
 See [ClassDefinition](https://w3id.org/linkml/ClassDefinition) for a full list of allowed slots
 
-Note that because LinkML is described in LinkML, your schema is an
+**Note**: class names can be normal natural language noun phrases
+encompassing characters such as spaces. However, when converted to
+external representations, different rules will be applied, and
+typically the exported name is in PascalCase. So for example, you
+could call your class `named thing`, but the URI for the class would
+be `myprefix:NamedThing`
+
+
+Because LinkML is described in LinkML, your schema is an
 instantiation of the LinkML metamodel, and schema elements have a list
 of allowed slots. So for example, `is_a`, `description`, and `slots`
 are all slots that are applicable to instances of
@@ -212,9 +221,18 @@ See [TypeDefinition](https://w3id.org/linkml/TypeDefinition) in the metamodel.
 
 Types in LinkML are scalar data values such as strings, integers, floats, and so on. LinkML comes with its own set of types, and these can be extended.
 
-TODO: example
+For example, you may represent chemical formulae as strings in your model, but if you provide an explicit type that maps to string, it makes the intended meaning clearer, and different applications can operate on these differently:
+
+```yaml
+  chemical formula value:
+    uri: xsd:string
+    base: str
+    description: A chemical formula
+```
 
 ## Enums
+
+The core enumeration model is the same as for familiar systems, where there is a set of allowed string values:
 
 
 ```yaml
@@ -224,6 +242,45 @@ enums:
       SIBLING_OF:
       PARENT_OF:
       CHILD_OF:
+```
+
+You can also make your enums into a ticher controlled vocabulary, with definitions built in:
+
+```yaml
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING OF:
+        description: A family relationship where the two members have a parent on common
+      PARENT OF:
+        description: A family relationship between offspring and their parent
+      CHILD OF:
+        description: inverse of the PARENT_OF relationship
+```
+
+(note you can include spaces in your enums if you like)
+
+LinkML goes beyond most frameworks and allows your enums to be backed by external ontologies. For example, this enum is backed by [GSSO](http://obofoundry.org/ontology/gsso)
+
+```yaml
+prefixes:
+  GGSO: http://purl.obolibrary.org/obo/GSSO_
+
+enums:
+  GenderType:
+    permissible_values:
+      nonbinary man:
+        meaning: GSSO:009254
+      nonbinary woman:
+        meaning: GSSO:009253
+      transgender woman:
+        meaning: GSSO:000384
+      transgender man:
+        meaning: GSSO:000372
+      cisgender man:
+        meaning: GSSO:000371
+      cisgender woman:
+        meaning: GSSO:000385
 ```
 
 ## Subsets
