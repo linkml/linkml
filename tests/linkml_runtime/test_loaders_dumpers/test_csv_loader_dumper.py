@@ -7,7 +7,7 @@ from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.dumpers import csv_dumper
 from linkml_runtime.loaders import csv_loader
-from tests.test_loaders_dumpers.models.books_normalized import Shop
+from tests.test_loaders_dumpers.models.books_normalized import Shop, Book
 
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -45,6 +45,8 @@ class CSVGenTestCase(unittest.TestCase):
         roundtrip = csv_loader.load(OUTPUT2, target_class=Shop, index_slot='all_book_series', schemaview=schemaview)
         print(json_dumper.dumps(roundtrip))
         #assert roundtrip == data
+
+
 
 
 
