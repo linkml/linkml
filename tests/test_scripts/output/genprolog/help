@@ -1,6 +1,6 @@
 Usage: gen-prolog [OPTIONS] YAMLFILE
 
-  Generate logic program representation of a biolink model
+  Generate logic program representation of a LinkML model
 
 Options:
   -f, --format [lp|sexpr]         Output format (default=lp)

@@ -1,7 +1,7 @@
 Usage: gen-namespace [OPTIONS] YAMLFILE
 
   Generate a namespace manager for all of the prefixes represented in a
-  biolink model
+  LinkML model
 
 Options:
   -f, --format [py]               Output format (default=py)

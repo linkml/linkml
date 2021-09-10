@@ -1,0 +1,98 @@
+{
+   "_comments": "Auto generated from personinfo.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-09-06 16:14\n    Schema: personinfo\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: Information about people\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "linkml": "https://w3id.org/linkml/",
+      "personinfo": {
+         "@id": "https://w3id.org/linkml/examples/personinfo",
+         "@prefix": true
+      },
+      "prov": "http://www.w3.org/ns/prov#",
+      "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+      "schema": "http://schema.org/",
+      "skos": "http://example.org/UNKNOWN/skos/",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/examples/personinfo",
+      "age_in_years": {
+         "@type": "xsd:integer"
+      },
+      "birth_date": {
+         "@id": "schema:birthDate"
+      },
+      "current_address": {
+         "@type": "@id"
+      },
+      "description": {
+         "@id": "schema:description"
+      },
+      "diagnosis": {
+         "@type": "@id"
+      },
+      "duration": {
+         "@type": "xsd:float"
+      },
+      "employed_at": {
+         "@type": "@id"
+      },
+      "ended_at_time": {
+         "@type": "xsd:date",
+         "@id": "prov:endedAtTime"
+      },
+      "founding_location": {
+         "@type": "@id"
+      },
+      "gender": {
+         "@id": "schema:gender"
+      },
+      "has_employment_history": {
+         "@type": "@id"
+      },
+      "has_familial_relationships": {
+         "@type": "@id"
+      },
+      "has_medical_history": {
+         "@type": "@id"
+      },
+      "id": "@id",
+      "image": {
+         "@id": "schema:image"
+      },
+      "in_location": {
+         "@type": "@id"
+      },
+      "is_current": {
+         "@type": "xsd:boolean"
+      },
+      "name": {
+         "@id": "schema:name"
+      },
+      "organizations": {
+         "@type": "@id"
+      },
+      "persons": {
+         "@type": "@id"
+      },
+      "primary_email": {
+         "@id": "schema:email"
+      },
+      "procedure": {
+         "@type": "@id"
+      },
+      "related_to": {
+         "@type": "@id"
+      },
+      "started_at_time": {
+         "@type": "xsd:date",
+         "@id": "prov:startedAtTime"
+      },
+      "Address": {
+         "@id": "schema:PostalAddress"
+      },
+      "Organization": {
+         "@id": "schema:Organization"
+      },
+      "Person": {
+         "@id": "schema:Person"
+      }
+   }
+}

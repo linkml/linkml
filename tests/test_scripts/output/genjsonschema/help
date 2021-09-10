@@ -1,6 +1,6 @@
 Usage: gen-json-schema [OPTIONS] YAMLFILE
 
-  Generate JSON Schema representation of a biolink model
+  Generate JSON Schema representation of a LinkML model
 
 Options:
   -i, --inline                    Generate references to types rather than

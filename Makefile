@@ -44,3 +44,6 @@ examples/%-data.jsonld: examples/%-data.json examples/%.context.jsonld
 	jq -s '.[0] * .[1]' $^ > $@
 examples/%-data.nt: examples/%-data.jsonld
 	riot $< > $@
+
+rtd:
+	cd sphinx && $(RUN) make html

@@ -1,6 +1,6 @@
 Usage: gen-golr-views [OPTIONS] YAMLFILE
 
-  Generate GOLR representation of a biolink model
+  Generate GOLR representation of a LinkML model
 
 Options:
   -d, --dir TEXT                  Output directory

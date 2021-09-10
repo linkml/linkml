@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inlining objects &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Using LinkML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Inlining objects</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topics/inlining.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="inlining-objects">
+<h1>Inlining objects<a class="headerlink" href="#inlining-objects" title="Permalink to this headline"></a></h1>
+<p>LinkML allows control over whether objects should be <em>inlined</em> or <em>referenced</em> in JSON-style representations using the <a class="reference external" href="https://w3id.org/linkml/inlined">inlined</a> slot.</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>For example, given a model with a Organism class that can reference other Organism classes:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">Organism</span><span class="p">:</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">id</span><span class="p">:</span>
+        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="nt">name</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+      <span class="nt">has_subtypes</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Organism</span>
+        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>for example, the object for “mammals” may be logically related to objects for “primates” and “cats” via the <code class="docutils literal notranslate"><span class="pre">has_subtypes</span></code> slot. This logical relationship can be serialized in the following different ways:</p>
+</section>
+<section id="no-inlining-reference-by-key">
+<h2>No inlining, reference by key<a class="headerlink" href="#no-inlining-reference-by-key" title="Permalink to this headline"></a></h2>
+<p>schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>      <span class="nt">has_subtypes</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Organism</span>
+        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+<p>example data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:40674</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mammals</span>
+  <span class="nt">has_subtypes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9682</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">primates</span>
+  <span class="nt">has_subtypes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+<p>Here the range of the has_subtypes slot is a list of strings, where each string is a <em>reference</em> to a separate object</p>
+</section>
+<section id="inlining-as-a-list">
+<h2>Inlining as a list<a class="headerlink" href="#inlining-as-a-list" title="Permalink to this headline"></a></h2>
+<p>schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>      <span class="nt">has_subtypes</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Organism</span>
+        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:40674</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mammals</span>
+  <span class="nt">has_subtypes</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">primates</span>
+      <span class="nt">has_subtypes</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">humans</span>
+        <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9682</span>
+          <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</section>
+<section id="inlining-as-a-dictionary">
+<h2>Inlining as a dictionary<a class="headerlink" href="#inlining-as-a-dictionary" title="Permalink to this headline"></a></h2>
+<p>This is a slight variant on inlining as a list - here a dictionary keyed by identifier is provided</p>
+<p><strong>Note</strong> this is only possible if the range of the slot is a class that has an identifier slot</p>
+<p>schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>      <span class="nt">has_subtypes</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Organism</span>
+        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+<p>data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:40674</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mammals</span>
+  <span class="nt">has_subtypes</span><span class="p">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span><span class="p p-Indicator">:</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">primates</span>
+      <span class="nt">has_subtypes</span><span class="p">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span><span class="p p-Indicator">:</span>
+          <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">humans</span>
+        <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9682</span><span class="p p-Indicator">:</span>
+          <span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+</div>
+</section>
+<section id="inlining-a-single-valued-object">
+<h2>Inlining a single-valued object<a class="headerlink" href="#inlining-a-single-valued-object" title="Permalink to this headline"></a></h2>
+<p>Consider a variant of the above schema, with a non-multivalued slot</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>      <span class="nt">has_parent</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Organism</span>
+        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">human</span>
+  <span class="nt">has_parent</span><span class="p">:</span>
+    <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span><span class="p p-Indicator">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">primates</span>
+    <span class="nt">has_parent</span><span class="p">:</span>
+      <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NCBITaxon:40674</span>
+      <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mammals</span>
+</pre></div>
+</div>
+</section>
+<section id="inlining-with-non-json-serializations">
+<h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Permalink to this headline"></a></h2>
+<p>The concept of inlining only makes sense with JSON-like tree-oriented data serializations:</p>
+<ul class="simple">
+<li><p>JSON and JSON-LD</p></li>
+<li><p>YAML</p></li>
+<li><p>Programmatic representations such as Python object trees</p></li>
+</ul>
+<p>When serializing data as RDF triples or in a relational database, the value for the slot will always be a reference.</p>
+<p>The inlined slot in LinkML corresponds to <code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code> in JSON-LD</p>
+</section>
+<section id="when-should-inlining-be-used">
+<h2>When should inlining be used<a class="headerlink" href="#when-should-inlining-be-used" title="Permalink to this headline"></a></h2>
+<p>The choice of whether to inline in a JSON representation is application dependent. Inlining can be more convenient for applications that need to traverse an object tree, but inlining can also lead to redundancy in representation and more verbose object payloads.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

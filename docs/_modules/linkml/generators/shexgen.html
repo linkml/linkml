@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.generators.shexgen &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.generators.shexgen</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.generators.shexgen</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Generate ShEx definition of a model</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">from</span> <span class="nn">ShExJSG</span> <span class="kn">import</span> <span class="n">ShExC</span>
+<span class="kn">from</span> <span class="nn">ShExJSG.SchemaWithContext</span> <span class="kn">import</span> <span class="n">Schema</span>
+<span class="kn">from</span> <span class="nn">ShExJSG.ShExJ</span> <span class="kn">import</span> <span class="n">Shape</span><span class="p">,</span> <span class="n">IRIREF</span><span class="p">,</span> <span class="n">EachOf</span><span class="p">,</span> <span class="n">TripleConstraint</span><span class="p">,</span> <span class="n">NodeConstraint</span><span class="p">,</span> <span class="n">ShapeOr</span>
+<span class="kn">from</span> <span class="nn">jsonasobj</span> <span class="kn">import</span> <span class="n">as_json</span> <span class="k">as</span> <span class="n">as_json_1</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">OWL</span><span class="p">,</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">XSD</span>
+
+<span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> \
+    <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="n">SHEX</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">sfx</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">URIorCURIE</span>
+
+
+<div class="viewcode-block" id="ShExGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator">[docs]</a><span class="k">class</span> <span class="nc">ShExGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.2&quot;</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;shex&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;rdf&#39;</span><span class="p">]</span>
+    <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="p">:</span> <span class="n">Schema</span> <span class="o">=</span> <span class="n">Schema</span><span class="p">()</span>                <span class="c1"># ShEx Schema being generated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shape</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>                    <span class="c1"># Current shape being defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_shapes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IRIREF</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>         <span class="c1"># Shapes that have been defined as lists</span>
+
+        <span class="k">if</span> <span class="n">METAMODEL_NAMESPACE_NAME</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">METAMODEL_NAMESPACE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>  <span class="c1"># URI for the metamodel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_base</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>    <span class="c1"># Base URI for what is being modeled</span>
+
+<div class="viewcode-block" id="ShExGenerator.visit_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">):</span>
+        <span class="c1"># Adjust the schema context to include the base model URI</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="p">[</span><span class="s1">&#39;@context&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="p">[</span><span class="s1">&#39;@context&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">context</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;@base&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_base</span><span class="p">}]</span>
+        <span class="c1"># Emit all of the type definitions</span>
+        <span class="k">for</span> <span class="n">typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">model_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
+                <span class="n">typ_type_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">typ_type_uri</span> <span class="ow">in</span> <span class="p">(</span><span class="n">XSD</span><span class="o">.</span><span class="n">anyURI</span><span class="p">,</span> <span class="n">SHEX</span><span class="o">.</span><span class="n">iri</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NodeConstraint</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">model_uri</span><span class="p">,</span> <span class="n">nodeKind</span><span class="o">=</span><span class="s2">&quot;iri&quot;</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">typ_type_uri</span> <span class="o">==</span> <span class="n">SHEX</span><span class="o">.</span><span class="n">nonLiteral</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NodeConstraint</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">model_uri</span><span class="p">,</span> <span class="n">nodeKind</span><span class="o">=</span><span class="s2">&quot;nonliteral&quot;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NodeConstraint</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">model_uri</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">uri</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">typeof_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">typeof</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Shape</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">model_uri</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">typeof_uri</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ShExGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">Shape</span><span class="p">()</span>
+
+        <span class="c1"># Start with all the parent classes, mixins and appytos</span>
+        <span class="n">struct_ref_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">]</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">struct_ref_list</span> <span class="o">+=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">applytorefs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">applier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">applytorefs</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">:</span>
+                <span class="n">struct_ref_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">applier</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sr</span> <span class="ow">in</span> <span class="n">struct_ref_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">sr</span><span class="p">,</span> <span class="s1">&#39;_tes&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_arc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">sr</span><span class="p">]</span><span class="o">.</span><span class="n">class_uri</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ShExGenerator.end_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># On entry self.shape contains all of the triple expressions that define the body of the shape</span>
+
+        <span class="c1"># Finish off the shape definition itself</span>
+
+        <span class="c1"># If there is nothing yet, we&#39;re at the very root of things.  Add in a final catch-all for any additional</span>
+        <span class="c1"># type arcs.  NOTE: Here is where you can sink other things as well if you want to ignore categories of things</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_constraint</span><span class="p">(</span><span class="n">TripleConstraint</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;_tes&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">EachOf</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_type_arc</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">,</span>
+                                                                   <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="bp">cls</span><span class="p">)))])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span><span class="p">)</span>
+
+        <span class="c1"># If this class has subtypes, define the class as the union of its subtypes and itself (if not abstract)</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">isarefs</span><span class="p">:</span>
+            <span class="n">childrenExprs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">child_classname</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">isarefs</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">classrefs</span><span class="p">)):</span>
+                <span class="n">childrenExprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">child_classname</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">childrenExprs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">childrenExprs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ShapeOr</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span> <span class="n">shapeExprs</span><span class="o">=</span><span class="n">childrenExprs</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ShapeOr</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span> <span class="n">shapeExprs</span><span class="o">=</span><span class="n">childrenExprs</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;_struct&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ShExGenerator.visit_class_slot"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> \
+            <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">mixin</span><span class="p">):</span>
+            <span class="n">constraint</span> <span class="o">=</span> <span class="n">TripleConstraint</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_constraint</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+            <span class="n">constraint</span><span class="o">.</span><span class="n">predicate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
+            <span class="n">constraint</span><span class="o">.</span><span class="n">min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">))</span>
+            <span class="n">constraint</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">constraint</span><span class="o">.</span><span class="n">valueExpr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ShExGenerator.end_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator.end_schema">[docs]</a>    <span class="k">def</span> <span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shapes</span> <span class="k">else</span> <span class="p">[</span><span class="n">Shape</span><span class="p">()]</span>
+        <span class="n">shex</span> <span class="o">=</span> <span class="n">as_json_1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s1">&#39;rdf&#39;</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">shex</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json-ld&quot;</span><span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;owl&#39;</span><span class="p">,</span> <span class="n">OWL</span><span class="p">)</span>
+            <span class="n">shex</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s1">&#39;shex&#39;</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">load_graph</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+            <span class="n">shex</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ShExC</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shex</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">sfx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">_base</span><span class="p">),</span> <span class="n">namespaces</span><span class="o">=</span><span class="n">g</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+                <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">shex</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">shex</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_class_or_type_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">],</span>
+                           <span class="n">suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIorCURIE</span><span class="p">:</span>
+        <span class="c1"># TODO: enums - figure this out</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">)):</span>
+            <span class="n">cls_or_type</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cls_or_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_for</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_or_curie_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="p">[</span><span class="n">cls_or_type</span><span class="o">.</span><span class="n">from_schema</span><span class="p">],</span>
+                                             <span class="n">camelcase</span><span class="p">(</span><span class="n">cls_or_type</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_slot_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIorCURIE</span><span class="p">:</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_or_curie_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">from_schema</span><span class="p">],</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_add_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># No constraints</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">constraint</span>
+        <span class="c1"># One constraint</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span><span class="p">,</span> <span class="n">EachOf</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">EachOf</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span><span class="p">,</span> <span class="n">constraint</span><span class="p">])</span>
+        <span class="c1"># Two or more constraints</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">expression</span><span class="o">.</span><span class="n">expressions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_type_arc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">URIorCURIE</span><span class="p">,</span> <span class="n">opt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TripleConstraint</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TripleConstraint</span><span class="p">(</span><span class="n">predicate</span><span class="o">=</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                <span class="n">valueExpr</span><span class="o">=</span><span class="n">NodeConstraint</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">IRIREF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">target</span><span class="p">))]),</span>
+                                <span class="nb">min</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">opt</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">ShExGenerator</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file name&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generate a ShEx Schema for a  LinkML model &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ShExGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">cli</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

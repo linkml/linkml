@@ -1,6 +1,6 @@
 Usage: gen-csv [OPTIONS] YAMLFILE
 
-  Generate CSV/TSV file from biolink model
+  Generate CSV/TSV file from LinkML model
 
 Options:
   -r, --root TEXT                 Class(es) to transform

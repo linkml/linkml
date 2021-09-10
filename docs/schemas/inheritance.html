@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inheritance &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Slots" href="slots.html" />
+    <link rel="prev" title="Schema Element Metadata" href="metadata.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Inheritance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inheritance-related-slots">Inheritance Related Slots</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#is-a">is_a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#abstract">abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mixin">mixin</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
+      <li>Inheritance</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/inheritance.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="inheritance">
+<h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h1>
+<section id="inheritance-related-slots">
+<h2>Inheritance Related Slots<a class="headerlink" href="#inheritance-related-slots" title="Permalink to this headline"></a></h2>
+<section id="is-a">
+<h3>is_a<a class="headerlink" href="#is-a" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://w3id.org/linkml/is_a">is_a</a> metamodel slot can be used to define a backbone hierarchy for your class. All inheritable metamodel slots are propagated down the is_a hierarchy.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">NamedThing</span><span class="p">:</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
+
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
+</pre></div>
+</div>
+<p>Here Person will inherit the four slots from NamedThing.</p>
+<p><strong>Note</strong>: Slots can also be organized in hierarchies</p>
+</section>
+<section id="abstract">
+<h3>abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h3>
+<p>A model class (or slot) may be tagged with its <a class="reference external" href="https://w3id.org/linkml/abstract">abstract</a> slot set to the boolean value <code class="docutils literal notranslate"><span class="pre">true</span></code>, to define whether it is abstract. This has comparable meaning to that in the computing science Object Oriented Paradigm: another class (or slot) can use the abstract class (or slot) as part of its inheritance hierarchy, but the abstract class itself <em>cannot</em> be directly instantiated.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">NamedThing</span><span class="p">:</span>
+    <span class="nt">abstract</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
+</pre></div>
+</div>
+<p>This forces data providers to always provide a more specific class than the generic “NamedThing”</p>
+<p>Some generators may also choose to utilize abstract tags, e.g to mask generation of abstract classes.</p>
+</section>
+<section id="mixin">
+<h3>mixin<a class="headerlink" href="#mixin" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/mixin">mixin</a> boolean slot to declare a class as a mixin</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/mixins">mixins</a> multiavlued slot which specifies a range of mixin parents.</p></li>
+</ul>
+<p>Mixin parents operate similarly to is_a parents, but they do not have the constraint if forming a tree.</p>
+<p>Mixins can be extremely helpful in a number of ways: 1) to generalize a set
+of attributes that can apply to classes in different parts of the class hierarchy, 2) reduce duplication of
+shared attributes between classes that do not inherit from one another and 3) to prevent the sometimes confusing nature
+of multiple inheritance noted in the <a class="reference external" href="https://tinyurl.com/4zdw9tsb">diamond problem</a>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">NamedThing</span><span class="p">:</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
+
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+    <span class="nt">mixins</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
+
+  <span class="nt">HasAliases</span><span class="p">:</span>
+    <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aliases</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">is_a</span></code> has the characteristics of homeomorphicity: <code class="docutils literal notranslate"><span class="pre">is_a</span></code> <strong>SHOULD</strong> only connect either (1) two mixins (2) two classes (3) two slots.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="metadata.html" class="btn btn-neutral float-left" title="Schema Element Metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="slots.html" class="btn btn-neutral float-right" title="Slots" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

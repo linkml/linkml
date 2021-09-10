@@ -1,6 +1,6 @@
 Usage: gen-yuml [OPTIONS] YAMLFILE
 
-  Generate a UML representation of a biolink model
+  Generate a UML representation of a LinkML model
 
 Options:
   -c, --classes TEXT              Class(es) to emit

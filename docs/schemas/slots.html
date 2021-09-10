@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slots &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="URIs and Mappings" href="uris-and-mappings.html" />
+    <link rel="prev" title="Inheritance" href="inheritance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Slots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ranges">ranges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slot-usage">slot_usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slot-cardinality">Slot cardinality</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multivalued">multivalued</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#required">required</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#recommended">recommended</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inverse">inverse</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
+      <li>Slots</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/slots.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="slots">
+<h1>Slots<a class="headerlink" href="#slots" title="Permalink to this headline"></a></h1>
+<p>Slots operate the same way as “fields” in traditional object languages and the same ways as “columns” in spreadsheets and relational databases.</p>
+<p>If you have a JSON object that is conformant to a LinkML schema, then
+the keys for that object must correspond to slots in the schema, that
+are applicable to that class.</p>
+<p>for example, if we have an object instantiating a Person class:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{&quot;id&quot;: &quot;PERSON001&quot;,
+ &quot;name&quot;: &quot;....&quot;,
+ &quot;email&quot;: &quot;....&quot;,
+ ...
+</pre></div>
+</div>
+<p>then <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">email</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code> should all be valid slots, as in the following schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">email</span>
+</pre></div>
+</div>
+<p>If we have tabular data</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>name</p></th>
+<th class="head"><p>email</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PERSON0001</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+<p>then the same constraints hold.</p>
+<section id="ranges">
+<h2>ranges<a class="headerlink" href="#ranges" title="Permalink to this headline"></a></h2>
+<p>Each slot must have a <a class="reference external" href="https://w3id.org/linkml/range">range</a> - if this is not declared explicitly, then <a class="reference external" href="https://w3id.org/linkml/default_range">default_range</a> is used.</p>
+<p>The range must be one of:</p>
+<ul class="simple">
+<li><p>A <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">ClassDefinition</a></p></li>
+<li><p>A <a class="reference external" href="https://w3id.org/linkml/SlotDefinition">SlotDefinition</a></p></li>
+<li><p>An <a class="reference external" href="https://w3id.org/linkml/EnumDefinition">EnumDefinition</a></p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+  <span class="nt">gender</span><span class="p">:</span>
+    <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:gender</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GenderType</span>  <span class="c1">## range is an enum</span>
+  <span class="nt">has_medical_history</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MedicalEvent</span> <span class="c1">## range is a class</span>
+    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">age_in_years</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>  <span class="c1">## range is a type</span>
+    <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+    <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">999</span>
+</pre></div>
+</div>
+</section>
+<section id="slot-usage">
+<h2>slot_usage<a class="headerlink" href="#slot-usage" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a> slot can be used to specify how a particular slot ought to be used in a class.</p>
+<p>For example, imagine a schema with a generic “Relationship” class:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">Relationship</span><span class="p">:</span>
+    <span class="nt">slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">started_at_time</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ended_at_time</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">related_to</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span>
+</pre></div>
+</div>
+<p>with subtypes such as <code class="docutils literal notranslate"><span class="pre">FamilialRelationship</span></code>, <code class="docutils literal notranslate"><span class="pre">BusinessRelationship</span></code>, etc</p>
+<p>we can use <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> to constrain the meaning of more generic slots such as <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">related</span> <span class="pre">to</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">FamilialRelationship</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Relationship</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">type</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FamilialRelationshipType</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="nt">related to</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+<section id="slot-cardinality">
+<h2>Slot cardinality<a class="headerlink" href="#slot-cardinality" title="Permalink to this headline"></a></h2>
+<section id="multivalued">
+<h3>multivalued<a class="headerlink" href="#multivalued" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://w3id.org/linkml/multivalued">multivalued</a> indicates that the range of the slot is a list</p>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+  <span class="nt">has_medical_history</span><span class="p">:</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MedicalEvent</span>
+    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+<section id="required">
+<h3>required<a class="headerlink" href="#required" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://w3id.org/linkml/required">required</a> slot can be used to define whether a slot is required.</p>
+<p>When a slot is declared as required, any class that uses that slot must have a value for that slot.</p>
+</section>
+<section id="recommended">
+<h3>recommended<a class="headerlink" href="#recommended" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://w3id.org/linkml/recommended">recommended</a> slot can be used to define whether a slot is recommended.</p>
+<p>If data is missing a recommended slot, it is still considered valid. However, validators may choose to issue warnings.</p>
+</section>
+</section>
+<section id="inverse">
+<h2>inverse<a class="headerlink" href="#inverse" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">inverse</span></code> slot can be used to specify the inverse predicate of a given predicate slot relationship.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">parent_of</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">famlially_related_to</span>
+    <span class="nt">inverse</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">child_of</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inheritance.html" class="btn btn-neutral float-left" title="Inheritance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uris-and-mappings.html" class="btn btn-neutral float-right" title="URIs and Mappings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

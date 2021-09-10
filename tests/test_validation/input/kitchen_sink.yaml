@@ -1,0 +1,250 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+description: |-
+  Kitchen Sink Schema
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+  - core
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+  CODE: http://example.org/code/
+  ROR: http://example.org/ror/
+  A: http://example.org/activities/
+  P: http://example.org/person/
+default_prefix: ks
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    description: >-
+      test subset A
+    comments:
+      - this subset is meaningless, it is just here for testing
+    aliases:
+      - A
+  subset B:
+    description: >-
+      test subset B
+    aliases:
+      - B
+
+classes:
+
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        multivalued: true
+
+  Person:
+    in_subset:
+      - subset A
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+      - has employment history
+      - has familial relationships
+      - has medical history
+      - age in years
+      - addresses
+      - has birth event
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+
+  Organization:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+
+  Place:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+  Address:
+    slots:
+      - street
+      - city
+
+  Concept:
+    slots:
+      - id
+      - name
+
+  DiagnosisConcept:
+    is_a: Concept
+
+  ProcedureConcept:
+    is_a: Concept
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - related to
+      - type
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
+  BirthEvent:
+    is_a: Event
+    slots:
+      - in location
+
+  EmploymentEvent:
+    is_a: Event
+    slots:
+      - employed at
+
+  MedicalEvent:
+    is_a: Event
+    slots:
+      - in location
+      - diagnosis
+      - procedure
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+
+  Dataset:
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+
+slots:
+  employed at:
+    range: Company
+    in_subset:
+      - subset A
+  is current:
+    range: boolean
+  has employment history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has medical history:
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  married to:
+    range: Person
+  in location:
+    range: Place
+  diagnosis:
+    range: DiagnosisConcept
+    inlined: true
+  procedure:
+    range: ProcedureConcept
+    inlined: true
+  addresses:
+    range: Address
+    multivalued: True
+  age in years:
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+    in_subset:
+      - subset A
+      - subset B
+  related to:
+  type:
+  street:
+  city:
+  has birth event:
+    range: BirthEvent
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  DiagnosisType:

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Validation &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with RDF and LinkML" href="rdf.html" />
+    <link rel="prev" title="Working with Data" href="working-with-data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Working with Data</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="working-with-data.html">Working with Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#validation-of-json-documents">Validation of JSON documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validation-of-rdf-triplestores-using-generated-sparql">Validation of RDF triplestores using generated SPARQL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#future-plans">Future plans</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Working with Data</a> &raquo;</li>
+      <li>Data Validation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/data/validating-data.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="data-validation">
+<h1>Data Validation<a class="headerlink" href="#data-validation" title="Permalink to this headline"></a></h1>
+<p>LinkML is designed to allow for a variety of strategies for data
+validation. The overall philosophy is to provide maximum expressivity
+in the language to allow model designers to state all consraints in a
+declarative fashion, and then to leverage existing frameworks and to
+allow the user to balance concerns such as expressivity vs efficiency.</p>
+<p>Currently there are 4 supported strategies:</p>
+<ul class="simple">
+<li><p>validation via Python object instantiation</p></li>
+<li><p>validation through JSON-Schema</p></li>
+<li><p>validation of triples in a triplestore or RDF file via generation of SPARQL constraints</p></li>
+<li><p>validation of RDF via generation of ShEx</p></li>
+</ul>
+<p>However, others will be supported in future</p>
+<section id="validation-of-json-documents">
+<h2>Validation of JSON documents<a class="headerlink" href="#validation-of-json-documents" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> command will automatically perform data validation.</p>
+<p>Currently it performs two level validation:</p>
+<ul class="simple">
+<li><p>it will convert data to in-memory Python objects, using dataclass validation</p></li>
+<li><p>it will then convert the LinkML schema to JSON-Schema and employ JSON-Schema validation</p></li>
+</ul>
+<p>Note that you can easily generate JSON-Schema and use your validator of choice, see <a class="reference internal" href="../generators/json-schema.html"><span class="doc std std-doc">JSON Schema Generation</span></a></p>
+</section>
+<section id="validation-of-rdf-triplestores-using-generated-sparql">
+<h2>Validation of RDF triplestores using generated SPARQL<a class="headerlink" href="#validation-of-rdf-triplestores-using-generated-sparql" title="Permalink to this headline"></a></h2>
+<p>The LinkML framework can also be used to validate RDF, either in a file, or a triplestore. There are two steps:</p>
+<ul class="simple">
+<li><p>generation of SPARQL constraint-style queries (see <a class="reference internal" href="../generators/sparql.html"><span class="doc std std-doc">sparqlgen</span></a> )</p></li>
+<li><p>execution of those queries on an in-memory graph or external triplestore</p></li>
+</ul>
+<p>The user can choose to run only the first step, to obtain a bank of SPARQL queries that can be applied selectively</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-sparql-validate --help
+Usage: linkml-sparql-validate <span class="o">[</span>OPTIONS<span class="o">]</span>
+
+  Validates sparql
+
+  Example:
+
+      linkml-sparql-validate -U http://sparql.hegroup.org/sparql -s
+      tests/test_validation/input/omo.yaml
+
+Options:
+  -G, --named-graph TEXT          Constrain query to a named graph
+  -i, --input TEXT                Input file to validate
+  -U, --endpoint-url TEXT         URL of sparql endpoint
+  -L, --limit TEXT                Max results per query
+  -o, --output TEXT               Path to report file
+  -f, --input-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+                                  Input format. Inferred from input suffix <span class="k">if</span>
+                                  not specified
+
+  -t, --output-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+                                  Output format. Inferred from output suffix
+                                  <span class="k">if</span> not specified
+
+  -s, --schema TEXT               Path to schema specified as LinkML yaml
+  --help                          Show this message and exit.
+</pre></div>
+</div>
+</section>
+<section id="future-plans">
+<h2>Future plans<a class="headerlink" href="#future-plans" title="Permalink to this headline"></a></h2>
+<p>Future versions of LinkML will employ a powerful constraint and inference language.</p>
+<p>One of the use cases here is being able to specify that the <code class="docutils literal notranslate"><span class="pre">length</span></code> field is equal to <code class="docutils literal notranslate"><span class="pre">end</span> <span class="pre">-</span> <span class="pre">start</span></code>. This declarative knowledge can then be used to either (1) infer the value of <code class="docutils literal notranslate"><span class="pre">length</span></code> if unspecified (2) infer either <code class="docutils literal notranslate"><span class="pre">start</span></code> or <code class="docutils literal notranslate"><span class="pre">end</span></code> if only one of these is specified alongside <code class="docutils literal notranslate"><span class="pre">length</span></code> (3) check consistency if all three are specified.</p>
+<p>These constraints can then be executed over large databases via a variety of strategies including:</p>
+<ul class="simple">
+<li><p>generation of datalog programs for efficient engines such as souffle</p></li>
+<li><p>generation of SQL queries to be used with relational databases</p></li>
+</ul>
+<p>We also plan to support generation of SHACL from LinkML</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="working-with-data.html" class="btn btn-neutral float-left" title="Working with Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rdf.html" class="btn btn-neutral float-right" title="Working with RDF and LinkML" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

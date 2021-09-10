@@ -1,6 +1,6 @@
 Usage: gen-rdf [OPTIONS] YAMLFILE
 
-  Generate an RDF representation of a biolink model
+  Generate an RDF representation of a LinkML model
 
 Options:
   -o, --output TEXT               Output file name

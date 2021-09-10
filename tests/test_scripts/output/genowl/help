@@ -1,6 +1,6 @@
 Usage: gen-owl [OPTIONS] YAMLFILE
 
-  Generate an OWL representation of a biolink model
+  Generate an OWL representation of a LinkML model
 
 Options:
   -o, --output TEXT               Output file name

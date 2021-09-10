@@ -1,6 +1,6 @@
 Usage: gen-shex [OPTIONS] YAMLFILE
 
-  Generate a ShEx Schema for a  biolink model
+  Generate a ShEx Schema for a  LinkML model
 
 Options:
   -o, --output TEXT               Output file name

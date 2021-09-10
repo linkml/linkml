@@ -1,0 +1,29 @@
+id: foo
+prefixes:
+  foo: http://x.org/
+default_prefix: foo
+default_range: string
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+classes:
+  Container:
+    slots:
+      - word_mappings
+  WordMapping:
+    slots:
+      - src
+      - tgt
+
+slots:
+  src:
+    identifier: true
+  tgt:
+  word_mappings:
+    multivalued: true
+    inlined: true
+    range: WordMapping
+

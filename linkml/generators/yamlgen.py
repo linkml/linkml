@@ -13,6 +13,9 @@ from linkml.utils.schemaloader import load_raw_schema
 
 
 class YAMLGenerator(Generator):
+    """
+    A generator that produces a schema as a YAML Document
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.0"
     valid_formats = ['yaml']
@@ -36,9 +39,8 @@ class YAMLGenerator(Generator):
 def cli(yamlfile, raw: bool, **args):
     """ Validate input and produce fully resolved yaml equivalent """
     if raw:
-        with open(yamlfile, 'r') as stream:
-            s = load_raw_schema(stream)
-            print(as_yaml(s))
+        s = load_raw_schema(yamlfile)
+        print(as_yaml(s))
     else:
         gen = YAMLGenerator(yamlfile, **args)
         print(gen.serialize(**args))

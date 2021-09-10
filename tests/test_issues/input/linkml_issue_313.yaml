@@ -1,0 +1,26 @@
+id: foo
+prefixes:
+  foo: http://x.org/
+default_prefix: foo
+default_range: string
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+classes:
+  c1:
+    c1val
+    
+slots:
+  s1:
+    s1val
+
+enums:
+  e1:
+    permissible_values:
+      v1: v1val
+
+  e2:
+    e2val

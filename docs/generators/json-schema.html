@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Schema &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Markdown" href="markdown.html" />
+    <link rel="prev" title="Generators" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">JSON Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-output">Example Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shacl.html">Shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="owl.html">Owl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Generators</a> &raquo;</li>
+      <li>JSON Schema</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generators/json-schema.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="json-schema">
+<h1>JSON Schema<a class="headerlink" href="#json-schema" title="Permalink to this headline"></a></h1>
+<section id="example-output">
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/jsonschema/personinfo.schema.json">personinfo.schema.json</a></p>
+</section>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://json-schema.org/">JSON Schema</a> is a schema language for JSON
+documents.</p>
+<p>To run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml &gt; personinfo.schema.json
+</pre></div>
+</div>
+<p>Note that any JSON that conforms to the derived JSON Schema can be
+converted to RDF using the derived JSON-LD context.</p>
+<p>Because JSON-Schema does not support inheritance hierarchy, slots are
+“rolled down” from parent.</p>
+<p>For example, in the personinfo schema, slots such as <cite>id</cite> and <cite>name</cite>
+are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mixin:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span>
+  <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+  <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+    <span class="no">A person (alive, dead, undead, or fictional).</span>
+  <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
+  <span class="nt">mixins</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
+  <span class="nt">slots</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
+  <span class="nt">slot_usage</span><span class="p">:</span>
+    <span class="nt">primary_email</span><span class="p">:</span>
+      <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;^\\S+@[\\S+\\.]+\\S+&quot;</span>
+</pre></div>
+</div>
+<p>(some parts truncated for brevity)</p>
+<p>This would generate the following JSON-Schema:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;Person&quot;: {
+       &quot;description&quot;: &quot;A person (alive, dead, undead, or fictional).&quot;,
+       &quot;properties&quot;: {
+          &quot;id&quot;: {
+             &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;name&quot;: {
+             &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;primary_email&quot;: {
+             &quot;pattern&quot;: &quot;^\\S+@[\\S+\\.]+\\S+&quot;,
+             &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;age_in_years&quot;: {
+             &quot;type&quot;: &quot;integer&quot;
+          },
+          &quot;aliases&quot;: {
+             &quot;items&quot;: {
+                &quot;type&quot;: &quot;string&quot;
+             },
+             &quot;type&quot;: &quot;array&quot;
+          },
+          &quot;current_address&quot;: {
+             &quot;$ref&quot;: &quot;#/definitions/Address&quot;
+          },
+          &quot;has_employment_history&quot;: {
+             &quot;items&quot;: {
+                &quot;$ref&quot;: &quot;#/definitions/EmploymentEvent&quot;
+             },
+             &quot;type&quot;: &quot;array&quot;
+          },
+          &quot;has_familial_relationships&quot;: {
+             &quot;items&quot;: {
+                &quot;$ref&quot;: &quot;#/definitions/FamilialRelationship&quot;
+             },
+             &quot;type&quot;: &quot;array&quot;
+          },
+          &quot;has_medical_history&quot;: {
+             &quot;items&quot;: {
+                &quot;$ref&quot;: &quot;#/definitions/MedicalEvent&quot;
+             },
+             &quot;type&quot;: &quot;array&quot;
+          },
+          ...
+       },
+       &quot;required&quot;: [
+          &quot;id&quot;
+       ],
+       &quot;title&quot;: &quot;Person&quot;,
+       &quot;type&quot;: &quot;object&quot;
+    }
+</pre></div>
+</div>
+</section>
+<section id="docs">
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<section id="command-line">
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-json-schema">
+<h4>gen-json-schema<a class="headerlink" href="#gen-json-schema" title="Permalink to this headline"></a></h4>
+<p>Generate JSON Schema representation of a LinkML model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-json-schema <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-i">
+<span id="cmdoption-gen-json-schema-inline"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--inline</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-i" title="Permalink to this definition"></a></dt>
+<dd><p>Generate references to types rather than inlining them.
+Note that declaring a slot as inlined: true will always inline the class</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-t">
+<span id="cmdoption-gen-json-schema-top-class"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--top-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;top_class&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-t" title="Permalink to this definition"></a></dt>
+<dd><p>Top level class; slots of this class will become top level properties in the json-schema</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-not-closed">
+<span id="cmdoption-gen-json-schema-closed"></span><span class="sig-name descname"><span class="pre">--not-closed</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--closed</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-not-closed" title="Permalink to this definition"></a></dt>
+<dd><p>Set additionalProperties=False if closed otherwise true if not closed at the global level</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-f">
+<span id="cmdoption-gen-json-schema-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=json)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>json</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-metadata">
+<span id="cmdoption-gen-json-schema-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-useuris">
+<span id="cmdoption-gen-json-schema-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-im">
+<span id="cmdoption-gen-json-schema-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-log_level">
+<span id="cmdoption-gen-json-schema-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-json-schema-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-mergeimports">
+<span id="cmdoption-gen-json-schema-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-json-schema-arg-YAMLFILE">
+<span id="cmdoption-gen-json-schema-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-json-schema-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="code">
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchemaGenerator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">linkml.generators.jsonschemagen.</span></span><span class="sig-name descname"><span class="pre">JsonSchemaGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_class</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/jsonschemagen.html#JsonSchemaGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Generates JSONSchema documents from a LinkML SchemaDefinition</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Generators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="markdown.html" class="btn btn-neutral float-right" title="Markdown" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

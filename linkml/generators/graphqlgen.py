@@ -41,7 +41,7 @@ class GraphqlGenerator(Generator):
 @shared_arguments(GraphqlGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate graphql representation of a biolink model """
+    """ Generate graphql representation of a LinkML model """
     print(GraphqlGenerator(yamlfile, **args).serialize(**args))
 
 

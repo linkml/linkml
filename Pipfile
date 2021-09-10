@@ -25,8 +25,12 @@ parse = "*"
 pyldmod = ">=2.0.5"
 rdflib-pyldmod-compat = ">=0.1.2c"
 hbreader = "*"
-linkml-runtime = "~=1.0, >=1.0.14"
+linkml-runtime = "~=1.0, >=1.0.15"
 sqlalchemy = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-click = "*"
+myst-parser = "*"
 jinja2 = "*"
 
 [dev-packages]
@@ -34,7 +38,6 @@ nbconvert = "*"
 nbformat = "*"
 ipykernel = "*"
 chardet = "*"
-linkml = {editable = true, path = "."}
 
 [pipenv]
 allow_prereleases = true

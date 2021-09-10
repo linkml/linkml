@@ -26,12 +26,24 @@ json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
 }
 
 class JsonSchemaGenerator(Generator):
+    """
+    Generates JSONSchema documents from a LinkML SchemaDefinition
+
+
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"
     valid_formats = ["json"]
     visit_all_class_slots = True
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], top_class: Optional[str] = None, **kwargs) -> None:
+        """
+        Instantiation
+
+        :param schema:
+        :param top_class: root class for JSONSchema generation
+        :param kwargs:
+        """
         super().__init__(schema, **kwargs)
         self.schemaobj: JsonObj = None
         self.clsobj: JsonObj = None
@@ -160,7 +172,7 @@ Top level class; slots of this class will become top level properties in the jso
 Set additionalProperties=False if closed otherwise true if not closed at the global level
 """)
 def cli(yamlfile, **kwargs):
-    """ Generate JSON Schema representation of a biolink model """
+    """ Generate JSON Schema representation of a LinkML model """
     print(JsonSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 

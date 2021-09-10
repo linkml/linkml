@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slots &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="URIs and Mappings" href="uris-and-mappings.html" />
+    <link rel="prev" title="Inheritance" href="inheritance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Using LinkML</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install.html">How to install LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Slots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#slot-usage">slot_usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#required">required</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slots-relating-to-constraints-on-slot-composition">Slots Relating to Constraints on Slot Composition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#domain">domain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#range">range</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#symmetric">symmetric</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#slots-relating-semantic-mappings-and-anchoring-to-external-ontology">Slots Relating Semantic Mappings and Anchoring to External Ontology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">symmetric</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inverse">inverse</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Generated Python Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Using LinkML</a> &raquo;</li>
+      <li>Slots</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/topics/slots.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="slots">
+<h1>Slots<a class="headerlink" href="#slots" title="Permalink to this headline"></a></h1>
+<section id="slot-usage">
+<h2>slot_usage<a class="headerlink" href="#slot-usage" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> slot can be used to specify how a particular slot ought to be used in a class.</p>
+<p>This is useful for documenting what a particular slot means for instances of a particular class.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">gene to gene association</span><span class="p">:</span>
+    <span class="nt">aliases</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;molecular</span><span class="nv"> </span><span class="s">or</span><span class="nv"> </span><span class="s">genetic</span><span class="nv"> </span><span class="s">interaction&#39;</span><span class="p p-Indicator">]</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">association</span>
+    <span class="nt">defining_slots</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">subject</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">object</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">abstract parent class for different kinds of gene-gene or gene product to gene product relationships.</span>
+      <span class="no">Includes homology and interaction.</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">subject</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+          <span class="no">the subject gene in the association. If the relation is symmetric, subject vs object is arbitrary.</span>
+          <span class="no">We allow a gene product to stand as proxy for the gene or vice versa</span>
+      <span class="nt">object</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene or gene product</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+          <span class="no">the object gene in the association. If the relation is symmetric, subject vs object is arbitrary.</span>
+          <span class="no">We allow a gene product to stand as proxy for the gene or vice versa</span>
+</pre></div>
+</div>
+<p>Here we document the association class <code class="docutils literal notranslate"><span class="pre">gene</span> <span class="pre">to</span> <span class="pre">gene</span> <span class="pre">association</span></code> with information on how the slot <code class="docutils literal notranslate"><span class="pre">subject</span></code> and <code class="docutils literal notranslate"><span class="pre">object</span></code> ought to be used to represent this association properly.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> section we define the range and provide a description for the slot <code class="docutils literal notranslate"><span class="pre">subject</span></code> and <code class="docutils literal notranslate"><span class="pre">object</span></code>.</p>
+</section>
+<section id="required">
+<h2>required<a class="headerlink" href="#required" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">required</span></code> slot can be used to define whether a slot is required.</p>
+<p>When a slot is declared as required, any class that uses that slot must have a value for that slot.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">id</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">node property</span>
+    <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">named thing</span>
+    <span class="nt">mappings</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">alliancegenome:primaryId</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gff3:ID</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gpi:DB_Object_ID</span>
+</pre></div>
+</div>
+<p>Here we define the property slot <code class="docutils literal notranslate"><span class="pre">id</span></code> as a required field for all instances of the entity class <code class="docutils literal notranslate"><span class="pre">named</span> <span class="pre">thing</span></code>.</p>
+</section>
+<section id="slots-relating-to-constraints-on-slot-composition">
+<h2>Slots Relating to Constraints on Slot Composition<a class="headerlink" href="#slots-relating-to-constraints-on-slot-composition" title="Permalink to this headline"></a></h2>
+<section id="domain">
+<h3>domain<a class="headerlink" href="#domain" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">domain</span></code> slot mimics the idea of <code class="docutils literal notranslate"><span class="pre">rdfs:domain</span></code> where you constrain the type of classes that a given Biolink Model slot can be a part of.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">genetically interacts with</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">interacts with</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
+</pre></div>
+</div>
+<p>Here we define that the subject (source node) of the predicate slot <code class="docutils literal notranslate"><span class="pre">genetically</span> <span class="pre">interacts</span> <span class="pre">with</span></code> must be an instance of class <code class="docutils literal notranslate"><span class="pre">gene</span></code>.</p>
+</section>
+<section id="range">
+<h3>range<a class="headerlink" href="#range" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">range</span></code> slot mimics the idea of <code class="docutils literal notranslate"><span class="pre">rdfs:range</span></code> where you can constrain the type of classes (or data types) a given Biolink Model slot can have as its value.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">genetically interacts with</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">interacts with</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
+</pre></div>
+</div>
+<p>Here we define that both the subject (source node) and object (target node) of the predicate slot <code class="docutils literal notranslate"><span class="pre">genetically</span> <span class="pre">interacts</span> <span class="pre">with</span></code> must be instances of class <code class="docutils literal notranslate"><span class="pre">gene</span></code>.</p>
+</section>
+<section id="symmetric">
+<h3>symmetric<a class="headerlink" href="#symmetric" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">symmetric</span></code> slot can be used to specify whether a Biolink Model predicate slot is symmetric in its semantics.</p>
+<p>i.e. if <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">-[r]-&gt;</span> <span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">r</span></code> is symmetric then one can infer <code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">-[r]-&gt;</span> <span class="pre">A</span></code></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">genetically interacts with</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">interacts with</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">symmetric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Here we define that the predicate slot <code class="docutils literal notranslate"><span class="pre">genetically</span> <span class="pre">interacts</span> <span class="pre">with</span></code> is symmetric.</p>
+<p><strong>Note:</strong> This property is not inherited by descendants of this predicate slot. You will have to explicitly define every predicate slot that should be considered as symmetric.</p>
+</section>
+</section>
+<section id="slots-relating-semantic-mappings-and-anchoring-to-external-ontology">
+<h2>Slots Relating Semantic Mappings and Anchoring to External Ontology<a class="headerlink" href="#slots-relating-semantic-mappings-and-anchoring-to-external-ontology" title="Permalink to this headline"></a></h2>
+<section id="id1">
+<h3>symmetric<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">symmetric</span></code> slot can be used to specify whether a given predicate slot is symmetric.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">interacts with</span><span class="p">:</span>
+    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">named thing</span>
+    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">named thing</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">holds between any two entities that directly or indirectly interact with each other</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">related to</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+    <span class="nt">symmetric</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> The symmetric nature of the predicate is not inherited by descendants of the predicate.</p>
+</section>
+<section id="inverse">
+<h3>inverse<a class="headerlink" href="#inverse" title="Permalink to this headline"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">inverse</span></code> slot can be used to specify the inverse predicate of a given predicate slot relationship.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">affects</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">related to</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
+      <span class="no">describes an entity that has a direct affect on the state or quality</span>
+      <span class="no">of another existing entity. Use of the &#39;affects&#39; predicate implies that</span>
+      <span class="no">the affected entity already exists, unlike predicates such as</span>
+      <span class="no">&#39;affects risk for&#39; and &#39;prevents, where the outcome is something</span>
+      <span class="no">that may or may not come to be.</span>
+    <span class="nt">inverse</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">affected by</span>
+    <span class="nt">in_subset</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inheritance.html" class="btn btn-neutral float-left" title="Inheritance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uris-and-mappings.html" class="btn btn-neutral float-right" title="URIs and Mappings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -47,7 +47,7 @@ class ProtoGenerator(Generator):
 @shared_arguments(ProtoGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate proto representation of biolink model """
+    """ Generate proto representation of LinkML model """
     print(ProtoGenerator(yamlfile, **args).serialize(**args))
 
 

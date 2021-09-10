@@ -348,7 +348,7 @@ class OwlSchemaGenerator(Generator):
               default='.owl.ttl',
               help="Suffix to append to schema id to generate OWL Ontology IRI")
 def cli(yamlfile, **kwargs):
-    """ Generate an OWL representation of a biolink model """
+    """ Generate an OWL representation of a LinkML model """
     print(OwlSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 

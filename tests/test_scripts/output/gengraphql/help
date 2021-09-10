@@ -1,6 +1,6 @@
 Usage: gen-graphql [OPTIONS] YAMLFILE
 
-  Generate graphql representation of a biolink model
+  Generate graphql representation of a LinkML model
 
 Options:
   -f, --format [graphql]          Output format (default=graphql)
