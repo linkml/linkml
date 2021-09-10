@@ -250,7 +250,9 @@ slots:
       - subset A
       - subset B
   related to:
+    range: Thing
   type:
+    range: string
   street:
   city:
   has birth event:
