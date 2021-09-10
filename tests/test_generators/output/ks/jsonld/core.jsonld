@@ -237,7 +237,7 @@
       "name": "started_at_time",
       "definition_uri": "https://w3id.org/linkml/tests/core/started_at_time",
       "mappings": [
-        "prov:startedAtTime"
+        "http://www.w3.org/ns/prov#startedAtTime"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "date",
@@ -252,7 +252,7 @@
       "name": "ended_at_time",
       "definition_uri": "https://w3id.org/linkml/tests/core/ended_at_time",
       "mappings": [
-        "prov:endedAtTime"
+        "http://www.w3.org/ns/prov#endedAtTime"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "date",
@@ -267,7 +267,7 @@
       "name": "was_informed_by",
       "definition_uri": "https://w3id.org/linkml/tests/core/was_informed_by",
       "mappings": [
-        "prov:wasInformedBy"
+        "http://www.w3.org/ns/prov#wasInformedBy"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "Activity",
@@ -283,7 +283,7 @@
       "name": "was_associated_with",
       "definition_uri": "https://w3id.org/linkml/tests/core/was_associated_with",
       "mappings": [
-        "prov:wasAssociatedWith"
+        "http://www.w3.org/ns/prov#wasAssociatedWith"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "Agent",
@@ -298,7 +298,7 @@
       "name": "acted_on_behalf_of",
       "definition_uri": "https://w3id.org/linkml/tests/core/acted_on_behalf_of",
       "mappings": [
-        "prov:actedOnBehalfOf"
+        "http://www.w3.org/ns/prov#actedOnBehalfOf"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "Agent",
@@ -313,7 +313,7 @@
       "name": "was_generated_by",
       "definition_uri": "https://w3id.org/linkml/tests/core/was_generated_by",
       "mappings": [
-        "prov:wasGeneratedBy"
+        "http://www.w3.org/ns/prov#wasGeneratedBy"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "range": "Activity",
@@ -324,7 +324,7 @@
       "name": "used",
       "definition_uri": "https://w3id.org/linkml/tests/core/used",
       "mappings": [
-        "prov:used"
+        "http://www.w3.org/ns/prov#used"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "domain": "Activity",
@@ -401,12 +401,12 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "core.yaml",
-  "source_file_date": "Wed Aug 25 05:53:26 2021",
+  "source_file_date": "Fri Aug 27 13:27:36 2021",
   "source_file_size": 1667,
-  "generation_date": "2021-08-25 05:57",
+  "generation_date": "2021-09-10 11:06",
   "@type": "SchemaDefinition",
   "@context": [
-    "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",
+    "file:///Users/kschaper/Documents/Monarch/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",
     "https://w3id.org/linkml/types.context.jsonld",
     {
       "@base": "https://w3id.org/linkml/tests/core/"

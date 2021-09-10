@@ -11,6 +11,15 @@ Options:
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
 
+  --output_directory TEXT         Output directory for individually generated
+                                  class files
+
+  --package TEXT                  Package name where relevant for generated
+                                  class files
+
+  --template_file TEXT            Optional jinja2 template to use for class
+                                  generation
+
   --useuris / --metauris          Include metadata in output
                                   (default=--useuris)
 

@@ -34,6 +34,7 @@ nbconvert = "*"
 nbformat = "*"
 ipykernel = "*"
 chardet = "*"
+linkml = {editable = true, path = "."}
 
 [pipenv]
 allow_prereleases = true
