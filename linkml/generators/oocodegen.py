@@ -1,25 +1,11 @@
-import keyword
-import os
-import re
+import abc
 from dataclasses import dataclass, field
-from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
-import logging
+from typing import Optional, List
 
-import click
-from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.utils.schemaview import SchemaView
-from rdflib import URIRef
-
-import linkml
-from linkml.generators import JAVA_GEN_VERSION
-import linkml_runtime.linkml_model.types as linkml_types
-from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
-    SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue, TypeDefinition
-from linkml_runtime.utils.formatutils import camelcase, underscore, be, wrapped_annotation, split_line, sfx, lcamelcase
-from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.ifabsent_functions import ifabsent_value_declaration, ifabsent_postinit_declaration, \
-    default_curie_or_uri
-from linkml_runtime.utils.metamodelcore import builtinnames
+from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, TypeDefinition
+from linkml_runtime.utils.formatutils import camelcase, underscore, lcamelcase
+from linkml.utils.generator import Generator
 
 
 SAFE_NAME = str
@@ -65,6 +51,10 @@ class OOClass:
 class OOCodeGenerator(Generator):
     package: PACKAGE = "example"
     java_style = True
+
+    @abc.abstractmethod
+    def serialize(self, directory: str) -> None:
+        raise NotImplementedError("Not implemented.")
 
     def get_class_name(self, cn):
         return camelcase(cn)

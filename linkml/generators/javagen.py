@@ -1,9 +1,5 @@
-import keyword
 import os
-import re
-from dataclasses import dataclass
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
-import logging
 
 import click
 from jinja2 import Template
@@ -11,11 +7,10 @@ from jinja2 import Template
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators import JAVA_GEN_VERSION
-from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinition, ClassDefinition, ClassDefinitionName, \
-    SlotDefinitionName, DefinitionName, Element, TypeDefinition, Definition, EnumDefinition, PermissibleValue
+from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition
 
-from linkml.generators.oocodegen import OOCodeGenerator, PACKAGE
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.utils.generator import shared_arguments
 
 default_template = """
 {#-
@@ -32,6 +27,7 @@ import lombok.*;
   {{ cls.source_class.description }}
 **/
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
 {% for f in cls.fields %}
   private {{f.range}} {{ f.name }};
