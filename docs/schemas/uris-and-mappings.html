@@ -44,7 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">URIs and Mappings</a><ul>
@@ -100,7 +100,9 @@
 <p>One feature that sets LinkML apart from frameworks such as JSON-Schema and UML is that fact that each element of your schema has a globally unique IRI/URI. This is somewhat hidden behind the scenes, so you can ignore this feature if you like, but it is also very easy to use this, which can provide benefits in terms of reusing and linking schemas, and working with the linked data stack.</p>
 <section id="background-uris-iris-and-curies">
 <h2>background: URIs, IRIs, and CURIEs<a class="headerlink" href="#background-uris-iris-and-curies" title="Permalink to this headline"></a></h2>
-<p>TODO</p>
+<p>URIs and IRIs are generalizations of URLs. URIs are used as identifiers in linked data standards and vocabularies.</p>
+<p>For example, in <a class="reference external" href="http://schema.org">schema.org</a>, the URI <a class="reference external" href="http://schema.org/Person">http://schema.org/Person</a> is the identifier for the Person concept.</p>
+<p>URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map <code class="docutils literal notranslate"><span class="pre">schema</span></code> to <code class="docutils literal notranslate"><span class="pre">http://schema.org/</span></code>, then we can use the CURIE <code class="docutils literal notranslate"><span class="pre">schema:Person</span></code> to denote the person concept</p>
 </section>
 <section id="prefixes">
 <h2>prefixes<a class="headerlink" href="#prefixes" title="Permalink to this headline"></a></h2>
@@ -161,7 +163,7 @@
 </section>
 <section id="mappings">
 <h2>mappings<a class="headerlink" href="#mappings" title="Permalink to this headline"></a></h2>
-<p>You may wish to avoid committing to completely reusing a linked data concept, whilst wanting to retain a mapping. LinkML makes use of skos predicates as metamodel slots:</p>
+<p>You may wish to avoid committing to completely reusing a linked data concept, whilst wanting to retain a mapping. LinkML makes use of <a class="reference external" href="https://www.w3.org/2004/02/skos/">SKOS predicates</a> as metamodel slots:</p>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">NamedThing</span><span class="p">:</span>
     <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>

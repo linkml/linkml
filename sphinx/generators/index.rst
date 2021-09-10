@@ -13,10 +13,20 @@ All generators
    markdown
    python
    java
-   jsonld
-   jsonld-context
    sqlddl
+   graphql
+   prefixmap
+   jsonld-context
+   jsonld
+   rdf
+   sparql
    shex
    shacl
-   
+   terminusdb
+   owl
+   excel
+   csv
+   yuml
+   solr
+   project-generator
 

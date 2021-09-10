@@ -10,5 +10,6 @@ Developers guide
    :caption: Contents:
 
    organization
+   manipulating-schemas
    contributing-code
 

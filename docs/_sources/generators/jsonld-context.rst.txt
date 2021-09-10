@@ -1,6 +1,12 @@
 JSON-LD Contexts
 ================
 
+.. warning ::
+
+    The JSON-LD context generator does not yet include ``@embed``
+    directives necessary for conversion *from* RDF.
+
+
 Overview
 --------
 

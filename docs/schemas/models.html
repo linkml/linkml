@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Metadata" href="metadata.html" />
+    <link rel="next" title="Schema Element Metadata" href="metadata.html" />
     <link rel="prev" title="LinkML Schemas" href="index.html" /> 
 </head>
 
@@ -55,7 +55,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#subsets">Subsets</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
@@ -106,12 +106,13 @@ expressed as JSON or YAML files (the default form for LinkML), or as
 CSVs, or as a relational database, or even a triplestore or graph
 database.</p>
 <p>LinkML models are authored as YAML files. These files can be understood as data files that instantiate <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">SchemaDefinitions</a> in the LinkML metamodel.</p>
-<p>The overall layout of a schema yaml file will be as follows:</p>
+<p>The overall layout of a schema yaml file is roughly as follows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://example.org/my-schema</span>
 <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
 <span class="l l-Scalar l-Scalar-Plain">&lt;OTHER METADATA HERE&gt;</span>
 
-<span class="c1"># main data templates</span>
+<span class="c1"># classes are the main organization until for data;</span>
+<span class="c1"># all data records instantiate a class</span>
 <span class="nt">classes</span><span class="p">:</span>
   <span class="nt">Person</span><span class="p">:</span>
     <span class="l l-Scalar l-Scalar-Plain">...</span>
@@ -173,7 +174,7 @@ database.</p>
 </li>
 <li><p>modules</p>
 <ul>
-<li><p><a class="reference external" href="https://w3id.org/linkml/imports">imports</a> – See <span class="xref myst">imports</span></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/imports">imports</a> – allows for modular development. See <a class="reference internal" href="imports.html"><span class="doc std std-doc">imports</span></a></p></li>
 </ul>
 </li>
 <li><p>prefix management</p>
@@ -199,7 +200,7 @@ instantiate classes in the schema. Each class has a set of <em>slots</em>
 <p>Classes operate in a very similar way to classes in a programming
 language like Python or Java. They are analogous to tables in
 relational databases.</p>
-<p>Classes are defined in a <code class="docutils literal notranslate"><span class="pre">classes</span></code> block at the top level of your YAML:</p>
+<p>Classes are defined in a <code class="docutils literal notranslate"><span class="pre">classes</span></code> block at the top level of your YAML, where the key is the class name:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
   <span class="nt">Person</span><span class="p">:</span>
     <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
@@ -219,7 +220,13 @@ relational databases.</p>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">ClassDefinition</a> for a full list of allowed slots</p>
-<p>Note that because LinkML is described in LinkML, your schema is an
+<p><strong>Note</strong>: class names can be normal natural language noun phrases
+encompassing characters such as spaces. However, when converted to
+external representations, different rules will be applied, and
+typically the exported name is in PascalCase. So for example, you
+could call your class <code class="docutils literal notranslate"><span class="pre">named</span> <span class="pre">thing</span></code>, but the URI for the class would
+be <code class="docutils literal notranslate"><span class="pre">myprefix:NamedThing</span></code></p>
+<p>Because LinkML is described in LinkML, your schema is an
 instantiation of the LinkML metamodel, and schema elements have a list
 of allowed slots. So for example, <code class="docutils literal notranslate"><span class="pre">is_a</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, and <code class="docutils literal notranslate"><span class="pre">slots</span></code>
 are all slots that are applicable to instances of
@@ -299,16 +306,57 @@ re-declare</p>
 <h2>Types<a class="headerlink" href="#types" title="Permalink to this headline"></a></h2>
 <p>See <a class="reference external" href="https://w3id.org/linkml/TypeDefinition">TypeDefinition</a> in the metamodel.</p>
 <p>Types in LinkML are scalar data values such as strings, integers, floats, and so on. LinkML comes with its own set of types, and these can be extended.</p>
-<p>TODO: example</p>
+<p>For example, you may represent chemical formulae as strings in your model, but if you provide an explicit type that maps to string, it makes the intended meaning clearer, and different applications can operate on these differently:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">chemical formula value</span><span class="p">:</span>
+    <span class="nt">uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xsd:string</span>
+    <span class="nt">base</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">str</span>
+    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A chemical formula</span>
+</pre></div>
+</div>
 </section>
 <section id="enums">
 <h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline"></a></h2>
+<p>The core enumeration model is the same as for familiar systems, where there is a set of allowed string values:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
   <span class="nt">FamilialRelationshipType</span><span class="p">:</span>
     <span class="nt">permissible_values</span><span class="p">:</span>
       <span class="nt">SIBLING_OF</span><span class="p">:</span>
       <span class="nt">PARENT_OF</span><span class="p">:</span>
       <span class="nt">CHILD_OF</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>You can also make your enums into a ticher controlled vocabulary, with definitions built in:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span>
+  <span class="nt">FamilialRelationshipType</span><span class="p">:</span>
+    <span class="nt">permissible_values</span><span class="p">:</span>
+      <span class="nt">SIBLING OF</span><span class="p">:</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A family relationship where the two members have a parent on common</span>
+      <span class="nt">PARENT OF</span><span class="p">:</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A family relationship between offspring and their parent</span>
+      <span class="nt">CHILD OF</span><span class="p">:</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">inverse of the PARENT_OF relationship</span>
+</pre></div>
+</div>
+<p>(note you can include spaces in your enums if you like)</p>
+<p>LinkML goes beyond most frameworks and allows your enums to be backed by external ontologies. For example, this enum is backed by <a class="reference external" href="http://obofoundry.org/ontology/gsso">GSSO</a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+  <span class="nt">GGSO</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/GSSO_</span>
+
+<span class="nt">enums</span><span class="p">:</span>
+  <span class="nt">GenderType</span><span class="p">:</span>
+    <span class="nt">permissible_values</span><span class="p">:</span>
+      <span class="nt">nonbinary man</span><span class="p">:</span>
+        <span class="nt">meaning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GSSO:009254</span>
+      <span class="nt">nonbinary woman</span><span class="p">:</span>
+        <span class="nt">meaning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GSSO:009253</span>
+      <span class="nt">transgender woman</span><span class="p">:</span>
+        <span class="nt">meaning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GSSO:000384</span>
+      <span class="nt">transgender man</span><span class="p">:</span>
+        <span class="nt">meaning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GSSO:000372</span>
+      <span class="nt">cisgender man</span><span class="p">:</span>
+        <span class="nt">meaning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GSSO:000371</span>
+      <span class="nt">cisgender woman</span><span class="p">:</span>
+        <span class="nt">meaning</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GSSO:000385</span>
 </pre></div>
 </div>
 </section>
@@ -323,7 +371,7 @@ re-declare</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="LinkML Schemas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="metadata.html" class="btn btn-neutral float-right" title="Metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="metadata.html" class="btn btn-neutral float-right" title="Schema Element Metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

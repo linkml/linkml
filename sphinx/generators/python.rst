@@ -4,7 +4,7 @@ Python
 Example Output
 --------------
 
-`personinfo.py https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py`_
+`personinfo.py <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py>`_
 
 Overview
 --------

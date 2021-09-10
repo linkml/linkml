@@ -4,7 +4,11 @@ One feature that sets LinkML apart from frameworks such as JSON-Schema and UML i
 
 ## background: URIs, IRIs, and CURIEs
 
-TODO
+URIs and IRIs are generalizations of URLs. URIs are used as identifiers in linked data standards and vocabularies.
+
+For example, in [schema.org](http://schema.org), the URI [http://schema.org/Person](http://schema.org/Person) is the identifier for the Person concept.
+
+URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map `schema` to `http://schema.org/`, then we can use the CURIE `schema:Person` to denote the person concept
 
 ## prefixes
 
@@ -72,7 +76,7 @@ For example, if Person did not declare a class_uri, then a CURIE `personinfo:Per
 
 ## mappings
 
-You may wish to avoid committing to completely reusing a linked data concept, whilst wanting to retain a mapping. LinkML makes use of skos predicates as metamodel slots:
+You may wish to avoid committing to completely reusing a linked data concept, whilst wanting to retain a mapping. LinkML makes use of [SKOS predicates](https://www.w3.org/2004/02/skos/) as metamodel slots:
 
 Example:
 

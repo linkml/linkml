@@ -24,11 +24,13 @@ Currently it performs two level validation:
  * it will convert data to in-memory Python objects, using dataclass validation
  * it will then convert the LinkML schema to JSON-Schema and employ JSON-Schema validation
 
+Note that you can easily generate JSON-Schema and use your validator of choice, see [JSON Schema Generation](../generators/json-schema)
+
 ## Validation of RDF triplestores using generated SPARQL
 
 The LinkML framework can also be used to validate RDF, either in a file, or a triplestore. There are two steps:
 
- - generation of SPARQL constraint-style queries (see [sparqlgen](../generators/sparql)
+ - generation of SPARQL constraint-style queries (see [sparqlgen](../generators/sparql) )
  - execution of those queries on an in-memory graph or external triplestore
 
 The user can choose to run only the first step, to obtain a bank of SPARQL queries that can be applied selectively
