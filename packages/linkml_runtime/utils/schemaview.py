@@ -132,7 +132,7 @@ class SchemaView(object):
         sname = self.importmap.get(str(imp), imp)               # Import map may use CURIE
         sname = self.namespaces().uri_for(sname) if ':' in sname else sname
         sname = self.importmap.get(str(sname), sname)               # It may also use URI or other forms
-        print(f'Loading schema {sname} from {from_schema.source_file}')
+        logging.info(f'Loading schema {sname} from {from_schema.source_file}')
         schema = load_schema_wrap(sname + '.yaml',
                                   base_dir=os.path.dirname(from_schema.source_file) if from_schema.source_file else None)
         return schema
@@ -667,8 +667,10 @@ class SchemaView(object):
             'minimum_value': lambda x, y: max(x, y),
         }
         for metaslot_name in SlotDefinition._inherited_slots:
+            # inheritance of slots; priority order
+            #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(islot, metaslot_name, None)
-            for an in self.class_ancestors(class_name):
+            for an in reversed(self.class_ancestors(class_name)):
                 a = self.get_class(an, imports)
                 anc_slot_usage = a.slot_usage.get(slot_name, {})
                 v2 = getattr(anc_slot_usage, metaslot_name, None)
@@ -679,7 +681,9 @@ class SchemaView(object):
                         if v2 is not None:
                             v = COMBINE[metaslot_name](v, v2)
                     else:
-                        break
+                        if v2 is not None:
+                            v = v2
+                            logging.debug(f'{v} takes precedence over {v2} for {islot.name}.{metaslot_name}')
             if v is None:
                 if metaslot_name == 'range':
                     v = self.schema.default_range

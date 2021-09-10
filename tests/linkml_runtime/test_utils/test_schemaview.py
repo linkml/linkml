@@ -36,6 +36,8 @@ class SchemaViewTestCase(unittest.TestCase):
         #assert list(view.annotation_dict('employed at')[]
 
         if True:
+            for sn, s in view.all_slot().items():
+                logging.info(f'SN = {sn} RANGE={s.range}')
             # this section is mostly for debugging
             for cn in all_cls.keys():
                 logging.debug(f'{cn} PARENTS = {view.class_parents(cn)}')
@@ -86,9 +88,14 @@ class SchemaViewTestCase(unittest.TestCase):
         #assert view.get_class('Company').class_uri == 'prov:Agent'
         assert view.get_uri('Company') == 'ks:Company'
 
+        # test induced slots
+
         for c in ['Company', 'Person', 'Organization',]:
             assert view.induced_slot('aliases', c).multivalued is True
 
+        assert view.get_identifier_slot('Company').name == 'id'
+        assert view.get_identifier_slot('Thing').name == 'id'
+        assert view.get_identifier_slot('FamilialRelationship') is None
         for c in ['Company', 'Person', 'Organization', 'Thing']:
             assert view.induced_slot('id', c).identifier is True
             assert view.induced_slot('name', c).identifier is not True
@@ -99,10 +106,14 @@ class SchemaViewTestCase(unittest.TestCase):
             logging.debug(f's={s.range} // c = {c}')
             assert s.range == 'date'
             assert s.slot_uri == 'prov:startedAtTime'
+        # test slot_usage
         assert view.induced_slot('age in years', 'Person').minimum_value == 0
         assert view.induced_slot('age in years', 'Adult').minimum_value == 16
+        assert view.induced_slot('name', 'Person').pattern is not None
         assert view.induced_slot('type', 'FamilialRelationship').range == 'FamilialRelationshipType'
         assert view.induced_slot('related to', 'FamilialRelationship').range == 'Person'
+        assert view.get_slot('related to').range == 'Thing'
+        assert view.induced_slot('related to', 'Relationship').range == 'Thing'
 
         a = view.get_class('activity')
         self.assertCountEqual(a.exact_mappings, ['prov:Activity'])
@@ -213,7 +224,7 @@ class SchemaViewTestCase(unittest.TestCase):
             assert view.induced_slot('name', c).range == 'string'
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
-            logging.debug(f's={s.range} // c = {c}')
+            print(f's={s.range} // c = {c}')
             assert s.range == 'date'
             assert s.slot_uri == 'prov:startedAtTime'
         assert view.induced_slot('age in years', 'Person').minimum_value == 0
