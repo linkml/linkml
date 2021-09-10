@@ -42,7 +42,7 @@ class JSONDumper(Dumper):
         :return: JSON Object representing the element
         """
         return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
-                          default=lambda o: remove_empty_items(o) if isinstance(o, YAMLRoot) else json.JSONDecoder().decode(o),
+                          default=lambda o: remove_empty_items(o, hide_protected_keys=True) if isinstance(o, YAMLRoot) else json.JSONDecoder().decode(o),
                           indent='  ')
 
 
