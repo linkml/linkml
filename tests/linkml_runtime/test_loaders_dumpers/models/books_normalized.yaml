@@ -78,8 +78,7 @@ slots:
     examples:
     - value: Ian M Banks
   genres:
-    #range: genre_enum
-    range: string
+    range: genre_enum
     multivalued: true
   from_country:
     range: country
