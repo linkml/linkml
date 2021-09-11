@@ -127,6 +127,8 @@ class FormatUtilsTestCase(unittest.TestCase):
             self.assertTrue(is_empty(thing), msg=f"{thing} should clock in as empty")
         for thing in non_empty_things:
             self.assertFalse(is_empty(thing))
+        obj = JsonObj([])
+        assert is_empty(obj)
 
     def test_remove_empty_items(self):
         """ Test the various remove empty items paths """
