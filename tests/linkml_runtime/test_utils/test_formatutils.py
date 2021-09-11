@@ -145,19 +145,11 @@ class FormatUtilsTestCase(unittest.TestCase):
     def test_enumerations_case(self):
         self.assertEqual("""[
    "state",
-   {
-      "text": "1",
-      "description": "production",
-      "meaning": "http://ontologies.r.us/wonderful/states/19923"
-   }
+   "1"
 ]""", as_json(remove_empty_items(json.loads(issue_157_1), hide_protected_keys=True)))
         self.assertEqual("""[
    "namedstate",
-   {
-      "text": "production",
-      "description": "production",
-      "meaning": "http://ontologies.r.us/wonderful/states/19923"
-   }
+   "production"
 ]""", as_json(remove_empty_items(json.loads(issue_157_2), hide_protected_keys=True)))
 
 if __name__ == '__main__':
