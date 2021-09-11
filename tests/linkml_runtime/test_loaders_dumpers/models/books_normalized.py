@@ -1,5 +1,5 @@
 # Auto generated from books_normalized.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-27 12:45
+# Generation date: 2021-09-10 16:59
 # Schema: example
 #
 # id: https://w3id.org/example
@@ -65,7 +65,7 @@ class CreativeWork(YAMLRoot):
 
     id: Union[str, CreativeWorkId] = None
     name: Optional[str] = None
-    genres: Optional[Union[str, List[str]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]] = empty_list()
     creator: Optional[Union[dict, "Author"]] = None
     summary: Optional[str] = None
     reviews: Optional[Union[Union[dict, "Review"], List[Union[dict, "Review"]]]] = empty_list()
@@ -81,14 +81,14 @@ class CreativeWork(YAMLRoot):
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, str) else str(v) for v in self.genres]
+        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
 
         if self.creator is not None and not isinstance(self.creator, Author):
             self.creator = Author(**as_dict(self.creator))
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, str) else str(v) for v in self.genres]
+        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
 
         if self.summary is not None and not isinstance(self.summary, str):
             self.summary = str(self.summary)
@@ -139,7 +139,7 @@ class BookSeries(CreativeWork):
 
     id: Union[str, BookSeriesId] = None
     books: Optional[Union[Dict[Union[str, BookId], Union[dict, Book]], List[Union[dict, Book]]]] = empty_dict()
-    genres: Optional[Union[str, List[str]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]] = empty_list()
     price: Optional[float] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -152,7 +152,7 @@ class BookSeries(CreativeWork):
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, str) else str(v) for v in self.genres]
+        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
 
         if self.price is not None and not isinstance(self.price, float):
             self.price = float(self.price)
@@ -170,7 +170,7 @@ class Author(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EXAMPLE.Author
 
     name: Optional[str] = None
-    genres: Optional[Union[str, List[str]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]] = empty_list()
     from_country: Optional[Union[str, CountryName]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -179,7 +179,7 @@ class Author(YAMLRoot):
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, str) else str(v) for v in self.genres]
+        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
 
         if self.from_country is not None and not isinstance(self.from_country, CountryName):
             self.from_country = CountryName(self.from_country)
@@ -286,7 +286,7 @@ slots.creator = Slot(uri=EXAMPLE.creator, name="creator", curie=EXAMPLE.curie('c
                    model_uri=EXAMPLE.creator, domain=None, range=Optional[Union[dict, Author]])
 
 slots.genres = Slot(uri=EXAMPLE.genres, name="genres", curie=EXAMPLE.curie('genres'),
-                   model_uri=EXAMPLE.genres, domain=None, range=Optional[Union[str, List[str]]])
+                   model_uri=EXAMPLE.genres, domain=None, range=Optional[Union[Union[str, "GenreEnum"], List[Union[str, "GenreEnum"]]]])
 
 slots.from_country = Slot(uri=EXAMPLE.from_country, name="from_country", curie=EXAMPLE.curie('from_country'),
                    model_uri=EXAMPLE.from_country, domain=None, range=Optional[Union[str, CountryName]])
