@@ -134,7 +134,7 @@ def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool
     """
     if is_list(obj):
         obj_list = [e for e in [remove_empty_items(l, hide_protected_keys=hide_protected_keys, inside=True)
-                                for l in as_json_obj(obj)] if not is_empty(e)]
+                                for l in obj] if not is_empty(e)]
         return obj_list if not inside or not is_empty(obj_list) else None
     elif is_dict(obj):
         obj_dict = {k: v for k, v in [(k2, remove_empty_items(v2, hide_protected_keys=hide_protected_keys, inside=True))
