@@ -4,7 +4,7 @@
 
 Get the latest version of Python at https://www.python.org/downloads/ or with your operating system’s package manager.
 
-You can verify that Python is installed by typing `pytho`n from your shell; you should see something like:
+You can verify that Python is installed by typing `python` from your shell; you should see something like:
 
 ```bash
 Python 3.9.5 (v3.9.5:0a7dcbdb13, May  3 2021, 13:17:02) 
