@@ -117,11 +117,11 @@ linkml:Uriorcurie a owl:Class,
     rdfs:label "personinfo" ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     skos:definition "Information about people, based on [schema.org](http://schema.org)" ;
-    linkml:generation_date "2021-09-12 17:49" ;
+    linkml:generation_date "2021-09-13 12:01" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "personinfo.yaml" ;
-    linkml:source_file_date "Sun Sep 12 17:49:16 2021" ;
-    linkml:source_file_size 4565 .
+    linkml:source_file_date "Mon Sep 13 12:01:47 2021" ;
+    linkml:source_file_size 5074 .
 
 <https://w3id.org/linkml/examples/personinfo/Container> a owl:Class,
         linkml:ClassDefinition ;
@@ -152,8 +152,8 @@ linkml:hasAliases__aliases a owl:ObjectProperty,
     rdfs:label "Relationship" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/related_to> ],
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/started_at_time> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
@@ -161,11 +161,11 @@ linkml:hasAliases__aliases a owl:ObjectProperty,
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/type> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/related_to> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/started_at_time> ] .
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/type> ] .
 
 <https://w3id.org/linkml/examples/personinfo/age_in_years> a owl:ObjectProperty,
         linkml:SlotDefinition ;
@@ -316,15 +316,15 @@ linkml:Integer a owl:Class,
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/city> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/street> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/postal_code> ] ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/postal_code> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/city> ] ;
     skos:exactMatch <http://schema.org/PostalAddress> .
 
 <https://w3id.org/linkml/examples/personinfo/Concept> a owl:Class,
@@ -351,20 +351,20 @@ linkml:Integer a owl:Class,
     rdfs:label "Event" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Float ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/duration> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Boolean ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/is_current> ],
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/ended_at_time> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/started_at_time> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/ended_at_time> ] ;
+            owl:onClass linkml:Float ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/duration> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Boolean ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/is_current> ] ;
     skos:closeMatch <http://schema.org/Event> .
 
 <https://w3id.org/linkml/examples/personinfo/MedicalEvent> a owl:Class,
@@ -372,16 +372,16 @@ linkml:Integer a owl:Class,
     rdfs:label "MedicalEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Place> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/in_location> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/diagnosis> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/examples/personinfo/ProcedureConcept> ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/procedure> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfo/Place> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/in_location> ],
         <https://w3id.org/linkml/examples/personinfo/Event> .
 
 <https://w3id.org/linkml/examples/personinfo/ProcedureConcept> a owl:Class,
@@ -439,19 +439,19 @@ linkml:related_to a owl:ObjectProperty,
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/name> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/description> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/name> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/image> ],
         [ a owl:Restriction ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/id> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/image> ] ;
+            owl:qualifiedCardinality 1 ] ;
     skos:closeMatch <http://schema.org/Thing> ;
     skos:definition "A generic grouping for any identifiable entity" .
 
@@ -477,9 +477,8 @@ linkml:related_to a owl:ObjectProperty,
         linkml:ClassDefinition ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/founding_date> ],
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty linkml:aliases ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/examples/personinfo/Place> ;
@@ -489,8 +488,9 @@ linkml:related_to a owl:ObjectProperty,
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/mission_statement> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty linkml:aliases ],
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/founding_date> ],
         <https://w3id.org/linkml/examples/personinfo/HasAliases>,
         <https://w3id.org/linkml/examples/personinfo/NamedThing> ;
     skos:definition "An organization such as a company or university" ;
@@ -500,12 +500,12 @@ linkml:related_to a owl:ObjectProperty,
         linkml:ClassDefinition ;
     rdfs:label "Place" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty linkml:aliases ],
-        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/name> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty linkml:aliases ],
         [ a owl:Restriction ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/id> ;
@@ -530,33 +530,33 @@ linkml:Date a owl:Class,
             owl:onClass linkml:Integer ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/age_in_years> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty linkml:aliases ],
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/EmploymentEvent> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_employment_history> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://UNKNOWN.org/GenderType> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/gender> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfo/Address> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/current_address> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/MedicalEvent> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_medical_history> ],
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/primary_email> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/birth_date> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/EmploymentEvent> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_employment_history> ],
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <http://UNKNOWN.org/GenderType> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/gender> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/MedicalEvent> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_medical_history> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_familial_relationships> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/primary_email> ],
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Address> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/current_address> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty linkml:aliases ],
         <https://w3id.org/linkml/examples/personinfo/HasAliases>,
         <https://w3id.org/linkml/examples/personinfo/NamedThing> ;
     skos:definition "A person (alive, dead, undead, or fictional)." ;

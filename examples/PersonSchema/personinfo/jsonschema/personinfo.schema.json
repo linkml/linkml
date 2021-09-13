@@ -181,7 +181,14 @@
       },
       "GenderType": {
          "description": "",
-         "enum": [],
+         "enum": [
+            "nonbinary man",
+            "nonbinary woman",
+            "transgender woman",
+            "transgender man",
+            "cisgender man",
+            "cisgender woman"
+         ],
          "title": "GenderType",
          "type": "string"
       },

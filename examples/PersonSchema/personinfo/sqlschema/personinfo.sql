@@ -53,7 +53,7 @@ CREATE TABLE "Person" (
 	primary_email TEXT, 
 	birth_date TEXT, 
 	age_in_years INTEGER, 
-	gender VARCHAR, 
+	gender VARCHAR(17), 
 	current_address TEXT, 
 	PRIMARY KEY (id)
 );

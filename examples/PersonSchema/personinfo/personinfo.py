@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-12 17:49
+# Generation date: 2021-09-13 12:01
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -31,6 +31,8 @@ metamodel_version = "1.7.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+GSSO = CurieNamespace('GSSO', 'http://purl.obolibrary.org/obo/GSSO_')
+FAMREL = CurieNamespace('famrel', 'https://example.org/FamilialRelations#')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
@@ -517,9 +519,12 @@ class Container(YAMLRoot):
 # Enumerations
 class FamilialRelationshipType(EnumDefinitionImpl):
 
-    SIBLING_OF = PermissibleValue(text="SIBLING_OF")
-    PARENT_OF = PermissibleValue(text="PARENT_OF")
-    CHILD_OF = PermissibleValue(text="CHILD_OF")
+    SIBLING_OF = PermissibleValue(text="SIBLING_OF",
+                                           meaning=FAMREL["01"])
+    PARENT_OF = PermissibleValue(text="PARENT_OF",
+                                         meaning=FAMREL["02"])
+    CHILD_OF = PermissibleValue(text="CHILD_OF",
+                                       meaning=FAMREL["01"])
 
     _defn = EnumDefinition(
         name="FamilialRelationshipType",
@@ -530,6 +535,27 @@ class GenderType(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="GenderType",
     )
+
+    @classmethod
+    def _addvals(cls):
+        setattr(cls, "nonbinary man",
+                PermissibleValue(text="nonbinary man",
+                                 meaning=GSSO["009254"]) )
+        setattr(cls, "nonbinary woman",
+                PermissibleValue(text="nonbinary woman",
+                                 meaning=GSSO["009253"]) )
+        setattr(cls, "transgender woman",
+                PermissibleValue(text="transgender woman",
+                                 meaning=GSSO["000384"]) )
+        setattr(cls, "transgender man",
+                PermissibleValue(text="transgender man",
+                                 meaning=GSSO["000372"]) )
+        setattr(cls, "cisgender man",
+                PermissibleValue(text="cisgender man",
+                                 meaning=GSSO["000371"]) )
+        setattr(cls, "cisgender woman",
+                PermissibleValue(text="cisgender woman",
+                                 meaning=GSSO["000385"]) )
 
 class DiagnosisType(EnumDefinitionImpl):
 
