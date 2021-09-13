@@ -15,11 +15,11 @@ class ExcelGenTestCase(unittest.TestCase):
         # create tempfile where the xlsx file should be saved
         new_file, filename = tempfile.mkstemp()
 
-        # call ExcelGenerator generator class
-        ExcelGenerator(ORGANIZATION_SCHEMA, output=filename).serialize()
-
         # add extension suffix to file path
-        xlsx_filename = filename + "_excelgen_0.0.1.xlsx"
+        xlsx_filename = filename + ".xlsx"
+
+        # call ExcelGenerator generator class
+        ExcelGenerator(ORGANIZATION_SCHEMA, output=xlsx_filename).serialize()
 
         # load Excel workbook object from temporary file path
         wb_obj = load_workbook(xlsx_filename)
