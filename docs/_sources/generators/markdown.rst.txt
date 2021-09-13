@@ -8,7 +8,7 @@ Markdown is a simple format for authoring documentation. Static site
 generation frameworks such as mkdocs use markdown to simply the
 creation of websites.
 
-Using LinkML you can go from a schema to a complete website hosted on
+Using LinkML you can go from a schema to a complete searchable website hosted on
 GitHub in minutes thanks to the markdown generator
 
 See for example:
