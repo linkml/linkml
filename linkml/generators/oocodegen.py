@@ -100,20 +100,26 @@ class OOCodeGenerator(Generator):
                 safe_sn = self.get_slot_name(sn)
                 slot = sv.induced_slot(sn, cn)
                 range = slot.range
+
                 if range is None:
                     # TODO: schemaview should infer this
                     range = sv.schema.default_range
+
                 if range is None:
                     range = 'string'
+
                 if range in sv.all_class():
                     range = self.get_class_name(range)
                 elif range in sv.all_type():
                     t = sv.get_type(range)
                     range = self.map_type(t)
+                    if range is None: # If mapping fails,
+                        range = self.map_type(sv.all_type().get('string'))
                 elif range in sv.all_enum():
-                    range = sv.get_type(linkml_types.String)
+                    range = self.map_type(sv.all_type().get('string'))
                 else:
                     raise Exception(f'Unknown range {range}')
+
                 if slot.multivalued:
                     range = self.make_multivalued(range)
                 oofield = OOField(name=safe_sn, source_slot=slot, range=range)
