@@ -29,11 +29,11 @@ class IssueJSONSchemaTypesTestCase(TestEnvironmentTestCase):
         assert props['scores']['type'] == 'array'
         assert props['scores']['items']['type'] == 'number'
         # single-valued complex type, inlined
-        assert props['has_d']['$ref'] == "#/definitions/D"
+        assert props['has_d']['$ref'] == "#/$defs/D"
 
         # multi-valued, inlined
         assert props['has_ds']['type'] == 'array'
-        assert props['has_ds']['items']['$ref'] == "#/definitions/D"
+        assert props['has_ds']['items']['$ref'] == "#/$defs/D"
 
         # single-valued, non-inlined (foreign key)
         assert props['parent']['type'] == "string"
