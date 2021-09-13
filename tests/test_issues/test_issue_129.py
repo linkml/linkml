@@ -20,7 +20,7 @@ class IssueJSONSchemaTypesTestCase(TestEnvironmentTestCase):
         sobj_str = env.generate_single_file('issue_129.json', lambda: generator(), value_is_returned=True)
 
         sobj = jsonasobj.loads(sobj_str)
-        defs = sobj['definitions']
+        defs = sobj['$defs']
         C = defs['C']
         props = C['properties']
         assert props['age_in_years']['type'] == 'integer'
