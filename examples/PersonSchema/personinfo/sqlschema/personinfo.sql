@@ -53,7 +53,7 @@ CREATE TABLE "Person" (
 	primary_email TEXT, 
 	birth_date TEXT, 
 	age_in_years INTEGER, 
-	gender TEXT, 
+	gender VARCHAR, 
 	current_address TEXT, 
 	PRIMARY KEY (id)
 );
@@ -84,7 +84,7 @@ CREATE TABLE "FamilialRelationship" (
 	started_at_time TEXT, 
 	ended_at_time TEXT, 
 	related_to TEXT NOT NULL, 
-	type TEXT NOT NULL, 
+	type VARCHAR(10) NOT NULL, 
 	"Person_id" TEXT, 
 	PRIMARY KEY (started_at_time, ended_at_time, related_to, type, "Person_id"), 
 	FOREIGN KEY(related_to) REFERENCES "Person" (id), 

@@ -8,7 +8,7 @@ The ProjectGenerator is a wrapper for all other generators, and will
 generate a complete project folder, with subfolders for jsonschema,
 python, etc
 
-See also `linkml-model-template <https://github.com/linkml/linkml-model-template>`_
+.. seealso:: `linkml-model-template <https://github.com/linkml/linkml-model-template>`_
 
 Docs
 ----

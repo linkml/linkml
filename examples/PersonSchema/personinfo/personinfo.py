@@ -1,9 +1,9 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-06 16:14
+# Generation date: 2021-09-12 17:49
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
-# description: Information about people
+# description: Information about people, based on [schema.org](http://schema.org)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
@@ -32,7 +32,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo')
+PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
@@ -124,7 +124,7 @@ class Person(NamedThing):
     primary_email: Optional[str] = None
     birth_date: Optional[str] = None
     age_in_years: Optional[int] = None
-    gender: Optional[str] = None
+    gender: Optional[Union[str, "GenderType"]] = None
     current_address: Optional[Union[dict, "Address"]] = None
     has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]] = empty_list()
     has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], List[Union[dict, "FamilialRelationship"]]]] = empty_list()
@@ -146,8 +146,8 @@ class Person(NamedThing):
         if self.age_in_years is not None and not isinstance(self.age_in_years, int):
             self.age_in_years = int(self.age_in_years)
 
-        if self.gender is not None and not isinstance(self.gender, str):
-            self.gender = str(self.gender)
+        if self.gender is not None and not isinstance(self.gender, GenderType):
+            self.gender = GenderType(self.gender)
 
         if self.current_address is not None and not isinstance(self.current_address, Address):
             self.current_address = Address(**as_dict(self.current_address))
@@ -415,14 +415,14 @@ class FamilialRelationship(Relationship):
     class_name: ClassVar[str] = "FamilialRelationship"
     class_model_uri: ClassVar[URIRef] = PERSONINFO.FamilialRelationship
 
-    type: str = None
+    type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.type):
             self.MissingRequiredField("type")
-        if not isinstance(self.type, str):
-            self.type = str(self.type)
+        if not isinstance(self.type, FamilialRelationshipType):
+            self.type = FamilialRelationshipType(self.type)
 
         if self._is_empty(self.related_to):
             self.MissingRequiredField("related_to")
@@ -525,6 +525,12 @@ class FamilialRelationshipType(EnumDefinitionImpl):
         name="FamilialRelationshipType",
     )
 
+class GenderType(EnumDefinitionImpl):
+
+    _defn = EnumDefinition(
+        name="GenderType",
+    )
+
 class DiagnosisType(EnumDefinitionImpl):
 
     _defn = EnumDefinition(
@@ -548,7 +554,7 @@ slots.image = Slot(uri=SCHEMA.image, name="image", curie=SCHEMA.curie('image'),
                    model_uri=PERSONINFO.image, domain=None, range=Optional[str])
 
 slots.gender = Slot(uri=SCHEMA.gender, name="gender", curie=SCHEMA.curie('gender'),
-                   model_uri=PERSONINFO.gender, domain=None, range=Optional[str])
+                   model_uri=PERSONINFO.gender, domain=None, range=Optional[Union[str, "GenderType"]])
 
 slots.primary_email = Slot(uri=SCHEMA.email, name="primary_email", curie=SCHEMA.curie('email'),
                    model_uri=PERSONINFO.primary_email, domain=None, range=Optional[str])
@@ -636,7 +642,7 @@ slots.Person_primary_email = Slot(uri=PERSONINFO.primary_email, name="Person_pri
                    pattern=re.compile(r'^\S+@[\S+\.]+\S+'))
 
 slots.FamilialRelationship_type = Slot(uri=PERSONINFO.type, name="FamilialRelationship_type", curie=PERSONINFO.curie('type'),
-                   model_uri=PERSONINFO.FamilialRelationship_type, domain=FamilialRelationship, range=str)
+                   model_uri=PERSONINFO.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
 
 slots.FamilialRelationship_related_to = Slot(uri=PERSONINFO.related_to, name="FamilialRelationship_related to", curie=PERSONINFO.curie('related_to'),
                    model_uri=PERSONINFO.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])

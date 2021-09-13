@@ -134,7 +134,9 @@ For example, the biolink model defines a list of allowed id_prefixes for gene ob
 
 Here we define the entity class `gene` to have a list of ID prefixes with `NCBIGene` having the highest priority.
 
+## See Also
 
+[this notebook](https://github.com/linkml/linkml/blob/main/notebooks/context_issue.ipynb) demonstrates some potential pitfalls of JSON-LD 1.0 with some forms of CURIEs
 
 
 

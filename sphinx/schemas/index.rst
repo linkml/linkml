@@ -19,3 +19,4 @@ create a schema to model your data
    working-with-data
    inlining
 
+.. seealso:: `Programmatic example in a Jupyter Notebook <https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb>`_

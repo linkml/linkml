@@ -159,7 +159,7 @@
                "type": "string"
             },
             "type": {
-               "type": "string"
+               "$ref": "#/definitions/FamilialRelationshipType"
             }
          },
          "required": [
@@ -177,6 +177,12 @@
             "CHILD_OF"
          ],
          "title": "FamilialRelationshipType",
+         "type": "string"
+      },
+      "GenderType": {
+         "description": "",
+         "enum": [],
+         "title": "GenderType",
          "type": "string"
       },
       "MedicalEvent": {
@@ -289,13 +295,14 @@
                "type": "string"
             },
             "current_address": {
-               "$ref": "#/definitions/Address"
+               "$ref": "#/definitions/Address",
+               "description": "The address at which a person currently lives"
             },
             "description": {
                "type": "string"
             },
             "gender": {
-               "type": "string"
+               "$ref": "#/definitions/GenderType"
             },
             "has_employment_history": {
                "items": {

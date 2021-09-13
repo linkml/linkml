@@ -35,16 +35,16 @@ linkml:Double a owl:Class,
 linkml:FamilialRelationship_related_to a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "FamilialRelationship_related to" ;
-    rdfs:domain <https://w3id.org/linkml/examples/personinfoFamilialRelationship> ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoPerson> ;
+    rdfs:domain <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> ;
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Person> ;
     rdfs:subPropertyOf linkml:related_to .
 
 linkml:FamilialRelationship_type a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "FamilialRelationship_type" ;
-    rdfs:domain <https://w3id.org/linkml/examples/personinfoFamilialRelationship> ;
-    rdfs:range linkml:String ;
-    rdfs:subPropertyOf <https://w3id.org/linkml/examples/personinfotype> .
+    rdfs:domain <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> ;
+    rdfs:range <http://UNKNOWN.org/FamilialRelationshipType> ;
+    rdfs:subPropertyOf <https://w3id.org/linkml/examples/personinfo/type> .
 
 linkml:Ncname a owl:Class,
         linkml:TypeDefinition ;
@@ -77,9 +77,9 @@ linkml:Objectidentifier a owl:Class,
 linkml:Person_primary_email a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "Person_primary_email" ;
-    rdfs:domain <https://w3id.org/linkml/examples/personinfoPerson> ;
+    rdfs:domain <https://w3id.org/linkml/examples/personinfo/Person> ;
     rdfs:range linkml:String ;
-    rdfs:subPropertyOf <https://w3id.org/linkml/examples/personinfoprimary_email> .
+    rdfs:subPropertyOf <https://w3id.org/linkml/examples/personinfo/primary_email> .
 
 linkml:SubsetDefinition a owl:Class ;
     rdfs:label "subset_definition" ;
@@ -116,30 +116,30 @@ linkml:Uriorcurie a owl:Class,
 <https://w3id.org/linkml/examples/personinfo> a owl:Ontology ;
     rdfs:label "personinfo" ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    skos:definition "Information about people" ;
-    linkml:generation_date "2021-09-06 16:14" ;
+    skos:definition "Information about people, based on [schema.org](http://schema.org)" ;
+    linkml:generation_date "2021-09-12 17:49" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "personinfo.yaml" ;
-    linkml:source_file_date "Mon Sep  6 16:13:36 2021" ;
-    linkml:source_file_size 4435 .
+    linkml:source_file_date "Sun Sep 12 17:49:16 2021" ;
+    linkml:source_file_size 4565 .
 
-<https://w3id.org/linkml/examples/personinfoContainer> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Container> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Container" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfoOrganization> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoorganizations> ],
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Organization> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/organizations> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfoPerson> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfopersons> ] .
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Person> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/persons> ] .
 
-<https://w3id.org/linkml/examples/personinfoWithLocation> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/WithLocation> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "WithLocation" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoPlace> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoin_location> ],
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Place> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/in_location> ],
         linkml:mixin .
 
 linkml:hasAliases__aliases a owl:ObjectProperty,
@@ -147,137 +147,138 @@ linkml:hasAliases__aliases a owl:ObjectProperty,
     rdfs:label "hasAliases__aliases" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfoRelationship> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Relationship> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Relationship" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoended_at_time> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinforelated_to> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfotype> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/related_to> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfostarted_at_time> ] .
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/ended_at_time> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/type> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/started_at_time> ] .
 
-<https://w3id.org/linkml/examples/personinfoage_in_years> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/age_in_years> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "age_in_years" ;
     rdfs:range linkml:Integer .
 
-<https://w3id.org/linkml/examples/personinfobirth_date> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/birth_date> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "birth_date" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfocity> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/city> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "city" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfocurrent_address> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/current_address> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "current_address" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoAddress> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Address> ;
+    skos:definition "The address at which a person currently lives" .
 
-<https://w3id.org/linkml/examples/personinfodescription> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/description> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "description" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfodiagnosis> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/diagnosis> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "diagnosis" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoDiagnosisConcept> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> .
 
-<https://w3id.org/linkml/examples/personinfoduration> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/duration> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "duration" ;
     rdfs:range linkml:Float .
 
-<https://w3id.org/linkml/examples/personinfoemployed_at> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/employed_at> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "employed_at" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoOrganization> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Organization> .
 
-<https://w3id.org/linkml/examples/personinfofounding_date> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/founding_date> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "founding_date" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfofounding_location> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/founding_location> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "founding_location" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoPlace> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Place> .
 
-<https://w3id.org/linkml/examples/personinfogender> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/gender> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "gender" ;
-    rdfs:range linkml:String .
+    rdfs:range <http://UNKNOWN.org/GenderType> .
 
-<https://w3id.org/linkml/examples/personinfohas_employment_history> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/has_employment_history> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "has_employment_history" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoEmploymentEvent> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/EmploymentEvent> .
 
-<https://w3id.org/linkml/examples/personinfohas_familial_relationships> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/has_familial_relationships> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "has_familial_relationships" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoFamilialRelationship> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> .
 
-<https://w3id.org/linkml/examples/personinfohas_medical_history> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/has_medical_history> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "has_medical_history" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoMedicalEvent> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/MedicalEvent> .
 
-<https://w3id.org/linkml/examples/personinfoimage> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/image> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "image" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfois_current> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/is_current> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "is_current" ;
     rdfs:range linkml:Boolean .
 
-<https://w3id.org/linkml/examples/personinfomission_statement> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/mission_statement> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "mission_statement" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfoorganizations> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/organizations> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "organizations" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoOrganization> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Organization> .
 
-<https://w3id.org/linkml/examples/personinfopersons> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/persons> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "persons" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoPerson> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Person> .
 
-<https://w3id.org/linkml/examples/personinfopostal_code> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/postal_code> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "postal_code" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfoprocedure> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/procedure> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "procedure" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoProcedureConcept> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/ProcedureConcept> .
 
-<https://w3id.org/linkml/examples/personinforelated_to> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/related_to> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "related_to" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfostreet> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/street> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "street" ;
     rdfs:range linkml:String .
@@ -309,111 +310,111 @@ linkml:Integer a owl:Class,
             owl:qualifiedCardinality 1 ] ;
     skos:definition "An integer" .
 
-<https://w3id.org/linkml/examples/personinfoAddress> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Address> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Address" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfostreet> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/city> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfocity> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/street> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfopostal_code> ] ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/postal_code> ] ;
     skos:exactMatch <http://schema.org/PostalAddress> .
 
-<https://w3id.org/linkml/examples/personinfoConcept> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Concept> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Concept" ;
-    rdfs:subClassOf <https://w3id.org/linkml/examples/personinfoNamedThing> .
+    rdfs:subClassOf <https://w3id.org/linkml/examples/personinfo/NamedThing> .
 
-<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "DiagnosisConcept" ;
-    rdfs:subClassOf <https://w3id.org/linkml/examples/personinfoConcept> .
+    rdfs:subClassOf <https://w3id.org/linkml/examples/personinfo/Concept> .
 
-<https://w3id.org/linkml/examples/personinfoEmploymentEvent> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/EmploymentEvent> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "EmploymentEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoOrganization> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoemployed_at> ],
-        <https://w3id.org/linkml/examples/personinfoEvent> .
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Organization> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/employed_at> ],
+        <https://w3id.org/linkml/examples/personinfo/Event> .
 
-<https://w3id.org/linkml/examples/personinfoEvent> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Event> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Event" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoended_at_time> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfostarted_at_time> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Float ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoduration> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/duration> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Boolean ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfois_current> ] ;
-    skos:closeMatch <http://schema.org/Evenet> .
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/is_current> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/started_at_time> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/ended_at_time> ] ;
+    skos:closeMatch <http://schema.org/Event> .
 
-<https://w3id.org/linkml/examples/personinfoMedicalEvent> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/MedicalEvent> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "MedicalEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoDiagnosisConcept> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfodiagnosis> ],
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/diagnosis> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoPlace> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoin_location> ],
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/ProcedureConcept> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/procedure> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoProcedureConcept> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoprocedure> ],
-        <https://w3id.org/linkml/examples/personinfoEvent> .
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Place> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/in_location> ],
+        <https://w3id.org/linkml/examples/personinfo/Event> .
 
-<https://w3id.org/linkml/examples/personinfoProcedureConcept> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/ProcedureConcept> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "ProcedureConcept" ;
-    rdfs:subClassOf <https://w3id.org/linkml/examples/personinfoConcept> .
+    rdfs:subClassOf <https://w3id.org/linkml/examples/personinfo/Concept> .
 
-<https://w3id.org/linkml/examples/personinfoended_at_time> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/ended_at_time> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "ended_at_time" ;
     rdfs:range linkml:Date .
 
-<https://w3id.org/linkml/examples/personinfoid> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/id> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "id" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfoin_location> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/in_location> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "in_location" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoPlace> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Place> .
 
-<https://w3id.org/linkml/examples/personinfoname> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/name> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "name" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfoprimary_email> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/primary_email> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "primary_email" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfostarted_at_time> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/started_at_time> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "started_at_time" ;
     rdfs:range linkml:Date .
@@ -421,9 +422,9 @@ linkml:Integer a owl:Class,
 linkml:related_to a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "related to" ;
-    rdfs:range <https://w3id.org/linkml/examples/personinfoPerson> .
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Person> .
 
-<https://w3id.org/linkml/examples/personinfoHasAliases> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/HasAliases> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "HasAliases" ;
     rdfs:subClassOf [ a owl:Restriction ;
@@ -432,84 +433,84 @@ linkml:related_to a owl:ObjectProperty,
         linkml:mixin ;
     skos:definition "A mixin applied to any class that can have aliases/alternateNames" .
 
-<https://w3id.org/linkml/examples/personinfoNamedThing> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/NamedThing> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "NamedThing" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoname> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/description> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfodescription> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/name> ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/id> ;
+            owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoimage> ],
-        [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoid> ;
-            owl:qualifiedCardinality 1 ] ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/image> ] ;
     skos:closeMatch <http://schema.org/Thing> ;
     skos:definition "A generic grouping for any identifiable entity" .
 
-<https://w3id.org/linkml/examples/personinfotype> a owl:ObjectProperty,
+<https://w3id.org/linkml/examples/personinfo/type> a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "type" ;
     rdfs:range linkml:String .
 
-<https://w3id.org/linkml/examples/personinfoFamilialRelationship> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/FamilialRelationship> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "FamilialRelationship" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfotype> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoPerson> ;
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Person> ;
             owl:onProperty linkml:related_to ;
             owl:qualifiedCardinality 1 ],
-        <https://w3id.org/linkml/examples/personinfoRelationship> .
+        [ a owl:Restriction ;
+            owl:onClass <http://UNKNOWN.org/FamilialRelationshipType> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/type> ;
+            owl:qualifiedCardinality 1 ],
+        <https://w3id.org/linkml/examples/personinfo/Relationship> .
 
-<https://w3id.org/linkml/examples/personinfoOrganization> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Organization> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/founding_date> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Place> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/founding_location> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/mission_statement> ],
+        [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty linkml:aliases ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfomission_statement> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoPlace> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfofounding_location> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfofounding_date> ],
-        <https://w3id.org/linkml/examples/personinfoHasAliases>,
-        <https://w3id.org/linkml/examples/personinfoNamedThing> ;
+        <https://w3id.org/linkml/examples/personinfo/HasAliases>,
+        <https://w3id.org/linkml/examples/personinfo/NamedThing> ;
     skos:definition "An organization such as a company or university" ;
     skos:exactMatch <http://schema.org/Organization> .
 
-<https://w3id.org/linkml/examples/personinfoPlace> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Place> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Place" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoname> ],
-        [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoid> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty linkml:aliases ],
-        <https://w3id.org/linkml/examples/personinfoHasAliases> .
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/name> ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/id> ;
+            owl:qualifiedCardinality 1 ],
+        <https://w3id.org/linkml/examples/personinfo/HasAliases> .
 
 linkml:Date a owl:Class,
         linkml:TypeDefinition ;
@@ -521,43 +522,43 @@ linkml:Date a owl:Class,
     skos:definition "a date (year, month and day) in an idealized calendar" ;
     skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
 
-<https://w3id.org/linkml/examples/personinfoPerson> a owl:Class,
+<https://w3id.org/linkml/examples/personinfo/Person> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Person" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfogender> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/examples/personinfoAddress> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfocurrent_address> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfoMedicalEvent> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfohas_medical_history> ],
+            owl:onClass linkml:Integer ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/age_in_years> ],
         [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty linkml:aliases ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfobirth_date> ],
+            owl:onClass <http://UNKNOWN.org/GenderType> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/gender> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/examples/personinfo/Address> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/current_address> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/MedicalEvent> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_medical_history> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoprimary_email> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/birth_date> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfoEmploymentEvent> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfohas_employment_history> ],
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/EmploymentEvent> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_employment_history> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfoFamilialRelationship> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfohas_familial_relationships> ],
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/has_familial_relationships> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Integer ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfoage_in_years> ],
-        <https://w3id.org/linkml/examples/personinfoHasAliases>,
-        <https://w3id.org/linkml/examples/personinfoNamedThing> ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/primary_email> ],
+        <https://w3id.org/linkml/examples/personinfo/HasAliases>,
+        <https://w3id.org/linkml/examples/personinfo/NamedThing> ;
     skos:definition "A person (alive, dead, undead, or fictional)." ;
     skos:exactMatch <http://schema.org/Person> .
 
@@ -572,10 +573,6 @@ linkml:ClassDefinition a owl:Class ;
     rdfs:label "class_definition" ;
     skos:definition "the definition of a class or interface" .
 
-linkml:SlotDefinition a owl:Class ;
-    rdfs:label "slot_definition" ;
-    skos:definition "the definition of a property or a slot" .
-
 linkml:String a owl:Class,
         linkml:TypeDefinition ;
     rdfs:label "string" ;
@@ -584,5 +581,9 @@ linkml:String a owl:Class,
             owl:onProperty linkml:topValue ;
             owl:qualifiedCardinality 1 ] ;
     skos:definition "A character string" .
+
+linkml:SlotDefinition a owl:Class ;
+    rdfs:label "slot_definition" ;
+    skos:definition "the definition of a property or a slot" .
 
 

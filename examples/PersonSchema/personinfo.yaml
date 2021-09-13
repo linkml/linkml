@@ -122,8 +122,7 @@ classes:
     is_a: Relationship
     slot_usage:
       type:
-        #range: FamilialRelationshipType
-        range: string  ## TODO: change to enum next release of linkml-runtime
+        range: FamilialRelationshipType
         required: true
       related to:
         range: Person

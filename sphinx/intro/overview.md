@@ -71,7 +71,7 @@ schema to other frameworks:
 - Convert to ShEx and validate your data as RDF
 - Convert to Python dataclasses for easy use within applications
 
-## Feature: eneration of documentation and websites
+## Feature: Generation of documentation and websites
 
 Using the LinkML toolchain you can go from a schema to statically
 hosted searchable website in minutes, with pages for each of your
@@ -86,7 +86,7 @@ The core LinkML toolchain allows for:
 - data validation of JSON, TSVs, or RDF using either JSON-Schema, SPARQL, or ShEx
 - easy programmatic manipulation of schemas
 
-LinkML is part of a growing ecosystem of general purpose tools that make curating, mapping, ingesting, and organizing data much easier
+LinkML is part of a growing [ecosystem](../ecosystem) of general purpose tools that make curating, mapping, ingesting, and organizing data much easier
 
  - [linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment) bootstraps schemas from existing structured and semi-structured sources
  - [linkml-owl](https://github.com/linkml/linkml-owl) allows for generation of complex OWL axioms from datamodels
