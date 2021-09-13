@@ -56,7 +56,10 @@
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">Shacl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Owl</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mapping">Mapping</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
@@ -68,6 +71,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -108,10 +112,62 @@
 <p>Web Ontology Language
 <a class="reference external" href="https://www.w3.org/TR/2012/REC-owl2-overview-20121211/">OWL</a> is
 modeling language used to author ontologies.</p>
-<p>..seealso:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>The `linkml-owl &lt;https://github.com/linkml/linkml-owl&gt;`_ maps between LinkML *data* and OWL
-</pre></div>
+<p>OWL is used for building <em>ontologies</em>, whereas LinkML is a <em>schema</em>
+language. Nevertheless, it can be useful to render Schemas as OWL (and
+in fact many semantic web schemas such as PROV have an OWL or RDFS
+rendering)</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>The <a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a>
+maps between LinkML <em>data</em> and OWL</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The OWL is rendered as RDF/turte. We recommend the suffix
+<code class="docutils literal notranslate"><span class="pre">.owl.ttl</span></code> to distinguish from the direct RDF mapping</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Currently imports are included in the rendered OWL, this
+means if you import linkml/types these will also be
+rendered, which can be confusing</p>
+</div>
+<section id="mapping">
+<h3>Mapping<a class="headerlink" href="#mapping" title="Permalink to this headline"></a></h3>
+<ul>
+<li><p>Each LinkML class maps to an OWL class</p></li>
+<li><p>Each LinkML slot maps to an OWL property</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>if the range of the slot is class, then an ObjectProperty is used</p></li>
+<li><p>otherwise DataProperty is used</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>OWL <em>restrictions</em> are used for cardinality and range constraints</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">only</span></code> (universal restrictions) is used for ranges</p></li>
+<li><p>If a slot is not <cite>multivalued</cite> then a <code class="docutils literal notranslate"><span class="pre">max</span> <span class="pre">1</span></code> cardinality
+restrictions are used</p></li>
+<li><p>required non-multivalued slots have an <code class="docutils literal notranslate"><span class="pre">exactly</span> <span class="pre">1</span></code> cardinality restriction</p></li>
+<li><p>required multivalued slots have a <code class="docutils literal notranslate"><span class="pre">min</span> <span class="pre">1</span></code> cardinality
+restriction</p></li>
+<li><p>it should be understood that OWL follows the Open World
+Assumption, thus OWL reasoners enforce a weaker model</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Each LinkML element is rendered as an instance of the relevant metamodel class</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>This means <em>punning</em> is used</p></li>
+<li><p>In future this behavior may be configurable</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>

@@ -9,7 +9,8 @@ Example Output
 Overview
 --------
 
-See also `using python <../data/python>`_
+
+.. seealso:: `using python <../data/python>`_
 
 Docs
 ----

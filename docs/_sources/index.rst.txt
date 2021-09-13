@@ -29,6 +29,7 @@ Documentation
    data/index
    generators/index
    examples
+   ecosystem
    faq/index
    
 Metamodel Reference

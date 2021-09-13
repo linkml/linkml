@@ -47,3 +47,5 @@ examples/%-data.nt: examples/%-data.jsonld
 
 rtd:
 	cd sphinx && $(RUN) make html
+deploy-rtd:
+	cd sphinx && $(RUN) make deploy

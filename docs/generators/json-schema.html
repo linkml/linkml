@@ -47,7 +47,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">JSON Schema</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#example-output">Example Output</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#inheritance">Inheritance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#composition">Composition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inlining">Inlining</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#patterns">Patterns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enums">Enums</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
@@ -60,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">Shacl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
@@ -111,92 +119,269 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p><a class="reference external" href="https://json-schema.org/">JSON Schema</a> is a schema language for JSON
 documents.</p>
+<p>JSON-Schema can be generated from a LinkML schema and used to validate
+JSON documents using standard JSON-Schema validators.</p>
 <p>To run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml &gt; personinfo.schema.json
 </pre></div>
 </div>
+<p>To use this in combination with the standard python jsonschema
+validator (bundled with linkml):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jsonschema -i data/example_personinfo_data.yaml personinfo.schema.json
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="../data/validating-data">Data Validation</a> for  other
+validation strategies</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>Note that any JSON that conforms to the derived JSON Schema can be
 converted to RDF using the derived JSON-LD context.</p>
+</div>
+<section id="inheritance">
+<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h3>
 <p>Because JSON-Schema does not support inheritance hierarchy, slots are
 “rolled down” from parent.</p>
 <p>For example, in the personinfo schema, slots such as <cite>id</cite> and <cite>name</cite>
 are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mixin:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">NamedThing</span><span class="p">:</span>
+  <span class="nt">slots</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+
+<span class="nt">HasAliases</span><span class="p">:</span>
+  <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">attributes</span><span class="p">:</span>
+    <span class="nt">aliases</span><span class="p">:</span>
+      <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">Person</span><span class="p">:</span>
   <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
-    <span class="no">A person (alive, dead, undead, or fictional).</span>
-  <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
   <span class="nt">mixins</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
   <span class="nt">slots</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
-  <span class="nt">slot_usage</span><span class="p">:</span>
-    <span class="nt">primary_email</span><span class="p">:</span>
-      <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;^\\S+@[\\S+\\.]+\\S+&quot;</span>
 </pre></div>
 </div>
 <p>(some parts truncated for brevity)</p>
 <p>This would generate the following JSON-Schema:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;Person&quot;: {
-       &quot;description&quot;: &quot;A person (alive, dead, undead, or fictional).&quot;,
-       &quot;properties&quot;: {
-          &quot;id&quot;: {
-             &quot;type&quot;: &quot;string&quot;
-          },
-          &quot;name&quot;: {
-             &quot;type&quot;: &quot;string&quot;
-          },
-          &quot;primary_email&quot;: {
-             &quot;pattern&quot;: &quot;^\\S+@[\\S+\\.]+\\S+&quot;,
-             &quot;type&quot;: &quot;string&quot;
-          },
-          &quot;age_in_years&quot;: {
-             &quot;type&quot;: &quot;integer&quot;
-          },
-          &quot;aliases&quot;: {
-             &quot;items&quot;: {
-                &quot;type&quot;: &quot;string&quot;
-             },
-             &quot;type&quot;: &quot;array&quot;
-          },
-          &quot;current_address&quot;: {
-             &quot;$ref&quot;: &quot;#/definitions/Address&quot;
-          },
-          &quot;has_employment_history&quot;: {
-             &quot;items&quot;: {
-                &quot;$ref&quot;: &quot;#/definitions/EmploymentEvent&quot;
-             },
-             &quot;type&quot;: &quot;array&quot;
-          },
-          &quot;has_familial_relationships&quot;: {
-             &quot;items&quot;: {
-                &quot;$ref&quot;: &quot;#/definitions/FamilialRelationship&quot;
-             },
-             &quot;type&quot;: &quot;array&quot;
-          },
-          &quot;has_medical_history&quot;: {
-             &quot;items&quot;: {
-                &quot;$ref&quot;: &quot;#/definitions/MedicalEvent&quot;
-             },
-             &quot;type&quot;: &quot;array&quot;
-          },
-          ...
-       },
-       &quot;required&quot;: [
-          &quot;id&quot;
-       ],
-       &quot;title&quot;: &quot;Person&quot;,
-       &quot;type&quot;: &quot;object&quot;
-    }
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Person&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A person (alive, dead, undead, or fictional).&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;age_in_years&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+         <span class="p">},</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;birth_date&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;gender&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/GenderType&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;id&quot;</span>
+   <span class="p">],</span>
+   <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+<span class="p">},</span>
 </pre></div>
 </div>
+</section>
+<section id="composition">
+<h3>Composition<a class="headerlink" href="#composition" title="Permalink to this headline"></a></h3>
+<p>JSON-Schema support schema composition through:</p>
+<ul class="simple">
+<li><p>allOf</p></li>
+<li><p>anyOf</p></li>
+<li><p>oneOf</p></li>
+<li><p>not</p></li>
+</ul>
+<p>See <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/combining.html">Schema Composition</a></p>
+<p>Currently there are no directly equivalent constructs in LinkML,
+although future versions of LinkML will support an expressive
+constraint mechanism.</p>
+<p>Note that many uses of the above constructs may be better handled by
+using inheritance (see below) in LinkML. Future versions of LinkML may
+support translation of certain object oriented patterns to JSON-Schema
+compositions, for example:</p>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/union_of">union_of</a> slot could be
+used to generate oneOf</p></li>
+</ul>
+</section>
+<section id="inlining">
+<h3>Inlining<a class="headerlink" href="#inlining" title="Permalink to this headline"></a></h3>
+<p>LinkML separates the underlying logical model from choices of how
+references are inlined in JSON.</p>
+<p>If an <a class="reference external" href="https://w3id.org/linkml/inlined">inlined</a> directive is added
+to a slot definition as follows:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">has_employment_history</span><span class="p">:</span>
+  <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">EmploymentEvent</span>
+  <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>then the JSON-Schema will use a <code class="docutils literal notranslate"><span class="pre">$ref</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;has_employment_history&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/EmploymentEvent&quot;</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+<p>However, if a slot is not inlined and the range is a class with an
+identifier, then the reference is by key.</p>
+<p>For example, given:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">FamilialRelationship</span><span class="p">:</span>
+  <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Relationship</span>
+  <span class="nt">slot_usage</span><span class="p">:</span>
+    <span class="nt">related to</span><span class="p">:</span>
+      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Here the value of <code class="docutils literal notranslate"><span class="pre">related_to</span></code> is expected to be a string must be an
+identifier for a <code class="docutils literal notranslate"><span class="pre">Person</span></code> object:</p>
+<p>the range is treated as a simple string in the JSON-Schema</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;FamilialRelationship&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;ended_at_time&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;related_to&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;started_at_time&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">}</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;related_to&quot;</span>
+   <span class="p">],</span>
+   <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FamilialRelationship&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+<p>Thus the JSON-Schema loses some information that is useful for
+validation, and for understanding of the schema.</p>
+</section>
+<section id="patterns">
+<h3>Patterns<a class="headerlink" href="#patterns" title="Permalink to this headline"></a></h3>
+<p>Both LinkML and JSON-Schema support the same subset of <a class="reference external" href="https://www.ecma-international.org/publications-and-standards/standards/ecma-262/">ECMA-262</a>
+regular expressions.</p>
+<p>See <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/regular_expressions.html#example">Regular Expressions</a>.</p>
+<p>For example, the following schema fragment</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="c1"># ...</span>
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="c1"># ...</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">primary_email</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>will generate:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;primary_email&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;pattern&quot;</span><span class="p">:</span> <span class="s2">&quot;^\\S+@[\\S+\\.]+\\S+&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="enums">
+<h3>Enums<a class="headerlink" href="#enums" title="Permalink to this headline"></a></h3>
+<p>Enumerations are treated as simple strings. If the LinkML schema has
+additional metadata about the enumeration values, this is lost in
+translations.</p>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="c1"># ...</span>
+  <span class="nt">FamilialRelationship</span><span class="p">:</span>
+    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Relationship</span>
+    <span class="nt">slot_usage</span><span class="p">:</span>
+      <span class="nt">type</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FamilialRelationshipType</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="nt">related to</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="c1">#...</span>
+
+<span class="nt">enums</span><span class="p">:</span>
+  <span class="nt">FamilialRelationshipType</span><span class="p">:</span>
+    <span class="nt">permissible_values</span><span class="p">:</span>
+      <span class="nt">SIBLING_OF</span><span class="p">:</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a relationship between two individuals who share a parent</span>
+      <span class="nt">PARENT_OF</span><span class="p">:</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a relationship between a parent (biological or non-biological) and their child</span>
+      <span class="nt">CHILD_OF</span><span class="p">:</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">inverse of the PARENT_OF type</span>
+</pre></div>
+</div>
+<p>Generates</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;FamilialRelationship&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;ended_at_time&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;related_to&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;started_at_time&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/FamilialRelationshipType&quot;</span>
+      <span class="p">}</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;related_to&quot;</span>
+   <span class="p">],</span>
+   <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FamilialRelationship&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+<span class="p">},</span>
+<span class="nt">&quot;FamilialRelationshipType&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;SIBLING_OF&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;PARENT_OF&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;CHILD_OF&quot;</span>
+   <span class="p">],</span>
+   <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FamilialRelationshipType&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
