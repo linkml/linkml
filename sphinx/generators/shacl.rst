@@ -1,6 +1,8 @@
 Shacl
 ======
 
+.. warning:: Not yet implemented!
+
 Overview
 --------
 

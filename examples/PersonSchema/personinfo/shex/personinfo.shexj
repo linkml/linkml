@@ -34,182 +34,166 @@ linkml:Objectidentifier IRI
 
 linkml:Nodeidentifier NONLITERAL
 
-<https://w3id.org/linkml/examples/personinfoAddress> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoAddress_tes> (  <https://w3id.org/linkml/examples/personinfostreet>
-          @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfocity> @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfopostal_code> @linkml:String ?
+<Address> CLOSED {
+    (  $<Address_tes> (  <street> @linkml:String ? ;
+          <city> @linkml:String ? ;
+          <postal_code> @linkml:String ?
        ) ;
        rdf:type [ schema:PostalAddress ] ?
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoConcept>  (
+<Concept>  (
     CLOSED {
-       (  $<https://w3id.org/linkml/examples/personinfoConcept_tes> (  &<https://w3id.org/linkml/examples/personinfoNamedThing_tes>
-             ;
-             rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ] ?
+       (  $<Concept_tes> (  &<NamedThing_tes> ;
+             rdf:type [ <NamedThing> ] ?
           ) ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoConcept> ]
+          rdf:type [ <Concept> ]
        )
-    } OR @<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> OR
-    @<https://w3id.org/linkml/examples/personinfoProcedureConcept>
+    } OR @<DiagnosisConcept> OR @<ProcedureConcept>
 )
 
-<https://w3id.org/linkml/examples/personinfoContainer> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoContainer_tes> (  <https://w3id.org/linkml/examples/personinfopersons>
-          @<https://w3id.org/linkml/examples/personinfoPerson> * ;
-          <https://w3id.org/linkml/examples/personinfoorganizations> @<https://w3id.org/linkml/examples/personinfoOrganization> *
+<Container> CLOSED {
+    (  $<Container_tes> (  <persons> @<Person> * ;
+          <organizations> @<Organization> *
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoContainer> ] ?
+       rdf:type [ <Container> ] ?
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoDiagnosisConcept_tes> ( 
-          &<https://w3id.org/linkml/examples/personinfoConcept_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoConcept> ] ?
+<DiagnosisConcept> CLOSED {
+    (  $<DiagnosisConcept_tes> (  &<Concept_tes> ;
+          rdf:type [ <Concept> ] ?
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoDiagnosisConcept> ]
+       rdf:type [ <DiagnosisConcept> ]
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoEmploymentEvent> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoEmploymentEvent_tes> (  &<https://w3id.org/linkml/examples/personinfoEvent_tes>
-          ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoEvent> ] ? ;
-          <https://w3id.org/linkml/examples/personinfoemployed_at> @<https://w3id.org/linkml/examples/personinfoOrganization> ?
+<EmploymentEvent> CLOSED {
+    (  $<EmploymentEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          <employed_at> @<Organization> ?
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoEmploymentEvent> ] ?
+       rdf:type [ <EmploymentEvent> ] ?
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoEvent>  (
+<Event>  (
     CLOSED {
-       (  $<https://w3id.org/linkml/examples/personinfoEvent_tes> (  prov:startedAtTime @linkml:Date ? ;
+       (  $<Event_tes> (  prov:startedAtTime @linkml:Date ? ;
              prov:endedAtTime @linkml:Date ? ;
-             <https://w3id.org/linkml/examples/personinfoduration> @linkml:Float ? ;
-             <https://w3id.org/linkml/examples/personinfois_current> @linkml:Boolean ?
+             <duration> @linkml:Float ? ;
+             <is_current> @linkml:Boolean ?
           ) ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoEvent> ] ?
+          rdf:type [ <Event> ] ?
        )
-    } OR @<https://w3id.org/linkml/examples/personinfoEmploymentEvent> OR
-    @<https://w3id.org/linkml/examples/personinfoMedicalEvent>
+    } OR @<EmploymentEvent> OR @<MedicalEvent>
 )
 
-<https://w3id.org/linkml/examples/personinfoFamilialRelationship> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoFamilialRelationship_tes> ( 
-          &<https://w3id.org/linkml/examples/personinfoRelationship_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoRelationship> ] ? ;
-          <https://w3id.org/linkml/examples/personinfotype> @linkml:String ;
-          <https://w3id.org/linkml/examples/personinforelated_to> @<https://w3id.org/linkml/examples/personinfoPerson>
+<FamilialRelationship> CLOSED {
+    (  $<FamilialRelationship_tes> (  &<Relationship_tes> ;
+          rdf:type [ <Relationship> ] ? ;
+          <type> @<FamilialRelationshipType> ;
+          <related_to> @<Person>
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoFamilialRelationship> ] ?
+       rdf:type [ <FamilialRelationship> ] ?
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoHasAliases> {
-    (  $<https://w3id.org/linkml/examples/personinfoHasAliases_tes> <https://w3id.org/linkml/examples/personinfoaliases>
-       @linkml:String * ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ?
+<HasAliases> {
+    (  $<HasAliases_tes> <aliases> @linkml:String * ;
+       rdf:type [ <HasAliases> ] ?
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoMedicalEvent> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoMedicalEvent_tes> (  &<https://w3id.org/linkml/examples/personinfoEvent_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoEvent> ] ? ;
-          <https://w3id.org/linkml/examples/personinfoin_location> @<https://w3id.org/linkml/examples/personinfoPlace> ? ;
-          <https://w3id.org/linkml/examples/personinfodiagnosis> @<https://w3id.org/linkml/examples/personinfoDiagnosisConcept> ? ;
-          <https://w3id.org/linkml/examples/personinfoprocedure> @<https://w3id.org/linkml/examples/personinfoProcedureConcept> ?
+<MedicalEvent> CLOSED {
+    (  $<MedicalEvent_tes> (  &<Event_tes> ;
+          rdf:type [ <Event> ] ? ;
+          <in_location> @<Place> ? ;
+          <diagnosis> @<DiagnosisConcept> ? ;
+          <procedure> @<ProcedureConcept> ?
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoMedicalEvent> ] ?
+       rdf:type [ <MedicalEvent> ] ?
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoNamedThing>  (
+<NamedThing>  (
     CLOSED {
-       (  $<https://w3id.org/linkml/examples/personinfoNamedThing_tes> (  schema:name @linkml:String ? ;
+       (  $<NamedThing_tes> (  schema:name @linkml:String ? ;
              schema:description @linkml:String ? ;
              schema:image @linkml:String ?
           ) ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ]
+          rdf:type [ <NamedThing> ]
        )
-    } OR @<https://w3id.org/linkml/examples/personinfoConcept> OR @<https://w3id.org/linkml/examples/personinfoOrganization> OR
-    @<https://w3id.org/linkml/examples/personinfoPerson>
+    } OR @<Concept> OR @<Organization> OR @<Person>
 )
 
-<https://w3id.org/linkml/examples/personinfoOrganization> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoOrganization_tes> ( 
-          &<https://w3id.org/linkml/examples/personinfoNamedThing_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ] ? ;
-          &<https://w3id.org/linkml/examples/personinfoHasAliases_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ? ;
-          <https://w3id.org/linkml/examples/personinfomission_statement> @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfofounding_date> @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfofounding_location> @<https://w3id.org/linkml/examples/personinfoPlace> ? ;
-          <https://w3id.org/linkml/examples/personinfoaliases> @linkml:String *
+<Organization> CLOSED {
+    (  $<Organization_tes> (  &<NamedThing_tes> ;
+          rdf:type [ <NamedThing> ] ? ;
+          &<HasAliases_tes> ;
+          rdf:type [ <HasAliases> ] ? ;
+          <mission_statement> @linkml:String ? ;
+          <founding_date> @linkml:String ? ;
+          <founding_location> @<Place> ? ;
+          <aliases> @linkml:String *
        ) ;
        rdf:type [ schema:Organization ]
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoPerson> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoPerson_tes> (  &<https://w3id.org/linkml/examples/personinfoNamedThing_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoNamedThing> ] ? ;
-          &<https://w3id.org/linkml/examples/personinfoHasAliases_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ? ;
-          <https://w3id.org/linkml/examples/personinfoprimary_email> @linkml:String ? ;
+<Person> CLOSED {
+    (  $<Person_tes> (  &<NamedThing_tes> ;
+          rdf:type [ <NamedThing> ] ? ;
+          &<HasAliases_tes> ;
+          rdf:type [ <HasAliases> ] ? ;
+          <primary_email> @linkml:String ? ;
           schema:birthDate @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfoage_in_years> @linkml:Integer ? ;
-          schema:gender @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfocurrent_address> @<https://w3id.org/linkml/examples/personinfoAddress> ? ;
-          <https://w3id.org/linkml/examples/personinfohas_employment_history>
-          @<https://w3id.org/linkml/examples/personinfoEmploymentEvent> * ;
-          <https://w3id.org/linkml/examples/personinfohas_familial_relationships>
-          @<https://w3id.org/linkml/examples/personinfoFamilialRelationship> * ;
-          <https://w3id.org/linkml/examples/personinfohas_medical_history>
-          @<https://w3id.org/linkml/examples/personinfoMedicalEvent> * ;
-          <https://w3id.org/linkml/examples/personinfoaliases> @linkml:String *
+          <age_in_years> @linkml:Integer ? ;
+          schema:gender @<GenderType> ? ;
+          <current_address> @<Address> ? ;
+          <has_employment_history> @<EmploymentEvent> * ;
+          <has_familial_relationships> @<FamilialRelationship> * ;
+          <has_medical_history> @<MedicalEvent> * ;
+          <aliases> @linkml:String *
        ) ;
        rdf:type [ schema:Person ]
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoPlace> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoPlace_tes> (  &<https://w3id.org/linkml/examples/personinfoHasAliases_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoHasAliases> ] ? ;
+<Place> CLOSED {
+    (  $<Place_tes> (  &<HasAliases_tes> ;
+          rdf:type [ <HasAliases> ] ? ;
           schema:name @linkml:String ? ;
-          <https://w3id.org/linkml/examples/personinfoaliases> @linkml:String *
+          <aliases> @linkml:String *
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoPlace> ]
+       rdf:type [ <Place> ]
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoProcedureConcept> CLOSED {
-    (  $<https://w3id.org/linkml/examples/personinfoProcedureConcept_tes> ( 
-          &<https://w3id.org/linkml/examples/personinfoConcept_tes> ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoConcept> ] ?
+<ProcedureConcept> CLOSED {
+    (  $<ProcedureConcept_tes> (  &<Concept_tes> ;
+          rdf:type [ <Concept> ] ?
        ) ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoProcedureConcept> ]
+       rdf:type [ <ProcedureConcept> ]
     )
 }
 
-<https://w3id.org/linkml/examples/personinfoRelationship>  (
+<Relationship>  (
     CLOSED {
-       (  $<https://w3id.org/linkml/examples/personinfoRelationship_tes> (  prov:startedAtTime @linkml:Date ? ;
+       (  $<Relationship_tes> (  prov:startedAtTime @linkml:Date ? ;
              prov:endedAtTime @linkml:Date ? ;
-             <https://w3id.org/linkml/examples/personinforelated_to> @linkml:String ? ;
-             <https://w3id.org/linkml/examples/personinfotype> @linkml:String ?
+             <related_to> @linkml:String ? ;
+             <type> @linkml:String ?
           ) ;
-          rdf:type [ <https://w3id.org/linkml/examples/personinfoRelationship> ] ?
+          rdf:type [ <Relationship> ] ?
        )
-    } OR @<https://w3id.org/linkml/examples/personinfoFamilialRelationship>
+    } OR @<FamilialRelationship>
 )
 
-<https://w3id.org/linkml/examples/personinfoWithLocation> {
-    (  $<https://w3id.org/linkml/examples/personinfoWithLocation_tes> <https://w3id.org/linkml/examples/personinfoin_location>
-       @<https://w3id.org/linkml/examples/personinfoPlace> ? ;
-       rdf:type [ <https://w3id.org/linkml/examples/personinfoWithLocation> ] ?
+<WithLocation> {
+    (  $<WithLocation_tes> <in_location> @<Place> ? ;
+       rdf:type [ <WithLocation> ] ?
     )
 }
 

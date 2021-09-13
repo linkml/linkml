@@ -10,6 +10,7 @@ Developers guide
    :caption: Contents:
 
    organization
+   notebooks
    manipulating-schemas
    contributing-code
 

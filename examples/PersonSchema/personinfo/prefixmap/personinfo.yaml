@@ -1,6 +1,6 @@
 {
    "linkml": "https://w3id.org/linkml/",
-   "personinfo": "https://w3id.org/linkml/examples/personinfo",
+   "personinfo": "https://w3id.org/linkml/examples/personinfo/",
    "prov": "http://www.w3.org/ns/prov#",
    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
