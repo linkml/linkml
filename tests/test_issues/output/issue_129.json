@@ -1,8 +1,5 @@
 {
-   "$id": "http://example.org/sample/types",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "C": {
          "additionalProperties": false,
          "description": "",
@@ -17,11 +14,11 @@
                "type": "array"
             },
             "has_d": {
-               "$ref": "#/definitions/D"
+               "$ref": "#/$defs/D"
             },
             "has_ds": {
                "items": {
-                  "$ref": "#/definitions/D"
+                  "$ref": "#/$defs/D"
                },
                "type": "array"
             },
@@ -62,6 +59,9 @@
          "type": "object"
       }
    },
+   "$id": "http://example.org/sample/types",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {
       "age_in_years": {
          "type": "integer"
@@ -73,11 +73,11 @@
          "type": "array"
       },
       "has_d": {
-         "$ref": "#/definitions/D"
+         "$ref": "#/$defs/D"
       },
       "has_ds": {
          "items": {
-            "$ref": "#/definitions/D"
+            "$ref": "#/$defs/D"
          },
          "type": "array"
       },

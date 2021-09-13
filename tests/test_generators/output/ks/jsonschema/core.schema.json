@@ -1,8 +1,5 @@
 {
-   "$id": "https://w3id.org/linkml/tests/core",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "Activity": {
          "additionalProperties": false,
          "description": "a provence-generating activity",
@@ -58,6 +55,9 @@
          "type": "object"
       }
    },
+   "$id": "https://w3id.org/linkml/tests/core",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {},
    "title": "core",
    "type": "object"

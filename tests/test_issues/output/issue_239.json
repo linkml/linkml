@@ -1,8 +1,5 @@
 {
-   "$id": "http://example.org/sample/types",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "C": {
          "additionalProperties": false,
          "description": "",
@@ -11,11 +8,11 @@
                "type": "string"
             },
             "issue_status": {
-               "$ref": "#/definitions/IssueStatuses"
+               "$ref": "#/$defs/IssueStatuses"
             },
             "issue_type": {
                "items": {
-                  "$ref": "#/definitions/IssueTypes"
+                  "$ref": "#/$defs/IssueTypes"
                },
                "type": "array"
             }
@@ -47,16 +44,19 @@
          "type": "string"
       }
    },
+   "$id": "http://example.org/sample/types",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {
       "id": {
          "type": "string"
       },
       "issue_status": {
-         "$ref": "#/definitions/IssueStatuses"
+         "$ref": "#/$defs/IssueStatuses"
       },
       "issue_type": {
          "items": {
-            "$ref": "#/definitions/IssueTypes"
+            "$ref": "#/$defs/IssueTypes"
          },
          "type": "array"
       }

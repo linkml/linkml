@@ -1,8 +1,5 @@
 {
-   "$id": "https://w3id.org/linkml/tests/kitchen_sink",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "Activity": {
          "additionalProperties": false,
          "description": "a provence-generating activity",
@@ -144,19 +141,19 @@
          "properties": {
             "activities": {
                "items": {
-                  "$ref": "#/definitions/Activity"
+                  "$ref": "#/$defs/Activity"
                },
                "type": "array"
             },
             "companies": {
                "items": {
-                  "$ref": "#/definitions/Company"
+                  "$ref": "#/$defs/Company"
                },
                "type": "array"
             },
             "persons": {
                "items": {
-                  "$ref": "#/definitions/Person"
+                  "$ref": "#/$defs/Person"
                },
                "type": "array"
             }
@@ -247,7 +244,7 @@
                "type": "string"
             },
             "type": {
-               "$ref": "#/definitions/FamilialRelationshipType"
+               "$ref": "#/$defs/FamilialRelationshipType"
             }
          },
          "required": [
@@ -298,7 +295,7 @@
          "description": "",
          "properties": {
             "diagnosis": {
-               "$ref": "#/definitions/DiagnosisConcept"
+               "$ref": "#/$defs/DiagnosisConcept"
             },
             "ended_at_time": {
                "format": "date",
@@ -311,7 +308,7 @@
                "type": "boolean"
             },
             "procedure": {
-               "$ref": "#/definitions/ProcedureConcept"
+               "$ref": "#/$defs/ProcedureConcept"
             },
             "started_at_time": {
                "format": "date",
@@ -351,7 +348,7 @@
          "properties": {
             "addresses": {
                "items": {
-                  "$ref": "#/definitions/Address"
+                  "$ref": "#/$defs/Address"
                },
                "type": "array"
             },
@@ -365,23 +362,23 @@
                "type": "array"
             },
             "has_birth_event": {
-               "$ref": "#/definitions/BirthEvent"
+               "$ref": "#/$defs/BirthEvent"
             },
             "has_employment_history": {
                "items": {
-                  "$ref": "#/definitions/EmploymentEvent"
+                  "$ref": "#/$defs/EmploymentEvent"
                },
                "type": "array"
             },
             "has_familial_relationships": {
                "items": {
-                  "$ref": "#/definitions/FamilialRelationship"
+                  "$ref": "#/$defs/FamilialRelationship"
                },
                "type": "array"
             },
             "has_medical_history": {
                "items": {
-                  "$ref": "#/definitions/MedicalEvent"
+                  "$ref": "#/$defs/MedicalEvent"
                },
                "type": "array"
             },
@@ -463,6 +460,9 @@
          "type": "object"
       }
    },
+   "$id": "https://w3id.org/linkml/tests/kitchen_sink",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {},
    "title": "kitchen_sink",
    "type": "object"

@@ -1,8 +1,5 @@
 {
-   "$id": "http://example.org/sample/example1",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "Course": {
          "additionalProperties": false,
          "description": "",
@@ -21,7 +18,7 @@
          "description": "",
          "properties": {
             "courses": {
-               "$ref": "#/definitions/Course"
+               "$ref": "#/$defs/Course"
             },
             "name": {
                "description": "Any name",
@@ -33,6 +30,9 @@
          "type": "object"
       }
    },
+   "$id": "http://example.org/sample/example1",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {},
    "title": "example1",
    "type": "object"

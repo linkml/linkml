@@ -463,7 +463,26 @@
    "$id": "https://w3id.org/linkml/tests/kitchen_sink",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
-   "properties": {},
+   "properties": {
+      "activities": {
+         "items": {
+            "$ref": "#/$defs/Activity"
+         },
+         "type": "array"
+      },
+      "companies": {
+         "items": {
+            "$ref": "#/$defs/Company"
+         },
+         "type": "array"
+      },
+      "persons": {
+         "items": {
+            "$ref": "#/$defs/Person"
+         },
+         "type": "array"
+      }
+   },
    "title": "kitchen_sink",
    "type": "object"
 }
