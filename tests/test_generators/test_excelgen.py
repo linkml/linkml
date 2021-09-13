@@ -16,7 +16,7 @@ class ExcelGenTestCase(unittest.TestCase):
         new_file, filename = tempfile.mkstemp()
 
         # call ExcelGenerator generator class
-        ExcelGenerator(ORGANIZATION_SCHEMA, filename=filename).serialize()
+        ExcelGenerator(ORGANIZATION_SCHEMA, output=filename).serialize()
 
         # add extension suffix to file path
         xlsx_filename = filename + "_excelgen_0.0.1.xlsx"
