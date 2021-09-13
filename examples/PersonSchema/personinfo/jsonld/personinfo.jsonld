@@ -26,6 +26,14 @@
     {
       "prefix_prefix": "prov",
       "prefix_reference": "http://www.w3.org/ns/prov#"
+    },
+    {
+      "prefix_prefix": "GSSO",
+      "prefix_reference": "http://purl.obolibrary.org/obo/GSSO_"
+    },
+    {
+      "prefix_prefix": "famrel",
+      "prefix_reference": "https://example.org/FamilialRelations#"
     }
   ],
   "emit_prefixes": [
@@ -206,20 +214,49 @@
       "from_schema": "https://w3id.org/linkml/examples/personinfo",
       "permissible_values": [
         {
-          "text": "SIBLING_OF"
+          "text": "SIBLING_OF",
+          "meaning": "famrel:01"
         },
         {
-          "text": "PARENT_OF"
+          "text": "PARENT_OF",
+          "meaning": "famrel:02"
         },
         {
-          "text": "CHILD_OF"
+          "text": "CHILD_OF",
+          "meaning": "famrel:01"
         }
       ]
     },
     {
       "name": "GenderType",
       "definition_uri": "https://w3id.org/linkml/examples/personinfo/GenderType",
-      "from_schema": "https://w3id.org/linkml/examples/personinfo"
+      "from_schema": "https://w3id.org/linkml/examples/personinfo",
+      "permissible_values": [
+        {
+          "text": "nonbinary man",
+          "meaning": "GSSO:009254"
+        },
+        {
+          "text": "nonbinary woman",
+          "meaning": "GSSO:009253"
+        },
+        {
+          "text": "transgender woman",
+          "meaning": "GSSO:000384"
+        },
+        {
+          "text": "transgender man",
+          "meaning": "GSSO:000372"
+        },
+        {
+          "text": "cisgender man",
+          "meaning": "GSSO:000371"
+        },
+        {
+          "text": "cisgender woman",
+          "meaning": "GSSO:000385"
+        }
+      ]
     },
     {
       "name": "DiagnosisType",
@@ -1003,9 +1040,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "personinfo.yaml",
-  "source_file_date": "Sun Sep 12 17:49:16 2021",
-  "source_file_size": 4565,
-  "generation_date": "2021-09-12 17:49",
+  "source_file_date": "Mon Sep 13 12:01:47 2021",
+  "source_file_size": 5074,
+  "generation_date": "2021-09-13 12:01",
   "@type": "SchemaDefinition",
   "@context": [
     "personinfo/jsonld/personinfo.context.jsonld",

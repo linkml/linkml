@@ -13,6 +13,8 @@ prefixes:
   schema: http://schema.org/
   rdfs: http://www.w3.org/2000/01/rdf-schema#
   prov: http://www.w3.org/ns/prov#
+  GSSO: http://purl.obolibrary.org/obo/GSSO_
+  famrel: https://example.org/FamilialRelations#
 default_prefix: personinfo
 default_range: string
 
@@ -235,7 +237,23 @@ enums:
   FamilialRelationshipType:
     permissible_values:
       SIBLING_OF:
+        meaning: famrel:01
       PARENT_OF:
+        meaning: famrel:02
       CHILD_OF:
+        meaning: famrel:01
   GenderType:
+    permissible_values:
+      nonbinary man:
+        meaning: GSSO:009254
+      nonbinary woman:
+        meaning: GSSO:009253
+      transgender woman:
+        meaning: GSSO:000384
+      transgender man:
+        meaning: GSSO:000372
+      cisgender man:
+        meaning: GSSO:000371
+      cisgender woman:
+        meaning: GSSO:000385
   DiagnosisType:

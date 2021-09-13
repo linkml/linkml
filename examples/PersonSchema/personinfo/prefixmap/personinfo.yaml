@@ -1,4 +1,6 @@
 {
+   "GSSO": "http://purl.obolibrary.org/obo/GSSO_",
+   "famrel": "https://example.org/FamilialRelations#",
    "linkml": "https://w3id.org/linkml/",
    "personinfo": "https://w3id.org/linkml/examples/personinfo/",
    "prov": "http://www.w3.org/ns/prov#",
