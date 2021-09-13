@@ -626,15 +626,6 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
         f.params.append(
             Option(("--metadata/--no-metadata", ), default=True, help="Include metadata in output (default=--metadata)"))
         f.params.append(
-            Option(("--output_directory", ), default="output",
-                        help="Output directory for individually generated class files"))
-        f.params.append(
-            Option(("--package", ), default=None,
-                   help="Package name where relevant for generated class files"))
-        f.params.append(
-            Option(("--template_file", ), default=None,
-                   help="Optional jinja2 template to use for class generation"))
-        f.params.append(
             Option(("--useuris/--metauris", ), default=True, help="Include metadata in output (default=--useuris)"))
         f.params.append(
             Option(("--importmap", "-im"), type=click.File(), help="Import mapping file")

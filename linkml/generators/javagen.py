@@ -87,6 +87,9 @@ class JavaGenerator(OOCodeGenerator):
 
 
 @shared_arguments(JavaGenerator)
+@click.option("--output_directory", default="output", help="Output directory for individually generated class files")
+@click.option("--package", help="Package name where relevant for generated class files")
+@click.option("--template_file", help="Optional jinja2 template to use for class generation")
 @click.command()
 def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
