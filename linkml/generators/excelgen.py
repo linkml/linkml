@@ -20,8 +20,8 @@ class ExcelGenerator(Generator):
 
     :param schema: LinkML schema object
     :type schema: class:`SchemaDefinition`
-    :param filename: LinkML schema specification in YAML format
-    :type filename: str
+    :param output: LinkML schema specification in YAML format
+    :type output: str
     """
 
     generator_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -29,31 +29,30 @@ class ExcelGenerator(Generator):
     valid_formats = ["xlsx"]
     sheet_name_cols = []
 
-    def _workbook_path(self, wb_name: str = None):
+    def _workbook_path(self, yaml_filename: str, wb_name: str = None):
         """Internal method that computes the path where the Excel workbook
         should be stored.
 
+        :param yaml_filename: Name of provided LinkML schema
+        :type yaml_filename: str
         :param wb_name: Prefix for the generated Excel spreadsheet name
         :type wb_name: str
-
-        TODO: Decide whether to use :param wb_name as prefix or full file name?
         """
-        dir_path = os.getcwd()
-
+        # handle the case when an output filename is not provided
         if not wb_name:
-            return os.path.join(
-                dir_path, self.generator_name + "_" + self.generator_version + ".xlsx"
+            prefix, _ = os.path.splitext(os.path.basename(yaml_filename))
+            prefix_root, prefix_ext = os.path.splitext(prefix)
+
+            if prefix_ext == ".yaml":
+                prefix = prefix_root
+
+            output_xlsx = (
+                f"{prefix}_{self.generator_name}_{self.generator_version}.xlsx"
             )
 
-        return os.path.join(
-            dir_path,
-            wb_name
-            + "_"
-            + self.generator_name
-            + "_"
-            + self.generator_version
-            + ".xlsx",
-        )
+            return output_xlsx
+
+        return wb_name
 
     @staticmethod
     def _slot_formatting(slots_list: List[Tuple[str, str]]) -> Dict[str, List[str]]:
@@ -96,10 +95,10 @@ class ExcelGenerator(Generator):
     def __init__(
         self,
         schema: Union[str, TextIO, SchemaDefinition],
-        filename: Optional[str] = None,
-        **kwargs
+        output: Optional[str] = None,
+        **kwargs,
     ) -> None:
-        self.wb_name = self._workbook_path(wb_name=filename)
+        self.wb_name = self._workbook_path(yaml_filename=schema, wb_name=output)
         self.workbook = openpyxl.Workbook()
         self.workbook.remove(self.workbook["Sheet"])
         super().__init__(schema, **kwargs)
@@ -133,7 +132,12 @@ class ExcelGenerator(Generator):
 
 @shared_arguments(ExcelGenerator)
 @click.command()
-@click.option("-f", "--filename", help="""Name of Excel spreadsheet to be created""")
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="""Name of Excel spreadsheet to be created""",
+)
 def cli(yamlfile, **kwargs):
     """Generate Excel representation of a LinkML model"""
     print(ExcelGenerator(yamlfile, **kwargs).serialize(**kwargs))
