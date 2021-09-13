@@ -19,6 +19,7 @@ jsonasobj2~=1.0, >=1.0.3
 jsonschema>=3.0.1
 linkml-runtime~=1.0, >=1.0.15
 myst-parser
+openpyxl
 parse
 prefixcommons>=0.1.7
 prologterms>=0.0.6
