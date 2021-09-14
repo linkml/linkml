@@ -15,6 +15,7 @@ click~=7.0
 graphviz>=0.10.1
 hbreader
 isodate>=0.6.0
+jinja2
 jsonasobj2~=1.0, >=1.0.3
 jsonschema>=3.0.1
 linkml-runtime~=1.0, >=1.0.15
