@@ -1,0 +1,22 @@
+{#-
+
+  Jinja2 Template for a Java class with Lombok @Data annotation
+  Annotation details at https://projectlombok.org
+-#}
+package {{ doc.package }};
+
+import java.util.List;
+import lombok.*;
+
+/**
+  {{ cls.source_class.description }}
+**/
+@Data
+@EqualsAndHashCode(callSuper=false)
+public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
+{% for f in cls.fields %}
+  private {{f.range}} {{ f.name }};
+{%- endfor %}
+
+}
+
