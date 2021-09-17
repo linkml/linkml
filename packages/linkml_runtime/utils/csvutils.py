@@ -16,7 +16,7 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
     """
     if index_slot is not None and schemaview is not None:
         slot = schemaview.get_slot(index_slot)
-        if slot.range is not None and slot.range in schemaview.all_class():
+        if slot.range is not None and slot.range in schemaview.all_classes():
             cm = {}
             for sn in schemaview.class_slots(slot.range):
                 config = _get_key_config(schemaview, slot.range, sn)
@@ -32,7 +32,7 @@ def get_configmap(schemaview: SchemaView, index_slot: SlotDefinitionName) -> CON
 def _get_key_config(schemaview: SchemaView, tgt_cls: ClassDefinitionName, sn: SlotDefinitionName, sep='_'):
     slot = schemaview.induced_slot(sn, tgt_cls)
     range = slot.range
-    all_cls = schemaview.all_class()
+    all_cls = schemaview.all_classes()
     if range in all_cls and schemaview.is_inlined(slot):
         mappings = {}
         is_complex = False
