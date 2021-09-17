@@ -22,7 +22,10 @@ RANGEMAP = {
     'double': Float(),
     'float': Float(),
     'Bool': Boolean(),
-    'URI': Text()
+    'URI': Text(),
+    'XSDTime': Time(),
+    'XSDDateTime': DateTime(),
+    'XSDDate': Date(),
 }
 
 def _quote(s: str) -> str:
