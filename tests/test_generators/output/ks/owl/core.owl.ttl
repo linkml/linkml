@@ -123,10 +123,10 @@ linkml:Uriorcurie a owl:Class,
     rdfs:label "core" ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     skos:definition "core schema imported by kitchen_sink    " ;
-    linkml:generation_date "2021-09-14 21:50" ;
+    linkml:generation_date "2021-09-17 20:29" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "core.yaml" ;
-    linkml:source_file_date "Tue Sep 14 21:46:35 2021" ;
+    linkml:source_file_date "Fri Sep 17 20:25:20 2021" ;
     linkml:source_file_size 1667 .
 
 <https://w3id.org/linkml/tests/core/activity_set> a owl:ObjectProperty,
@@ -231,8 +231,8 @@ linkml:Date a owl:Class,
             owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/was_associated_with> ],
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
         [ a owl:Restriction ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
@@ -243,16 +243,16 @@ linkml:Date a owl:Class,
             owl:onProperty <https://w3id.org/linkml/tests/core/description> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/tests/core/used> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ] ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/was_associated_with> ] ;
     skos:definition "a provence-generating activity" ;
     skos:exactMatch <http://www.w3.org/ns/prov#Activity> .
 
