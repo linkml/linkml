@@ -297,6 +297,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
         wrapped_description = f'\n\t"""\n\t{wrapped_annotation(be(cls.description))}\n\t"""' if be(cls.description) else ''
 
+        if self.is_class_unconstrained(cls):
+            return f'\n{self.class_or_type_name(cls.name)} = Any'
+
+
         return ('\n@dataclass' if slotdefs else '') + \
                f'\nclass {self.class_or_type_name(cls.name)}{parentref}:{wrapped_description}' + \
                f'{self.gen_inherited_slots(cls)}' + \
@@ -576,6 +580,10 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         """ Generate python post init rules for slot in class
         """
         rlines: List[str] = []
+
+        if slot.range in self.schema.classes:
+            if self.is_class_unconstrained(self.schema.classes[slot.range]):
+                return ""
 
         aliased_slot_name = self.slot_name(slot.name)           # Mangled name by which the slot is known in python
         range_type, base_type, base_type_name = self.class_reference_type(slot, cls)
