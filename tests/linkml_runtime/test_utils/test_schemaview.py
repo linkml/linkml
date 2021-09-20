@@ -86,7 +86,9 @@ class SchemaViewTestCase(unittest.TestCase):
         # test induced slots
 
         for c in ['Company', 'Person', 'Organization',]:
-            assert view.induced_slot('aliases', c).multivalued is True
+            islot = view.induced_slot('aliases', c)
+            assert islot.multivalued is True
+            self.assertEqual(islot.owner, c, 'owner does not match')
 
         assert view.get_identifier_slot('Company').name == 'id'
         assert view.get_identifier_slot('Thing').name == 'id'
@@ -96,11 +98,14 @@ class SchemaViewTestCase(unittest.TestCase):
             assert view.induced_slot('name', c).identifier is not True
             assert view.induced_slot('name', c).required is False
             assert view.induced_slot('name', c).range == 'string'
+            self.assertEqual(view.induced_slot('id', c).owner, c, 'owner does not match')
+            self.assertEqual(view.induced_slot('name', c).owner, c, 'owner does not match')
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
             logging.debug(f's={s.range} // c = {c}')
             assert s.range == 'date'
             assert s.slot_uri == 'prov:startedAtTime'
+            self.assertEqual(s.owner, c, 'owner does not match')
         # test slot_usage
         assert view.induced_slot('age in years', 'Person').minimum_value == 0
         assert view.induced_slot('age in years', 'Adult').minimum_value == 16
