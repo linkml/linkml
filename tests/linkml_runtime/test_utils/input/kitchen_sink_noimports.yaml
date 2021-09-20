@@ -46,14 +46,23 @@ subsets:
     aliases:
       - B
 
+# --
+# Classes
+# --
 classes:
 
+  # --
+  # Mixins
+  # --
   HasAliases:
     mixin: true
     attributes:
       aliases:
         multivalued: true
 
+    # --
+    # Main Classes
+    # --
   Thing:
     slots:
       - id
