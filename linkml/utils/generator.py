@@ -603,6 +603,15 @@ class Generator(metaclass=abc.ABCMeta):
             self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
         self.emit_prefixes.add(ncname)
 
+    def is_class_unconstrained(self, cls: ClassDefinition):
+        """
+        Determine if the class is mapped to typing.Any, i.e the unconstrained class
+
+        :param cls: class definition
+        :return: true if the class is unconstrained
+        """
+        return cls.class_uri == 'linkml:Any'
+
 
 def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
     _LOG_LEVEL_STRINGS = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
