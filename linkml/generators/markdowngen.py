@@ -614,7 +614,7 @@ class MarkdownGenerator(Generator):
 
 @shared_arguments(MarkdownGenerator)
 @click.command()
-@click.option("--dir", "-d", help="Output directory")
+@click.option("--dir", "-d", required=True, help="Output directory")
 @click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
 @click.option("--img", "-i",  is_flag=True, help="Download YUML images to 'image' directory")
 @click.option("--index-file", "-I", help="Name of markdown file that holds index")
