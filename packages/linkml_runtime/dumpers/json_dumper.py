@@ -8,7 +8,7 @@ from linkml_runtime.utils import formatutils
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_json_object
-
+from jsonasobj2 import JsonObj
 
 class JSONDumper(Dumper):
 
@@ -55,3 +55,37 @@ class JSONDumper(Dumper):
         :return: copy of dictionary with empty lists/dicts and Nones removed
         """
         return formatutils.remove_empty_items(obj, hide_protected_keys=True)
+
+    def to_json_object(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> JsonObj:
+        """
+        As dumps(), except returns a JsonObj, not a string
+
+        :param element: LinkML object to be emitted
+        :param contexts: JSON-LD context(s) in the form of:
+            * file name
+            * URL
+            * JSON String
+            * dict
+            * JSON Object
+            * A list containing elements of any type named above
+        :param inject_type: if True (default), add a @type at the top level
+        :return: JSON Object representing the element
+        """
+        return as_json_object(element, contexts, inject_type=inject_type)
+
+    def to_dict(self, element: YAMLRoot, **kwargs) -> JsonObj:
+        """
+        As dumps(), except returns a JsonObj, not a string
+
+        :param element: LinkML object to be emitted
+        :param contexts: JSON-LD context(s) in the form of:
+            * file name
+            * URL
+            * JSON String
+            * dict
+            * JSON Object
+            * A list containing elements of any type named above
+        :param inject_type: if True (default), add a @type at the top level
+        :return: JSON Object representing the element
+        """
+        return json.loads(self.dumps(element, inject_type=False, **kwargs))
