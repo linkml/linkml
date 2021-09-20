@@ -3,7 +3,7 @@ Usage: gen-markdown [OPTIONS] YAMLFILE
   Generate markdown documentation of a LinkML model
 
 Options:
-  -d, --dir TEXT                  Output directory
+  -d, --dir TEXT                  Output directory  [required]
   -c, --classes TEXT              Class(es) to emit
   -i, --img                       Download YUML images to 'image' directory
   -I, --index-file TEXT           Name of markdown file that holds index

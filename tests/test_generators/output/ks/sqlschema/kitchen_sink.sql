@@ -2,8 +2,8 @@
 
 CREATE TABLE activity (
 	id TEXT NOT NULL, 
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	was_informed_by TEXT, 
 	was_associated_with TEXT, 
 	used TEXT, 
@@ -42,8 +42,8 @@ CREATE TABLE "DiagnosisConcept" (
 );
 
 CREATE TABLE "Event" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	PRIMARY KEY (started_at_time, ended_at_time, is_current)
 );
@@ -75,8 +75,8 @@ CREATE TABLE "ProcedureConcept" (
 );
 
 CREATE TABLE "Relationship" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	related_to TEXT, 
 	type TEXT, 
 	PRIMARY KEY (started_at_time, ended_at_time, related_to, type)
@@ -91,8 +91,8 @@ CREATE TABLE "Address" (
 );
 
 CREATE TABLE "BirthEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	in_location TEXT, 
 	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location), 
@@ -108,8 +108,8 @@ CREATE TABLE "Company" (
 );
 
 CREATE TABLE "FamilialRelationship" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	type VARCHAR(10) NOT NULL, 
 	related_to TEXT NOT NULL, 
 	"Person_id" TEXT, 
@@ -119,8 +119,8 @@ CREATE TABLE "FamilialRelationship" (
 );
 
 CREATE TABLE "MarriageEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	married_to TEXT, 
 	in_location TEXT, 
@@ -130,8 +130,8 @@ CREATE TABLE "MarriageEvent" (
 );
 
 CREATE TABLE "MedicalEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	in_location TEXT, 
 	diagnosis TEXT, 
@@ -166,8 +166,8 @@ CREATE TABLE "Place_aliases" (
 );
 
 CREATE TABLE "EmploymentEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	employed_at TEXT, 
 	"Person_id" TEXT, 

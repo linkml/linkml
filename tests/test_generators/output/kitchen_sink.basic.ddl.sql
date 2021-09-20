@@ -2,8 +2,8 @@
 
 CREATE TABLE activity (
 	id TEXT NOT NULL, 
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	was_informed_by TEXT, 
 	was_associated_with TEXT, 
 	used TEXT, 
@@ -22,8 +22,8 @@ CREATE TABLE agent (
 );
 
 CREATE TABLE "BirthEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	in_location TEXT
 );
@@ -52,36 +52,36 @@ CREATE TABLE "DiagnosisConcept" (
 );
 
 CREATE TABLE "EmploymentEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	employed_at TEXT
 );
 
 CREATE TABLE "Event" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN
 );
 
 CREATE TABLE "FamilialRelationship" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	type VARCHAR(10) NOT NULL, 
 	related_to TEXT NOT NULL
 );
 
 CREATE TABLE "MarriageEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	married_to TEXT, 
 	in_location TEXT
 );
 
 CREATE TABLE "MedicalEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	in_location TEXT, 
 	diagnosis TEXT, 
@@ -118,8 +118,8 @@ CREATE TABLE "ProcedureConcept" (
 );
 
 CREATE TABLE "Relationship" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	related_to TEXT, 
 	type TEXT
 );

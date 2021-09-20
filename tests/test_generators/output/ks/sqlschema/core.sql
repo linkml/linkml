@@ -2,8 +2,8 @@
 
 CREATE TABLE activity (
 	id TEXT NOT NULL, 
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	was_informed_by TEXT, 
 	was_associated_with TEXT, 
 	used TEXT, 
