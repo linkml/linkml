@@ -316,16 +316,20 @@ class SchemaView(object):
         return ix
 
     @lru_cache()
-    def get_class(self, class_name: CLASS_NAME, imports=True) -> ClassDefinition:
+    def get_class(self, class_name: CLASS_NAME, imports=True, strict=False) -> ClassDefinition:
         """
         :param class_name: name of the class to be retrieved
         :param imports: include import closure
         :return: class definition
         """
-        return self.all_classes(imports).get(class_name, None)
+        c = self.all_classes(imports).get(class_name, None)
+        if strict and c is None:
+            raise Exception(f'No such class as "{class_name}"')
+        else:
+            return c
 
     @lru_cache()
-    def get_slot(self, slot_name: SLOT_NAME, imports=True, attributes=False) -> SlotDefinition:
+    def get_slot(self, slot_name: SLOT_NAME, imports=True, attributes=False, strict=False) -> SlotDefinition:
         """
         :param slot_name: name of the slot to be retrieved
         :param imports: include import closure
@@ -338,35 +342,50 @@ class SchemaView(object):
                     if slot is not None:
                         # slot name is ambiguous, no results
                         return None
-                    slot = c.attributes[slot_name]
+                    slot = copy(c.attributes[slot_name])
+                    slot.owner = c.name
+        if strict and slot in None:
+            raise Exception(f'No such slot as "{slot_name}"')
         return slot
 
     @lru_cache()
-    def get_subset(self, subset_name: SUBSET_NAME, imports=True) -> SubsetDefinition:
+    def get_subset(self, subset_name: SUBSET_NAME, imports=True, strict=False) -> SubsetDefinition:
         """
         :param subset_name: name of the subsey to be retrieved
         :param imports: include import closure
         :return: subset definition
         """
-        return self.all_subsets(imports).get(subset_name, None)
+        s = self.all_subsets(imports).get(subset_name, None)
+        if strict and s is None:
+            raise Exception(f'No such subset as "{subset_name}"')
+        else:
+            return s
 
     @lru_cache()
-    def get_enum(self, enum_name: ENUM_NAME, imports=True) -> EnumDefinition:
+    def get_enum(self, enum_name: ENUM_NAME, imports=True, strict=False) -> EnumDefinition:
         """
         :param enum_name: name of the enum to be retrieved
         :param imports: include import closure
         :return: enum definition
         """
-        return self.all_enums(imports).get(enum_name, None)
+        e = self.all_enums(imports).get(enum_name, None)
+        if strict and e is None:
+            raise Exception(f'No such subset as "{enum_name}"')
+        else:
+            return e
 
     @lru_cache()
-    def get_type(self, type_name: TYPE_NAME, imports=True) -> TypeDefinition:
+    def get_type(self, type_name: TYPE_NAME, imports=True, strict=False) -> TypeDefinition:
         """
         :param type_name: name of the type to be retrieved
         :param imports: include import closure
         :return: type definition
         """
-        return self.all_types(imports).get(type_name, None)
+        t = self.all_types(imports).get(type_name, None)
+        if strict and t is None:
+            raise Exception(f'No such subset as "{type_name}"')
+        else:
+            return t
 
     def _parents(self, e: Element, imports=True, mixins=True, is_a=True) -> List[ElementName]:
         if mixins:
@@ -385,7 +404,7 @@ class SchemaView(object):
         :param mixins: include mixins (default is True)
         :return: all direct parent class names (is_a and mixins)
         """
-        cls = self.get_class(class_name, imports)
+        cls = self.get_class(class_name, imports, strict=True)
         return self._parents(cls, imports, mixins, is_a)
 
     @lru_cache()
@@ -731,6 +750,7 @@ class SchemaView(object):
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(islot, metaslot_name, None)
             for an in reversed(self.class_ancestors(class_name)):
+                islot.owner = an
                 a = self.get_class(an, imports)
                 anc_slot_usage = a.slot_usage.get(slot_name, {})
                 v2 = getattr(anc_slot_usage, metaslot_name, None)
@@ -753,6 +773,13 @@ class SchemaView(object):
 
     @lru_cache()
     def class_induced_slots(self, class_name: CLASS_NAME = None, imports=True) -> List[SlotDefinition]:
+        """
+        All slots that are asserted or inferred for a class, with their inferred semantics
+
+        :param class_name:
+        :param imports:
+        :return: inferred slot definition
+        """
         return [self.induced_slot(sn, class_name, imports=imports) for sn in self.class_slots(class_name)]
 
     @lru_cache()
@@ -760,7 +787,7 @@ class SchemaView(object):
         """
         :param cn: class name
         :param imports:
-        :return: the slot that acts as identifier
+        :return: name of slot that acts as identifier for the given class
         """
         for sn in self.class_slots(cn, imports=imports):
             s = self.induced_slot(sn, cn, imports=imports)
@@ -899,6 +926,9 @@ class SchemaView(object):
         """
         del self.schema.subsetes[subset_name]
         self.set_modified()
+
+    #def rename(self, old_name: str, new_name: str):
+    #   todo: add to runtime
 
     def merge_schema(self, schema: SchemaDefinition) -> None:
         """
