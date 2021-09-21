@@ -15,6 +15,7 @@ class ProjectGeneratorTestCase(unittest.TestCase):
         """ Generate whole project  """
         config = ProjectConfiguration()
         config.directory = PROJECT_DIR
+        config.generator_args['jsonschema'] = {"top_class": "Container"}
         gen = ProjectGenerator()
         gen.generate(SCHEMA, config)
 
