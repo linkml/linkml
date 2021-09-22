@@ -42,7 +42,7 @@ GEN_MAP = {
     'python': (PythonGenerator, '{name}.py', {}),
 #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {}),
 #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {'context': '{parent}/../jsonld/{name}.context.jsonld'}),
-    'shex': (ShExGenerator, 'shex/{name}.shexj', {}),
+    'shex': (ShExGenerator, 'shex/{name}.shex', {}),
     'sqlddl': (SQLDDLGenerator, 'sqlschema/{name}.sql', {}),
     'java': (SQLDDLGenerator, 'java/{name}.sql', {}),
     'excel': (SQLDDLGenerator, 'excel/{name}.xlsx', {}),
