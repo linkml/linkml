@@ -1,5 +1,5 @@
 # Auto generated from testtypes.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-21 23:23
+# Generation date: 2021-09-22 15:54
 # Schema: types
 #
 # id: http://example.org/tests/types
