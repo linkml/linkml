@@ -100,6 +100,11 @@ class MarkdownGenerator(Generator):
                         self.bullet(self.type_link(typ, after_link=f' ({typ_typ})', use_desc=True))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
+
+        # allow client to relabel metamodel
+        mixin_local_name = self.get_metamodel_slot_name('Mixin')
+        class_local_name = self.get_metamodel_slot_name('Class')
+
         if self.gen_classes and cls.name not in self.gen_classes:
             return False
 
@@ -123,6 +128,8 @@ class MarkdownGenerator(Generator):
 
                 self.mappings(cls)
 
+
+
                 if cls.id_prefixes:
                     self.header(2, 'Identifier prefixes')
                     for p in cls.id_prefixes:
@@ -132,7 +139,7 @@ class MarkdownGenerator(Generator):
                     self.header(2, 'Parents')
                     self.bullet(f' is_a: {self.class_link(cls.is_a, use_desc=True)}')
                 if cls.mixins:
-                    self.header(2, 'Uses Mixins')
+                    self.header(2, f'Uses {mixin_local_name}')
                     for mixin in cls.mixins:
                         self.bullet(f' mixin: {self.class_link(mixin, use_desc=True)}')
 
@@ -142,12 +149,12 @@ class MarkdownGenerator(Generator):
                         self.bullet(f'{self.class_link(child, use_desc=True)}')
 
                 if cls.name in self.synopsis.mixinrefs:
-                    self.header(2, 'Mixin for')
+                    self.header(2, f'{mixin_local_name} for')
                     for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs):
                         self.bullet(f'{self.class_link(mixin, use_desc=True, after_link="(mixin)")}')
 
                 if cls.name in self.synopsis.classrefs:
-                    self.header(2, 'Referenced by class')
+                    self.header(2, f'Referenced by {class_local_name}')
                     for sn in sorted(self.synopsis.classrefs[cls.name].slotrefs):
                         slot = self.schema.slots[sn]
                         if slot.range == cls.name:
@@ -473,8 +480,8 @@ class MarkdownGenerator(Generator):
     def anchorend() -> None:
         print('</a>')
 
-    @staticmethod
-    def header(level: int, txt: str) -> None:
+    def header(self, level: int, txt: str) -> None:
+        txt = self.get_metamodel_slot_name(txt)
         print(f'\n{"#" * level} {txt}\n')
 
     @staticmethod
@@ -616,16 +623,22 @@ class MarkdownGenerator(Generator):
 @click.command()
 @click.option("--dir", "-d", required=True, help="Output directory")
 @click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
+@click.option("--map-fields", "-M", default=None, multiple=True, help="Map metamodel fields, e.g. slot=field")
 @click.option("--img", "-i",  is_flag=True, help="Download YUML images to 'image' directory")
 @click.option("--index-file", "-I", help="Name of markdown file that holds index")
 @click.option("--noimages", is_flag=True, help="Do not (re-)generate images")
 @click.option("--noyuml", is_flag=True, help="Do not add yUML figures to pages")
 @click.option("--notypesdir", is_flag=True, help="Do not create a separate types directory")
 @click.option("--warnonexist", is_flag=True, help="Warn if output file already exists")
-def cli(yamlfile, dir, img, index_file, notypesdir, warnonexist, **kwargs):
+def cli(yamlfile, map_fields, dir, img, index_file, notypesdir, warnonexist, **kwargs):
     """ Generate markdown documentation of a LinkML model """
-    MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)\
-        .serialize(directory=dir, image_dir=img, **kwargs)
+    gen = MarkdownGenerator(yamlfile, no_types_dir=notypesdir, warn_on_exist=warnonexist, **kwargs)
+    if map_fields is not None:
+        gen.metamodel_name_map = {}
+        for mf in map_fields:
+            [k, v] = mf.split('=')
+            gen.metamodel_name_map[k] = v
+    gen.serialize(directory=dir, image_dir=img, **kwargs)
 
 
 if __name__ == '__main__':

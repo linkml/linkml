@@ -2,7 +2,7 @@ import abc
 import logging
 from contextlib import redirect_stdout
 from io import StringIO
-from typing import List, Set, Union, TextIO, Optional, cast, Callable, Type
+from typing import List, Set, Union, TextIO, Optional, cast, Callable, Type, Dict
 
 import click
 from click import Command, Argument, Option
@@ -29,6 +29,8 @@ class Generator(metaclass=abc.ABCMeta):
     visit_all_class_slots: bool = False         # False means only visit own slots, True means visit all slots
     visits_are_sorted: bool = True              # True means visit basic types in alphabetial order, false in entry
     sort_class_slots: bool = False              # True means visit class slots in alphabetical order
+
+    metamodel_name_map: Dict[str, str] = None   # Allows mapping of names of metamodel elements such as slot, etc
 
     def __init__(self,
                  schema: Union[str, TextIO, SchemaDefinition, "Generator"],
@@ -602,6 +604,36 @@ class Generator(metaclass=abc.ABCMeta):
             self.logger.warning(f"Unrecognized prefix: {ncname}")
             self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
         self.emit_prefixes.add(ncname)
+
+    def get_metamodel_slot_name(self, slot_name: str) -> str:
+        """
+        Allows for localization of some generators, such as markdown generator
+
+        The client can control how metamodel elements are displayed; e.g.
+        mapping the metamodel slot "slot" to "field"
+
+        This method also takes care of pluralization; e.g. if "slot" is mapped to
+        "field", then "slots" will be mapped to "fields"
+
+        :param slot_name:
+        :return:
+        """
+        is_capitalized = slot_name[0].isupper()
+        def capitalize(s: str):
+            if is_capitalized:
+                return f'{s[0].upper()}{s[1:]}'
+            else:
+                return s
+        slot_name_normalized = underscore(slot_name).lower()
+        slot_name_normalized_singular = f'{slot_name_normalized}'.replace('s', '')
+        if slot_name_normalized == 'classes':
+            slot_name_normalized_singular = 'class'
+        if self.metamodel_name_map is not None and slot_name_normalized in self.metamodel_name_map:
+            return capitalize(self.metamodel_name_map[slot_name_normalized])
+        elif self.metamodel_name_map is not None and slot_name_normalized_singular in self.metamodel_name_map:
+            return capitalize(f'{self.metamodel_name_map[slot_name_normalized_singular]}s')
+        else:
+            return slot_name
 
     def is_class_unconstrained(self, cls: ClassDefinition):
         """
