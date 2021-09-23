@@ -1,11 +1,13 @@
 import keyword
 import os
 import re
+from types import ModuleType
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 import logging
 
 import click
 from linkml_runtime.linkml_model import linkml_files
+from linkml_runtime.utils.compile_python import compile_python
 from rdflib import URIRef
 
 import linkml
@@ -39,6 +41,14 @@ class PythonGenerator(Generator):
             logging.error(f'Generating metamodel without --genmeta is highly inadvised!')
         if not self.schema.source_file and isinstance(self.sourcefile, str) and '\n' not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
+
+    def compile_module(self, **kwargs) -> ModuleType:
+        """
+        Compiles generated python code to a module
+        :return:
+        """
+        pycode = self.serialize(**kwargs)
+        return compile_python(pycode)
 
     def visit_schema(self, **kwargs) -> None:
         # Add explicitly declared prefixes

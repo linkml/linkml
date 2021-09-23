@@ -1,7 +1,7 @@
 import unittest
 
 from linkml.generators.sparqlgen import SparqlGenerator
-from linkml.utils.sparqlvalidator import SparqlValidator
+from linkml.validators.sparqlvalidator import SparqlDataValidator
 from tests.test_validation.environment import env
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
@@ -18,7 +18,7 @@ class SparqlValidatorTestCase(unittest.TestCase):
         sg = SparqlGenerator(SCHEMA)
         print(sg.queries)
         print(f'Making validator {SCHEMA}')
-        sv = SparqlValidator()
+        sv = SparqlDataValidator()
         sv.load_schema(SCHEMA)
         results = sv.validate_file(DATA)
         print(results)
