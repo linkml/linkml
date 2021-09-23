@@ -13,7 +13,7 @@ URI: [biolink:OrganismTaxonToOrganismTaxonInteraction](https://w3id.org/biolink/
 
  *  is_a: [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md) - A relationship between two organism taxon nodes
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -14,7 +14,7 @@ URI: [biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin](https://w3id.o
  * [DiseaseOrPhenotypicFeatureAssociationToLocationAssociation](DiseaseOrPhenotypicFeatureAssociationToLocationAssociation.md) (mixin) 
  * [DiseaseOrPhenotypicFeatureToLocationAssociation](DiseaseOrPhenotypicFeatureToLocationAssociation.md) (mixin)  - An association between either a disease or a phenotypic feature and an anatomical entity, where the disease/feature manifests in that site.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

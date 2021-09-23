@@ -9,13 +9,13 @@ URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Place]uses%20-.->[HasAliases&#124;aliases:string%20*],[Person]uses%20-.->[HasAliases],[Organization]uses%20-.->[HasAliases],[Place],[Person],[Organization])](https://yuml.me/diagram/nofunky;dir:TB/class/[Place]uses%20-.->[HasAliases&#124;aliases:string%20*],[Person]uses%20-.->[HasAliases],[Organization]uses%20-.->[HasAliases],[Place],[Person],[Organization])
 
-## Mixin for
+## Trait for
 
  * [Organization](Organization.md) (mixin) 
  * [Person](Person.md) (mixin) 
  * [Place](Place.md) (mixin) 
 
-## Referenced by class
+## Referenced by Record
 
 
 ## Attributes

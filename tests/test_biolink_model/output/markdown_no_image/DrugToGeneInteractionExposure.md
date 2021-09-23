@@ -13,7 +13,7 @@ URI: [biolink:DrugToGeneInteractionExposure](https://w3id.org/biolink/vocab/Drug
 
  *  is_a: [DrugExposure](DrugExposure.md) - A drug exposure is an intake of a particular drug.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [GeneGroupingMixin](GeneGroupingMixin.md) - any grouping of multiple genes or gene products
 

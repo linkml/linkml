@@ -13,11 +13,11 @@ URI: [biolink:DrugToGeneAssociation](https://w3id.org/biolink/vocab/DrugToGeneAs
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [DrugToEntityAssociationMixin](DrugToEntityAssociationMixin.md) - An interaction between a drug and another entity
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,7 +13,7 @@ URI: [biolink:ComplexChemicalExposure](https://w3id.org/biolink/vocab/ComplexChe
 
  *  is_a: [ChemicalExposure](ChemicalExposure.md) - A chemical exposure is an intake of a particular chemical substance, other than a drug.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Mixture](Mixture.md) - The physical combination of two or more molecular entities in which the identities are retained and are mixed in the form of solutions, suspensions and colloids.
 

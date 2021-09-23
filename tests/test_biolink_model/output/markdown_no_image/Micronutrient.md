@@ -17,7 +17,7 @@ URI: [biolink:Micronutrient](https://w3id.org/biolink/vocab/Micronutrient)
 
  * [Vitamin](Vitamin.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

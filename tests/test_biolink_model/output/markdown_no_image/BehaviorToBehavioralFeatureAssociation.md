@@ -13,11 +13,11 @@ URI: [biolink:BehaviorToBehavioralFeatureAssociation](https://w3id.org/biolink/v
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

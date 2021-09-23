@@ -14,7 +14,7 @@ URI: [biolink:GenotypeToEntityAssociationMixin](https://w3id.org/biolink/vocab/G
  * [GenotypeToDiseaseAssociation](GenotypeToDiseaseAssociation.md) (mixin) 
  * [GenotypeToPhenotypicFeatureAssociation](GenotypeToPhenotypicFeatureAssociation.md) (mixin)  - Any association between one genotype and a phenotypic feature, where having the genotype confers the phenotype, either in isolation or through environment
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

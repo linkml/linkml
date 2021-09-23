@@ -13,12 +13,12 @@ URI: [biolink:Treatment](https://w3id.org/biolink/vocab/Treatment)
 
  *  is_a: [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
  *  mixin: [ChemicalOrDrugOrTreatment](ChemicalOrDrugOrTreatment.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)** *[approved for treatment by](approved_for_treatment_by.md)*  <sub>0..\*</sub>  **[Treatment](Treatment.md)**
  *  **[SequenceVariantModulatesTreatmentAssociation](SequenceVariantModulatesTreatmentAssociation.md)** *[sequence variant modulates treatment association➞object](sequence_variant_modulates_treatment_association_object.md)*  <sub>1..1</sub>  **[Treatment](Treatment.md)**

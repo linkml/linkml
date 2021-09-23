@@ -15,7 +15,7 @@ URI: [biolink:GeneGroupingMixin](https://w3id.org/biolink/vocab/GeneGroupingMixi
  * [GeneFamily](GeneFamily.md) (mixin)  - any grouping of multiple genes or gene products related by common descent
  * [GenomicBackgroundExposure](GenomicBackgroundExposure.md) (mixin)  - A genomic background exposure is where an individual's specific genomic background of genes, sequence variants or other pre-existing genomic conditions constitute a kind of 'exposure' to the organism, leading to or influencing an outcome.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,7 +13,7 @@ URI: [biolink:EpidemiologicalOutcome](https://w3id.org/biolink/vocab/Epidemiolog
 
  *  is_a: [BiologicalEntity](BiologicalEntity.md)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Outcome](Outcome.md) - An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.
 

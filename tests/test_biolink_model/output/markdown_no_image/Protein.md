@@ -21,7 +21,7 @@ URI: [biolink:Protein](https://w3id.org/biolink/vocab/Protein)
 
  *  is_a: [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [GeneProductMixin](GeneProductMixin.md) - The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules.
 
@@ -29,7 +29,7 @@ URI: [biolink:Protein](https://w3id.org/biolink/vocab/Protein)
 
  * [ProteinIsoform](ProteinIsoform.md) - Represents a protein that is a specific isoform of the canonical or reference protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Transcript](Transcript.md)** *[translates to](translates_to.md)*  <sub>0..\*</sub>  **[Protein](Protein.md)**
 

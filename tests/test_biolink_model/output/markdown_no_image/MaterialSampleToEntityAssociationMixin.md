@@ -13,7 +13,7 @@ URI: [biolink:MaterialSampleToEntityAssociationMixin](https://w3id.org/biolink/v
 
  * [MaterialSampleToDiseaseOrPhenotypicFeatureAssociation](MaterialSampleToDiseaseOrPhenotypicFeatureAssociation.md) (mixin)  - An association between a material sample and a disease or phenotype.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

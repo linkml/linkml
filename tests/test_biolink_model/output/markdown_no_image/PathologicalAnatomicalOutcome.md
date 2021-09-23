@@ -13,7 +13,7 @@ URI: [biolink:PathologicalAnatomicalOutcome](https://w3id.org/biolink/vocab/Path
 
  *  is_a: [PathologicalAnatomicalStructure](PathologicalAnatomicalStructure.md) - An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Outcome](Outcome.md) - An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.
 

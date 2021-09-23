@@ -13,11 +13,11 @@ URI: [biolink:GeneToGeneCoexpressionAssociation](https://w3id.org/biolink/vocab/
 
  *  is_a: [GeneToGeneAssociation](GeneToGeneAssociation.md) - abstract parent class for different kinds of gene-gene or gene product to gene product relationships. Includes homology and interaction.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [GeneExpressionMixin](GeneExpressionMixin.md) - Observed gene expression intensity, context (site, stage) and associated phenotypic status within which the expression occurs.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

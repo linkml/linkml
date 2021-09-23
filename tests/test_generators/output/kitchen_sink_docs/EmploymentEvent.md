@@ -13,7 +13,7 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
 
  *  is_a: [Event](Event.md)
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[has employment history](has_employment_history.md)*  <sub>0..\*</sub>  **[EmploymentEvent](EmploymentEvent.md)**
 

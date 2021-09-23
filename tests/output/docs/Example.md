@@ -9,7 +9,7 @@ URI: [linkml:Example](https://w3id.org/linkml/Example)
 
 [![img](images/Example.svg)](images/Example.svg)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Element](Element.md)** *[examples](examples.md)*  <sub>0..\*</sub>  **[Example](Example.md)**
 

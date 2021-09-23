@@ -22,7 +22,7 @@ URI: [biolink:Agent](https://w3id.org/biolink/vocab/Agent)
 
  *  is_a: [AdministrativeEntity](AdministrativeEntity.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Publication](Publication.md)** *[author](author.md)*  <sub>0..\*</sub>  **[Agent](Agent.md)**
  *  **[InformationContentEntity](InformationContentEntity.md)** *[contributor](contributor.md)*  <sub>0..\*</sub>  **[Agent](Agent.md)**

@@ -13,7 +13,7 @@ URI: [biolink:GenomicSequenceLocalization](https://w3id.org/biolink/vocab/Genomi
 
  *  is_a: [SequenceAssociation](SequenceAssociation.md) - An association between a sequence feature and a genomic entity it is localized to.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

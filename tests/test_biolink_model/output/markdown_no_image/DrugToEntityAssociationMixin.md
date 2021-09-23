@@ -17,7 +17,7 @@ URI: [biolink:DrugToEntityAssociationMixin](https://w3id.org/biolink/vocab/DrugT
 
  * [DrugToGeneAssociation](DrugToGeneAssociation.md) (mixin)  - An interaction between a drug and a gene or gene product.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

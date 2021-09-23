@@ -13,7 +13,7 @@ URI: [biolink:Zygosity](https://w3id.org/biolink/vocab/Zygosity)
 
  *  is_a: [Attribute](Attribute.md) - A property or characteristic of an entity. For example, an apple may have properties such as color, shape, age, crispiness. An environmental sample may have attributes such as depth, lat, long, material.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[GenomicEntity](GenomicEntity.md)** *[has zygosity](has_zygosity.md)*  <sub>0..1</sub>  **[Zygosity](Zygosity.md)**
 

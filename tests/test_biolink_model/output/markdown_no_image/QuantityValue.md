@@ -13,7 +13,7 @@ URI: [biolink:QuantityValue](https://w3id.org/biolink/vocab/QuantityValue)
 
  *  is_a: [Annotation](Annotation.md) - Biolink Model root class for entity annotations.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Attribute](Attribute.md)** *[has quantitative value](has_quantitative_value.md)*  <sub>0..\*</sub>  **[QuantityValue](QuantityValue.md)**
 

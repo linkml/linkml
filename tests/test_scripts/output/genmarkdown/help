@@ -5,6 +5,7 @@ Usage: gen-markdown [OPTIONS] YAMLFILE
 Options:
   -d, --dir TEXT                  Output directory  [required]
   -c, --classes TEXT              Class(es) to emit
+  -M, --map-fields TEXT           Map metamodel fields, e.g. slot=field
   -i, --img                       Download YUML images to 'image' directory
   -I, --index-file TEXT           Name of markdown file that holds index
   --noimages                      Do not (re-)generate images

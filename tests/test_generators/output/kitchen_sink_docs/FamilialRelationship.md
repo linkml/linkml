@@ -13,7 +13,7 @@ URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/Famili
 
  *  is_a: [Relationship](Relationship.md)
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[has familial relationships](has_familial_relationships.md)*  <sub>0..\*</sub>  **[FamilialRelationship](FamilialRelationship.md)**
 

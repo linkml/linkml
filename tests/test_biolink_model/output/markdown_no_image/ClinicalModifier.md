@@ -13,7 +13,7 @@ URI: [biolink:ClinicalModifier](https://w3id.org/biolink/vocab/ClinicalModifier)
 
  *  is_a: [ClinicalAttribute](ClinicalAttribute.md) - Attributes relating to a clinical manifestation
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[clinical modifier qualifier](clinical_modifier_qualifier.md)*  <sub>0..1</sub>  **[ClinicalModifier](ClinicalModifier.md)**
 

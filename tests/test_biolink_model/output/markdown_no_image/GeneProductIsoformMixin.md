@@ -18,7 +18,7 @@ URI: [biolink:GeneProductIsoformMixin](https://w3id.org/biolink/vocab/GeneProduc
  * [RNAProductIsoform](RNAProductIsoform.md) (mixin)  - Represents a protein that is a specific isoform of the canonical or reference RNA
  * [ProteinIsoform](ProteinIsoform.md) (mixin)  - Represents a protein that is a specific isoform of the canonical or reference protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

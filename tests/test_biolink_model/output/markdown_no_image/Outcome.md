@@ -20,7 +20,7 @@ URI: [biolink:Outcome](https://w3id.org/biolink/vocab/Outcome)
  * [PathologicalProcessOutcome](PathologicalProcessOutcome.md) (mixin)  - An outcome resulting from an exposure event which is the manifestation of a pathological process.
  * [SocioeconomicOutcome](SocioeconomicOutcome.md) (mixin)  - An general social or economic outcome, such as healthcare costs, utilization, etc., resulting from an exposure event
 
-## Referenced by class
+## Referenced by Class
 
  *  **[EntityToOutcomeAssociationMixin](EntityToOutcomeAssociationMixin.md)** *[entity to outcome association mixin➞object](entity_to_outcome_association_mixin_object.md)*  <sub>1..1</sub>  **[Outcome](Outcome.md)**
 

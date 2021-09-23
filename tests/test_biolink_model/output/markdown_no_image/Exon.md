@@ -13,7 +13,7 @@ URI: [biolink:Exon](https://w3id.org/biolink/vocab/Exon)
 
  *  is_a: [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ExonToTranscriptRelationship](ExonToTranscriptRelationship.md)** *[exon to transcript relationship➞subject](exon_to_transcript_relationship_subject.md)*  <sub>1..1</sub>  **[Exon](Exon.md)**
 

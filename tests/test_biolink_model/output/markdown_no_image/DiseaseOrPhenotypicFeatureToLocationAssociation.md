@@ -13,11 +13,11 @@ URI: [biolink:DiseaseOrPhenotypicFeatureToLocationAssociation](https://w3id.org/
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [DiseaseOrPhenotypicFeatureToEntityAssociationMixin](DiseaseOrPhenotypicFeatureToEntityAssociationMixin.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

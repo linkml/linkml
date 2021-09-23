@@ -13,7 +13,7 @@ URI: [biolink:SubjectOfInvestigation](https://w3id.org/biolink/vocab/SubjectOfIn
 
  * [MaterialSample](MaterialSample.md) (mixin)  - A sample is a limited quantity of something (e.g. an individual or set of individuals from a population, or a portion of a substance) to be used for testing, analysis, inspection, investigation, demonstration, or trial use. [SIO]
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

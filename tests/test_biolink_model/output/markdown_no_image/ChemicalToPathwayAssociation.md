@@ -13,11 +13,11 @@ URI: [biolink:ChemicalToPathwayAssociation](https://w3id.org/biolink/vocab/Chemi
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) - An interaction between a chemical entity and another entity
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

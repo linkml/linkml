@@ -33,7 +33,7 @@ URI: [biolink:Disease](https://w3id.org/biolink/vocab/Disease)
 
  *  is_a: [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md) - Either one of a disease or an individual phenotypic feature. Some knowledge resources such as Monarch treat these as distinct, others such as MESH conflate.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[DiseaseToEntityAssociationMixin](DiseaseToEntityAssociationMixin.md)** *[disease to entity association mixin➞subject](disease_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[Disease](Disease.md)**
  *  **[EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md)** *[entity to disease association mixin➞object](entity_to_disease_association_mixin_object.md)*  <sub>1..1</sub>  **[Disease](Disease.md)**

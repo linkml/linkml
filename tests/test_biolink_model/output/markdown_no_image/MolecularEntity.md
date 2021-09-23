@@ -13,7 +13,7 @@ URI: [biolink:MolecularEntity](https://w3id.org/biolink/vocab/MolecularEntity)
 
  *  is_a: [BiologicalEntity](BiologicalEntity.md)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ThingWithTaxon](ThingWithTaxon.md) - A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes
  *  mixin: [PhysicalEssence](PhysicalEssence.md) - Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.
@@ -27,7 +27,7 @@ URI: [biolink:MolecularEntity](https://w3id.org/biolink/vocab/MolecularEntity)
  * [GeneFamily](GeneFamily.md) - any grouping of multiple genes or gene products related by common descent
  * [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[MolecularEntity](MolecularEntity.md)** *[affects abundance of](affects_abundance_of.md)*  <sub>0..\*</sub>  **[MolecularEntity](MolecularEntity.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[affects activity of](affects_activity_of.md)*  <sub>0..\*</sub>  **[MolecularEntity](MolecularEntity.md)**

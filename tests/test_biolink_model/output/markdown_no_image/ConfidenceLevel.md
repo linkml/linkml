@@ -13,7 +13,7 @@ URI: [biolink:ConfidenceLevel](https://w3id.org/biolink/vocab/ConfidenceLevel)
 
  *  is_a: [InformationContentEntity](InformationContentEntity.md) - a piece of information that typically describes some topic of discourse or is used as support.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[has confidence level](has_confidence_level.md)*  <sub>0..1</sub>  **[ConfidenceLevel](ConfidenceLevel.md)**
 

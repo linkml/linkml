@@ -9,7 +9,7 @@ URI: [linkml:Example](https://w3id.org/linkml/Example)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[CommonMetadata]++-%20examples%200..*>[Example&#124;value:string%20%3F;description:string%20%3F],[Element],[CommonMetadata])](https://yuml.me/diagram/nofunky;dir:TB/class/[CommonMetadata]++-%20examples%200..*>[Example&#124;value:string%20%3F;description:string%20%3F],[Element],[CommonMetadata])
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Element](Element.md)** *[examples](examples.md)*  <sub>0..\*</sub>  **[Example](Example.md)**
 

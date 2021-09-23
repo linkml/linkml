@@ -14,7 +14,7 @@ URI: [biolink:MolecularEntityToEntityAssociationMixin](https://w3id.org/biolink/
  * [ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) - An interaction between a chemical entity and another entity
  * [DrugToEntityAssociationMixin](DrugToEntityAssociationMixin.md) - An interaction between a drug and another entity
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

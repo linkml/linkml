@@ -18,7 +18,7 @@ URI: [biolink:BiologicalSex](https://w3id.org/biolink/vocab/BiologicalSex)
  * [GenotypicSex](GenotypicSex.md) - An attribute corresponding to the genotypic sex of the individual, based upon genotypic composition of sex chromosomes.
  * [PhenotypicSex](PhenotypicSex.md) - An attribute corresponding to the phenotypic sex of the individual, based upon the reproductive organs present.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[sex qualifier](sex_qualifier.md)*  <sub>0..1</sub>  **[BiologicalSex](BiologicalSex.md)**
 

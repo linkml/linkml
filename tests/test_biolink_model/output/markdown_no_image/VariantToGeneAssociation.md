@@ -13,7 +13,7 @@ URI: [biolink:VariantToGeneAssociation](https://w3id.org/biolink/vocab/VariantTo
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md)
 
@@ -21,7 +21,7 @@ URI: [biolink:VariantToGeneAssociation](https://w3id.org/biolink/vocab/VariantTo
 
  * [VariantToGeneExpressionAssociation](VariantToGeneExpressionAssociation.md) - An association between a variant and expression of a gene (i.e. e-QTL)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

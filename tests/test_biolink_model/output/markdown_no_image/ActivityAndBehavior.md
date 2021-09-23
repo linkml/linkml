@@ -18,7 +18,7 @@ URI: [biolink:ActivityAndBehavior](https://w3id.org/biolink/vocab/ActivityAndBeh
  * [Activity](Activity.md) (mixin)  - An activity is something that occurs over a period of time and acts upon or with entities; it may include consuming, processing, transforming, modifying, relocating, using, or generating entities.
  * [Procedure](Procedure.md) (mixin)  - A series of actions conducted in a certain order or manner
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

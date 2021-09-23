@@ -13,7 +13,7 @@ URI: [biolink:DiseaseOrPhenotypicFeatureOutcome](https://w3id.org/biolink/vocab/
 
  *  is_a: [DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md) - Either one of a disease or an individual phenotypic feature. Some knowledge resources such as Monarch treat these as distinct, others such as MESH conflate.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Outcome](Outcome.md) - An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.
 

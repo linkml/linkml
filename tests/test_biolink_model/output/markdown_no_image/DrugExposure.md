@@ -13,7 +13,7 @@ URI: [biolink:DrugExposure](https://w3id.org/biolink/vocab/DrugExposure)
 
  *  is_a: [Drug](Drug.md) - A substance intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
 
@@ -21,7 +21,7 @@ URI: [biolink:DrugExposure](https://w3id.org/biolink/vocab/DrugExposure)
 
  * [DrugToGeneInteractionExposure](DrugToGeneInteractionExposure.md) - drug to gene interaction exposure is a drug exposure is where the interactions of the drug with specific genes are known to constitute an 'exposure' to the organism, leading to or influencing an outcome.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

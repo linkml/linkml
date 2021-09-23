@@ -13,7 +13,7 @@ URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
  * [Annotation](Annotation.md) - a tag/value pair with the semantics of OWL Annotation
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Extensible](Extensible.md)** *[extensions](extensions.md)*  <sub>0..\*</sub>  **[Extension](Extension.md)**
 

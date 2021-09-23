@@ -7,10 +7,10 @@ test subset B
 URI: [ks:subset_B](https://w3id.org/linkml/tests/kitchen_sink/subset_B)
 
 
-### Classes
+### Records
 
 
-### Mixins
+### Traits
 
 
 ### Slots

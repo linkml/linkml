@@ -18,7 +18,7 @@ URI: [biolink:ClinicalEntity](https://w3id.org/biolink/vocab/ClinicalEntity)
  * [ClinicalIntervention](ClinicalIntervention.md)
  * [ClinicalTrial](ClinicalTrial.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

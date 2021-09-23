@@ -36,7 +36,7 @@ URI: [biolink:OntologyClass](https://w3id.org/biolink/vocab/OntologyClass)
  * [PhysiologicalProcess](PhysiologicalProcess.md) (mixin) 
  * [ProcessedMaterial](ProcessedMaterial.md) (mixin)  - A chemical substance (often a mixture) processed for consumption for nutritional, medical or technical use.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ClinicalMeasurement](ClinicalMeasurement.md)** *[clinical measurement➞has attribute type](clinical_measurement_has_attribute_type.md)*  <sub>1..1</sub>  **[OntologyClass](OntologyClass.md)**
  *  **[ContributorAssociation](ContributorAssociation.md)** *[contributor association➞qualifiers](contributor_association_qualifiers.md)*  <sub>0..\*</sub>  **[OntologyClass](OntologyClass.md)**

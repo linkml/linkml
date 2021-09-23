@@ -16,7 +16,7 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
  * [MarriageEvent](MarriageEvent.md)
  * [MedicalEvent](MedicalEvent.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

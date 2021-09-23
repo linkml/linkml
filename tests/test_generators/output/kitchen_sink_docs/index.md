@@ -17,7 +17,7 @@ Lists:
 And links, e.g to [Person](Person.md)
 
 
-### Classes
+### Records
 
  * [Address](Address.md)
  * [Concept](Concept.md)
@@ -38,7 +38,7 @@ And links, e.g to [Person](Person.md)
  * [Activity](Activity.md) - a provence-generating activity
  * [Agent](Agent.md) - a provence-generating agent
 
-### Mixins
+### Traits
 
  * [HasAliases](HasAliases.md)
  * [WithLocation](WithLocation.md)

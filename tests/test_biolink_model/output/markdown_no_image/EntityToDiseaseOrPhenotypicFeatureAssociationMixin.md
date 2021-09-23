@@ -15,7 +15,7 @@ URI: [biolink:EntityToDiseaseOrPhenotypicFeatureAssociationMixin](https://w3id.o
  * [ChemicalToDiseaseOrPhenotypicFeatureAssociation](ChemicalToDiseaseOrPhenotypicFeatureAssociation.md) (mixin)  - An interaction between a chemical entity and a phenotype or disease, where the presence of the chemical gives rise to or exacerbates the phenotype.
  * [MaterialSampleToDiseaseOrPhenotypicFeatureAssociation](MaterialSampleToDiseaseOrPhenotypicFeatureAssociation.md) (mixin)  - An association between a material sample and a disease or phenotype.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

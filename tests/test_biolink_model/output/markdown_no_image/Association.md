@@ -56,7 +56,7 @@ URI: [biolink:Association](https://w3id.org/biolink/vocab/Association)
  * [VariantToPhenotypicFeatureAssociation](VariantToPhenotypicFeatureAssociation.md)
  * [VariantToPopulationAssociation](VariantToPopulationAssociation.md) - An association between a variant and a population, where the variant has particular frequency in the population
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

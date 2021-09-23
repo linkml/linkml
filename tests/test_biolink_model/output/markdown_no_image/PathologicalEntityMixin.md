@@ -15,7 +15,7 @@ URI: [biolink:PathologicalEntityMixin](https://w3id.org/biolink/vocab/Pathologic
  * [PathologicalAnatomicalStructure](PathologicalAnatomicalStructure.md) (mixin)  - An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.
  * [PathologicalProcess](PathologicalProcess.md) (mixin)  - A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

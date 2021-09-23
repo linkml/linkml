@@ -18,7 +18,7 @@ URI: [biolink:Nutrient](https://w3id.org/biolink/vocab/Nutrient)
  * [Macronutrient](Macronutrient.md)
  * [Micronutrient](Micronutrient.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

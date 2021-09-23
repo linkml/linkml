@@ -19,7 +19,7 @@ URI: [biolink:ClinicalFinding](https://w3id.org/biolink/vocab/ClinicalFinding)
 
  *  is_a: [PhenotypicFeature](PhenotypicFeature.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

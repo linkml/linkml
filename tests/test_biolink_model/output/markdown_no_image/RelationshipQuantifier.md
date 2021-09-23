@@ -15,7 +15,7 @@ URI: [biolink:RelationshipQuantifier](https://w3id.org/biolink/vocab/Relationshi
  * [SensitivityQuantifier](SensitivityQuantifier.md)
  * [SpecificityQuantifier](SpecificityQuantifier.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

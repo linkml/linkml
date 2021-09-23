@@ -13,7 +13,7 @@ URI: [ks:MedicalEvent](https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent)
 
  *  is_a: [Event](Event.md)
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[has medical history](has_medical_history.md)*  <sub>0..\*</sub>  **[MedicalEvent](MedicalEvent.md)**
 

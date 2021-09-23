@@ -23,7 +23,7 @@ URI: [biolink:CellularComponent](https://w3id.org/biolink/vocab/CellularComponen
 
  *  is_a: [AnatomicalEntity](AnatomicalEntity.md) - A subcellular location, cell type or gross anatomical part
 
-## Referenced by class
+## Referenced by Class
 
  *  **[MacromolecularMachineToCellularComponentAssociation](MacromolecularMachineToCellularComponentAssociation.md)** *[macromolecular machine to cellular component association➞object](macromolecular_machine_to_cellular_component_association_object.md)*  <sub>1..1</sub>  **[CellularComponent](CellularComponent.md)**
 

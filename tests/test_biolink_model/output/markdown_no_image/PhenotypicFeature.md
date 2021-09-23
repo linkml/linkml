@@ -34,7 +34,7 @@ URI: [biolink:PhenotypicFeature](https://w3id.org/biolink/vocab/PhenotypicFeatur
  * [BehavioralFeature](BehavioralFeature.md) - A phenotypic feature which is behavioral in nature.
  * [ClinicalFinding](ClinicalFinding.md) - this category is currently considered broad enough to tag clinical lab measurements and other biological attributes taken as 'clinical traits' with some statistical score, for example, a p value in genetic associations.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md)** *[entity to phenotypic feature association mixin➞object](entity_to_phenotypic_feature_association_mixin_object.md)*  <sub>1..1</sub>  **[PhenotypicFeature](PhenotypicFeature.md)**
  *  **[BiologicalEntity](BiologicalEntity.md)** *[has phenotype](has_phenotype.md)*  <sub>0..\*</sub>  **[PhenotypicFeature](PhenotypicFeature.md)**

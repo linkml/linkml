@@ -20,7 +20,7 @@ URI: [biolink:Attribute](https://w3id.org/biolink/vocab/Attribute)
 
  *  is_a: [Annotation](Annotation.md) - Biolink Model root class for entity annotations.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [OntologyClass](OntologyClass.md) - a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.
 
@@ -33,7 +33,7 @@ URI: [biolink:Attribute](https://w3id.org/biolink/vocab/Attribute)
  * [SocioeconomicAttribute](SocioeconomicAttribute.md) - Attributes relating to a socioeconomic manifestation
  * [Zygosity](Zygosity.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Entity](Entity.md)** *[has attribute](has_attribute.md)*  <sub>0..\*</sub>  **[Attribute](Attribute.md)**
  *  **[OrganismalEntity](OrganismalEntity.md)** *[organismal entity➞has attribute](organismal_entity_has_attribute.md)*  <sub>0..\*</sub>  **[Attribute](Attribute.md)**

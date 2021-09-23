@@ -14,7 +14,7 @@ URI: [biolink:OrganismTaxonToEntityAssociation](https://w3id.org/biolink/vocab/O
  * [OrganismTaxonToEnvironmentAssociation](OrganismTaxonToEnvironmentAssociation.md) (mixin) 
  * [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md) (mixin)  - A relationship between two organism taxon nodes
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

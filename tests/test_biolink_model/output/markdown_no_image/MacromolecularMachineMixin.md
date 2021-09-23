@@ -14,7 +14,7 @@ URI: [biolink:MacromolecularMachineMixin](https://w3id.org/biolink/vocab/Macromo
  * [GeneOrGeneProduct](GeneOrGeneProduct.md) - A union of gene loci or gene products. Frequently an identifier for one will be used as proxy for another
  * [MacromolecularComplexMixin](MacromolecularComplexMixin.md) - A stable assembly of two or more macromolecules, i.e. proteins, nucleic acids, carbohydrates or lipids, in which at least one component is a protein and the constituent parts function together.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[catalyst qualifier](catalyst_qualifier.md)*  <sub>0..\*</sub>  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**
  *  **[ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md)** *[chemical to chemical derivation association➞catalyst qualifier](chemical_to_chemical_derivation_association_catalyst_qualifier.md)*  <sub>0..\*</sub>  **[MacromolecularMachineMixin](MacromolecularMachineMixin.md)**

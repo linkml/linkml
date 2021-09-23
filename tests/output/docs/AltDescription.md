@@ -9,7 +9,7 @@ URI: [linkml:AltDescription](https://w3id.org/linkml/AltDescription)
 
 [![img](images/AltDescription.svg)](images/AltDescription.svg)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Element](Element.md)** *[alt_descriptions](alt_descriptions.md)*  <sub>0..\*</sub>  **[AltDescription](AltDescription.md)**
 

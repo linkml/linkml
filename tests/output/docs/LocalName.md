@@ -9,7 +9,7 @@ URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)
 
 [![img](images/LocalName.svg)](images/LocalName.svg)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Element](Element.md)** *[local_names](local_names.md)*  <sub>0..\*</sub>  **[LocalName](LocalName.md)**
 

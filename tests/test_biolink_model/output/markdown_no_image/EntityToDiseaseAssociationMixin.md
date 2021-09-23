@@ -24,7 +24,7 @@ URI: [biolink:EntityToDiseaseAssociationMixin](https://w3id.org/biolink/vocab/En
  * [VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md) (mixin) 
  * [VariantToDiseaseAssociation](VariantToDiseaseAssociation.md) (mixin) 
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

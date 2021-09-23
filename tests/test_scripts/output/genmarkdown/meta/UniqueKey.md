@@ -9,12 +9,12 @@ URI: [linkml:UniqueKey](https://w3id.org/linkml/UniqueKey)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SlotDefinition]<unique_key_slots%201..*-%20[UniqueKey],[UniqueKey]uses%20-.->[Extensible],[UniqueKey]uses%20-.->[Annotatable],[SlotDefinition],[Extension],[Extensible],[ClassDefinition],[Annotation],[Annotatable])](https://yuml.me/diagram/nofunky;dir:TB/class/[SlotDefinition]<unique_key_slots%201..*-%20[UniqueKey],[UniqueKey]uses%20-.->[Extensible],[UniqueKey]uses%20-.->[Annotatable],[SlotDefinition],[Extension],[Extensible],[ClassDefinition],[Annotation],[Annotatable])
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Extensible](Extensible.md) - mixin for classes that support extension
  *  mixin: [Annotatable](Annotatable.md) - mixin for classes that support annotations
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ClassDefinition](ClassDefinition.md)** *[unique_keys](unique_keys.md)*  <sub>0..\*</sub>  **[UniqueKey](UniqueKey.md)**
 

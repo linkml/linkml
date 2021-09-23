@@ -16,7 +16,7 @@ URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)
  * [PermissibleValue](PermissibleValue.md) (mixin)  - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [UniqueKey](UniqueKey.md) (mixin)  - a collection of slots whose values uniquely identify an instance of a class
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

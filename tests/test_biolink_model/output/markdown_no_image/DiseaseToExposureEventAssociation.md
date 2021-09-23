@@ -13,7 +13,7 @@ URI: [biolink:DiseaseToExposureEventAssociation](https://w3id.org/biolink/vocab/
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [DiseaseToEntityAssociationMixin](DiseaseToEntityAssociationMixin.md)
  *  mixin: [EntityToExposureEventAssociationMixin](EntityToExposureEventAssociationMixin.md) - An association between some entity and an exposure event.

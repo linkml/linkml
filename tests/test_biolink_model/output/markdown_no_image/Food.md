@@ -17,7 +17,7 @@ URI: [biolink:Food](https://w3id.org/biolink/vocab/Food)
 
  *  is_a: [MolecularEntity](MolecularEntity.md) - A gene, gene product, small molecule or macromolecule (including protein complex)"
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Mixture](Mixture.md) - The physical combination of two or more molecular entities in which the identities are retained and are mixed in the form of solutions, suspensions and colloids.
 

@@ -13,7 +13,7 @@ URI: [biolink:SocioeconomicOutcome](https://w3id.org/biolink/vocab/Socioeconomic
 
  *  is_a: [Behavior](Behavior.md)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Outcome](Outcome.md) - An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.
 

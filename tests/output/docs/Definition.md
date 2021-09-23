@@ -18,7 +18,7 @@ URI: [linkml:Definition](https://w3id.org/linkml/Definition)
  * [ClassDefinition](ClassDefinition.md) - the definition of a class or interface
  * [SlotDefinition](SlotDefinition.md) - the definition of a property or a slot
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Definition](Definition.md)** *[apply_to](apply_to.md)*  <sub>0..\*</sub>  **[Definition](Definition.md)**
  *  **[Definition](Definition.md)** *[is_a](is_a.md)*  <sub>0..1</sub>  **[Definition](Definition.md)**

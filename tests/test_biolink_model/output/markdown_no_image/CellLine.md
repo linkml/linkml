@@ -17,7 +17,7 @@ URI: [biolink:CellLine](https://w3id.org/biolink/vocab/CellLine)
 
  *  is_a: [OrganismalEntity](OrganismalEntity.md) - A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding molecular entities
 
-## Referenced by class
+## Referenced by Class
 
  *  **[CellLineAsAModelOfDiseaseAssociation](CellLineAsAModelOfDiseaseAssociation.md)** *[cell line as a model of disease association➞subject](cell_line_as_a_model_of_disease_association_subject.md)*  <sub>1..1</sub>  **[CellLine](CellLine.md)**
  *  **[CellLineToEntityAssociationMixin](CellLineToEntityAssociationMixin.md)** *[cell line to entity association mixin➞subject](cell_line_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[CellLine](CellLine.md)**

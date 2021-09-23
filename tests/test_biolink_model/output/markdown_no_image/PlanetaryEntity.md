@@ -19,7 +19,7 @@ URI: [biolink:PlanetaryEntity](https://w3id.org/biolink/vocab/PlanetaryEntity)
  * [EnvironmentalProcess](EnvironmentalProcess.md)
  * [GeographicLocation](GeographicLocation.md) - a location that can be described in lat/long coordinates
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

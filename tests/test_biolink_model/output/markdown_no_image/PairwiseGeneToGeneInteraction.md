@@ -17,7 +17,7 @@ URI: [biolink:PairwiseGeneToGeneInteraction](https://w3id.org/biolink/vocab/Pair
 
  * [PairwiseMolecularInteraction](PairwiseMolecularInteraction.md) - An interaction at the molecular level between two physical entities
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -18,7 +18,7 @@ URI: [biolink:Genotype](https://w3id.org/biolink/vocab/Genotype)
 
  *  is_a: [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[GenotypeAsAModelOfDiseaseAssociation](GenotypeAsAModelOfDiseaseAssociation.md)** *[genotype as a model of disease association➞subject](genotype_as_a_model_of_disease_association_subject.md)*  <sub>1..1</sub>  **[Genotype](Genotype.md)**
  *  **[GenotypeToEntityAssociationMixin](GenotypeToEntityAssociationMixin.md)** *[genotype to entity association mixin➞subject](genotype_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[Genotype](Genotype.md)**

@@ -14,7 +14,7 @@ URI: [biolink:ChemicalOrDrugOrTreatment](https://w3id.org/biolink/vocab/Chemical
  * [Drug](Drug.md) (mixin)  - A substance intended for use in the diagnosis, cure, mitigation, treatment, or prevention of disease
  * [Treatment](Treatment.md) (mixin)  - A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices and/or procedures
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

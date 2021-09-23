@@ -9,7 +9,7 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;description:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotDefinition]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;description:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotDefinition]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Extensible](Extensible.md) - mixin for classes that support extension
  *  mixin: [Annotatable](Annotatable.md) - mixin for classes that support annotations
@@ -23,7 +23,7 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [SubsetDefinition](SubsetDefinition.md) - the name and description of a subset
  * [TypeDefinition](TypeDefinition.md) - A data type definition.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[SlotDefinition](SlotDefinition.md)** *[range](range.md)*  <sub>0..1</sub>  **[Element](Element.md)**
 

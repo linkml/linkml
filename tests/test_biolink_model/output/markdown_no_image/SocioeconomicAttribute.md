@@ -13,7 +13,7 @@ URI: [biolink:SocioeconomicAttribute](https://w3id.org/biolink/vocab/Socioeconom
 
  *  is_a: [Attribute](Attribute.md) - A property or characteristic of an entity. For example, an apple may have properties such as color, shape, age, crispiness. An environmental sample may have attributes such as depth, lat, long, material.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[SocioeconomicExposure](SocioeconomicExposure.md)** *[socioeconomic exposure➞has attribute](socioeconomic_exposure_has_attribute.md)*  <sub>1..\*</sub>  **[SocioeconomicAttribute](SocioeconomicAttribute.md)**
 

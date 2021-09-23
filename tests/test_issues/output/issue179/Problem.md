@@ -13,7 +13,7 @@ URI: [http://example.org/sample/example1/Problem](http://example.org/sample/exam
 
  * [DownloadProblem](DownloadProblem.md) - A problem in downloading a knowledge source
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

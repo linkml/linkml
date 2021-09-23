@@ -17,7 +17,7 @@ URI: [biolink:SequenceAssociation](https://w3id.org/biolink/vocab/SequenceAssoci
 
  * [GenomicSequenceLocalization](GenomicSequenceLocalization.md) - A relationship between a sequence feature and a genomic entity it is localized to. The reference entity may be a chromosome, chromosome region or information entity such as a contig.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

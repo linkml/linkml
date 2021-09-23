@@ -13,7 +13,7 @@ URI: [biolink:PathologicalAnatomicalStructure](https://w3id.org/biolink/vocab/Pa
 
  *  is_a: [AnatomicalEntity](AnatomicalEntity.md) - A subcellular location, cell type or gross anatomical part
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [PathologicalEntityMixin](PathologicalEntityMixin.md) - A pathological (abnormal) structure or process.
 
@@ -22,7 +22,7 @@ URI: [biolink:PathologicalAnatomicalStructure](https://w3id.org/biolink/vocab/Pa
  * [PathologicalAnatomicalExposure](PathologicalAnatomicalExposure.md) - An abnormal anatomical structure, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. thrombosis leading to an ischemic disease outcome.
  * [PathologicalAnatomicalOutcome](PathologicalAnatomicalOutcome.md) - An outcome resulting from an exposure event which is the manifestation of an abnormal anatomical structure.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,7 +13,7 @@ URI: [linkml:EnumDefinition](https://w3id.org/linkml/EnumDefinition)
 
  *  is_a: [Element](Element.md) - a named element in the model
 
-## Referenced by class
+## Referenced by Class
 
  *  **[SchemaDefinition](SchemaDefinition.md)** *[enums](enums.md)*  <sub>0..\*</sub>  **[EnumDefinition](EnumDefinition.md)**
 

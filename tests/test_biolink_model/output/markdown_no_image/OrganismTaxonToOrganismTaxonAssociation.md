@@ -13,7 +13,7 @@ URI: [biolink:OrganismTaxonToOrganismTaxonAssociation](https://w3id.org/biolink/
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [OrganismTaxonToEntityAssociation](OrganismTaxonToEntityAssociation.md) - An association between an organism taxon and another entity
 
@@ -22,7 +22,7 @@ URI: [biolink:OrganismTaxonToOrganismTaxonAssociation](https://w3id.org/biolink/
  * [OrganismTaxonToOrganismTaxonInteraction](OrganismTaxonToOrganismTaxonInteraction.md) - An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and parasitism), or it may be non-symbiotic. Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens
  * [OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md) - A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

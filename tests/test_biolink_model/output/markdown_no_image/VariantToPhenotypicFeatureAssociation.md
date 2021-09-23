@@ -13,12 +13,12 @@ URI: [biolink:VariantToPhenotypicFeatureAssociation](https://w3id.org/biolink/vo
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md)
  *  mixin: [EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

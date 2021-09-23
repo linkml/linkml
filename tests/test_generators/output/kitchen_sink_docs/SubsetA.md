@@ -7,11 +7,11 @@ test subset A
 URI: [ks:subset_A](https://w3id.org/linkml/tests/kitchen_sink/subset_A)
 
 
-### Classes
+### Records
 
  * [Person](Person.md)
 
-### Mixins
+### Traits
 
 
 ### Slots

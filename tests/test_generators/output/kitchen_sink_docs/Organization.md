@@ -9,7 +9,7 @@ URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Organization&#124;id:string;name:string%20%3F;aliases:string%20*]uses%20-.->[HasAliases],[Organization]^-[Company],[HasAliases],[Company])](https://yuml.me/diagram/nofunky;dir:TB/class/[Organization&#124;id:string;name:string%20%3F;aliases:string%20*]uses%20-.->[HasAliases],[Organization]^-[Company],[HasAliases],[Company])
 
-## Uses Mixins
+## Uses Trait
 
  *  mixin: [HasAliases](HasAliases.md)
 
@@ -17,7 +17,7 @@ URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)
 
  * [Company](Company.md)
 
-## Referenced by class
+## Referenced by Record
 
 
 ## Attributes

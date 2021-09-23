@@ -14,7 +14,7 @@ URI: [biolink:PhysicalEssenceOrOccurrent](https://w3id.org/biolink/vocab/Physica
  * [Occurrent](Occurrent.md) - A processual entity.
  * [PhysicalEssence](PhysicalEssence.md) - Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[negatively regulated by](negatively_regulated_by.md)*  <sub>0..1</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**
  *  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)** *[negatively regulates](negatively_regulates.md)*  <sub>0..1</sub>  **[PhysicalEssenceOrOccurrent](PhysicalEssenceOrOccurrent.md)**

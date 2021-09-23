@@ -9,7 +9,7 @@ URI: [ks:Activity](https://w3id.org/linkml/tests/kitchen_sink/Activity)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Agent],[Agent]<was%20associated%20with%200..1-%20[Activity&#124;id:string;started_at_time:date%20%3F;ended_at_time:date%20%3F;used:string%20%3F;description:string%20%3F],[Activity]<was%20informed%20by%200..1-%20[Activity],[Dataset]++-%20activities%200..*>[Activity],[Dataset])](https://yuml.me/diagram/nofunky;dir:TB/class/[Agent],[Agent]<was%20associated%20with%200..1-%20[Activity&#124;id:string;started_at_time:date%20%3F;ended_at_time:date%20%3F;used:string%20%3F;description:string%20%3F],[Activity]<was%20informed%20by%200..1-%20[Activity],[Dataset]++-%20activities%200..*>[Activity],[Dataset])
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[activity set](activity_set.md)*  <sub>0..\*</sub>  **[Activity](Activity.md)**
  *  **None** *[➞activities](dataset__activities.md)*  <sub>0..\*</sub>  **[Activity](Activity.md)**

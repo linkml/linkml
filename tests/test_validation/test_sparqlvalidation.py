@@ -15,7 +15,7 @@ class SparqlValidatorTestCase(unittest.TestCase):
     # rdflib bug on parsing sparql queries
     @unittest.skip
     def test_sparql_validation(self):
-        """ Validate a schema  """
+        """ Validate using in-memory sparql  """
         print(f'TEST: Loading {SCHEMA}')
         sg = SparqlGenerator(SCHEMA)
         print(sg.queries)

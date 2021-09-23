@@ -13,11 +13,11 @@ URI: [biolink:SocioeconomicExposure](https://w3id.org/biolink/vocab/Socioeconomi
 
  *  is_a: [Behavior](Behavior.md)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

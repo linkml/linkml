@@ -17,7 +17,7 @@ URI: [biolink:IndividualOrganism](https://w3id.org/biolink/vocab/IndividualOrgan
 
  *  is_a: [OrganismalEntity](OrganismalEntity.md) - A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding molecular entities
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ThingWithTaxon](ThingWithTaxon.md) - A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes
 
@@ -25,7 +25,7 @@ URI: [biolink:IndividualOrganism](https://w3id.org/biolink/vocab/IndividualOrgan
 
  * [Case](Case.md) - An individual (human) organism that has a patient role in some clinical context.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

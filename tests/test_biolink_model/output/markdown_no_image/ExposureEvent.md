@@ -24,7 +24,7 @@ URI: [biolink:ExposureEvent](https://w3id.org/biolink/vocab/ExposureEvent)
  * [SocioeconomicExposure](SocioeconomicExposure.md) (mixin)  - A socioeconomic exposure is a factor relating to social and financial status of an affected individual (e.g. poverty).
  * [Treatment](Treatment.md) (mixin)  - A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices and/or procedures
 
-## Referenced by class
+## Referenced by Class
 
  *  **[EntityToExposureEventAssociationMixin](EntityToExposureEventAssociationMixin.md)** *[entity to exposure event association mixin➞object](entity_to_exposure_event_association_mixin_object.md)*  <sub>1..1</sub>  **[ExposureEvent](ExposureEvent.md)**
  *  **[ExposureEventToEntityAssociationMixin](ExposureEventToEntityAssociationMixin.md)** *[exposure event to entity association mixin➞subject](exposure_event_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[ExposureEvent](ExposureEvent.md)**
