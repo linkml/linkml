@@ -1,7 +1,11 @@
 import click
+from linkml.utils import validation
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader
+from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _get_context, infer_index_slot, \
+    infer_root_class, _is_xsv, get_dumper
 
 
 @click.command()
@@ -42,7 +46,7 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
         if schema is None:
             raise Exception('must pass one of module OR schema')
         else:
-            python_module = PythonGenerator(schema).compile_module(pycode)
+            python_module = PythonGenerator(schema).compile_module()
     else:
         python_module = compile_python(module)
     if schema is not None:
@@ -75,6 +79,7 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
     if validate:
         if schema is None:
             raise Exception('--schema must be passed in order to validate. Suppress with --no-validate')
+        # TODO: use validator framework
         validation.validate_object(obj, schema)
 
     output_format = _get_format(output, output_format, default='json')
