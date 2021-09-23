@@ -24,7 +24,7 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.1.1"
+    generatorversion = "0.2.1"
     directory_output = True
     valid_formats = ["md"]
     visit_all_class_slots = False
@@ -304,7 +304,15 @@ class MarkdownGenerator(Generator):
             obj_type = 'Subset'
         else:
             obj_type = 'Class'
-        self.header(1, f"{obj_type}: {name}" + (f" _(deprecated)_" if obj.deprecated else ""))
+
+        # TODO: for some reason obj.deprecated dosn't appear to be True even
+        # ...though 'deprecated' in obj.slots. When that's fixed, can update
+        # ...this clause to be simpler. - joeflack4 2021/09/23
+        if (hasattr(obj, 'slots') and 'deprecated' in obj.slots) or obj.deprecated:
+            self.header(1, f"{obj_type}: ~~{name}~~ _(deprecated)_")
+        else:
+            self.header(1, f"{obj_type}: {name}")
+
         self.para(be(obj.description))
         print(f'URI: [{curie}]({uri})')
         print()

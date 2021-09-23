@@ -60,6 +60,10 @@ classes:
       aliases:
         multivalued: true
 
+  God:
+    slots:
+      - deprecated
+
   Person:
     in_subset:
       - subset A
@@ -240,6 +244,17 @@ slots:
   city:
   has birth event:
     range: BirthEvent
+  deprecated:
+    name: deprecated
+    definition_uri: https://w3id.org/linkml/deprecated
+    description: Description of why and when this element will no longer be used
+    from_schema: https://w3id.org/linkml/meta
+#    domain: God
+    range: string
+    slot_uri: linkml:deprecated
+    owner: deprecated
+    domain_of:
+    - common_metadata
 
 enums:
   FamilialRelationshipType:
