@@ -7,9 +7,12 @@ import click
 import jsonschema
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
 from linkml.utils.datavalidator import DataValidator
 from linkml_runtime.utils.dictutils import as_simple_dict
@@ -95,7 +98,7 @@ def cli(input, module, target_class, output=None, input_format=None,
     if schema is None:
         raise Exception('--schema must be passed in order to validate. Suppress with --no-validate')
     validator = JsonSchemaDataValidator(schema)
-    results = validator.validate_object(obj, target_class=target_class)
+    results = validator.validate_object(obj, target_class=py_target_class)
     print(results)
 
 
