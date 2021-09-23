@@ -38,9 +38,9 @@ class ExcelGenTestCase(unittest.TestCase):
         assert sorted(employee_cols_list) == [
             "age in years",
             "aliases",
+            "employee_last name",
             "first name",
             "id",
-            "last name",
         ]
 
         # test case to check the column names in Manager worksheet
@@ -51,7 +51,14 @@ class ExcelGenTestCase(unittest.TestCase):
             cell_obj = wb_obj["Manager"].cell(row=1, column=i)
             manager_cols_list.append(cell_obj.value)
 
-        assert sorted(manager_cols_list) == ["has employees"]
+        assert sorted(manager_cols_list) == [
+            "age in years",
+            "aliases",
+            "employee_last name",
+            "first name",
+            "has employees",
+            "id",
+        ]
 
         # test case to check the column names in Organization worksheet
         organization_cols_list = []
