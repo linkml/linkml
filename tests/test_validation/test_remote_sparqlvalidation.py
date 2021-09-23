@@ -1,8 +1,7 @@
 import unittest
 
-from linkml.generators.sparqlgen import SparqlGenerator
 from linkml_runtime.dumpers import yaml_dumper
-from linkml.utils.sparqlvalidator import SparqlValidator
+from linkml.validators.sparqlvalidator import SparqlDataValidator
 from tests.test_validation.environment import env
 from tests import SKIP_REMOTE_SPARQL_TESTS
 
@@ -18,7 +17,7 @@ class RemoteSparqlValidatorTestCase(unittest.TestCase):
 
     def test_remote_sparql_validation(self):
         """ Validate a schema  """
-        sv = SparqlValidator()
+        sv = SparqlDataValidator()
         sv.load_schema(SCHEMA)
         if SKIP_REMOTE_SPARQL_TESTS:
             print(f'Skipping ontobee test')

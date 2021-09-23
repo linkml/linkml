@@ -14,6 +14,7 @@ from linkml.generators.sparqlgen import SparqlGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml.reporting import CheckResult, Report
 from linkml.utils.datautils import get_dumper, _get_format, get_loader, dumpers_loaders
+from linkml.utils.datavalidator import DataValidator
 
 
 def sparqljson2dict(row: dict):
@@ -30,7 +31,7 @@ def _make_result(row):
 
 
 @dataclass
-class SparqlValidator():
+class SparqlDataValidator(DataValidator):
 
     schema: SchemaDefinition = None
     queries: dict = None
@@ -66,8 +67,8 @@ class SparqlValidator():
         report = Report()
         for qn, q in self.queries.items():
             q += " LIMIT 20"
-            print(f'QUERY: {qn}')
-            print(f'{q}')
+            logging.debug(f'QUERY: {qn}')
+            logging.debug(f'{q}')
             sw = SPARQLWrapper(url)
             sw.setQuery(q)
             sw.setReturnFormat(JSON)
@@ -117,7 +118,7 @@ def cli(input, output=None, input_format=None, output_format=None,
     """
     if schema is not None:
         sv = SchemaView(schema)
-    validator = SparqlValidator(schema)
+    validator = SparqlDataValidator(schema)
     if endpoint_url is not None:
         results = validator.validate_endpoint(endpoint_url, limit=limit, named_graphs=named_graph)
     else:
