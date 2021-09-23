@@ -67,8 +67,8 @@ class SparqlDataValidator(DataValidator):
         report = Report()
         for qn, q in self.queries.items():
             q += " LIMIT 20"
-            print(f'QUERY: {qn}')
-            print(f'{q}')
+            logging.debug(f'QUERY: {qn}')
+            logging.debug(f'{q}')
             sw = SPARQLWrapper(url)
             sw.setQuery(q)
             sw.setReturnFormat(JSON)
