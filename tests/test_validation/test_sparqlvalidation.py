@@ -13,7 +13,7 @@ DATA = env.input_path('kitchen_sink_inst_01.ttl')
 class SparqlValidatorTestCase(unittest.TestCase):
 
     def test_sparql_validation(self):
-        """ Validate a schema  """
+        """ Validate using in-memory sparql  """
         print(f'TEST: Loading {SCHEMA}')
         sg = SparqlGenerator(SCHEMA)
         print(sg.queries)
