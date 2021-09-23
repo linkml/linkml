@@ -14,7 +14,7 @@ URI: [biolink:GeneExpressionMixin](https://w3id.org/biolink/vocab/GeneExpression
  * [GeneToGeneCoexpressionAssociation](GeneToGeneCoexpressionAssociation.md) (mixin)  - Indicates that two genes are co-expressed, generally under the same conditions.
  * [VariantToGeneExpressionAssociation](VariantToGeneExpressionAssociation.md) (mixin)  - An association between a variant and expression of a gene (i.e. e-QTL)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

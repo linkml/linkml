@@ -13,11 +13,11 @@ URI: [biolink:OrganismTaxonToEnvironmentAssociation](https://w3id.org/biolink/vo
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [OrganismTaxonToEntityAssociation](OrganismTaxonToEntityAssociation.md) - An association between an organism taxon and another entity
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

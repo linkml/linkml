@@ -13,11 +13,11 @@ URI: [linkml:Annotation](https://w3id.org/linkml/Annotation)
 
  *  is_a: [Extension](Extension.md) - a tag/value pair used to add non-model information to an entry
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Annotatable](Annotatable.md) - mixin for classes that support annotations
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Annotatable](Annotatable.md)** *[annotations](annotations.md)*  <sub>0..\*</sub>  **[Annotation](Annotation.md)**
 

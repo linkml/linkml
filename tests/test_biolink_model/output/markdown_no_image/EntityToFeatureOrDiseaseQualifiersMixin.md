@@ -18,7 +18,7 @@ URI: [biolink:EntityToFeatureOrDiseaseQualifiersMixin](https://w3id.org/biolink/
  * [EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) - mixin class for any association whose object (target node) is a disease
  * [EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

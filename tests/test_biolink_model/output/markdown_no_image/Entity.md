@@ -14,7 +14,7 @@ URI: [biolink:Entity](https://w3id.org/biolink/vocab/Entity)
  * [Association](Association.md) - A typed association between two entities, supported by evidence
  * [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

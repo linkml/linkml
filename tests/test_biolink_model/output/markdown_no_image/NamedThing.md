@@ -28,7 +28,7 @@ URI: [biolink:NamedThing](https://w3id.org/biolink/vocab/NamedThing)
  * [Procedure](Procedure.md) - A series of actions conducted in a certain order or manner
  * [Treatment](Treatment.md) - A treatment is targeted at a disease or phenotype and may involve multiple drug 'exposures', medical devices and/or procedures
 
-## Referenced by class
+## Referenced by Class
 
  *  **[NamedThing](NamedThing.md)** *[affected by](affected_by.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**
  *  **[NamedThing](NamedThing.md)** *[affects](affects.md)*  <sub>0..\*</sub>  **[NamedThing](NamedThing.md)**

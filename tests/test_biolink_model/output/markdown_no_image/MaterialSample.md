@@ -18,11 +18,11 @@ URI: [biolink:MaterialSample](https://w3id.org/biolink/vocab/MaterialSample)
 
  *  is_a: [PhysicalEntity](PhysicalEntity.md) - An entity that has material reality (a.k.a. physical essence).
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [SubjectOfInvestigation](SubjectOfInvestigation.md) - An entity that has the role of being studied in an investigation, study, or experiment
 
-## Referenced by class
+## Referenced by Class
 
  *  **[MaterialSampleDerivationAssociation](MaterialSampleDerivationAssociation.md)** *[material sample derivation association➞subject](material_sample_derivation_association_subject.md)*  <sub>1..1</sub>  **[MaterialSample](MaterialSample.md)**
  *  **[MaterialSampleToEntityAssociationMixin](MaterialSampleToEntityAssociationMixin.md)** *[material sample to entity association mixin➞subject](material_sample_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[MaterialSample](MaterialSample.md)**

@@ -13,12 +13,12 @@ URI: [biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation](https://w3id.org/
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) - An interaction between a chemical entity and another entity
  *  mixin: [EntityToDiseaseOrPhenotypicFeatureAssociationMixin](EntityToDiseaseOrPhenotypicFeatureAssociationMixin.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

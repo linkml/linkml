@@ -19,7 +19,7 @@ URI: [biolink:ClinicalAttribute](https://w3id.org/biolink/vocab/ClinicalAttribut
  * [ClinicalMeasurement](ClinicalMeasurement.md) - A clinical measurement is a special kind of attribute which results from a laboratory observation from a subject individual or sample. Measurements can be connected to their subject by the 'has attribute' slot.
  * [ClinicalModifier](ClinicalModifier.md) - Used to characterize and specify the phenotypic abnormalities defined in the phenotypic abnormality sub-ontology, with respect to severity, laterality, and other aspects
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ClinicalFinding](ClinicalFinding.md)** *[clinical finding➞has attribute](clinical_finding_has_attribute.md)*  <sub>0..\*</sub>  **[ClinicalAttribute](ClinicalAttribute.md)**
 

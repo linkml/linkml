@@ -9,7 +9,7 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 [![img](images/Element.svg)](images/Element.svg)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Extensible](Extensible.md) - mixin for classes that support extension
  *  mixin: [Annotatable](Annotatable.md) - mixin for classes that support annotations
@@ -23,7 +23,7 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
  * [SubsetDefinition](SubsetDefinition.md) - the name and description of a subset
  * [TypeDefinition](TypeDefinition.md) - A data type definition.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[SlotDefinition](SlotDefinition.md)** *[range](range.md)*  <sub>0..1</sub>  **[Element](Element.md)**
 

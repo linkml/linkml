@@ -19,7 +19,7 @@ URI: [biolink:GeneToGeneAssociation](https://w3id.org/biolink/vocab/GeneToGeneAs
  * [GeneToGeneHomologyAssociation](GeneToGeneHomologyAssociation.md) - A homology association between two genes. May be orthology (in which case the species of subject and object should differ) or paralogy (in which case the species may be the same)
  * [PairwiseGeneToGeneInteraction](PairwiseGeneToGeneInteraction.md) - An interaction between two genes or two gene products. May be physical (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein interaction) or directed (e.g. phosphorylation)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

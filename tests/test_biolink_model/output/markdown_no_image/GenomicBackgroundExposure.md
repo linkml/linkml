@@ -13,7 +13,7 @@ URI: [biolink:GenomicBackgroundExposure](https://w3id.org/biolink/vocab/GenomicB
 
  *  is_a: [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
  *  mixin: [GeneGroupingMixin](GeneGroupingMixin.md) - any grouping of multiple genes or gene products

@@ -22,7 +22,7 @@ URI: [biolink:OrganismTaxon](https://w3id.org/biolink/vocab/OrganismTaxon)
 
  * [BioticExposure](BioticExposure.md) - An external biotic exposure is an intake of (sometimes pathological) biological organisms (including viruses).
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ThingWithTaxon](ThingWithTaxon.md)** *[in taxon](in_taxon.md)*  <sub>0..\*</sub>  **[OrganismTaxon](OrganismTaxon.md)**
  *  **[OrganismTaxonToEntityAssociation](OrganismTaxonToEntityAssociation.md)** *[organism taxon to entity association➞subject](organism_taxon_to_entity_association_subject.md)*  <sub>1..1</sub>  **[OrganismTaxon](OrganismTaxon.md)**

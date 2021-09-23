@@ -15,7 +15,7 @@ URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
  * [Person](Person.md) (mixin) 
  * [Place](Place.md) (mixin) 
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

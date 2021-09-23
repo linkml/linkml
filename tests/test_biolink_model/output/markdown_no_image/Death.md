@@ -17,7 +17,7 @@ URI: [biolink:Death](https://w3id.org/biolink/vocab/Death)
 
  * [MortalityOutcome](MortalityOutcome.md) - An outcome of death from resulting from an exposure event.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,11 +13,11 @@ URI: [biolink:Procedure](https://w3id.org/biolink/vocab/Procedure)
 
  *  is_a: [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ActivityAndBehavior](ActivityAndBehavior.md) - Activity or behavior of any independent integral living, organization or mechanical actor in the world
 
-## Referenced by class
+## Referenced by Class
 
  *  **[NamedThing](NamedThing.md)** *[has procedure](has_procedure.md)*  <sub>0..\*</sub>  **[Procedure](Procedure.md)**
 

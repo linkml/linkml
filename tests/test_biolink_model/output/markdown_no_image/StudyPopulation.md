@@ -17,7 +17,7 @@ URI: [biolink:StudyPopulation](https://w3id.org/biolink/vocab/StudyPopulation)
 
  * [Cohort](Cohort.md) - A group of people banded together or treated as a group who share common characteristics. A cohort 'study' is a particular form of longitudinal study that samples a cohort, performing a cross-section at intervals through time.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

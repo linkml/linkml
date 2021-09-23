@@ -13,7 +13,7 @@ URI: [biolink:EntityToExposureEventAssociationMixin](https://w3id.org/biolink/vo
 
  * [DiseaseToExposureEventAssociation](DiseaseToExposureEventAssociation.md) (mixin)  - An association between an exposure event and a disease.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

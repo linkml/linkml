@@ -13,7 +13,7 @@ URI: [biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation](https://w3id.
 
  *  is_a: [AnatomicalEntityToAnatomicalEntityAssociation](AnatomicalEntityToAnatomicalEntityAssociation.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

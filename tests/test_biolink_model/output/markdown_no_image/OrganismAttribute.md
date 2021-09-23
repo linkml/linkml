@@ -18,7 +18,7 @@ URI: [biolink:OrganismAttribute](https://w3id.org/biolink/vocab/OrganismAttribut
  * [Inheritance](Inheritance.md) - The pattern or 'mode' in which a particular genetic trait or disorder is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive, etc.
  * [PhenotypicQuality](PhenotypicQuality.md) - A property of a phenotype
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

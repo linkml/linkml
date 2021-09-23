@@ -9,7 +9,7 @@ URI: [http://example.org/sample/example1/MetricResult](http://example.org/sample
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MetricResultChild],[MetricResult&#124;evaluated_using:string%20%3F;has_source:string%20%3F;has_status:string%20%3F;description:string%20%3F;has_messages:string%20%3F]uses%20-.->[HasMessagesClass],[MetricResult]^-[MetricResultChild],[HasMessagesClass])](https://yuml.me/diagram/nofunky;dir:TB/class/[MetricResultChild],[MetricResult&#124;evaluated_using:string%20%3F;has_source:string%20%3F;has_status:string%20%3F;description:string%20%3F;has_messages:string%20%3F]uses%20-.->[HasMessagesClass],[MetricResult]^-[MetricResultChild],[HasMessagesClass])
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [HasMessagesClass](HasMessagesClass.md)
 
@@ -17,7 +17,7 @@ URI: [http://example.org/sample/example1/MetricResult](http://example.org/sample
 
  * [MetricResultChild](MetricResultChild.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

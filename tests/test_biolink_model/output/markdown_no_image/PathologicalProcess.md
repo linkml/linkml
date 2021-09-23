@@ -13,7 +13,7 @@ URI: [biolink:PathologicalProcess](https://w3id.org/biolink/vocab/PathologicalPr
 
  *  is_a: [BiologicalProcess](BiologicalProcess.md) - One or more causally connected executions of molecular functions
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [PathologicalEntityMixin](PathologicalEntityMixin.md) - A pathological (abnormal) structure or process.
 
@@ -22,7 +22,7 @@ URI: [biolink:PathologicalProcess](https://w3id.org/biolink/vocab/PathologicalPr
  * [PathologicalProcessExposure](PathologicalProcessExposure.md) - A pathological process, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. autoimmunity leading to disease.
  * [PathologicalProcessOutcome](PathologicalProcessOutcome.md) - An outcome resulting from an exposure event which is the manifestation of a pathological process.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

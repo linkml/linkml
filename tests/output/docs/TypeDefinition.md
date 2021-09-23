@@ -13,7 +13,7 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 
  *  is_a: [Element](Element.md) - a named element in the model
 
-## Referenced by class
+## Referenced by Class
 
  *  **[SchemaDefinition](SchemaDefinition.md)** *[default_range](default_range.md)*  <sub>0..1</sub>  **[TypeDefinition](TypeDefinition.md)**
  *  **[TypeDefinition](TypeDefinition.md)** *[typeof](typeof.md)*  <sub>0..1</sub>  **[TypeDefinition](TypeDefinition.md)**

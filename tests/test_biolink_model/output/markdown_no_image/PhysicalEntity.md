@@ -13,7 +13,7 @@ URI: [biolink:PhysicalEntity](https://w3id.org/biolink/vocab/PhysicalEntity)
 
  *  is_a: [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [PhysicalEssence](PhysicalEssence.md) - Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.
 
@@ -21,7 +21,7 @@ URI: [biolink:PhysicalEntity](https://w3id.org/biolink/vocab/PhysicalEntity)
 
  * [MaterialSample](MaterialSample.md) - A sample is a limited quantity of something (e.g. an individual or set of individuals from a population, or a portion of a substance) to be used for testing, analysis, inspection, investigation, demonstration, or trial use. [SIO]
 
-## Referenced by class
+## Referenced by Class
 
  *  **[BiologicalProcessOrActivity](BiologicalProcessOrActivity.md)** *[enabled by](enabled_by.md)*  <sub>0..\*</sub>  **[PhysicalEntity](PhysicalEntity.md)**
 

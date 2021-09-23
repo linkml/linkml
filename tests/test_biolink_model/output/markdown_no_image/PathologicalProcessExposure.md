@@ -13,7 +13,7 @@ URI: [biolink:PathologicalProcessExposure](https://w3id.org/biolink/vocab/Pathol
 
  *  is_a: [PathologicalProcess](PathologicalProcess.md) - A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
 

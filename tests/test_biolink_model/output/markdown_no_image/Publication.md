@@ -24,7 +24,7 @@ URI: [biolink:Publication](https://w3id.org/biolink/vocab/Publication)
  * [BookChapter](BookChapter.md)
  * [Serial](Serial.md) - This class may rarely be instantiated except if use cases of a given knowledge graph support its utility.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[publications](publications.md)*  <sub>0..\*</sub>  **[Publication](Publication.md)**
 

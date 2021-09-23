@@ -17,7 +17,7 @@ URI: [biolink:PopulationOfIndividualOrganisms](https://w3id.org/biolink/vocab/Po
 
  *  is_a: [OrganismalEntity](OrganismalEntity.md) - A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding molecular entities
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ThingWithTaxon](ThingWithTaxon.md) - A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes
 
@@ -25,7 +25,7 @@ URI: [biolink:PopulationOfIndividualOrganisms](https://w3id.org/biolink/vocab/Po
 
  * [StudyPopulation](StudyPopulation.md) - A group of people banded together or treated as a group as participants in a research study.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[has population context](has_population_context.md)*  <sub>0..1</sub>  **[PopulationOfIndividualOrganisms](PopulationOfIndividualOrganisms.md)**
  *  **[PopulationToPopulationAssociation](PopulationToPopulationAssociation.md)** *[population to population association➞object](population_to_population_association_object.md)*  <sub>1..1</sub>  **[PopulationOfIndividualOrganisms](PopulationOfIndividualOrganisms.md)**

@@ -31,7 +31,7 @@ URI: [biolink:SequenceVariant](https://w3id.org/biolink/vocab/SequenceVariant)
 
  * [Snv](Snv.md) - SNVs are single nucleotide positions in genomic DNA at which different sequence alternatives exist
 
-## Referenced by class
+## Referenced by Class
 
  *  **[GenotypeToVariantAssociation](GenotypeToVariantAssociation.md)** *[genotype to variant association➞object](genotype_to_variant_association_object.md)*  <sub>1..1</sub>  **[SequenceVariant](SequenceVariant.md)**
  *  **[SequenceVariantModulatesTreatmentAssociation](SequenceVariantModulatesTreatmentAssociation.md)** *[sequence variant modulates treatment association➞subject](sequence_variant_modulates_treatment_association_subject.md)*  <sub>1..1</sub>  **[SequenceVariant](SequenceVariant.md)**

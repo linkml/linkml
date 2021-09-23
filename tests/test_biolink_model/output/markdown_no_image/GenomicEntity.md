@@ -27,7 +27,7 @@ URI: [biolink:GenomicEntity](https://w3id.org/biolink/vocab/GenomicEntity)
  * [SequenceVariant](SequenceVariant.md) - An allele that varies in its sequence from what is considered the reference allele at that locus.
  * [Transcript](Transcript.md) - An RNA synthesized on a DNA or RNA template by an RNA polymerase.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[MolecularEntity](MolecularEntity.md)** *[affects expression of](affects_expression_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[affects mutation rate of](affects_mutation_rate_of.md)*  <sub>0..\*</sub>  **[GenomicEntity](GenomicEntity.md)**

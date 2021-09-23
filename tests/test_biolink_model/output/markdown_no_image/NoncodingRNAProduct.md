@@ -24,7 +24,7 @@ URI: [biolink:NoncodingRNAProduct](https://w3id.org/biolink/vocab/NoncodingRNAPr
  * [MicroRNA](MicroRNA.md)
  * [SiRNA](SiRNA.md) - A small RNA molecule that is the product of a longer exogenous or endogenous dsRNA, which is either a bimolecular duplex or very long hairpin, processed (via the Dicer pathway) such that numerous siRNAs accumulate from both strands of the dsRNA. SRNAs trigger the cleavage of their target molecules.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

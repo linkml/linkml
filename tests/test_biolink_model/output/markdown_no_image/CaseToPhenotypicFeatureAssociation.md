@@ -13,7 +13,7 @@ URI: [biolink:CaseToPhenotypicFeatureAssociation](https://w3id.org/biolink/vocab
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md)
  *  mixin: [CaseToEntityAssociationMixin](CaseToEntityAssociationMixin.md) - An abstract association for use where the case is the subject

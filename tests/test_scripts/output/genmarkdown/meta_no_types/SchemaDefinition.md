@@ -13,7 +13,7 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
 
  *  is_a: [Element](Element.md) - a named element in the model
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

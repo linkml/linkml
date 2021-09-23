@@ -13,7 +13,7 @@ URI: [http://example.org/sample/example1/MetricResultChild](http://example.org/s
 
  *  is_a: [MetricResult](MetricResult.md) - Result of executing a metric on a KS
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [HasMessagesChild](HasMessagesChild.md)
 

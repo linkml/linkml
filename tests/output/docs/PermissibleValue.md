@@ -9,13 +9,13 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 [![img](images/PermissibleValue.svg)](images/PermissibleValue.svg)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Extensible](Extensible.md) - mixin for classes that support extension
  *  mixin: [Annotatable](Annotatable.md) - mixin for classes that support annotations
  *  mixin: [CommonMetadata](CommonMetadata.md) - Generic metadata shared across definitions
 
-## Referenced by class
+## Referenced by Class
 
  *  **[PermissibleValue](PermissibleValue.md)** *[permissible_value➞is_a](permissible_value_is_a.md)*  <sub>0..1</sub>  **[PermissibleValue](PermissibleValue.md)**
  *  **[PermissibleValue](PermissibleValue.md)** *[permissible_value➞mixins](permissible_value_mixins.md)*  <sub>0..\*</sub>  **[PermissibleValue](PermissibleValue.md)**

@@ -21,7 +21,7 @@ URI: [biolink:BiologicalEntity](https://w3id.org/biolink/vocab/BiologicalEntity)
  * [MolecularEntity](MolecularEntity.md) - A gene, gene product, small molecule or macromolecule (including protein complex)"
  * [OrganismalEntity](OrganismalEntity.md) - A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding molecular entities
 
-## Referenced by class
+## Referenced by Class
 
  *  **[PhenotypicFeature](PhenotypicFeature.md)** *[phenotype of](phenotype_of.md)*  <sub>0..\*</sub>  **[BiologicalEntity](BiologicalEntity.md)**
 

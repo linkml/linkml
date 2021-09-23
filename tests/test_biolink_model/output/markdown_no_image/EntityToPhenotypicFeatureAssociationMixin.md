@@ -23,7 +23,7 @@ URI: [biolink:EntityToPhenotypicFeatureAssociationMixin](https://w3id.org/biolin
  * [GenotypeToPhenotypicFeatureAssociation](GenotypeToPhenotypicFeatureAssociation.md) (mixin)  - Any association between one genotype and a phenotypic feature, where having the genotype confers the phenotype, either in isolation or through environment
  * [VariantToPhenotypicFeatureAssociation](VariantToPhenotypicFeatureAssociation.md) (mixin) 
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

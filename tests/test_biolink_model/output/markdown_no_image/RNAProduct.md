@@ -17,7 +17,7 @@ URI: [biolink:RNAProduct](https://w3id.org/biolink/vocab/RNAProduct)
 
  *  is_a: [Transcript](Transcript.md) - An RNA synthesized on a DNA or RNA template by an RNA polymerase.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [GeneProductMixin](GeneProductMixin.md) - The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules.
 
@@ -26,7 +26,7 @@ URI: [biolink:RNAProduct](https://w3id.org/biolink/vocab/RNAProduct)
  * [RNAProductIsoform](RNAProductIsoform.md) - Represents a protein that is a specific isoform of the canonical or reference RNA
  * [NoncodingRNAProduct](NoncodingRNAProduct.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

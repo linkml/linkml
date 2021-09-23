@@ -13,7 +13,7 @@ URI: [biolink:Activity](https://w3id.org/biolink/vocab/Activity)
 
  *  is_a: [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ActivityAndBehavior](ActivityAndBehavior.md) - Activity or behavior of any independent integral living, organization or mechanical actor in the world
 

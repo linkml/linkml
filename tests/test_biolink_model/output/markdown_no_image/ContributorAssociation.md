@@ -13,7 +13,7 @@ URI: [biolink:ContributorAssociation](https://w3id.org/biolink/vocab/Contributor
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

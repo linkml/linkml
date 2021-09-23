@@ -13,7 +13,7 @@ URI: [ks:Company](https://w3id.org/linkml/tests/kitchen_sink/Company)
 
  *  is_a: [Organization](Organization.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **None** *[➞companies](dataset__companies.md)*  <sub>0..\*</sub>  **[Company](Company.md)**
  *  **None** *[employed at](employed_at.md)*  <sub>0..1</sub>  **[Company](Company.md)**

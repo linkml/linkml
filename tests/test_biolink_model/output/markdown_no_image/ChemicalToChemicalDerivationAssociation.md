@@ -20,7 +20,7 @@ URI: [biolink:ChemicalToChemicalDerivationAssociation](https://w3id.org/biolink/
 
  *  is_a: [ChemicalToChemicalAssociation](ChemicalToChemicalAssociation.md) - A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal edges, e.g. one chemical converted to another.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

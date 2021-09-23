@@ -13,7 +13,7 @@ URI: [ks:BirthEvent](https://w3id.org/linkml/tests/kitchen_sink/BirthEvent)
 
  *  is_a: [Event](Event.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **None** *[has birth event](has_birth_event.md)*  <sub>0..1</sub>  **[BirthEvent](BirthEvent.md)**
 

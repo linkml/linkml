@@ -13,7 +13,7 @@ URI: [linkml:SubsetDefinition](https://w3id.org/linkml/SubsetDefinition)
 
  *  is_a: [Element](Element.md) - a named element in the model
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Element](Element.md)** *[in_subset](in_subset.md)*  <sub>0..\*</sub>  **[SubsetDefinition](SubsetDefinition.md)**
  *  **[SchemaDefinition](SchemaDefinition.md)** *[subsets](subsets.md)*  <sub>0..\*</sub>  **[SubsetDefinition](SubsetDefinition.md)**

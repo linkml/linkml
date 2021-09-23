@@ -20,7 +20,7 @@ URI: [biolink:BiologicalProcess](https://w3id.org/biolink/vocab/BiologicalProces
 
  *  is_a: [BiologicalProcessOrActivity](BiologicalProcessOrActivity.md) - Either an individual molecular activity, or a collection of causally connected molecular activities in a biological system.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Occurrent](Occurrent.md) - A processual entity.
  *  mixin: [OntologyClass](OntologyClass.md) - a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.
@@ -33,7 +33,7 @@ URI: [biolink:BiologicalProcess](https://w3id.org/biolink/vocab/BiologicalProces
  * [Pathway](Pathway.md)
  * [PhysiologicalProcess](PhysiologicalProcess.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[MacromolecularMachineToBiologicalProcessAssociation](MacromolecularMachineToBiologicalProcessAssociation.md)** *[macromolecular machine to biological process association➞object](macromolecular_machine_to_biological_process_association_object.md)*  <sub>1..1</sub>  **[BiologicalProcess](BiologicalProcess.md)**
 

@@ -32,11 +32,11 @@ URI: [biolink:Gene](https://w3id.org/biolink/vocab/Gene)
 
  *  is_a: [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [GeneOrGeneProduct](GeneOrGeneProduct.md) - A union of gene loci or gene products. Frequently an identifier for one will be used as proxy for another
 
-## Referenced by class
+## Referenced by Class
 
  *  **[DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)** *[condition associated with gene](condition_associated_with_gene.md)*  <sub>0..\*</sub>  **[Gene](Gene.md)**
  *  **[GeneProductMixin](GeneProductMixin.md)** *[gene product of](gene_product_of.md)*  <sub>0..\*</sub>  **[Gene](Gene.md)**

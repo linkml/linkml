@@ -13,7 +13,7 @@ URI: [biolink:ChemicalToChemicalAssociation](https://w3id.org/biolink/vocab/Chem
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md) - An interaction between a chemical entity and another entity
 
@@ -21,7 +21,7 @@ URI: [biolink:ChemicalToChemicalAssociation](https://w3id.org/biolink/vocab/Chem
 
  * [ChemicalToChemicalDerivationAssociation](ChemicalToChemicalDerivationAssociation.md) - A causal relationship between two chemical entities, where the subject represents the upstream entity and the object represents the downstream. For any such association there is an implicit reaction:
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

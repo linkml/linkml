@@ -14,7 +14,7 @@ URI: [biolink:GeneToEntityAssociationMixin](https://w3id.org/biolink/vocab/GeneT
  * [GeneToDiseaseAssociation](GeneToDiseaseAssociation.md) (mixin) 
  * [GeneToPhenotypicFeatureAssociation](GeneToPhenotypicFeatureAssociation.md) (mixin) 
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

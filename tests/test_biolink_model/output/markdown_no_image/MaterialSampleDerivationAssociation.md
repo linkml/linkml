@@ -13,7 +13,7 @@ URI: [biolink:MaterialSampleDerivationAssociation](https://w3id.org/biolink/voca
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

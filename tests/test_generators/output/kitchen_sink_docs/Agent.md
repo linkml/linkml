@@ -9,7 +9,7 @@ URI: [ks:Agent](https://w3id.org/linkml/tests/kitchen_sink/Agent)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Activity]<was%20informed%20by%200..1-%20[Agent&#124;id:string],[Agent]<acted%20on%20behalf%20of%200..1-%20[Agent],[Activity]-%20was%20associated%20with%200..1>[Agent],[Activity])](https://yuml.me/diagram/nofunky;dir:TB/class/[Activity]<was%20informed%20by%200..1-%20[Agent&#124;id:string],[Agent]<acted%20on%20behalf%20of%200..1-%20[Agent],[Activity]-%20was%20associated%20with%200..1>[Agent],[Activity])
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[acted on behalf of](acted_on_behalf_of.md)*  <sub>0..1</sub>  **[Agent](Agent.md)**
  *  **None** *[agent set](agent_set.md)*  <sub>0..\*</sub>  **[Agent](Agent.md)**

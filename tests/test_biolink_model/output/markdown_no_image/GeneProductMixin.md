@@ -28,7 +28,7 @@ URI: [biolink:GeneProductMixin](https://w3id.org/biolink/vocab/GeneProductMixin)
  * [RNAProduct](RNAProduct.md) (mixin) 
  * [Protein](Protein.md) (mixin)  - A gene product that is composed of a chain of amino acid sequences and is produced by ribosome-mediated translation of mRNA
 
-## Referenced by class
+## Referenced by Class
 
  *  **[GeneToGeneProductRelationship](GeneToGeneProductRelationship.md)** *[gene to gene product relationship➞object](gene_to_gene_product_relationship_object.md)*  <sub>1..1</sub>  **[GeneProductMixin](GeneProductMixin.md)**
  *  **[Gene](Gene.md)** *[has gene product](has_gene_product.md)*  <sub>0..\*</sub>  **[GeneProductMixin](GeneProductMixin.md)**

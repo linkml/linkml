@@ -13,7 +13,7 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
 
  *  is_a: [Definition](Definition.md) - base class for definitions
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ClassDefinition](ClassDefinition.md)** *[class_definition➞apply_to](class_definition_apply_to.md)*  <sub>0..\*</sub>  **[ClassDefinition](ClassDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[class_definition➞is_a](class_definition_is_a.md)*  <sub>0..1</sub>  **[ClassDefinition](ClassDefinition.md)**

@@ -17,7 +17,7 @@ URI: [biolink:ClinicalIntervention](https://w3id.org/biolink/vocab/ClinicalInter
 
  * [Hospitalization](Hospitalization.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

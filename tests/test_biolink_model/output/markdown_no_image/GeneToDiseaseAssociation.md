@@ -13,7 +13,7 @@ URI: [biolink:GeneToDiseaseAssociation](https://w3id.org/biolink/vocab/GeneToDis
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) - mixin class for any association whose object (target node) is a disease
  *  mixin: [GeneToEntityAssociationMixin](GeneToEntityAssociationMixin.md)
@@ -23,7 +23,7 @@ URI: [biolink:GeneToDiseaseAssociation](https://w3id.org/biolink/vocab/GeneToDis
  * [GeneAsAModelOfDiseaseAssociation](GeneAsAModelOfDiseaseAssociation.md)
  * [GeneHasVariantThatContributesToDiseaseAssociation](GeneHasVariantThatContributesToDiseaseAssociation.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

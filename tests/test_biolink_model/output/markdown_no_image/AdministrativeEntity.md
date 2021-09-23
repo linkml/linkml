@@ -17,7 +17,7 @@ URI: [biolink:AdministrativeEntity](https://w3id.org/biolink/vocab/Administrativ
 
  * [Agent](Agent.md) - person, group, organization or project that provides a piece of information (i.e. a knowledge association)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,7 +13,7 @@ URI: [biolink:EntityToOutcomeAssociationMixin](https://w3id.org/biolink/vocab/En
 
  * [ExposureEventToOutcomeAssociation](ExposureEventToOutcomeAssociation.md) (mixin)  - An association between an exposure event and an outcome.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

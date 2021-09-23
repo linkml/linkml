@@ -13,7 +13,7 @@ URI: [biolink:CodingSequence](https://w3id.org/biolink/vocab/CodingSequence)
 
  *  is_a: [GenomicEntity](GenomicEntity.md) - an entity that can either be directly located on a genome (gene, transcript, exon, regulatory region) or is encoded in a genome (protein)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

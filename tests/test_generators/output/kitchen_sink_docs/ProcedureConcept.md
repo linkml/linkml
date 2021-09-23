@@ -13,7 +13,7 @@ URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureC
 
  *  is_a: [Concept](Concept.md)
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[procedure](procedure.md)*  <sub>0..1</sub>  **[ProcedureConcept](ProcedureConcept.md)**
 

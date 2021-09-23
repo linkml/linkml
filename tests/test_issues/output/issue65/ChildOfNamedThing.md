@@ -13,7 +13,7 @@ URI: [https://example.com/test65/ChildOfNamedThing](https://example.com/test65/C
 
  *  is_a: [NamedThing](NamedThing.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

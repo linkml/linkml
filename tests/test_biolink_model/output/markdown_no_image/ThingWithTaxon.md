@@ -18,7 +18,7 @@ URI: [biolink:ThingWithTaxon](https://w3id.org/biolink/vocab/ThingWithTaxon)
  * [MolecularEntity](MolecularEntity.md) (mixin)  - A gene, gene product, small molecule or macromolecule (including protein complex)"
  * [PopulationOfIndividualOrganisms](PopulationOfIndividualOrganisms.md) (mixin)  - A collection of individuals from the same taxonomic class distinguished by one or more characteristics.  Characteristics can include, but are not limited to, shared geographic location, genetics, phenotypes [Alliance for Genome Resources]
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

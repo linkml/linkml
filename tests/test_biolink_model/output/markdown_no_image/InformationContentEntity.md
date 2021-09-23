@@ -27,7 +27,7 @@ URI: [biolink:InformationContentEntity](https://w3id.org/biolink/vocab/Informati
  * [EvidenceType](EvidenceType.md) - Class of evidence that supports an association
  * [Publication](Publication.md) - Any published piece of information. Can refer to a whole publication, its encompassing publication (i.e. journal or book) or to a part of a publication, if of significant knowledge scope (e.g. a figure, figure legend, or section highlighted by NLP). The scope is intended to be general and include information published on the web, as well as printed materials, either directly or in one of the Publication Biolink category subclasses.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ContributorAssociation](ContributorAssociation.md)** *[contributor association➞subject](contributor_association_subject.md)*  <sub>1..1</sub>  **[InformationContentEntity](InformationContentEntity.md)**
 

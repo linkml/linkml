@@ -22,7 +22,7 @@ URI: [biolink:Transcript](https://w3id.org/biolink/vocab/Transcript)
 
  * [RNAProduct](RNAProduct.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[MolecularEntity](MolecularEntity.md)** *[affects splicing of](affects_splicing_of.md)*  <sub>0..\*</sub>  **[Transcript](Transcript.md)**
  *  **[MolecularEntity](MolecularEntity.md)** *[decreases splicing of](decreases_splicing_of.md)*  <sub>0..\*</sub>  **[Transcript](Transcript.md)**

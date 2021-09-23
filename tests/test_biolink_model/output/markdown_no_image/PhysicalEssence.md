@@ -19,7 +19,7 @@ URI: [biolink:PhysicalEssence](https://w3id.org/biolink/vocab/PhysicalEssence)
  * [MolecularEntity](MolecularEntity.md) (mixin)  - A gene, gene product, small molecule or macromolecule (including protein complex)"
  * [PhysicalEntity](PhysicalEntity.md) (mixin)  - An entity that has material reality (a.k.a. physical essence).
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

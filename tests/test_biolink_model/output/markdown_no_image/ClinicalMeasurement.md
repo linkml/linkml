@@ -13,7 +13,7 @@ URI: [biolink:ClinicalMeasurement](https://w3id.org/biolink/vocab/ClinicalMeasur
 
  *  is_a: [ClinicalAttribute](ClinicalAttribute.md) - Attributes relating to a clinical manifestation
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -17,7 +17,7 @@ URI: [http://example.org/sample/example1/HasMessagesClass](http://example.org/sa
 
  * [MetricResult](MetricResult.md) (mixin)  - Result of executing a metric on a KS
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

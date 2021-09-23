@@ -13,7 +13,7 @@ URI: [biolink:GeneHasVariantThatContributesToDiseaseAssociation](https://w3id.or
 
  *  is_a: [GeneToDiseaseAssociation](GeneToDiseaseAssociation.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

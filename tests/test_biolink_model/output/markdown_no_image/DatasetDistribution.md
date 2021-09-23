@@ -13,7 +13,7 @@ URI: [biolink:DatasetDistribution](https://w3id.org/biolink/vocab/DatasetDistrib
 
  *  is_a: [InformationContentEntity](InformationContentEntity.md) - a piece of information that typically describes some topic of discourse or is used as support.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[DatasetVersion](DatasetVersion.md)** *[has distribution](has_distribution.md)*  <sub>0..1</sub>  **[DatasetDistribution](DatasetDistribution.md)**
 

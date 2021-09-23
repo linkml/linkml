@@ -20,7 +20,7 @@ URI: [biolink:ChemicalToEntityAssociationMixin](https://w3id.org/biolink/vocab/C
  * [ChemicalToGeneAssociation](ChemicalToGeneAssociation.md) (mixin)  - An interaction between a chemical entity and a gene or gene product.
  * [ChemicalToPathwayAssociation](ChemicalToPathwayAssociation.md) (mixin)  - An interaction between a chemical entity and a biological process or pathway.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,7 +13,7 @@ URI: [biolink:EvidenceType](https://w3id.org/biolink/vocab/EvidenceType)
 
  *  is_a: [InformationContentEntity](InformationContentEntity.md) - a piece of information that typically describes some topic of discourse or is used as support.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[has evidence](has_evidence.md)*  <sub>0..1</sub>  **[EvidenceType](EvidenceType.md)**
 

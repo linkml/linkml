@@ -13,7 +13,7 @@ URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisC
 
  *  is_a: [Concept](Concept.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **None** *[diagnosis](diagnosis.md)*  <sub>0..1</sub>  **[DiagnosisConcept](DiagnosisConcept.md)**
 

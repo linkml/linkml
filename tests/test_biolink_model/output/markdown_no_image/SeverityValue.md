@@ -13,7 +13,7 @@ URI: [biolink:SeverityValue](https://w3id.org/biolink/vocab/SeverityValue)
 
  *  is_a: [Attribute](Attribute.md) - A property or characteristic of an entity. For example, an apple may have properties such as color, shape, age, crispiness. An environmental sample may have attributes such as depth, lat, long, material.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[severity qualifier](severity_qualifier.md)*  <sub>0..1</sub>  **[SeverityValue](SeverityValue.md)**
 

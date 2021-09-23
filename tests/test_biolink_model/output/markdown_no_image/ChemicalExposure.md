@@ -13,7 +13,7 @@ URI: [biolink:ChemicalExposure](https://w3id.org/biolink/vocab/ChemicalExposure)
 
  *  is_a: [ChemicalSubstance](ChemicalSubstance.md) - May be a chemical entity or a formulation with a chemical entity as active ingredient, or a complex material with multiple chemical entities as part
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ExposureEvent](ExposureEvent.md) - A (possibly time bounded) incidence of a feature of the environment of an organism that influences one or more phenotypic features of that organism, potentially mediated by genes
 
@@ -21,7 +21,7 @@ URI: [biolink:ChemicalExposure](https://w3id.org/biolink/vocab/ChemicalExposure)
 
  * [ComplexChemicalExposure](ComplexChemicalExposure.md) - A complex chemical exposure is an intake of a chemical mixture (e.g. gasoline), other than a drug.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

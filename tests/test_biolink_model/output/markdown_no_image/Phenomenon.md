@@ -13,7 +13,7 @@ URI: [biolink:Phenomenon](https://w3id.org/biolink/vocab/Phenomenon)
 
  *  is_a: [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Occurrent](Occurrent.md) - A processual entity.
 

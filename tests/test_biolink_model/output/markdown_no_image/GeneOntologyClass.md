@@ -13,7 +13,7 @@ URI: [biolink:GeneOntologyClass](https://w3id.org/biolink/vocab/GeneOntologyClas
 
  *  is_a: [OntologyClass](OntologyClass.md) - a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[FunctionalAssociation](FunctionalAssociation.md)** *[functional association➞object](functional_association_object.md)*  <sub>1..1</sub>  **[GeneOntologyClass](GeneOntologyClass.md)**
  *  **[GeneToGoTermAssociation](GeneToGoTermAssociation.md)** *[gene to go term association➞object](gene_to_go_term_association_object.md)*  <sub>1..1</sub>  **[GeneOntologyClass](GeneOntologyClass.md)**

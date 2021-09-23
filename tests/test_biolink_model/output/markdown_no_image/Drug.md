@@ -19,7 +19,7 @@ URI: [biolink:Drug](https://w3id.org/biolink/vocab/Drug)
 
  *  is_a: [MolecularEntity](MolecularEntity.md) - A gene, gene product, small molecule or macromolecule (including protein complex)"
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [Mixture](Mixture.md) - The physical combination of two or more molecular entities in which the identities are retained and are mixed in the form of solutions, suspensions and colloids.
  *  mixin: [ChemicalOrDrugOrTreatment](ChemicalOrDrugOrTreatment.md)
@@ -29,7 +29,7 @@ URI: [biolink:Drug](https://w3id.org/biolink/vocab/Drug)
 
  * [DrugExposure](DrugExposure.md) - A drug exposure is an intake of a particular drug.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[DrugToEntityAssociationMixin](DrugToEntityAssociationMixin.md)** *[drug to entity association mixin➞subject](drug_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[Drug](Drug.md)**
  *  **[NamedThing](NamedThing.md)** *[has drug](has_drug.md)*  <sub>0..\*</sub>  **[Drug](Drug.md)**

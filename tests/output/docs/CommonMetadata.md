@@ -14,7 +14,7 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
  * [Element](Element.md) (mixin)  - a named element in the model
  * [PermissibleValue](PermissibleValue.md) (mixin)  - a permissible value, accompanied by intended text and an optional mapping to a concept URI
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

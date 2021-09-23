@@ -9,7 +9,7 @@ URI: [linkml:LocalName](https://w3id.org/linkml/LocalName)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20local_names%200..*>[LocalName&#124;local_name_source(pk):ncname;local_name_value:string],[Element])](https://yuml.me/diagram/nofunky;dir:TB/class/[Element]++-%20local_names%200..*>[LocalName&#124;local_name_source(pk):ncname;local_name_value:string],[Element])
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Element](Element.md)** *[local_names](local_names.md)*  <sub>0..\*</sub>  **[LocalName](LocalName.md)**
 

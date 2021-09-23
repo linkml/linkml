@@ -13,11 +13,11 @@ URI: [biolink:LifeStage](https://w3id.org/biolink/vocab/LifeStage)
 
  *  is_a: [OrganismalEntity](OrganismalEntity.md) - A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding molecular entities
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ThingWithTaxon](ThingWithTaxon.md) - A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes
 
-## Referenced by class
+## Referenced by Class
 
  *  **[GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md)** *[gene to expression site association➞stage qualifier](gene_to_expression_site_association_stage_qualifier.md)*  <sub>0..1</sub>  **[LifeStage](LifeStage.md)**
  *  **[Association](Association.md)** *[stage qualifier](stage_qualifier.md)*  <sub>0..1</sub>  **[LifeStage](LifeStage.md)**

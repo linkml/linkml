@@ -13,7 +13,7 @@ URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/Varian
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md)
  *  mixin: [EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) - mixin class for any association whose object (target node) is a disease
@@ -22,7 +22,7 @@ URI: [biolink:VariantToDiseaseAssociation](https://w3id.org/biolink/vocab/Varian
 
  * [VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

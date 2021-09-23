@@ -16,7 +16,7 @@ URI: [biolink:Mixture](https://w3id.org/biolink/vocab/Mixture)
  * [Food](Food.md) (mixin)  - A substance consumed by a living organism as a source of nutrition
  * [ProcessedMaterial](ProcessedMaterial.md) (mixin)  - A chemical substance (often a mixture) processed for consumption for nutritional, medical or technical use.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

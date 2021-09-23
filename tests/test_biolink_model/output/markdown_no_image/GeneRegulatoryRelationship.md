@@ -13,7 +13,7 @@ URI: [biolink:GeneRegulatoryRelationship](https://w3id.org/biolink/vocab/GeneReg
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

@@ -13,12 +13,12 @@ URI: [biolink:VariantAsAModelOfDiseaseAssociation](https://w3id.org/biolink/voca
 
  *  is_a: [VariantToDiseaseAssociation](VariantToDiseaseAssociation.md)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md) - This mixin is used for any association class for which the subject (source node) plays the role of a 'model', in that it recapitulates some features of the disease in a way that is useful for studying the disease outside a patient carrying the disease
  *  mixin: [EntityToDiseaseAssociationMixin](EntityToDiseaseAssociationMixin.md) - mixin class for any association whose object (target node) is a disease
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

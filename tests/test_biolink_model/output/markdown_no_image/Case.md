@@ -13,7 +13,7 @@ URI: [biolink:Case](https://w3id.org/biolink/vocab/Case)
 
  *  is_a: [IndividualOrganism](IndividualOrganism.md) - An instance of an organism. For example, Richard Nixon, Charles Darwin, my pet cat. Example ID: ORCID:0000-0002-5355-2576
 
-## Referenced by class
+## Referenced by Class
 
  *  **[CaseToEntityAssociationMixin](CaseToEntityAssociationMixin.md)** *[case to entity association mixin➞subject](case_to_entity_association_mixin_subject.md)*  <sub>1..1</sub>  **[Case](Case.md)**
 

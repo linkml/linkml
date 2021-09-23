@@ -14,7 +14,7 @@ URI: [ks:Concept](https://w3id.org/linkml/tests/kitchen_sink/Concept)
  * [DiagnosisConcept](DiagnosisConcept.md)
  * [ProcedureConcept](ProcedureConcept.md)
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

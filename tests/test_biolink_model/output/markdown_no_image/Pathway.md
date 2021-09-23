@@ -25,11 +25,11 @@ URI: [biolink:Pathway](https://w3id.org/biolink/vocab/Pathway)
 
  *  is_a: [BiologicalProcess](BiologicalProcess.md) - One or more causally connected executions of molecular functions
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [OntologyClass](OntologyClass.md) - a concept or class in an ontology, vocabulary or thesaurus. Note that nodes in a biolink compatible KG can be considered both instances of biolink classes, and OWL classes in their own right. In general you should not need to use this class directly. Instead, use the appropriate biolink class. For example, for the GO concept of endocytosis (GO:0006897), use bl:BiologicalProcess as the type.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ChemicalToPathwayAssociation](ChemicalToPathwayAssociation.md)** *[chemical to pathway association➞object](chemical_to_pathway_association_object.md)*  <sub>1..1</sub>  **[Pathway](Pathway.md)**
 

@@ -13,7 +13,7 @@ URI: [biolink:Onset](https://w3id.org/biolink/vocab/Onset)
 
  *  is_a: [ClinicalCourse](ClinicalCourse.md) - The course a disease typically takes from its onset, progression in time, and eventual resolution or death of the affected individual
 
-## Referenced by class
+## Referenced by Class
 
  *  **[Association](Association.md)** *[onset qualifier](onset_qualifier.md)*  <sub>0..1</sub>  **[Onset](Onset.md)**
 

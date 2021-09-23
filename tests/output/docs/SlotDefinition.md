@@ -13,7 +13,7 @@ URI: [linkml:SlotDefinition](https://w3id.org/linkml/SlotDefinition)
 
  *  is_a: [Definition](Definition.md) - base class for definitions
 
-## Referenced by class
+## Referenced by Class
 
  *  **[ClassDefinition](ClassDefinition.md)** *[attributes](attributes.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[defining_slots](defining_slots.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**

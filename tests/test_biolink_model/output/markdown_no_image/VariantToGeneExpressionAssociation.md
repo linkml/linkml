@@ -13,11 +13,11 @@ URI: [biolink:VariantToGeneExpressionAssociation](https://w3id.org/biolink/vocab
 
  *  is_a: [VariantToGeneAssociation](VariantToGeneAssociation.md) - An association between a variant and a gene, where the variant has a genetic association with the gene (i.e. is in linkage disequilibrium)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [GeneExpressionMixin](GeneExpressionMixin.md) - Observed gene expression intensity, context (site, stage) and associated phenotypic status within which the expression occurs.
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

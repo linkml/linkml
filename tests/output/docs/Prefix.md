@@ -9,7 +9,7 @@ URI: [linkml:Prefix](https://w3id.org/linkml/Prefix)
 
 [![img](images/Prefix.svg)](images/Prefix.svg)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[SchemaDefinition](SchemaDefinition.md)** *[prefixes](prefixes.md)*  <sub>0..\*</sub>  **[Prefix](Prefix.md)**
 

@@ -18,7 +18,7 @@ URI: [biolink:GeographicLocation](https://w3id.org/biolink/vocab/GeographicLocat
  * [GeographicExposure](GeographicExposure.md) - A geographic exposure is a factor relating to geographic proximity to some impactful entity.
  * [GeographicLocationAtTime](GeographicLocationAtTime.md) - a location that can be described in lat/long coordinates, for a particular time
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

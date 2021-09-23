@@ -17,7 +17,7 @@ URI: [biolink:ClinicalCourse](https://w3id.org/biolink/vocab/ClinicalCourse)
 
  * [Onset](Onset.md) - The age group in which (disease) symptom manifestations appear
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

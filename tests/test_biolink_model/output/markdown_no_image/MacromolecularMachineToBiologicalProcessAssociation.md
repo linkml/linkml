@@ -13,11 +13,11 @@ URI: [biolink:MacromolecularMachineToBiologicalProcessAssociation](https://w3id.
 
  *  is_a: [FunctionalAssociation](FunctionalAssociation.md) - An association between a macromolecular machine mixin (gene, gene product or complex of gene products) and either a molecular activity, a biological process or a cellular location in which a function is executed.
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [MacromolecularMachineToEntityAssociationMixin](MacromolecularMachineToEntityAssociationMixin.md) - an association which has a macromolecular machine mixin as a subject
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

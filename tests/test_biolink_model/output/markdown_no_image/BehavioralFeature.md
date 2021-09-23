@@ -13,7 +13,7 @@ URI: [biolink:BehavioralFeature](https://w3id.org/biolink/vocab/BehavioralFeatur
 
  *  is_a: [PhenotypicFeature](PhenotypicFeature.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[BehaviorToBehavioralFeatureAssociation](BehaviorToBehavioralFeatureAssociation.md)** *[behavior to behavioral feature association➞object](behavior_to_behavioral_feature_association_object.md)*  <sub>1..1</sub>  **[BehavioralFeature](BehavioralFeature.md)**
 

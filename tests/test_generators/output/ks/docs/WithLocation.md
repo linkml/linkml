@@ -13,7 +13,7 @@ URI: [ks:WithLocation](https://w3id.org/linkml/tests/kitchen_sink/WithLocation)
 
  * [MarriageEvent](MarriageEvent.md) (mixin) 
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

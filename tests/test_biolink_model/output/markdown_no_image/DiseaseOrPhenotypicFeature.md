@@ -13,7 +13,7 @@ URI: [biolink:DiseaseOrPhenotypicFeature](https://w3id.org/biolink/vocab/Disease
 
  *  is_a: [BiologicalEntity](BiologicalEntity.md)
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [ThingWithTaxon](ThingWithTaxon.md) - A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes
 
@@ -24,7 +24,7 @@ URI: [biolink:DiseaseOrPhenotypicFeature](https://w3id.org/biolink/vocab/Disease
  * [DiseaseOrPhenotypicFeatureOutcome](DiseaseOrPhenotypicFeatureOutcome.md) - Physiological outcomes resulting from an exposure event which is the manifestation of a disease or other characteristic phenotype.
  * [PhenotypicFeature](PhenotypicFeature.md)
 
-## Referenced by class
+## Referenced by Class
 
  *  **[BiologicalEntity](BiologicalEntity.md)** *[ameliorates](ameliorates.md)*  <sub>0..\*</sub>  **[DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)**
  *  **[ChemicalOrDrugOrTreatment](ChemicalOrDrugOrTreatment.md)** *[approved to treat](approved_to_treat.md)*  <sub>0..\*</sub>  **[DiseaseOrPhenotypicFeature](DiseaseOrPhenotypicFeature.md)**

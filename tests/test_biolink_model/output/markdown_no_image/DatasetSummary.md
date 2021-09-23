@@ -13,7 +13,7 @@ URI: [biolink:DatasetSummary](https://w3id.org/biolink/vocab/DatasetSummary)
 
  *  is_a: [InformationContentEntity](InformationContentEntity.md) - a piece of information that typically describes some topic of discourse or is used as support.
 
-## Referenced by class
+## Referenced by Class
 
  *  **[DatasetVersion](DatasetVersion.md)** *[version of](version_of.md)*  <sub>0..1</sub>  **[DatasetSummary](DatasetSummary.md)**
 

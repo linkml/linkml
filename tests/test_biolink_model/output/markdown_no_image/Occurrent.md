@@ -25,7 +25,7 @@ URI: [biolink:Occurrent](https://w3id.org/biolink/vocab/Occurrent)
  * [MolecularActivity](MolecularActivity.md) (mixin)  - An execution of a molecular function carried out by a gene product or macromolecular complex.
  * [Phenomenon](Phenomenon.md) (mixin)  - a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question
 
-## Referenced by class
+## Referenced by Class
 
  *  **[NamedThing](NamedThing.md)** *[actively involved in](actively_involved_in.md)*  <sub>0..\*</sub>  **[Occurrent](Occurrent.md)**
  *  **[NamedThing](NamedThing.md)** *[capable of](capable_of.md)*  <sub>0..\*</sub>  **[Occurrent](Occurrent.md)**

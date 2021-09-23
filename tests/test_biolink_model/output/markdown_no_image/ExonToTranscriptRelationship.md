@@ -13,7 +13,7 @@ URI: [biolink:ExonToTranscriptRelationship](https://w3id.org/biolink/vocab/ExonT
 
  *  is_a: [SequenceFeatureRelationship](SequenceFeatureRelationship.md) - For example, a particular exon is part of a particular transcript or gene
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes

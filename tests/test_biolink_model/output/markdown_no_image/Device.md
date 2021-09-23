@@ -13,7 +13,7 @@ URI: [biolink:Device](https://w3id.org/biolink/vocab/Device)
 
  *  is_a: [NamedThing](NamedThing.md) - a databased entity or concept/class
 
-## Referenced by class
+## Referenced by Class
 
  *  **[NamedThing](NamedThing.md)** *[has device](has_device.md)*  <sub>0..\*</sub>  **[Device](Device.md)**
 

@@ -13,11 +13,11 @@ URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
 
  *  is_a: [Event](Event.md)
 
-## Uses Mixins
+## Uses Trait
 
  *  mixin: [WithLocation](WithLocation.md)
 
-## Referenced by class
+## Referenced by Record
 
  *  **None** *[has marriage history](has_marriage_history.md)*  <sub>0..\*</sub>  **[MarriageEvent](MarriageEvent.md)**
 

@@ -13,13 +13,13 @@ URI: [biolink:VariantToPopulationAssociation](https://w3id.org/biolink/vocab/Var
 
  *  is_a: [Association](Association.md) - A typed association between two entities, supported by evidence
 
-## Uses Mixins
+## Uses Mixin
 
  *  mixin: [VariantToEntityAssociationMixin](VariantToEntityAssociationMixin.md)
  *  mixin: [FrequencyQuantifier](FrequencyQuantifier.md)
  *  mixin: [FrequencyQualifierMixin](FrequencyQualifierMixin.md) - Qualifier for frequency type associations
 
-## Referenced by class
+## Referenced by Class
 
 
 ## Attributes
