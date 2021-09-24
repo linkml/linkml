@@ -1,0 +1,33 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      full_name:
+        required: true
+        description:
+          name of the person
+      aliases:
+        multivalued: true
+        description:
+          other names for the person
+      phone:
+        pattern: "^[\\d\\(\\)\\-]+$"
+      age:
+        range: integer
+        minimum_value: 0
+        maximum_value: 200
+  Container:
+    attributes:
+      persons:
+        multivalued: true
+        inlined_as_list: true
+        range: Person

@@ -1,0 +1,8 @@
+@prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
+
+[] a ns1:dict ;
+    ns1:age "32" ;
+    ns1:full_name "Clark Kent" ;
+    ns1:id "ORCID:1234" ;
+    ns1:phone "555-555-5555" .
+

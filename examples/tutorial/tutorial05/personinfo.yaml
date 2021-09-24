@@ -1,0 +1,41 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:                                  ## Note are adding 3 new ones here
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  ORCID: https://orcid.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    class_uri: schema:Person              ## reuse schema.org vocabulary
+    attributes:
+      id:
+        identifier: true
+      full_name:
+        required: true
+        description:
+          name of the person
+        slot_uri: schema:name             ## reuse schema.org vocabulary
+      aliases:
+        multivalued: true
+        description:
+          other names for the person
+      phone:
+        pattern: "^[\\d\\(\\)\\-]+$"
+        slot_uri: schema:telephone       ## reuse schema.org vocabulary
+      age:
+        range: integer
+        minimum_value: 0
+        maximum_value: 200
+    id_prefixes:
+      - ORCID
+  Container:
+    attributes:
+      persons:
+        multivalued: true
+        inlined_as_list: true
+        range: Person

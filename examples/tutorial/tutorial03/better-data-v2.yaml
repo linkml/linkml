@@ -1,0 +1,8 @@
+persons:
+  - id: ORCID:1234
+    full_name: Clark Kent
+    age: 9000
+    phone: 1-800-kryptonite
+  - id: ORCID:4567
+    full_name: Lois Lane
+    age: 33

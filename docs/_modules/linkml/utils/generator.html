@@ -43,6 +43,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -80,7 +81,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Option</span>
@@ -107,6 +108,8 @@
     <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>         <span class="c1"># False means only visit own slots, True means visit all slots</span>
     <span class="n">visits_are_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>              <span class="c1"># True means visit basic types in alphabetial order, false in entry</span>
     <span class="n">sort_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>              <span class="c1"># True means visit class slots in alphabetical order</span>
+
+    <span class="n">metamodel_name_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Allows mapping of names of metamodel elements such as slot, etc</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">],</span>
@@ -679,7 +682,46 @@
         <span class="k">if</span> <span class="n">ncname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized prefix: </span><span class="si">{</span><span class="n">ncname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">ncname</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://example.org/UNKNOWN/</span><span class="si">{</span><span class="n">ncname</span><span class="si">}</span><span class="s2">/&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ncname</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ncname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Generator.get_metamodel_slot_name"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.generator.Generator.get_metamodel_slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_metamodel_slot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allows for localization of some generators, such as markdown generator</span>
+
+<span class="sd">        The client can control how metamodel elements are displayed; e.g.</span>
+<span class="sd">        mapping the metamodel slot &quot;slot&quot; to &quot;field&quot;</span>
+
+<span class="sd">        This method also takes care of pluralization; e.g. if &quot;slot&quot; is mapped to</span>
+<span class="sd">        &quot;field&quot;, then &quot;slots&quot; will be mapped to &quot;fields&quot;</span>
+
+<span class="sd">        :param slot_name:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_capitalized</span> <span class="o">=</span> <span class="n">slot_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">capitalize</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">is_capitalized</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}{</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span>
+        <span class="n">slot_name_normalized</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">slot_name_normalized_singular</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">slot_name_normalized</span><span class="si">}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot_name_normalized</span> <span class="o">==</span> <span class="s1">&#39;classes&#39;</span><span class="p">:</span>
+            <span class="n">slot_name_normalized_singular</span> <span class="o">=</span> <span class="s1">&#39;class&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slot_name_normalized</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">capitalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">[</span><span class="n">slot_name_normalized</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slot_name_normalized_singular</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">capitalize</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">[</span><span class="n">slot_name_normalized_singular</span><span class="p">]</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">slot_name</span></div>
+
+<div class="viewcode-block" id="Generator.is_class_unconstrained"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.generator.Generator.is_class_unconstrained">[docs]</a>    <span class="k">def</span> <span class="nf">is_class_unconstrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if the class is mapped to typing.Any, i.e the unconstrained class</span>
+
+<span class="sd">        :param cls: class definition</span>
+<span class="sd">        :return: true if the class is unconstrained</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">==</span> <span class="s1">&#39;linkml:Any&#39;</span></div></div>
 
 
 <div class="viewcode-block" id="shared_arguments"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.generator.shared_arguments">[docs]</a><span class="k">def</span> <span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Generator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>

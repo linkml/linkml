@@ -40,6 +40,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
@@ -272,6 +273,43 @@ CamelCased. Slot names are the alias, not the actual name</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.generator.Generator.generatorversion">
 <span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.generatorversion" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.get_metamodel_slot_name">
+<span class="sig-name descname"><span class="pre">get_metamodel_slot_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml/utils/generator.html#Generator.get_metamodel_slot_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.get_metamodel_slot_name" title="Permalink to this definition"></a></dt>
+<dd><p>Allows for localization of some generators, such as markdown generator</p>
+<p>The client can control how metamodel elements are displayed; e.g.
+mapping the metamodel slot “slot” to “field”</p>
+<p>This method also takes care of pluralization; e.g. if “slot” is mapped to
+“field”, then “slots” will be mapped to “fields”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>slot_name</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.is_class_unconstrained">
+<span class="sig-name descname"><span class="pre">is_class_unconstrained</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/generator.html#Generator.is_class_unconstrained"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.generator.Generator.is_class_unconstrained" title="Permalink to this definition"></a></dt>
+<dd><p>Determine if the class is mapped to typing.Any, i.e the unconstrained class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cls</strong> – class definition</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true if the class is unconstrained</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="linkml.utils.generator.Generator.metamodel_name_map">
+<span class="sig-name descname"><span class="pre">metamodel_name_map</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.generator.Generator.metamodel_name_map" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1052,49 +1090,8 @@ content and load a SchemaSynopsis entry</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-linkml.utils.sparqlvalidator">
-<span id="linkml-utils-sparqlvalidator-module"></span><h2>linkml.utils.sparqlvalidator module<a class="headerlink" href="#module-linkml.utils.sparqlvalidator" title="Permalink to this headline"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">linkml.utils.sparqlvalidator.</span></span><span class="sig-name descname"><span class="pre">SparqlValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queries</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/sparqlvalidator.html#SparqlValidator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator.load_schema">
-<span class="sig-name descname"><span class="pre">load_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/sparqlvalidator.html#SparqlValidator.load_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator.load_schema" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator.queries">
-<span class="sig-name descname"><span class="pre">queries</span></span><em class="property"><span class="pre">:</span> <span class="pre">dict</span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator.queries" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator.schema">
-<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator.schema" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator.validate_endpoint">
-<span class="sig-name descname"><span class="pre">validate_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/sparqlvalidator.html#SparqlValidator.validate_endpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator.validate_endpoint" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator.validate_file">
-<span class="sig-name descname"><span class="pre">validate_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'turtle'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/sparqlvalidator.html#SparqlValidator.validate_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator.validate_file" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.SparqlValidator.validate_graph">
-<span class="sig-name descname"><span class="pre">validate_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">rdflib.graph.Graph</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/sparqlvalidator.html#SparqlValidator.validate_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.sparqlvalidator.SparqlValidator.validate_graph" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="linkml.utils.sparqlvalidator.sparqljson2dict">
-<span class="sig-prename descclassname"><span class="pre">linkml.utils.sparqlvalidator.</span></span><span class="sig-name descname"><span class="pre">sparqljson2dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/utils/sparqlvalidator.html#sparqljson2dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.sparqlvalidator.sparqljson2dict" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<section id="linkml-utils-sparqlvalidator-module">
+<h2>linkml.utils.sparqlvalidator module<a class="headerlink" href="#linkml-utils-sparqlvalidator-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="linkml-utils-sqltransformer-module">
 <h2>linkml.utils.sqltransformer module<a class="headerlink" href="#linkml-utils-sqltransformer-module" title="Permalink to this headline"></a></h2>

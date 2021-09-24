@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Examples of use" href="../examples.html" />
-    <link rel="prev" title="Owl" href="owl.html" /> 
+    <link rel="prev" title="Excel Spreadsheet" href="excel.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">Shacl</a></li>
 <li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="owl.html">Owl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Project Generator</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
@@ -68,6 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -119,7 +121,38 @@ python, etc</p>
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
 <section id="gen-project">
 <h4>gen-project<a class="headerlink" href="#gen-project" title="Permalink to this headline"></a></h4>
-<p>Generate JSONLD file from biolink schema</p>
+<p>Generate an entire project LinkML schema</p>
+<p>Generate all downstream artefacts using default configuration:</p>
+<blockquote>
+<div><p>gen-project -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Exclusion lists: all except ShEx:</p>
+<blockquote>
+<div><p>gen-project –exclude shex -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Inclusion lists: only jsonschema and python:</p>
+<blockquote>
+<div><p>gen-project -I python -I jsonschema -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Configuration, on command line:</p>
+<blockquote>
+<div><p>gen-project -A ‘jsonschema: {top_class: Container}’ -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Configuration, via yaml file:</p>
+<blockquote>
+<div><p>gen-project –config config.yaml personinfo.yaml</p>
+</div></blockquote>
+<p>config.yaml:</p>
+<blockquote>
+<div><p>directory: .
+generator_args:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>json_schema:</dt><dd><p>top_class: Container</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-project <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
 </div>
@@ -128,6 +161,30 @@ python, etc</p>
 <dt class="sig sig-object std" id="cmdoption-gen-project-d">
 <span id="cmdoption-gen-project-dir"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dir&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-d" title="Permalink to this definition"></a></dt>
 <dd><p>directory in which to place generated files. E.g. linkml_model, biolink_model</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-A">
+<span id="cmdoption-gen-project-a"></span><span id="cmdoption-gen-project-generator-arguments"></span><span class="sig-name descname"><span class="pre">-A</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--generator-arguments</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;generator_arguments&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-A" title="Permalink to this definition"></a></dt>
+<dd><p>yaml configuration for generators</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-C">
+<span id="cmdoption-gen-project-c"></span><span id="cmdoption-gen-project-config-file"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-C" title="Permalink to this definition"></a></dt>
+<dd><p>path to yaml configuration</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-X">
+<span id="cmdoption-gen-project-x"></span><span id="cmdoption-gen-project-exclude"></span><span class="sig-name descname"><span class="pre">-X</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-X" title="Permalink to this definition"></a></dt>
+<dd><p>list of artefacts to be excluded</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-I">
+<span id="cmdoption-gen-project-i"></span><span id="cmdoption-gen-project-include"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-I" title="Permalink to this definition"></a></dt>
+<dd><p>list of artefacts to be included. If not set, defaults to all</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
@@ -154,7 +211,7 @@ python, etc</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="owl.html" class="btn btn-neutral float-left" title="Owl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="excel.html" class="btn btn-neutral float-left" title="Excel Spreadsheet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../examples.html" class="btn btn-neutral float-right" title="Examples of use" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
