@@ -39,6 +39,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generators/index.html">Generators</a></li>
@@ -96,7 +97,6 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
- | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -132,6 +132,13 @@
 </li>
       </ul></li>
       <li>
+    --config-file &lt;config_file&gt;
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-C">gen-project command line option</a>
+</li>
+      </ul></li>
+      <li>
     --dialect &lt;dialect&gt;
 
       <ul>
@@ -157,9 +164,20 @@
 </li>
       </ul></li>
       <li>
+    --exclude &lt;exclude&gt;
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-X">gen-project command line option</a>
+</li>
+      </ul></li>
+      <li>
     --format &lt;format&gt;
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-f">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-f">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-f">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-f">gen-markdown command line option</a>
@@ -173,6 +191,13 @@
         <li><a href="generators/sparql.html#cmdoption-gen-sparql-f">gen-sparql command line option</a>
 </li>
         <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-f">gen-sqlddl command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --generator-arguments &lt;generator_arguments&gt;
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-A">gen-project command line option</a>
 </li>
       </ul></li>
       <li>
@@ -200,6 +225,10 @@
     --importmap &lt;importmap&gt;
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-im">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-im">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-im">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-im">gen-markdown command line option</a>
@@ -213,6 +242,13 @@
         <li><a href="generators/sparql.html#cmdoption-gen-sparql-im">gen-sparql command line option</a>
 </li>
         <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-im">gen-sqlddl command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --include &lt;include&gt;
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-I">gen-project command line option</a>
 </li>
       </ul></li>
       <li>
@@ -233,6 +269,10 @@
     --log_level &lt;log_level&gt;
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-log_level">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-log_level">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-log_level">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-log_level">gen-markdown command line option</a>
@@ -249,9 +289,20 @@
 </li>
       </ul></li>
       <li>
+    --map-fields &lt;map_fields&gt;
+
+      <ul>
+        <li><a href="generators/markdown.html#cmdoption-gen-markdown-M">gen-markdown command line option</a>
+</li>
+      </ul></li>
+      <li>
     --mergeimports
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-mergeimports">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-mergeimports">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-mergeimports">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-mergeimports">gen-markdown command line option</a>
@@ -271,6 +322,10 @@
     --metadata
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-metadata">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-metadata">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-metadata">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-metadata">gen-markdown command line option</a>
@@ -290,6 +345,10 @@
     --metauris
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-useuris">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-useuris">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-useuris">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-useuris">gen-markdown command line option</a>
@@ -337,6 +396,10 @@
     --no-mergeimports
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-mergeimports">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-mergeimports">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-mergeimports">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-mergeimports">gen-markdown command line option</a>
@@ -358,6 +421,10 @@
     --no-metadata
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-metadata">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-metadata">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-metadata">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-metadata">gen-markdown command line option</a>
@@ -426,9 +493,25 @@
     --output &lt;output&gt;
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-o">gen-excel command line option</a>
+</li>
         <li><a href="generators/owl.html#cmdoption-gen-owl-o">gen-owl command line option</a>
 </li>
         <li><a href="generators/shex.html#cmdoption-gen-shex-o">gen-shex command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --output_directory &lt;output_directory&gt;
+
+      <ul>
+        <li><a href="generators/java.html#cmdoption-gen-java-output_directory">gen-java command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --package &lt;package&gt;
+
+      <ul>
+        <li><a href="generators/java.html#cmdoption-gen-java-package">gen-java command line option</a>
 </li>
       </ul></li>
       <li>
@@ -453,6 +536,13 @@
 </li>
       </ul></li>
       <li>
+    --template_file &lt;template_file&gt;
+
+      <ul>
+        <li><a href="generators/java.html#cmdoption-gen-java-template_file">gen-java command line option</a>
+</li>
+      </ul></li>
+      <li>
     --top-class &lt;top_class&gt;
 
       <ul>
@@ -470,6 +560,10 @@
     --useuris
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-useuris">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-useuris">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-useuris">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-useuris">gen-markdown command line option</a>
@@ -490,6 +584,20 @@
 
       <ul>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-warnonexist">gen-markdown command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -A
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-A">gen-project command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -C
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-C">gen-project command line option</a>
 </li>
       </ul></li>
       <li>
@@ -514,6 +622,10 @@
     -f
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-f">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-f">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-f">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-f">gen-markdown command line option</a>
@@ -535,6 +647,8 @@
       <ul>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-I">gen-markdown command line option</a>
 </li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-I">gen-project command line option</a>
+</li>
       </ul></li>
       <li>
     -i
@@ -549,6 +663,10 @@
     -im
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-im">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-im">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-im">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-im">gen-markdown command line option</a>
@@ -565,9 +683,18 @@
 </li>
       </ul></li>
       <li>
+    -M
+
+      <ul>
+        <li><a href="generators/markdown.html#cmdoption-gen-markdown-M">gen-markdown command line option</a>
+</li>
+      </ul></li>
+      <li>
     -o
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-o">gen-excel command line option</a>
+</li>
         <li><a href="generators/owl.html#cmdoption-gen-owl-o">gen-owl command line option</a>
 </li>
         <li><a href="generators/shex.html#cmdoption-gen-shex-o">gen-shex command line option</a>
@@ -578,6 +705,13 @@
 
       <ul>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-t">gen-json-schema command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -X
+
+      <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-X">gen-project command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -780,6 +914,8 @@
 </li>
       <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.columns">columns (linkml.generators.sqlddlgen.SQLTable attribute)</a>, <a href="source/linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.columns">[1]</a>
 </li>
+      <li><a href="linkml.generators.html#linkml.generators.pythongen.PythonGenerator.compile_module">compile_module() (linkml.generators.pythongen.PythonGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.pythongen.PythonGenerator.compile_module">[1]</a>
+</li>
       <li><a href="linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator">ContextGenerator (class in linkml.generators.jsonldcontextgen)</a>, <a href="source/linkml.generators.html#linkml.generators.jsonldcontextgen.ContextGenerator">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.infer_model.convert_range">convert_range() (in module linkml.generators.infer_model)</a>, <a href="source/linkml.generators.html#linkml.generators.infer_model.convert_range">[1]</a>
@@ -910,8 +1046,6 @@
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.end_class">(linkml.utils.generator.Generator method)</a>, <a href="source/linkml.utils.html#linkml.utils.generator.Generator.end_class">[1]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="linkml.generators.html#linkml.generators.dotgen.DotGenerator.end_schema">end_schema() (linkml.generators.dotgen.DotGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.dotgen.DotGenerator.end_schema">[1]</a>
 
       <ul>
@@ -936,6 +1070,8 @@
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.end_schema">(linkml.utils.generator.Generator method)</a>, <a href="source/linkml.utils.html#linkml.utils.generator.Generator.end_schema">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="glossary.html#term-enum"><strong>enum</strong></a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.enum_hier">enum_hier() (linkml.generators.markdowngen.MarkdownGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.enum_hier">[1]</a>
@@ -953,6 +1089,8 @@
       <li><a href="linkml.reporting.html#linkml.reporting.model.SeverityOptions.ERROR">ERROR (linkml.reporting.model.SeverityOptions attribute)</a>, <a href="source/linkml.reporting.html#linkml.reporting.model.SeverityOptions.ERROR">[1]</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.errors">errors() (linkml.utils.schemasynopsis.SchemaSynopsis method)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.errors">[1]</a>
+</li>
+      <li><a href="linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration.excludes">excludes (linkml.generators.projectgen.ProjectConfiguration attribute)</a>, <a href="source/linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration.excludes">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.exist_warning">exist_warning() (linkml.generators.markdowngen.MarkdownGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.exist_warning">[1]</a>
 </li>
@@ -990,6 +1128,74 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    gen-excel command line option
+
+      <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-f">--format &lt;format&gt;</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-im">--importmap &lt;importmap&gt;</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-log_level">--log_level &lt;log_level&gt;</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-mergeimports">--mergeimports</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-metadata">--metadata</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-useuris">--metauris</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-mergeimports">--no-mergeimports</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-metadata">--no-metadata</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-o">--output &lt;output&gt;</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-useuris">--useuris</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-f">-f</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-im">-im</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-o">-o</a>
+</li>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-arg-YAMLFILE">YAMLFILE</a>
+</li>
+      </ul></li>
+      <li>
+    gen-java command line option
+
+      <ul>
+        <li><a href="generators/java.html#cmdoption-gen-java-f">--format &lt;format&gt;</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-im">--importmap &lt;importmap&gt;</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-log_level">--log_level &lt;log_level&gt;</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-mergeimports">--mergeimports</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-metadata">--metadata</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-useuris">--metauris</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-mergeimports">--no-mergeimports</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-metadata">--no-metadata</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-output_directory">--output_directory &lt;output_directory&gt;</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-package">--package &lt;package&gt;</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-template_file">--template_file &lt;template_file&gt;</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-useuris">--useuris</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-f">-f</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-im">-im</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-arg-YAMLFILE">YAMLFILE</a>
+</li>
+      </ul></li>
       <li>
     gen-json-schema command line option
 
@@ -1049,6 +1255,8 @@
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-log_level">--log_level &lt;log_level&gt;</a>
 </li>
+        <li><a href="generators/markdown.html#cmdoption-gen-markdown-M">--map-fields &lt;map_fields&gt;</a>
+</li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-mergeimports">--mergeimports</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-metadata">--metadata</a>
@@ -1080,6 +1288,8 @@
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-I">-I</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-im">-im</a>
+</li>
+        <li><a href="generators/markdown.html#cmdoption-gen-markdown-M">-M</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-arg-YAMLFILE">YAMLFILE</a>
 </li>
@@ -1123,9 +1333,25 @@
     gen-project command line option
 
       <ul>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-C">--config-file &lt;config_file&gt;</a>
+</li>
         <li><a href="generators/project-generator.html#cmdoption-gen-project-d">--dir &lt;dir&gt;</a>
 </li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-X">--exclude &lt;exclude&gt;</a>
+</li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-A">--generator-arguments &lt;generator_arguments&gt;</a>
+</li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-I">--include &lt;include&gt;</a>
+</li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-A">-A</a>
+</li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-C">-C</a>
+</li>
         <li><a href="generators/project-generator.html#cmdoption-gen-project-d">-d</a>
+</li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-I">-I</a>
+</li>
+        <li><a href="generators/project-generator.html#cmdoption-gen-project-X">-X</a>
 </li>
         <li><a href="generators/project-generator.html#cmdoption-gen-project-arg-YAMLFILE">YAMLFILE</a>
 </li>
@@ -1208,6 +1434,8 @@
         <li><a href="generators/shex.html#cmdoption-gen-shex-arg-YAMLFILE">YAMLFILE</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gen-sparql command line option
 
@@ -1241,8 +1469,6 @@
         <li><a href="generators/sparql.html#cmdoption-gen-sparql-arg-YAMLFILE">YAMLFILE</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gen-sqlddl command line option
 
@@ -1466,6 +1692,8 @@
 </li>
       <li><a href="linkml.generators.html#linkml.generators.projectgen.get_local_imports">get_local_imports() (in module linkml.generators.projectgen)</a>, <a href="source/linkml.generators.html#linkml.generators.projectgen.get_local_imports">[1]</a>
 </li>
+      <li><a href="linkml.utils.html#linkml.utils.generator.Generator.get_metamodel_slot_name">get_metamodel_slot_name() (linkml.utils.generator.Generator method)</a>, <a href="source/linkml.utils.html#linkml.utils.generator.Generator.get_metamodel_slot_name">[1]</a>
+</li>
       <li><a href="linkml.generators.html#linkml.generators.infer_model.get_pv_element">get_pv_element() (in module linkml.generators.infer_model)</a>, <a href="source/linkml.generators.html#linkml.generators.infer_model.get_pv_element">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key">get_singular_primary_key() (linkml.generators.sqlddlgen.SQLTable method)</a>, <a href="source/linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.get_singular_primary_key">[1]</a>
@@ -1490,7 +1718,7 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.header">header() (linkml.generators.markdowngen.MarkdownGenerator static method)</a>, <a href="source/linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.header">[1]</a>
+      <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.header">header() (linkml.generators.markdowngen.MarkdownGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.header">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -1517,6 +1745,8 @@
       <li><a href="source/linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.image_directory">image_directory (linkml.generators.markdowngen.MarkdownGenerator attribute)</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.in_schema">in_schema (linkml.generators.sqlddlgen.SQLTable attribute)</a>, <a href="source/linkml.generators.html#linkml.generators.sqlddlgen.SQLTable.in_schema">[1]</a>
+</li>
+      <li><a href="linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration.includes">includes (linkml.generators.projectgen.ProjectConfiguration attribute)</a>, <a href="source/linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration.includes">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.infer_model.infer_enum_meanings">infer_enum_meanings() (in module linkml.generators.infer_model)</a>, <a href="source/linkml.generators.html#linkml.generators.infer_model.infer_enum_meanings">[1]</a>
 </li>
@@ -1548,6 +1778,8 @@
       </ul></li>
       <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.inverses">inverses (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.inverses">[1]</a>
 </li>
+      <li><a href="linkml.utils.html#linkml.utils.generator.Generator.is_class_unconstrained">is_class_unconstrained() (linkml.utils.generator.Generator method)</a>, <a href="source/linkml.utils.html#linkml.utils.generator.Generator.is_class_unconstrained">[1]</a>
+</li>
       <li><a href="linkml.generators.html#linkml.generators.infer_model.is_date">is_date() (in module linkml.generators.infer_model)</a>, <a href="source/linkml.generators.html#linkml.generators.infer_model.is_date">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.pythongen.PythonGenerator.is_key_value_class">is_key_value_class() (linkml.generators.pythongen.PythonGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.pythongen.PythonGenerator.is_key_value_class">[1]</a>
@@ -1570,12 +1802,14 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#linkml_runtime.dumpers.json_dumper.JSONDumper">JSONDumper (class in linkml_runtime.dumpers.json_dumper)</a>
+      <li><a href="generators/java.html#linkml.generators.javagen.JavaGenerator">JavaGenerator (class in linkml.generators.javagen)</a>
 </li>
-      <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator">JSONLDGenerator (class in linkml.generators.jsonldgen)</a>, <a href="source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator">[1]</a>
+      <li><a href="code.html#linkml_runtime.dumpers.json_dumper.JSONDumper">JSONDumper (class in linkml_runtime.dumpers.json_dumper)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator">JSONLDGenerator (class in linkml.generators.jsonldgen)</a>, <a href="source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator">[1]</a>
+</li>
       <li><a href="code.html#linkml_runtime.loaders.JSONLoader">JSONLoader (class in linkml_runtime.loaders)</a>
 </li>
       <li><a href="code.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">JsonSchemaGenerator (class in linkml.generators.jsonschemagen)</a>, <a href="generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">[1]</a>, <a href="linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">[2]</a>, <a href="source/linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator">[3]</a>
@@ -1734,6 +1968,8 @@
         <li><a href="linkml.generators.html#module-linkml.generators.shexgen">module</a>, <a href="source/linkml.generators.html#module-linkml.generators.shexgen">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     linkml.generators.sparqlgen
 
@@ -1741,8 +1977,6 @@
         <li><a href="linkml.generators.html#module-linkml.generators.sparqlgen">module</a>, <a href="source/linkml.generators.html#module-linkml.generators.sparqlgen">[1]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     linkml.generators.sqlddlgen
 
@@ -1849,13 +2083,6 @@
 </li>
       </ul></li>
       <li>
-    linkml.utils.sparqlvalidator
-
-      <ul>
-        <li><a href="linkml.utils.html#module-linkml.utils.sparqlvalidator">module</a>, <a href="source/linkml.utils.html#module-linkml.utils.sparqlvalidator">[1]</a>
-</li>
-      </ul></li>
-      <li>
     linkml.utils.typereferences
 
       <ul>
@@ -1872,8 +2099,6 @@
       <li><a href="source/linkml.generators.html#linkml.generators.shexgen.ShExGenerator.list_shapes">list_shapes (linkml.generators.shexgen.ShExGenerator attribute)</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.rawloader.load_raw_schema">load_raw_schema() (in module linkml.utils.rawloader)</a>, <a href="source/linkml.utils.html#linkml.utils.rawloader.load_raw_schema">[1]</a>
-</li>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.load_schema">load_schema() (linkml.utils.sparqlvalidator.SparqlValidator method)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.load_schema">[1]</a>
 </li>
       <li><a href="code.html#linkml_runtime.loaders.JSONLoader.loads">loads() (linkml_runtime.loaders.JSONLoader method)</a>
 </li>
@@ -1922,6 +2147,8 @@
       <li><a href="linkml.utils.html#linkml.utils.mergeutils.merge_slots">merge_slots() (in module linkml.utils.mergeutils)</a>, <a href="source/linkml.utils.html#linkml.utils.mergeutils.merge_slots">[1]</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_type">merge_type() (linkml.utils.schemaloader.SchemaLoader method)</a>, <a href="source/linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.merge_type">[1]</a>
+</li>
+      <li><a href="linkml.utils.html#linkml.utils.generator.Generator.metamodel_name_map">metamodel_name_map (linkml.utils.generator.Generator attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.generator.Generator.metamodel_name_map">[1]</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.mixinrefs">mixinrefs (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.mixinrefs">[1]</a>
 </li>
@@ -2002,8 +2229,6 @@
         <li><a href="linkml.utils.html#module-linkml.utils.schemasynopsis">linkml.utils.schemasynopsis</a>, <a href="source/linkml.utils.html#module-linkml.utils.schemasynopsis">[1]</a>
 </li>
         <li><a href="linkml.utils.html#module-linkml.utils.schemautils">linkml.utils.schemautils</a>, <a href="source/linkml.utils.html#module-linkml.utils.schemautils">[1]</a>
-</li>
-        <li><a href="linkml.utils.html#module-linkml.utils.sparqlvalidator">linkml.utils.sparqlvalidator</a>, <a href="source/linkml.utils.html#module-linkml.utils.sparqlvalidator">[1]</a>
 </li>
         <li><a href="linkml.utils.html#module-linkml.utils.typereferences">linkml.utils.typereferences</a>, <a href="source/linkml.utils.html#module-linkml.utils.typereferences">[1]</a>
 </li>
@@ -2137,14 +2362,6 @@
   </ul></td>
 </tr></table>
 
-<h2 id="Q">Q</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.queries">queries (linkml.utils.sparqlvalidator.SparqlValidator attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.queries">[1]</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -2195,11 +2412,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.schema">schema (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.schema">[1]</a>
-
-      <ul>
-        <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.schema">(linkml.utils.sparqlvalidator.SparqlValidator attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.schema">[1]</a>
 </li>
-      </ul></li>
       <li><a href="linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.schema_errors">schema_errors() (linkml.utils.schemaloader.SchemaLoader method)</a>, <a href="source/linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.schema_errors">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.golrgen.GOLRClass.schema_generating">schema_generating (linkml.generators.golrgen.GOLRClass attribute)</a>, <a href="source/linkml.generators.html#linkml.generators.golrgen.GOLRClass.schema_generating">[1]</a>
@@ -2218,9 +2431,11 @@
 </li>
       <li><a href="source/linkml.generators.html#linkml.generators.csvgen.CsvGenerator.sep">sep (linkml.generators.csvgen.CsvGenerator attribute)</a>
 </li>
-      <li><a href="code.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">serialize() (linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>, <a href="generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">[1]</a>
+      <li><a href="generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">serialize() (linkml.generators.javagen.JavaGenerator method)</a>
 
       <ul>
+        <li><a href="code.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">(linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>, <a href="generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">[1]</a>
+</li>
         <li><a href="generators/markdown.html#linkml.generators.markdowngen.MarkdownGenerator.serialize">(linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
         <li><a href="generators/python.html#linkml.generators.pythongen.PythonGenerator.serialize">(linkml.generators.pythongen.PythonGenerator method)</a>
@@ -2264,10 +2479,10 @@
 </li>
       <li><a href="linkml.utils.html#linkml.utils.mergeutils.slot_usage_name">slot_usage_name() (in module linkml.utils.mergeutils)</a>, <a href="source/linkml.utils.html#linkml.utils.mergeutils.slot_usage_name">[1]</a>
 </li>
-      <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.slotclasses">slotclasses (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.slotclasses">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.slotclasses">slotclasses (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.slotclasses">[1]</a>
+</li>
       <li><a href="code.html#linkml_runtime.linkml_model.meta.SlotDefinition">SlotDefinition (class in linkml_runtime.linkml_model.meta)</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.slotrefs">slotrefs (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.slotrefs">[1]</a>
@@ -2291,10 +2506,6 @@
 </li>
       </ul></li>
       <li><a href="generators/sparql.html#linkml.generators.sparqlgen.SparqlGenerator">SparqlGenerator (class in linkml.generators.sparqlgen)</a>, <a href="linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator">[1]</a>, <a href="source/linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator">[2]</a>
-</li>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.sparqljson2dict">sparqljson2dict() (in module linkml.utils.sparqlvalidator)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.sparqljson2dict">[1]</a>
-</li>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator">SparqlValidator (class in linkml.utils.sparqlvalidator)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator">[1]</a>
 </li>
       <li><a href="linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.split_sparql">split_sparql() (linkml.generators.sparqlgen.SparqlGenerator method)</a>, <a href="source/linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.split_sparql">[1]</a>
 </li>
@@ -2448,12 +2659,6 @@
         <li><a href="linkml.utils.html#linkml.utils.generator.Generator.valid_formats">(linkml.utils.generator.Generator attribute)</a>, <a href="source/linkml.utils.html#linkml.utils.generator.Generator.valid_formats">[1]</a>
 </li>
       </ul></li>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.validate_endpoint">validate_endpoint() (linkml.utils.sparqlvalidator.SparqlValidator method)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.validate_endpoint">[1]</a>
-</li>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.validate_file">validate_file() (linkml.utils.sparqlvalidator.SparqlValidator method)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.validate_file">[1]</a>
-</li>
-      <li><a href="linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.validate_graph">validate_graph() (linkml.utils.sparqlvalidator.SparqlValidator method)</a>, <a href="source/linkml.utils.html#linkml.utils.sparqlvalidator.SparqlValidator.validate_graph">[1]</a>
-</li>
       <li><a href="linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.validate_item_names">validate_item_names() (linkml.utils.schemaloader.SchemaLoader method)</a>, <a href="source/linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.validate_item_names">[1]</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.validation.validate_object">validate_object() (in module linkml.utils.validation)</a>, <a href="source/linkml.utils.html#linkml.utils.validation.validate_object">[1]</a>
@@ -2668,6 +2873,10 @@
     YAMLFILE
 
       <ul>
+        <li><a href="generators/excel.html#cmdoption-gen-excel-arg-YAMLFILE">gen-excel command line option</a>
+</li>
+        <li><a href="generators/java.html#cmdoption-gen-java-arg-YAMLFILE">gen-java command line option</a>
+</li>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-arg-YAMLFILE">gen-json-schema command line option</a>
 </li>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-arg-YAMLFILE">gen-markdown command line option</a>

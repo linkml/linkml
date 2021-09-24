@@ -25,6 +25,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -42,10 +43,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
 </ul>
 
@@ -77,11 +80,13 @@
 <span></span><span class="kn">import</span> <span class="nn">keyword</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Set</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">linkml_files</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
 <span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">URIRef</span>
 
 <span class="kn">import</span> <span class="nn">linkml</span>
@@ -115,6 +120,14 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generating metamodel without --genmeta is highly inadvised!&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sourcefile</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PythonGenerator.compile_module"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.pythongen.PythonGenerator.compile_module">[docs]</a>    <span class="k">def</span> <span class="nf">compile_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compiles generated python code to a module</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pycode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">pycode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PythonGenerator.visit_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.pythongen.PythonGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Add explicitly declared prefixes</span>
@@ -372,6 +385,10 @@
         <span class="n">postinits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_postinits</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
         <span class="n">wrapped_description</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&quot;&quot;&quot;</span><span class="se">\n\t</span><span class="si">{</span><span class="n">wrapped_annotation</span><span class="p">(</span><span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">))</span><span class="si">}</span><span class="se">\n\t</span><span class="s1">&quot;&quot;&quot;&#39;</span> <span class="k">if</span> <span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1"> = Any&#39;</span>
+
 
         <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">@dataclass&#39;</span> <span class="k">if</span> <span class="n">slotdefs</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> \
                <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">class </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}{</span><span class="n">parentref</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">wrapped_description</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> \
@@ -652,6 +669,10 @@
         <span class="sd">&quot;&quot;&quot; Generate python post init rules for slot in class</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rlines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
         <span class="n">aliased_slot_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>           <span class="c1"># Mangled name by which the slot is known in python</span>
         <span class="n">range_type</span><span class="p">,</span> <span class="n">base_type</span><span class="p">,</span> <span class="n">base_type_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_reference_type</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>

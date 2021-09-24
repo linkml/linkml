@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Objects &mdash; linkml  documentation</title>
+  <title>The LinkML Ecosystem &mdash; linkml  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,9 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FAQ" href="faq/index.html" />
+    <link rel="prev" title="Examples of use" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,14 +39,23 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples of use</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The LinkML Ecosystem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tools-that-build-off-linkml">Tools that build off LinkML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-harmonizer">Data Harmonizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bootstrapping-models">Bootstrapping Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#templates-owl-generation">Templates OWL generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linkml-and-solr">LinkML and SOLR</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -67,9 +78,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Data Objects</li>
+      <li>The LinkML Ecosystem</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/data-objects.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/ecosystem.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -77,19 +88,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="data-objects">
-<h1>Data Objects<a class="headerlink" href="#data-objects" title="Permalink to this headline"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="the-linkml-ecosystem">
+<h1>The LinkML Ecosystem<a class="headerlink" href="#the-linkml-ecosystem" title="Permalink to this headline"></a></h1>
+<p>LinkML is part of a growing ecosystem of tools</p>
+<section id="tools-that-build-off-linkml">
+<h2>Tools that build off LinkML<a class="headerlink" href="#tools-that-build-off-linkml" title="Permalink to this headline"></a></h2>
+<section id="data-harmonizer">
+<h3>Data Harmonizer<a class="headerlink" href="#data-harmonizer" title="Permalink to this headline"></a></h3>
 <ul class="simple">
-<li><p>JSON</p></li>
-<li><p>YAML</p></li>
-<li></li>
+<li><p><a class="reference external" href="https://github.com/Public-Health-Bioinformatics/DataHarmonizer">DataHarmonizer</a> is a ontology-based curation tool that is being adapter to LinkML</p></li>
 </ul>
+</section>
+<section id="bootstrapping-models">
+<h3>Bootstrapping Models<a class="headerlink" href="#bootstrapping-models" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a> bootstraps schemas from existing structured and semi-structured sources</p></li>
+</ul>
+</section>
+<section id="templates-owl-generation">
+<h3>Templates OWL generation<a class="headerlink" href="#templates-owl-generation" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> allows for generation of complex OWL axioms from datamodels</p></li>
+</ul>
+</section>
+<section id="linkml-and-solr">
+<h3>LinkML and SOLR<a class="headerlink" href="#linkml-and-solr" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-solr">linkml-solr</a></p></li>
+</ul>
+</section>
+</section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples of use" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="faq/index.html" class="btn btn-neutral float-right" title="FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

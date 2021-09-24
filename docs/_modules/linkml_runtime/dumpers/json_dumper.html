@@ -43,6 +43,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -84,6 +85,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.dumpers.dumper_root</span> <span class="kn">import</span> <span class="n">Dumper</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils</span> <span class="kn">import</span> <span class="n">formatutils</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.context_utils</span> <span class="kn">import</span> <span class="n">CONTEXTS_PARAM_TYPE</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">remove_empty_items</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">as_json_object</span>
 
 
@@ -119,7 +121,7 @@
 <span class="sd">        :return: JSON Object representing the element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">as_json_object</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">contexts</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="n">inject_type</span><span class="p">),</span>
-                          <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_empty_items</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">)</span> <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
+                          <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">o</span><span class="p">:</span> <span class="n">remove_empty_items</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">hide_protected_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">)</span> <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">o</span><span class="p">),</span>
                           <span class="n">indent</span><span class="o">=</span><span class="s1">&#39;  &#39;</span><span class="p">)</span></div>
 
 

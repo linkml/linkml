@@ -43,6 +43,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -82,15 +83,15 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">import</span> <span class="nn">jsonschema</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
 
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">as_dict</span><span class="p">,</span> <span class="n">YAMLRoot</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
 
 <span class="kn">from</span> <span class="nn">linkml.generators.jsonschemagen</span> <span class="kn">import</span> <span class="n">JsonSchemaGenerator</span>
-<span class="kn">import</span> <span class="nn">linkml.utils.datautils</span> <span class="k">as</span> <span class="nn">datautils</span>
+
 
 <span class="k">def</span> <span class="nf">_as_dict</span><span class="p">(</span><span class="n">inst</span><span class="p">):</span>
     <span class="c1"># TODO: replace this with linkml_runtime.dictutils when 1.0.14 is released</span>
@@ -98,7 +99,7 @@
     <span class="k">del</span> <span class="n">inst_dict</span><span class="p">[</span><span class="s1">&#39;@type&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">inst_dict</span>
 
-
+<span class="c1"># Deprecated: use validators module</span>
 <div class="viewcode-block" id="validate_object"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.validation.validate_object">[docs]</a><span class="k">def</span> <span class="nf">validate_object</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -119,8 +120,6 @@
     <span class="n">jsonschema_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">jsonschemastr</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">inst_dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">jsonschema_obj</span><span class="p">)</span></div>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">datautils</span><span class="o">.</span><span class="n">cli</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 </pre></div>
 
            </div>

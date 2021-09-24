@@ -25,6 +25,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -36,13 +37,19 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../authoring-schemas.html">Schemas</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../validating-data.html">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">SSSOM-PY</a></li>
 </ul>
 
         </div>
@@ -91,7 +98,7 @@
 
 
 <div class="viewcode-block" id="SchemaLoader"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.schemaloader.SchemaLoader">[docs]</a><span class="k">class</span> <span class="nc">SchemaLoader</span><span class="p">:</span>
-<div class="viewcode-block" id="SchemaLoader.__init__"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span>
                  <span class="n">base_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">namespaces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Namespaces</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -135,7 +142,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>           <span class="c1"># Map from schema URI to default namespace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">merge_modules</span> <span class="o">=</span> <span class="n">mergeimports</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="n">emit_metadata</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="n">emit_metadata</span>
 
 <div class="viewcode-block" id="SchemaLoader.resolve"><a class="viewcode-back" href="../../../source/linkml.utils.html#linkml.utils.schemaloader.SchemaLoader.resolve">[docs]</a>    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Reconcile a loaded schema, applying is_a, mixins, apply_to&#39;s and other such things.  Also validate the</span>
@@ -257,8 +264,11 @@
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">mappings</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">useuris</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Class has no from_schema: </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">suffixed_cls_schema</span> <span class="o">=</span> <span class="n">sfx</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">)</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_or_curie_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">,</span> <span class="n">sfx</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">)),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_or_curie_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">,</span> <span class="n">suffixed_cls_schema</span><span class="p">),</span>
                                                                  <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
         <span class="c1"># Get the inverse ducks all in a row before we start filling other stuff in</span>
