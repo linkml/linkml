@@ -64,6 +64,13 @@ slots:
     see_also:
       - https://en.wikipedia.org/wiki/Data_element_name
 
+  title:
+    domain: element
+    description: the official title of the element
+    slot_uri: dcterms:title
+    in_subset:
+      - owl
+
   definition_uri:
     domain: element
     description: the "native" URI of the element
@@ -328,13 +335,6 @@ slots:
     description: >-
         a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in
         this list are added to the prefix sections of the target models.
-
-  title:
-    domain: schema_definition
-    description: the official title of the schema
-    slot_uri: dcterms:title
-    in_subset:
-      - owl
 
   version:
     domain: schema_definition
@@ -785,7 +785,7 @@ slots:
     inherited: true
 
   pattern:
-    domain: slot_definition
+    domain: definition
     range: string
     description: the string value of the slot must conform to this regular expression
     inherited: true
@@ -971,6 +971,7 @@ classes:
       - common_metadata
     slots:
       - name
+      - title
       - id_prefixes
       - definition_uri
       - aliases
@@ -991,7 +992,6 @@ classes:
     is_a: element
     slots:
       - id
-      - title
       - version
       - imports
       - license
@@ -1027,6 +1027,7 @@ classes:
       - base
       - type_uri
       - repr
+      - pattern
 
   subset_definition:
     description: the name and description of a subset

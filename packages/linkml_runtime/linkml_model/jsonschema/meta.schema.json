@@ -1,8 +1,5 @@
 {
-   "$id": "https://w3id.org/linkml/meta",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "AltDescription": {
          "additionalProperties": false,
          "description": "an attributed description",
@@ -30,14 +27,14 @@
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -73,14 +70,14 @@
             },
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -93,7 +90,7 @@
             "attributes": {
                "description": "Inline definition of slots",
                "items": {
-                  "$ref": "#/definitions/SlotDefinition"
+                  "$ref": "#/$defs/SlotDefinition"
                },
                "type": "array"
             },
@@ -168,14 +165,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -211,7 +208,7 @@
             },
             "local_names": {
                "items": {
-                  "$ref": "#/definitions/LocalName"
+                  "$ref": "#/$defs/LocalName"
                },
                "type": "array"
             },
@@ -271,7 +268,7 @@
             "slot_usage": {
                "description": "the redefinition of a slot in the context of the containing class definition.",
                "items": {
-                  "$ref": "#/definitions/SlotDefinition"
+                  "$ref": "#/$defs/SlotDefinition"
                },
                "type": "array"
             },
@@ -292,6 +289,10 @@
             },
             "subclass_of": {
                "description": "rdfs:subClassOf to be emitted in OWL generation",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
                "type": "string"
             },
             "todos": {
@@ -338,14 +339,14 @@
             },
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -412,14 +413,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -447,7 +448,7 @@
             },
             "local_names": {
                "items": {
-                  "$ref": "#/definitions/LocalName"
+                  "$ref": "#/$defs/LocalName"
                },
                "type": "array"
             },
@@ -479,13 +480,13 @@
             "permissible_values": {
                "description": "A list of possible values for a slot range",
                "items": {
-                  "$ref": "#/definitions/PermissibleValue"
+                  "$ref": "#/$defs/PermissibleValue"
                },
                "type": "array"
             },
             "pv_formula": {
-               "description": "Defines the specific formula to be used to generate the permissible values.",
-               "type": "string"
+               "$ref": "#/$defs/PvFormulaOptions",
+               "description": "Defines the specific formula to be used to generate the permissible values."
             },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
@@ -500,6 +501,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
             },
             "todos": {
                "description": "Outstanding issue that needs resolution",
@@ -539,7 +544,7 @@
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -585,14 +590,14 @@
          "properties": {
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -622,14 +627,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -712,6 +717,17 @@
          "title": "Prefix",
          "type": "object"
       },
+      "PvFormulaOptions": {
+         "description": "The formula used to generate the set of permissible values from the code_set values",
+         "enum": [
+            "CODE",
+            "CURIE",
+            "URI",
+            "FHIR_CODING"
+         ],
+         "title": "PvFormulaOptions",
+         "type": "string"
+      },
       "SchemaDefinition": {
          "additionalProperties": false,
          "description": "a collection of subset, type, slot and class definitions",
@@ -724,14 +740,14 @@
             },
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -745,7 +761,7 @@
             "classes": {
                "description": "class definitions",
                "items": {
-                  "$ref": "#/definitions/ClassDefinition"
+                  "$ref": "#/$defs/ClassDefinition"
                },
                "type": "array"
             },
@@ -808,7 +824,7 @@
             "enums": {
                "description": "enumerated ranges",
                "items": {
-                  "$ref": "#/definitions/EnumDefinition"
+                  "$ref": "#/$defs/EnumDefinition"
                },
                "type": "array"
             },
@@ -822,14 +838,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -877,7 +893,7 @@
             },
             "local_names": {
                "items": {
-                  "$ref": "#/definitions/LocalName"
+                  "$ref": "#/$defs/LocalName"
                },
                "type": "array"
             },
@@ -912,7 +928,7 @@
             "prefixes": {
                "description": "prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes",
                "items": {
-                  "$ref": "#/definitions/Prefix"
+                  "$ref": "#/$defs/Prefix"
                },
                "type": "array"
             },
@@ -933,7 +949,7 @@
             "slots": {
                "description": "slot definitions",
                "items": {
-                  "$ref": "#/definitions/SlotDefinition"
+                  "$ref": "#/$defs/SlotDefinition"
                },
                "type": "array"
             },
@@ -953,12 +969,12 @@
             "subsets": {
                "description": "list of subsets referenced in this model",
                "items": {
-                  "$ref": "#/definitions/SubsetDefinition"
+                  "$ref": "#/$defs/SubsetDefinition"
                },
                "type": "array"
             },
             "title": {
-               "description": "the official title of the schema",
+               "description": "the official title of the element",
                "type": "string"
             },
             "todos": {
@@ -971,7 +987,7 @@
             "types": {
                "description": "data types used in the model",
                "items": {
-                  "$ref": "#/definitions/TypeDefinition"
+                  "$ref": "#/$defs/TypeDefinition"
                },
                "type": "array"
             },
@@ -1007,14 +1023,14 @@
             },
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -1099,14 +1115,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -1178,7 +1194,7 @@
             },
             "local_names": {
                "items": {
-                  "$ref": "#/definitions/LocalName"
+                  "$ref": "#/$defs/LocalName"
                },
                "type": "array"
             },
@@ -1299,6 +1315,10 @@
                "description": "True means that any instance of  d s r implies that there is also an instance of r s d",
                "type": "boolean"
             },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -1336,14 +1356,14 @@
             },
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -1398,14 +1418,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -1433,7 +1453,7 @@
             },
             "local_names": {
                "items": {
-                  "$ref": "#/definitions/LocalName"
+                  "$ref": "#/$defs/LocalName"
                },
                "type": "array"
             },
@@ -1476,6 +1496,10 @@
                },
                "type": "array"
             },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -1502,14 +1526,14 @@
             },
             "alt_descriptions": {
                "items": {
-                  "$ref": "#/definitions/AltDescription"
+                  "$ref": "#/$defs/AltDescription"
                },
                "type": "array"
             },
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
@@ -1568,14 +1592,14 @@
             "examples": {
                "description": "example usages of an element",
                "items": {
-                  "$ref": "#/definitions/Example"
+                  "$ref": "#/$defs/Example"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -1603,7 +1627,7 @@
             },
             "local_names": {
                "items": {
-                  "$ref": "#/definitions/LocalName"
+                  "$ref": "#/$defs/LocalName"
                },
                "type": "array"
             },
@@ -1632,6 +1656,10 @@
                },
                "type": "array"
             },
+            "pattern": {
+               "description": "the string value of the slot must conform to this regular expression",
+               "type": "string"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -1649,6 +1677,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
             },
             "todos": {
                "description": "Outstanding issue that needs resolution",
@@ -1679,14 +1711,14 @@
             "annotations": {
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
                "items": {
-                  "$ref": "#/definitions/Annotation"
+                  "$ref": "#/$defs/Annotation"
                },
                "type": "array"
             },
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -1705,6 +1737,9 @@
          "type": "object"
       }
    },
+   "$id": "https://w3id.org/linkml/meta",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {},
    "title": "meta",
    "type": "object"
