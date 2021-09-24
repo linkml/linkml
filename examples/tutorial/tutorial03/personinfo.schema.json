@@ -1,0 +1,59 @@
+{
+   "$defs": {
+      "Container": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "persons": {
+               "items": {
+                  "$ref": "#/$defs/Person"
+               },
+               "type": "array"
+            }
+         },
+         "required": [],
+         "title": "Container",
+         "type": "object"
+      },
+      "Person": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "age": {
+               "type": "integer"
+            },
+            "aliases": {
+               "description": "other names for the person",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "full_name": {
+               "description": "name of the person",
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "phone": {
+               "pattern": "^[\\d\\(\\)\\-]+$",
+               "type": "string"
+            }
+         },
+         "required": [
+            "id",
+            "full_name"
+         ],
+         "title": "Person",
+         "type": "object"
+      }
+   },
+   "$id": "https://w3id.org/linkml/examples/personinfo",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "properties": {},
+   "title": "personinfo",
+   "type": "object"
+}
+
