@@ -1,8 +1,5 @@
 {
-   "$id": "https://w3id.org/linkml/extensions",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "Extension": {
          "additionalProperties": false,
          "description": "a tag/value pair used to add non-model information to an entry",
@@ -10,7 +7,7 @@
             "extensions": {
                "description": "a tag/text tuple attached to an arbitrary element",
                "items": {
-                  "$ref": "#/definitions/Extension"
+                  "$ref": "#/$defs/Extension"
                },
                "type": "array"
             },
@@ -31,6 +28,9 @@
          "type": "object"
       }
    },
+   "$id": "https://w3id.org/linkml/extensions",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
    "properties": {},
    "title": "extensions",
    "type": "object"

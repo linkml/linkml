@@ -6,38 +6,28 @@
     linkml:default_prefix "linkml" ;
     linkml:default_range "string" ;
     linkml:description "Shared type definitions for the core LinkML mode and metamodel" ;
-    linkml:generation_date "2021-08-19 17:51" ;
+    linkml:generation_date "2021-09-24 02:31" ;
     linkml:id "https://w3id.org/linkml/types" ;
     linkml:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:name "types" ;
     linkml:prefixes [ linkml:prefix_prefix "linkml" ;
             linkml:prefix_reference "https://w3id.org/linkml/" ],
-        [ linkml:prefix_prefix "shex" ;
-            linkml:prefix_reference "http://www.w3.org/ns/shex#" ],
         [ linkml:prefix_prefix "xsd" ;
-            linkml:prefix_reference "http://www.w3.org/2001/XMLSchema#" ] ;
+            linkml:prefix_reference "http://www.w3.org/2001/XMLSchema#" ],
+        [ linkml:prefix_prefix "shex" ;
+            linkml:prefix_reference "http://www.w3.org/ns/shex#" ] ;
     linkml:source_file "types.yaml" ;
-    linkml:source_file_date "Thu Aug 19 17:49:00 2021" ;
+    linkml:source_file_date "Fri Sep 24 02:29:20 2021" ;
     linkml:source_file_size 2676 ;
     linkml:title "Core LinkML metamodel types" ;
     linkml:types [ a linkml:TypeDefinition ;
-            linkml:base "URIorCURIE" ;
-            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
-            linkml:description "a URI or a CURIE" ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/String" ;
+            linkml:description "A character string" ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "uriorcurie" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "XSDDate" ;
-            linkml:definition_uri "https://w3id.org/linkml/Date" ;
-            linkml:description "a date (year, month and day) in an idealized calendar" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "date" ;
-            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#date" ],
+            linkml:name "string" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
         [ a linkml:TypeDefinition ;
             linkml:base "ElementIdentifier" ;
             linkml:comments "Used for inheritence and type checking" ;
@@ -55,21 +45,14 @@
             linkml:name "float" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
         [ a linkml:TypeDefinition ;
-            linkml:base "NodeIdentifier" ;
-            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
-            linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
+            linkml:base "XSDDate" ;
+            linkml:definition_uri "https://w3id.org/linkml/Date" ;
+            linkml:description "a date (year, month and day) in an idealized calendar" ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "nodeidentifier" ;
+            linkml:name "date" ;
+            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
             linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "URI" ;
-            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
-            linkml:description "a complete URI" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "uri" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+            linkml:uri "http://www.w3.org/2001/XMLSchema#date" ],
         [ a linkml:TypeDefinition ;
             linkml:base "Decimal" ;
             linkml:definition_uri "https://w3id.org/linkml/Decimal" ;
@@ -77,14 +60,6 @@
             linkml:from_schema "https://w3id.org/linkml/types" ;
             linkml:name "decimal" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "XSDDateTime" ;
-            linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
-            linkml:description "The combination of a date and time" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "datetime" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
         [ a linkml:TypeDefinition ;
             linkml:base "float" ;
             linkml:definition_uri "https://w3id.org/linkml/Double" ;
@@ -101,12 +76,21 @@
             linkml:repr "bool" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ],
         [ a linkml:TypeDefinition ;
-            linkml:base "int" ;
-            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
-            linkml:description "An integer" ;
+            linkml:base "NodeIdentifier" ;
+            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
+            linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "integer" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+            linkml:name "nodeidentifier" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "NCName" ;
+            linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
+            linkml:description "Prefix part of CURIE" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "ncname" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
         [ a linkml:TypeDefinition ;
             linkml:base "XSDTime" ;
             linkml:definition_uri "https://w3id.org/linkml/Time" ;
@@ -117,20 +101,36 @@
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
         [ a linkml:TypeDefinition ;
-            linkml:base "NCName" ;
-            linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
-            linkml:description "Prefix part of CURIE" ;
+            linkml:base "URI" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
+            linkml:description "a complete URI" ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "ncname" ;
+            linkml:name "uri" ;
             linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
         [ a linkml:TypeDefinition ;
-            linkml:base "str" ;
-            linkml:definition_uri "https://w3id.org/linkml/String" ;
-            linkml:description "A character string" ;
+            linkml:base "URIorCURIE" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
+            linkml:description "a URI or a CURIE" ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "string" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ] ;
+            linkml:name "uriorcurie" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "int" ;
+            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
+            linkml:description "An integer" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "integer" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "XSDDateTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
+            linkml:description "The combination of a date and time" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "datetime" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ] ;
     linkml:version "2.0.0" .
 
 

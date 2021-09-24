@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-08-19 17:51
+# Generation date: 2021-09-24 02:32
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -185,6 +185,7 @@ class Element(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.Element
 
     name: Union[str, ElementName] = None
+    title: Optional[str] = None
     id_prefixes: Optional[Union[Union[str, NCName], List[Union[str, NCName]]]] = empty_list()
     definition_uri: Optional[Union[str, URIorCURIE]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
@@ -216,6 +217,9 @@ class Element(YAMLRoot):
             self.MissingRequiredField("name")
         if not isinstance(self.name, ElementName):
             self.name = ElementName(self.name)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
 
         if not isinstance(self.id_prefixes, list):
             self.id_prefixes = [self.id_prefixes] if self.id_prefixes is not None else []
@@ -319,7 +323,6 @@ class SchemaDefinition(Element):
 
     name: Union[str, SchemaDefinitionName] = None
     id: Union[str, URI] = None
-    title: Optional[str] = None
     version: Optional[str] = None
     imports: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     license: Optional[str] = None
@@ -351,9 +354,6 @@ class SchemaDefinition(Element):
             self.MissingRequiredField("id")
         if not isinstance(self.id, URI):
             self.id = URI(self.id)
-
-        if self.title is not None and not isinstance(self.title, str):
-            self.title = str(self.title)
 
         if self.version is not None and not isinstance(self.version, str):
             self.version = str(self.version)
@@ -414,7 +414,7 @@ class TypeDefinition(Element):
     """
     A data type definition.
     """
-    _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr"]
+    _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr", "pattern"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.TypeDefinition
     class_class_curie: ClassVar[str] = "linkml:TypeDefinition"
@@ -426,6 +426,7 @@ class TypeDefinition(Element):
     base: Optional[str] = None
     uri: Optional[Union[str, URIorCURIE]] = None
     repr: Optional[str] = None
+    pattern: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
@@ -444,6 +445,9 @@ class TypeDefinition(Element):
 
         if self.repr is not None and not isinstance(self.repr, str):
             self.repr = str(self.repr)
+
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
 
         super().__post_init__(**kwargs)
 
