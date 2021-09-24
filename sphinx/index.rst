@@ -25,6 +25,7 @@ Documentation
 
    intro/overview
    intro/install
+   intro/tutorial
    schemas/index
    data/index
    generators/index
