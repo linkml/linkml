@@ -335,7 +335,7 @@ domain(owner, slot_definition).
 range(owner, definition).
 has_uri(owner, 'http://w3id.org/biolink/vocab/owner').
 slot(pattern).
-domain(pattern, slot_definition).
+domain(pattern, definition).
 range(pattern, string).
 has_uri(pattern, 'http://w3id.org/biolink/vocab/pattern').
 slot(is_a).
@@ -489,7 +489,7 @@ range(text, string).
 has_uri(text, 'http://w3id.org/biolink/vocab/text').
 required(text).
 slot(title).
-domain(title, schema_definition).
+domain(title, element).
 range(title, string).
 has_uri(title, 'http://w3id.org/biolink/vocab/title').
 slot(todos).
@@ -602,6 +602,10 @@ required(name).
 slotrange(string).
 required_in(name, class_definition).
 range_in(name, string, class_definition).
+class_slot(class_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, class_definition).
 class_slot(class_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -877,6 +881,10 @@ required(name).
 slotrange(string).
 required_in(name, definition).
 range_in(name, string, definition).
+class_slot(definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, definition).
 class_slot(definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1056,6 +1064,10 @@ required(name).
 slotrange(string).
 required_in(name, element).
 range_in(name, string, element).
+class_slot(element, title).
+required(title).
+slotrange(string).
+range_in(title, string, element).
 class_slot(element, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1182,6 +1194,10 @@ required(name).
 slotrange(string).
 required_in(name, enum_definition).
 range_in(name, string, enum_definition).
+class_slot(enum_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, enum_definition).
 class_slot(enum_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1474,6 +1490,10 @@ range_in(prefix_reference, uri, prefix).
 class(schema_definition).
 is_a(schema_definition, element).
 has_uri(schema_definition, 'http://w3id.org/biolink/vocab/SchemaDefinition').
+class_slot(schema_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, schema_definition).
 class_slot(schema_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1597,10 +1617,6 @@ required(id).
 slotrange(uri).
 required_in(id, schema_definition).
 range_in(id, uri, schema_definition).
-class_slot(schema_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, schema_definition).
 class_slot(schema_definition, version).
 required(version).
 slotrange(string).
@@ -1695,6 +1711,10 @@ required(name).
 slotrange(string).
 required_in(name, slot_definition).
 range_in(name, string, slot_definition).
+class_slot(slot_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, slot_definition).
 class_slot(slot_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1985,6 +2005,10 @@ required(name).
 slotrange(string).
 required_in(name, subset_definition).
 range_in(name, string, subset_definition).
+class_slot(subset_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, subset_definition).
 class_slot(subset_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -2111,6 +2135,10 @@ required(name).
 slotrange(string).
 required_in(name, type_definition).
 range_in(name, string, type_definition).
+class_slot(type_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, type_definition).
 class_slot(type_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -2245,6 +2273,10 @@ class_slot(type_definition, repr).
 required(repr).
 slotrange(string).
 range_in(repr, string, type_definition).
+class_slot(type_definition, pattern).
+required(pattern).
+slotrange(string).
+range_in(pattern, string, type_definition).
 class(unique_key).
 mixin(unique_key, extensible).
 mixin(unique_key, annotatable).

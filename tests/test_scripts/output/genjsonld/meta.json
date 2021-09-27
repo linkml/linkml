@@ -1,8 +1,8 @@
 {
   "name": "meta",
+  "title": "LinkML Schema Metamodel",
   "description": "A metamodel for defining linked open data schemas",
   "id": "https://w3id.org/linkml/meta",
-  "title": "LinkML Schema Metamodel",
   "version": "2.0.0",
   "imports": [
     "linkml:types",
@@ -263,6 +263,25 @@
       "slot_uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "required": true,
       "identifier": true,
+      "owner": "Element",
+      "domain_of": [
+        "Element"
+      ]
+    },
+    {
+      "name": "title",
+      "definition_uri": "https://w3id.org/linkml/title",
+      "mappings": [
+        "http://purl.org/dc/terms/title"
+      ],
+      "description": "the official title of the element",
+      "in_subset": [
+        "owl"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "Element",
+      "range": "string",
+      "slot_uri": "http://purl.org/dc/terms/title",
       "owner": "Element",
       "domain_of": [
         "Element"
@@ -797,25 +816,6 @@
       "range": "ncname",
       "slot_uri": "https://w3id.org/linkml/emit_prefixes",
       "multivalued": true,
-      "owner": "SchemaDefinition",
-      "domain_of": [
-        "SchemaDefinition"
-      ]
-    },
-    {
-      "name": "title",
-      "definition_uri": "https://w3id.org/linkml/title",
-      "mappings": [
-        "http://purl.org/dc/terms/title"
-      ],
-      "description": "the official title of the schema",
-      "in_subset": [
-        "owl"
-      ],
-      "from_schema": "https://w3id.org/linkml/meta",
-      "domain": "SchemaDefinition",
-      "range": "string",
-      "slot_uri": "http://purl.org/dc/terms/title",
       "owner": "SchemaDefinition",
       "domain_of": [
         "SchemaDefinition"
@@ -1669,12 +1669,13 @@
       "definition_uri": "https://w3id.org/linkml/pattern",
       "description": "the string value of the slot must conform to this regular expression",
       "from_schema": "https://w3id.org/linkml/meta",
-      "domain": "SlotDefinition",
+      "domain": "Definition",
       "range": "string",
       "slot_uri": "https://w3id.org/linkml/pattern",
       "inherited": true,
-      "owner": "SlotDefinition",
+      "owner": "pattern",
       "domain_of": [
+        "TypeDefinition",
         "SlotDefinition"
       ]
     },
@@ -2336,6 +2337,7 @@
       ],
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2378,6 +2380,7 @@
       ],
       "is_a": "Element",
       "slots": [
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2404,7 +2407,6 @@
         "deprecated_element_has_exact_replacement",
         "deprecated_element_has_possible_replacement",
         "id",
-        "title",
         "version",
         "imports",
         "license",
@@ -2436,6 +2438,7 @@
       "is_a": "Element",
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2464,7 +2467,8 @@
         "typeof",
         "base",
         "type_uri",
-        "repr"
+        "repr",
+        "pattern"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/TypeDefinition"
@@ -2477,6 +2481,7 @@
       "is_a": "Element",
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2518,6 +2523,7 @@
       "abstract": true,
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2567,6 +2573,7 @@
       "is_a": "Element",
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2620,6 +2627,7 @@
       "is_a": "Definition",
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2707,6 +2715,7 @@
       "is_a": "Definition",
       "slots": [
         "name",
+        "title",
         "id_prefixes",
         "definition_uri",
         "aliases",
@@ -2917,8 +2926,8 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "Thu Aug 26 20:51:59 2021",
-  "source_file_size": 34566,
-  "generation_date": "2021-08-26 20:54"
+  "source_file_date": "Mon Sep 27 21:44:23 2021",
+  "source_file_size": 34568,
+  "generation_date": "2021-09-27 21:48"
 }
 

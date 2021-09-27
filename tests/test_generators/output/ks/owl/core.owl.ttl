@@ -123,10 +123,10 @@ linkml:Uriorcurie a owl:Class,
     rdfs:label "core" ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     skos:definition "core schema imported by kitchen_sink    " ;
-    linkml:generation_date "2021-09-24 02:49" ;
+    linkml:generation_date "2021-09-27 21:47" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "core.yaml" ;
-    linkml:source_file_date "Fri Sep 24 02:45:04 2021" ;
+    linkml:source_file_date "Mon Sep 27 21:42:32 2021" ;
     linkml:source_file_size 1667 .
 
 <https://w3id.org/linkml/tests/core/activity_set> a owl:ObjectProperty,
@@ -208,17 +208,17 @@ linkml:Date a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "agent" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
             owl:onProperty <https://w3id.org/linkml/tests/core/acted_on_behalf_of> ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ] ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ] ;
     skos:definition "a provence-generating agent" ;
     skos:exactMatch <http://www.w3.org/ns/prov#Agent> .
 
@@ -226,33 +226,33 @@ linkml:Date a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "activity" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
+            owl:onProperty <https://w3id.org/linkml/tests/core/description> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
             owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/used> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/description> ],
+            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/was_associated_with> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
             owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ],
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/used> ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/was_associated_with> ] ;
+            owl:onClass linkml:Date ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ] ;
     skos:definition "a provence-generating activity" ;
     skos:exactMatch <http://www.w3.org/ns/prov#Activity> .
 

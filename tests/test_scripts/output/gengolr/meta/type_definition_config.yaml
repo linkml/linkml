@@ -10,6 +10,9 @@ fields:
     is combined with the default prefix to form the globally unique subject of the
     target class.
   display_name: name
+- id: title
+  description: the official title of the element
+  display_name: title
 - id: id_prefixes
   description: the identifier of this class or slot must begin with the URIs referenced
     by this prefix
@@ -126,3 +129,6 @@ fields:
 - id: repr
   description: the name of the python object that implements this type definition
   display_name: repr
+- id: pattern
+  description: the string value of the slot must conform to this regular expression
+  display_name: pattern

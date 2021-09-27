@@ -9,7 +9,7 @@ URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 
 ## Domain and Range
 
-[SlotDefinition](SlotDefinition.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
+[Definition](Definition.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 
@@ -20,3 +20,4 @@ URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+ * [TypeDefinition](TypeDefinition.md)

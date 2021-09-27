@@ -1,7 +1,7 @@
 {
    "name": "schema6",
-   "id": "http://example.org/schema6.fuzz",
    "title": "Load Raw Schema Test",
+   "id": "http://example.org/schema6.fuzz",
    "default_prefix": "http://example.org/schema6.fuzz/",
    "types": [
       {

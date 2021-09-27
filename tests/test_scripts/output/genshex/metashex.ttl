@@ -276,10 +276,6 @@
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
                 shex:predicate <http://purl.org/pav/version> ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
@@ -513,6 +509,10 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/repr> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
+                shex:max 1 ;
+                shex:min 0 ;
+                shex:predicate <https://w3id.org/linkml/pattern> ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/UniqueKey_tes> a shex:EachOf ;
@@ -793,6 +793,10 @@
                 shex:predicate rdf:type ;
                 shex:valueExpr [ a shex:NodeConstraint ;
                         shex:values ( <https://w3id.org/linkml/CommonMetadata> ) ] ] [ a shex:TripleConstraint ;
+                shex:max 1 ;
+                shex:min 0 ;
+                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/id_prefixes> ;

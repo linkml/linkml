@@ -128,6 +128,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <Annotatable> ] ? ;
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
+          <title> @<String> ? ;
           <id_prefixes> @<Ncname> * ;
           <definition_uri> @<Uriorcurie> ? ;
           <aliases> @<String> * ;
@@ -246,7 +247,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     (  $<SchemaDefinition_tes> (  &<Element_tes> ;
           rdf:type [ <Element> ] ? ;
           <id> @<Uri> ;
-          <title> @<String> ? ;
           <version> @<String> ? ;
           <imports> @<Uriorcurie> * ;
           <license> @<String> ? ;
@@ -323,7 +323,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <typeof> @<TypeDefinition> ? ;
           <base> @<String> ? ;
           <uri> @<Uriorcurie> ? ;
-          <repr> @<String> ?
+          <repr> @<String> ? ;
+          <pattern> @<String> ?
        ) ;
        rdf:type [ <TypeDefinition> ]
     )

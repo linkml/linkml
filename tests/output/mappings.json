@@ -1,8 +1,8 @@
 {
   "name": "mappings",
+  "title": "LinkML Schema Mappings",
   "description": "LinkML model for mappings",
   "id": "https://w3id.org/linkml/mappings",
-  "title": "LinkML Schema Mappings",
   "version": "2.0.0",
   "imports": [
     "linkml:types"
@@ -311,9 +311,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "mappings.yaml",
-  "source_file_date": "Thu Aug 26 20:51:59 2021",
+  "source_file_date": "Mon Sep 27 21:44:23 2021",
   "source_file_size": 2656,
-  "generation_date": "2021-08-26 20:52",
+  "generation_date": "2021-09-27 21:45",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

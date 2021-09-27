@@ -291,6 +291,10 @@
                "description": "rdfs:subClassOf to be emitted in OWL generation",
                "type": "string"
             },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -497,6 +501,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
             },
             "todos": {
                "description": "Outstanding issue that needs resolution",
@@ -966,7 +974,7 @@
                "type": "array"
             },
             "title": {
-               "description": "the official title of the schema",
+               "description": "the official title of the element",
                "type": "string"
             },
             "todos": {
@@ -1307,6 +1315,10 @@
                "description": "True means that any instance of  d s r implies that there is also an instance of r s d",
                "type": "boolean"
             },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -1484,6 +1496,10 @@
                },
                "type": "array"
             },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -1640,6 +1656,10 @@
                },
                "type": "array"
             },
+            "pattern": {
+               "description": "the string value of the slot must conform to this regular expression",
+               "type": "string"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -1657,6 +1677,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
             },
             "todos": {
                "description": "Outstanding issue that needs resolution",

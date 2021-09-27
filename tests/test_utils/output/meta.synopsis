@@ -17,13 +17,14 @@ Slots: 126
 	Undeclared mixin: 0
 	Abstract: 1
 	* Unowned slots: unique_keys
-	Not in domain: 6
+	Not in domain: 7
 		slot.name: slot.domain
 		---------  -----------
 		"created_by": "element"
 		"created_on": "element"
 		"last_updated_on": "element"
 		"modified_by": "element"
+		"pattern": "definition"
 		"status": "element"
 		"unique_keys": "class_definition"
 	Domain unspecified: 8

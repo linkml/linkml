@@ -20,6 +20,7 @@ type Annotation implements Annotatable
 type ClassDefinition
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -87,6 +88,7 @@ interface CommonMetadata
 interface Definition
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -129,6 +131,7 @@ interface Definition
 type Element implements Extensible, Annotatable, CommonMetadata
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -159,6 +162,7 @@ type Element implements Extensible, Annotatable, CommonMetadata
 type EnumDefinition
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -246,6 +250,7 @@ type Prefix
 
 type SchemaDefinition
   {
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -272,7 +277,6 @@ type SchemaDefinition
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
     id: Uri!
-    title: String
     version: String
     imports: [Uriorcurie]
     license: String
@@ -297,6 +301,7 @@ type SchemaDefinition
 type SlotDefinition
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -367,6 +372,7 @@ type SlotDefinition
 type SubsetDefinition
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -397,6 +403,7 @@ type SubsetDefinition
 type TypeDefinition
   {
     name: String!
+    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
@@ -426,6 +433,7 @@ type TypeDefinition
     base: String
     uri: Uriorcurie
     repr: String
+    pattern: String
   }
 
 type UniqueKey implements Extensible, Annotatable

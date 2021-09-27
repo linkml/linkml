@@ -1,7 +1,7 @@
 {
    "name": "base",
-   "id": "http://example.org/base",
    "title": "Base for import test",
+   "id": "http://example.org/base",
    "imports": [
       "linkml:types"
    ],
@@ -200,7 +200,7 @@
    ],
    "metamodel_version": "1.7.0",
    "source_file": "base.yaml",
-   "source_file_date": "Wed Mar 24 16:43:50 2021",
+   "source_file_date": "Mon Sep 27 21:42:32 2021",
    "source_file_size": 467,
-   "generation_date": "2021-03-24 16:49"
+   "generation_date": "2021-09-27 21:50"
 }

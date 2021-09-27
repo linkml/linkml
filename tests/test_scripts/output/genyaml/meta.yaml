@@ -1,7 +1,7 @@
 name: meta
+title: LinkML Schema Metamodel
 description: A metamodel for defining linked open data schemas
 id: https://w3id.org/linkml/meta
-title: LinkML Schema Metamodel
 version: 2.0.0
 imports:
 - linkml:types
@@ -227,6 +227,21 @@ slots:
     slot_uri: rdfs:label
     required: true
     identifier: true
+    owner: element
+    domain_of:
+    - element
+  title:
+    name: title
+    definition_uri: https://w3id.org/linkml/title
+    mappings:
+    - dcterms:title
+    description: the official title of the element
+    in_subset:
+    - owl
+    from_schema: https://w3id.org/linkml/meta
+    domain: element
+    range: string
+    slot_uri: dcterms:title
     owner: element
     domain_of:
     - element
@@ -691,21 +706,6 @@ slots:
     range: ncname
     slot_uri: linkml:emit_prefixes
     multivalued: true
-    owner: schema_definition
-    domain_of:
-    - schema_definition
-  title:
-    name: title
-    definition_uri: https://w3id.org/linkml/title
-    mappings:
-    - dcterms:title
-    description: the official title of the schema
-    in_subset:
-    - owl
-    from_schema: https://w3id.org/linkml/meta
-    domain: schema_definition
-    range: string
-    slot_uri: dcterms:title
     owner: schema_definition
     domain_of:
     - schema_definition
@@ -1474,12 +1474,13 @@ slots:
     definition_uri: https://w3id.org/linkml/pattern
     description: the string value of the slot must conform to this regular expression
     from_schema: https://w3id.org/linkml/meta
-    domain: slot_definition
+    domain: definition
     range: string
     slot_uri: linkml:pattern
     inherited: true
-    owner: slot_definition
+    owner: pattern
     domain_of:
+    - type_definition
     - slot_definition
   string_serialization:
     name: string_serialization
@@ -2077,6 +2078,7 @@ classes:
     - common_metadata
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2114,6 +2116,7 @@ classes:
     - https://en.wikipedia.org/wiki/Data_dictionary
     is_a: element
     slots:
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2140,7 +2143,6 @@ classes:
     - deprecated element has exact replacement
     - deprecated element has possible replacement
     - id
-    - title
     - version
     - imports
     - license
@@ -2173,6 +2175,7 @@ classes:
     is_a: element
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2202,6 +2205,7 @@ classes:
     - base
     - type_uri
     - repr
+    - pattern
     class_uri: linkml:TypeDefinition
   subset_definition:
     name: subset_definition
@@ -2211,6 +2215,7 @@ classes:
     is_a: element
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2248,6 +2253,7 @@ classes:
     abstract: true
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2294,6 +2300,7 @@ classes:
     is_a: element
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2342,6 +2349,7 @@ classes:
     is_a: definition
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2434,6 +2442,7 @@ classes:
     is_a: definition
     slots:
     - name
+    - title
     - id_prefixes
     - definition_uri
     - aliases
@@ -2626,7 +2635,7 @@ classes:
     class_uri: linkml:Annotation
 metamodel_version: 1.7.0
 source_file: meta.yaml
-source_file_date: Thu Aug 19 19:02:51 2021
-source_file_size: 34566
-generation_date: 2021-08-19 19:06
+source_file_date: Mon Sep 27 21:44:23 2021
+source_file_size: 34568
+generation_date: 2021-09-27 21:49
 

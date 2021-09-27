@@ -144,7 +144,7 @@ A metamodel for defining linked open data schemas
  * [subsets](subsets.md) - list of subsets referenced in this model
  * [symmetric](symmetric.md) - True means that any instance of  d s r implies that there is also an instance of r s d
  * [text](text.md)
- * [title](title.md) - the official title of the schema
+ * [title](title.md) - the official title of the element
  * [todos](todos.md) - Outstanding issue that needs resolution
  * [tree_root](tree_root.md) - indicator that this is the root class in tree structures
  * [type_definition➞uri](type_uri.md) - The uri that defines the possible values for the type definition

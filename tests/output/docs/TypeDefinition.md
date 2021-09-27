@@ -36,11 +36,18 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [repr](repr.md)  <sub>0..1</sub>
      * Description: the name of the python object that implements this type definition
      * Range: [String](types/String.md)
+ * [pattern](pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to this regular expression
+     * Range: [String](types/String.md)
 
 ### Inherited from element:
 
  * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+     * Range: [String](types/String.md)
+     * in subsets: (owl)
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
      * Range: [String](types/String.md)
      * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>

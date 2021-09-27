@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-08-19 19:06
+# Generation date: 2021-09-27 21:49
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -187,6 +187,7 @@ class Element(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.Element
 
     name: Union[str, ElementName] = None
+    title: Optional[str] = None
     id_prefixes: Optional[Union[Union[str, NCName], List[Union[str, NCName]]]] = empty_list()
     definition_uri: Optional[Union[str, URIorCURIE]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
@@ -218,6 +219,9 @@ class Element(YAMLRoot):
             self.MissingRequiredField("name")
         if not isinstance(self.name, ElementName):
             self.name = ElementName(self.name)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
 
         if not isinstance(self.id_prefixes, list):
             self.id_prefixes = [self.id_prefixes] if self.id_prefixes is not None else []
@@ -321,7 +325,6 @@ class SchemaDefinition(Element):
 
     name: Union[str, SchemaDefinitionName] = None
     id: Union[str, URI] = None
-    title: Optional[str] = None
     version: Optional[str] = None
     imports: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     license: Optional[str] = None
@@ -353,9 +356,6 @@ class SchemaDefinition(Element):
             self.MissingRequiredField("id")
         if not isinstance(self.id, URI):
             self.id = URI(self.id)
-
-        if self.title is not None and not isinstance(self.title, str):
-            self.title = str(self.title)
 
         if self.version is not None and not isinstance(self.version, str):
             self.version = str(self.version)
@@ -416,7 +416,7 @@ class TypeDefinition(Element):
     """
     A data type definition.
     """
-    _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr"]
+    _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr", "pattern"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.TypeDefinition
     class_class_curie: ClassVar[str] = "linkml:TypeDefinition"
@@ -428,6 +428,7 @@ class TypeDefinition(Element):
     base: Optional[str] = None
     uri: Optional[Union[str, URIorCURIE]] = None
     repr: Optional[str] = None
+    pattern: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
@@ -446,6 +447,9 @@ class TypeDefinition(Element):
 
         if self.repr is not None and not isinstance(self.repr, str):
             self.repr = str(self.repr)
+
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
 
         super().__post_init__(**kwargs)
 
@@ -1071,6 +1075,9 @@ class slots:
 slots.name = Slot(uri=RDFS.label, name="name", curie=RDFS.curie('label'),
                    model_uri=LINKML.name, domain=Element, range=Union[str, ElementName], mappings = [SCHEMA.name])
 
+slots.title = Slot(uri=DCTERMS.title, name="title", curie=DCTERMS.curie('title'),
+                   model_uri=LINKML.title, domain=Element, range=Optional[str])
+
 slots.definition_uri = Slot(uri=LINKML.definition_uri, name="definition_uri", curie=LINKML.curie('definition_uri'),
                    model_uri=LINKML.definition_uri, domain=Element, range=Optional[Union[str, URIorCURIE]])
 
@@ -1166,9 +1173,6 @@ slots.id = Slot(uri=LINKML.id, name="id", curie=LINKML.curie('id'),
 
 slots.emit_prefixes = Slot(uri=LINKML.emit_prefixes, name="emit_prefixes", curie=LINKML.curie('emit_prefixes'),
                    model_uri=LINKML.emit_prefixes, domain=SchemaDefinition, range=Optional[Union[Union[str, NCName], List[Union[str, NCName]]]])
-
-slots.title = Slot(uri=DCTERMS.title, name="title", curie=DCTERMS.curie('title'),
-                   model_uri=LINKML.title, domain=SchemaDefinition, range=Optional[str])
 
 slots.version = Slot(uri=PAV.version, name="version", curie=PAV.curie('version'),
                    model_uri=LINKML.version, domain=SchemaDefinition, range=Optional[str], mappings = [SCHEMA.schemaVersion])
@@ -1330,7 +1334,7 @@ slots.maximum_value = Slot(uri=LINKML.maximum_value, name="maximum_value", curie
                    model_uri=LINKML.maximum_value, domain=SlotDefinition, range=Optional[int])
 
 slots.pattern = Slot(uri=LINKML.pattern, name="pattern", curie=LINKML.curie('pattern'),
-                   model_uri=LINKML.pattern, domain=SlotDefinition, range=Optional[str])
+                   model_uri=LINKML.pattern, domain=Definition, range=Optional[str])
 
 slots.string_serialization = Slot(uri=LINKML.string_serialization, name="string_serialization", curie=LINKML.curie('string_serialization'),
                    model_uri=LINKML.string_serialization, domain=Definition, range=Optional[str])

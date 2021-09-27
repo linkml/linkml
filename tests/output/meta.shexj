@@ -623,6 +623,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/id_prefixes",
                         "valueExpr": "https://w3id.org/linkml/Ncname",
                         "min": 0,
@@ -1313,13 +1320,6 @@
                      },
                      {
                         "type": "TripleConstraint",
-                        "predicate": "http://purl.org/dc/terms/title",
-                        "valueExpr": "https://w3id.org/linkml/String",
-                        "min": 0,
-                        "max": 1
-                     },
-                     {
-                        "type": "TripleConstraint",
                         "predicate": "http://purl.org/pav/version",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -1802,6 +1802,13 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/repr",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/pattern",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1

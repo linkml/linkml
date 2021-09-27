@@ -24,10 +24,6 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
  * [id](id.md)  <sub>1..1</sub>
      * Description: The official schema URI
      * Range: [Uri](types/Uri.md)
- * [title](title.md)  <sub>0..1</sub>
-     * Description: the official title of the schema
-     * Range: [String](types/String.md)
-     * in subsets: (owl)
  * [version](version.md)  <sub>0..1</sub>
      * Description: particular version of schema
      * Range: [String](types/String.md)
@@ -94,6 +90,10 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
 
 ### Inherited from element:
 
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](types/String.md)
+     * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)

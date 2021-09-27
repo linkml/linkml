@@ -2,14 +2,14 @@
 # Slot: title
 
 
-the official title of the schema
+the official title of the element
 
 URI: [linkml:title](https://w3id.org/linkml/title)
 
 
 ## Domain and Range
 
-schema_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
+[Element](Element.md) &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Parents
 
@@ -19,7 +19,14 @@ schema_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Used by
 
+ * class_definition
+ * definition
+ * [Element](Element.md)
+ * enum_definition
  * schema_definition
+ * slot_definition
+ * subset_definition
+ * type_definition
 
 ## Other properties
 

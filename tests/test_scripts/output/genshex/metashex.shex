@@ -136,6 +136,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Annotatable> ] ? ;
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
+          dcterms:title @<String> ? ;
           <id_prefixes> @<Ncname> * ;
           <definition_uri> @<Uriorcurie> ? ;
           skos:altLabel @<String> * ;
@@ -254,7 +255,6 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     (  $<SchemaDefinition_tes> (  &<Element_tes> ;
           rdf:type [ <Element> ] ? ;
           <id> @<Uri> ;
-          dcterms:title @<String> ? ;
           pav:version @<String> ? ;
           <imports> @<Uriorcurie> * ;
           dcterms:license @<String> ? ;
@@ -331,7 +331,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <typeof> @<TypeDefinition> ? ;
           <base> @<String> ? ;
           <uri> @<Uriorcurie> ? ;
-          <repr> @<String> ?
+          <repr> @<String> ? ;
+          <pattern> @<String> ?
        ) ;
        rdf:type [ <TypeDefinition> ]
     )
