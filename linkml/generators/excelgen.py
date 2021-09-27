@@ -69,6 +69,7 @@ class ExcelGenerator(Generator):
         :type columns: List[str]
         """
         ws = self.workbook.create_sheet(ws_name)
+        self.workbook.active = ws
         ws.append(columns)
         self.workbook.save(self.wb_name)
 
