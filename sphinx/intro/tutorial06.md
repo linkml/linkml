@@ -1,22 +1,19 @@
-# Part 6: Basic Language Features
+# Part 6: Enumerations
 
-## Slots and attributes
+Now we will extend our schema with a new slot `status` which records the vital status of a person, i.e whether they are living or dead.
 
-Previously we have seen examples of schemas that declare fields/slots using an `attributes` slot under the relevant class.
+We could do this by making the range of `status` a string, and
+allowing the data provider to fill this with any value. However, this
+will result in messy data that will need to cleaned up before any analysis is performed, e.g. to harmonize strings such as "alive" and "living"
 
-In LinkML, "slots" (aka fields) are first-class entities that can be
-declared outside of classes. The attribute syntax is just a convenient
-layer on this, but explicit declaration of slots is often preferred
-for reuse.
-
-Let's see this in action:
+LinkML allows you to provide *enumerations*, collections of controlled string values. Here is our example schema, with an example enumeration:
 
 personinfo.yaml:
 
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                 
+prefixes:                                  
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   personinfo: https://w3id.org/linkml/examples/personinfo/
@@ -28,12 +25,29 @@ default_range: string
 classes:
   Person:
     class_uri: schema:Person             
-    slots:   ## specified as a list
-     - id
-     - full_name
-     - aliases
-     - phone
-     - age
+    attributes:
+      id:
+        identifier: true
+      full_name:
+        required: true
+        description:
+          name of the person
+        slot_uri: schema:name            
+      aliases:
+        multivalued: true
+        description:
+          other names for the person
+      phone:
+        pattern: "^[\\d\\(\\)\\-]+$"
+        slot_uri: schema:telephone       
+      age:
+        range: integer
+        minimum_value: 0
+        maximum_value: 200
+      status:
+        description: >-
+          vital status of the person
+        range: PersonStatus       ## see "enums" section below
     id_prefixes:
       - ORCID
   Container:
@@ -43,84 +57,120 @@ classes:
         inlined_as_list: true
         range: Person
 
-# slots are first-class entities in the metamodel
-# delcaring them here allows them to be reused elsewhere
-slots:
-  id:
-    identifier: true
-  full_name:
-    required: true
-    description:
-      name of the person
-    slot_uri: schema:name
-  aliases:
-    multivalued: true
-    description:
-      other names for the person
-  phone:
-    pattern: "^[\\d\\(\\)\\-]+$"
-    slot_uri: schema:telephone 
-  age:
-    range: integer
-    minimum_value: 0
-    maximum_value: 200
+enums:
+  PersonStatus:
+    permissible_values:
+      ALIVE:
+      DEAD:
+      UNKNOWN:
 ```
 
-The JSON-Schema that is generated should be the same as in the previous example:
+Now let's collect some data!
+
+data.yaml:
+
+```yaml
+persons:
+  - id: ORCID:1234
+    full_name: Clark Kent
+    age: 33
+    phone: 555-555-5555
+    status: ALIVE
+  - id: ORCID:2222
+    full_name: Count Dracula
+    status: UNDEAD
+```
+
+We can run our data through the linkml validator (which just wraps a jsonschema validator by default)
+
+<!-- FAIL -->
+```bash
+linkml-validate -s personinfo.yaml data.yaml
+```
+
+If you run this you should see that it throws an error with the message:
+
+```test
+ValueError: Unknown PersonStatus enumeration code: UNDEAD
+```
+
+<!-- TODO: use schematools to patch the data -->
+
+Let's go ahead and fix the data, changing Dracula's vital status from UNDEAD to UNKNOWN:
+
+data-fixed.yaml:
+
+```yaml
+persons:
+  - id: ORCID:1234
+    full_name: Clark Kent
+    age: 33
+    phone: 555-555-5555
+    status: ALIVE
+  - id: ORCID:2222
+    full_name: Count Dracula
+    status: UNKNOWN
+```
+
+This should now validate successfully:
 
 ```bash
-gen-json-schema personinfo.yaml
+linkml-validate -s personinfo.yaml data-fixed.yaml
 ```
 
-## Inheritance
+## Mapping Enums to vocabularies
 
-LinkML provides mechanisms for inheritance/polymorphism
+We will now enhance our enums and map the different values to terms
+from vocabularies or ontologies. This doesn't affect the basic
+behavior of tools that use the schema - however, it does provide a
+better basis for schema mapping, and it does affect the behavior of
+generated RDF.
 
-personinfo-with-inheritance.yaml:
+Here we use the biomedical ontology PATO to provide codes/terms for statuses like living and dead:
+
+personinfo-mapped.yaml:
 
 ```yaml
 id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
-prefixes:                                 
+prefixes:                                  
   linkml: https://w3id.org/linkml/
   schema: http://schema.org/
   personinfo: https://w3id.org/linkml/examples/personinfo/
   ORCID: https://orcid.org/
+  PATO: http://purl.obolibrary.org/obo/PATO_
 imports:
   - linkml:types
 default_range: string
   
 classes:
-  NamedThing:
-    slots: 
-     - id
-     - full_name
-    close_mappings:
-     - schema:Thing
-  
   Person:
-    is_a: NamedThing
-    mixins:
-      - HasAliases
     class_uri: schema:Person             
-    slots: 
-     - id
-     - full_name
-     - phone
-     - age
+    attributes:
+      id:
+        identifier: true
+      full_name:
+        required: true
+        description:
+          name of the person
+        slot_uri: schema:name            
+      aliases:
+        multivalued: true
+        description:
+          other names for the person
+      phone:
+        pattern: "^[\\d\\(\\)\\-]+$"
+        slot_uri: schema:telephone       
+      age:
+        range: integer
+        minimum_value: 0
+        maximum_value: 200
+      status:
+        description: >-
+          vital status of the person
+        range: PersonStatus
     id_prefixes:
       - ORCID
-
-  Organization:
-    description: >-
-      An organization such as a company or university
-    is_a: NamedThing
-    class_uri: schema:Organization
-    mixins:
-      - HasAliases
-    slots:
-      - mission_statement
-      
   Container:
     attributes:
       persons:
@@ -128,42 +178,79 @@ classes:
         inlined_as_list: true
         range: Person
 
-  HasAliases:
-    description: >-
-      A mixin applied to any class that can have aliases/alternateNames
-    mixin: true
-    attributes:
-      aliases:
-        multivalued: true
-        exact_mappings:
-          - schema:alternateName
-
-slots:
-  id:
-    identifier: true
-  full_name:
-    required: true
-    description:
-      name of the person
-    slot_uri: schema:name
-  aliases:
-    multivalued: true
-    description:
-      other names for the person
-  phone:
-    pattern: "^[\\d\\(\\)\\-]+$"
-    slot_uri: schema:telephone 
-  age:
-    range: integer
-    minimum_value: 0
-    maximum_value: 200
-  mission_statement:
+enums:
+  PersonStatus:
+    permissible_values:
+      ALIVE:
+        description: the person is living
+        meaning: PATO:0001421 
+      DEAD:
+        description: the person is deceased
+        meaning: PATO:0001422
+      UNKNOWN:
+        description: the vital status is not known
+        todos:
+          - map this to an ontology
 ```
 
-Now note when generating the JSON-Schema, slots from parent classes and mixins are "rolled down":
 
 ```bash
-gen-json-schema personinfo-with-inheritance.yaml
+linkml-convert -s personinfo-mapped.yaml data-fixed.yaml
 ```
 
+Outputs:
 
+```json
+{
+  "persons": [
+    {
+      "id": "ORCID:1234",
+      "full_name": "Clark Kent",
+      "phone": "555-555-5555",
+      "age": 33,
+      "status": "ALIVE"
+    },
+    {
+      "id": "ORCID:2222",
+      "full_name": "Count Dracula",
+      "status": "UNKNOWN"
+    }
+  ],
+  "@type": "Container"
+}
+```
+
+<!-- TODO: RDF docs -->
+
+## Use in Python
+
+(you can skip this section if you are not concerned with interacting with data instances via Python)
+
+```bash
+gen-python personinfo-mapped.yaml > personinfo.py
+```
+
+then use this code:
+
+test.py:
+
+```python
+from personinfo import Person, PersonStatus
+
+person = Person(id='P1', full_name='Julius Caesar', status="DEAD")
+print(f'STATUS={person.status}')
+print(f'MEANING={person.status.meaning}')
+```
+
+```bash
+python test.py
+```
+
+Outputs:
+
+```text
+STATUS=DEAD
+MEANING=http://purl.obolibrary.org/obo/PATO_0001422
+```
+
+Next we will explore more aspects of the modeling language
