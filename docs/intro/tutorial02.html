@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Part 3: Enriching our schema" href="tutorial03.html" />
+    <link rel="next" title="Part 3: Adding constraints and performing validation" href="tutorial03.html" />
     <link rel="prev" title="Part 1: Creating your first LinkML schema" href="tutorial01.html" /> 
 </head>
 
@@ -48,11 +48,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-data-file">Example data file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nesting-lists-of-objects">Nesting lists of objects</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#validating">Validating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualizing">Visualizing</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Enriching our schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Slots and inheritance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
@@ -164,6 +166,24 @@ crucial characteristics:</p>
 </div>
 <p>This should report no errors.</p>
 </section>
+<section id="visualizing">
+<h2>Visualizing<a class="headerlink" href="#visualizing" title="Permalink to this headline"></a></h2>
+<p>We can use yUML to visualize the schema. The <code class="docutils literal notranslate"><span class="pre">gen-yuml</span></code> command can generate REST URLs that can be fed into</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml -f yuml personinfo.yaml 
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++- persons 0..*&gt;[Person|id:string %3F;full_name:string %3F;aliases:string %3F;phone:string %3F;age:string %3F],[Container]
+</pre></div>
+</div>
+<p>Which renders as:</p>
+<p><img alt="img" src="https://yuml.me/diagram/nofunky%3Bdir:TB/class/%5BContainer%5D++-%20persons%200..*%3E%5BPerson%7Cid:string%20%3F;full_name:string%20%3F%3Baliases:string%20%3F%3Bphone:string%20%3F%3Bage:string%20%3F%5D,%5BContainer%5D" /></p>
+<p>You can also generate a png directly</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml -f png personinfo.yaml  &gt; personinfo.png
+</pre></div>
+</div>
+<p>Next we will explore how to add constraints to the schema</p>
+</section>
 </section>
 
 
@@ -171,7 +191,7 @@ crucial characteristics:</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="tutorial01.html" class="btn btn-neutral float-left" title="Part 1: Creating your first LinkML schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="tutorial03.html" class="btn btn-neutral float-right" title="Part 3: Enriching our schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorial03.html" class="btn btn-neutral float-right" title="Part 3: Adding constraints and performing validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
