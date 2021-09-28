@@ -40,8 +40,7 @@ class SQLDDLTestCase(unittest.TestCase):
         with open(BASIC_SQLA_CODE, 'w') as stream:
             with redirect_stdout(stream):
                 gen.write_sqla_python_imperative('output.kitchen_sink')
-                # don't load this - will conflict
-                #create_and_compile_sqla_bindings(gen, BASIC_SQLA_CODE)
+                create_and_compile_sqla_bindings(gen, BASIC_SQLA_CODE)
 
     def test_sqlddl(self):
         """ DDL  """
