@@ -105,4 +105,21 @@ You can also generate a png directly
 gen-yuml -f png personinfo.yaml  > personinfo.png
 ```
 
+## Exercises
+
+1. Extend the container object to include dataset-level metadata:
+   - `description` of the dataset
+   - `name` of the dataset
+2. Modify the schema to allow multiple aliases
+3. Modify the test dataset to include multiple aliases for Clark Kent: "Superman" and "Man of Steel"
+4. Validate the data
+
+## Further reading
+
+* Metamodel Specification
+   * [multivalued](https://w3id.org/linkml/multivalued) slot
+   * [range](https://w3id.org/linkml/range) slot   
+
+## Next
+
 Next we will explore how to add constraints to the schema

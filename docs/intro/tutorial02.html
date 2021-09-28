@@ -49,12 +49,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#nesting-lists-of-objects">Nesting lists of objects</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#validating">Validating</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#visualizing">Visualizing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#next">Next</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
@@ -62,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -182,6 +188,34 @@ crucial characteristics:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml -f png personinfo.yaml  &gt; personinfo.png
 </pre></div>
 </div>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<ol class="simple">
+<li><p>Extend the container object to include dataset-level metadata:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> of the dataset</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> of the dataset</p></li>
+</ul>
+</li>
+<li><p>Modify the schema to allow multiple aliases</p></li>
+<li><p>Modify the test dataset to include multiple aliases for Clark Kent: “Superman” and “Man of Steel”</p></li>
+<li><p>Validate the data</p></li>
+</ol>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Metamodel Specification</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/multivalued">multivalued</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/range">range</a> slot</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="next">
+<h2>Next<a class="headerlink" href="#next" title="Permalink to this headline"></a></h2>
 <p>Next we will explore how to add constraints to the schema</p>
 </section>
 </section>

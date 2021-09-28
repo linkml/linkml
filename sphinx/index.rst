@@ -31,6 +31,7 @@ Documentation
    generators/index
    examples
    ecosystem
+   specifications/linkml-spec.md
    faq/index
    
 Metamodel Reference

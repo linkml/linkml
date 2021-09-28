@@ -254,3 +254,11 @@ MEANING=http://purl.obolibrary.org/obo/PATO_0001422
 ```
 
 Next we will explore more aspects of the modeling language
+
+## Further reading
+
+* [LinkML Schemas: Enums](../schemas/models.html#enums)
+* Metamodel Specification
+    * [Enum Definition](https://w3id.org/linkml/EnumDefinition) class
+* FAQ:
+    - [Enums vs strings](../modeling.html#why-would-i-want-to-use-enums-over-strings)

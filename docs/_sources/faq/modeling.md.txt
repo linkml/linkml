@@ -66,3 +66,17 @@ Enums also give you hooks into ontologies and vocabulaies.
 More on enums:
 
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
+## How do I do the equivalent of JSON-Schema composition?
+
+See: [Schema Composition](https://json-schema.org/understanding-json-schema/reference/combining.html) in JSON-Schema docs
+
+Currently there is no *direct* analog of JSON-Schema anyOf/allOf/oneOf schema composition structures.
+
+In some cases, the equivalent of this can be achieved through *inheritance* in LinkML. 
+
+LinkML also has the `union_of` slot to allow an *exhaustive* set of subclasses to be specified. This acts in a similar way to
+oneOf and future versions of JSON-Schema translation may compile down to oneOf
+
+
+

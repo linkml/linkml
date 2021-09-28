@@ -46,16 +46,20 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Part 1: Creating your first LinkML schema</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#your-first-schema">Your first schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#converting-to-json-schema">Converting to JSON-Schema</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#creating-data">Creating data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-and-validating-data">Creating and validating data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-json">Working with JSON</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#converting-to-rdf">Converting to RDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collections-of-data">Collections of data</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial02.html">Part 2: Adding a container object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Basic Language Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
@@ -63,6 +67,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html#translation-of-object-graphs">Translation of object graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html#generation-of-prefixmaps-from-linkml-objects-and-schemas">Generation of prefixmaps from LinkML objects and schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -100,19 +107,19 @@
 <h1>Part 1: Creating your first LinkML schema<a class="headerlink" href="#part-1-creating-your-first-linkml-schema" title="Permalink to this headline"></a></h1>
 <p>We assume that you already have LinkML <a class="reference internal" href="install.html"><span class="doc std std-doc">installed</span></a></p>
 <p>For the purposes of this tutorial, the simplest setup is to use a virtual environment, and then install linkml:</p>
-<!-- SETUP -->
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="n">linkml</span><span class="o">-</span><span class="n">tutorial</span>
-<span class="n">cd</span> <span class="n">linkml</span><span class="o">-</span><span class="n">tutorial</span>
-<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
-<span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">linkml</span>
+<!-- NO_EXECUTE -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir linkml-tutorial
+<span class="nb">cd</span> linkml-tutorial
+python3 -m venv venv
+<span class="nb">source</span> venv/bin/activate
+pip install linkml
 </pre></div>
 </div>
 <p>You can check the install worked:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert --help
 </pre></div>
 </div>
-<p>As always, you can consult the <span class="xref myst">FAQ</span> if you have issues.</p>
+<p>As always, you can consult the <a class="reference internal" href="../faq/index.html"><span class="doc std std-doc">FAQ</span></a> if you have issues.</p>
 <section id="your-first-schema">
 <h2>Your first schema<a class="headerlink" href="#your-first-schema" title="Permalink to this headline"></a></h2>
 <p>Our first schema consists of a single <em>class</em> <code class="docutils literal notranslate"><span class="pre">Person</span></code>, with a number of <em>slots</em>:</p>
@@ -136,11 +143,11 @@
       <span class="nt">age</span><span class="p">:</span>
 </pre></div>
 </div>
-<p>(note that all files are available in the example folder of this repository)</p>
+<p>(note that all files are available in the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/tutorial">examples/tutorial</a> folder of this repository)</p>
 </section>
 <section id="converting-to-json-schema">
 <h2>Converting to JSON-Schema<a class="headerlink" href="#converting-to-json-schema" title="Permalink to this headline"></a></h2>
-<p>Now run the following command on the file you hust created:</p>
+<p>Now run the following command on the file you just created:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml 
 </pre></div>
 </div>
@@ -181,10 +188,10 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Don’t worry if you don’t know much about JSON-Schema. This is just an illustration that LinkML can be used in conjunction with a number of frameworks.</p>
+<p>Don’t worry if you don’t know much about JSON-Schema. This is just an illustration that LinkML can be used in combination with a number of frameworks.</p>
 </section>
-<section id="creating-data">
-<h2>Creating data<a class="headerlink" href="#creating-data" title="Permalink to this headline"></a></h2>
+<section id="creating-and-validating-data">
+<h2>Creating and validating data<a class="headerlink" href="#creating-and-validating-data" title="Permalink to this headline"></a></h2>
 <p>Let’s create an example data file. The file will contain an <em>instance</em> of the class we defined in our <code class="docutils literal notranslate"><span class="pre">personinfo.yaml</span></code> schema:</p>
 <p>data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
@@ -256,6 +263,18 @@
 </pre></div>
 </div>
 <p>If you are not familiar with RDF that’s OK! RDF is just one of the possible ways of working with LinkML.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<ol class="simple">
+<li><p>Extend the example schema to include fields for <code class="docutils literal notranslate"><span class="pre">occupation</span></code> and <code class="docutils literal notranslate"><span class="pre">employed_by</span></code></p></li>
+<li><p>Create a test data instance to indicate Clark Kent has an occupation of reporter and is employed by the Daily Planet</p></li>
+<li><p>Validate the data</p></li>
+</ol>
+</section>
+<section id="collections-of-data">
+<h2>Collections of data<a class="headerlink" href="#collections-of-data" title="Permalink to this headline"></a></h2>
+<p>Our toy example so far has a single person instance. Next we’ll see how to exchange lists of records.</p>
 </section>
 </section>
 

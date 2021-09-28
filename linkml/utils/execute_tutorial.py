@@ -12,6 +12,7 @@ import re
 re_decl = re.compile('^(\\S+):$')
 re_start_yaml = re.compile('^```(\w+)$')
 re_end_yaml = re.compile('^```$')
+re_html_comment = re.compile('^<!-- (.+) -->')
 
 @dataclass
 class Block:
@@ -22,6 +23,7 @@ class Block:
     error: str = None
     expected_fail: bool = None
     prior_lines: List[str] = None
+    annotations: List[str] = None
 
     def is_file_block(self) -> bool:
         return self.title and '.' in self.title
@@ -56,6 +58,8 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
             with open(path, 'w') as stream:
                 stream.write(block.content)
         elif block.is_bash():
+            if 'no_execute' in block.annotations:
+                continue
             cmd = block.content.strip().split()
             if '>' in cmd:
                 # redirects not support in subprocess.run
@@ -118,6 +122,7 @@ def parse_file_to_blocks(input) -> List[Block]:
     blocks = []
     fn = None
     prior_lines = []
+    anns = []
     expected_fail = False
     while lines:
         line = lines[0].rstrip()
@@ -126,6 +131,10 @@ def parse_file_to_blocks(input) -> List[Block]:
         if curr_block is None:
             if line.lower().startswith('<!-- fail'):
                 expected_fail = True
+            m = re_html_comment.match(line)
+            if m:
+                anns.append(m.group(1).strip().lower())
+                continue
             m = re_decl.match(line)
             if m:
                 fn = m.group(1)
@@ -137,8 +146,10 @@ def parse_file_to_blocks(input) -> List[Block]:
                                        title=fn,
                                        expected_fail=expected_fail,
                                        content="",
+                                       annotations=anns,
                                        prior_lines=prior_lines)
                     prior_lines = []
+                    anns = []
                 else:
                     prior_lines += [line]
         else:

@@ -15,11 +15,18 @@ Tutorial
    tutorial06
    tutorial07
    tutorial08
-   tutorial09
-   tutorial10
-   tutorial10
-   tutorial11
-   tutorial12
 
 
-The tutorial is evolving, check back soon!   
+The tutorial is evolving, some things that will be covered in future
+versions:
+
+* Generating schemas from:
+
+   - JSON Schema
+   - OWL Ontologies
+   - Instance data in JSON, TSV/spreadsheets, RDF
+   
+* SQL databases
+* Using LinkML to organize spreadsheets
+* Change objects and diffs
+* Query APIs

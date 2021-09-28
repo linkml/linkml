@@ -13,6 +13,7 @@ GitHub in minutes thanks to the markdown generator
 
 See for example:
 
+* `LinkML (Meta)Model <https://linkml.io/linkml-model/docs/>`_
 * `NMDC Schema <https://microbiomedata.github.io/nmdc-schema/>`_
 * `CRDC-H Schema <https://cancerdhc.github.io/ccdhmodel/>`_
 
