@@ -13,6 +13,13 @@ Tutorial
    tutorial04
    tutorial05
    tutorial06
+   tutorial07
+   tutorial08
+   tutorial09
+   tutorial10
+   tutorial10
+   tutorial11
+   tutorial12
 
 
 The tutorial is evolving, check back soon!   
