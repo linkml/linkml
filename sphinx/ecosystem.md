@@ -1,6 +1,6 @@
 # The LinkML Ecosystem
 
-LinkML is part of a growing ecosystem of tools
+LinkML is part of a growing ecosystem of tools:
 
 ## Tools that build off LinkML
 
@@ -12,11 +12,7 @@ LinkML is part of a growing ecosystem of tools
 
  - [linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment) bootstraps schemas from existing structured and semi-structured sources
 
-### Templates OWL generation
+### Templated OWL generation
 
- - [linkml-owl](https://github.com/linkml/linkml-owl) allows for generation of complex OWL axioms from datamodels
-
-### LinkML and SOLR
-
- - [linkml-solr](https://github.com/linkml/linkml-solr)
+ - [linkml-owl](https://github.com/linkml/linkml-owl) enables generation of complex OWL axioms from datamodels
 

@@ -6,9 +6,13 @@ In previous parts of this tutorial, we have covered
 - how to generate Python classes, for use in code
 - how to generate ShEx and JSON-LD contexts, for use with RDF data
 
-Later on we will explore generation of other downstream artefacts like SQL CREATE TABLE statements
+Later on we will explore generation of other downstream artefacts like SQL CREATE TABLE statements and markdown documentation.
 
-It is rare that all of these are useful for all use cases, but it can be useful to pregenerate all these in advance for a project.
+Even though you don't necessarily need all of these output artefacts,
+it can be useful to regularly generate these whenever you change your
+schema. The `gen-project` script will do this for you.
+
+## Example
 
 Given a schema:
 
@@ -97,4 +101,12 @@ sqlschema
 ```
 
 
-...
+## See Also
+
+### ProjectGen docs
+
+ * [project-generator](generators/project-generator)
+
+### linkml-model-template
+
+The [linkml/linkml-model-template](https://github.com/linkml/linkml-model-template) utility will allow you to set up a whole GitHub repository, with a Makefile that can be used to regenerate all downstream products

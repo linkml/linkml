@@ -17,7 +17,9 @@
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LinkML Schemas" href="../schemas/index.html" />
+    <link rel="prev" title="Part 7: Slots and inheritance" href="tutorial07.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,10 +39,28 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial01.html">Part 1: Creating your first LinkML schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Part 8: Generating Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#projectgen-docs">ProjectGen docs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linkml-model-template">linkml-model-template</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
@@ -68,6 +88,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="tutorial.html">Tutorial</a> &raquo;</li>
       <li>Part 8: Generating Projects</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/intro/tutorial08.md.txt" rel="nofollow"> View page source</a>
@@ -80,6 +101,19 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="part-8-generating-projects">
 <h1>Part 8: Generating Projects<a class="headerlink" href="#part-8-generating-projects" title="Permalink to this headline"></a></h1>
+<p>In previous parts of this tutorial, we have covered</p>
+<ul class="simple">
+<li><p>how to generate JSON-Schema, for use in JSON validation</p></li>
+<li><p>how to generate Python classes, for use in code</p></li>
+<li><p>how to generate ShEx and JSON-LD contexts, for use with RDF data</p></li>
+</ul>
+<p>Later on we will explore generation of other downstream artefacts like SQL CREATE TABLE statements and markdown documentation.</p>
+<p>Even though you don’t necessarily need all of these output artefacts,
+it can be useful to regularly generate these whenever you change your
+schema. The <code class="docutils literal notranslate"><span class="pre">gen-project</span></code> script will do this for you.</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>Given a schema:</p>
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
 <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
@@ -137,6 +171,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-project -d personinfo/ personinfo.yaml
 </pre></div>
 </div>
+<p>This will place all artefacts in the <code class="docutils literal notranslate"><span class="pre">personinfo</span></code> dir:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls personinfo/
 </pre></div>
 </div>
@@ -155,13 +190,29 @@ shex
 sqlschema
 </pre></div>
 </div>
-<p>…</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<section id="projectgen-docs">
+<h3>ProjectGen docs<a class="headerlink" href="#projectgen-docs" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><span class="xref myst">project-generator</span></p></li>
+</ul>
+</section>
+<section id="linkml-model-template">
+<h3>linkml-model-template<a class="headerlink" href="#linkml-model-template" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://github.com/linkml/linkml-model-template">linkml/linkml-model-template</a> utility will allow you to set up a whole GitHub repository, with a Makefile that can be used to regenerate all downstream products</p>
+</section>
+</section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial07.html" class="btn btn-neutral float-left" title="Part 7: Slots and inheritance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../schemas/index.html" class="btn btn-neutral float-right" title="LinkML Schemas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

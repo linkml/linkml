@@ -48,14 +48,17 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Part 3: Adding constraints and performing validation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#example-schema">Example schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-data">Example data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-the-json-schema-directly">Using the JSON Schema directly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#other-validation-strategies">Other validation strategies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
@@ -63,6 +66,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -211,7 +215,12 @@
     <span class="s1">&#39;1-800-kryptonite&#39;</span>
 </pre></div>
 </div>
-<p>See if you can iterate on the example file to get something that works.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<ol class="simple">
+<li><p>See if you can iterate on the example file to get something that works.</p></li>
+</ol>
 </section>
 <section id="using-the-json-schema-directly">
 <h2>Using the JSON Schema directly<a class="headerlink" href="#using-the-json-schema-directly" title="Permalink to this headline"></a></h2>
@@ -234,6 +243,7 @@ to be complete.</p>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">linkml-validator</span></code> will first perform an internal conversion prior to using the jsonschema validator, and some errors may be caught at that stage</p></li>
 <li><p>the conversion process may mask some errors - e.g. if a slot has range integer and is supplied as a string, implicit conversion is used</p></li>
 </ul>
+<p>See the <a class="reference internal" href="../generators/json-schema.html"><span class="doc std std-doc">JSON-Schema generator</span></a> docs for more info on JSON-Schema validation</p>
 </section>
 <section id="other-validation-strategies">
 <h2>Other validation strategies<a class="headerlink" href="#other-validation-strategies" title="Permalink to this headline"></a></h2>
@@ -243,6 +253,30 @@ to be complete.</p>
 <li><p>converting data to RDF and using either Shape validators or SPARQL queries</p></li>
 </ul>
 <p>The next section deals with working with RDF data.</p>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../data/working-with-data.html"><span class="doc std std-doc">Working with Data</span></a></p></li>
+<li><p>Metamodel Specification</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/required">required</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/minimum_value">minimum_value</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/maximum_value">maximum_value</a> slot</p></li>
+</ul>
+</li>
+<li><p>FAQ:</p>
+<ul>
+<li><p><a class="reference external" href="../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl">LinkML vs shape languages</a></p></li>
+</ul>
+</li>
+<li><p>Generators:</p>
+<ul>
+<li><p><a class="reference internal" href="../generators/json-schema.html"><span class="doc std std-doc">JSON Schema Generator</span></a></p></li>
+</ul>
+</li>
+</ul>
 </section>
 </section>
 

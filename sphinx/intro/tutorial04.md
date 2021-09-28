@@ -291,3 +291,12 @@ linkml:Nodeidentifier NONLITERAL
 ## RDF support is evolving
 
 RDF support in LinkML is evolving, and future versions will have more direct support.
+
+## More Info
+
+* [Working with RDF Data](../data/rdf.html)
+* FAQ:
+    - [LinkML vs shape languages](../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl)
+* Generators:
+   - [JSON-LD Context](../generators/jsonld-context)
+   - [ShEx](../generators/shex)

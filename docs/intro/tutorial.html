@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -98,9 +99,11 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial01.html">Part 1: Creating your first LinkML schema</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial01.html#your-first-schema">Your first schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial01.html#converting-to-json-schema">Converting to JSON-Schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial01.html#creating-data">Creating data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial01.html#creating-and-validating-data">Creating and validating data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial01.html#working-with-json">Working with JSON</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial01.html#converting-to-rdf">Converting to RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial01.html#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial01.html#collections-of-data">Collections of data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial02.html">Part 2: Adding a container object</a><ul>
@@ -108,13 +111,18 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorial02.html#nesting-lists-of-objects">Nesting lists of objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial02.html#validating">Validating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial02.html#visualizing">Visualizing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html#next">Next</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial03.html#example-schema">Example schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial03.html#example-data">Example data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial03.html#exercises">Exercises</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial03.html#using-the-json-schema-directly">Using the JSON Schema directly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial03.html#other-validation-strategies">Other validation strategies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial03.html#further-reading">Further reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a><ul>
@@ -123,16 +131,20 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html#json-ld-contexts">JSON-LD contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html#using-shape-languages">Using Shape Languages</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial04.html#rdf-support-is-evolving">RDF support is evolving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial04.html#more-info">More Info</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial05.html#generating-a-python-datamodel">Generating a Python datamodel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial05.html#linkml-runtime">LinkML runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial05.html#further-reading">Further reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial05.html#next">Next</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial06.html#mapping-enums-to-vocabularies">Mapping Enums to vocabularies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial06.html#use-in-python">Use in Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html#further-reading">Further reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a><ul>
@@ -141,12 +153,25 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorial07.html#customizing-slots-in-the-context-of-classes-slot-usage">Customizing slots in the context of classes: Slot Usage</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html#see-also">See Also</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <p>The tutorial is evolving, some things that will be covered in future
 versions:</p>
-<ul class="simple">
+<ul>
+<li><p>Generating schemas from:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>JSON Schema</p></li>
+<li><p>OWL Ontologies</p></li>
+<li><p>Instance data in JSON, TSV/spreadsheets, RDF</p></li>
+</ul>
+</div></blockquote>
+</li>
 <li><p>SQL databases</p></li>
 <li><p>Using LinkML to organize spreadsheets</p></li>
 <li><p>Change objects and diffs</p></li>

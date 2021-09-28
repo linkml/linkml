@@ -281,9 +281,11 @@ classes:
       has_familial_relationships:
         multivalued: true
         range: FamilialRelationship
+        inlined_as_list: true
       has_organizational_relationships:
         multivalued: true
         range: OrganizationalRelationship
+        inlined_as_list: true
     
   Organization:
     is_a: NamedThing
@@ -343,6 +345,7 @@ enums:
       EMPLOYED_BY:
       FOUNDED_BY:
       LEADER_OF:
+      MEMBER_OF:
 
 ```
 
@@ -350,10 +353,34 @@ enums:
 gen-yuml slot-usage-example.yaml
 ```
 
-![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing|id:string;full_name:string %3F]<related_to 0..1- [Relationship|duration:integer %3F;relationship_type:string %3F],[Relationship]^-[OrganizationalRelationship|relationship_type:OrganizationalRelationshipType %3F;duration(i):integer %3F],[Relationship]^-[FamilialRelationship|relationship_type:FamilialRelationshipType %3F;duration(i):integer %3F],[Organization|id(i):string;full_name(i):string %3F]<related_to 1..1- [OrganizationalRelationship],[Person|id(i):string;full_name(i):string %3F]++- has_organizational_relationships 0..*>[OrganizationalRelationship],[FamilialRelationship]<has_familial_relationships 0..*-++[Person],[FamilialRelationship]- related_to 1..1>[Person],[Container]++- persons 0..*>[Person],[NamedThing]^-[Person],[OrganizationalRelationship]- related_to 1..1>[Organization],[Container]++- organizations 0..*>[Organization],[NamedThing]^-[Organization],[Relationship]- related_to 0..1>[NamedThing],[NamedThing]^-[Person],[NamedThing]^-[Organization],[Person]++- has_familial_relationships 0..*>[FamilialRelationship],[Container])
+![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing%7Cid:string;full_name:string%20%3F]%3Crelated_to%200..1-%20[Relationship%7Cduration:integer%20%3F;relationship_type:string%20%3F],[Relationship]%5E-[OrganizationalRelationship%7Crelationship_type:OrganizationalRelationshipType%20%3F;duration(i):integer%20%3F],[Relationship]%5E-[FamilialRelationship%7Crelationship_type:FamilialRelationshipType%20%3F;duration(i):integer%20%3F],[Organization%7Cid(i):string;full_name(i):string%20%3F]%3Crelated_to%201..1-%20[OrganizationalRelationship],[Person%7Cid(i):string;full_name(i):string%20%3F]++-%20has_organizational_relationships%200..*%3E[OrganizationalRelationship],[FamilialRelationship]%3Chas_familial_relationships%200..*-++[Person],[FamilialRelationship]-%20related_to%201..1%3E[Person],[Container]++-%20persons%200..*%3E[Person],[NamedThing]%5E-[Person],[OrganizationalRelationship]-%20related_to%201..1%3E[Organization],[Container]++-%20organizations%200..*%3E[Organization],[NamedThing]%5E-[Organization],[Relationship]-%20related_to%200..1%3E[NamedThing],[NamedThing]%5E-[Person],[NamedThing]%5E-[Organization],[Person]++-%20has_familial_relationships%200..*%3E[FamilialRelationship],[Container])
 
 
 Here we have a fairly generic class `Relationship` that holds a relationship a person can hold to another entity such as another person or an organization.
 
 there are two subclasses, or for personal relationships (e.g. siblings) and other for person-to-organization relationships. these use the same generic slots (duration, relationship)type, and related_to). However, the latter two are constrained in a class-specific way.
 
+data.yaml:
+
+```yaml
+persons:
+  - id: ORCID:1234
+    full_name: Superman
+    has_organizational_relationships:
+      - related_to: ROR:1
+        relationship_type: MEMBER_OF
+  - id: ORCID:3000
+    full_name: Jor El
+    has_familial_relationships:
+      - related_to: ORCID:1234
+        relationship_type: PARENT_OF
+organizations:
+  - id: ROR:1
+    full_name: Justice League
+```    
+
+```bash
+linkml-validate data.yaml -s slot-usage-example.yaml
+```
+
+...

@@ -42,11 +42,13 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
 <li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
@@ -57,6 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#what-are-induced-slots">What are induced slots?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-need-to-define-my-own-types">Why would I need to define my own types?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-want-to-use-enums-over-strings">Why would I want to use enums over strings?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
@@ -150,6 +153,14 @@ text.</p>
 <p>Enums also give you hooks into ontologies and vocabulaies.</p>
 <p>More on enums:</p>
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+</section>
+<section id="how-do-i-do-the-equivalent-of-json-schema-composition">
+<h2>How do I do the equivalent of JSON-Schema composition?<a class="headerlink" href="#how-do-i-do-the-equivalent-of-json-schema-composition" title="Permalink to this headline"></a></h2>
+<p>See: <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/combining.html">Schema Composition</a> in JSON-Schema docs</p>
+<p>Currently there is no <em>direct</em> analog of JSON-Schema anyOf/allOf/oneOf schema composition structures.</p>
+<p>In some cases, the equivalent of this can be achieved through <em>inheritance</em> in LinkML.</p>
+<p>LinkML also has the <code class="docutils literal notranslate"><span class="pre">union_of</span></code> slot to allow an <em>exhaustive</em> set of subclasses to be specified. This acts in a similar way to
+oneOf and future versions of JSON-Schema translation may compile down to oneOf</p>
 </section>
 </section>
 

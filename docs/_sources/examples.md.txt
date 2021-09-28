@@ -34,8 +34,10 @@ See [Cancer Research Data Commons - Harmonized Model](https://cancerdhc.github.i
 LinkML is itself described as a LinkML model
 
  * [linkml/linkml-model](https://github.com/linkml/linkml-model) repo
- * [generated docs][https://linkml.io/linkml-model/docs/]
+ * [generated docs](https://linkml.io/linkml-model/docs/)
 
 ## LinkML Registry
 
-[linkml.io/linkml-registry](https://linkml.io/linkml-registry/registry/)
+The LinkML registry collects some existing schemas and allows for basic browsing:
+
+ * [linkml/linkml-registry](https://linkml.io/linkml-registry/registry/)

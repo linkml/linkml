@@ -133,8 +133,9 @@ Will result in:
 On instance['persons'][0]['phone']:
     '1-800-kryptonite'
 ```
+## Exercises
 
-See if you can iterate on the example file to get something that works.
+ 1. See if you can iterate on the example file to get something that works.
 
 ## Using the JSON Schema directly
 
@@ -161,6 +162,8 @@ In general this should give you similar results, with some caveats:
  - the `linkml-validator` will first perform an internal conversion prior to using the jsonschema validator, and some errors may be caught at that stage
  - the conversion process may mask some errors - e.g. if a slot has range integer and is supplied as a string, implicit conversion is used
 
+See the [JSON-Schema generator](../generators/json-schema) docs for more info on JSON-Schema validation
+
 ## Other validation strategies
 
 Other strategies include
@@ -170,3 +173,15 @@ Other strategies include
 
 The next section deals with working with RDF data.
 
+## Further reading
+
+* [Working with Data](../data/working-with-data)
+* Metamodel Specification
+    * [identifier](https://w3id.org/linkml/identifier) slot
+    * [required](https://w3id.org/linkml/required) slot
+    * [minimum_value](https://w3id.org/linkml/minimum_value) slot    
+    * [maximum_value](https://w3id.org/linkml/maximum_value) slot    
+* FAQ:
+    - [LinkML vs shape languages](../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl)
+* Generators:
+    - [JSON Schema Generator](../generators/json-schema)

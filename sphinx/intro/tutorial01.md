@@ -5,8 +5,8 @@ We assume that you already have LinkML [installed](install)
 For the purposes of this tutorial, the simplest setup is to use a virtual environment, and then install linkml:
 
 
-<!-- SETUP -->
-```
+<!-- NO_EXECUTE -->
+```bash
 mkdir linkml-tutorial
 cd linkml-tutorial
 python3 -m venv venv
@@ -20,7 +20,7 @@ You can check the install worked:
 linkml-convert --help
 ```
 
-As always, you can consult the [FAQ](../faq) if you have issues.
+As always, you can consult the [FAQ](../faq/index) if you have issues.
 
 ## Your first schema
 
@@ -49,11 +49,11 @@ classes:
       age:
 ```
 
-(note that all files are available in the example folder of this repository)
+(note that all files are available in the [examples/tutorial](https://github.com/linkml/linkml/tree/main/examples/tutorial) folder of this repository)
 
 ## Converting to JSON-Schema
 
-Now run the following command on the file you hust created:
+Now run the following command on the file you just created:
 
 ```bash
 gen-json-schema personinfo.yaml 
@@ -97,9 +97,9 @@ Outputs:
 }
 ```
 
-Don't worry if you don't know much about JSON-Schema. This is just an illustration that LinkML can be used in conjunction with a number of frameworks.
+Don't worry if you don't know much about JSON-Schema. This is just an illustration that LinkML can be used in combination with a number of frameworks.
 
-## Creating data
+## Creating and validating data
 
 Let's create an example data file. The file will contain an *instance* of the class we defined in our `personinfo.yaml` schema:
 
@@ -194,3 +194,12 @@ This will produce an RDF/turtle file as follows
 
 If you are not familiar with RDF that's OK! RDF is just one of the possible ways of working with LinkML.
 
+## Exercises
+
+ 1. Extend the example schema to include fields for `occupation` and `employed_by`
+ 2. Create a test data instance to indicate Clark Kent has an occupation of reporter and is employed by the Daily Planet
+ 3. Validate the data
+
+## Collections of data
+
+Our toy example so far has a single person instance. Next we'll see how to exchange lists of records.

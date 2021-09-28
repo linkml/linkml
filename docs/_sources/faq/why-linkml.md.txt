@@ -132,6 +132,8 @@ However, if any of the following apply to you, you may want to consider LinkML -
 
 When making your decision, you should weigh factors such as the fact that things that can be expressed in one framework may not be expressible in the other.
 
+See also FAQ entries in [modeling](modeling) which compare some similar constructs.
+
 ## Why should I use LinkML over ShEx/SHACL?
 
 ShEx and SHACL are both excellent "shape" languages for providing
