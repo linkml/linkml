@@ -40,14 +40,14 @@
           - related_to: P:002
             type: NON_EXISTENT_RELATION
 - description: age lower than threshold
-  skip: true ## TODO
+  skip: false
   dataset:
     persons:
       - id: P
         name: benjamin button
         age_in_years: -5
 - description: age higher than threshold
-  skip: true ## TODO
+  skip: false
   dataset:
     persons:
       - id: P
