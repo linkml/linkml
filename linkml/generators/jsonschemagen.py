@@ -153,6 +153,10 @@ class JsonSchemaGenerator(Generator):
         if slot.pattern:
             # See https://github.com/linkml/linkml/issues/193
             prop.pattern = slot.pattern
+        if slot.minimum_value is not None:
+            prop.minimum = slot.minimum_value
+        if slot.maximum_value is not None:
+            prop.maximum = slot.maximum_value
         self.clsobj.properties[underscore(aliased_slot_name)] = prop
         if self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name) or \
                 self.topCls is None and cls.tree_root:
