@@ -125,5 +125,5 @@ Outputs:
 }
 ```
 
-That's all for now! Check back soon for more tutorial content.
+Next we will look at the *enumerations* feature of LinkML
 
