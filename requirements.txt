@@ -18,7 +18,8 @@ isodate>=0.6.0
 jinja2
 jsonasobj2~=1.0, >=1.0.3
 jsonschema>=3.0.1
-linkml-runtime>=1.1.0
+linkml-runtime-api
+linkml-runtime>=1.1.2
 myst-parser
 openpyxl
 parse
