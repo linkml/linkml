@@ -25,7 +25,9 @@ Failed validating 'required' in schema['properties']['persons']['items']:
      'description': '',
      'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                   'type': 'array'},
-                    'age_in_years': {'type': 'integer'},
+                    'age_in_years': {'maximum': 999,
+                                     'minimum': 0,
+                                     'type': 'integer'},
                     'aliases': {'items': {'type': 'string'},
                                 'type': 'array'},
                     'has_birth_event': {'$ref': '#/$defs/BirthEvent'},
@@ -57,7 +59,9 @@ Failed validating 'additionalProperties' in schema['properties']['persons']['ite
      'description': '',
      'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                   'type': 'array'},
-                    'age_in_years': {'type': 'integer'},
+                    'age_in_years': {'maximum': 999,
+                                     'minimum': 0,
+                                     'type': 'integer'},
                     'aliases': {'items': {'type': 'string'},
                                 'type': 'array'},
                     'has_birth_event': {'$ref': '#/$defs/BirthEvent'},
@@ -121,12 +125,30 @@ wrong enum:
 age lower than threshold:
 
 {'persons': [{'id': 'P', 'name': 'benjamin button', 'age_in_years': -5}]}:
- SKIPPED
+
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
+	-5 is less than the minimum of 0
+
+Failed validating 'minimum' in schema['properties']['persons']['items']['properties']['age_in_years']:
+    {'maximum': 999, 'minimum': 0, 'type': 'integer'}
+
+On instance['persons'][0]['age_in_years']:
+    -5
+
 --------------------
 age higher than threshold:
 
 {'persons': [{'id': 'P', 'name': 'dr who', 'age_in_years': 5000}]}:
- SKIPPED
+
+vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
+	5000 is greater than the maximum of 999
+
+Failed validating 'maximum' in schema['properties']['persons']['items']['properties']['age_in_years']:
+    {'maximum': 999, 'minimum': 0, 'type': 'integer'}
+
+On instance['persons'][0]['age_in_years']:
+    5000
+
 --------------------
 additional properties is closed:
 
@@ -140,7 +162,9 @@ Failed validating 'additionalProperties' in schema['properties']['persons']['ite
      'description': '',
      'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                   'type': 'array'},
-                    'age_in_years': {'type': 'integer'},
+                    'age_in_years': {'maximum': 999,
+                                     'minimum': 0,
+                                     'type': 'integer'},
                     'aliases': {'items': {'type': 'string'},
                                 'type': 'array'},
                     'has_birth_event': {'$ref': '#/$defs/BirthEvent'},
@@ -328,7 +352,9 @@ Failed validating 'additionalProperties' in schema:
                           'description': '',
                           'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                                        'type': 'array'},
-                                         'age_in_years': {'type': 'integer'},
+                                         'age_in_years': {'maximum': 999,
+                                                          'minimum': 0,
+                                                          'type': 'integer'},
                                          'aliases': {'items': {'type': 'string'},
                                                      'type': 'array'},
                                          'has_birth_event': {'$ref': '#/$defs/BirthEvent'},

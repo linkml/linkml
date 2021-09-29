@@ -353,6 +353,8 @@
                "type": "array"
             },
             "age_in_years": {
+               "maximum": 999,
+               "minimum": 0,
                "type": "integer"
             },
             "aliases": {
