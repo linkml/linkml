@@ -15,6 +15,14 @@ from linkml.utils.typereferences import References
 
 
 class MarkdownGenerator(Generator):
+    """
+    Generates markdown documentation for a LinkML schema
+
+    Each schema element (class, slot, type, enum) is translated into its own markdown file;
+    additionally, an index.md is generated that links everything together.
+
+    The markdown is suitable for deployment as a MkDocs or Sphinx site
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     directory_output = True
