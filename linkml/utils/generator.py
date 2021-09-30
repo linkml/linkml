@@ -672,7 +672,7 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
             Option(("--importmap", "-im"), type=click.File(), help="Import mapping file")
         )
         f.params.append(
-            Option(("--log_level", ), type=click.Choice(_LOG_LEVEL_STRINGS),
+            Option(("--log-level", ), type=click.Choice(_LOG_LEVEL_STRINGS),
                    help=f"Logging level (default={DEFAULT_LOG_LEVEL})",
                    default=DEFAULT_LOG_LEVEL)
         )
