@@ -22,6 +22,11 @@ from linkml_runtime.utils.metamodelcore import builtinnames
 
 
 class PythonGenerator(Generator):
+    """
+    Generates Python dataclasses from a LinkML model
+
+    
+    """
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
     valid_formats = ['py']
