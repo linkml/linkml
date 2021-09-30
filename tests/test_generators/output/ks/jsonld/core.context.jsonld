@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from core.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-09-30 01:42\n    Schema: core\n    \n    id: https://w3id.org/linkml/tests/core\n    description: core schema imported by kitchen_sink\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from core.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-09-30 03:28\n    Schema: core\n    \n    id: https://w3id.org/linkml/tests/core\n    description: core schema imported by kitchen_sink\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "biolink": "https://w3id.org/biolink/",
       "core": "https://w3id.org/linkml/tests/core/",
