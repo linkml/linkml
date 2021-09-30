@@ -42,28 +42,28 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Inheritance</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#inheritance-related-slots">Inheritance Related Slots</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#is-a">is_a</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#abstract">abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mixin">mixin</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#linking-classes-and-slots-with-is-a">Linking classes and slots with is_a</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#abstract-classes-and-slots">abstract classes and slots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mixin-classes-and-slots">mixin classes and slots</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -99,10 +99,8 @@
              
   <section class="tex2jax_ignore mathjax_ignore" id="inheritance">
 <h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h1>
-<section id="inheritance-related-slots">
-<h2>Inheritance Related Slots<a class="headerlink" href="#inheritance-related-slots" title="Permalink to this headline"></a></h2>
-<section id="is-a">
-<h3>is_a<a class="headerlink" href="#is-a" title="Permalink to this headline"></a></h3>
+<section id="linking-classes-and-slots-with-is-a">
+<h2>Linking classes and slots with is_a<a class="headerlink" href="#linking-classes-and-slots-with-is-a" title="Permalink to this headline"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/is_a">is_a</a> metamodel slot can be used to define a backbone hierarchy for your class. All inheritable metamodel slots are propagated down the is_a hierarchy.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
   <span class="nt">NamedThing</span><span class="p">:</span>
@@ -128,10 +126,10 @@
 </pre></div>
 </div>
 <p>Here Person will inherit the four slots from NamedThing.</p>
-<p><strong>Note</strong>: Slots can also be organized in hierarchies</p>
+<p><strong>Note</strong>: Slots can also be organized in hierarchies using <code class="docutils literal notranslate"><span class="pre">is_a</span></code>.</p>
 </section>
-<section id="abstract">
-<h3>abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h3>
+<section id="abstract-classes-and-slots">
+<h2>abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this headline"></a></h2>
 <p>A model class (or slot) may be tagged with its <a class="reference external" href="https://w3id.org/linkml/abstract">abstract</a> slot set to the boolean value <code class="docutils literal notranslate"><span class="pre">true</span></code>, to define whether it is abstract. This has comparable meaning to that in the computing science Object Oriented Paradigm: another class (or slot) can use the abstract class (or slot) as part of its inheritance hierarchy, but the abstract class itself <em>cannot</em> be directly instantiated.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
   <span class="nt">NamedThing</span><span class="p">:</span>
@@ -145,9 +143,10 @@
 </div>
 <p>This forces data providers to always provide a more specific class than the generic “NamedThing”</p>
 <p>Some generators may also choose to utilize abstract tags, e.g to mask generation of abstract classes.</p>
+<p><strong>Note</strong>: Slots can also be declared abstract.</p>
 </section>
-<section id="mixin">
-<h3>mixin<a class="headerlink" href="#mixin" title="Permalink to this headline"></a></h3>
+<section id="mixin-classes-and-slots">
+<h2>mixin classes and slots<a class="headerlink" href="#mixin-classes-and-slots" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/mixin">mixin</a> boolean slot to declare a class as a mixin</p></li>
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/mixins">mixins</a> multiavlued slot which specifies a range of mixin parents.</p></li>
@@ -185,8 +184,7 @@ of multiple inheritance noted in the <a class="reference external" href="https:/
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aliases</span>
 </pre></div>
 </div>
-<p>Note that <code class="docutils literal notranslate"><span class="pre">is_a</span></code> has the characteristics of homeomorphicity: <code class="docutils literal notranslate"><span class="pre">is_a</span></code> <strong>SHOULD</strong> only connect either (1) two mixins (2) two classes (3) two slots.</p>
-</section>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">is_a</span></code> has the characteristics of homeomorphicity: <code class="docutils literal notranslate"><span class="pre">is_a</span></code> <strong>SHOULD</strong> only connect either (1) two mixins (2) two non-mixin elements</p>
 </section>
 </section>
 

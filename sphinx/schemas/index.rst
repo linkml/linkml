@@ -16,7 +16,9 @@ create a schema to model your data
    slots
    uris-and-mappings
    generators
-   working-with-data
    inlining
+   constraints
+   imports
+   experimental
 
 .. seealso:: `Programmatic example in a Jupyter Notebook <https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb>`_

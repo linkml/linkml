@@ -17,4 +17,3 @@ See [https://github.com/cmungall/json-flattener/](https://github.com/cmungall/js
 
 Use `tsvs2linkml` in the enrichment toolkit
 
-## TODO

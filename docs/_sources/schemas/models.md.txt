@@ -285,7 +285,9 @@ enums:
 
 ## Subsets
 
-TODO: example
+Elements of a schema can be partitioned into named [subsets](https://w3id.org/linkml/SubsetDefinition). These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposs.
+
+
 
 
 
