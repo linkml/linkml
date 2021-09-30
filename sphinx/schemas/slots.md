@@ -93,6 +93,22 @@ we can use `slot_usage` to constrain the meaning of more generic slots such as `
         required: true
 ```        
 
+## Identifiers
+
+
+If a slot is declared as an [identifier](https://w3id.org/linkml/)
+then it serves as a unique key for members of that class. It can also
+be used for [inlining](inlining) as a dict in JSON serializations.
+
+
+```yaml
+slots:
+  id:
+    identifier: true
+```
+
+the range of an identifier can be any type, but it is a good idea to have these be of type [uriorcurie](https://w3id.org/linkml/uriorcurie)
+
 ## Slot cardinality
 
 ### multivalued

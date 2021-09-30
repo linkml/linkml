@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organization &mdash; linkml  documentation</title>
+  <title>GitHub Organization &mdash; linkml  documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -54,7 +54,7 @@
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Developers guide</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Organization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
@@ -78,7 +78,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Developers guide</a> &raquo;</li>
-      <li>Organization</li>
+      <li>GitHub Organization</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/developers/organization.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -88,24 +88,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="organization">
-<h1>Organization<a class="headerlink" href="#organization" title="Permalink to this headline"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="github-organization">
+<h1>GitHub Organization<a class="headerlink" href="#github-organization" title="Permalink to this headline"></a></h1>
 <p>See <a class="reference external" href="https://github.com/linkml">github.com/linkml</a></p>
 <ul class="simple">
-<li><p>linkml-model</p>
+<li><p><a class="reference external" href="https://github.com/linkml-model">linkml</a></p>
 <ul>
-<li><p>self-describing linkml datamodel</p></li>
-<li><p>note that you should not use the python classes - use linkml_runtime.linkml_model</p></li>
+<li><p><span class="xref myst">generators</span></p></li>
+<li><p>datautils</p></li>
+<li><p>this documentation</p></li>
 </ul>
 </li>
-<li><p>linkml-runtime</p>
+<li><p><a class="reference external" href="https://github.com/linkml-model">linkml-model</a></p>
+<ul>
+<li><p>self-describing linkml datamodel</p></li>
+<li><p>note that you should not use this module programmatically - use linkml_runtime.linkml_model</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://github.com/linkml-runtime">linkml-runtime</a></p>
 <ul>
 <li><p>code needed by linkml python object models</p></li>
-<li><p>utility code such as schemaview</p></li>
+<li><p>utility code such as <a class="reference internal" href="manipulating-schemas.html"><span class="doc std std-doc">schemaview</span></a></p></li>
 <li><p>includes metamodel (linkml_runtime.linkml_model)</p></li>
 </ul>
 </li>
-<li><p>linkml-runtime-api</p>
+<li><p><a class="reference external" href="https://github.com/linkml-runtime-api">linkml-runtime-api</a> <strong>NEW</strong></p>
 <ul>
 <li><p>extension to runtime to provide:</p>
 <ul>
@@ -115,20 +122,22 @@
 </li>
 </ul>
 </li>
-<li><p>linkml</p>
+<li><p><a class="reference external" href="https://github.com/linkml-model-enrichment">linkml-model-enrichment</a></p>
 <ul>
-<li><p>generators</p></li>
-<li><p>datautils</p></li>
+<li><p>tools for bootstrapping schemas</p>
+<ul>
+<li><p>from unstructured TSVs</p></li>
+<li><p>from OWL ontologies</p></li>
+<li><p>from JSON-Schema</p></li>
 </ul>
 </li>
-<li><p>linkml-model-enrichment</p>
-<ul>
-<li><p>tools for bootstrapping schemas</p></li>
+<li><p>tools for inferring enum ontology mappings using OLS and BioPortal</p></li>
 </ul>
 </li>
-<li><p>linkml-model-template</p>
+<li><p><a class="reference external" href="https://github.com/linkml-model-template">linkml-model-template</a></p>
 <ul>
 <li><p>Project template for new LinkML datamodels</p></li>
+<li><p><strong>NOTE</strong> this may be replaced by a cookiecutter system soon</p></li>
 </ul>
 </li>
 </ul>

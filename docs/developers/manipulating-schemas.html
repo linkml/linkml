@@ -48,12 +48,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Developers guide</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="organization.html">Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
@@ -89,6 +90,12 @@
              
   <section id="manipulating-schemas">
 <h1>Manipulating Schemas<a class="headerlink" href="#manipulating-schemas" title="Permalink to this headline"></a></h1>
+<p>The SchemaView class in the linkml-runtime provides a method for
+dynamically introspecting and manipulating schemas, for example:</p>
+<ul class="simple">
+<li><p>find all ancestors or descendants of a class</p></li>
+<li><p>find all inferred (induced) slots for a class</p></li>
+</ul>
 <p>See <a class="reference external" href="https://github.com/linkml/linkml-runtime/tree/main/notebooks">runtime notebooks</a> for an example</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView">
@@ -108,6 +115,803 @@ into the schema rather than providing dynamic methods.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.add_class">
+<span class="sig-name descname"><span class="pre">add_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.add_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.add_class" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cls</strong> – class to be added</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.add_enum">
+<span class="sig-name descname"><span class="pre">add_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.add_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.add_enum" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>enum</strong> – enum to be added</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.add_slot">
+<span class="sig-name descname"><span class="pre">add_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.add_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.add_slot" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>slot</strong> – slot to be added</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.add_subset">
+<span class="sig-name descname"><span class="pre">add_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.add_subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.add_subset" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subset</strong> – subset to be added</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.add_type">
+<span class="sig-name descname"><span class="pre">add_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinition</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.add_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.add_type" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>type</strong> – type to be added</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_class">
+<span class="sig-name descname"><span class="pre">all_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_class" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all classes in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_classes">
+<span class="sig-name descname"><span class="pre">all_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_classes" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all classes in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_element">
+<span class="sig-name descname"><span class="pre">all_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_element" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all elements in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_elements">
+<span class="sig-name descname"><span class="pre">all_elements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_elements" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all elements in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_enum">
+<span class="sig-name descname"><span class="pre">all_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_enum" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all enums in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_enums">
+<span class="sig-name descname"><span class="pre">all_enums</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_enums"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_enums" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all enums in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_schema">
+<span class="sig-name descname"><span class="pre">all_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_schema" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all schemas</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_slot">
+<span class="sig-name descname"><span class="pre">all_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_slot" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all slots in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_slots">
+<span class="sig-name descname"><span class="pre">all_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_slots" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all slots in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_subset">
+<span class="sig-name descname"><span class="pre">all_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_subset" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all subsets in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_subsets">
+<span class="sig-name descname"><span class="pre">all_subsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_subsets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_subsets" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all subsets in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_type">
+<span class="sig-name descname"><span class="pre">all_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_type" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all types in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.all_types">
+<span class="sig-name descname"><span class="pre">all_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinition</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.all_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.all_types" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>imports</strong> – include imports closure</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all types in schema view</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.annotation_dict">
+<span class="sig-name descname"><span class="pre">annotation_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.utils.metamodelcore.URIorCURIE</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.annotation_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.annotation_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary where keys are annotation tags and values are annotation values for any given element.</p>
+<p>Note this will not include higher-order annotations</p>
+<p>See also: <a class="reference external" href="https://github.com/linkml/linkml/issues/296">https://github.com/linkml/linkml/issues/296</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_name</strong> – </p></li>
+<li><p><strong>imports</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>annotation dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_ancestors">
+<span class="sig-name descname"><span class="pre">class_ancestors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reflexive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_ancestors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_ancestors" title="Permalink to this definition"></a></dt>
+<dd><p>Closure of class_parents method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – query class</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+<li><p><strong>is_a</strong> – include is_a parents (default is True)</p></li>
+<li><p><strong>reflexive</strong> – include self in set of ancestors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ancestor class names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_children">
+<span class="sig-name descname"><span class="pre">class_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_children" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – parent class name</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+<li><p><strong>is_a</strong> – include is_a parents (default is True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all direct child class names (is_a and mixins)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_descendants">
+<span class="sig-name descname"><span class="pre">class_descendants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reflexive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_descendants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_descendants" title="Permalink to this definition"></a></dt>
+<dd><p>Closure of class_children method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – query class</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+<li><p><strong>is_a</strong> – include is_a parents (default is True)</p></li>
+<li><p><strong>reflexive</strong> – include self in set of descendants</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>descendants class names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_induced_slots">
+<span class="sig-name descname"><span class="pre">class_induced_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_induced_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_induced_slots" title="Permalink to this definition"></a></dt>
+<dd><p>All slots that are asserted or inferred for a class, with their inferred semantics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – </p></li>
+<li><p><strong>imports</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>inferred slot definition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_leaves">
+<span class="sig-name descname"><span class="pre">class_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_leaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_leaves" title="Permalink to this definition"></a></dt>
+<dd><p>All classes that have no children
+:param imports:
+:param mixins:
+:param is_a: include is_a parents (default is True)
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_parents">
+<span class="sig-name descname"><span class="pre">class_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_parents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_parents" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – child class name</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all direct parent class names (is_a and mixins)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_roots">
+<span class="sig-name descname"><span class="pre">class_roots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_roots" title="Permalink to this definition"></a></dt>
+<dd><p>All classes that have no parents
+:param imports:
+:param mixins:
+:param is_a: include is_a parents (default is True)
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.class_slots">
+<span class="sig-name descname"><span class="pre">class_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.class_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.class_slots" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – </p></li>
+<li><p><strong>imports</strong> – include imports closure</p></li>
+<li><p><strong>direct</strong> – only returns slots directly associated with a class (default is False)</p></li>
+<li><p><strong>attributes</strong> – include attribute declarations as well as slots (default is True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all slot names applicable for a class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.delete_class">
+<span class="sig-name descname"><span class="pre">delete_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_references</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.delete_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.delete_class" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>class_name</strong> – class to be deleted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.delete_enum">
+<span class="sig-name descname"><span class="pre">delete_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.delete_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.delete_enum" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>enum_name</strong> – enum to be deleted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.delete_slot">
+<span class="sig-name descname"><span class="pre">delete_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.delete_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.delete_slot" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>slot_name</strong> – slot to be deleted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.delete_subset">
+<span class="sig-name descname"><span class="pre">delete_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.delete_subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.delete_subset" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subset_name</strong> – subset to be deleted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.delete_type">
+<span class="sig-name descname"><span class="pre">delete_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinitionName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.delete_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.delete_type" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>type_name</strong> – type to be deleted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.expand_curie">
+<span class="sig-name descname"><span class="pre">expand_curie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.expand_curie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.expand_curie" title="Permalink to this definition"></a></dt>
+<dd><p>Expands a URI or CURIE to a full URI
+:param uri:
+:return: URI as a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_class">
+<span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_class" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – name of the class to be retrieved</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>class definition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_element">
+<span class="sig-name descname"><span class="pre">get_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.Element</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">linkml_runtime.linkml_model.meta.Element</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_element" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch an element by name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> – query element</p></li>
+<li><p><strong>imports</strong> – include imports closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_enum">
+<span class="sig-name descname"><span class="pre">get_enum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">linkml_runtime.linkml_model.meta.EnumDefinition</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_enum" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enum_name</strong> – name of the enum to be retrieved</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>enum definition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot">
+<span class="sig-name descname"><span class="pre">get_identifier_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_identifier_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cn</strong> – class name</p></li>
+<li><p><strong>imports</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of slot that acts as identifier for the given class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_mapping_index">
+<span class="sig-name descname"><span class="pre">get_mapping_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.utils.metamodelcore.URIorCURIE</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.Element</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_mapping_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_mapping_index" title="Permalink to this definition"></a></dt>
+<dd><p>Returns an index of all elements keyed by the mapping value.
+The index values are tuples of mapping type and element</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>imports</strong> – </p></li>
+<li><p><strong>expand</strong> – if true the index will be keyed by expanded URIs, not CURIEs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_mappings">
+<span class="sig-name descname"><span class="pre">get_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.utils.metamodelcore.URIorCURIE</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_mappings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_mappings" title="Permalink to this definition"></a></dt>
+<dd><p>Get all mappings for a given element</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_name</strong> – the query element</p></li>
+<li><p><strong>imports</strong> – include imports closure</p></li>
+<li><p><strong>expand</strong> – expand CURIEs to URIs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index keyed by mapping type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_slot">
+<span class="sig-name descname"><span class="pre">get_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_slot" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot_name</strong> – name of the slot to be retrieved</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>slot definition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_subset">
+<span class="sig-name descname"><span class="pre">get_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">linkml_runtime.linkml_model.meta.SubsetDefinition</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_subset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_subset" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subset_name</strong> – name of the subsey to be retrieved</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>subset definition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_type">
+<span class="sig-name descname"><span class="pre">get_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">linkml_runtime.linkml_model.meta.TypeDefinition</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_type" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type_name</strong> – name of the type to be retrieved</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>type definition</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_uri">
+<span class="sig-name descname"><span class="pre">get_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span><span class="p"><span class="pre">,</span> </span><span class="pre">linkml_runtime.linkml_model.meta.Element</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">native</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_uri" title="Permalink to this definition"></a></dt>
+<dd><p>Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
+used, otherwise this is constructed from the default prefix combined with the element name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_name</strong> – name of schema element</p></li>
+<li><p><strong>imports</strong> – include imports closure</p></li>
+<li><p><strong>native</strong> – return the native CURIE or URI rather than what is declared in the uri slot</p></li>
+<li><p><strong>expand</strong> – expand the CURIE to a URI; defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>URI or CURIE as a string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.imports_closure">
+<span class="sig-name descname"><span class="pre">imports_closure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.imports_closure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.imports_closure" title="Permalink to this definition"></a></dt>
+<dd><p>Return all imports</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>traverse</strong> – if true, traverse recursively</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all schema names in the transitive reflexive imports closure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.in_schema">
+<span class="sig-name descname"><span class="pre">in_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinitionName</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.in_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.in_schema" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element_name</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of schema in which element is defined</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.induced_slot">
+<span class="sig-name descname"><span class="pre">induced_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.induced_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.induced_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Given a slot, in the context of a particular class, yield a dynamic SlotDefinition that
+has all properties materialized.</p>
+<p>This makes use of schema slots, such as attributes, slot_usage. It also uses ancestor relationships
+to infer missing values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot_name</strong> – slot to be queries</p></li>
+<li><p><strong>class_name</strong> – class used as context</p></li>
+<li><p><strong>imports</strong> – include imports closure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dynamic slot constructed by inference</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.is_inlined">
+<span class="sig-name descname"><span class="pre">is_inlined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.is_inlined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.is_inlined" title="Permalink to this definition"></a></dt>
+<dd><p>True if slot is inferred or asserted inline</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot</strong> – </p></li>
+<li><p><strong>imports</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.is_relationship">
+<span class="sig-name descname"><span class="pre">is_relationship</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.is_relationship"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.is_relationship" title="Permalink to this definition"></a></dt>
+<dd><p>Tests if a class represents a relationship or reified statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_name</strong> – </p></li>
+<li><p><strong>imports</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true if the class represents a relationship</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.merge_schema">
+<span class="sig-name descname"><span class="pre">merge_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.merge_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.merge_schema" title="Permalink to this definition"></a></dt>
+<dd><p>merges another schema into this one
+:param schema: schema to be merged</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.slot_ancestors">
+<span class="sig-name descname"><span class="pre">slot_ancestors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reflexive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.slot_ancestors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.slot_ancestors" title="Permalink to this definition"></a></dt>
+<dd><p>Closure of slot_parents method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot_name</strong> – query slot</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+<li><p><strong>is_a</strong> – include is_a parents (default is True)</p></li>
+<li><p><strong>reflexive</strong> – include self in set of ancestors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ancestor slot names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.slot_children">
+<span class="sig-name descname"><span class="pre">slot_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.slot_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.slot_children" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot_name</strong> – parent slot name</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+<li><p><strong>is_a</strong> – include is_a parents (default is True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all direct child slot names (is_a and mixins)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.slot_leaves">
+<span class="sig-name descname"><span class="pre">slot_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.slot_leaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.slot_leaves" title="Permalink to this definition"></a></dt>
+<dd><p>All slotes that have no children
+:param imports:
+:param mixins:
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.slot_parents">
+<span class="sig-name descname"><span class="pre">slot_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.slot_parents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.slot_parents" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot_name</strong> – child slot name</p></li>
+<li><p><strong>imports</strong> – include import closure</p></li>
+<li><p><strong>mixins</strong> – include mixins (default is True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>all direct parent slot names (is_a and mixins)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.slot_roots">
+<span class="sig-name descname"><span class="pre">slot_roots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mixins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.slot_roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.slot_roots" title="Permalink to this definition"></a></dt>
+<dd><p>All slotes that have no parents
+:param imports:
+:param mixins:
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.usage_index">
+<span class="sig-name descname"><span class="pre">usage_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ElementName</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.utils.schemaview.SchemaUsage</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.usage_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.usage_index" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dictionary keyed by used elements</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
