@@ -42,6 +42,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
@@ -55,6 +56,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#inlining-as-a-list">Inlining as a list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inlining-as-a-dictionary">Inlining as a dictionary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inlining-a-single-valued-object">Inlining a single-valued object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#note-on-json-schema-validation">Note on JSON-Schema validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inlining-with-non-json-serializations">Inlining with non-JSON serializations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-should-inlining-be-used">When should inlining be used?</a></li>
 </ul>
@@ -65,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -216,6 +219,10 @@
       <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mammals</span>
 </pre></div>
 </div>
+</section>
+<section id="note-on-json-schema-validation">
+<h2>Note on JSON-Schema validation<a class="headerlink" href="#note-on-json-schema-validation" title="Permalink to this headline"></a></h2>
+<p>Currently JSON-Schema validation will fail on any structures inlined as dicts.</p>
 </section>
 <section id="inlining-with-non-json-serializations">
 <h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Permalink to this headline"></a></h2>

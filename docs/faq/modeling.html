@@ -60,6 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-need-to-define-my-own-types">Why would I need to define my own types?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-want-to-use-enums-over-strings">Why would I want to use enums over strings?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
@@ -126,7 +127,7 @@ hierarchies should be stratified.</p>
 <section id="when-should-i-use-attributes-vs-slots">
 <h2>When should I use attributes vs slots?<a class="headerlink" href="#when-should-i-use-attributes-vs-slots" title="Permalink to this headline"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/attributes">attributes</a> metamodel slot is really just a convenient shorthand for being able to declare slots “inline”.</p>
-<p>LinkML treats slots as first class entities. They are defined in their own section of a schema, and can be reused by any number of classes (and refined, using slot_usage). This can be bery powerful for reuse.</p>
+<p>LinkML treats slots as first class entities. They are defined in their own section of a schema, and can be reused by any number of classes (and refined, using slot_usage). This can be very powerful for reuse.</p>
 <p>However, this can also be slightly inconvenient for simple schemas, especially those where we have classes with slots that are completely “owned” by that class. The attribute slot can be used to avoid having to specify the slot separately</p>
 </section>
 <section id="what-are-induced-slots">
@@ -161,6 +162,68 @@ text.</p>
 <p>In some cases, the equivalent of this can be achieved through <em>inheritance</em> in LinkML.</p>
 <p>LinkML also has the <code class="docutils literal notranslate"><span class="pre">union_of</span></code> slot to allow an <em>exhaustive</em> set of subclasses to be specified. This acts in a similar way to
 oneOf and future versions of JSON-Schema translation may compile down to oneOf</p>
+</section>
+<section id="why-are-my-class-names-translated-to-camelcase">
+<h2>Why are my class names translated to CamelCase?<a class="headerlink" href="#why-are-my-class-names-translated-to-camelcase" title="Permalink to this headline"></a></h2>
+<p>LinkML allows you to use any convention you like when authoring
+schemas. However, when translating to other formalisms such as
+JSON-Schema, RDF, Python then those naming conventions are applied.</p>
+<p>For example, if you define a class:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">my class</span><span class="p">:</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">my slot</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>Then this will translate as follows:</p>
+<ul class="simple">
+<li><p>Python, JSON-Schema</p>
+<ul>
+<li><p>MyClass</p></li>
+<li><p>my_slot</p></li>
+</ul>
+</li>
+<li><p>RDF/OWL URIs</p>
+<ul>
+<li><p>my_schema:MyClass</p></li>
+<li><p>my_schema:my_slot</p></li>
+</ul>
+</li>
+</ul>
+<p>Note in the RDF/OWL representation, seperate <code class="docutils literal notranslate"><span class="pre">rdfs:label</span></code> triples will be generated retaining the original human-friendly name.</p>
+<p>This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names</p>
+<p>However, the autotmatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">MyClass</span><span class="p">:</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">my_slot</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>you have the option of specifying human-friendly <em>titles</em> for each element:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">MyClass</span><span class="p">:</span>
+    <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my class</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">my_slot</span><span class="p">:</span>
+        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my slot</span>
+</pre></div>
+</div>
+<p>Note that one current limitation of the LinkML generator framework is
+that it does not protect you from using keywords that are reserved in
+certain formalisms.</p>
+<p>For example, if you define a slot <code class="docutils literal notranslate"><span class="pre">in</span></code>, then this conflicts with the
+Python keyword, and the generated python code will raise errors. For now the recommendation is to avoid these as they arise.</p>
+<p>In future, the LinkML framework will</p>
+<ul class="simple">
+<li><p>warn if a reserved term is used</p></li>
+<li><p>provide a mechanism for transparent mapping between a schema element and a “safe” version of the element</p></li>
+</ul>
 </section>
 </section>
 

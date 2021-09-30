@@ -71,6 +71,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -219,8 +220,8 @@ GitHub in minutes thanks to the markdown generator</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-markdown-log_level">
-<span id="cmdoption-gen-markdown-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-log_level" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-log-level">
+<span class="sig-name descname"><span class="pre">--log-level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-log-level" title="Permalink to this definition"></a></dt>
 <dd><p>Logging level (default=WARNING)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Options</dt>
@@ -249,7 +250,11 @@ GitHub in minutes thanks to the markdown generator</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">linkml.generators.markdowngen.</span></span><span class="sig-name descname"><span class="pre">MarkdownGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noyuml</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_on_exist</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/markdowngen.html#MarkdownGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
+<dd><p>Generates markdown documentation for a LinkML schema</p>
+<p>Each schema element (class, slot, type, enum) is translated into its own markdown file;
+additionally, an index.md is generated that links everything together.</p>
+<p>The markdown is suitable for deployment as a MkDocs or Sphinx site</p>
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator.serialize" title="Permalink to this definition"></a></dt>
 <dd><p>Generate output in the required format</p>

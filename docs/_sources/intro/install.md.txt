@@ -22,4 +22,16 @@ The latest version can always be installed with:
 pip install linkml
 ```
 
-*note for core developers*: consult the [developers guide](../developers/contributing-code) for using this codebase from GitHub
+## Alternative protocol: Use Docker
+
+You can also use the Docker image, courtesy of the Monarch Initiative:
+
+```bash
+docker run -v $(PWD):/work -w /work/ --rm -ti monarchinitiative/linkml
+```
+
+This comes with LinkML already installed
+
+## Installation for contributors
+
+*note for core developers and contributors*: consult the [developers guide](../developers/contributing-code) for using this codebase from GitHub

@@ -42,6 +42,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
@@ -80,6 +81,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -191,8 +193,8 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-python-log_level">
-<span id="cmdoption-gen-python-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-python-log_level" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-python-log-level">
+<span class="sig-name descname"><span class="pre">--log-level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-python-log-level" title="Permalink to this definition"></a></dt>
 <dd><p>Logging level (default=WARNING)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Options</dt>
@@ -221,7 +223,8 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pythongen.</span></span><span class="sig-name descname"><span class="pre">PythonGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'py'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pythongen.html#PythonGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
+<dd><p>Generates Python dataclasses from a LinkML model</p>
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.serialize" title="Permalink to this definition"></a></dt>
 <dd><p>Generate output in the required format</p>

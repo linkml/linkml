@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="LinkML Schemas" href="../schemas/index.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
     <link rel="prev" title="LinkML at a glance" href="overview.html" /> 
 </head>
 
@@ -44,13 +44,17 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Install Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#install-python">Install Python</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#install-linkml">Install LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#alternative-protocol-use-docker">Alternative protocol: Use Docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-for-contributors">Installation for contributors</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -102,7 +106,18 @@ Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install linkml
 </pre></div>
 </div>
-<p><em>note for core developers</em>: consult the <a class="reference internal" href="../developers/contributing-code.html"><span class="doc std std-doc">developers guide</span></a> for using this codebase from GitHub</p>
+</section>
+<section id="alternative-protocol-use-docker">
+<h2>Alternative protocol: Use Docker<a class="headerlink" href="#alternative-protocol-use-docker" title="Permalink to this headline"></a></h2>
+<p>You can also use the Docker image, courtesy of the Monarch Initiative:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -v <span class="k">$(</span>PWD<span class="k">)</span>:/work -w /work/ --rm -ti monarchinitiative/linkml
+</pre></div>
+</div>
+<p>This comes with LinkML already installed</p>
+</section>
+<section id="installation-for-contributors">
+<h2>Installation for contributors<a class="headerlink" href="#installation-for-contributors" title="Permalink to this headline"></a></h2>
+<p><em>note for core developers and contributors</em>: consult the <a class="reference internal" href="../developers/contributing-code.html"><span class="doc std std-doc">developers guide</span></a> for using this codebase from GitHub</p>
 </section>
 </section>
 
@@ -111,7 +126,7 @@ Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="overview.html" class="btn btn-neutral float-left" title="LinkML at a glance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../schemas/index.html" class="btn btn-neutral float-right" title="LinkML Schemas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

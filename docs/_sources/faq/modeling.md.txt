@@ -30,7 +30,7 @@ However, in our experience inheritance is still very useful when used for data c
 
 The [attributes](https://w3id.org/linkml/attributes) metamodel slot is really just a convenient shorthand for being able to declare slots "inline".
 
-LinkML treats slots as first class entities. They are defined in their own section of a schema, and can be reused by any number of classes (and refined, using slot_usage). This can be bery powerful for reuse.
+LinkML treats slots as first class entities. They are defined in their own section of a schema, and can be reused by any number of classes (and refined, using slot_usage). This can be very powerful for reuse.
 
 However, this can also be slightly inconvenient for simple schemas, especially those where we have classes with slots that are completely "owned" by that class. The attribute slot can be used to avoid having to specify the slot separately
 
@@ -78,5 +78,68 @@ In some cases, the equivalent of this can be achieved through *inheritance* in L
 LinkML also has the `union_of` slot to allow an *exhaustive* set of subclasses to be specified. This acts in a similar way to
 oneOf and future versions of JSON-Schema translation may compile down to oneOf
 
+## Why are my class names translated to CamelCase?
 
+LinkML allows you to use any convention you like when authoring
+schemas. However, when translating to other formalisms such as
+JSON-Schema, RDF, Python then those naming conventions are applied.
 
+For example, if you define a class:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  my class:
+    attributes:
+      my slot:
+```
+
+Then this will translate as follows:
+
+ * Python, JSON-Schema
+   * MyClass
+   * my_slot
+ * RDF/OWL URIs
+   * my_schema:MyClass
+   * my_schema:my_slot
+
+Note in the RDF/OWL representation, seperate `rdfs:label` triples will be generated retaining the original human-friendly name.
+
+This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names
+
+However, the autotmatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  MyClass:
+    attributes:
+      my_slot:
+```
+
+you have the option of specifying human-friendly *titles* for each element:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  MyClass:
+    title: my class
+    attributes:
+      my_slot:
+        title: my slot
+```
+
+Note that one current limitation of the LinkML generator framework is
+that it does not protect you from using keywords that are reserved in
+certain formalisms.
+
+For example, if you define a slot `in`, then this conflicts with the
+Python keyword, and the generated python code will raise errors. For now the recommendation is to avoid these as they arise.
+
+In future, the LinkML framework will
+
+ * warn if a reserved term is used
+ * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
