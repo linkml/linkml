@@ -179,24 +179,24 @@ Lists:
    * c
 
 And links, e.g to [Person](Person.md)""" ;
-    linkml:generation_date "2021-09-30 03:28" ;
+    linkml:generation_date "2021-10-01 20:54" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "kitchen_sink.yaml" ;
-    linkml:source_file_date "Thu Sep 30 03:23:18 2021" ;
+    linkml:source_file_date "Fri Oct  1 20:49:47 2021" ;
     linkml:source_file_size 4456 .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Dataset> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Dataset" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
+            owl:onProperty linkml:companies ],
+        [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
             owl:onProperty linkml:persons ],
         [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/tests/core/Activity> ;
-            owl:onProperty linkml:activities ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
-            owl:onProperty linkml:companies ] .
+            owl:onProperty linkml:activities ] .
 
 <https://w3id.org/linkml/tests/kitchen_sink/has_marriage_history> a owl:ObjectProperty,
         linkml:SlotDefinition ;
@@ -242,16 +242,16 @@ And links, e.g to [Person](Person.md)""" ;
         linkml:ClassDefinition ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+        [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty linkml:aliases ],
         [ a owl:Restriction ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
             owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Relationship> a owl:Class,
@@ -260,7 +260,11 @@ And links, e.g to [Person](Person.md)""" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
+            owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/type> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
@@ -268,11 +272,7 @@ And links, e.g to [Person](Person.md)""" ;
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/type> ] .
+            owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ] .
 
 <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> a owl:Class,
         linkml:ClassDefinition ;
@@ -396,13 +396,13 @@ linkml:Integer a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Concept" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/name> ] .
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+        [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ] .
 
 <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> a owl:Class,
         linkml:ClassDefinition ;
@@ -423,16 +423,16 @@ linkml:Integer a owl:Class,
     rdfs:label "MedicalEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
+            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/procedure> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
             owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/in_location> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ;
             owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/diagnosis> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
-            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/procedure> ],
         <https://w3id.org/linkml/tests/kitchen_sink/Event> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> a owl:Class,
@@ -515,17 +515,17 @@ linkml:Integer a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "agent" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/acted_on_behalf_of> ],
-        [ a owl:Restriction ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
             owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ] ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/acted_on_behalf_of> ] ;
     skos:definition "a provence-generating agent" ;
     skos:exactMatch <http://www.w3.org/ns/prov#Agent> .
 
@@ -538,16 +538,16 @@ linkml:Integer a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Place" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         [ a owl:Restriction ;
             owl:allValuesFrom linkml:String ;
             owl:onProperty linkml:aliases ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ],
         <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> .
 
 <https://w3id.org/linkml/tests/core/id> a owl:ObjectProperty,
@@ -569,9 +569,13 @@ linkml:Date a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "activity" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/was_associated_with> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
+            owl:onProperty <https://w3id.org/linkml/tests/core/used> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
@@ -581,21 +585,17 @@ linkml:Date a owl:Class,
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/tests/core/description> ],
         [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
             owl:onProperty <https://w3id.org/linkml/tests/core/was_informed_by> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/used> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/was_associated_with> ] ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ] ;
     skos:definition "a provence-generating activity" ;
     skos:exactMatch <http://www.w3.org/ns/prov#Activity> .
 
@@ -603,16 +603,16 @@ linkml:Date a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Person" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty linkml:aliases ],
-        [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
+            owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/Address> ;
+            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/addresses> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ;
             owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/has_birth_event> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Integer ;
+            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/age_in_years> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ;
             owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships> ],
@@ -621,18 +621,18 @@ linkml:Date a owl:Class,
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty linkml:aliases ],
+        [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ;
             owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/Address> ;
-            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/addresses> ],
         [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ;
             owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/has_medical_history> ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Integer ;
-            owl:onProperty <https://w3id.org/linkml/tests/kitchen_sink/age_in_years> ],
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ],
         <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> .
 
 linkml:TypeDefinition a owl:Class ;
