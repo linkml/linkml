@@ -1,0 +1,24 @@
+id: https://w3id.org/linkml/examples/personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  foo: https://example.org/foo/
+default_range: my_str
+
+types:
+  my_str:
+    base: str
+    uri: xsd:string
+
+classes:
+  C1:
+    attributes:
+      a:
+  C2:
+    attributes:
+      a:
+  C3:
+    attributes:
+      a:
+        slot_uri: foo:a
+
+
