@@ -324,6 +324,8 @@ class OwlSchemaGenerator(Generator):
 
     def visit_type(self, typ: TypeDefinition) -> None:
         type_uri = self._type_uri(typ.name)
+        if not self.type_objects:
+            return False
         if typ.from_schema == 'https://w3id.org/linkml/types':
             return
         self.graph.add((type_uri, RDF.type, OWL.Class))
@@ -446,7 +448,14 @@ class OwlSchemaGenerator(Generator):
               default='.owl.ttl',
               help="Suffix to append to schema id to generate OWL Ontology IRI")
 def cli(yamlfile, **kwargs):
-    """ Generate an OWL representation of a LinkML model """
+    """ Generate an OWL representation of a LinkML model
+
+    Examples:
+
+        gen-owl --no-metaclasses --no-type-objects
+
+    For more info, see: https://linkml.io/linkml/generators/owl
+    """
     print(OwlSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
 
 

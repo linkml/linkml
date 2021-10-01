@@ -16,6 +16,8 @@ from tests.test_issues.environment import env
 class IssueOWLNamespaceTestCase(TestEnvironmentTestCase):
     """
     Tests: https://github.com/linkml/linkml/issues/387
+
+    Ensure attributes have correct names in OWL
     """
     env = env
 
