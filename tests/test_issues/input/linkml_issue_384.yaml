@@ -1,0 +1,62 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  sdo: http://schema.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Thing:
+    slots:
+      - id
+      - full_name
+  Person:
+    is_a: Thing
+    class_uri: sdo:Person
+    attributes:
+      aliases:
+        multivalued: true
+      phone:
+      age:
+        description: age in years
+        range: integer
+    slot_usage:
+      parent:
+        range: Person
+  Organization:
+    is_a: Thing
+    slot_usage:
+      full_name:
+        description: name of the organization, e.g. ACME inc
+      parent:
+        range: Organization
+  GeoObject:
+    is_a: Thing
+    attributes:
+      aliases:
+        multivalued: false
+        comments:
+          - we introduce a deliberate conflict (single vs multivalied) with the aliases attribute that is local to person
+      age:
+        range: GeoAge
+        comments:
+          - we introduce a deliberate conflict (type vs class range) with the age attribute that is local to person
+
+  GeoAge:
+    attributes:
+      unit:
+      value:
+        range: float
+
+
+
+slots:
+  id:
+  full_name:
+    title: full name
+  parent:
+    range: Thing
+    multivalued: true
+
