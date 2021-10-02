@@ -391,7 +391,7 @@ class OwlSchemaGenerator(Generator):
     def _prop_uri(self, pn: SlotDefinitionName) -> URIRef:
         p = self.schema.slots.get(pn, None)
         if p is not None and p.slot_uri is not None:
-            return URIRef(p.slot_uri)
+            return self.namespaces.uri_for(p.slot_uri)
         else:
             raise Exception(f'No slot_uri for {pn} // {p}')
 
