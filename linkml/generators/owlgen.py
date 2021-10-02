@@ -237,9 +237,9 @@ class OwlSchemaGenerator(Generator):
                 cardinality_on = OWL.onDataRange
             else:
                 cardinality_on = OWL.onClass
+            slot_uri = self.namespaces.uri_for(slot.slot_uri)
             if slot_uri == 'rdf:type':
                 logging.warning(f'rdflib may have issues serializing rdf:type with turtle serializer')
-            slot_uri = self.namespaces.uri_for(slot.slot_uri)
             if slot.required:
                 if slot.multivalued:
                     #  intersectionOf(restriction(slot only type) restriction(slot some type)
@@ -309,7 +309,7 @@ class OwlSchemaGenerator(Generator):
 
         slots_with_same_uri = [s.name for s in self.schema.slots.values() if slot_uri == self._prop_uri(s.name)]
         if len(slots_with_same_uri) > 1:
-            logging.error(f'Multiple slots with URI: {slot_uri}: {slots_with_same_uri}')
+            logging.error(f'Multiple slots with URI: {slot_uri}: {slots_with_same_uri}; consider giving each a unique slot_uri')
             return
 
         self.add_mappings(slot)
