@@ -237,18 +237,21 @@ class OwlSchemaGenerator(Generator):
                 cardinality_on = OWL.onDataRange
             else:
                 cardinality_on = OWL.onClass
+            if slot_uri == 'rdf:type':
+                logging.warning(f'rdflib may have issues serializing rdf:type with turtle serializer')
+            slot_uri = self.namespaces.uri_for(slot.slot_uri)
             if slot.required:
                 if slot.multivalued:
                     #  intersectionOf(restriction(slot only type) restriction(slot some type)
                     restr1 = BNode()
                     self.graph.add((restr1, RDF.type, OWL.Restriction))
                     self.graph.add((restr1, OWL.allValuesFrom, self._range_uri(slot)))
-                    self.graph.add((restr1, OWL.onProperty, URIRef(slot.slot_uri)))
+                    self.graph.add((restr1, OWL.onProperty, slot_uri))
 
                     restr2 = BNode()
                     self.graph.add((restr2, RDF.type, OWL.Restriction))
                     self.graph.add((restr2, OWL.someValuesFrom, self._range_uri(slot)))
-                    self.graph.add((restr2, OWL.onProperty, URIRef(slot.slot_uri)))
+                    self.graph.add((restr2, OWL.onProperty, slot_uri))
 
                     coll_bnode = BNode()
                     Collection(self.graph, coll_bnode, [restr1, restr2])
@@ -258,20 +261,20 @@ class OwlSchemaGenerator(Generator):
                     #    restriction(slot exactly 1 type)
                     self.graph.add((slot_node, RDF.type, OWL.Restriction))
                     self.graph.add((slot_node, OWL.qualifiedCardinality, Literal(1)))
-                    self.graph.add((slot_node, OWL.onProperty, URIRef(slot.slot_uri)))
+                    self.graph.add((slot_node, OWL.onProperty, slot_uri))
                     self.graph.add((slot_node, cardinality_on, self._range_uri(slot)))
             else:
                 if slot.multivalued:
                     #    restriction(slot only type)
                     self.graph.add((slot_node, RDF.type, OWL.Restriction))
                     self.graph.add((slot_node, OWL.allValuesFrom, self._range_uri(slot)))
-                    self.graph.add((slot_node, OWL.onProperty, URIRef(slot.slot_uri)))
+                    self.graph.add((slot_node, OWL.onProperty, slot_uri))
                 else:
                     #    intersectionOf(restriction(slot only type) restriction(slot max 1 type))
                     self.graph.add((slot_node, RDF.type, OWL.Restriction))
                     self.graph.add((slot_node, cardinality_on, self._range_uri(slot)))
                     self.graph.add((slot_node, OWL.maxQualifiedCardinality, Literal(1)))
-                    self.graph.add((slot_node, OWL.onProperty, URIRef(slot.slot_uri)))
+                    self.graph.add((slot_node, OWL.onProperty, slot_uri))
 
         return True
 
@@ -292,10 +295,10 @@ class OwlSchemaGenerator(Generator):
         if slot.alias is not None and slot.alias != slot.name and slot.alias in self.schema.slots:
             logging.debug(f'SKIPPING slot induced by slot_usage: {slot.alias} // {slot.name} // {slot}')
             return
-        self.add_mappings(slot)
 
         slot_uri = self._prop_uri(slot.name)
-        self._add_element_properties(slot_uri, slot)
+        #logging.error(f'SLOT_URI={slot_uri}')
+
         # Slots may be modeled as Object or Datatype Properties
         # if type_objects is True, then ALL slots are ObjectProperties
         self.graph.add((slot_uri, RDF.type, self.slot_owl_type(slot)))
@@ -303,6 +306,16 @@ class OwlSchemaGenerator(Generator):
             # add metaclass which this property instantiates -- induces punning
             self.graph.add((slot_uri, RDF.type,
                             self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][camelcase('slot definition')]))
+
+        slots_with_same_uri = [s.name for s in self.schema.slots.values() if slot_uri == self._prop_uri(s.name)]
+        if len(slots_with_same_uri) > 1:
+            logging.error(f'Multiple slots with URI: {slot_uri}: {slots_with_same_uri}')
+            return
+
+        self.add_mappings(slot)
+        self._add_element_properties(slot_uri, slot)
+
+
         self.graph.add((slot_uri, RDFS.range, self._range_uri(slot)))
         if slot.domain:
             self.graph.add((slot_uri, RDFS.domain, self._class_uri(slot.domain)))
