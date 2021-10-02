@@ -1,0 +1,49 @@
+{
+   "$defs": {
+      "C1": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "a": {
+               "description": "this-a in the context of C1",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "C1",
+         "type": "object"
+      },
+      "C2": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "a": {
+               "description": "this-a in the context of C2",
+               "type": "integer"
+            }
+         },
+         "required": [],
+         "title": "C2",
+         "type": "object"
+      },
+      "C3": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "a": {
+               "$ref": "#/$defs/C1",
+               "description": "other-a in the context of C3"
+            }
+         },
+         "required": [],
+         "title": "C3",
+         "type": "object"
+      }
+   },
+   "$id": "https://w3id.org/linkml/examples/personinfo",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "properties": {},
+   "title": "personinfo",
+   "type": "object"
+}

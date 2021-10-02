@@ -1,189 +1,88 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <http://example.org/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/D2> a owl:Class,
+ex:D2 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "d2" ;
-    rdfs:subClassOf <http://example.org/C> .
+    rdfs:subClassOf ex:C .
 
-<http://example.org/E> a owl:Class,
+ex:E a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "e" ;
-    rdfs:subClassOf <http://example.org/D1> .
+    rdfs:subClassOf ex:D1 .
 
 <http://example.org/sample/example1> a owl:Ontology ;
     rdfs:label "example1" ;
+    IAO:0000700 ex:A ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2021-03-24 16:47" ;
+    linkml:generation_date "2021-10-02 02:02" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_163.yaml" ;
-    linkml:source_file_date "Wed Mar 24 16:43:50 2021" ;
+    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
     linkml:source_file_size 718 .
-
-linkml:Boolean a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "boolean" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:boolean ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A binary (true or false) value" .
-
-linkml:Date a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "date" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:date ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a date (year, month and day) in an idealized calendar" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
-
-linkml:Datetime a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "datetime" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:dateTime ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "The combination of a date and time" .
-
-linkml:Decimal a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "decimal" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:decimal ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" .
-
-linkml:Double a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "double" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:double ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number that conforms to the xsd:double specification" .
-
-linkml:Float a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "float" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:float ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number that conforms to the xsd:float specification" .
-
-linkml:Ncname a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "ncname" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "Prefix part of CURIE" .
-
-linkml:Nodeidentifier a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "nodeidentifier" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://www.w3.org/ns/shex#nonLiteral> ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A URI, CURIE or BNODE that represents a node in a model." .
-
-linkml:Objectidentifier a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "objectidentifier" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://www.w3.org/ns/shex#iri> ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A URI or CURIE that represents an object in the model." ;
-    skos:note "Used for inheritence and type checking" .
 
 linkml:SubsetDefinition a owl:Class ;
     rdfs:label "subset_definition" ;
     skos:definition "the name and description of a subset" .
 
-linkml:Time a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "time" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:dateTime ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
-
-linkml:Uri a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "uri" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:anyURI ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a complete URI" .
-
-linkml:Uriorcurie a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "uriorcurie" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:anyURI ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a URI or a CURIE" .
-
-<http://example.org/D1> a owl:Class,
+ex:D1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "d1" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/C> ;
-            owl:onProperty <http://example.org/has_c> ],
-        <http://example.org/C> .
+            owl:onClass ex:C ;
+            owl:onProperty ex:has_c ],
+        ex:C .
 
-<http://example.org/has_a> a owl:ObjectProperty,
+ex:has_a a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "has a" ;
-    rdfs:range <http://example.org/A> .
+    rdfs:range ex:A .
 
-<http://example.org/has_b> a owl:ObjectProperty,
+ex:has_b a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "has b" ;
-    rdfs:range <http://example.org/B> .
+    rdfs:range ex:B .
 
-<http://example.org/has_c> a owl:ObjectProperty,
+ex:has_c a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "has c" ;
-    rdfs:range <http://example.org/C> .
+    rdfs:range ex:C .
 
-<http://example.org/id> a owl:ObjectProperty,
+ex:id a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "id" ;
     rdfs:range linkml:String .
 
-<http://example.org/len> a owl:ObjectProperty,
+ex:len a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "len" ;
     rdfs:range linkml:Integer .
 
-<http://example.org/name> a owl:ObjectProperty,
+ex:name a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "name" ;
     rdfs:range linkml:String .
 
-<http://example.org/unit> a owl:ObjectProperty,
+ex:unit a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "unit" ;
-    rdfs:range <http://example.org/Unitcode> .
+    rdfs:range ex:Unitcode .
 
-<http://example.org/Unitcode> a owl:Class,
+linkml:TypeDefinition a owl:Class ;
+    rdfs:label "type_definition" ;
+    skos:definition "A data type definition." .
+
+linkml:topValue a owl:DatatypeProperty ;
+    rdfs:label "value" .
+
+ex:Unitcode a owl:Class,
         linkml:TypeDefinition ;
     rdfs:label "unitcode" ;
     rdfs:subClassOf [ a owl:Restriction ;
@@ -191,61 +90,43 @@ linkml:Uriorcurie a owl:Class,
             owl:onProperty linkml:topValue ;
             owl:qualifiedCardinality 1 ] .
 
-linkml:Integer a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "integer" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:integer ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "An integer" .
-
-<http://example.org/A> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "a" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty <http://example.org/id> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Integer ;
-            owl:onProperty <http://example.org/len> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/Unitcode> ;
-            owl:onProperty <http://example.org/unit> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <http://example.org/name> ] .
-
-<http://example.org/B> a owl:Class,
+ex:B a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "b" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/A> ;
-            owl:onProperty <http://example.org/has_a> ],
-        <http://example.org/A> .
+            owl:onClass ex:A ;
+            owl:onProperty ex:has_a ],
+        ex:A .
 
-<http://example.org/C> a owl:Class,
+ex:A a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "a" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onClass linkml:String ;
+            owl:onProperty ex:id ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Integer ;
+            owl:onProperty ex:len ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty ex:name ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass ex:Unitcode ;
+            owl:onProperty ex:unit ] .
+
+ex:C a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/B> ;
-            owl:onProperty <http://example.org/has_b> ],
-        <http://example.org/B> .
-
-linkml:String a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "string" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A character string" .
+            owl:onClass ex:B ;
+            owl:onProperty ex:has_b ],
+        ex:B .
 
 linkml:ClassDefinition a owl:Class ;
     rdfs:label "class_definition" ;
@@ -254,12 +135,5 @@ linkml:ClassDefinition a owl:Class ;
 linkml:SlotDefinition a owl:Class ;
     rdfs:label "slot_definition" ;
     skos:definition "the definition of a property or a slot" .
-
-linkml:TypeDefinition a owl:Class ;
-    rdfs:label "type_definition" ;
-    skos:definition "A data type definition." .
-
-linkml:topValue a owl:DatatypeProperty ;
-    rdfs:label "value" .
 
 

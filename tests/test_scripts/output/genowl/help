@@ -2,8 +2,28 @@ Usage: gen-owl [OPTIONS] YAMLFILE
 
   Generate an OWL representation of a LinkML model
 
+  Examples:
+
+      gen-owl --no-metaclasses --no-type-objects
+
+  For more info, see: https://linkml.io/linkml/generators/owl
+
 Options:
   -o, --output TEXT               Output file name
+  --type-objects / --no-type-objects
+                                  If true, will model linkml types as objects,
+                                  not literals
+
+  --metaclasses / --no-metaclasses
+                                  If true, include linkml metamodel classes as
+                                  metaclasses. Note this introduces punning in
+                                  OWL-DL
+
+  --add-ols-annotations / --no-add-ols-annotations
+                                  If true, auto-include annotations from
+                                  https://www.ebi.ac.uk/ols/docs/installation-
+                                  guide
+
   --ontology-iri-suffix TEXT      Suffix to append to schema id to generate
                                   OWL Ontology IRI
 

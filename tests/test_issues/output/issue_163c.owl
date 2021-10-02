@@ -1,187 +1,26 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <http://example.org/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/C1> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "c1" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty linkml:source ] .
-
-<http://example.org/C2> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "c2" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Uriorcurie ;
-            owl:onProperty linkml:source ] .
-
-<http://example.org/s1> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "s1" ;
-    rdfs:range linkml:String ;
-    skos:definition "This is a slot used in one context whose range is a description" .
-
-<http://example.org/s2> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "s2" ;
-    rdfs:range linkml:Uriorcurie ;
-    skos:definition "A second slot which wishes to be called \"source\", but is a URI" .
-
 <http://example.org/sample/example163c> a owl:Ontology ;
     rdfs:label "example163c" ;
+    IAO:0000700 ex:C1,
+        ex:C2 ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2021-03-24 16:47" ;
+    linkml:generation_date "2021-10-02 02:02" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_163c.yaml" ;
-    linkml:source_file_date "Wed Mar 24 16:43:50 2021" ;
+    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
     linkml:source_file_size 654 .
-
-linkml:Boolean a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "boolean" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:boolean ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A binary (true or false) value" .
-
-linkml:Date a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "date" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:date ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a date (year, month and day) in an idealized calendar" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
-
-linkml:Datetime a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "datetime" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:dateTime ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "The combination of a date and time" .
-
-linkml:Decimal a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "decimal" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:decimal ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" .
-
-linkml:Double a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "double" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:double ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number that conforms to the xsd:double specification" .
-
-linkml:Float a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "float" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:float ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number that conforms to the xsd:float specification" .
-
-linkml:Integer a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "integer" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:integer ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "An integer" .
-
-linkml:Ncname a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "ncname" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "Prefix part of CURIE" .
-
-linkml:Nodeidentifier a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "nodeidentifier" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://www.w3.org/ns/shex#nonLiteral> ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A URI, CURIE or BNODE that represents a node in a model." .
-
-linkml:Objectidentifier a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "objectidentifier" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://www.w3.org/ns/shex#iri> ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A URI or CURIE that represents an object in the model." ;
-    skos:note "Used for inheritence and type checking" .
 
 linkml:SubsetDefinition a owl:Class ;
     rdfs:label "subset_definition" ;
     skos:definition "the name and description of a subset" .
-
-linkml:Time a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "time" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:dateTime ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
-
-linkml:Uri a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "uri" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:anyURI ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a complete URI" .
-
-linkml:ClassDefinition a owl:Class ;
-    rdfs:label "class_definition" ;
-    skos:definition "the definition of a class or interface" .
-
-linkml:SlotDefinition a owl:Class ;
-    rdfs:label "slot_definition" ;
-    skos:definition "the definition of a property or a slot" .
-
-linkml:String a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "string" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A character string" .
-
-linkml:Uriorcurie a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "uriorcurie" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:anyURI ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a URI or a CURIE" .
 
 linkml:TypeDefinition a owl:Class ;
     rdfs:label "type_definition" ;
@@ -189,5 +28,32 @@ linkml:TypeDefinition a owl:Class ;
 
 linkml:topValue a owl:DatatypeProperty ;
     rdfs:label "value" .
+
+ex:C1 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty ex:source ] .
+
+ex:C2 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c2" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:Uriorcurie ;
+            owl:onProperty ex:source ] .
+
+linkml:SlotDefinition a owl:Class ;
+    rdfs:label "slot_definition" ;
+    skos:definition "the definition of a property or a slot" .
+
+ex:source a owl:ObjectProperty,
+        linkml:SlotDefinition .
+
+linkml:ClassDefinition a owl:Class ;
+    rdfs:label "class_definition" ;
+    skos:definition "the definition of a class or interface" .
 
 

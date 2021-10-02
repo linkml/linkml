@@ -1,3 +1,4 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -6,10 +7,11 @@
 
 <http://example.org> a owl:Ontology ;
     rdfs:label "example.org" ;
-    linkml:generation_date "2021-06-11 19:12" ;
+    IAO:0000700 <http://example.org/C> ;
+    linkml:generation_date "2021-10-02 02:02" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "issue_290.yaml" ;
-    linkml:source_file_date "Fri Jun 11 19:09:09 2021" ;
+    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
     linkml:source_file_size 118 .
 
 linkml:SubsetDefinition a owl:Class ;

@@ -1,4 +1,6 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix linkml: <https://w3id.org/linkml/> .
+@prefix meta: <http://example.org/owl2/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -6,39 +8,41 @@
 
 <http://example.org/owl2> a owl:Ontology ;
     rdfs:label "owl2" ;
-    linkml:generation_date "2021-03-24 16:49" ;
+    IAO:0000700 meta:C1,
+        meta:C2 ;
+    linkml:generation_date "2021-10-02 02:04" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "owl2.yaml" ;
-    linkml:source_file_date "Wed Mar 24 16:43:50 2021" ;
+    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
     linkml:source_file_size 519 .
 
 linkml:SubsetDefinition a owl:Class ;
     rdfs:label "subset_definition" ;
     skos:definition "the name and description of a subset" .
 
-<http://example.org/owl2/annotslot> a owl:ObjectProperty,
+meta:annotslot a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "annotslot" ;
-    rdfs:domain <http://example.org/owl2/C1> ;
-    rdfs:range <http://example.org/owl2/C2> .
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 .
 
-<http://example.org/owl2/annotslot2> a owl:ObjectProperty,
+meta:annotslot2 a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "annotslot2" ;
-    rdfs:domain <http://example.org/owl2/C1> ;
-    rdfs:range <http://example.org/owl2/String> .
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:String .
 
-<http://example.org/owl2/dataslot> a owl:ObjectProperty,
+meta:dataslot a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "dataslot" ;
-    rdfs:domain <http://example.org/owl2/C1> ;
-    rdfs:range <http://example.org/owl2/String> .
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:String .
 
-<http://example.org/owl2/objslot> a owl:ObjectProperty,
+meta:objslot a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "objslot" ;
-    rdfs:domain <http://example.org/owl2/C1> ;
-    rdfs:range <http://example.org/owl2/C2> .
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 .
 
 linkml:TypeDefinition a owl:Class ;
     rdfs:label "type_definition" ;
@@ -51,31 +55,7 @@ linkml:ClassDefinition a owl:Class ;
     rdfs:label "class_definition" ;
     skos:definition "the definition of a class or interface" .
 
-<http://example.org/owl2/C1> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "c1" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/owl2/String> ;
-            owl:onProperty <http://example.org/owl2/annotslot2> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/owl2/C2> ;
-            owl:onProperty <http://example.org/owl2/objslot> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/owl2/C2> ;
-            owl:onProperty <http://example.org/owl2/annotslot> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <http://example.org/owl2/String> ;
-            owl:onProperty <http://example.org/owl2/dataslot> ] .
-
-<http://example.org/owl2/C2> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "c2" .
-
-<http://example.org/owl2/String> a owl:Class,
+meta:String a owl:Class,
         linkml:TypeDefinition ;
     rdfs:label "string" ;
     rdfs:subClassOf [ a owl:Restriction ;
@@ -86,5 +66,29 @@ linkml:ClassDefinition a owl:Class ;
 linkml:SlotDefinition a owl:Class ;
     rdfs:label "slot_definition" ;
     skos:definition "the definition of a property or a slot" .
+
+meta:C1 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass meta:String ;
+            owl:onProperty meta:dataslot ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass meta:C2 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass meta:C2 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass meta:String ;
+            owl:onProperty meta:annotslot2 ] .
+
+meta:C2 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c2" .
 
 
