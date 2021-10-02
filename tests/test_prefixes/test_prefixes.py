@@ -20,11 +20,13 @@ CONTEXT_OUTPUT = env.expected_path('prefixtest.context.jsonld')
 class PrefixTestCase(unittest.TestCase):
     def test_owlgen(self):
         """ owl  """
-        owl = OwlSchemaGenerator(SCHEMA, mergeimports=False, ontology_uri_suffix='.owl.ttl').serialize()
+        owl = OwlSchemaGenerator(SCHEMA, mergeimports=False, ontology_uri_suffix='.owl.ttl', format='nt').serialize()
         with open(OWL_OUTPUT, 'w') as stream:
             stream.write(owl)
         g = Graph()
-        g.parse(OWL_OUTPUT, format="turtle")
+        # TODO: test with turtle when https://github.com/linkml/linkml/issues/163#issuecomment-906507968 is resolved
+        #g.parse(OWL_OUTPUT, format="turtle")
+        g.parse(OWL_OUTPUT, format="nt")
         # TODO: fix owlgen such that we don't have to hardcode exceptions
         self._check_triples(g,exceptions=[
             'http://schema.org/additionalName',

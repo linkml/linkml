@@ -1,0 +1,35 @@
+id: https://w3id.org/linkml/examples/personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  this: https://example.org/this/
+  other: https://example.org/other/
+default_range: my_str
+default_prefix: this
+
+types:
+  my_str:
+    base: str
+    uri: xsd:string
+  my_int:
+    base: integer
+    uri: xsd:integer
+
+classes:
+  C1:
+    attributes:
+      a:
+        range: my_str
+        description: this-a in the context of C1
+  C2:
+    attributes:
+      a:
+        range: my_int
+        description: this-a in the context of C2
+  C3:
+    attributes:
+      a:
+        slot_uri: other:a
+        description: other-a in the context of C3
+        range: C1
+
+
