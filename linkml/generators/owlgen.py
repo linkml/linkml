@@ -51,6 +51,8 @@ class OwlSchemaGenerator(Generator):
         self.graph = Graph(identifier=base)
         for prefix in self.metamodel.schema.emit_prefixes:
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
+        for pfx in self.schema.prefixes.values():
+            self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
 
         self.graph.add((base, RDF.type, OWL.Ontology))
         self._add_element_properties(base, self.schema)
