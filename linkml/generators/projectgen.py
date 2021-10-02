@@ -71,6 +71,7 @@ class ProjectConfiguration:
     generator_args: Dict[str, Dict[str,Any]] = field(default_factory=lambda: defaultdict(dict))
     includes: List[str] = None
     excludes: List[str] = None
+    mergeimports: bool = None
 
 class ProjectGenerator:
 
@@ -78,7 +79,10 @@ class ProjectGenerator:
         if config.directory is None:
             raise Exception(f'Must pass directory')
         Path(config.directory).mkdir(parents=True, exist_ok=True)
-        all_schemas = get_local_imports(schema_path, os.path.dirname(schema_path))
+        if config.mergeimports:
+            all_schemas = [schema_path]
+        else:
+            all_schemas = get_local_imports(schema_path, os.path.dirname(schema_path))
         print(f'ALL_SCHEMAS = {all_schemas}')
         for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
             if config.includes is not None and config.includes != [] and gen_name not in config.includes:
@@ -101,7 +105,7 @@ class ProjectGenerator:
                 all_gen_args = {**default_gen_args, **config.generator_args.get(gen_name, {})}
                 gen: Generator
                 gen = gen_cls(local_path, **all_gen_args)
-                serialize_args = {'mergeimports': False}
+                serialize_args = {'mergeimports': config.mergeimports}
                 for k, v in all_gen_args.items():
                     serialize_args[k] = v.format(name=name, parent=parent_dir)
                 logging.info(f' ARGS: {serialize_args}')
@@ -126,8 +130,11 @@ class ProjectGenerator:
 @click.option("--include", "-I",
               multiple=True,
               help="list of artefacts to be included. If not set, defaults to all")  # TODO: make this an enum
+@click.option("--mergeimports/--no-mergeimports",
+              default=True,
+              help="Merge imports into source file")
 @click.argument('yamlfile')
-def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, generator_arguments: str, **kwargs):
+def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, mergeimports, generator_arguments: str, **kwargs):
     """
     Generate an entire project LinkML schema
 
@@ -176,6 +183,7 @@ def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, gene
         logging.info(f'generator args: {project_config.generator_args}')
     if dir is not None:
         project_config.directory = dir
+    project_config.mergeimports = mergeimports
     gen = ProjectGenerator()
     gen.generate(yamlfile, project_config)
 
