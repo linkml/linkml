@@ -305,13 +305,8 @@ class MarkdownGenerator(Generator):
         else:
             obj_type = 'Class'
 
-        # TODO: for some reason obj.deprecated dosn't appear to be True even
-        # ...though 'deprecated' in obj.slots. When that's fixed, can update
-        # ...this clause to be simpler. - joeflack4 2021/09/23
-        if (hasattr(obj, 'slots') and 'deprecated' in obj.slots) or obj.deprecated:
-            self.header(1, f"{obj_type}: ~~{name}~~ _(deprecated)_")
-        else:
-            self.header(1, f"{obj_type}: {name}")
+        header_label = f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
+        self.header(1, header_label)
 
         self.para(be(obj.description))
         print(f'URI: [{curie}]({uri})')
