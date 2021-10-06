@@ -3,7 +3,8 @@ from typing import Union, TextIO, Optional, Dict, Tuple
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, PermissibleValueText
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition, \
+    PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
 
 from linkml.utils.generator import Generator, shared_arguments
@@ -24,6 +25,7 @@ json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
     "xsddatetime": ("string", "date-time"),
     "xsdtime": ("string", "time"),
 }
+
 
 class JsonSchemaGenerator(Generator):
     """
@@ -48,13 +50,13 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj: JsonObj = None
         self.clsobj: JsonObj = None
         self.inline = False
-        self.topCls = top_class  ## JSON object is one instance of this
+        self.topCls = top_class  # JSON object is one instance of this
         self.entryProperties = {}
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         self.visit_all_slots = True
 
-    def visit_schema(self, inline: bool = False, not_closed=True, **kwargs) -> None:    
+    def visit_schema(self, inline: bool = False, not_closed=True, **kwargs) -> None:
         self.inline = inline
         self.schemaobj = JsonObj(title=self.schema.name,
                                  type="object",
@@ -106,11 +108,10 @@ class JsonSchemaGenerator(Generator):
             enum=permissible_values_texts,
             description=be(enum.description))
 
-
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        typ = None          # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
-        reference = None    # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
-        fmt = None          # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
+        typ = None  # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
+        reference = None  # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
+        fmt = None  # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
         if slot.range in self.schema.types:
             (typ, fmt) = json_schema_types.get(self.schema.types[slot.range].base.lower(), ("string", None))
         elif slot.range in self.schema.enums:
@@ -145,6 +146,10 @@ class JsonSchemaGenerator(Generator):
                     prop = JsonObj(type=typ)
                 else:
                     prop = JsonObj(type=typ, format=fmt)
+
+        # # use tree root to determine what the top class will be if top_class is not supplied
+        if not self.topCls:
+            self.topCls = cls.tree_root
 
         if slot.description:
             prop.description = slot.description
