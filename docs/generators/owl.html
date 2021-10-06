@@ -126,14 +126,8 @@ maps between LinkML <em>data</em> and OWL</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The OWL is rendered as RDF/turte. We recommend the suffix
+<p>The OWL is rendered as RDF/turtle. We recommend the suffix
 <code class="docutils literal notranslate"><span class="pre">.owl.ttl</span></code> to distinguish from the direct RDF mapping</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Currently imports are included in the rendered OWL, this
-means if you import linkml/types these will also be
-rendered, which can be confusing</p>
 </div>
 <section id="mapping">
 <h3>Mapping<a class="headerlink" href="#mapping" title="Permalink to this headline"></a></h3>
@@ -144,6 +138,7 @@ rendered, which can be confusing</p>
 <div><ul class="simple">
 <li><p>if the range of the slot is class, then an ObjectProperty is used</p></li>
 <li><p>otherwise DataProperty is used</p></li>
+<li><p>Exception to the above: if <code class="docutils literal notranslate"><span class="pre">type_objects</span></code> is set then ObjectProperties are always used</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -165,11 +160,15 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <blockquote>
 <div><ul class="simple">
 <li><p>This means <em>punning</em> is used</p></li>
-<li><p>In future this behavior may be configurable</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">metaclass=False</span></code> if you do not want this behavior</p></li>
 </ul>
 </div></blockquote>
 </li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The current default settings for <code class="docutils literal notranslate"><span class="pre">metaclasses</span></code> and <code class="docutils literal notranslate"><span class="pre">type_objects</span></code> may change in the future</p>
+</div>
 </section>
 </section>
 <section id="docs">
@@ -179,6 +178,11 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <section id="gen-owl">
 <h4>gen-owl<a class="headerlink" href="#gen-owl" title="Permalink to this headline"></a></h4>
 <p>Generate an OWL representation of a LinkML model</p>
+<p>Examples:</p>
+<blockquote>
+<div><p>gen-owl –no-metaclasses –no-type-objects</p>
+</div></blockquote>
+<p>For more info, see: <a class="reference external" href="https://linkml.io/linkml/generators/owl">https://linkml.io/linkml/generators/owl</a></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-owl <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
 </div>
@@ -187,6 +191,24 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <dt class="sig sig-object std" id="cmdoption-gen-owl-o">
 <span id="cmdoption-gen-owl-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-o" title="Permalink to this definition"></a></dt>
 <dd><p>Output file name</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-type-objects">
+<span id="cmdoption-gen-owl-no-type-objects"></span><span class="sig-name descname"><span class="pre">--type-objects</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-type-objects</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-type-objects" title="Permalink to this definition"></a></dt>
+<dd><p>If true, will model linkml types as objects, not literals</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-metaclasses">
+<span id="cmdoption-gen-owl-no-metaclasses"></span><span class="sig-name descname"><span class="pre">--metaclasses</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metaclasses</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-metaclasses" title="Permalink to this definition"></a></dt>
+<dd><p>If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-add-ols-annotations">
+<span id="cmdoption-gen-owl-no-add-ols-annotations"></span><span class="sig-name descname"><span class="pre">--add-ols-annotations</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-add-ols-annotations</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-add-ols-annotations" title="Permalink to this definition"></a></dt>
+<dd><p>If true, auto-include annotations from <a class="reference external" href="https://www.ebi.ac.uk/ols/docs/installation-guide">https://www.ebi.ac.uk/ols/docs/installation-guide</a></p>
 </dd></dl>
 
 <dl class="std option">

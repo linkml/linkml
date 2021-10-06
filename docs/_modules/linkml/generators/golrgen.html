@@ -39,10 +39,13 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -97,7 +100,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">as_yaml</span>
 
 
-<div class="viewcode-block" id="GOLRField"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GOLRField">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="GOLRField"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GOLRField">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">GOLRField</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
@@ -106,7 +109,7 @@
     <span class="n">cardinality</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="GOLRClass"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GOLRClass">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="GOLRClass"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GOLRClass">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">GOLRClass</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">schema_generating</span><span class="p">:</span> <span class="nb">bool</span>
@@ -117,7 +120,7 @@
     <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GOLRField</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="GolrSchemaGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator">[docs]</a><span class="k">class</span> <span class="nc">GolrSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="GolrSchemaGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator">[docs]</a><span class="k">class</span> <span class="nc">GolrSchemaGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
     <span class="n">directory_output</span> <span class="o">=</span> <span class="kc">True</span>
@@ -129,13 +132,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">class_obj</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GOLRClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="GolrSchemaGenerator.visit_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="GolrSchemaGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span> <span class="o">=</span> <span class="n">directory</span>
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
         <span class="c1"># write_golr_yaml_to_dir(schema, dir)</span>
 
-<div class="viewcode-block" id="GolrSchemaGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="GolrSchemaGenerator.visit_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">class_obj</span> <span class="o">=</span> <span class="n">GOLRClass</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">underscore</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
                                        <span class="n">schema_generating</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -147,13 +150,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="GolrSchemaGenerator.end_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="GolrSchemaGenerator.end_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dirname</span><span class="p">,</span> <span class="n">underscore</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;-config.yaml&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_obj</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">as_yaml</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_obj</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="GolrSchemaGenerator.visit_class_slot"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="GolrSchemaGenerator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.golrgen.GolrSchemaGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">field</span> <span class="o">=</span> <span class="n">GOLRField</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">),</span> <span class="n">description</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
             <span class="n">field</span><span class="o">.</span><span class="n">cardinality</span> <span class="o">=</span> <span class="s1">&#39;multi&#39;</span>

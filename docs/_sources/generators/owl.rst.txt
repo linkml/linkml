@@ -17,12 +17,9 @@ rendering)
 .. seealso:: The `linkml-owl <https://github.com/linkml/linkml-owl>`_
              maps between LinkML *data* and OWL
              
-.. note:: The OWL is rendered as RDF/turte. We recommend the suffix
+.. note:: The OWL is rendered as RDF/turtle. We recommend the suffix
           ``.owl.ttl`` to distinguish from the direct RDF mapping
-             
-.. warning:: Currently imports are included in the rendered OWL, this
-             means if you import linkml/types these will also be
-             rendered, which can be confusing
+
 
 Mapping
 ^^^^^^^
@@ -32,6 +29,7 @@ Mapping
 
     - if the range of the slot is class, then an ObjectProperty is used
     - otherwise DataProperty is used
+    - Exception to the above: if ``type_objects`` is set then ObjectProperties are always used
 
 * OWL *restrictions* are used for cardinality and range constraints
 
@@ -47,8 +45,10 @@ Mapping
 * Each LinkML element is rendered as an instance of the relevant metamodel class      
 
     - This means *punning* is used
-    - In future this behavior may be configurable
-      
+    - Set ``metaclass=False`` if you do not want this behavior
+
+.. note:: The current default settings for ``metaclasses`` and ``type_objects`` may change in the future
+
 Docs
 ----
 

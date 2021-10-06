@@ -59,6 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-sql-ddl">Why should I use LinkML over SQL DDL?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-uml">Why should I use LinkML over UML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-owl">Why should I use LinkML over OWL?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-csv-on-the-web">Why should I use LinkML over CSV-on-the-web?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
@@ -240,7 +241,85 @@ schema to ShEx, with the ability to do this for SHACL coming soon!</p>
 </section>
 <section id="why-should-i-use-linkml-over-sql-ddl">
 <h2>Why should I use LinkML over SQL DDL?<a class="headerlink" href="#why-should-i-use-linkml-over-sql-ddl" title="Permalink to this headline"></a></h2>
-<p>TODO</p>
+<p>SQL Data Description Language (DDL; or simply “CREATE TABLE”
+statements) is a means of describing the structure of a relational
+database.</p>
+<p>If you are using a relational database and have minimal lightweight
+application code that performs direct SQL queries over data, there may
+be no compelling use case for LinkML.</p>
+<p>However, most information architectures that use a SQL database also
+involve some alternative representation of the data - for example, a
+JSON representation in an API, or an object representation – or even
+an RDF representation. It can be challenging to keep these different
+representations in sync. There are frequently excellent products that
+solve “one part” of this mapping problem – e.g. an ORM (Object
+Relational Mapping) tool. LinkML is intended to allow you to give a
+“bigger picture” view of your model that is as independent as possible
+from underlying storage or exchange technologies, and at the same time
+can be compiled down.</p>
+<p>LinkML also allows you to specify URIs and CURIE/URI mappings for each
+element of your schema, which provides a declarative specification of
+how your data should be mapped. For example, if you are trying to
+bring together two schemas (whether via federation or via
+warehousing), if both schemas annotate the same field with the same
+URI then we know these can be merged.</p>
+<p>Even if you are not interested in mapping your SQL data model to
+anything else, it can still be a great idea to use LinkML as a data
+definition language for your schema, especially if you have a schema
+with many fields that a domain scientist or stakeholder needs to
+understand.</p>
+<p>In our opinion, SQL DDL is not a great language for data
+dictionaries. There is a lack of standard ways to even add comments or
+descriptions to fields, and it can be challenging to introspect
+these. LinkML provides a simple easy to use way to provide rich
+metadata about your fields.</p>
+<p>Compare:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sample</span> <span class="p">(</span>
+  <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>  <span class="c1">-- unique sample id</span>
+  <span class="n">individual_id</span> <span class="nb">TEXT</span> <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">id</span><span class="p">),</span>
+  <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span>
+  <span class="n">disease</span> <span class="nb">TEXT</span><span class="p">,</span>
+  <span class="n">src</span> <span class="nb">TEXT</span><span class="p">,</span>
+  <span class="n">collec_location</span> <span class="nb">TEXT</span> <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">geoloc</span><span class="p">.</span><span class="n">id</span><span class="p">),</span>
+  <span class="p">...</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>with:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">Sample</span><span class="p">:</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">id</span><span class="p">:</span>
+        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">identifier</span>
+        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;SAMPLEDB:SAM\\d{8}&quot;</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A unique identifier for the sample</span>
+      <span class="nt">name</span><span class="p">:</span>
+        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sample name</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A human-readable name for the sample</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NarrativeText</span>
+      <span class="nt">disease</span><span class="p">:</span>
+        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">disease</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the disease with which the patient was diagnosed</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span>
+      <span class="nt">src</span><span class="p">:</span>
+        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tissue source</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the anatomical location from which the tissue was sampled</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span>
+        <span class="nt">todos</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">model this using an ontology term instead</span>
+      <span class="nt">collec_location</span><span class="p">:</span>
+        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">collection location</span>
+        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the geocoordinates of the site where the sampling was obtained</span>
+        <span class="nt">notes</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">this should NOT be the site of processing</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GeoLoc</span>
+</pre></div>
+</div>
+<p>Here we have a standard way of providing human-readable names for our
+columns (via <a class="reference external" href="https://w3id.org/linkml/title">title</a>). We have a
+human-friendly textual description. Both of these could be used to
+drive dynamic tooltips in an application that collects or displays data.</p>
 </section>
 <section id="why-should-i-use-linkml-over-uml">
 <h2>Why should I use LinkML over UML?<a class="headerlink" href="#why-should-i-use-linkml-over-uml" title="Permalink to this headline"></a></h2>
@@ -264,6 +343,9 @@ by using LinkML as a metaclass authoring system. See
 <a class="reference external" href="https://cmungall.github.io/chem-schema/ontology.html">ChemSchema</a> for
 an example, and see also the
 <a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> framework.</p>
+</section>
+<section id="why-should-i-use-linkml-over-csv-on-the-web">
+<h2>Why should I use LinkML over CSV-on-the-web?<a class="headerlink" href="#why-should-i-use-linkml-over-csv-on-the-web" title="Permalink to this headline"></a></h2>
 </section>
 </section>
 
