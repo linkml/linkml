@@ -13,6 +13,9 @@ RSCHEMA_EXPANDED = env.expected_path('personinfo.relational.expanded.yaml')
 
 
 class SQLTransformerTestCase(unittest.TestCase):
+    """
+    Tests transformation from a linkml model to a relational model (independent of SQL)
+    """
 
     def test_sqlt_basic(self):
         """ DDL  """
