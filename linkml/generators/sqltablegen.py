@@ -21,11 +21,31 @@ class SqlNamingPolicy(Enum):
     underscore = 'underscore'
     camelcase = 'camelcase'
 
+# TODO: move this up
+METAMODEL_TYPE_TO_BASE = {
+    'string': 'str',
+    'integer': 'int',
+    'boolean': 'Bool',
+    'float': 'float',
+    'double': 'double',
+    'decimal': 'Decimal',
+    'time': 'XSDTime',
+    'date': 'XSDDate',
+    'datetime': 'XSDDateTime',
+    'uriorcurie': 'URIorCURIE',
+    'uri': 'URI',
+    'ncname': 'NCName',
+    'objectidentifier': 'ElementIdentifier',
+    'nodeidentifier': 'NodeIdentifier',
+}
+
 RANGEMAP = {
     'str': Text(),
+    'string': Text(),
     'NCName': Text(),
     'URIorCURIE': Text(),
     'int': Integer(),
+    'Decimal': Integer(),
     'double': Float(),
     'float': Float(),
     'Bool': Boolean(),
@@ -33,6 +53,7 @@ RANGEMAP = {
     'XSDTime': Time(),
     'XSDDateTime': DateTime(),
     'XSDDate': Date(),
+
 }
 
 
@@ -169,19 +190,24 @@ class SQLTableGenerator(Generator):
         """
         range = slot.range
         if range in schema.classes:
+            # FKs treated as Text
             return Text()
-        if range in schema.types:
-            range = schema.types[range].base
-
         if range in schema.enums:
             e = schema.enums[range]
             if e.permissible_values is not None:
                 vs = [str(v) for v in e.permissible_values]
                 return Enum(name=e.name, *vs)
-        if range in RANGEMAP:
-            return RANGEMAP[range]
+        if range in METAMODEL_TYPE_TO_BASE:
+            range_base = METAMODEL_TYPE_TO_BASE[range]
+        elif range in schema.types:
+            range_base = schema.types[range].base
         else:
-            logging.warning(f'UNKNOWN: {range} // {type(range)}')
+            logging.error(f'Unknown range: {range} for {slot.name} = {slot.range}')
+            return Text()
+        if range_base in RANGEMAP:
+            return RANGEMAP[range_base]
+        else:
+            logging.error(f'UNKNOWN range base: {range_base} for {slot.name} = {slot.range}')
             return Text()
 
     def get_foreign_key(self, cn: str, sv: SchemaView) -> str:
