@@ -84,7 +84,7 @@ def load_raw_schema(data: Union[str, dict, TextIO],
 
     if emit_metadata:
         schema.source_file = schema_metadata.source_file
-        schema.source_file_date = schema_metadata.source_file_date
+        schema.source_file_date = datetime.strptime(schema_metadata.source_file_date, "%a %b %d %H:%M:%S %Y")
         schema.source_file_size = schema_metadata.source_file_size
         schema.generation_date = datetime.now().strftime("%Y-%m-%d %H:%M")
     schema.metamodel_version = metamodel_version
