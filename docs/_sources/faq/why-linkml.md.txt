@@ -153,7 +153,97 @@ Full disclosure: LinkML lead developer Harold Solbrig is also one of the authors
 
 ## Why should I use LinkML over SQL DDL?
 
-TODO
+SQL Data Description Language (DDL; or simply "CREATE TABLE"
+statements) is a means of describing the structure of a relational
+database.
+
+If you are using a relational database and have minimal lightweight
+application code that performs direct SQL queries over data, there may
+be no compelling use case for LinkML.
+
+However, most information architectures that use a SQL database also
+involve some alternative representation of the data - for example, a
+JSON representation in an API, or an object representation -- or even
+an RDF representation. It can be challenging to keep these different
+representations in sync. There are frequently excellent products that
+solve "one part" of this mapping problem -- e.g. an ORM (Object
+Relational Mapping) tool. LinkML is intended to allow you to give a
+"bigger picture" view of your model that is as independent as possible
+from underlying storage or exchange technologies, and at the same time
+can be compiled down.
+
+LinkML also allows you to specify URIs and CURIE/URI mappings for each
+element of your schema, which provides a declarative specification of
+how your data should be mapped. For example, if you are trying to
+bring together two schemas (whether via federation or via
+warehousing), if both schemas annotate the same field with the same
+URI then we know these can be merged.
+
+Even if you are not interested in mapping your SQL data model to
+anything else, it can still be a great idea to use LinkML as a data
+definition language for your schema, especially if you have a schema
+with many fields that a domain scientist or stakeholder needs to
+understand.
+
+In our opinion, SQL DDL is not a great language for data
+dictionaries. There is a lack of standard ways to even add comments or
+descriptions to fields, and it can be challenging to introspect
+these. LinkML provides a simple easy to use way to provide rich
+metadata about your fields.
+
+Compare:
+
+```sql
+CREATE TABLE sample (
+  id TEXT PRIMARY KEY,  -- unique sample id
+  individual_id TEXT FOREIGN KEY(person.id),
+  name TEXT,
+  disease TEXT,
+  src TEXT,
+  collec_location TEXT FOREIGN KEY(geoloc.id),
+  ...
+);
+```
+
+with:
+
+```yaml
+classes:
+  Sample:
+    attributes:
+      id:
+        title: identifier
+        identifier: true
+        pattern: "SAMPLEDB:SAM\\d{8}"
+        description: A unique identifier for the sample
+      name:
+        title: sample name
+        description: A human-readable name for the sample
+        range: NarrativeText
+      disease:
+        title: disease
+        description: the disease with which the patient was diagnosed
+        range: DiseaseEnum
+      src:
+        title: tissue source
+        description: the anatomical location from which the tissue was sampled
+        range: DiseaseEnum
+        todos:
+          - model this using an ontology term instead
+      collec_location:
+        title: collection location
+        description: the geocoordinates of the site where the sampling was obtained
+        notes:
+          - this should NOT be the site of processing
+        range: GeoLoc
+```
+
+Here we have a standard way of providing human-readable names for our
+columns (via [title](https://w3id.org/linkml/title)). We have a
+human-friendly textual description. Both of these could be used to
+drive dynamic tooltips in an application that collects or displays data.
+
+
 
 ## Why should I use LinkML over UML?
 
@@ -180,6 +270,9 @@ by using LinkML as a metaclass authoring system. See
 [ChemSchema](https://cmungall.github.io/chem-schema/ontology.html) for
 an example, and see also the
 [linkml-owl](https://github.com/linkml/linkml-owl) framework.
+
+
+## Why should I use LinkML over CSV-on-the-web?
 
 
 

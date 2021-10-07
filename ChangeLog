@@ -2,6 +2,194 @@ CHANGES
 =======
 
 * Automated adding outputs from tests
+* revert change to setup.py in order to expose dependents
+* Automated adding outputs from tests
+
+v1.1.5
+------
+
+* Support \`minimum\` and \`maximum\` properties in JSON Schema output
+* enable tests for validating min and max values
+* add minimum and maximum properties to JSON Schema
+* Automated adding outputs from tests
+* add missing
+* tutorial
+* more-docs
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* add-missing
+* regen
+* more docs
+* Automated adding outputs from tests
+* fix Excel encoding issue
+* fix Excel encoding issue
+* Automated adding outputs from tests
+* tutorial
+* tutorial
+* tutorial
+* new docs
+* Automated adding outputs from tests
+* update previous implementation of excel generator module
+* fix excel generator unit test based on new implementation
+* fixes previous implementation of excel generator
+
+v1.1.4
+------
+
+* Automated adding outputs from tests
+* temp restoring
+* fixing paths
+* fixing paths
+* Automated adding outputs from tests
+* suppressing test
+
+v1.1.2
+------
+
+* Automated adding outputs from tests
+* test to trigger sparql check
+* Additional markdown tests for customized output
+* Refactoring validators
+* allow customization of markdown headers
+* Automated adding outputs from tests
+* use .shex extension for shex
+* try adding name explicitly to setup.py
+* add version to setup.py. this used to come automatically from using pbr in setup.py, but when pbr was removed in favor of an explicit setup.py (to help github discover dependents), version wasn't included
+* Automated adding outputs from tests
+* Added command line ops to make projectgen more configurable
+* Automated adding outputs from tests
+* Enforcing \`-d\` option on \`gen-markdown\`
+
+v1.1.1
+------
+
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* exclude tombstoned rdflib-jsonld
+* force non-tombstoned rdflib-jsonld. See #291
+* enforce -d option for markdown generator
+* Add checks for Any type
+* DateTime mapping for SQLDDL
+* Automated adding outputs from tests
+* Updated docs link to point to Chris's new wonderful docs
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* first version of sphinx docs for excel generator
+* Update excel.rst
+* add first version of sphinx docs for excel generator
+* Automated adding outputs from tests
+
+v1.1.0
+------
+
+* Automatically generated requirements.txt and requirements-dev.txt
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Automated adding outputs from tests
+* Change of attribute name from \`definitions\` to \`$defs\` in JSON Schema output
+* missed a few replacements of definitions attribute in test\_issue\_129
+* Automated adding outputs from tests
+* fixed failing tests in test\_issues for  change
+* Automatically generated requirements.txt and requirements-dev.txt
+* [Feature] Excel spreadsheet generation module
+* regen
+* fix temp file path in excel generator test
+* Reverted test artifact to match main
+* Moved javagen specific options to javagen cli method
+* Fixed merge-mishap in bringing in oocodegen type handling
+* Set up OOCodeGenerator with an abstract serialize method, then checked for the method being abstract in test\_tccm\_issues. Also tweaked the example java template to avoid warnings
+* Can read from template files now and has an example
+* Producing java that will compile, with types simplified to Strings and no annotations
+* First pass at #175
+* change argument name in excel generator unit test
+* fix path to output excel sreadsheet
+* Automated adding outputs from tests
+* more examples for #173
+* Automated adding outputs from tests
+* more docs
+* latest release
+* Automated adding outputs from tests
+* bump linkml
+* Update install.md
+* more docs
+* Automated adding outputs from tests
+* Allow serving of \_static
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* modify output JSON schema after incorporating  change
+* docs
+* loadsa docs
+* add a setup.py that echos setup.cfg so that github can trace the dependents graph
+* generated
+* generators docs
+* add name to setup.py to enable dependents graph in github
+* just the faqs
+* \`unittest\` test cases for excelgen generator
+* unittest test cases for excelgen generator module
+* first pass at sphinx docs
+* removing unused jekyll artefacts
+* Automated adding outputs from tests
+
+v1.0.6
+------
+
+* Adding SPARQL validators
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* move log level from error to debug
+* fix path where the generated excel path should be saved
+* changed definitions references to $defs
+* Automated adding outputs from tests
+* Delete Migration.md
+* Added test to ensure predictable behavior for simple dicts, fixes #313 Added demo and test for making schemas for arbitrary dicts, fixes #315
+* changed definitions to $defs in JSON Schema output
+* remove duplicate slots
+* use domain\_of slot property to capture class slot relationship
+* revert \_workbook\_path() definition to bash compatible
+* changed signature of visit\_class()
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+
+v1.0.5
+------
+
+* added docstrings to classes and methods in excelgen module
+* Automated adding outputs from tests
+* bump runtime
+* removed explicit import from openpyxl library
+* forcing the inclusion of an rdf:type works around the rdf:type prefix issue in #163
+* default\_namespace
+* Addressing issue #163
+* remove test file that is auto added by PyCharm
+* create slots as column names in respective worksheets
+* generate empty excel sheet with class names
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* remove test spreadsheets
+* added openpyxl to Pipfile
+* create empty workbook using openpyxl
+* adding CSV
+* Automated adding outputs from tests
+* added a data conversion CLI
+* Adding wrapper for jsonschema validation
+* Adding tests for #303
+* Automated adding outputs from tests
+* fixing post\_init for non-inlined single-valued slots
+* barebones for excel generator module
+* Automated adding outputs from tests
+* Automated adding outputs from tests
+* Fix setup url
+
+v1.0.4
+------
+
+* Automated adding outputs from tests
+* Automatically generated requirements.txt and requirements-dev.txt
+* Switch to v1.0.13 of linkml-runtime
+* documenting genmeta and adding a check. See https://github.com/linkml/linkml-runtime/issues/10
+* adding CLI
+* Automated adding outputs from tests
+* link directly to docs page
 * Automated adding outputs from tests
 * add issue templates for bug and feature requests
 * reformatted and fixed links in README
@@ -11,6 +199,7 @@ CHANGES
 * Update tests
 * Ensure that name of enum is passed to SQL Enum
 * Fix executor for engine when generating DDL
+* example of prov associations
 * Automated adding outputs from tests
 * Automated adding outputs from tests
 * only export mappings

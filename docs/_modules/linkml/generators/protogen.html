@@ -39,10 +39,13 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -86,7 +89,7 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 
-<div class="viewcode-block" id="ProtoGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.protogen.ProtoGenerator">[docs]</a><span class="k">class</span> <span class="nc">ProtoGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="ProtoGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.protogen.ProtoGenerator">[docs]</a><span class="k">class</span> <span class="nc">ProtoGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A `Generator` for creating Protobuf schemas from a linkml schema.</span>
 
@@ -100,7 +103,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relative_slot_num</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="ProtoGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.protogen.ProtoGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="ProtoGenerator.visit_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.protogen.ProtoGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
@@ -111,10 +114,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">relative_slot_num</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ProtoGenerator.end_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.protogen.ProtoGenerator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ProtoGenerator.end_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.protogen.ProtoGenerator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; }&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProtoGenerator.visit_class_slot"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.protogen.ProtoGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ProtoGenerator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.protogen.ProtoGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">qual</span> <span class="o">=</span> <span class="s1">&#39;repeated &#39;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="s1">&#39;optional &#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
         <span class="n">slotname</span> <span class="o">=</span> <span class="n">lcamelcase</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span>
         <span class="n">slot_range</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
