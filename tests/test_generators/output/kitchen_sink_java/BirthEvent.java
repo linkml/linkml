@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public  class BirthEvent extend Event {
+public  class BirthEvent extends Event {
 
   private Place inLocation;
 
