@@ -1,0 +1,28 @@
+id: http://example.org/
+
+
+classes:
+  C1:
+    slots:
+      - s1
+  C2:
+    is_a: C1
+    slot_usage:
+      s1:
+        required: true
+        range: D2
+
+  D1:
+  D2:
+    is_a: D1
+        
+slots:
+  s1:
+    description: this description should preserved in all uses
+    pattern: "^\\S+$"
+    range: D1
+    recommended: true
+    comments:
+      - comment 1
+    todos:
+      - todo 1
