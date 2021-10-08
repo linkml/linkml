@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class Event  {
+public  class Event  {
 
   private String startedAtTime;
   private String endedAtTime;
