@@ -183,6 +183,11 @@ classes:
         inlined: true
         multivalued: true
 
+  FakeClass:
+    deprecated: this is not a real class, we are using it to test deprecation
+    attributes:
+      test_attribute:
+
 slots:
   employed at:
     range: Company

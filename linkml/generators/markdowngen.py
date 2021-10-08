@@ -24,7 +24,7 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.1.1"
+    generatorversion = "0.2.1"
     directory_output = True
     valid_formats = ["md"]
     visit_all_class_slots = False
@@ -304,7 +304,10 @@ class MarkdownGenerator(Generator):
             obj_type = 'Subset'
         else:
             obj_type = 'Class'
-        self.header(1, f"{obj_type}: {name}" + (f" _(deprecated)_" if obj.deprecated else ""))
+
+        header_label = f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
+        self.header(1, header_label)
+
         self.para(be(obj.description))
         print(f'URI: [{curie}]({uri})')
         print()
