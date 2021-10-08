@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class Company extends Organization {
+public  class Company extend Organization {
 
   private Person ceo;
 

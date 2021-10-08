@@ -60,6 +60,11 @@ classes:
       aliases:
         multivalued: true
 
+  Friend:
+    abstract: true
+    slots:
+      - name
+
   Person:
     in_subset:
       - subset A

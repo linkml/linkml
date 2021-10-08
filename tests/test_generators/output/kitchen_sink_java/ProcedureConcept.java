@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class ProcedureConcept extends Concept {
+public  class ProcedureConcept extend Concept {
 
 
 }

@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class Relationship  {
+public  class Relationship  {
 
   private String startedAtTime;
   private String endedAtTime;

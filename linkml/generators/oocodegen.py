@@ -42,11 +42,13 @@ class OOClass:
     """
     name: SAFE_NAME
     is_a: Optional[SAFE_NAME] = None
+    abstract: Optional[bool] = None
     mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
     fields: List[OOField] = field(default_factory=lambda: [])
     annotations: List[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
+
 
 class OOCodeGenerator(Generator):
     package: PACKAGE = "example"
@@ -88,6 +90,8 @@ class OOCodeGenerator(Generator):
             ooclass = OOClass(name=safe_cn, package=self.package, fields=[], source_class=c)
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]
+            if c.abstract:
+                ooclass.abstract = c.abstract
             if c.is_a:
                 ooclass.is_a = self.get_class_name(c.is_a)
                 parent_slots = sv.class_slots(c.is_a)

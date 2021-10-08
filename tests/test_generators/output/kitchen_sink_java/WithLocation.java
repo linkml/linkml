@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class WithLocation  {
+public  class WithLocation  {
 
   private Place inLocation;
 
