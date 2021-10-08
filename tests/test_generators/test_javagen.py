@@ -30,9 +30,7 @@ class JavaGeneratorTestCase(unittest.TestCase):
     def test_javagen(self):
         """ Generate java classes  """
         gen = JavaGenerator(SCHEMA, package=PACKAGE)
-        print(gen.serialize(directory=JAVA_DIR))
         md = gen.serialize(directory=JAVA_DIR)
-        print(md)
 
 
 
