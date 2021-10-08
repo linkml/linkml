@@ -4,7 +4,7 @@
 
 ## [Binder Link](https://mybinder.org/v2/gh/linkml/linkml/main?filepath=notebooks)
 
-# LinkML - <u>Link</u>ed data <u>M</u>odeling <u>L</u>anguage
+# LinkML - Linked data Modeling Language
 
 LinkML is a general purpose modeling language following object-oriented and ontological principles. LinkML models can be specified in YAML, JSON or RDF.
 
