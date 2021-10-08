@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public  class Person  {
+public class Person  {
 
   private String id;
   private String name;

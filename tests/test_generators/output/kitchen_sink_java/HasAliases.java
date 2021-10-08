@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public  class HasAliases  {
+public class HasAliases  {
 
   private List<String> aliases;
 

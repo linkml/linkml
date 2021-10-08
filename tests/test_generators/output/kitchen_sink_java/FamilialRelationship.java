@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public  class FamilialRelationship extends Relationship {
+public class FamilialRelationship extends Relationship {
 
 
 }

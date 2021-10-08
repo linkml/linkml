@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public  class DiagnosisConcept extends Concept {
+public class DiagnosisConcept extends Concept {
 
 
 }

@@ -25,14 +25,13 @@ def assert_file_contains(filename, text, after=None, description=None) -> None:
                 is_after = True
     assert found
 
+
 class JavaGeneratorTestCase(unittest.TestCase):
 
     def test_javagen(self):
         """ Generate java classes  """
         gen = JavaGenerator(SCHEMA, package=PACKAGE)
         md = gen.serialize(directory=JAVA_DIR)
-
-
 
 
 if __name__ == '__main__':
