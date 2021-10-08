@@ -1,6 +1,7 @@
 import logging
 import os
 from collections import OrderedDict
+from copy import deepcopy
 from typing import Union, TextIO, Optional, Set, List, cast, Dict, Mapping, Tuple, Iterator
 from urllib.parse import urlparse
 
@@ -190,7 +191,7 @@ class SchemaLoader:
                 suffixed_cls_schema = sfx(cls.from_schema)
                 cls.class_uri = \
                     self.namespaces.uri_or_curie_for(self.schema_defaults.get(cls.from_schema, suffixed_cls_schema),
-                                                                 camelcase(cls.name))
+                                                     camelcase(cls.name))
 
         # Get the inverse ducks all in a row before we start filling other stuff in
         for slot in self.schema.slots.values():
@@ -318,7 +319,7 @@ class SchemaLoader:
             if slot.slot_uri is None or not self.useuris:
                 slot.slot_uri = \
                     self.namespaces.uri_or_curie_for(self.schema_defaults.get(slot.from_schema, sfx(slot.from_schema)),
-                                                                 self.slot_name_for(slot))
+                                                     self.slot_name_for(slot))
 
             if slot.subproperty_of and slot.subproperty_of not in self.schema.slots:
                 self.raise_value_error(f'Slot: "{slot.name}" - subproperty_of: "{slot.subproperty_of}" '
@@ -628,6 +629,11 @@ class SchemaLoader:
             # Construct a new slot
             # If we've already assigned a parent, use it
 
+            if slotname in self.schema.slots:
+                base_slot = self.schema.slots[slotname]
+            else:
+                logging.error(f'slot_usage for undefined slot: {slotname}')
+                base_slot = None
             parent_slot = self.schema.slots.get(slot_usage.is_a)
             # Follow the ancestry of the class to get the most proximal parent
             if not parent_slot:
@@ -645,10 +651,10 @@ class SchemaLoader:
             new_slot = SlotDefinition(name=child_name, alias=slot_alias, domain=cls.name, is_usage_slot=Bool(True),
                                       usage_slot_name=slotname, owner=cls.name, domain_of=[cls.name],
                                       imported_from=cls.imported_from)
+
             self.schema.slots[child_name] = new_slot
             merge_slots(new_slot, slot_usage, inheriting=False, skip=['name', 'alias', 'domain', 'is_usage_slot',
                                                                       'usage_slot_name', 'owner', 'domain_of'])
-
             # Copy the parent definition.  If there is no parent definition, the slot is being defined
             # locally as a slot_usage
             if parent_slot is not None:
@@ -663,6 +669,16 @@ class SchemaLoader:
                     cls.slots.append(child_name)
             elif not new_slot.range:
                 new_slot.range = self.schema.default_range
+            # copy base slot metalsot values across, except where already
+            # populated/overridden, OR where propagation to induced slots is
+            # forbidden (inverses)
+            if base_slot is not None:
+                for metaslot_name in base_slot.__dict__.keys():
+                    current_val = getattr(new_slot, metaslot_name)
+                    if not current_val and metaslot_name not in ['inverse']:
+                        new_val = deepcopy(getattr(base_slot, metaslot_name))
+                        if new_val:
+                            setattr(new_slot, metaslot_name, new_val)
 
     def merge_type(self, typ: TypeDefinition, merged_types: List[TypeDefinitionName]) -> None:
         """
@@ -690,8 +706,8 @@ class SchemaLoader:
                 self.raise_value_error(f"Unknown parent class: {cls.is_a}", cls.is_a)
             for sn in self.schema.classes[cls.is_a].slots:
                 slot = self.schema.slots[sn]
-                if (slot.usage_slot_name and slotname == slot.usage_slot_name) or\
-                   (not slot.usage_slot_name and slotname == slot.name):
+                if (slot.usage_slot_name and slotname == slot.usage_slot_name) or \
+                        (not slot.usage_slot_name and slotname == slot.name):
                     return slot
         for mixin in cls.mixins:
             if mixin not in self.schema.classes:
