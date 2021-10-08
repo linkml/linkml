@@ -242,7 +242,7 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 <FriendlyPerson> CLOSED {
     (  $<FriendlyPerson_tes> (  &<Person_tes> ;
           rdf:type [ <Person> ] ? ;
-          <knows> @<Person> +
+          foaf:knows @<Person> +
        ) ;
        rdf:type [ <FriendlyPerson> ]
     )
@@ -264,5 +264,4 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 
 Conforms
-  Testing <http://example.org/people/42> against shape http://example.org/model/FriendlyPerson
-       No matching triples found for predicate samp:knows
+Conforms

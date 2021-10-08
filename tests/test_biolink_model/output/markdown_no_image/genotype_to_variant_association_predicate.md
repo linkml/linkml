@@ -21,3 +21,14 @@ URI: [biolink:genotype_to_variant_association_predicate](https://w3id.org/biolin
 ## Used by
 
  * [GenotypeToVariantAssociation](GenotypeToVariantAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

@@ -22,4 +22,5 @@ URI: [biolink:CellLineToEntityAssociationMixin](https://w3id.org/biolink/vocab/C
 ### Own
 
  * [cell line to entity association mixin➞subject](cell_line_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
+     * Description: connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
      * Range: [CellLine](CellLine.md)

@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-27 21:45
+# Generation date: 2021-10-08 17:01
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -1386,8 +1386,8 @@ slots.local_name_value = Slot(uri=SKOS.altLabel, name="local_name_value", curie=
 slots.local_names = Slot(uri=LINKML.local_names, name="local_names", curie=LINKML.curie('local_names'),
                    model_uri=LINKML.local_names, domain=Element, range=Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]])
 
-slots.schema_definition_name = Slot(uri=LINKML.name, name="schema_definition_name", curie=LINKML.curie('name'),
-                   model_uri=LINKML.schema_definition_name, domain=SchemaDefinition, range=Union[str, SchemaDefinitionName])
+slots.schema_definition_name = Slot(uri=RDFS.label, name="schema_definition_name", curie=RDFS.curie('label'),
+                   model_uri=LINKML.schema_definition_name, domain=SchemaDefinition, range=Union[str, SchemaDefinitionName], mappings = [SCHEMA.name])
 
 slots.slot_definition_is_a = Slot(uri=LINKML.is_a, name="slot_definition_is_a", curie=LINKML.curie('is_a'),
                    model_uri=LINKML.slot_definition_is_a, domain=SlotDefinition, range=Optional[Union[str, SlotDefinitionName]])

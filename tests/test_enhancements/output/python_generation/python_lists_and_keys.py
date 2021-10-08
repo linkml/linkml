@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-08-23 00:59
+# Generation date: 2021-10-08 17:03
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -434,13 +434,14 @@ class RequiredInlinedOneElementRange(RequiredOneElementRange):
     class_name: ClassVar[str] = "RequiredInlinedOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedOneElementRange
 
-    v1: Union[dict, OneElementClass] = None
+    v1: Union[Union[dict, OneElementClass], List[Union[dict, OneElementClass]]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
-        if not isinstance(self.v1, OneElementClass):
-            self.v1 = OneElementClass(**as_dict(self.v1))
+        if not isinstance(self.v1, list):
+            self.v1 = [self.v1] if self.v1 is not None else []
+        self.v1 = [v if isinstance(v, OneElementClass) else OneElementClass(**as_dict(v)) for v in self.v1]
 
         super().__post_init__(**kwargs)
 
@@ -529,13 +530,12 @@ class RequiredInlinedKeyedOneElementRange(OptionalKeyedOneElementRange):
     class_name: ClassVar[str] = "RequiredInlinedKeyedOneElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRange
 
-    v1: Union[dict, KeyedOneElementClass] = None
+    v1: Union[List[Union[str, KeyedOneElementClassName]], Dict[Union[str, KeyedOneElementClassName], Union[dict, KeyedOneElementClass]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
-        if not isinstance(self.v1, KeyedOneElementClass):
-            self.v1 = KeyedOneElementClass(**as_dict(self.v1))
+        self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedOneElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -574,13 +574,12 @@ class RequiredInlinedKeyedTwoElementRange(OptionalKeyedTwoElementRange):
     class_name: ClassVar[str] = "RequiredInlinedKeyedTwoElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRange
 
-    v1: Union[dict, KeyedTwoElementClass] = None
+    v1: Union[Dict[Union[str, KeyedTwoElementClassName], Union[dict, KeyedTwoElementClass]], List[Union[dict, KeyedTwoElementClass]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
-        if not isinstance(self.v1, KeyedTwoElementClass):
-            self.v1 = KeyedTwoElementClass(**as_dict(self.v1))
+        self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedTwoElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -619,13 +618,12 @@ class RequiredInlinedKeyedThreeElementRange(OptionalKeyedThreeElementRange):
     class_name: ClassVar[str] = "RequiredInlinedKeyedThreeElementRange"
     class_model_uri: ClassVar[URIRef] = LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRange
 
-    v1: Union[dict, KeyedThreeElementClass] = None
+    v1: Union[Dict[Union[str, KeyedThreeElementClassName], Union[dict, KeyedThreeElementClass]], List[Union[dict, KeyedThreeElementClass]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.v1):
             self.MissingRequiredField("v1")
-        if not isinstance(self.v1, KeyedThreeElementClass):
-            self.v1 = KeyedThreeElementClass(**as_dict(self.v1))
+        self._normalize_inlined_as_dict(slot_name="v1", slot_type=KeyedThreeElementClass, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -1159,7 +1157,7 @@ slots.RequiredTwoElementRangeList_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="Require
                    model_uri=LISTS_AND_KEYS.RequiredTwoElementRangeList_v1, domain=RequiredTwoElementRangeList, range=Union[Union[dict, TwoElementClass], List[Union[dict, TwoElementClass]]])
 
 slots.RequiredInlinedOneElementRange_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedOneElementRange_v1", curie=LISTS_AND_KEYS.curie('v1'),
-                   model_uri=LISTS_AND_KEYS.RequiredInlinedOneElementRange_v1, domain=RequiredInlinedOneElementRange, range=Union[dict, OneElementClass])
+                   model_uri=LISTS_AND_KEYS.RequiredInlinedOneElementRange_v1, domain=RequiredInlinedOneElementRange, range=Union[Union[dict, OneElementClass], List[Union[dict, OneElementClass]]])
 
 slots.RequiredInlinedOneElementRangeList_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedOneElementRangeList_v1", curie=LISTS_AND_KEYS.curie('v1'),
                    model_uri=LISTS_AND_KEYS.RequiredInlinedOneElementRangeList_v1, domain=RequiredInlinedOneElementRangeList, range=Union[Union[dict, OneElementClass], List[Union[dict, OneElementClass]]])
@@ -1171,19 +1169,19 @@ slots.RequiredInlinedThreeElementRangeList_v1 = Slot(uri=LISTS_AND_KEYS.v1, name
                    model_uri=LISTS_AND_KEYS.RequiredInlinedThreeElementRangeList_v1, domain=RequiredInlinedThreeElementRangeList, range=Union[Union[dict, ThreeElementClass], List[Union[dict, ThreeElementClass]]])
 
 slots.RequiredInlinedKeyedOneElementRange_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedOneElementRange_v1", curie=LISTS_AND_KEYS.curie('v1'),
-                   model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRange_v1, domain=RequiredInlinedKeyedOneElementRange, range=Union[dict, KeyedOneElementClass])
+                   model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRange_v1, domain=RequiredInlinedKeyedOneElementRange, range=Union[List[Union[str, KeyedOneElementClassName]], Dict[Union[str, KeyedOneElementClassName], Union[dict, KeyedOneElementClass]]])
 
 slots.RequiredInlinedKeyedOneElementRangeList_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedOneElementRangeList_v1", curie=LISTS_AND_KEYS.curie('v1'),
                    model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedOneElementRangeList_v1, domain=RequiredInlinedKeyedOneElementRangeList, range=Union[List[Union[str, KeyedOneElementClassName]], Dict[Union[str, KeyedOneElementClassName], Union[dict, KeyedOneElementClass]]])
 
 slots.RequiredInlinedKeyedTwoElementRange_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedTwoElementRange_v1", curie=LISTS_AND_KEYS.curie('v1'),
-                   model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRange_v1, domain=RequiredInlinedKeyedTwoElementRange, range=Union[dict, KeyedTwoElementClass])
+                   model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRange_v1, domain=RequiredInlinedKeyedTwoElementRange, range=Union[Dict[Union[str, KeyedTwoElementClassName], Union[dict, KeyedTwoElementClass]], List[Union[dict, KeyedTwoElementClass]]])
 
 slots.RequiredInlinedKeyedTwoElementRangeList_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedTwoElementRangeList_v1", curie=LISTS_AND_KEYS.curie('v1'),
                    model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedTwoElementRangeList_v1, domain=RequiredInlinedKeyedTwoElementRangeList, range=Union[Dict[Union[str, KeyedTwoElementClassName], Union[dict, KeyedTwoElementClass]], List[Union[dict, KeyedTwoElementClass]]])
 
 slots.RequiredInlinedKeyedThreeElementRange_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedThreeElementRange_v1", curie=LISTS_AND_KEYS.curie('v1'),
-                   model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRange_v1, domain=RequiredInlinedKeyedThreeElementRange, range=Union[dict, KeyedThreeElementClass])
+                   model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRange_v1, domain=RequiredInlinedKeyedThreeElementRange, range=Union[Dict[Union[str, KeyedThreeElementClassName], Union[dict, KeyedThreeElementClass]], List[Union[dict, KeyedThreeElementClass]]])
 
 slots.RequiredInlinedKeyedThreeElementRangeList_v1 = Slot(uri=LISTS_AND_KEYS.v1, name="RequiredInlinedKeyedThreeElementRangeList_v1", curie=LISTS_AND_KEYS.curie('v1'),
                    model_uri=LISTS_AND_KEYS.RequiredInlinedKeyedThreeElementRangeList_v1, domain=RequiredInlinedKeyedThreeElementRangeList, range=Union[Dict[Union[str, KeyedThreeElementClassName], Union[dict, KeyedThreeElementClass]], List[Union[dict, KeyedThreeElementClass]]])

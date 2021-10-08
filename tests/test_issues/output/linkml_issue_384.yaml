@@ -245,6 +245,7 @@ slots:
     - GeoAge
   Person_parent:
     name: Person_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
     from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: parent
     domain: Person
@@ -260,6 +261,8 @@ slots:
     usage_slot_name: parent
   Organization_full_name:
     name: Organization_full_name
+    title: full name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
     description: name of the organization, e.g. ACME inc
     from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: full_name
@@ -274,6 +277,7 @@ slots:
     usage_slot_name: full_name
   Organization_parent:
     name: Organization_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
     from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: parent
     domain: Organization
@@ -382,6 +386,6 @@ classes:
     class_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
 metamodel_version: 1.7.0
 source_file: linkml_issue_384.yaml
-source_file_date: Fri Oct  8 15:46:01 2021
+source_file_date: Fri Oct  8 16:58:13 2021
 source_file_size: 1220
-generation_date: 2021-10-08 15:51
+generation_date: 2021-10-08 17:03

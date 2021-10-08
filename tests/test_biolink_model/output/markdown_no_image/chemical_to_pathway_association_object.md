@@ -21,3 +21,14 @@ URI: [biolink:chemical_to_pathway_association_object](https://w3id.org/biolink/v
 ## Used by
 
  * [ChemicalToPathwayAssociation](ChemicalToPathwayAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
+

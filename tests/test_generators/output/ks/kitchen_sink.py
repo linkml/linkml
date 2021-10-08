@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-08 15:51
+# Generation date: 2021-10-08 17:03
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -760,7 +760,7 @@ slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", 
 slots.fakeClass__test_attribute = Slot(uri=KS.test_attribute, name="fakeClass__test_attribute", curie=KS.curie('test_attribute'),
                    model_uri=KS.fakeClass__test_attribute, domain=None, range=Optional[str])
 
-slots.Person_name = Slot(uri=KS.name, name="Person_name", curie=KS.curie('name'),
+slots.Person_name = Slot(uri=CORE.name, name="Person_name", curie=CORE.curie('name'),
                    model_uri=KS.Person_name, domain=Person, range=Optional[str],
                    pattern=re.compile(r'^\S+ \S+'))
 

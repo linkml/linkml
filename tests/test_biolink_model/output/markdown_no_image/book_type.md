@@ -21,3 +21,13 @@ URI: [biolink:book_type](https://w3id.org/biolink/vocab/book_type)
 ## Used by
 
  * [Book](Book.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | rdf:type |
+| **Exact Mappings:** | | alliancegenome:soTermId |
+|  | | gff3:type |
+|  | | gpi:DB_Object_Type |
+

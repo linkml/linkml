@@ -23,6 +23,7 @@ URI: [linkml:owl](https://w3id.org/linkml/owl)
  * metamodel_version
  * name
  * notes
+ * schema_definition_name
  * see_also
  * source_file
  * source_file_date

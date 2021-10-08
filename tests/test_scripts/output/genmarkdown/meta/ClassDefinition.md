@@ -53,10 +53,13 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
      * Description: indicator that this is the root class in tree structures
      * Range: [Boolean](types/Boolean.md)
  * [class_definition➞is_a](class_definition_is_a.md)  <sub>0..1</sub>
+     * Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
      * Range: [ClassDefinition](ClassDefinition.md)
  * [class_definition➞mixins](class_definition_mixins.md)  <sub>0..\*</sub>
+     * Description: List of definitions to be mixed in. Targets may be any definition of the same type
      * Range: [ClassDefinition](ClassDefinition.md)
  * [class_definition➞apply_to](class_definition_apply_to.md)  <sub>0..\*</sub>
+     * Description: Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
      * Range: [ClassDefinition](ClassDefinition.md)
 
 ### Inherited from definition:

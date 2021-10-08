@@ -23,3 +23,14 @@ URI: [biolink:gene_to_disease_association_subject](https://w3id.org/biolink/voca
 ## Used by
 
  * [GeneToDiseaseAssociation](GeneToDiseaseAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

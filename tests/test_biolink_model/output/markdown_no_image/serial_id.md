@@ -21,3 +21,13 @@ URI: [biolink:serial_id](https://w3id.org/biolink/vocab/serial_id)
 ## Used by
 
  * [Serial](Serial.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | translator_minimal |
+| **Exact Mappings:** | | alliancegenome:primaryId |
+|  | | gff3:ID |
+|  | | gpi:DB_Object_ID |
+

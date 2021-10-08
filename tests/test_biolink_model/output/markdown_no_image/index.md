@@ -323,13 +323,13 @@ Entity and association taxonomy and datamodel for life-sciences data
          * [entity to phenotypic feature association mixin➞object](entity_to_phenotypic_feature_association_mixin_object.md) - phenotypic class
          * [functional association➞object](functional_association_object.md) - class describing the activity, process or localization of the gene product
              * [gene to go term association➞object](gene_to_go_term_association_object.md)
-             * [macromolecular machine to biological process association➞object](macromolecular_machine_to_biological_process_association_object.md)
-             * [macromolecular machine to cellular component association➞object](macromolecular_machine_to_cellular_component_association_object.md)
-             * [macromolecular machine to molecular activity association➞object](macromolecular_machine_to_molecular_activity_association_object.md)
+             * [macromolecular machine to biological process association➞object](macromolecular_machine_to_biological_process_association_object.md) - connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
+             * [macromolecular machine to cellular component association➞object](macromolecular_machine_to_cellular_component_association_object.md) - connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
+             * [macromolecular machine to molecular activity association➞object](macromolecular_machine_to_molecular_activity_association_object.md) - connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
          * [gene regulatory relationship➞object](gene_regulatory_relationship_object.md)
          * [gene to expression site association➞object](gene_to_expression_site_association_object.md) - location in which the gene is expressed
          * [gene to gene association➞object](gene_to_gene_association_object.md) - the object gene in the association. If the relation is symmetric, subject vs object is arbitrary. We allow a gene product to stand as a proxy for the gene or vice versa.
-             * [pairwise molecular interaction➞object](pairwise_molecular_interaction_object.md)
+             * [pairwise molecular interaction➞object](pairwise_molecular_interaction_object.md) - connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
          * [genomic sequence localization➞object](genomic_sequence_localization_object.md)
          * [genotype to disease association➞object](genotype_to_disease_association_object.md) - a disease that is associated with that genotype
          * [genotype to gene association➞object](genotype_to_gene_association_object.md) - gene implicated in genotype
@@ -425,7 +425,7 @@ Entity and association taxonomy and datamodel for life-sciences data
          * [gene to entity association mixin➞subject](gene_to_entity_association_mixin_subject.md) - gene that is the subject of the association
          * [gene to expression site association➞subject](gene_to_expression_site_association_subject.md) - gene in which variation is correlated with the phenotypic feature
          * [gene to gene association➞subject](gene_to_gene_association_subject.md) - the subject gene in the association. If the relation is symmetric, subject vs object is arbitrary. We allow a gene product to stand as a proxy for the gene or vice versa.
-             * [pairwise molecular interaction➞subject](pairwise_molecular_interaction_subject.md)
+             * [pairwise molecular interaction➞subject](pairwise_molecular_interaction_subject.md) - connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
          * [gene to phenotypic feature association➞subject](gene_to_phenotypic_feature_association_subject.md) - gene in which variation is correlated with the phenotypic feature
          * [genomic sequence localization➞subject](genomic_sequence_localization_subject.md)
          * [genotype to disease association➞subject](genotype_to_disease_association_subject.md) - a genotype that is associated in some way with a disease state

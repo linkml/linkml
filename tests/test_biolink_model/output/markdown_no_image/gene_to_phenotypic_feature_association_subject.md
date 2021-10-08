@@ -26,5 +26,10 @@ URI: [biolink:gene_to_phenotypic_feature_association_subject](https://w3id.org/b
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
 | **Examples:** | | Example(value='HGNC:2197', description='COL1A1 (Human)') |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
 

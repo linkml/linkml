@@ -2,7 +2,7 @@
 # Slot: subject
 
 
-
+connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
 
 URI: [biolink:genomic_sequence_localization_subject](https://w3id.org/biolink/vocab/genomic_sequence_localization_subject)
 
@@ -27,4 +27,9 @@ URI: [biolink:genomic_sequence_localization_subject](https://w3id.org/biolink/vo
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | sequence feature |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
 

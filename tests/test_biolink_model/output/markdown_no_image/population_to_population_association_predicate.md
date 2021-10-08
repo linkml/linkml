@@ -21,3 +21,14 @@ URI: [biolink:population_to_population_association_predicate](https://w3id.org/b
 ## Used by
 
  * [PopulationToPopulationAssociation](PopulationToPopulationAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

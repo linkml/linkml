@@ -25,3 +25,19 @@ URI: [biolink:macromolecular_machine_mixin_name](https://w3id.org/biolink/vocab/
  * [GeneProductMixin](GeneProductMixin.md)
  * [MacromolecularComplexMixin](MacromolecularComplexMixin.md)
  * [MacromolecularMachineMixin](MacromolecularMachineMixin.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | label |
+|  | | display name |
+|  | | title |
+| **Mappings:** | | rdfs:label |
+| **In Subsets:** | | translator_minimal |
+|  | | samples |
+| **Exact Mappings:** | | gff3:Name |
+|  | | gpi:DB_Object_Name |
+| **Narrow Mappings:** | | dct:title |
+|  | | WIKIDATA_PROPERTY:P1476 |
+

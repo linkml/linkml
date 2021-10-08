@@ -86,7 +86,9 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
      * Range: [Datetime](Datetime.md)
      * in subsets: (owl)
  * [schema_definition➞name](schema_definition_name.md)  <sub>1..1</sub>
+     * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [Ncname](Ncname.md)
+     * in subsets: (owl)
 
 ### Inherited from element:
 

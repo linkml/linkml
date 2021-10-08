@@ -21,3 +21,14 @@ URI: [biolink:model_to_disease_association_mixin_predicate](https://w3id.org/bio
 ## Used by
 
  * [ModelToDiseaseAssociationMixin](ModelToDiseaseAssociationMixin.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

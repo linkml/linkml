@@ -23,6 +23,7 @@ URI: [linkml:owl](https://w3id.org/linkml/owl)
  * [metamodel_version](metamodel_version.md) - Version of the metamodel used to load the schema
  * [name](name.md) - the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
  * [notes](notes.md) - editorial notes about an element intended for internal consumption
+ * [schema_definition➞name](schema_definition_name.md)
  * [see_also](see_also.md) - a reference
  * [source_file](source_file.md) - name, uri or description of the source of the schema
  * [source_file_date](source_file_date.md) - modification date of the source of the schema

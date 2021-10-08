@@ -30,5 +30,10 @@ URI: [biolink:functional_association_subject](https://w3id.org/biolink/vocab/fun
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
 | **Examples:** | | Example(value='ZFIN:ZDB-GENE-050417-357', description='twist1b') |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
 

@@ -26,6 +26,11 @@ URI: [biolink:entity_to_disease_or_phenotypic_feature_association_mixin_object](
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
 | **Examples:** | | Example(value='MONDO:0017314', description='Ehlers-Danlos syndrome, vascular type') |
 |  | | Example(value='MP:0013229', description='abnormal brain ventricle size') |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
 

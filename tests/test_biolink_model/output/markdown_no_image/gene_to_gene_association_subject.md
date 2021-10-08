@@ -25,3 +25,14 @@ URI: [biolink:gene_to_gene_association_subject](https://w3id.org/biolink/vocab/g
  * [GeneToGeneCoexpressionAssociation](GeneToGeneCoexpressionAssociation.md)
  * [GeneToGeneHomologyAssociation](GeneToGeneHomologyAssociation.md)
  * [PairwiseGeneToGeneInteraction](PairwiseGeneToGeneInteraction.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

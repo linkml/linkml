@@ -25,3 +25,19 @@ URI: [biolink:publication_name](https://w3id.org/biolink/vocab/publication_name)
  * [BookChapter](BookChapter.md)
  * [Publication](Publication.md)
  * [Serial](Serial.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | label |
+|  | | display name |
+|  | | title |
+| **Mappings:** | | rdfs:label |
+| **In Subsets:** | | translator_minimal |
+|  | | samples |
+| **Exact Mappings:** | | gff3:Name |
+|  | | gpi:DB_Object_Name |
+| **Narrow Mappings:** | | dct:title |
+|  | | WIKIDATA_PROPERTY:P1476 |
+

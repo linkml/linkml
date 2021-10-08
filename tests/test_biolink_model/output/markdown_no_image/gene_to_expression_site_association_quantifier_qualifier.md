@@ -21,3 +21,14 @@ URI: [biolink:gene_to_expression_site_association_quantifier_qualifier](https://
 ## Used by
 
  * [GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Narrow Mappings:** | | LOINC:analyzes |
+|  | | LOINC:measured_by |
+|  | | LOINC:property_of |
+|  | | SEMMEDDB:measures |
+|  | | UMLS:measures |
+

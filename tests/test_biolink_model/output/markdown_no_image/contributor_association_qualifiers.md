@@ -21,3 +21,10 @@ URI: [biolink:contributor_association_qualifiers](https://w3id.org/biolink/vocab
 ## Used by
 
  * [ContributorAssociation](ContributorAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation qualifier (ga4gh) |
+

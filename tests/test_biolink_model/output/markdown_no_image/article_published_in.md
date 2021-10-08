@@ -21,3 +21,10 @@ URI: [biolink:article_published_in](https://w3id.org/biolink/vocab/article_publi
 ## Used by
 
  * [Article](Article.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | WIKIDATA_PROPERTY:P1433 |
+

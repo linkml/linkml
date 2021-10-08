@@ -25,3 +25,13 @@ URI: [biolink:publication_id](https://w3id.org/biolink/vocab/publication_id)
  * [Article](Article.md)
  * [BookChapter](BookChapter.md)
  * [Publication](Publication.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | translator_minimal |
+| **Exact Mappings:** | | alliancegenome:primaryId |
+|  | | gff3:ID |
+|  | | gpi:DB_Object_ID |
+

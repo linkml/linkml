@@ -22,4 +22,5 @@ URI: [biolink:EntityToOutcomeAssociationMixin](https://w3id.org/biolink/vocab/En
 ### Own
 
  * [entity to outcome association mixin➞object](entity_to_outcome_association_mixin_object.md)  <sub>1..1</sub>
+     * Description: connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
      * Range: [Outcome](Outcome.md)

@@ -25,6 +25,7 @@ URI: [biolink:Onset](https://w3id.org/biolink/vocab/Onset)
  * [attribute➞name](attribute_name.md)  <sub>0..1</sub>
      * Description: The human-readable 'attribute name' can be set to a string which reflects its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation or it can default to the name associated with the 'has attribute type' slot ontology term.
      * Range: [LabelType](types/LabelType.md)
+     * in subsets: (translator_minimal,samples)
  * [has attribute type](has_attribute_type.md)  <sub>1..1</sub>
      * Description: connects an attribute to a class that describes it
      * Range: [OntologyClass](OntologyClass.md)

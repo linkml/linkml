@@ -84,3 +84,13 @@ URI: [biolink:association_type](https://w3id.org/biolink/vocab/association_type)
  * [VariantToGeneExpressionAssociation](VariantToGeneExpressionAssociation.md)
  * [VariantToPhenotypicFeatureAssociation](VariantToPhenotypicFeatureAssociation.md)
  * [VariantToPopulationAssociation](VariantToPopulationAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | rdf:type |
+| **Exact Mappings:** | | alliancegenome:soTermId |
+|  | | gff3:type |
+|  | | gpi:DB_Object_Type |
+

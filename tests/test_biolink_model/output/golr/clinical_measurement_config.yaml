@@ -30,4 +30,5 @@ fields:
     the origin of the entity to which the slot belongs.
   display_name: source
 - id: has_attribute_type
+  description: connects an attribute to a class that describes it
   display_name: clinical measurement_has attribute type

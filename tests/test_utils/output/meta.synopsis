@@ -15,7 +15,7 @@ Slots: 126
 	Standalone: 130
 	Declared mixin: 0
 	Undeclared mixin: 0
-	Abstract: 1
+	Abstract: 4
 	* Unowned slots: unique_keys
 	Not in domain: 7
 		slot.name: slot.domain

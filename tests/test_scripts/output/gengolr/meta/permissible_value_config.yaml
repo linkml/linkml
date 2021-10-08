@@ -15,8 +15,17 @@ fields:
   description: the value meaning (in the 11179 sense) of a permissible value
   display_name: meaning
 - id: is_a
+  description: specifies single-inheritance between classes or slots. While multiple
+    inheritance is not allowed, mixins can be provided effectively providing the same
+    thing. The semantics are the same when translated to formalisms that allow MI
+    (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python
+    classes) then is a is used. When translating a framework without polymorphism
+    (e.g. json-schema, solr document schema) then is a and mixins are recursively
+    unfolded
   display_name: permissible_value_is_a
 - id: mixins
+  description: List of definitions to be mixed in. Targets may be any definition of
+    the same type
   display_name: permissible_value_mixins
   cardinality: multi
 - id: extensions

@@ -21,3 +21,14 @@ URI: [biolink:contributor_association_object](https://w3id.org/biolink/vocab/con
 ## Used by
 
  * [ContributorAssociation](ContributorAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
+

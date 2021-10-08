@@ -21,3 +21,11 @@ URI: [biolink:molecular_activity_enabled_by](https://w3id.org/biolink/vocab/mole
 ## Used by
 
  * [MolecularActivity](MolecularActivity.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | translator_minimal |
+| **Exact Mappings:** | | RO:0002333 |
+

@@ -24,4 +24,5 @@ URI: [biolink:MacromolecularMachineToEntityAssociationMixin](https://w3id.org/bi
 ### Own
 
  * [macromolecular machine to entity association mixin➞subject](macromolecular_machine_to_entity_association_mixin_subject.md)  <sub>1..1</sub>
+     * Description: connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
      * Range: [NamedThing](NamedThing.md)

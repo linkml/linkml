@@ -53,7 +53,13 @@ URI: [biolink:BookChapter](https://w3id.org/biolink/vocab/BookChapter)
      * Range: [Attribute](Attribute.md)
      * in subsets: (samples)
  * [named thing➞category](named_thing_category.md)  <sub>1..\*</sub>
+     * Description: Name of the high level ontology class in which this entity is categorized. Corresponds to the label for the biolink entity type class.
+ * In a neo4j database this MAY correspond to the neo4j label tag.
+ * In an RDF database it should be a biolink model class URI.
+This field is multi-valued. It should include values for ancestors of the biolink class; for example, a protein such as Shh would have category values `biolink:Protein`, `biolink:GeneProduct`, `biolink:MolecularEntity`, ...
+In an RDF database, nodes will typically have an rdf:type triples. This can be to the most specific biolink class, or potentially to a class more specific than something in biolink. For example, a sequence feature `f` may have a rdf:type assertion to a SO class such as TF_binding_site, which is more specific than anything in biolink. Here we would have categories {biolink:GenomicEntity, biolink:MolecularEntity, biolink:NamedThing}
      * Range: [NamedThing](NamedThing.md)
+     * in subsets: (translator_minimal)
  * [license](license.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
  * [rights](rights.md)  <sub>0..1</sub>
@@ -85,9 +91,11 @@ URI: [biolink:BookChapter](https://w3id.org/biolink/vocab/BookChapter)
  * [publication➞id](publication_id.md)  <sub>1..1</sub>
      * Description: Different kinds of publication subtypes will have different preferred identifiers (curies when feasible). Precedence of identifiers for scientific articles is as follows: PMID if available; DOI if not; actual alternate CURIE otherwise. Enclosing publications (i.e. referenced by 'published in' node property) such as books and journals, should have industry-standard identifier such as from ISBN and ISSN.
      * Range: [String](types/String.md)
+     * in subsets: (translator_minimal)
  * [publication➞name](publication_name.md)  <sub>0..1</sub>
      * Description: the 'title' of the publication is generally recorded in the 'name' property (inherited from NamedThing). The field name 'title' is now also tagged as an acceptable alias for the node property 'name' (just in case).
      * Range: [LabelType](types/LabelType.md)
+     * in subsets: (translator_minimal,samples)
  * [publication➞type](publication_type.md)  <sub>1..1</sub>
      * Description: Ontology term for publication type may be drawn from Dublin Core types (https://www.dublincore.org/specifications/dublin-core/dcmi-type-vocabulary/), FRBR-aligned Bibliographic Ontology (https://sparontologies.github.io/fabio/current/fabio.html), the MESH publication types (https://www.nlm.nih.gov/mesh/pubtypes.html), the Confederation of Open Access Repositories (COAR) Controlled Vocabulary for Resource Type Genres (http://vocabularies.coar-repositories.org/documentation/resource_types/), Wikidata (https://www.wikidata.org/wiki/Wikidata:Publication_types), or equivalent publication type ontology. When a given publication type ontology term is used within a given knowledge graph, then the CURIE identified term must be documented in the graph as a concept node of biolink:category biolink:OntologyClass.
      * Range: [String](types/String.md)

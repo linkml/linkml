@@ -21,3 +21,13 @@ URI: [biolink:serial_type](https://w3id.org/biolink/vocab/serial_type)
 ## Used by
 
  * [Serial](Serial.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | rdf:type |
+| **Exact Mappings:** | | alliancegenome:soTermId |
+|  | | gff3:type |
+|  | | gpi:DB_Object_Type |
+

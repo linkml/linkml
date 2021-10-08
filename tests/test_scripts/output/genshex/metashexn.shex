@@ -67,7 +67,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <union_of> @<ClassDefinition> * ;
           <defining_slots> @<SlotDefinition> * ;
           <tree_root> @<Boolean> ? ;
-          <is_a> @<ClassDefinition> ? ;
           <mixins> @<ClassDefinition> * ;
           <apply_to> @<ClassDefinition> *
        ) ;
@@ -214,7 +213,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <CommonMetadata> ] ? ;
           <description> @<String> ? ;
           <meaning> @<Uriorcurie> ? ;
-          <is_a> @<PermissibleValue> ? ;
           <mixins> @<PermissibleValue> * ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
@@ -301,7 +299,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
-          <is_a> @<SlotDefinition> ? ;
           <mixins> @<SlotDefinition> * ;
           <apply_to> @<SlotDefinition> *
        ) ;

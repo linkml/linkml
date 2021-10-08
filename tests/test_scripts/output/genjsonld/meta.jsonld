@@ -2288,11 +2288,23 @@
     },
     {
       "name": "schema_definition_name",
+      "definition_uri": "https://w3id.org/linkml/name",
+      "mappings": [
+        "http://www.w3.org/2000/01/rdf-schema#label",
+        "http://schema.org/name"
+      ],
+      "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
+      "in_subset": [
+        "owl"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://en.wikipedia.org/wiki/Data_element_name"
+      ],
       "is_a": "name",
       "domain": "SchemaDefinition",
       "range": "ncname",
-      "slot_uri": "https://w3id.org/linkml/name",
+      "slot_uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "required": true,
       "identifier": true,
       "alias": "name",
@@ -2306,8 +2318,11 @@
     },
     {
       "name": "slot_definition_is_a",
+      "definition_uri": "https://w3id.org/linkml/is_a",
+      "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "is_a",
+      "abstract": true,
       "domain": "SlotDefinition",
       "range": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/is_a",
@@ -2322,7 +2337,18 @@
     },
     {
       "name": "slot_definition_mixins",
+      "definition_uri": "https://w3id.org/linkml/mixins",
+      "aliases": [
+        "traits"
+      ],
+      "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
+      "comments": [
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://en.wikipedia.org/wiki/Mixin"
+      ],
       "is_a": "mixins",
       "domain": "SlotDefinition",
       "range": "SlotDefinition",
@@ -2339,6 +2365,8 @@
     },
     {
       "name": "slot_definition_apply_to",
+      "definition_uri": "https://w3id.org/linkml/apply_to",
+      "description": "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "apply_to",
       "domain": "SlotDefinition",
@@ -2356,8 +2384,11 @@
     },
     {
       "name": "class_definition_is_a",
+      "definition_uri": "https://w3id.org/linkml/is_a",
+      "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "is_a",
+      "abstract": true,
       "domain": "ClassDefinition",
       "range": "ClassDefinition",
       "slot_uri": "https://w3id.org/linkml/is_a",
@@ -2372,7 +2403,18 @@
     },
     {
       "name": "class_definition_mixins",
+      "definition_uri": "https://w3id.org/linkml/mixins",
+      "aliases": [
+        "traits"
+      ],
+      "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
+      "comments": [
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://en.wikipedia.org/wiki/Mixin"
+      ],
       "is_a": "mixins",
       "domain": "ClassDefinition",
       "range": "ClassDefinition",
@@ -2389,6 +2431,8 @@
     },
     {
       "name": "class_definition_apply_to",
+      "definition_uri": "https://w3id.org/linkml/apply_to",
+      "description": "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "apply_to",
       "domain": "ClassDefinition",
@@ -2406,8 +2450,11 @@
     },
     {
       "name": "permissible_value_is_a",
+      "definition_uri": "https://w3id.org/linkml/is_a",
+      "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
       "from_schema": "https://w3id.org/linkml/meta",
       "is_a": "is_a",
+      "abstract": true,
       "domain": "PermissibleValue",
       "range": "PermissibleValue",
       "slot_uri": "https://w3id.org/linkml/is_a",
@@ -2422,7 +2469,18 @@
     },
     {
       "name": "permissible_value_mixins",
+      "definition_uri": "https://w3id.org/linkml/mixins",
+      "aliases": [
+        "traits"
+      ],
+      "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
+      "comments": [
+        "mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierachy, while keeping the benefits of multiple inheritance"
+      ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "see_also": [
+        "https://en.wikipedia.org/wiki/Mixin"
+      ],
       "is_a": "mixins",
       "domain": "PermissibleValue",
       "range": "PermissibleValue",
@@ -3087,9 +3145,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "Mon Sep 27 21:44:23 2021",
+  "source_file_date": "Fri Oct  8 17:00:01 2021",
   "source_file_size": 34568,
-  "generation_date": "2021-09-27 21:48",
+  "generation_date": "2021-10-08 17:04",
   "@type": "SchemaDefinition",
   "@context": [
     "file:./output/gencontext/meta.jsonld",

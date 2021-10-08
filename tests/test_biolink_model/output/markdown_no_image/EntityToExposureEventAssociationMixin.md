@@ -22,4 +22,5 @@ URI: [biolink:EntityToExposureEventAssociationMixin](https://w3id.org/biolink/vo
 ### Own
 
  * [entity to exposure event association mixin➞object](entity_to_exposure_event_association_mixin_object.md)  <sub>1..1</sub>
+     * Description: connects an association to the object of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
      * Range: [ExposureEvent](ExposureEvent.md)

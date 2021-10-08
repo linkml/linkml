@@ -2,7 +2,7 @@
 # Slot: predicate
 
 
-
+A high-level grouping for the relationship type. AKA minimal predicate. This is analogous to category for nodes.
 
 URI: [biolink:anatomical_entity_to_anatomical_entity_ontogenic_association_predicate](https://w3id.org/biolink/vocab/anatomical_entity_to_anatomical_entity_ontogenic_association_predicate)
 
@@ -21,3 +21,14 @@ URI: [biolink:anatomical_entity_to_anatomical_entity_ontogenic_association_predi
 ## Used by
 
  * [AnatomicalEntityToAnatomicalEntityOntogenicAssociation](AnatomicalEntityToAnatomicalEntityOntogenicAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

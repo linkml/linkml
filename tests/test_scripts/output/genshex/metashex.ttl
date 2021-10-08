@@ -68,10 +68,6 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/tree_root> ;
                 shex:valueExpr <https://w3id.org/linkml/Boolean> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/is_a> ;
-                shex:valueExpr <https://w3id.org/linkml/ClassDefinition> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/mixins> ;
@@ -188,10 +184,6 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/meaning> ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/is_a> ;
-                shex:valueExpr <https://w3id.org/linkml/PermissibleValue> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/mixins> ;
@@ -465,10 +457,6 @@
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/pattern> ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/is_a> ;
-                shex:valueExpr <https://w3id.org/linkml/SlotDefinition> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/mixins> ;
@@ -722,6 +710,15 @@
 <https://w3id.org/linkml/Integer> a shex:NodeConstraint ;
     shex:datatype xsd:integer .
 
+<https://w3id.org/linkml/PermissibleValue> a shex:Shape ;
+    shex:closed true ;
+    shex:expression [ a shex:EachOf ;
+            shex:expressions ( <https://w3id.org/linkml/PermissibleValue_tes> [ a shex:TripleConstraint ;
+                        shex:min 1 ;
+                        shex:predicate rdf:type ;
+                        shex:valueExpr [ a shex:NodeConstraint ;
+                                shex:values ( <https://w3id.org/linkml/PermissibleValue> ) ] ] ) ] .
+
 <https://w3id.org/linkml/AltDescription> a shex:Shape ;
     shex:closed true ;
     shex:expression [ a shex:EachOf ;
@@ -760,15 +757,6 @@
 
 <https://w3id.org/linkml/Ncname> a shex:NodeConstraint ;
     shex:datatype xsd:string .
-
-<https://w3id.org/linkml/PermissibleValue> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/PermissibleValue_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/PermissibleValue> ) ] ] ) ] .
 
 <https://w3id.org/linkml/Annotatable> a shex:Shape ;
     shex:closed false ;

@@ -773,11 +773,12 @@
     },
     {
       "name": "Person_name",
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "definition_uri": "https://w3id.org/linkml/tests/core/name",
+      "from_schema": "https://w3id.org/linkml/tests/core",
       "is_a": "name",
       "domain": "Person",
       "range": "string",
-      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/name",
+      "slot_uri": "https://w3id.org/linkml/tests/core/name",
       "alias": "name",
       "owner": "Person",
       "domain_of": [
@@ -790,6 +791,7 @@
     },
     {
       "name": "FamilialRelationship_type",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/type",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "type",
       "domain": "FamilialRelationship",
@@ -807,6 +809,7 @@
     },
     {
       "name": "FamilialRelationship_related_to",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/related_to",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "related_to",
       "domain": "FamilialRelationship",
@@ -1190,9 +1193,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "Fri Oct  8 15:46:01 2021",
+  "source_file_date": "Fri Oct  8 16:58:13 2021",
   "source_file_size": 4586,
-  "generation_date": "2021-10-08 15:51",
+  "generation_date": "2021-10-08 17:03",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

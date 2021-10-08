@@ -25,3 +25,10 @@ URI: [biolink:publication_pages](https://w3id.org/biolink/vocab/publication_page
  * [BookChapter](BookChapter.md)
  * [Publication](Publication.md)
  * [Serial](Serial.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | WIKIDATA_PROPERTY:P304 |
+

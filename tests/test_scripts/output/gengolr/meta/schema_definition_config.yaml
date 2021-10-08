@@ -184,4 +184,7 @@ fields:
   description: date and time that the schema was loaded/generated
   display_name: generation_date
 - id: name
+  description: the unique name of the element within the context of the schema.  Name
+    is combined with the default prefix to form the globally unique subject of the
+    target class.
   display_name: schema_definition_name

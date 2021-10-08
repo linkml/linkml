@@ -1,5 +1,5 @@
 # Auto generated from issue_121.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2021-10-08 17:03
 # Schema: schema
 #
 # id: https://microbiomedata/schema
@@ -77,5 +77,5 @@ class slots:
 slots.depth = Slot(uri=DEFAULT_['mixs/depth'], name="depth", curie=DEFAULT_.curie('mixs/depth'),
                    model_uri=DEFAULT_.depth, domain=None, range=Optional[str])
 
-slots.biosample_depth = Slot(uri=DEFAULT_.depth, name="biosample_depth", curie=DEFAULT_.curie('depth'),
+slots.biosample_depth = Slot(uri=DEFAULT_['mixs/depth'], name="biosample_depth", curie=DEFAULT_.curie('mixs/depth'),
                    model_uri=DEFAULT_.biosample_depth, domain=Biosample, range=Optional[str])

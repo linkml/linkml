@@ -185,7 +185,7 @@ core:Agent CLOSED {
 <Person> CLOSED {
     (  $<Person_tes> (  &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
-          <name> @linkml:String ? ;
+          core:name @linkml:String ? ;
           <has_employment_history> @<EmploymentEvent> * ;
           <has_familial_relationships> @<FamilialRelationship> * ;
           <has_medical_history> @<MedicalEvent> * ;

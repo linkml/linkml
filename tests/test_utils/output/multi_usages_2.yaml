@@ -157,6 +157,7 @@ slots:
     - root_class
   child_class1_s1:
     name: child_class1_s1
+    definition_uri: http://example.org/multi_usages_2/s1
     description: A muti-valued boolean named 'child_class1_s1', alias 'value' is_a
       's1'
     from_schema: http://example.org/multi_usages_2
@@ -173,6 +174,7 @@ slots:
     usage_slot_name: s1
   child_class2_s1:
     name: child_class2_s1
+    definition_uri: http://example.org/multi_usages_2/s1
     description: A muti-valued integer named 'child_class2_s1', alias 'value', is_a
       'child_class1_s1'
     from_schema: http://example.org/multi_usages_2
@@ -189,6 +191,7 @@ slots:
     usage_slot_name: s1
   child_class3_s1:
     name: child_class3_s1
+    definition_uri: http://example.org/multi_usages_2/s1
     description: A single-valued integer named 'child_class3_s1', alias 'value' is_a
       'child_class_2_s1'
     from_schema: http://example.org/multi_usages_2
@@ -196,7 +199,7 @@ slots:
     domain: child_class3
     range: integer
     slot_uri: http://example.org/multi_usages_2/value
-    multivalued: false
+    multivalued: true
     alias: value
     owner: child_class3
     domain_of:
@@ -255,6 +258,6 @@ classes:
     class_uri: http://example.org/multi_usages_2/ChildClass3
 metamodel_version: 1.7.0
 source_file: multi_usages_2.yaml
-source_file_date: Wed Mar 24 16:43:50 2021
+source_file_date: Fri Oct  8 16:58:13 2021
 source_file_size: 989
-generation_date: 2021-03-24 16:49
+generation_date: 2021-10-08 17:05
