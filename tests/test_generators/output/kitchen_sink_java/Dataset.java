@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class Dataset  {
+public  class Dataset  {
 
   private List<Person> persons;
   private List<Company> companies;

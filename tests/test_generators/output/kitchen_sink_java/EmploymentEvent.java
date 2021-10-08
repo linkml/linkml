@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class EmploymentEvent extends Event {
+public  class EmploymentEvent extend Event {
 
   private Company employedAt;
 

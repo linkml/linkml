@@ -28,7 +28,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public {% if cls.abstract -%} abstract {% endif %} class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
+public {% if cls.abstract -%}abstract{% endif %} class {{ cls.name }} {% if cls.is_a -%} extend {{ cls.is_a }} {%- endif %} {
 {% for f in cls.fields %}
   private {{f.range}} {{ f.name }};
 {%- endfor %}
@@ -92,9 +92,11 @@ class JavaGenerator(OOCodeGenerator):
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template_file", help="Optional jinja2 template to use for class generation")
 @click.command()
-def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
+def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False,
+        genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
-    JavaGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory)
+    JavaGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta,
+                  gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory)
 
 
 if __name__ == '__main__':
