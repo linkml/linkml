@@ -8,7 +8,7 @@ import lombok.*;
 **/
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class Address  {
+public  class Address  {
 
   private String street;
   private String city;

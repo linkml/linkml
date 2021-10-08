@@ -10,6 +10,7 @@ SCHEMA = env.input_path('kitchen_sink.yaml')
 JAVA_DIR = env.expected_path('kitchen_sink_java')
 PACKAGE = 'org.sink.kitchen'
 
+
 def assert_file_contains(filename, text, after=None, description=None) -> None:
     found = False
     is_after = False  ## have we reached the after mark?
@@ -32,6 +33,8 @@ class JavaGeneratorTestCase(unittest.TestCase):
         """ Generate java classes  """
         gen = JavaGenerator(SCHEMA, package=PACKAGE)
         md = gen.serialize(directory=JAVA_DIR)
+
+
 
 
 if __name__ == '__main__':
