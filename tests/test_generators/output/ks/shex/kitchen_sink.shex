@@ -125,6 +125,12 @@ core:Agent CLOSED {
     } OR @<BirthEvent> OR @<EmploymentEvent> OR @<MarriageEvent> OR @<MedicalEvent>
 )
 
+<FakeClass> CLOSED {
+    (  $<FakeClass_tes> <test_attribute> @linkml:String ? ;
+       rdf:type [ <FakeClass> ] ?
+    )
+}
+
 <FamilialRelationship> CLOSED {
     (  $<FamilialRelationship_tes> (  &<Relationship_tes> ;
           rdf:type [ <Relationship> ] ? ;

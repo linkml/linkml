@@ -15,4 +15,4 @@ URI: [ks:FakeClass](https://w3id.org/linkml/tests/kitchen_sink/FakeClass)
 ### Own
 
  * [➞test_attribute](fakeClass__test_attribute.md)  <sub>0..1</sub>
-     * Range: [String](String.md)
+     * Range: [String](types/String.md)

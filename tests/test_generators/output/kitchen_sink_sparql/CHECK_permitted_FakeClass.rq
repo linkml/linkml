@@ -16,35 +16,22 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX shex: <http://www.w3.org/ns/shex#>
 
-SELECT
-  ?check
-  ?graph
-  ?subject
-  ?predicate
-  ?object
-WHERE {
- GRAPH ?graph {
-  ?subject rdf:type ks:Dataset ;
-     ?predicate ?object .
-  FILTER NOT EXISTS {
-    ?object rdf:type ?otype .
-    FILTER ( ?otype IN (
-      core:Activity
-      
-      ))
-  }
+SELECT ?g ?s ?p WHERE {
+ GRAPH ?g {
+  ?s rdf:type ks:FakeClass ;
+     ?p ?o .
+  FILTER ( ?p NOT IN (
+   ks:test_attribute,
+   rdf:type ))
  }
- VALUES ?check { linkml:range }
- VALUES ?predicate { ks:activities  }
  
-}  
+} 
 
 
 
-## -- End of checks for Dataset
 
 
-## --
-## Checks for FakeClass
-## --
+
+
+## -- End of checks for FakeClass
 

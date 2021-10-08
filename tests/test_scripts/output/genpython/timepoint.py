@@ -1,5 +1,5 @@
 # Auto generated from timepoint.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-07 18:17
+# Generation date: 2021-10-08 15:52
 # Schema: timepoint
 #
 # id: http://example.org/tests/timepoint

@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-07 18:16
+# Generation date: 2021-10-08 15:51
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -539,6 +539,24 @@ class Dataset(YAMLRoot):
 
 
 @dataclass
+class FakeClass(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.FakeClass
+    class_class_curie: ClassVar[str] = "ks:FakeClass"
+    class_name: ClassVar[str] = "FakeClass"
+    class_model_uri: ClassVar[URIRef] = KS.FakeClass
+
+    test_attribute: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.test_attribute is not None and not isinstance(self.test_attribute, str):
+            self.test_attribute = str(self.test_attribute)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Activity(YAMLRoot):
     """
     a provence-generating activity
@@ -738,6 +756,9 @@ slots.dataset__companies = Slot(uri=KS.companies, name="dataset__companies", cur
 
 slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", curie=KS.curie('activities'),
                    model_uri=KS.dataset__activities, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
+
+slots.fakeClass__test_attribute = Slot(uri=KS.test_attribute, name="fakeClass__test_attribute", curie=KS.curie('test_attribute'),
+                   model_uri=KS.fakeClass__test_attribute, domain=None, range=Optional[str])
 
 slots.Person_name = Slot(uri=KS.name, name="Person_name", curie=KS.curie('name'),
                    model_uri=KS.Person_name, domain=Person, range=Optional[str],

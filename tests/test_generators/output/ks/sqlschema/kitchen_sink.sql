@@ -48,6 +48,11 @@ CREATE TABLE "Event" (
 	PRIMARY KEY (started_at_time, ended_at_time, is_current)
 );
 
+CREATE TABLE "FakeClass" (
+	test_attribute TEXT, 
+	PRIMARY KEY (test_attribute)
+);
+
 CREATE TABLE "Organization" (
 	id TEXT NOT NULL, 
 	name TEXT, 

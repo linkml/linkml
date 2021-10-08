@@ -72,6 +72,11 @@ type Event
     isCurrent: Boolean
   }
 
+type FakeClass
+  {
+    testAttribute: String
+  }
+
 type FamilialRelationship
   {
     startedAtTime: Date

@@ -228,6 +228,18 @@
          "title": "Event",
          "type": "object"
       },
+      "FakeClass": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "test_attribute": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "FakeClass",
+         "type": "object"
+      },
       "FamilialRelationship": {
          "additionalProperties": false,
          "description": "",

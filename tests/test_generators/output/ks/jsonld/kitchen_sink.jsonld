@@ -760,6 +760,18 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "fakeClass__test_attribute",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "range": "string",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/test_attribute",
+      "alias": "test_attribute",
+      "owner": "FakeClass",
+      "domain_of": [
+        "FakeClass"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "Person_name",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "name",
@@ -1120,6 +1132,24 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "FakeClass",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass",
+      "deprecated": "this is not a real class, we are using it to test deprecation",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "fakeClass__test_attribute"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "test_attribute",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "Activity",
       "definition_uri": "https://w3id.org/linkml/tests/core/Activity",
       "mappings": [
@@ -1160,9 +1190,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "Thu Oct  7 18:11:46 2021",
-  "source_file_size": 4456,
-  "generation_date": "2021-10-07 18:16",
+  "source_file_date": "Fri Oct  8 15:46:01 2021",
+  "source_file_size": 4586,
+  "generation_date": "2021-10-08 15:51",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

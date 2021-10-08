@@ -1,5 +1,5 @@
 
-# Class: disease or phenotypic feature association to location association _(deprecated)_
+# Class: ~~disease or phenotypic feature association to location association~~ _(deprecated)_
 
 
 

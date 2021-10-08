@@ -64,6 +64,10 @@ CREATE TABLE "Event" (
 	is_current BOOLEAN
 );
 
+CREATE TABLE "FakeClass" (
+	test_attribute TEXT
+);
+
 CREATE TABLE "FamilialRelationship" (
 	started_at_time DATE, 
 	ended_at_time DATE, 

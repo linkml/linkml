@@ -75,6 +75,9 @@ tbl_Event = Table('Event', metadata,
     Column('ended_at_time', Text, primary_key=True),
     Column('is_current', Text, primary_key=True),
 )
+tbl_FakeClass = Table('FakeClass', metadata, 
+    Column('test_attribute', Text, primary_key=True),
+)
 tbl_FamilialRelationship = Table('FamilialRelationship', metadata, 
     Column('started_at_time', Text, primary_key=True),
     Column('ended_at_time', Text, primary_key=True),
@@ -157,6 +160,8 @@ mapper_registry.map_imperatively(DiagnosisConcept, tbl_DiagnosisConcept, propert
 mapper_registry.map_imperatively(EmploymentEvent, tbl_EmploymentEvent, properties={
 })
 mapper_registry.map_imperatively(Event, tbl_Event, properties={
+})
+mapper_registry.map_imperatively(FakeClass, tbl_FakeClass, properties={
 })
 mapper_registry.map_imperatively(FamilialRelationship, tbl_FamilialRelationship, properties={
 })

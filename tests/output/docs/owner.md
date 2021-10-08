@@ -1,5 +1,5 @@
 
-# Slot: owner _(deprecated)_
+# Slot: ~~owner~~ _(deprecated)_
 
 
 the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot

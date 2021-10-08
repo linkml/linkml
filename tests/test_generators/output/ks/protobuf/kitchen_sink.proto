@@ -64,6 +64,10 @@ message Event
   optional endedAtTime Date = 2
   optional isCurrent Boolean = 3
  }
+message FakeClass
+ {
+  optional testAttribute String = 1
+ }
 message FamilialRelationship
  {
   optional startedAtTime Date = 1
