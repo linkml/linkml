@@ -31,6 +31,7 @@ def create_and_compile_sqla_bindings(gen: SQLDDLGenerator, path: str = SQLA_CODE
 
 class SQLDDLTestCase(unittest.TestCase):
 
+
     def test_sqlddl_basic(self):
         """ DDL  """
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, direct_mapping=True)
@@ -40,7 +41,7 @@ class SQLDDLTestCase(unittest.TestCase):
         with open(BASIC_SQLA_CODE, 'w') as stream:
             with redirect_stdout(stream):
                 gen.write_sqla_python_imperative('output.kitchen_sink')
-                create_and_compile_sqla_bindings(gen, BASIC_SQLA_CODE)
+                #create_and_compile_sqla_bindings(gen, BASIC_SQLA_CODE)
 
     def test_sqlddl(self):
         """ DDL  """
