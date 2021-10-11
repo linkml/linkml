@@ -13,6 +13,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
+from linkml_runtime.linkml_model.types import Datetime
 
 from linkml.utils.mergeutils import set_from_schema
 
@@ -103,8 +104,9 @@ def load_raw_schema(
         schema.source_file_date = (
             datetime.strptime(schema_metadata.source_file_date, "%a %b %d %H:%M:%S %Y")
             .replace(tzinfo=timezone.utc)
-            .strftime("%Y-%m-%dT%H:%M:%S")
+            .isoformat()
         )
+        
         schema.source_file_size = schema_metadata.source_file_size
         schema.generation_date = datetime.now().strftime("%Y-%m-%d %H:%M")
     schema.metamodel_version = metamodel_version
