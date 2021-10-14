@@ -253,3 +253,5 @@ enums:
       PARENT_OF:
       CHILD_OF:
   DiagnosisType:
+    permissible_values:
+      TODO:
