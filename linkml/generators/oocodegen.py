@@ -82,7 +82,7 @@ class OOCodeGenerator(Generator):
         sv: SchemaView
         sv = self.schemaview
         docs = []
-        for cn in sv.all_class(imports=False):
+        for cn in sv.all_classes(imports=False):
             c = sv.get_class(cn)
             safe_cn = camelcase(cn)
             oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
@@ -112,14 +112,14 @@ class OOCodeGenerator(Generator):
                 if range is None:
                     range = 'string'
 
-                if range in sv.all_class():
+                if range in sv.all_classes():
                     range = self.get_class_name(range)
-                elif range in sv.all_type():
+                elif range in sv.all_types():
                     t = sv.get_type(range)
                     range = self.map_type(t)
                     if range is None: # If mapping fails,
                         range = self.map_type(sv.all_type().get('string'))
-                elif range in sv.all_enum():
+                elif range in sv.all_enums():
                     range = self.map_type(sv.all_type().get('string'))
                 else:
                     raise Exception(f'Unknown range {range}')
