@@ -23,12 +23,12 @@ package {{ doc.package }};
 import java.util.List;
 import lombok.*;
 
-/**
+{% if cls.source_class.description %}/**
   {{ cls.source_class.description }}
-**/
+**/{% endif %}
 @Data
 @EqualsAndHashCode(callSuper=false)
-public {% if cls.abstract -%} abstract {% endif %} class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
+public {% if cls.abstract -%}abstract {% endif %}class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
 {% for f in cls.fields %}
   private {{f.range}} {{ f.name }};
 {%- endfor %}
