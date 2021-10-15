@@ -541,6 +541,7 @@
       "slot_uri": "https://w3id.org/linkml/tests/core/name",
       "owner": "Concept",
       "domain_of": [
+        "Friend",
         "Person",
         "Organization",
         "Place",
@@ -844,6 +845,18 @@
         }
       ],
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "Friend",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Friend",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "abstract": true,
+      "slots": [
+        "name"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Friend",
       "@type": "ClassDefinition"
     },
     {
@@ -1193,9 +1206,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "Sat Oct  9 00:26:54 2021",
-  "source_file_size": 4586,
-  "generation_date": "2021-10-09 00:31",
+  "source_file_date": "Fri Oct 15 18:57:59 2021",
+  "source_file_size": 4640,
+  "generation_date": "2021-10-15 19:03",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

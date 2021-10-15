@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-09 00:31
+# Generation date: 2021-10-15 19:03
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -104,6 +104,24 @@ class HasAliases(YAMLRoot):
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class Friend(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.Friend
+    class_class_curie: ClassVar[str] = "ks:Friend"
+    class_name: ClassVar[str] = "Friend"
+    class_model_uri: ClassVar[URIRef] = KS.Friend
+
+    name: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.name is not None and not isinstance(self.name, str):
+            self.name = str(self.name)
 
         super().__post_init__(**kwargs)
 

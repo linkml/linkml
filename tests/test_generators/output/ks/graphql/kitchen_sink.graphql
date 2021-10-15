@@ -85,6 +85,11 @@ type FamilialRelationship
     relatedTo: Person!
   }
 
+interface Friend
+  {
+    name: String
+  }
+
 interface HasAliases
   {
     aliases: [String]

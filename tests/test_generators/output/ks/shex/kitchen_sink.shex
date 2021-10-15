@@ -141,6 +141,12 @@ core:Agent CLOSED {
     )
 }
 
+<Friend> {
+    (  $<Friend_tes> core:name @linkml:String ? ;
+       rdf:type [ <Friend> ] ?
+    )
+}
+
 <HasAliases> {
     (  $<HasAliases_tes> <aliases> @linkml:String * ;
        rdf:type [ <HasAliases> ] ?

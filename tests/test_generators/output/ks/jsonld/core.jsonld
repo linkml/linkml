@@ -401,9 +401,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "core.yaml",
-  "source_file_date": "Sat Oct  9 00:26:54 2021",
+  "source_file_date": "Fri Oct 15 18:57:59 2021",
   "source_file_size": 1667,
-  "generation_date": "2021-10-09 00:31",
+  "generation_date": "2021-10-15 19:03",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",
