@@ -119,7 +119,7 @@ class PydanticGenerator(OOCodeGenerator):
             e2: ClassDefinition
             e2 = deepcopy(e)
             e2.name = camelcase(e.name)
-            pyschema.enums[e2.name] = e
+            pyschema.enums[e2.name] = e2
 
         for cn, c in sv.all_classes().items():
             c2: ClassDefinition
