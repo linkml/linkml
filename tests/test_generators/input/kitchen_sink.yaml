@@ -61,6 +61,7 @@ classes:
         multivalued: true
 
   Person:
+    description: A person, living or dead
     in_subset:
       - subset A
     mixins:
@@ -188,6 +189,15 @@ classes:
     attributes:
       test_attribute:
 
+  class with spaces:
+    attributes:
+      slot with space 1:
+  subclass test:
+    is_a: class with spaces
+    attributes:
+      slot with space 2:
+        range: class with spaces
+
 slots:
   employed at:
     range: Company
@@ -233,6 +243,7 @@ slots:
     range: Address
     multivalued: True
   age in years:
+    description: number of years since birth
     range: integer
     minimum_value: 0
     maximum_value: 999
