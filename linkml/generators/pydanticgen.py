@@ -75,7 +75,6 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     if t.base == 'XSDDate':
         pyrange = 'date'
     if pyrange is None and t.typeof is not None:
-        logging.error(f'looking up parent {t.name} ==> {t.typeof}')
         pyrange = _get_pyrange(sv.get_type(t.typeof), sv)
     if pyrange is None:
         raise Exception(f'No python type for range: {s.range} // {t}')
