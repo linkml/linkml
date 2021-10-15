@@ -893,7 +893,7 @@ pipenv run gen-owl examples/PersonSchema/personinfo.yaml > examples/PersonSchema
 ```
 
 <details>
-<summary>OWL output for `Person` schema</summary>
+<summary>OWL output for Person schema</summary>
 
 ```turtle
 <https://w3id.org/linkml/examples/personinfo/Person> a owl:Class,
@@ -950,7 +950,7 @@ pipenv run gen-markdown examples/PersonSchema/personinfo.yaml -d examples/Person
 
 See [specification](https://linkml.io/linkml/specifications/linkml-spec.html). Also see the [semantics](semantics) folder for an experimental specification in terms of FOL.
 
-## Developers Notes
+## Developer Notes
 
 ### Release to PyPI
 
