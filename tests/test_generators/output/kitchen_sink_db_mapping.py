@@ -45,6 +45,9 @@ tbl_BirthEvent = Table('BirthEvent', metadata,
     Column('is_current', Text, primary_key=True),
     Column('in_location', Text, ForeignKey('Place.id'), primary_key=True),
 )
+tbl_class_with_spaces = Table('class_with_spaces', metadata, 
+    Column('slot_with_space_1', Text, primary_key=True),
+)
 tbl_Company = Table('Company', metadata, 
     Column('id', Text, primary_key=True),
     Column('name', Text),
@@ -125,6 +128,10 @@ tbl_Relationship = Table('Relationship', metadata,
     Column('related_to', Text, primary_key=True),
     Column('type', Text, primary_key=True),
 )
+tbl_subclass_test = Table('subclass_test', metadata, 
+    Column('slot_with_space_1', Text, primary_key=True),
+    Column('slot_with_space_2', Text, primary_key=True),
+)
 tbl_Company_aliases = Table('Company_aliases', metadata, 
     Column('backref_id', Text, ForeignKey('Company.id'), primary_key=True),
     Column('aliases', Text, primary_key=True),
@@ -148,6 +155,8 @@ mapper_registry.map_imperatively(Address, tbl_Address, properties={
 mapper_registry.map_imperatively(Agent, tbl_agent, properties={
 })
 mapper_registry.map_imperatively(BirthEvent, tbl_BirthEvent, properties={
+})
+mapper_registry.map_imperatively(ClassWithSpaces, tbl_class_with_spaces, properties={
 })
 mapper_registry.map_imperatively(Company, tbl_Company, properties={
 })
@@ -202,4 +211,6 @@ mapper_registry.map_imperatively(Place, tbl_Place, properties={
 mapper_registry.map_imperatively(ProcedureConcept, tbl_ProcedureConcept, properties={
 })
 mapper_registry.map_imperatively(Relationship, tbl_Relationship, properties={
+})
+mapper_registry.map_imperatively(SubclassTest, tbl_subclass_test, properties={
 })

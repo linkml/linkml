@@ -22,6 +22,11 @@ CREATE TABLE agent (
 	FOREIGN KEY(was_informed_by) REFERENCES activity (id)
 );
 
+CREATE TABLE class_with_spaces (
+	slot_with_space_1 TEXT, 
+	PRIMARY KEY (slot_with_space_1)
+);
+
 CREATE TABLE "Concept" (
 	id TEXT NOT NULL, 
 	name TEXT, 
@@ -85,6 +90,12 @@ CREATE TABLE "Relationship" (
 	related_to TEXT, 
 	type TEXT, 
 	PRIMARY KEY (started_at_time, ended_at_time, related_to, type)
+);
+
+CREATE TABLE subclass_test (
+	slot_with_space_1 TEXT, 
+	slot_with_space_2 TEXT, 
+	PRIMARY KEY (slot_with_space_1, slot_with_space_2)
 );
 
 CREATE TABLE "Address" (

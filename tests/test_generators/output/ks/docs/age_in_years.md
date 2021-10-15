@@ -2,7 +2,7 @@
 # Slot: age in years
 
 
-
+number of years since birth
 
 URI: [ks:age_in_years](https://w3id.org/linkml/tests/kitchen_sink/age_in_years)
 

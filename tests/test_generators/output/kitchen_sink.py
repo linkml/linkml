@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-15 19:03
+# Generation date: 2021-10-15 19:59
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -128,6 +128,9 @@ class Friend(YAMLRoot):
 
 @dataclass
 class Person(YAMLRoot):
+    """
+    A person, living or dead
+    """
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS.Person
@@ -575,6 +578,42 @@ class FakeClass(YAMLRoot):
 
 
 @dataclass
+class ClassWithSpaces(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.ClassWithSpaces
+    class_class_curie: ClassVar[str] = "ks:ClassWithSpaces"
+    class_name: ClassVar[str] = "class with spaces"
+    class_model_uri: ClassVar[URIRef] = KS.ClassWithSpaces
+
+    slot_with_space_1: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.slot_with_space_1 is not None and not isinstance(self.slot_with_space_1, str):
+            self.slot_with_space_1 = str(self.slot_with_space_1)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class SubclassTest(ClassWithSpaces):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.SubclassTest
+    class_class_curie: ClassVar[str] = "ks:SubclassTest"
+    class_name: ClassVar[str] = "subclass test"
+    class_model_uri: ClassVar[URIRef] = KS.SubclassTest
+
+    slot_with_space_2: Optional[Union[dict, ClassWithSpaces]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.slot_with_space_2 is not None and not isinstance(self.slot_with_space_2, ClassWithSpaces):
+            self.slot_with_space_2 = ClassWithSpaces(**as_dict(self.slot_with_space_2))
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Activity(YAMLRoot):
     """
     a provence-generating activity
@@ -664,6 +703,8 @@ class FamilialRelationshipType(EnumDefinitionImpl):
     )
 
 class DiagnosisType(EnumDefinitionImpl):
+
+    TODO = PermissibleValue(text="TODO")
 
     _defn = EnumDefinition(
         name="DiagnosisType",
@@ -777,6 +818,12 @@ slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", 
 
 slots.fakeClass__test_attribute = Slot(uri=KS.test_attribute, name="fakeClass__test_attribute", curie=KS.curie('test_attribute'),
                    model_uri=KS.fakeClass__test_attribute, domain=None, range=Optional[str])
+
+slots.classWithSpaces__slot_with_space_1 = Slot(uri=KS.slot_with_space_1, name="classWithSpaces__slot_with_space_1", curie=KS.curie('slot_with_space_1'),
+                   model_uri=KS.classWithSpaces__slot_with_space_1, domain=None, range=Optional[str])
+
+slots.subclassTest__slot_with_space_2 = Slot(uri=KS.slot_with_space_2, name="subclassTest__slot_with_space_2", curie=KS.curie('slot_with_space_2'),
+                   model_uri=KS.subclassTest__slot_with_space_2, domain=None, range=Optional[Union[dict, ClassWithSpaces]])
 
 slots.Person_name = Slot(uri=CORE.name, name="Person_name", curie=CORE.curie('name'),
                    model_uri=KS.Person_name, domain=Person, range=Optional[str],

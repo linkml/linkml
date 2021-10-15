@@ -28,6 +28,10 @@ CREATE TABLE "BirthEvent" (
 	in_location TEXT
 );
 
+CREATE TABLE class_with_spaces (
+	slot_with_space_1 TEXT
+);
+
 CREATE TABLE "Company" (
 	id TEXT NOT NULL, 
 	name TEXT, 
@@ -126,4 +130,9 @@ CREATE TABLE "Relationship" (
 	ended_at_time DATE, 
 	related_to TEXT, 
 	type TEXT
+);
+
+CREATE TABLE subclass_test (
+	slot_with_space_1 TEXT, 
+	slot_with_space_2 TEXT
 );

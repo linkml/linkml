@@ -9,14 +9,14 @@ URI: [ks:subset_A](https://w3id.org/linkml/tests/kitchen_sink/subset_A)
 
 ### Classes
 
- * [Person](Person.md)
+ * [Person](Person.md) - A person, living or dead
 
 ### Mixins
 
 
 ### Slots
 
- * [age in years](age_in_years.md)
+ * [age in years](age_in_years.md) - number of years since birth
  * [employed at](employed_at.md)
 
 ### Types

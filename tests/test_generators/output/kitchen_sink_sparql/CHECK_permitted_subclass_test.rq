@@ -18,10 +18,11 @@ PREFIX shex: <http://www.w3.org/ns/shex#>
 
 SELECT ?g ?s ?p WHERE {
  GRAPH ?g {
-  ?s rdf:type ks:FakeClass ;
+  ?s rdf:type ks:SubclassTest ;
      ?p ?o .
   FILTER ( ?p NOT IN (
-   ks:test_attribute,
+   ks:slot_with_space_2,
+   ks:slot_with_space_1,
    rdf:type ))
  }
  
@@ -30,13 +31,4 @@ SELECT ?g ?s ?p WHERE {
 
 
 
-
-
-
-## -- End of checks for FakeClass
-
-
-## --
-## Checks for class with spaces
-## --
 

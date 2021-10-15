@@ -12,7 +12,7 @@ URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
 ## Trait for
 
  * [Organization](Organization.md) (mixin) 
- * [Person](Person.md) (mixin) 
+ * [Person](Person.md) (mixin)  - A person, living or dead
  * [Place](Place.md) (mixin) 
 
 ## Referenced by Record

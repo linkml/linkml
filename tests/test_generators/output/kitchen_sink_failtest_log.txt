@@ -22,10 +22,12 @@ vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 
 Failed validating 'required' in schema['properties']['persons']['items']:
     {'additionalProperties': False,
-     'description': '',
+     'description': 'A person, living or dead',
      'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                   'type': 'array'},
-                    'age_in_years': {'maximum': 999,
+                    'age_in_years': {'description': 'number of years since '
+                                                    'birth',
+                                     'maximum': 999,
                                      'minimum': 0,
                                      'type': 'integer'},
                     'aliases': {'items': {'type': 'string'},
@@ -56,10 +58,12 @@ vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 
 Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
     {'additionalProperties': False,
-     'description': '',
+     'description': 'A person, living or dead',
      'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                   'type': 'array'},
-                    'age_in_years': {'maximum': 999,
+                    'age_in_years': {'description': 'number of years since '
+                                                    'birth',
+                                     'maximum': 999,
                                      'minimum': 0,
                                      'type': 'integer'},
                     'aliases': {'items': {'type': 'string'},
@@ -130,7 +134,10 @@ vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	-5 is less than the minimum of 0
 
 Failed validating 'minimum' in schema['properties']['persons']['items']['properties']['age_in_years']:
-    {'maximum': 999, 'minimum': 0, 'type': 'integer'}
+    {'description': 'number of years since birth',
+     'maximum': 999,
+     'minimum': 0,
+     'type': 'integer'}
 
 On instance['persons'][0]['age_in_years']:
     -5
@@ -144,7 +151,10 @@ vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 	5000 is greater than the maximum of 999
 
 Failed validating 'maximum' in schema['properties']['persons']['items']['properties']['age_in_years']:
-    {'maximum': 999, 'minimum': 0, 'type': 'integer'}
+    {'description': 'number of years since birth',
+     'maximum': 999,
+     'minimum': 0,
+     'type': 'integer'}
 
 On instance['persons'][0]['age_in_years']:
     5000
@@ -159,10 +169,12 @@ vException (expected=False: <class 'jsonschema.exceptions.ValidationError'>:
 
 Failed validating 'additionalProperties' in schema['properties']['persons']['items']:
     {'additionalProperties': False,
-     'description': '',
+     'description': 'A person, living or dead',
      'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                   'type': 'array'},
-                    'age_in_years': {'maximum': 999,
+                    'age_in_years': {'description': 'number of years since '
+                                                    'birth',
+                                     'maximum': 999,
                                      'minimum': 0,
                                      'type': 'integer'},
                     'aliases': {'items': {'type': 'string'},
@@ -237,6 +249,12 @@ Failed validating 'additionalProperties' in schema:
                               'required': [],
                               'title': 'BirthEvent',
                               'type': 'object'},
+               'ClassWithSpaces': {'additionalProperties': False,
+                                   'description': '',
+                                   'properties': {'slot_with_space_1': {'type': 'string'}},
+                                   'required': [],
+                                   'title': 'ClassWithSpaces',
+                                   'type': 'object'},
                'Company': {'additionalProperties': False,
                            'description': '',
                            'properties': {'aliases': {'items': {'type': 'string'},
@@ -273,7 +291,7 @@ Failed validating 'additionalProperties' in schema:
                                     'title': 'DiagnosisConcept',
                                     'type': 'object'},
                'DiagnosisType': {'description': '',
-                                 'enum': [],
+                                 'enum': ['TODO'],
                                  'title': 'DiagnosisType',
                                  'type': 'string'},
                'EmploymentEvent': {'additionalProperties': False,
@@ -355,10 +373,15 @@ Failed validating 'additionalProperties' in schema:
                                 'title': 'Organization',
                                 'type': 'object'},
                'Person': {'additionalProperties': False,
-                          'description': '',
+                          'description': 'A person, living or dead',
                           'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
                                                        'type': 'array'},
-                                         'age_in_years': {'maximum': 999,
+                                         'age_in_years': {'description': 'number '
+                                                                         'of '
+                                                                         'years '
+                                                                         'since '
+                                                                         'birth',
+                                                          'maximum': 999,
                                                           'minimum': 0,
                                                           'type': 'integer'},
                                          'aliases': {'items': {'type': 'string'},
@@ -402,6 +425,13 @@ Failed validating 'additionalProperties' in schema:
                                                'type': {'type': 'string'}},
                                 'required': [],
                                 'title': 'Relationship',
+                                'type': 'object'},
+               'SubclassTest': {'additionalProperties': False,
+                                'description': '',
+                                'properties': {'slot_with_space_1': {'type': 'string'},
+                                               'slot_with_space_2': {'$ref': '#/$defs/ClassWithSpaces'}},
+                                'required': [],
+                                'title': 'SubclassTest',
                                 'type': 'object'}},
      '$id': 'https://w3id.org/linkml/tests/kitchen_sink',
      '$schema': 'http://json-schema.org/draft-07/schema#',

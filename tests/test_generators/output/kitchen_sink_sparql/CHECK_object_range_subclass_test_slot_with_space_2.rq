@@ -16,27 +16,34 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX shex: <http://www.w3.org/ns/shex#>
 
-SELECT ?g ?s ?p WHERE {
- GRAPH ?g {
-  ?s rdf:type ks:FakeClass ;
-     ?p ?o .
-  FILTER ( ?p NOT IN (
-   ks:test_attribute,
-   rdf:type ))
+SELECT
+  ?check
+  ?graph
+  ?subject
+  ?predicate
+  ?object
+WHERE {
+ GRAPH ?graph {
+  ?subject rdf:type ks:SubclassTest ;
+     ?predicate ?object .
+  FILTER NOT EXISTS {
+    ?object rdf:type ?otype .
+    FILTER ( ?otype IN (
+      ks:ClassWithSpaces
+      , 
+      ks:SubclassTest
+      
+      ))
+  }
  }
+ VALUES ?check { linkml:range }
+ VALUES ?predicate { ks:slot_with_space_2  }
  
-} 
+}  
 
 
 
 
 
-
-
-## -- End of checks for FakeClass
-
-
-## --
-## Checks for class with spaces
-## --
+## -- End of checks for subclass test
 

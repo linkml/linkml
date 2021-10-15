@@ -33,12 +33,14 @@ And links, e.g to [Person](Person.md)
  * [Friend](Friend.md)
  * [Organization](Organization.md)
      * [Company](Company.md)
- * [Person](Person.md)
+ * [Person](Person.md) - A person, living or dead
  * [Place](Place.md)
  * [Relationship](Relationship.md)
      * [FamilialRelationship](FamilialRelationship.md)
  * [Activity](Activity.md) - a provence-generating activity
  * [Agent](Agent.md) - a provence-generating agent
+ * [ClassWithSpaces](ClassWithSpaces.md)
+     * [SubclassTest](SubclassTest.md)
 
 ### Mixins
 
@@ -50,9 +52,10 @@ And links, e.g to [Person](Person.md)
  * [acted on behalf of](acted_on_behalf_of.md)
  * [activity set](activity_set.md)
  * [addresses](addresses.md)
- * [age in years](age_in_years.md)
+ * [age in years](age_in_years.md) - number of years since birth
  * [agent set](agent_set.md)
  * [city](city.md)
+ * [➞slot with space 1](classWithSpaces__slot_with_space_1.md)
  * [➞ceo](company__ceo.md)
  * [➞activities](dataset__activities.md)
  * [➞companies](dataset__companies.md)
@@ -79,6 +82,7 @@ And links, e.g to [Person](Person.md)
      * [FamilialRelationship➞related to](FamilialRelationship_related_to.md)
  * [started at time](started_at_time.md)
  * [street](street.md)
+ * [➞slot with space 2](subclassTest__slot_with_space_2.md)
  * [type](type.md)
      * [FamilialRelationship➞type](FamilialRelationship_type.md)
  * [used](used.md)

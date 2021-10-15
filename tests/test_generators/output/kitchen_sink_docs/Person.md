@@ -2,7 +2,7 @@
 # Class: Person
 
 
-
+A person, living or dead
 
 URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
 
@@ -39,6 +39,7 @@ URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
      * Range: [MedicalEvent](MedicalEvent.md)
      * in subsets: (subset B)
  * [age in years](age_in_years.md)  <sub>0..1</sub>
+     * Description: number of years since birth
      * Range: [Integer](Integer.md)
      * in subsets: (subset A,subset B)
  * [addresses](addresses.md)  <sub>0..\*</sub>

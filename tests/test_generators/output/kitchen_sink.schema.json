@@ -92,6 +92,18 @@
          "title": "BirthEvent",
          "type": "object"
       },
+      "ClassWithSpaces": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "slot_with_space_1": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "ClassWithSpaces",
+         "type": "object"
+      },
       "Company": {
          "additionalProperties": false,
          "description": "",
@@ -181,7 +193,9 @@
       },
       "DiagnosisType": {
          "description": "",
-         "enum": [],
+         "enum": [
+            "TODO"
+         ],
          "title": "DiagnosisType",
          "type": "string"
       },
@@ -356,7 +370,7 @@
       },
       "Person": {
          "additionalProperties": false,
-         "description": "",
+         "description": "A person, living or dead",
          "properties": {
             "addresses": {
                "items": {
@@ -365,6 +379,7 @@
                "type": "array"
             },
             "age_in_years": {
+               "description": "number of years since birth",
                "maximum": 999,
                "minimum": 0,
                "type": "integer"
@@ -471,6 +486,21 @@
          },
          "required": [],
          "title": "Relationship",
+         "type": "object"
+      },
+      "SubclassTest": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "slot_with_space_1": {
+               "type": "string"
+            },
+            "slot_with_space_2": {
+               "$ref": "#/$defs/ClassWithSpaces"
+            }
+         },
+         "required": [],
+         "title": "SubclassTest",
          "type": "object"
       }
    },

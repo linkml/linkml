@@ -71,6 +71,14 @@ core:Agent CLOSED {
     )
 }
 
+<ClassWithSpaces>  (
+    CLOSED {
+       (  $<ClassWithSpaces_tes> <slot_with_space_1> @linkml:String ? ;
+          rdf:type [ <ClassWithSpaces> ] ?
+       )
+    } OR @<SubclassTest>
+)
+
 <Company> CLOSED {
     (  $<Company_tes> (  &<Organization_tes> ;
           rdf:type [ <Organization> ] ? ;
@@ -233,6 +241,15 @@ core:Agent CLOSED {
        )
     } OR @<FamilialRelationship>
 )
+
+<SubclassTest> CLOSED {
+    (  $<SubclassTest_tes> (  &<ClassWithSpaces_tes> ;
+          rdf:type [ <ClassWithSpaces> ] ? ;
+          <slot_with_space_2> @<ClassWithSpaces> ?
+       ) ;
+       rdf:type [ <SubclassTest> ] ?
+    )
+}
 
 <WithLocation> {
     (  $<WithLocation_tes> <in_location> @<Place> ? ;

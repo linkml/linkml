@@ -270,7 +270,12 @@
     {
       "name": "DiagnosisType",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisType",
-      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink"
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "permissible_values": [
+        {
+          "text": "TODO"
+        }
+      ]
     }
   ],
   "slots": [
@@ -438,6 +443,7 @@
     {
       "name": "age_in_years",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/age_in_years",
+      "description": "number of years since birth",
       "in_subset": [
         "subset_A",
         "subset_B"
@@ -773,6 +779,31 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "classWithSpaces__slot_with_space_1",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "range": "string",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1",
+      "alias": "slot_with_space_1",
+      "owner": "ClassWithSpaces",
+      "domain_of": [
+        "ClassWithSpaces"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "subclassTest__slot_with_space_2",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "range": "ClassWithSpaces",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_2",
+      "inlined": true,
+      "alias": "slot_with_space_2",
+      "owner": "SubclassTest",
+      "domain_of": [
+        "SubclassTest"
+      ],
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "Person_name",
       "definition_uri": "https://w3id.org/linkml/tests/core/name",
       "from_schema": "https://w3id.org/linkml/tests/core",
@@ -862,6 +893,7 @@
     {
       "name": "Person",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "description": "A person, living or dead",
       "in_subset": [
         "subset_A"
       ],
@@ -1166,6 +1198,43 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "ClassWithSpaces",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slots": [
+        "classWithSpaces__slot_with_space_1"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "slot_with_space_1",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces",
+      "@type": "ClassDefinition"
+    },
+    {
+      "name": "SubclassTest",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "is_a": "ClassWithSpaces",
+      "slots": [
+        "classWithSpaces__slot_with_space_1",
+        "subclassTest__slot_with_space_2"
+      ],
+      "slot_usage": {},
+      "attributes": [
+        {
+          "name": "slot_with_space_2",
+          "range": "ClassWithSpaces",
+          "@type": "SlotDefinition"
+        }
+      ],
+      "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "Activity",
       "definition_uri": "https://w3id.org/linkml/tests/core/Activity",
       "mappings": [
@@ -1206,9 +1275,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "Fri Oct 15 18:57:59 2021",
-  "source_file_size": 4640,
-  "generation_date": "2021-10-15 19:03",
+  "source_file_date": "Fri Oct 15 19:55:03 2021",
+  "source_file_size": 4945,
+  "generation_date": "2021-10-15 19:59",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

@@ -3,7 +3,9 @@ package org.sink.kitchen;
 import java.util.List;
 import lombok.*;
 
-
+/**
+  A person, living or dead
+**/
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class Person  {

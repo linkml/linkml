@@ -30,6 +30,11 @@ type BirthEvent
     inLocation: Place
   }
 
+type ClassWithSpaces
+  {
+    slotWithSpace1: String
+  }
+
 type Company
   {
     id: String!
@@ -153,6 +158,12 @@ type Relationship
     endedAtTime: Date
     relatedTo: String
     type: String
+  }
+
+type SubclassTest
+  {
+    slotWithSpace1: String
+    slotWithSpace2: ClassWithSpaces
   }
 
 interface WithLocation
