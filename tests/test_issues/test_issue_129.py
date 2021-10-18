@@ -31,9 +31,14 @@ class IssueJSONSchemaTypesTestCase(TestEnvironmentTestCase):
         # single-valued complex type, inlined
         assert props['has_d']['$ref'] == "#/$defs/D"
 
-        # multi-valued, inlined
+        # multi-valued, inlined_as_list
         assert props['has_ds']['type'] == 'array'
         assert props['has_ds']['items']['$ref'] == "#/$defs/D"
+
+        # multi-valued, inlined (as dict) #411
+        D_id_opt = props['has_ds2']['additionalProperties']['$ref'].replace('#/$defs/', '')
+        assert D_id_opt in defs
+        assert defs[D_id_opt]['required'] == []
 
         # single-valued, non-inlined (foreign key)
         assert props['parent']['type'] == "string"
