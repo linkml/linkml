@@ -406,7 +406,7 @@ from {model_path} import *
         for sqltable in self.sqlschema.tables.values():
             cols = sqltable.columns.values()
             if len(cols) == 0:
-                logging.warning(f'No columns for {t.name}')
+                logging.warning(f'No columns for {sqltable.name}')
                 continue
 
             var = sqltable.as_var()
