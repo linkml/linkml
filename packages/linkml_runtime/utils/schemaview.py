@@ -494,6 +494,19 @@ class SchemaView(object):
         """
         return _closure(lambda x: self.class_children(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive)
 
+    @lru_cache()
+    def slot_descendants(self, slot_name: SLOT_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[SlotDefinitionName]:
+        """
+        Closure of slot_children method
+
+        :param slot_name: query slot
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of descendants
+        :return: descendants slot names
+        """
+        return _closure(lambda x: self.slot_children(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive)
 
     @lru_cache()
     def class_roots(self, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
