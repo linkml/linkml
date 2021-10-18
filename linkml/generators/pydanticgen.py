@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
-from copy import copy, deepcopy
+from copy import deepcopy
 
 import click
 from jinja2 import Template
@@ -131,7 +131,9 @@ class PydanticGenerator(OOCodeGenerator):
             for a in list(c2.attributes.keys()):
                 del c2.attributes[a]
             for sn in sv.class_slots(cn):
-                s = sv.induced_slot(sn, cn)
+                # TODO: fix runtime, copy should not be necessary
+                s = deepcopy(sv.induced_slot(sn, cn))
+                logging.error(f'Induced slot {cn}.{sn} == {s.name} {s.range}')
                 s.name = underscore(s.name)
                 c2.attributes[s.name] = s
                 collection_key = None

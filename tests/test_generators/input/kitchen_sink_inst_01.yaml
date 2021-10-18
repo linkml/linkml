@@ -17,9 +17,11 @@ persons:
         diagnosis:
           id: CODE:D0001
           name: headache
+          in_code_system: DiseaseCodes
         procedure:
           id: CODE:P0001
           name: trepanation
+          in_code_system: ProcedureCodes
     addresses:
       - street: 1 foo street
         city: foo city
@@ -30,3 +32,8 @@ activities:
   - id: A:1
     started_at_time: 2019-01-01
     was_associated_with: Agent:987
+code_systems:
+  - id: DiseaseCodes
+    name: disease codes
+  - id: ProcedureCodes
+    name: disease codes
