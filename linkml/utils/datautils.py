@@ -60,6 +60,17 @@ def _get_context(schema) -> str:
     return ContextGenerator(schema).serialize()
 
 def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
+    """
+    Infer the class that should be at the root of the object tree
+
+    (Note this is distinct from the root of the class hierarchy)
+
+    If a class is explicitly designated with tree_root, use this.
+    Otherwise use the class that is not referenced as a range in any other class.
+    """
+    for c in sv.all_class().values():
+        if c.tree_root:
+            return c.name
     refs = defaultdict(int)
     for cn in sv.all_class().keys():
         for sn in sv.class_slots(cn):
