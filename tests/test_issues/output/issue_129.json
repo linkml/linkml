@@ -22,6 +22,11 @@
                },
                "type": "array"
             },
+            "has_ds2": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/D__identifier_optional"
+               }
+            },
             "has_prop": {
                "type": "boolean"
             },
@@ -57,6 +62,18 @@
          ],
          "title": "D",
          "type": "object"
+      },
+      "D__identifier_optional": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "D",
+         "type": "object"
       }
    },
    "$id": "http://example.org/sample/types",
@@ -80,6 +97,11 @@
             "$ref": "#/$defs/D"
          },
          "type": "array"
+      },
+      "has_ds2": {
+         "additionalProperties": {
+            "$ref": "#/$defs/D__identifier_optional"
+         }
       },
       "has_prop": {
          "type": "boolean"

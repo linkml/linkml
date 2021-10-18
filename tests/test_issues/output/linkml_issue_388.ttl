@@ -9,20 +9,20 @@
         <https://example.org/this/C3> ;
     linkml:default_prefix "this" ;
     linkml:default_range <https://example.org/this/my_str> ;
-    linkml:generation_date "2021-10-15 20:00"^^xsd:dateTime ;
+    linkml:generation_date "2021-10-18 01:27"^^xsd:dateTime ;
     linkml:id <https://w3id.org/linkml/examples/personinfo> ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "this" ;
-            linkml:prefix_reference <https://example.org/this/> ],
-        [ linkml:prefix_prefix "linkml" ;
+    linkml:prefixes [ linkml:prefix_prefix "linkml" ;
             linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "this" ;
+            linkml:prefix_reference <https://example.org/this/> ],
         [ linkml:prefix_prefix "other" ;
             linkml:prefix_reference <https://example.org/other/> ] ;
     linkml:slots <https://example.org/this/c1__a>,
         <https://example.org/this/c2__a>,
         <https://example.org/this/c3__a> ;
     linkml:source_file "linkml_issue_388.yaml" ;
-    linkml:source_file_date "Fri Oct 15 19:55:03 2021"^^xsd:dateTime ;
+    linkml:source_file_date "Mon Oct 18 01:20:49 2021"^^xsd:dateTime ;
     linkml:source_file_size 648 ;
     linkml:types <https://example.org/this/my_int>,
         <https://example.org/this/my_str> .
@@ -30,7 +30,7 @@
 <https://example.org/this/c1__a> a linkml:SlotDefinition ;
     skos:definition "this-a in the context of C1" ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
-    linkml:alias "a" ;
+    skos:prefLabel "a" ;
     linkml:domain_of <https://example.org/this/C1> ;
     linkml:owner <https://example.org/this/C1> ;
     linkml:range <https://example.org/this/my_str> ;
@@ -39,7 +39,7 @@
 <https://example.org/this/c2__a> a linkml:SlotDefinition ;
     skos:definition "this-a in the context of C2" ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
-    linkml:alias "a" ;
+    skos:prefLabel "a" ;
     linkml:domain_of <https://example.org/this/C2> ;
     linkml:owner <https://example.org/this/C2> ;
     linkml:range <https://example.org/this/my_int> ;
@@ -49,7 +49,7 @@
     skos:definition "other-a in the context of C3" ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     skos:mappingRelation <https://example.org/other/a> ;
-    linkml:alias "a" ;
+    skos:prefLabel "a" ;
     linkml:domain_of <https://example.org/this/C3> ;
     linkml:inlined true ;
     linkml:owner <https://example.org/this/C3> ;

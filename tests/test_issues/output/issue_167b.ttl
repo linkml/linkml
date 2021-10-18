@@ -18,22 +18,22 @@ ex:annotations_test a linkml:SchemaDefinition ;
     linkml:default_prefix "ex" ;
     linkml:default_range ex:string ;
     linkml:emit_prefixes "linkml" ;
-    linkml:generation_date "2021-06-07 18:06"^^xsd:dateTime ;
+    linkml:generation_date "2021-10-18 01:26"^^xsd:dateTime ;
     linkml:id <http://example.org/tests/issue167b> ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "ex" ;
-            linkml:prefix_reference ex: ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ] ;
+    linkml:prefixes [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "ex" ;
+            linkml:prefix_reference ex: ] ;
     linkml:slots ex:annotations,
         ex:extension_tag,
         ex:extension_value,
         ex:extensions ;
     linkml:source_file "issue_167b.yaml" ;
-    linkml:source_file_date "Mon Jun  7 18:02:49 2021"^^xsd:dateTime ;
+    linkml:source_file_date "Mon Oct 18 01:20:49 2021"^^xsd:dateTime ;
     linkml:source_file_size 818 ;
     linkml:types ex:boolean,
         ex:date,
@@ -170,11 +170,11 @@ ex:MyClass a linkml:ClassDefinition ;
     skos:definition "Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace" ;
     skos:inScheme <http://example.org/tests/issue167b> ;
     linkml:annotations [ a linkml:Annotation ;
-            linkml:tag ex:altLabel ;
-            linkml:value "some other label" ],
-        [ a linkml:Annotation ;
             linkml:tag skos:prefLabel ;
-            linkml:value "a label" ] ;
+            linkml:value "a label" ],
+        [ a linkml:Annotation ;
+            linkml:tag ex:altLabel ;
+            linkml:value "some other label" ] ;
     linkml:class_uri ex:MyClass ;
     linkml:definition_uri ex:MyClass ;
     linkml:slot_usage [ ] .
@@ -210,7 +210,7 @@ ex:annotations a linkml:SlotDefinition ;
 ex:extension_tag a linkml:SlotDefinition ;
     skos:definition "a tag associated with an extension" ;
     skos:inScheme linkml:extensions ;
-    linkml:alias "tag" ;
+    skos:prefLabel "tag" ;
     linkml:definition_uri linkml:extension_tag ;
     linkml:domain ex:Extension ;
     linkml:domain_of ex:Extension ;
@@ -223,7 +223,7 @@ ex:extension_tag a linkml:SlotDefinition ;
 ex:extension_value a linkml:SlotDefinition ;
     skos:definition "the actual annotation" ;
     skos:inScheme linkml:extensions ;
-    linkml:alias "value" ;
+    skos:prefLabel "value" ;
     linkml:definition_uri linkml:extension_value ;
     linkml:domain ex:Extension ;
     linkml:domain_of ex:Extension ;

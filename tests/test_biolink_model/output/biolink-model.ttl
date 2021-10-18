@@ -331,201 +331,201 @@ biolink:Biolink-Model a linkml:SchemaDefinition ;
         "skos",
         "xsd" ;
     linkml:enums biolink:logical_interpretation_enum ;
-    linkml:generation_date "2021-10-08 17:02"^^xsd:dateTime ;
+    linkml:generation_date "2021-10-18 01:24"^^xsd:dateTime ;
     linkml:imports linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "dct" ;
-            linkml:prefix_reference dct: ],
-        [ linkml:prefix_prefix "foaf" ;
-            linkml:prefix_reference foaf: ],
-        [ linkml:prefix_prefix "KEGG.RCLASS" ;
-            linkml:prefix_reference KEGG.RCLASS: ],
-        [ linkml:prefix_prefix "LOINC" ;
-            linkml:prefix_reference LOINC: ],
-        [ linkml:prefix_prefix "GTOPDB" ;
-            linkml:prefix_reference <https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId=> ],
-        [ linkml:prefix_prefix "isbn" ;
-            linkml:prefix_reference isbn: ],
-        [ linkml:prefix_prefix "schema" ;
-            linkml:prefix_reference schema: ],
-        [ linkml:prefix_prefix "ChemBank" ;
-            linkml:prefix_reference <http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid=> ],
-        [ linkml:prefix_prefix "CAID" ;
-            linkml:prefix_reference <http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=> ],
-        [ linkml:prefix_prefix "ICD0" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/ICD0_> ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ],
-        [ linkml:prefix_prefix "os" ;
-            linkml:prefix_reference <https://github.com/cmungall/owlstar/blob/master/owlstar.ttl> ],
-        [ linkml:prefix_prefix "HCPCS" ;
-            linkml:prefix_reference HCPCS: ],
-        [ linkml:prefix_prefix "OBAN" ;
-            linkml:prefix_reference OBAN: ],
-        [ linkml:prefix_prefix "DGIdb" ;
-            linkml:prefix_reference <https://www.dgidb.org/interaction_types> ],
-        [ linkml:prefix_prefix "Aeolus" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/Aeolus_> ],
-        [ linkml:prefix_prefix "biolink" ;
-            linkml:prefix_reference biolink: ],
-        [ linkml:prefix_prefix "PATO-PROPERTY" ;
-            linkml:prefix_reference PATO-PROPERTY: ],
-        [ linkml:prefix_prefix "GSID" ;
-            linkml:prefix_reference <https://scholar.google.com/citations?user=> ],
-        [ linkml:prefix_prefix "RXNORM" ;
-            linkml:prefix_reference RXNORM: ],
-        [ linkml:prefix_prefix "ScopusID" ;
-            linkml:prefix_reference <https://www.scopus.com/authid/detail.uri?authorId=> ],
-        [ linkml:prefix_prefix "SEMMEDDB" ;
-            linkml:prefix_reference <https://skr3.nlm.nih.gov/SemMedDB> ],
-        [ linkml:prefix_prefix "doi" ;
-            linkml:prefix_reference doi: ],
-        [ linkml:prefix_prefix "RTXKG1" ;
-            linkml:prefix_reference RTXKG1: ],
-        [ linkml:prefix_prefix "KEGG.ENZYME" ;
-            linkml:prefix_reference KEGG.RCLASS: ],
-        [ linkml:prefix_prefix "UMLSSG" ;
-            linkml:prefix_reference UMLSSG: ],
+    linkml:prefixes [ linkml:prefix_prefix "oboformat" ;
+            linkml:prefix_reference oboformat: ],
+        [ linkml:prefix_prefix "wgs" ;
+            linkml:prefix_reference <http://www.w3.org/2003/01/geo/wgs84_pos> ],
         [ linkml:prefix_prefix "CHEMBL.MECHANISM" ;
             linkml:prefix_reference CHEMBL.MECHANISM: ],
-        [ linkml:prefix_prefix "KEGG.GENE" ;
-            linkml:prefix_reference KEGG.RCLASS: ],
-        [ linkml:prefix_prefix "fabio" ;
-            linkml:prefix_reference fabio: ],
-        [ linkml:prefix_prefix "ORCID" ;
-            linkml:prefix_reference ORCID: ],
-        [ linkml:prefix_prefix "CTD" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/CTD_> ],
-        [ linkml:prefix_prefix "issn" ;
-            linkml:prefix_reference issn: ],
-        [ linkml:prefix_prefix "PHAROS" ;
-            linkml:prefix_reference <http://pharos.nih.gov/> ],
-        [ linkml:prefix_prefix "SIO" ;
-            linkml:prefix_reference <http://semanticscience.org/resource/SIO_> ],
-        [ linkml:prefix_prefix "interpro" ;
-            linkml:prefix_reference interpro: ],
-        [ linkml:prefix_prefix "NLMID" ;
-            linkml:prefix_reference <https://www.ncbi.nlm.nih.gov/nlmcatalog/?term=> ],
-        [ linkml:prefix_prefix "CPT" ;
-            linkml:prefix_reference CPT: ],
-        [ linkml:prefix_prefix "foodb.compound" ;
-            linkml:prefix_reference foodb.compound: ],
-        [ linkml:prefix_prefix "ResearchID" ;
-            linkml:prefix_reference ResearchID: ],
-        [ linkml:prefix_prefix "alliancegenome" ;
-            linkml:prefix_reference alliancegenome: ],
-        [ linkml:prefix_prefix "EDAM-OPERATION" ;
-            linkml:prefix_reference <http://edamontology.org/operation_> ],
-        [ linkml:prefix_prefix "OBOREL" ;
-            linkml:prefix_reference OBO:RO_ ],
-        [ linkml:prefix_prefix "PathWhiz" ;
-            linkml:prefix_reference PathWhiz: ],
-        [ linkml:prefix_prefix "gtpo" ;
-            linkml:prefix_reference gtpo: ],
-        [ linkml:prefix_prefix "GAMMA" ;
-            linkml:prefix_reference <http://translator.renci.org/GAMMA_> ],
-        [ linkml:prefix_prefix "EDAM-FORMAT" ;
-            linkml:prefix_reference <http://edamontology.org/format_> ],
-        [ linkml:prefix_prefix "UMLSSC" ;
-            linkml:prefix_reference UMLSSC: ],
-        [ linkml:prefix_prefix "WIKIDATA" ;
-            linkml:prefix_reference WIKIDATA: ],
-        [ linkml:prefix_prefix "prov" ;
-            linkml:prefix_reference prov: ],
-        [ linkml:prefix_prefix "MetaCyc" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/MetaCyc_> ],
-        [ linkml:prefix_prefix "EDAM-DATA" ;
-            linkml:prefix_reference <http://edamontology.org/data_> ],
-        [ linkml:prefix_prefix "WIKIDATA_PROPERTY" ;
-            linkml:prefix_reference WIKIDATA_PROPERTY: ],
-        [ linkml:prefix_prefix "RXCUI" ;
-            linkml:prefix_reference <https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm=> ],
-        [ linkml:prefix_prefix "MSigDB" ;
-            linkml:prefix_reference MSigDB: ],
-        [ linkml:prefix_prefix "HANCESTRO" ;
-            linkml:prefix_reference <http://www.ebi.ac.uk/ancestro/ancestro_> ],
-        [ linkml:prefix_prefix "UBERGRAPH" ;
-            linkml:prefix_reference UBERGRAPH: ],
-        [ linkml:prefix_prefix "INO" ;
-            linkml:prefix_reference OBO:INO_ ],
-        [ linkml:prefix_prefix "pav" ;
-            linkml:prefix_reference pav: ],
-        [ linkml:prefix_prefix "GOP" ;
-            linkml:prefix_reference GOP: ],
+        [ linkml:prefix_prefix "gff3" ;
+            linkml:prefix_reference gff3: ],
         [ linkml:prefix_prefix "CID" ;
             linkml:prefix_reference CID: ],
-        [ linkml:prefix_prefix "VMC" ;
-            linkml:prefix_reference VMC: ],
-        [ linkml:prefix_prefix "COAR_RESOURCE" ;
-            linkml:prefix_reference COAR_RESOURCE: ],
-        [ linkml:prefix_prefix "KEGG.BRITE" ;
+        [ linkml:prefix_prefix "CAID" ;
+            linkml:prefix_reference <http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=> ],
+        [ linkml:prefix_prefix "ExO" ;
+            linkml:prefix_reference OBO:ExO_ ],
+        [ linkml:prefix_prefix "EDAM-DATA" ;
+            linkml:prefix_reference <http://edamontology.org/data_> ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference pav: ],
+        [ linkml:prefix_prefix "KEGG.RCLASS" ;
             linkml:prefix_reference KEGG.RCLASS: ],
-        [ linkml:prefix_prefix "MI" ;
-            linkml:prefix_reference OBO:MI_ ],
-        [ linkml:prefix_prefix "REPODB" ;
-            linkml:prefix_reference REPODB: ],
-        [ linkml:prefix_prefix "dcat" ;
-            linkml:prefix_reference dcat: ],
-        [ linkml:prefix_prefix "ICD9" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/ICD9_> ],
+        [ linkml:prefix_prefix "RO" ;
+            linkml:prefix_reference OBO:RO_ ],
         [ linkml:prefix_prefix "hetio" ;
             linkml:prefix_reference <http://translator.ncats.nih.gov/hetio_> ],
-        [ linkml:prefix_prefix "WBVocab" ;
-            linkml:prefix_reference <http://bio2rdf.org/wormbase_vocabulary> ],
+        [ linkml:prefix_prefix "ICD0" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/ICD0_> ],
+        [ linkml:prefix_prefix "ORCID" ;
+            linkml:prefix_reference ORCID: ],
+        [ linkml:prefix_prefix "fabio" ;
+            linkml:prefix_reference fabio: ],
+        [ linkml:prefix_prefix "foodb.compound" ;
+            linkml:prefix_reference foodb.compound: ],
+        [ linkml:prefix_prefix "gpi" ;
+            linkml:prefix_reference gpi: ],
+        [ linkml:prefix_prefix "OBOREL" ;
+            linkml:prefix_reference OBO:RO_ ],
+        [ linkml:prefix_prefix "UMLSSG" ;
+            linkml:prefix_reference UMLSSG: ],
+        [ linkml:prefix_prefix "EDAM-TOPIC" ;
+            linkml:prefix_reference <http://edamontology.org/topic_> ],
+        [ linkml:prefix_prefix "HsapDv" ;
+            linkml:prefix_reference OBO:HsapDv_ ],
+        [ linkml:prefix_prefix "GSID" ;
+            linkml:prefix_reference <https://scholar.google.com/citations?user=> ],
+        [ linkml:prefix_prefix "UBERON_CORE" ;
+            linkml:prefix_reference UBERON_CORE: ],
+        [ linkml:prefix_prefix "GTOPDB" ;
+            linkml:prefix_reference <https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId=> ],
+        [ linkml:prefix_prefix "doi" ;
+            linkml:prefix_reference doi: ],
+        [ linkml:prefix_prefix "foaf" ;
+            linkml:prefix_reference foaf: ],
+        [ linkml:prefix_prefix "KEGG.BRITE" ;
+            linkml:prefix_reference KEGG.RCLASS: ],
+        [ linkml:prefix_prefix "PHAROS" ;
+            linkml:prefix_reference <http://pharos.nih.gov/> ],
+        [ linkml:prefix_prefix "isbn" ;
+            linkml:prefix_reference isbn: ],
+        [ linkml:prefix_prefix "GOP" ;
+            linkml:prefix_reference GOP: ],
+        [ linkml:prefix_prefix "isni" ;
+            linkml:prefix_reference isni: ],
+        [ linkml:prefix_prefix "MetaCyc" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/MetaCyc_> ],
+        [ linkml:prefix_prefix "UMLSSC" ;
+            linkml:prefix_reference UMLSSC: ],
+        [ linkml:prefix_prefix "NDDF" ;
+            linkml:prefix_reference NDDF: ],
+        [ linkml:prefix_prefix "DrugCentral" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/DrugCentral_> ],
+        [ linkml:prefix_prefix "SEMMEDDB" ;
+            linkml:prefix_reference <https://skr3.nlm.nih.gov/SemMedDB> ],
+        [ linkml:prefix_prefix "os" ;
+            linkml:prefix_reference <https://github.com/cmungall/owlstar/blob/master/owlstar.ttl> ],
+        [ linkml:prefix_prefix "KEGG.GENE" ;
+            linkml:prefix_reference KEGG.RCLASS: ],
+        [ linkml:prefix_prefix "RXCUI" ;
+            linkml:prefix_reference <https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm=> ],
+        [ linkml:prefix_prefix "CHADO" ;
+            linkml:prefix_reference CHADO: ],
+        [ linkml:prefix_prefix "biolink" ;
+            linkml:prefix_reference biolink: ],
+        [ linkml:prefix_prefix "prov" ;
+            linkml:prefix_reference prov: ],
+        [ linkml:prefix_prefix "MSigDB" ;
+            linkml:prefix_reference MSigDB: ],
+        [ linkml:prefix_prefix "RTXKG1" ;
+            linkml:prefix_reference RTXKG1: ],
+        [ linkml:prefix_prefix "EFO" ;
+            linkml:prefix_reference <http://www.ebi.ac.uk/efo/EFO_> ],
+        [ linkml:prefix_prefix "VANDF" ;
+            linkml:prefix_reference VANDF: ],
+        [ linkml:prefix_prefix "EDAM-FORMAT" ;
+            linkml:prefix_reference <http://edamontology.org/format_> ],
+        [ linkml:prefix_prefix "Aeolus" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/Aeolus_> ],
+        [ linkml:prefix_prefix "ICD9" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/ICD9_> ],
+        [ linkml:prefix_prefix "CTD" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/CTD_> ],
         [ linkml:prefix_prefix "SNPEFF" ;
             linkml:prefix_reference <http://translator.ncats.nih.gov/SNPEFF_> ],
-        [ linkml:prefix_prefix "ORPHA" ;
-            linkml:prefix_reference <http://www.orpha.net/ORDO/Orphanet_> ],
+        [ linkml:prefix_prefix "HANCESTRO" ;
+            linkml:prefix_reference <http://www.ebi.ac.uk/ancestro/ancestro_> ],
+        [ linkml:prefix_prefix "NLMID" ;
+            linkml:prefix_reference <https://www.ncbi.nlm.nih.gov/nlmcatalog/?term=> ],
+        [ linkml:prefix_prefix "KEGG.DGROUP" ;
+            linkml:prefix_reference KEGG.RCLASS: ],
+        [ linkml:prefix_prefix "DGIdb" ;
+            linkml:prefix_reference <https://www.dgidb.org/interaction_types> ],
+        [ linkml:prefix_prefix "gtpo" ;
+            linkml:prefix_reference gtpo: ],
+        [ linkml:prefix_prefix "LOINC" ;
+            linkml:prefix_reference LOINC: ],
+        [ linkml:prefix_prefix "WBVocab" ;
+            linkml:prefix_reference <http://bio2rdf.org/wormbase_vocabulary> ],
+        [ linkml:prefix_prefix "RXNORM" ;
+            linkml:prefix_reference RXNORM: ],
+        [ linkml:prefix_prefix "schema" ;
+            linkml:prefix_reference schema: ],
+        [ linkml:prefix_prefix "ECTO" ;
+            linkml:prefix_reference OBO:ECTO_ ],
+        [ linkml:prefix_prefix "PATO-PROPERTY" ;
+            linkml:prefix_reference PATO-PROPERTY: ],
+        [ linkml:prefix_prefix "ICD10" ;
+            linkml:prefix_reference <http://translator.ncats.nih.gov/ICD10_> ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "INO" ;
+            linkml:prefix_reference OBO:INO_ ],
+        [ linkml:prefix_prefix "GAMMA" ;
+            linkml:prefix_reference <http://translator.renci.org/GAMMA_> ],
+        [ linkml:prefix_prefix "UBERGRAPH" ;
+            linkml:prefix_reference UBERGRAPH: ],
+        [ linkml:prefix_prefix "GTEx" ;
+            linkml:prefix_reference GTEx: ],
         [ linkml:prefix_prefix "UMLSST" ;
             linkml:prefix_reference UMLSST: ],
         [ linkml:prefix_prefix "PDQ" ;
             linkml:prefix_reference PDQ: ],
-        [ linkml:prefix_prefix "gpi" ;
-            linkml:prefix_reference gpi: ],
-        [ linkml:prefix_prefix "UBERON_CORE" ;
-            linkml:prefix_reference UBERON_CORE: ],
-        [ linkml:prefix_prefix "CHADO" ;
-            linkml:prefix_reference CHADO: ],
-        [ linkml:prefix_prefix "gff3" ;
-            linkml:prefix_reference gff3: ],
-        [ linkml:prefix_prefix "ExO" ;
-            linkml:prefix_reference OBO:ExO_ ],
-        [ linkml:prefix_prefix "KEGG.DGROUP" ;
-            linkml:prefix_reference KEGG.RCLASS: ],
-        [ linkml:prefix_prefix "wgs" ;
-            linkml:prefix_reference <http://www.w3.org/2003/01/geo/wgs84_pos> ],
+        [ linkml:prefix_prefix "OBAN" ;
+            linkml:prefix_reference OBAN: ],
+        [ linkml:prefix_prefix "ChemBank" ;
+            linkml:prefix_reference <http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid=> ],
+        [ linkml:prefix_prefix "COAR_RESOURCE" ;
+            linkml:prefix_reference COAR_RESOURCE: ],
         [ linkml:prefix_prefix "medgen" ;
             linkml:prefix_reference medgen: ],
+        [ linkml:prefix_prefix "ResearchID" ;
+            linkml:prefix_reference ResearchID: ],
         [ linkml:prefix_prefix "qud" ;
             linkml:prefix_reference qud: ],
-        [ linkml:prefix_prefix "ECTO" ;
-            linkml:prefix_reference OBO:ECTO_ ],
-        [ linkml:prefix_prefix "DrugCentral" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/DrugCentral_> ],
-        [ linkml:prefix_prefix "GOREL" ;
-            linkml:prefix_reference OBO:GOREL_ ],
-        [ linkml:prefix_prefix "GTEx" ;
-            linkml:prefix_reference GTEx: ],
-        [ linkml:prefix_prefix "NDDF" ;
-            linkml:prefix_reference NDDF: ],
-        [ linkml:prefix_prefix "EFO" ;
-            linkml:prefix_reference <http://www.ebi.ac.uk/efo/EFO_> ],
-        [ linkml:prefix_prefix "ICD10" ;
-            linkml:prefix_reference <http://translator.ncats.nih.gov/ICD10_> ],
+        [ linkml:prefix_prefix "dct" ;
+            linkml:prefix_reference dct: ],
+        [ linkml:prefix_prefix "ScopusID" ;
+            linkml:prefix_reference <https://www.scopus.com/authid/detail.uri?authorId=> ],
+        [ linkml:prefix_prefix "REPODB" ;
+            linkml:prefix_reference REPODB: ],
+        [ linkml:prefix_prefix "KEGG.ENZYME" ;
+            linkml:prefix_reference KEGG.RCLASS: ],
         [ linkml:prefix_prefix "chembio" ;
             linkml:prefix_reference <http://translator.ncats.nih.gov/chembio_> ],
-        [ linkml:prefix_prefix "HsapDv" ;
-            linkml:prefix_reference OBO:HsapDv_ ],
-        [ linkml:prefix_prefix "VANDF" ;
-            linkml:prefix_reference VANDF: ],
-        [ linkml:prefix_prefix "isni" ;
-            linkml:prefix_reference isni: ],
-        [ linkml:prefix_prefix "oboformat" ;
-            linkml:prefix_reference oboformat: ],
-        [ linkml:prefix_prefix "EDAM-TOPIC" ;
-            linkml:prefix_reference <http://edamontology.org/topic_> ],
-        [ linkml:prefix_prefix "RO" ;
-            linkml:prefix_reference OBO:RO_ ] ;
+        [ linkml:prefix_prefix "dcat" ;
+            linkml:prefix_reference dcat: ],
+        [ linkml:prefix_prefix "WIKIDATA" ;
+            linkml:prefix_reference WIKIDATA: ],
+        [ linkml:prefix_prefix "alliancegenome" ;
+            linkml:prefix_reference alliancegenome: ],
+        [ linkml:prefix_prefix "HCPCS" ;
+            linkml:prefix_reference HCPCS: ],
+        [ linkml:prefix_prefix "MI" ;
+            linkml:prefix_reference OBO:MI_ ],
+        [ linkml:prefix_prefix "ORPHA" ;
+            linkml:prefix_reference <http://www.orpha.net/ORDO/Orphanet_> ],
+        [ linkml:prefix_prefix "EDAM-OPERATION" ;
+            linkml:prefix_reference <http://edamontology.org/operation_> ],
+        [ linkml:prefix_prefix "GOREL" ;
+            linkml:prefix_reference OBO:GOREL_ ],
+        [ linkml:prefix_prefix "WIKIDATA_PROPERTY" ;
+            linkml:prefix_reference WIKIDATA_PROPERTY: ],
+        [ linkml:prefix_prefix "CPT" ;
+            linkml:prefix_reference CPT: ],
+        [ linkml:prefix_prefix "SIO" ;
+            linkml:prefix_reference <http://semanticscience.org/resource/SIO_> ],
+        [ linkml:prefix_prefix "PathWhiz" ;
+            linkml:prefix_reference PathWhiz: ],
+        [ linkml:prefix_prefix "VMC" ;
+            linkml:prefix_reference VMC: ],
+        [ linkml:prefix_prefix "interpro" ;
+            linkml:prefix_reference interpro: ],
+        [ linkml:prefix_prefix "issn" ;
+            linkml:prefix_reference issn: ] ;
     linkml:slots biolink:actively_involved_in,
         biolink:address,
         biolink:affected_by,
@@ -1002,7 +1002,7 @@ biolink:Biolink-Model a linkml:SchemaDefinition ;
         biolink:xenologous_to,
         biolink:xref ;
     linkml:source_file "biolink-model.yaml" ;
-    linkml:source_file_date "Fri Oct  8 16:58:13 2021"^^xsd:dateTime ;
+    linkml:source_file_date "Mon Oct 18 01:20:49 2021"^^xsd:dateTime ;
     linkml:source_file_size 267853 ;
     linkml:subsets biolink:model_organism_database,
         biolink:samples,
@@ -1118,7 +1118,7 @@ biolink:agent_id a linkml:SlotDefinition ;
         gpi:DB_Object_ID,
         alliancegenome:primaryId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:id ;
     linkml:domain biolink:Agent ;
     linkml:domain_of biolink:Agent ;
@@ -1150,7 +1150,7 @@ biolink:agent_name a linkml:SlotDefinition ;
     ns1:mappingRelation rdfs:label ;
     ns1:narrowMatch dct:title,
         WIKIDATA_PROPERTY:P1476 ;
-    linkml:alias "name" ;
+    ns1:prefLabel "name" ;
     linkml:definition_uri biolink:name ;
     linkml:domain biolink:Agent ;
     linkml:domain_of biolink:Agent ;
@@ -1167,7 +1167,7 @@ biolink:anatomical_entity_to_anatomical_entity_ontogenic_association_object a li
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation ;
@@ -1191,7 +1191,7 @@ biolink:anatomical_entity_to_anatomical_entity_ontogenic_association_predicate a
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation ;
@@ -1213,7 +1213,7 @@ biolink:anatomical_entity_to_anatomical_entity_ontogenic_association_subject a l
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation ;
@@ -1235,7 +1235,7 @@ biolink:anatomical_entity_to_anatomical_entity_part_of_association_object a link
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation ;
@@ -1259,7 +1259,7 @@ biolink:anatomical_entity_to_anatomical_entity_part_of_association_predicate a l
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation ;
@@ -1281,7 +1281,7 @@ biolink:anatomical_entity_to_anatomical_entity_part_of_association_subject a lin
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation ;
@@ -1301,7 +1301,7 @@ biolink:article_iso_abbreviation a linkml:SlotDefinition ;
     dct:description "Optional value, if used locally as a convenience, is set to the iso abbreviation of the 'published in' parent." ;
     ns1:exactMatch WIKIDATA_PROPERTY:P1160 ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "iso abbreviation" ;
+    ns1:prefLabel "iso abbreviation" ;
     linkml:definition_uri biolink:iso_abbreviation ;
     linkml:domain biolink:Article ;
     linkml:domain_of biolink:Article ;
@@ -1316,7 +1316,7 @@ biolink:article_published_in a linkml:SlotDefinition ;
     dct:description "The enclosing parent serial containing the article should have industry-standard identifier from ISSN." ;
     ns1:exactMatch WIKIDATA_PROPERTY:P1433 ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "published in" ;
+    ns1:prefLabel "published in" ;
     linkml:definition_uri biolink:published_in ;
     linkml:domain biolink:Article ;
     linkml:domain_of biolink:Article ;
@@ -1337,7 +1337,7 @@ biolink:behavior_to_behavioral_feature_association_object a linkml:SlotDefinitio
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:BehaviorToBehavioralFeatureAssociation ;
     linkml:domain_of biolink:BehaviorToBehavioralFeatureAssociation ;
@@ -1359,7 +1359,7 @@ biolink:behavior_to_behavioral_feature_association_subject a linkml:SlotDefiniti
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:BehaviorToBehavioralFeatureAssociation ;
     linkml:domain_of biolink:BehaviorToBehavioralFeatureAssociation ;
@@ -1379,7 +1379,7 @@ biolink:book_chapter_published_in a linkml:SlotDefinition ;
     dct:description "The enclosing parent book containing the chapter should have industry-standard identifier from ISBN." ;
     ns1:exactMatch WIKIDATA_PROPERTY:P1433 ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "published in" ;
+    ns1:prefLabel "published in" ;
     linkml:definition_uri biolink:published_in ;
     linkml:domain biolink:BookChapter ;
     linkml:domain_of biolink:BookChapter ;
@@ -1401,7 +1401,7 @@ biolink:book_id a linkml:SlotDefinition ;
         gpi:DB_Object_ID,
         alliancegenome:primaryId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:id ;
     linkml:domain biolink:Book ;
     linkml:domain_of biolink:Book ;
@@ -1421,7 +1421,7 @@ biolink:book_type a linkml:SlotDefinition ;
         alliancegenome:soTermId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:type ;
-    linkml:alias "type" ;
+    ns1:prefLabel "type" ;
     linkml:definition_uri biolink:type ;
     linkml:domain biolink:Book ;
     linkml:domain_of biolink:Book ;
@@ -1439,7 +1439,7 @@ biolink:case_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:CaseToEntityAssociationMixin ;
     linkml:domain_of biolink:CaseToEntityAssociationMixin ;
@@ -1461,7 +1461,7 @@ biolink:cell_line_as_a_model_of_disease_association_subject a linkml:SlotDefinit
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:CellLineAsAModelOfDiseaseAssociation ;
     linkml:domain_of biolink:CellLineAsAModelOfDiseaseAssociation ;
@@ -1483,7 +1483,7 @@ biolink:cell_line_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:CellLineToEntityAssociationMixin ;
     linkml:domain_of biolink:CellLineToEntityAssociationMixin ;
@@ -1510,7 +1510,7 @@ biolink:chemical_formula_value a linkml:TypeDefinition ;
 biolink:chemical_to_chemical_derivation_association_catalyst_qualifier a linkml:SlotDefinition ;
     dct:description "this connects the derivation edge to the molecular entity that catalyzes the reaction that causes the subject chemical to transform into the object chemical." ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "catalyst qualifier" ;
+    ns1:prefLabel "catalyst qualifier" ;
     linkml:definition_uri biolink:catalyst_qualifier ;
     linkml:domain biolink:ChemicalToChemicalDerivationAssociation ;
     linkml:domain_of biolink:ChemicalToChemicalDerivationAssociation ;
@@ -1529,7 +1529,7 @@ biolink:chemical_to_chemical_derivation_association_object a linkml:SlotDefiniti
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ChemicalToChemicalDerivationAssociation ;
     linkml:domain_of biolink:ChemicalToChemicalDerivationAssociation ;
@@ -1553,7 +1553,7 @@ biolink:chemical_to_chemical_derivation_association_predicate a linkml:SlotDefin
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:ChemicalToChemicalDerivationAssociation ;
     linkml:domain_of biolink:ChemicalToChemicalDerivationAssociation ;
@@ -1575,7 +1575,7 @@ biolink:chemical_to_chemical_derivation_association_subject a linkml:SlotDefinit
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ChemicalToChemicalDerivationAssociation ;
     linkml:domain_of biolink:ChemicalToChemicalDerivationAssociation ;
@@ -1597,7 +1597,7 @@ biolink:chemical_to_disease_or_phenotypic_feature_association_object a linkml:Sl
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation ;
@@ -1619,7 +1619,7 @@ biolink:chemical_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ChemicalToEntityAssociationMixin ;
     linkml:domain_of biolink:ChemicalToEntityAssociationMixin ;
@@ -1641,7 +1641,7 @@ biolink:chemical_to_gene_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ChemicalToGeneAssociation ;
     linkml:domain_of biolink:ChemicalToGeneAssociation ;
@@ -1664,7 +1664,7 @@ biolink:chemical_to_pathway_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ChemicalToPathwayAssociation ;
     linkml:domain_of biolink:ChemicalToPathwayAssociation ;
@@ -1761,7 +1761,7 @@ biolink:clinical_finding_has_attribute a linkml:SlotDefinition ;
         <http://www.orpha.net/ORDO/Orphanet_C016>,
         <http://www.orpha.net/ORDO/Orphanet_C017>,
         CPT:has_possibly_included_panel_element ;
-    linkml:alias "has attribute" ;
+    ns1:prefLabel "has attribute" ;
     linkml:definition_uri biolink:has_attribute ;
     linkml:domain biolink:ClinicalFinding ;
     linkml:domain_of biolink:ClinicalFinding ;
@@ -1780,7 +1780,7 @@ biolink:clinical_measurement_has_attribute_type a linkml:SlotDefinition ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:narrowMatch LOINC:has_modality_type,
         LOINC:has_view_type ;
-    linkml:alias "has attribute type" ;
+    ns1:prefLabel "has attribute type" ;
     linkml:definition_uri biolink:has_attribute_type ;
     linkml:domain biolink:ClinicalMeasurement ;
     linkml:domain_of biolink:ClinicalMeasurement ;
@@ -1801,7 +1801,7 @@ biolink:contributor_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ContributorAssociation ;
     linkml:domain_of biolink:ContributorAssociation ;
@@ -1825,7 +1825,7 @@ biolink:contributor_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:ContributorAssociation ;
     linkml:domain_of biolink:ContributorAssociation ;
@@ -1845,7 +1845,7 @@ biolink:contributor_association_qualifiers a linkml:SlotDefinition ;
     dct:description "this field can be used to annotate special characteristics of an agent relationship, such as the fact that a given author agent of a publication is the 'corresponding author'" ;
     ns1:altLabel "qualifier" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "qualifiers" ;
+    ns1:prefLabel "qualifiers" ;
     linkml:definition_uri biolink:qualifiers ;
     linkml:domain biolink:ContributorAssociation ;
     linkml:domain_of biolink:ContributorAssociation ;
@@ -1866,7 +1866,7 @@ biolink:contributor_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ContributorAssociation ;
     linkml:domain_of biolink:ContributorAssociation ;
@@ -1888,7 +1888,7 @@ biolink:disease_or_phenotypic_feature_association_to_location_association_object
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:DiseaseOrPhenotypicFeatureAssociationToLocationAssociation ;
     linkml:domain_of biolink:DiseaseOrPhenotypicFeatureAssociationToLocationAssociation ;
@@ -1910,16 +1910,16 @@ biolink:disease_or_phenotypic_feature_to_entity_association_mixin_subject a link
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin ;
     linkml:domain_of biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin ;
     linkml:examples [ a linkml:Example ;
-            dct:description "abnormal brain ventricle size" ;
-            ns1:example "MP:0013229" ],
-        [ a linkml:Example ;
             dct:description "Ehlers-Danlos syndrome, vascular type" ;
-            ns1:example "MONDO:0017314" ] ;
+            ns1:example "MONDO:0017314" ],
+        [ a linkml:Example ;
+            dct:description "abnormal brain ventricle size" ;
+            ns1:example "MP:0013229" ] ;
     linkml:is_a biolink:subject ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ ns1:altLabel "annotation subject" ;
@@ -1938,7 +1938,7 @@ biolink:disease_or_phenotypic_feature_to_location_association_object a linkml:Sl
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:DiseaseOrPhenotypicFeatureToLocationAssociation ;
     linkml:domain_of biolink:DiseaseOrPhenotypicFeatureToLocationAssociation ;
@@ -1963,7 +1963,7 @@ biolink:disease_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:DiseaseToEntityAssociationMixin ;
     linkml:domain_of biolink:DiseaseToEntityAssociationMixin ;
@@ -1993,7 +1993,7 @@ biolink:drug_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:DrugToEntityAssociationMixin ;
     linkml:domain_of biolink:DrugToEntityAssociationMixin ;
@@ -2015,7 +2015,7 @@ biolink:drug_to_gene_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:DrugToGeneAssociation ;
     linkml:domain_of biolink:DrugToGeneAssociation ;
@@ -2038,7 +2038,7 @@ biolink:entity_to_disease_association_mixin_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:EntityToDiseaseAssociationMixin ;
     linkml:domain_of biolink:EntityToDiseaseAssociationMixin ;
@@ -2063,16 +2063,16 @@ biolink:entity_to_disease_or_phenotypic_feature_association_mixin_object a linkm
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:EntityToDiseaseOrPhenotypicFeatureAssociationMixin ;
     linkml:domain_of biolink:EntityToDiseaseOrPhenotypicFeatureAssociationMixin ;
     linkml:examples [ a linkml:Example ;
-            dct:description "Ehlers-Danlos syndrome, vascular type" ;
-            ns1:example "MONDO:0017314" ],
-        [ a linkml:Example ;
             dct:description "abnormal brain ventricle size" ;
-            ns1:example "MP:0013229" ] ;
+            ns1:example "MP:0013229" ],
+        [ a linkml:Example ;
+            dct:description "Ehlers-Danlos syndrome, vascular type" ;
+            ns1:example "MONDO:0017314" ] ;
     linkml:is_a biolink:object ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ ns1:altLabel "descriptor" ;
@@ -2091,7 +2091,7 @@ biolink:entity_to_exposure_event_association_mixin_object a linkml:SlotDefinitio
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:EntityToExposureEventAssociationMixin ;
     linkml:domain_of biolink:EntityToExposureEventAssociationMixin ;
@@ -2114,7 +2114,7 @@ biolink:entity_to_outcome_association_mixin_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:EntityToOutcomeAssociationMixin ;
     linkml:domain_of biolink:EntityToOutcomeAssociationMixin ;
@@ -2140,7 +2140,7 @@ biolink:entity_to_phenotypic_feature_association_mixin_description a linkml:Slot
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation dct:description ;
     ns1:narrowMatch gff3:Description ;
-    linkml:alias "description" ;
+    ns1:prefLabel "description" ;
     linkml:definition_uri biolink:description ;
     linkml:domain biolink:EntityToPhenotypicFeatureAssociationMixin ;
     linkml:domain_of biolink:EntityToPhenotypicFeatureAssociationMixin ;
@@ -2157,19 +2157,19 @@ biolink:entity_to_phenotypic_feature_association_mixin_object a linkml:SlotDefin
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:EntityToPhenotypicFeatureAssociationMixin ;
     linkml:domain_of biolink:EntityToPhenotypicFeatureAssociationMixin ;
     linkml:examples [ a linkml:Example ;
-            dct:description "axon morphology variant" ;
-            ns1:example "WBPhenotype:0000180" ],
-        [ a linkml:Example ;
             dct:description "Hyperkinesis" ;
             ns1:example "HP:0002487" ],
         [ a linkml:Example ;
             dct:description "abnormal circulating bilirubin level" ;
-            ns1:example "MP:0001569" ] ;
+            ns1:example "MP:0001569" ],
+        [ a linkml:Example ;
+            dct:description "axon morphology variant" ;
+            ns1:example "WBPhenotype:0000180" ] ;
     linkml:is_a biolink:object ;
     linkml:is_usage_slot true ;
     linkml:local_names [ linkml:ga4gh [ ns1:altLabel "descriptor" ;
@@ -2192,7 +2192,7 @@ biolink:exon_to_transcript_relationship_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ExonToTranscriptRelationship ;
     linkml:domain_of biolink:ExonToTranscriptRelationship ;
@@ -2214,7 +2214,7 @@ biolink:exon_to_transcript_relationship_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ExonToTranscriptRelationship ;
     linkml:domain_of biolink:ExonToTranscriptRelationship ;
@@ -2236,7 +2236,7 @@ biolink:exposure_event_to_entity_association_mixin_subject a linkml:SlotDefiniti
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ExposureEventToEntityAssociationMixin ;
     linkml:domain_of biolink:ExposureEventToEntityAssociationMixin ;
@@ -2259,7 +2259,7 @@ biolink:exposure_event_to_phenotypic_feature_association_subject a linkml:SlotDe
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ExposureEventToPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:ExposureEventToPhenotypicFeatureAssociation ;
@@ -2289,7 +2289,7 @@ biolink:gene_as_a_model_of_disease_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneAsAModelOfDiseaseAssociation ;
     linkml:domain_of biolink:GeneAsAModelOfDiseaseAssociation ;
@@ -2312,7 +2312,7 @@ biolink:gene_has_variant_that_contributes_to_disease_association_subject a linkm
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneHasVariantThatContributesToDiseaseAssociation ;
     linkml:domain_of biolink:GeneHasVariantThatContributesToDiseaseAssociation ;
@@ -2335,7 +2335,7 @@ biolink:gene_regulatory_relationship_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GeneRegulatoryRelationship ;
     linkml:domain_of biolink:GeneRegulatoryRelationship ;
@@ -2360,7 +2360,7 @@ biolink:gene_regulatory_relationship_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GeneRegulatoryRelationship ;
     linkml:domain_of biolink:GeneRegulatoryRelationship ;
@@ -2382,7 +2382,7 @@ biolink:gene_regulatory_relationship_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneRegulatoryRelationship ;
     linkml:domain_of biolink:GeneRegulatoryRelationship ;
@@ -2406,7 +2406,7 @@ biolink:gene_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToEntityAssociationMixin ;
     linkml:domain_of biolink:GeneToEntityAssociationMixin ;
@@ -2429,7 +2429,7 @@ biolink:gene_to_expression_site_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GeneToExpressionSiteAssociation ;
     linkml:domain_of biolink:GeneToExpressionSiteAssociation ;
@@ -2456,7 +2456,7 @@ biolink:gene_to_expression_site_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GeneToExpressionSiteAssociation ;
     linkml:domain_of biolink:GeneToExpressionSiteAssociation ;
@@ -2480,7 +2480,7 @@ biolink:gene_to_expression_site_association_quantifier_qualifier a linkml:SlotDe
         LOINC:measured_by,
         LOINC:property_of,
         <https://skr3.nlm.nih.gov/SemMedDBmeasures> ;
-    linkml:alias "quantifier qualifier" ;
+    ns1:prefLabel "quantifier qualifier" ;
     linkml:definition_uri biolink:quantifier_qualifier ;
     linkml:domain biolink:GeneToExpressionSiteAssociation ;
     linkml:domain_of biolink:GeneToExpressionSiteAssociation ;
@@ -2495,7 +2495,7 @@ biolink:gene_to_expression_site_association_quantifier_qualifier a linkml:SlotDe
 biolink:gene_to_expression_site_association_stage_qualifier a linkml:SlotDefinition ;
     dct:description "stage at which the gene is expressed in the site" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "stage qualifier" ;
+    ns1:prefLabel "stage qualifier" ;
     linkml:definition_uri biolink:stage_qualifier ;
     linkml:domain biolink:GeneToExpressionSiteAssociation ;
     linkml:domain_of biolink:GeneToExpressionSiteAssociation ;
@@ -2515,7 +2515,7 @@ biolink:gene_to_expression_site_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToExpressionSiteAssociation ;
     linkml:domain_of biolink:GeneToExpressionSiteAssociation ;
@@ -2540,7 +2540,7 @@ biolink:gene_to_gene_coexpression_association_predicate a linkml:SlotDefinition 
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GeneToGeneCoexpressionAssociation ;
     linkml:domain_of biolink:GeneToGeneCoexpressionAssociation ;
@@ -2565,7 +2565,7 @@ biolink:gene_to_gene_homology_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GeneToGeneHomologyAssociation ;
     linkml:domain_of biolink:GeneToGeneHomologyAssociation ;
@@ -2588,7 +2588,7 @@ biolink:gene_to_gene_product_relationship_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GeneToGeneProductRelationship ;
     linkml:domain_of biolink:GeneToGeneProductRelationship ;
@@ -2613,7 +2613,7 @@ biolink:gene_to_gene_product_relationship_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GeneToGeneProductRelationship ;
     linkml:domain_of biolink:GeneToGeneProductRelationship ;
@@ -2635,7 +2635,7 @@ biolink:gene_to_gene_product_relationship_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToGeneProductRelationship ;
     linkml:domain_of biolink:GeneToGeneProductRelationship ;
@@ -2657,7 +2657,7 @@ biolink:gene_to_go_term_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GeneToGoTermAssociation ;
     linkml:domain_of biolink:GeneToGoTermAssociation ;
@@ -2684,7 +2684,7 @@ biolink:gene_to_go_term_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToGoTermAssociation ;
     linkml:domain_of biolink:GeneToGoTermAssociation ;
@@ -2709,7 +2709,7 @@ biolink:gene_to_phenotypic_feature_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:GeneToPhenotypicFeatureAssociation ;
@@ -2736,7 +2736,7 @@ biolink:genomic_sequence_localization_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GenomicSequenceLocalization ;
     linkml:domain_of biolink:GenomicSequenceLocalization ;
@@ -2760,7 +2760,7 @@ biolink:genomic_sequence_localization_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GenomicSequenceLocalization ;
     linkml:domain_of biolink:GenomicSequenceLocalization ;
@@ -2783,7 +2783,7 @@ biolink:genomic_sequence_localization_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenomicSequenceLocalization ;
     linkml:domain_of biolink:GenomicSequenceLocalization ;
@@ -2805,7 +2805,7 @@ biolink:genotype_as_a_model_of_disease_association_subject a linkml:SlotDefiniti
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeAsAModelOfDiseaseAssociation ;
     linkml:domain_of biolink:GenotypeAsAModelOfDiseaseAssociation ;
@@ -2827,7 +2827,7 @@ biolink:genotype_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeToEntityAssociationMixin ;
     linkml:domain_of biolink:GenotypeToEntityAssociationMixin ;
@@ -2849,7 +2849,7 @@ biolink:genotype_to_gene_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GenotypeToGeneAssociation ;
     linkml:domain_of biolink:GenotypeToGeneAssociation ;
@@ -2872,7 +2872,7 @@ biolink:genotype_to_gene_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GenotypeToGeneAssociation ;
     linkml:domain_of biolink:GenotypeToGeneAssociation ;
@@ -2894,7 +2894,7 @@ biolink:genotype_to_gene_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeToGeneAssociation ;
     linkml:domain_of biolink:GenotypeToGeneAssociation ;
@@ -2916,7 +2916,7 @@ biolink:genotype_to_genotype_part_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GenotypeToGenotypePartAssociation ;
     linkml:domain_of biolink:GenotypeToGenotypePartAssociation ;
@@ -2940,7 +2940,7 @@ biolink:genotype_to_genotype_part_association_predicate a linkml:SlotDefinition 
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GenotypeToGenotypePartAssociation ;
     linkml:domain_of biolink:GenotypeToGenotypePartAssociation ;
@@ -2962,7 +2962,7 @@ biolink:genotype_to_genotype_part_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeToGenotypePartAssociation ;
     linkml:domain_of biolink:GenotypeToGenotypePartAssociation ;
@@ -2986,7 +2986,7 @@ biolink:genotype_to_phenotypic_feature_association_predicate a linkml:SlotDefini
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GenotypeToPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:GenotypeToPhenotypicFeatureAssociation ;
@@ -3008,7 +3008,7 @@ biolink:genotype_to_phenotypic_feature_association_subject a linkml:SlotDefiniti
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeToPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:GenotypeToPhenotypicFeatureAssociation ;
@@ -3030,7 +3030,7 @@ biolink:genotype_to_variant_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GenotypeToVariantAssociation ;
     linkml:domain_of biolink:GenotypeToVariantAssociation ;
@@ -3053,7 +3053,7 @@ biolink:genotype_to_variant_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GenotypeToVariantAssociation ;
     linkml:domain_of biolink:GenotypeToVariantAssociation ;
@@ -3075,7 +3075,7 @@ biolink:genotype_to_variant_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeToVariantAssociation ;
     linkml:domain_of biolink:GenotypeToVariantAssociation ;
@@ -3103,7 +3103,7 @@ biolink:macromolecular_machine_to_biological_process_association_object a linkml
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:MacromolecularMachineToBiologicalProcessAssociation ;
     linkml:domain_of biolink:MacromolecularMachineToBiologicalProcessAssociation ;
@@ -3125,7 +3125,7 @@ biolink:macromolecular_machine_to_cellular_component_association_object a linkml
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:MacromolecularMachineToCellularComponentAssociation ;
     linkml:domain_of biolink:MacromolecularMachineToCellularComponentAssociation ;
@@ -3147,7 +3147,7 @@ biolink:macromolecular_machine_to_entity_association_mixin_subject a linkml:Slot
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:MacromolecularMachineToEntityAssociationMixin ;
     linkml:domain_of biolink:MacromolecularMachineToEntityAssociationMixin ;
@@ -3169,7 +3169,7 @@ biolink:macromolecular_machine_to_molecular_activity_association_object a linkml
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:MacromolecularMachineToMolecularActivityAssociation ;
     linkml:domain_of biolink:MacromolecularMachineToMolecularActivityAssociation ;
@@ -3191,7 +3191,7 @@ biolink:material_sample_derivation_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:MaterialSampleDerivationAssociation ;
     linkml:domain_of biolink:MaterialSampleDerivationAssociation ;
@@ -3215,7 +3215,7 @@ biolink:material_sample_derivation_association_predicate a linkml:SlotDefinition
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:MaterialSampleDerivationAssociation ;
     linkml:domain_of biolink:MaterialSampleDerivationAssociation ;
@@ -3237,7 +3237,7 @@ biolink:material_sample_derivation_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:MaterialSampleDerivationAssociation ;
     linkml:domain_of biolink:MaterialSampleDerivationAssociation ;
@@ -3259,7 +3259,7 @@ biolink:material_sample_to_entity_association_mixin_subject a linkml:SlotDefinit
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:MaterialSampleToEntityAssociationMixin ;
     linkml:domain_of biolink:MaterialSampleToEntityAssociationMixin ;
@@ -3283,7 +3283,7 @@ biolink:model_to_disease_association_mixin_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:ModelToDiseaseAssociationMixin ;
     linkml:domain_of biolink:ModelToDiseaseAssociationMixin ;
@@ -3305,7 +3305,7 @@ biolink:model_to_disease_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:ModelToDiseaseAssociationMixin ;
     linkml:domain_of biolink:ModelToDiseaseAssociationMixin ;
@@ -3326,7 +3326,7 @@ biolink:molecular_activity_enabled_by a linkml:SlotDefinition ;
     oboInOwl:inSubset biolink:translator_minimal ;
     ns1:exactMatch OBO:RO_0002333 ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "enabled by" ;
+    ns1:prefLabel "enabled by" ;
     linkml:definition_uri biolink:enabled_by ;
     linkml:domain biolink:MolecularActivity ;
     linkml:domain_of biolink:MolecularActivity ;
@@ -3361,7 +3361,7 @@ biolink:molecular_activity_has_input a linkml:SlotDefinition ;
         OBO:SNOMED_uses_energy,
         OBO:SNOMED_uses_substance,
         PathWhiz:has_left_element ;
-    linkml:alias "has input" ;
+    ns1:prefLabel "has input" ;
     linkml:definition_uri biolink:has_input ;
     linkml:domain biolink:MolecularActivity ;
     linkml:domain_of biolink:MolecularActivity ;
@@ -3391,7 +3391,7 @@ biolink:molecular_activity_has_output a linkml:SlotDefinition ;
         OBO:RO_0002588,
         OBO:RO_0004008,
         PathWhiz:has_right_element ;
-    linkml:alias "has output" ;
+    ns1:prefLabel "has output" ;
     linkml:definition_uri biolink:has_output ;
     linkml:domain biolink:MolecularActivity ;
     linkml:domain_of biolink:MolecularActivity ;
@@ -3410,7 +3410,7 @@ biolink:organism_taxon_to_entity_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:OrganismTaxonToEntityAssociation ;
     linkml:domain_of biolink:OrganismTaxonToEntityAssociation ;
@@ -3432,7 +3432,7 @@ biolink:organism_taxon_to_environment_association_object a linkml:SlotDefinition
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:OrganismTaxonToEnvironmentAssociation ;
     linkml:domain_of biolink:OrganismTaxonToEnvironmentAssociation ;
@@ -3457,7 +3457,7 @@ biolink:organism_taxon_to_environment_association_predicate a linkml:SlotDefinit
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:OrganismTaxonToEnvironmentAssociation ;
     linkml:domain_of biolink:OrganismTaxonToEnvironmentAssociation ;
@@ -3479,7 +3479,7 @@ biolink:organism_taxon_to_environment_association_subject a linkml:SlotDefinitio
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:OrganismTaxonToEnvironmentAssociation ;
     linkml:domain_of biolink:OrganismTaxonToEnvironmentAssociation ;
@@ -3499,7 +3499,7 @@ biolink:organism_taxon_to_environment_association_subject a linkml:SlotDefinitio
 biolink:organism_taxon_to_organism_taxon_interaction_associated_environmental_context a linkml:SlotDefinition ;
     dct:description "the environment in which the two taxa interact" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "associated environmental context" ;
+    ns1:prefLabel "associated environmental context" ;
     linkml:definition_uri biolink:associated_environmental_context ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonInteraction ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonInteraction ;
@@ -3516,7 +3516,7 @@ biolink:organism_taxon_to_organism_taxon_interaction_object a linkml:SlotDefinit
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonInteraction ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonInteraction ;
@@ -3541,7 +3541,7 @@ biolink:organism_taxon_to_organism_taxon_interaction_predicate a linkml:SlotDefi
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonInteraction ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonInteraction ;
@@ -3563,7 +3563,7 @@ biolink:organism_taxon_to_organism_taxon_interaction_subject a linkml:SlotDefini
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonInteraction ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonInteraction ;
@@ -3586,7 +3586,7 @@ biolink:organism_taxon_to_organism_taxon_specialization_object a linkml:SlotDefi
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonSpecialization ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonSpecialization ;
@@ -3611,7 +3611,7 @@ biolink:organism_taxon_to_organism_taxon_specialization_predicate a linkml:SlotD
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonSpecialization ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonSpecialization ;
@@ -3633,7 +3633,7 @@ biolink:organism_taxon_to_organism_taxon_specialization_subject a linkml:SlotDef
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonSpecialization ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonSpecialization ;
@@ -3656,7 +3656,7 @@ biolink:organismal_entity_as_a_model_of_disease_association_subject a linkml:Slo
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:OrganismalEntityAsAModelOfDiseaseAssociation ;
     linkml:domain_of biolink:OrganismalEntityAsAModelOfDiseaseAssociation ;
@@ -3679,7 +3679,7 @@ biolink:pairwise_molecular_interaction_id a linkml:SlotDefinition ;
         gpi:DB_Object_ID,
         alliancegenome:primaryId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:id ;
     linkml:domain biolink:PairwiseMolecularInteraction ;
     linkml:domain_of biolink:PairwiseMolecularInteraction ;
@@ -3702,7 +3702,7 @@ biolink:pairwise_molecular_interaction_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:PairwiseMolecularInteraction ;
     linkml:domain_of biolink:PairwiseMolecularInteraction ;
@@ -3726,7 +3726,7 @@ biolink:pairwise_molecular_interaction_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:PairwiseMolecularInteraction ;
     linkml:domain_of biolink:PairwiseMolecularInteraction ;
@@ -3745,7 +3745,7 @@ biolink:pairwise_molecular_interaction_predicate a linkml:SlotDefinition ;
 biolink:pairwise_molecular_interaction_relation a linkml:SlotDefinition ;
     dct:description "interaction relationship type" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "relation" ;
+    ns1:prefLabel "relation" ;
     linkml:definition_uri biolink:relation ;
     linkml:domain biolink:PairwiseMolecularInteraction ;
     linkml:domain_of biolink:PairwiseMolecularInteraction ;
@@ -3771,7 +3771,7 @@ biolink:pairwise_molecular_interaction_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:PairwiseMolecularInteraction ;
     linkml:domain_of biolink:PairwiseMolecularInteraction ;
@@ -3793,7 +3793,7 @@ biolink:population_to_population_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:PopulationToPopulationAssociation ;
     linkml:domain_of biolink:PopulationToPopulationAssociation ;
@@ -3816,7 +3816,7 @@ biolink:population_to_population_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:PopulationToPopulationAssociation ;
     linkml:domain_of biolink:PopulationToPopulationAssociation ;
@@ -3838,7 +3838,7 @@ biolink:population_to_population_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:PopulationToPopulationAssociation ;
     linkml:domain_of biolink:PopulationToPopulationAssociation ;
@@ -3860,7 +3860,7 @@ biolink:sequence_variant_modulates_treatment_association_object a linkml:SlotDef
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:SequenceVariantModulatesTreatmentAssociation ;
     linkml:domain_of biolink:SequenceVariantModulatesTreatmentAssociation ;
@@ -3882,7 +3882,7 @@ biolink:sequence_variant_modulates_treatment_association_subject a linkml:SlotDe
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:SequenceVariantModulatesTreatmentAssociation ;
     linkml:domain_of biolink:SequenceVariantModulatesTreatmentAssociation ;
@@ -3905,7 +3905,7 @@ biolink:serial_id a linkml:SlotDefinition ;
         gpi:DB_Object_ID,
         alliancegenome:primaryId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:id ;
     linkml:domain biolink:Serial ;
     linkml:domain_of biolink:Serial ;
@@ -3925,7 +3925,7 @@ biolink:serial_type a linkml:SlotDefinition ;
         alliancegenome:soTermId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:type ;
-    linkml:alias "type" ;
+    ns1:prefLabel "type" ;
     linkml:definition_uri biolink:type ;
     linkml:domain biolink:Serial ;
     linkml:domain_of biolink:Serial ;
@@ -4018,7 +4018,7 @@ biolink:socioeconomic_exposure_has_attribute a linkml:SlotDefinition ;
         <http://www.orpha.net/ORDO/Orphanet_C016>,
         <http://www.orpha.net/ORDO/Orphanet_C017>,
         CPT:has_possibly_included_panel_element ;
-    linkml:alias "has attribute" ;
+    ns1:prefLabel "has attribute" ;
     linkml:definition_uri biolink:has_attribute ;
     linkml:domain biolink:SocioeconomicExposure ;
     linkml:domain_of biolink:SocioeconomicExposure ;
@@ -4055,7 +4055,7 @@ biolink:transcript_to_gene_relationship_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:TranscriptToGeneRelationship ;
     linkml:domain_of biolink:TranscriptToGeneRelationship ;
@@ -4077,7 +4077,7 @@ biolink:transcript_to_gene_relationship_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:TranscriptToGeneRelationship ;
     linkml:domain_of biolink:TranscriptToGeneRelationship ;
@@ -4108,7 +4108,7 @@ biolink:variant_as_a_model_of_disease_association_subject a linkml:SlotDefinitio
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:VariantAsAModelOfDiseaseAssociation ;
     linkml:domain_of biolink:VariantAsAModelOfDiseaseAssociation ;
@@ -4130,7 +4130,7 @@ biolink:variant_to_entity_association_mixin_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:VariantToEntityAssociationMixin ;
     linkml:domain_of biolink:VariantToEntityAssociationMixin ;
@@ -4160,7 +4160,7 @@ biolink:variant_to_gene_expression_association_predicate a linkml:SlotDefinition
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:VariantToGeneExpressionAssociation ;
     linkml:domain_of biolink:VariantToGeneExpressionAssociation ;
@@ -4182,7 +4182,7 @@ biolink:variant_to_phenotypic_feature_association_subject a linkml:SlotDefinitio
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:VariantToPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:VariantToPhenotypicFeatureAssociation ;
@@ -4202,7 +4202,7 @@ biolink:variant_to_population_association_has_count a linkml:SlotDefinition ;
     dct:description "number in object population that carry a particular allele, aka allele count" ;
     ns1:exactMatch LOINC:has_count ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "has count" ;
+    ns1:prefLabel "has count" ;
     linkml:definition_uri biolink:has_count ;
     linkml:domain biolink:VariantToPopulationAssociation ;
     linkml:domain_of biolink:VariantToPopulationAssociation ;
@@ -4219,7 +4219,7 @@ biolink:variant_to_population_association_has_count a linkml:SlotDefinition ;
 biolink:variant_to_population_association_has_quotient a linkml:SlotDefinition ;
     dct:description "frequency of allele in population, expressed as a number with allele divided by number in reference population, aka allele frequency" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "has quotient" ;
+    ns1:prefLabel "has quotient" ;
     linkml:definition_uri biolink:has_quotient ;
     linkml:domain biolink:VariantToPopulationAssociation ;
     linkml:domain_of biolink:VariantToPopulationAssociation ;
@@ -4235,7 +4235,7 @@ biolink:variant_to_population_association_has_quotient a linkml:SlotDefinition ;
 biolink:variant_to_population_association_has_total a linkml:SlotDefinition ;
     dct:description "number all populations that carry a particular allele, aka allele number" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "has total" ;
+    ns1:prefLabel "has total" ;
     linkml:definition_uri biolink:has_total ;
     linkml:domain biolink:VariantToPopulationAssociation ;
     linkml:domain_of biolink:VariantToPopulationAssociation ;
@@ -4255,7 +4255,7 @@ biolink:variant_to_population_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:VariantToPopulationAssociation ;
     linkml:domain_of biolink:VariantToPopulationAssociation ;
@@ -4280,7 +4280,7 @@ biolink:variant_to_population_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:VariantToPopulationAssociation ;
     linkml:domain_of biolink:VariantToPopulationAssociation ;
@@ -5571,7 +5571,7 @@ biolink:association_id a linkml:SlotDefinition ;
     dct:description "A unique identifier for an association" ;
     oboInOwl:inSubset biolink:translator_minimal ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:association_id ;
     linkml:deprecated "This slot is deprecated in favor of 'id' slot." ;
     linkml:deprecated_element_has_exact_replacement biolink:id ;
@@ -5614,7 +5614,7 @@ biolink:cell_line_to_disease_or_phenotypic_feature_association_subject a linkml:
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:CellLineToDiseaseOrPhenotypicFeatureAssociation ;
     linkml:domain_of biolink:CellLineToDiseaseOrPhenotypicFeatureAssociation ;
@@ -5645,7 +5645,7 @@ biolink:chemical_to_chemical_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:ChemicalToChemicalAssociation ;
     linkml:domain_of biolink:ChemicalToChemicalAssociation ;
@@ -5706,7 +5706,7 @@ biolink:genotype_to_disease_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GenotypeToDiseaseAssociation ;
     linkml:domain_of biolink:GenotypeToDiseaseAssociation ;
@@ -5733,7 +5733,7 @@ biolink:genotype_to_disease_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:GenotypeToDiseaseAssociation ;
     linkml:domain_of biolink:GenotypeToDiseaseAssociation ;
@@ -5755,7 +5755,7 @@ biolink:genotype_to_disease_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GenotypeToDiseaseAssociation ;
     linkml:domain_of biolink:GenotypeToDiseaseAssociation ;
@@ -5824,7 +5824,7 @@ biolink:narrative_text a linkml:TypeDefinition ;
 biolink:organism_taxon_has_taxonomic_rank a linkml:SlotDefinition ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation WIKIDATA:P105 ;
-    linkml:alias "has taxonomic rank" ;
+    ns1:prefLabel "has taxonomic rank" ;
     linkml:domain biolink:OrganismTaxon ;
     linkml:domain_of biolink:OrganismTaxon ;
     linkml:inlined true ;
@@ -5869,7 +5869,7 @@ biolink:organism_taxon_subclass_of a linkml:SlotDefinition ;
         OBO:SNOMED_has_dose_form,
         OBO:intersection_of,
         rdfs:subPropertyOf ;
-    linkml:alias "subclass of" ;
+    ns1:prefLabel "subclass of" ;
     linkml:definition_uri biolink:subclass_of ;
     linkml:domain biolink:OrganismTaxon ;
     linkml:domain_of biolink:OrganismTaxon ;
@@ -5890,7 +5890,7 @@ biolink:pairwise_gene_to_gene_interaction_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:PairwiseGeneToGeneInteraction ;
     linkml:domain_of biolink:PairwiseGeneToGeneInteraction ;
@@ -5910,7 +5910,7 @@ biolink:pairwise_gene_to_gene_interaction_predicate a linkml:SlotDefinition ;
 biolink:pairwise_gene_to_gene_interaction_relation a linkml:SlotDefinition ;
     dct:description "interaction relationship type" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "relation" ;
+    ns1:prefLabel "relation" ;
     linkml:definition_uri biolink:relation ;
     linkml:domain biolink:PairwiseGeneToGeneInteraction ;
     linkml:domain_of biolink:PairwiseGeneToGeneInteraction ;
@@ -5930,7 +5930,7 @@ biolink:pairwise_gene_to_gene_interaction_relation a linkml:SlotDefinition ;
 biolink:sequence_variant_has_biological_sequence a linkml:SlotDefinition ;
     dct:description "The state of the sequence w.r.t a reference sequence" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "has biological sequence" ;
+    ns1:prefLabel "has biological sequence" ;
     linkml:definition_uri biolink:has_biological_sequence ;
     linkml:domain biolink:SequenceVariant ;
     linkml:domain_of biolink:SequenceVariant ;
@@ -5944,7 +5944,7 @@ biolink:sequence_variant_has_biological_sequence a linkml:SlotDefinition ;
 biolink:sequence_variant_has_gene a linkml:SlotDefinition ;
     dct:description "Each allele can be associated with any number of genes" ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "has gene" ;
+    ns1:prefLabel "has gene" ;
     linkml:definition_uri biolink:has_gene ;
     linkml:domain biolink:SequenceVariant ;
     linkml:domain_of biolink:SequenceVariant ;
@@ -5963,16 +5963,16 @@ biolink:sequence_variant_id a linkml:SlotDefinition ;
         gpi:DB_Object_ID,
         alliancegenome:primaryId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:id ;
     linkml:domain biolink:SequenceVariant ;
     linkml:domain_of biolink:SequenceVariant ;
     linkml:examples [ a linkml:Example ;
-            dct:description "ti282a allele from ZFIN" ;
-            ns1:example "ZFIN:ZDB-ALT-980203-1091" ],
-        [ a linkml:Example ;
             dct:description "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)" ;
-            ns1:example "ClinVarVariant:17681" ] ;
+            ns1:example "ClinVarVariant:17681" ],
+        [ a linkml:Example ;
+            dct:description "ti282a allele from ZFIN" ;
+            ns1:example "ZFIN:ZDB-ALT-980203-1091" ] ;
     linkml:identifier true ;
     linkml:is_a biolink:id ;
     linkml:is_usage_slot true ;
@@ -6024,7 +6024,7 @@ biolink:variant_to_disease_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:VariantToDiseaseAssociation ;
     linkml:domain_of biolink:VariantToDiseaseAssociation ;
@@ -6051,7 +6051,7 @@ biolink:variant_to_disease_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:VariantToDiseaseAssociation ;
     linkml:domain_of biolink:VariantToDiseaseAssociation ;
@@ -6073,7 +6073,7 @@ biolink:variant_to_disease_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:VariantToDiseaseAssociation ;
     linkml:domain_of biolink:VariantToDiseaseAssociation ;
@@ -6098,7 +6098,7 @@ biolink:variant_to_gene_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:VariantToGeneAssociation ;
     linkml:domain_of biolink:VariantToGeneAssociation ;
@@ -6122,7 +6122,7 @@ biolink:variant_to_gene_association_predicate a linkml:SlotDefinition ;
         owl:annotatedProperty ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:predicate ;
-    linkml:alias "predicate" ;
+    ns1:prefLabel "predicate" ;
     linkml:definition_uri biolink:predicate ;
     linkml:domain biolink:VariantToGeneAssociation ;
     linkml:domain_of biolink:VariantToGeneAssociation ;
@@ -6774,7 +6774,7 @@ biolink:anatomical_entity_to_anatomical_entity_association_object a linkml:SlotD
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityAssociation ;
@@ -6796,7 +6796,7 @@ biolink:anatomical_entity_to_anatomical_entity_association_subject a linkml:Slot
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:AnatomicalEntityToAnatomicalEntityAssociation ;
     linkml:domain_of biolink:AnatomicalEntityToAnatomicalEntityAssociation ;
@@ -7411,7 +7411,7 @@ biolink:gene_expression_mixin_quantifier_qualifier a linkml:SlotDefinition ;
         LOINC:measured_by,
         LOINC:property_of,
         <https://skr3.nlm.nih.gov/SemMedDBmeasures> ;
-    linkml:alias "quantifier qualifier" ;
+    ns1:prefLabel "quantifier qualifier" ;
     linkml:definition_uri biolink:quantifier_qualifier ;
     linkml:domain biolink:GeneExpressionMixin ;
     linkml:domain_of biolink:GeneExpressionMixin ;
@@ -7429,7 +7429,7 @@ biolink:gene_to_disease_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToDiseaseAssociation ;
     linkml:domain_of biolink:GeneToDiseaseAssociation ;
@@ -8265,7 +8265,7 @@ biolink:molecular_entity_to_entity_association_mixin_subject a linkml:SlotDefini
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:MolecularEntityToEntityAssociationMixin ;
     linkml:domain_of biolink:MolecularEntityToEntityAssociationMixin ;
@@ -8349,7 +8349,7 @@ biolink:organism_taxon_to_organism_taxon_association_object a linkml:SlotDefinit
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonAssociation ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonAssociation ;
@@ -8371,7 +8371,7 @@ biolink:organism_taxon_to_organism_taxon_association_subject a linkml:SlotDefini
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:OrganismTaxonToOrganismTaxonAssociation ;
     linkml:domain_of biolink:OrganismTaxonToOrganismTaxonAssociation ;
@@ -9224,11 +9224,11 @@ biolink:entity_positively_regulates_entity a linkml:SlotDefinition ;
     linkml:inherited true ;
     linkml:is_a biolink:entity_regulates_entity ;
     linkml:local_names [ a linkml:LocalName ;
-            ns1:altLabel "activity directly positively regulates activity of" ;
-            linkml:local_name_source "ro" ],
-        [ a linkml:LocalName ;
             ns1:altLabel "positively regulates" ;
-            linkml:local_name_source "translator" ] ;
+            linkml:local_name_source "translator" ],
+        [ a linkml:LocalName ;
+            ns1:altLabel "activity directly positively regulates activity of" ;
+            linkml:local_name_source "ro" ] ;
     linkml:mixins biolink:positively_regulates ;
     linkml:multivalued true ;
     linkml:owner biolink:entity_positively_regulates_entity ;
@@ -9861,7 +9861,7 @@ biolink:sequence_feature_relationship_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:SequenceFeatureRelationship ;
     linkml:domain_of biolink:SequenceFeatureRelationship ;
@@ -9883,7 +9883,7 @@ biolink:sequence_feature_relationship_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:SequenceFeatureRelationship ;
     linkml:domain_of biolink:SequenceFeatureRelationship ;
@@ -11144,7 +11144,7 @@ biolink:functional_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:FunctionalAssociation ;
     linkml:domain_of biolink:FunctionalAssociation ;
@@ -11174,7 +11174,7 @@ biolink:functional_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:FunctionalAssociation ;
     linkml:domain_of biolink:FunctionalAssociation ;
@@ -11200,7 +11200,7 @@ biolink:gene_to_gene_association_object a linkml:SlotDefinition ;
         owl:annotatedTarget ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:object ;
-    linkml:alias "object" ;
+    ns1:prefLabel "object" ;
     linkml:definition_uri biolink:object ;
     linkml:domain biolink:GeneToGeneAssociation ;
     linkml:domain_of biolink:GeneToGeneAssociation ;
@@ -11223,7 +11223,7 @@ biolink:gene_to_gene_association_subject a linkml:SlotDefinition ;
         owl:annotatedSource ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:subject ;
-    linkml:alias "subject" ;
+    ns1:prefLabel "subject" ;
     linkml:definition_uri biolink:subject ;
     linkml:domain biolink:GeneToGeneAssociation ;
     linkml:domain_of biolink:GeneToGeneAssociation ;
@@ -11371,7 +11371,7 @@ biolink:macromolecular_machine_mixin_name a linkml:SlotDefinition ;
     ns1:mappingRelation rdfs:label ;
     ns1:narrowMatch dct:title,
         WIKIDATA_PROPERTY:P1476 ;
-    linkml:alias "name" ;
+    ns1:prefLabel "name" ;
     linkml:definition_uri biolink:name ;
     linkml:domain biolink:MacromolecularMachineMixin ;
     linkml:domain_of biolink:MacromolecularMachineMixin ;
@@ -11433,7 +11433,7 @@ biolink:publication_id a linkml:SlotDefinition ;
         gpi:DB_Object_ID,
         alliancegenome:primaryId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "id" ;
+    ns1:prefLabel "id" ;
     linkml:definition_uri biolink:id ;
     linkml:domain biolink:Publication ;
     linkml:domain_of biolink:Publication ;
@@ -11459,7 +11459,7 @@ biolink:publication_name a linkml:SlotDefinition ;
     ns1:mappingRelation rdfs:label ;
     ns1:narrowMatch dct:title,
         WIKIDATA_PROPERTY:P1476 ;
-    linkml:alias "name" ;
+    ns1:prefLabel "name" ;
     linkml:definition_uri biolink:name ;
     linkml:domain biolink:Publication ;
     linkml:domain_of biolink:Publication ;
@@ -11474,7 +11474,7 @@ biolink:publication_pages a linkml:SlotDefinition ;
     dct:description "When a 2-tuple of page numbers are provided, they represent the start and end page of the publication within its parent publication context. For books, this may be set to the total number of pages of the book." ;
     ns1:exactMatch WIKIDATA_PROPERTY:P304 ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "pages" ;
+    ns1:prefLabel "pages" ;
     linkml:definition_uri biolink:pages ;
     linkml:domain biolink:Publication ;
     linkml:domain_of biolink:Publication ;
@@ -11493,7 +11493,7 @@ biolink:publication_type a linkml:SlotDefinition ;
         alliancegenome:soTermId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation dct:type ;
-    linkml:alias "type" ;
+    ns1:prefLabel "type" ;
     linkml:definition_uri biolink:type ;
     linkml:domain biolink:Publication ;
     linkml:domain_of biolink:Publication ;
@@ -11970,11 +11970,11 @@ biolink:entity_regulates_entity a linkml:SlotDefinition ;
     linkml:inherited true ;
     linkml:is_a biolink:affects ;
     linkml:local_names [ a linkml:LocalName ;
-            ns1:altLabel "regulates" ;
-            linkml:local_name_source "translator" ],
-        [ a linkml:LocalName ;
             ns1:altLabel "activity directly regulates activity of" ;
-            linkml:local_name_source "ro" ] ;
+            linkml:local_name_source "ro" ],
+        [ a linkml:LocalName ;
+            ns1:altLabel "regulates" ;
+            linkml:local_name_source "translator" ] ;
     linkml:mixins biolink:regulates ;
     linkml:multivalued true ;
     linkml:owner biolink:entity_regulates_entity ;
@@ -12389,10 +12389,10 @@ biolink:PopulationOfIndividualOrganisms a linkml:ClassDefinition ;
     linkml:is_a biolink:OrganismalEntity ;
     linkml:local_names [ a linkml:LocalName ;
             ns1:altLabel "population" ;
-            linkml:local_name_source "agr" ],
+            linkml:local_name_source "ga4gh" ],
         [ a linkml:LocalName ;
             ns1:altLabel "population" ;
-            linkml:local_name_source "ga4gh" ] ;
+            linkml:local_name_source "agr" ] ;
     linkml:mixins biolink:ThingWithTaxon ;
     linkml:slot_usage [ ] ;
     linkml:slots biolink:description,
@@ -14597,7 +14597,7 @@ biolink:attribute_name a linkml:SlotDefinition ;
     ns1:mappingRelation rdfs:label ;
     ns1:narrowMatch dct:title,
         WIKIDATA_PROPERTY:P1476 ;
-    linkml:alias "name" ;
+    ns1:prefLabel "name" ;
     linkml:definition_uri biolink:name ;
     linkml:domain biolink:Attribute ;
     linkml:domain_of biolink:Attribute ;
@@ -14701,7 +14701,7 @@ biolink:organismal_entity_has_attribute a linkml:SlotDefinition ;
         <http://www.orpha.net/ORDO/Orphanet_C016>,
         <http://www.orpha.net/ORDO/Orphanet_C017>,
         CPT:has_possibly_included_panel_element ;
-    linkml:alias "has attribute" ;
+    ns1:prefLabel "has attribute" ;
     linkml:definition_uri biolink:has_attribute ;
     linkml:domain biolink:OrganismalEntity ;
     linkml:domain_of biolink:OrganismalEntity ;
@@ -15538,11 +15538,11 @@ biolink:SequenceVariant a linkml:ClassDefinition ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:note "This class is for modeling the specific state at a locus. A single DBSNP rs ID could correspond to more than one sequence variants (e.g CIViC:1252 and CIViC:1253, two distinct BRCA2 alleles for rs28897743)" ;
     linkml:alt_descriptions [ a linkml:AltDescription ;
-            dct:description "A contiguous change at a Location" ;
-            linkml:source "VMC" ],
-        [ a linkml:AltDescription ;
             dct:description "An entity that describes a single affected, endogenous allele. These can be of any type that matches that definition" ;
-            linkml:source "AGR" ] ;
+            linkml:source "AGR" ],
+        [ a linkml:AltDescription ;
+            dct:description "A contiguous change at a Location" ;
+            linkml:source "VMC" ] ;
     linkml:class_uri biolink:SequenceVariant ;
     linkml:definition_uri biolink:SequenceVariant ;
     linkml:id_prefixes "CAID",
@@ -15892,7 +15892,7 @@ This field is multi-valued. It should include values for ancestors of the biolin
 In an RDF database, nodes will typically have an rdf:type triples. This can be to the most specific biolink class, or potentially to a class more specific than something in biolink. For example, a sequence feature `f` may have a rdf:type assertion to a SO class such as TF_binding_site, which is more specific than anything in biolink. Here we would have categories {biolink:GenomicEntity, biolink:MolecularEntity, biolink:NamedThing}""" ;
     oboInOwl:inSubset biolink:translator_minimal ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "category" ;
+    ns1:prefLabel "category" ;
     linkml:definition_uri biolink:category ;
     linkml:domain biolink:Association ;
     linkml:domain_of biolink:Association ;
@@ -15937,7 +15937,7 @@ biolink:association_type a linkml:SlotDefinition ;
         alliancegenome:soTermId ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
     ns1:mappingRelation rdf:type ;
-    linkml:alias "type" ;
+    ns1:prefLabel "type" ;
     linkml:definition_uri biolink:association_type,
         biolink:type ;
     linkml:deprecated "This slot is deprecated in favor of 'category' slot." ;
@@ -16027,11 +16027,11 @@ biolink:predicate a linkml:SlotDefinition ;
     linkml:domain_of biolink:Association ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            ns1:altLabel "predicate" ;
-            linkml:local_name_source "translator" ],
-        [ a linkml:LocalName ;
             ns1:altLabel "annotation predicate" ;
-            linkml:local_name_source "ga4gh" ] ;
+            linkml:local_name_source "ga4gh" ],
+        [ a linkml:LocalName ;
+            ns1:altLabel "predicate" ;
+            linkml:local_name_source "translator" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:predicate_type ;
     linkml:required true ;
@@ -16045,7 +16045,7 @@ This field is multi-valued. It should include values for ancestors of the biolin
 In an RDF database, nodes will typically have an rdf:type triples. This can be to the most specific biolink class, or potentially to a class more specific than something in biolink. For example, a sequence feature `f` may have a rdf:type assertion to a SO class such as TF_binding_site, which is more specific than anything in biolink. Here we would have categories {biolink:GenomicEntity, biolink:MolecularEntity, biolink:NamedThing}""" ;
     oboInOwl:inSubset biolink:translator_minimal ;
     ns1:inScheme <https://w3id.org/biolink/biolink-model> ;
-    linkml:alias "category" ;
+    ns1:prefLabel "category" ;
     linkml:definition_uri biolink:category ;
     linkml:domain biolink:NamedThing ;
     linkml:domain_of biolink:NamedThing ;
@@ -16120,11 +16120,11 @@ biolink:object a linkml:SlotDefinition ;
     linkml:domain_of biolink:Association ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            ns1:altLabel "descriptor" ;
-            linkml:local_name_source "ga4gh" ],
-        [ a linkml:LocalName ;
             ns1:altLabel "node with incoming relationship" ;
-            linkml:local_name_source "neo4j" ] ;
+            linkml:local_name_source "neo4j" ],
+        [ a linkml:LocalName ;
+            ns1:altLabel "descriptor" ;
+            linkml:local_name_source "ga4gh" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:NamedThing ;
     linkml:required true ;
@@ -16258,11 +16258,11 @@ biolink:subject a linkml:SlotDefinition ;
     linkml:domain_of biolink:Association ;
     linkml:is_a biolink:association_slot ;
     linkml:local_names [ a linkml:LocalName ;
-            ns1:altLabel "annotation subject" ;
-            linkml:local_name_source "ga4gh" ],
-        [ a linkml:LocalName ;
             ns1:altLabel "node with outgoing relationship" ;
-            linkml:local_name_source "neo4j" ] ;
+            linkml:local_name_source "neo4j" ],
+        [ a linkml:LocalName ;
+            ns1:altLabel "annotation subject" ;
+            linkml:local_name_source "ga4gh" ] ;
     linkml:owner biolink:Association ;
     linkml:range biolink:NamedThing ;
     linkml:required true ;
