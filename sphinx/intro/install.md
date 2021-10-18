@@ -19,17 +19,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 The latest version can always be installed with:
 
 ```bash
-python -m pip install linkml
+pip install linkml
 ```
-
-## Install with Pipenv
-
-We can use [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) to install the package for local testing as shown in the following code block. Some IDE's like PyCharm also have direct [support](https://www.jetbrains.com/help/pycharm/pipenv.html) for pipenv.
-
-```bash
-pipenv install --dev -e .
-```
-
 
 ## Alternative protocol: Use Docker
 
