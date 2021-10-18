@@ -568,10 +568,6 @@ class SchemaView(object):
             e = self.get_subset(element, imports=imports)
         return e
 
-    def class_rules(self, class_name: ClassDefinitionName) -> List[ClassRule]:
-        cls = self.get_class(class_name)
-        return cls.rules
-
 
     def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False) -> str:
         """
