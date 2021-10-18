@@ -96,6 +96,3 @@ tests/test_biolink_model/source/graphviz/
 
 # Test config
 tests/test_config.ini
-
-# Don't lock
-Pipfile.lock
