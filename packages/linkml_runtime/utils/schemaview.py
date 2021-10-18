@@ -2,7 +2,7 @@ import os
 import uuid
 import logging
 from functools import lru_cache
-from copy import copy
+from copy import copy, deepcopy
 from collections import defaultdict
 from typing import Mapping, Tuple
 from linkml_runtime.utils.namespaces import Namespaces
@@ -136,7 +136,7 @@ class SchemaView(object):
         return schema
 
     @lru_cache()
-    def imports_closure(self, traverse=True) -> List[SchemaDefinitionName]:
+    def imports_closure(self, traverse=True, inject_metadata=True) -> List[SchemaDefinitionName]:
         """
         Return all imports
 
@@ -162,7 +162,12 @@ class SchemaView(object):
             for i in s.imports:
                 if i not in visited:
                     todo.append(i)
+        if inject_metadata:
+            for s in self.schema_map.values():
+                for x in {**s.classes, **s.enums, **s.slots, **s.subsets}.values():
+                    x.from_schema = s.id
         return closure
+
 
     @lru_cache()
     def all_schema(self, imports: True) -> List[SchemaDefinition]:
@@ -290,10 +295,12 @@ class SchemaView(object):
     def _get_dict(self, slot_name: str, imports=True) -> Dict:
         schemas = self.all_schema(imports)
         d = {}
+        # iterate through all schemas and merge the list together
         for s in schemas:
             # get the value of element name from the schema, if empty, return empty dictionary.
             d1 = getattr(s, slot_name, {})
             d = {**d, **d1}
+
         return d
 
     @lru_cache()
@@ -303,6 +310,8 @@ class SchemaView(object):
         :return: name of schema in which element is defined
         """
         ix = self.element_by_schema_map()
+        if element_name not in ix:
+            raise Exception(f'Element {element_name} not in any schema')
         return ix[element_name]
 
     @lru_cache()
@@ -343,6 +352,7 @@ class SchemaView(object):
                         # slot name is ambiguous, no results
                         return None
                     slot = copy(c.attributes[slot_name])
+                    slot.from_schema = c.from_schema
                     slot.owner = c.name
         if strict and slot in None:
             raise Exception(f'No such slot as "{slot_name}"')
@@ -584,8 +594,13 @@ class SchemaView(object):
         else:
             raise Exception(f'Must be class or slot or type: {e}')
         if uri is None or native:
-            schema = self.schema_map[self.in_schema(e.name)]
-            ns = self.namespaces()
+            if e.from_schema is not None:
+                schema = next(sc for sc in self.schema_map.values() if sc.id == e.from_schema)
+                if schema == None:
+                    raise Exception(f'Cannot find {e.from_schema} in schema_map')
+            else:
+                logging.warning(f'from_schema not populated for element {e.name}')
+                schema = self.schema_map[self.in_schema(e.name)]
             pfx = schema.default_prefix
             uri = f'{pfx}:{e_name}'
         if expand:
@@ -731,7 +746,7 @@ class SchemaView(object):
         cls = self.get_class(class_name, imports)
         islot = None
         if slot is not None:
-            islot = copy(slot)
+            islot = deepcopy(slot)
         else:
             for an in self.class_ancestors(class_name):
                 a = self.get_class(an, imports)
@@ -769,7 +784,7 @@ class SchemaView(object):
                     v = self.schema.default_range
             if v is not None:
                 setattr(islot, metaslot_name, v)
-        return islot
+        return deepcopy(islot)
 
     @lru_cache()
     def class_induced_slots(self, class_name: CLASS_NAME = None, imports=True) -> List[SlotDefinition]:

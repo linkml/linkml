@@ -2,7 +2,7 @@ import os
 import unittest
 import logging
 
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.schemaops import roll_up, roll_down
@@ -25,11 +25,11 @@ class SchemaViewTestCase(unittest.TestCase):
         all_cls = view.all_classes()
         logging.debug(f'n_cls = {len(all_cls)}')
 
-        assert list(view.annotation_dict('is current').values()) == ['bar']
-        logging.debug(view.annotation_dict('employed at'))
-        element = view.get_element('employed at')
+        assert list(view.annotation_dict(SlotDefinitionName('is current')).values()) == ['bar']
+        logging.debug(view.annotation_dict(SlotDefinitionName('employed at')))
+        element = view.get_element(SlotDefinitionName('employed at'))
         logging.debug(element.annotations)
-        element = view.get_element('has employment history')
+        element = view.get_element(SlotDefinitionName('has employment history'))
         logging.debug(element.annotations)
 
         if True:
@@ -37,6 +37,7 @@ class SchemaViewTestCase(unittest.TestCase):
                 logging.info(f'SN = {sn} RANGE={s.range}')
             # this section is mostly for debugging
             for cn in all_cls.keys():
+                logging.debug(f'{cn} FROM SCHEMA = {view.get_class(cn).from_schema}')
                 logging.debug(f'{cn} PARENTS = {view.class_parents(cn)}')
                 logging.debug(f'{cn} ANCS = {view.class_ancestors(cn)}')
                 logging.debug(f'{cn} CHILDREN = {view.class_children(cn)}')
@@ -89,6 +90,7 @@ class SchemaViewTestCase(unittest.TestCase):
             islot = view.induced_slot('aliases', c)
             assert islot.multivalued is True
             self.assertEqual(islot.owner, c, 'owner does not match')
+            self.assertEqual(view.get_uri(islot, expand=True), 'https://w3id.org/linkml/tests/kitchen_sink/aliases')
 
         assert view.get_identifier_slot('Company').name == 'id'
         assert view.get_identifier_slot('Thing').name == 'id'
