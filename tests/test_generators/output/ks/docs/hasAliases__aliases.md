@@ -24,3 +24,10 @@ None &#8594;  <sub>0..\*</sub> [String](types/String.md)
  * [Organization](Organization.md)
  * [Person](Person.md)
  * [Place](Place.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | skos:altLabel |
+

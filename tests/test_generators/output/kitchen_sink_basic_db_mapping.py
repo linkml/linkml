@@ -47,6 +47,10 @@ tbl_BirthEvent = Table('BirthEvent', metadata,
 tbl_class_with_spaces = Table('class_with_spaces', metadata, 
     Column('slot_with_space_1', Text),
 )
+tbl_CodeSystem = Table('CodeSystem', metadata, 
+    Column('id', Text),
+    Column('name', Text),
+)
 tbl_Company = Table('Company', metadata, 
     Column('id', Text),
     Column('name', Text),
@@ -56,21 +60,25 @@ tbl_Company = Table('Company', metadata,
 tbl_Concept = Table('Concept', metadata, 
     Column('id', Text),
     Column('name', Text),
+    Column('in_code_system', Text),
 )
 tbl_Dataset = Table('Dataset', metadata, 
     Column('persons', Text),
     Column('companies', Text),
     Column('activities', Text),
+    Column('code_systems', Text),
 )
 tbl_DiagnosisConcept = Table('DiagnosisConcept', metadata, 
     Column('id', Text),
     Column('name', Text),
+    Column('in_code_system', Text),
 )
 tbl_EmploymentEvent = Table('EmploymentEvent', metadata, 
     Column('started_at_time', Text),
     Column('ended_at_time', Text),
     Column('is_current', Text),
     Column('employed_at', Text),
+    Column('type', Text),
 )
 tbl_Event = Table('Event', metadata, 
     Column('started_at_time', Text),
@@ -125,6 +133,7 @@ tbl_Place = Table('Place', metadata,
 tbl_ProcedureConcept = Table('ProcedureConcept', metadata, 
     Column('id', Text),
     Column('name', Text),
+    Column('in_code_system', Text),
 )
 tbl_Relationship = Table('Relationship', metadata, 
     Column('started_at_time', Text),
@@ -145,6 +154,8 @@ mapper_registry.map_imperatively(Agent, tbl_agent, properties={
 mapper_registry.map_imperatively(BirthEvent, tbl_BirthEvent, properties={
 })
 mapper_registry.map_imperatively(ClassWithSpaces, tbl_class_with_spaces, properties={
+})
+mapper_registry.map_imperatively(CodeSystem, tbl_CodeSystem, properties={
 })
 mapper_registry.map_imperatively(Company, tbl_Company, properties={
 })

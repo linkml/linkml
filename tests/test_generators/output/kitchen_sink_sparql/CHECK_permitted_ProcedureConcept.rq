@@ -10,6 +10,9 @@ PREFIX CODE: <http://example.org/code/>
 PREFIX ROR: <http://example.org/ror/>
 PREFIX A: <http://example.org/activities/>
 PREFIX P: <http://example.org/person/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX bizcodes: <https://example.org/bizcodes/>
+PREFIX schema: <http://schema.org/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX core: <https://w3id.org/linkml/tests/core/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
@@ -23,6 +26,7 @@ SELECT ?g ?s ?p WHERE {
   FILTER ( ?p NOT IN (
    core:id,
    core:name,
+   ks:in_code_system,
    rdf:type ))
  }
  
@@ -35,11 +39,4 @@ SELECT ?g ?s ?p WHERE {
 
 
 
-
-## -- End of checks for ProcedureConcept
-
-
-## --
-## Checks for Event
-## --
 

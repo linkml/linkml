@@ -27,7 +27,7 @@ CREATE TABLE class_with_spaces (
 	PRIMARY KEY (slot_with_space_1)
 );
 
-CREATE TABLE "Concept" (
+CREATE TABLE "CodeSystem" (
 	id TEXT NOT NULL, 
 	name TEXT, 
 	PRIMARY KEY (id)
@@ -37,13 +37,8 @@ CREATE TABLE "Dataset" (
 	persons TEXT, 
 	companies TEXT, 
 	activities TEXT, 
-	PRIMARY KEY (persons, companies, activities)
-);
-
-CREATE TABLE "DiagnosisConcept" (
-	id TEXT NOT NULL, 
-	name TEXT, 
-	PRIMARY KEY (id)
+	code_systems TEXT, 
+	PRIMARY KEY (persons, companies, activities, code_systems)
 );
 
 CREATE TABLE "Event" (
@@ -73,12 +68,6 @@ CREATE TABLE "Person" (
 );
 
 CREATE TABLE "Place" (
-	id TEXT NOT NULL, 
-	name TEXT, 
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE "ProcedureConcept" (
 	id TEXT NOT NULL, 
 	name TEXT, 
 	PRIMARY KEY (id)
@@ -123,6 +112,22 @@ CREATE TABLE "Company" (
 	FOREIGN KEY(ceo) REFERENCES "Person" (id)
 );
 
+CREATE TABLE "Concept" (
+	id TEXT NOT NULL, 
+	name TEXT, 
+	in_code_system TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(in_code_system) REFERENCES "CodeSystem" (id)
+);
+
+CREATE TABLE "DiagnosisConcept" (
+	id TEXT NOT NULL, 
+	name TEXT, 
+	in_code_system TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(in_code_system) REFERENCES "CodeSystem" (id)
+);
+
 CREATE TABLE "FamilialRelationship" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
@@ -145,19 +150,12 @@ CREATE TABLE "MarriageEvent" (
 	FOREIGN KEY(in_location) REFERENCES "Place" (id)
 );
 
-CREATE TABLE "MedicalEvent" (
-	started_at_time DATE, 
-	ended_at_time DATE, 
-	is_current BOOLEAN, 
-	in_location TEXT, 
-	diagnosis TEXT, 
-	procedure TEXT, 
-	"Person_id" TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location, diagnosis, procedure, "Person_id"), 
-	FOREIGN KEY(in_location) REFERENCES "Place" (id), 
-	FOREIGN KEY(diagnosis) REFERENCES "DiagnosisConcept" (id), 
-	FOREIGN KEY(procedure) REFERENCES "ProcedureConcept" (id), 
-	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
+CREATE TABLE "ProcedureConcept" (
+	id TEXT NOT NULL, 
+	name TEXT, 
+	in_code_system TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(in_code_system) REFERENCES "CodeSystem" (id)
 );
 
 CREATE TABLE "Organization_aliases" (
@@ -186,9 +184,25 @@ CREATE TABLE "EmploymentEvent" (
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	employed_at TEXT, 
+	type VARCHAR(9), 
 	"Person_id" TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, employed_at, "Person_id"), 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, employed_at, type, "Person_id"), 
 	FOREIGN KEY(employed_at) REFERENCES "Company" (id), 
+	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
+);
+
+CREATE TABLE "MedicalEvent" (
+	started_at_time DATE, 
+	ended_at_time DATE, 
+	is_current BOOLEAN, 
+	in_location TEXT, 
+	diagnosis TEXT, 
+	procedure TEXT, 
+	"Person_id" TEXT, 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location, diagnosis, procedure, "Person_id"), 
+	FOREIGN KEY(in_location) REFERENCES "Place" (id), 
+	FOREIGN KEY(diagnosis) REFERENCES "DiagnosisConcept" (id), 
+	FOREIGN KEY(procedure) REFERENCES "ProcedureConcept" (id), 
 	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
 );
 

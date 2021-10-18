@@ -17,6 +17,14 @@ class DiagnosisType(str, Enum):
     TODO = "TODO"
     
 
+class EmploymentEventType(str, Enum):
+    
+    HIRE = "HIRE"
+    FIRE = "FIRE"
+    PROMOTION = "PROMOTION"
+    TRANSFER = "TRANSFER"
+    
+
 
 
 class HasAliases(BaseModel):
@@ -74,6 +82,7 @@ class Concept(BaseModel):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
+    in_code_system: Optional[str] = Field(None)
     
     
 
@@ -81,6 +90,7 @@ class DiagnosisConcept(Concept):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
+    in_code_system: Optional[str] = Field(None)
     
     
 
@@ -88,6 +98,7 @@ class ProcedureConcept(Concept):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
+    in_code_system: Optional[str] = Field(None)
     
     
 
@@ -103,8 +114,8 @@ class Relationship(BaseModel):
     
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
-    related_to: str = Field(None)
-    type: FamilialRelationshipType = Field(None)
+    related_to: Optional[str] = Field(None)
+    type: Optional[str] = Field(None)
     
     
 
@@ -129,6 +140,7 @@ class BirthEvent(Event):
 class EmploymentEvent(Event):
     
     employed_at: Optional[str] = Field(None)
+    type: Optional[EmploymentEventType] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
@@ -171,11 +183,19 @@ class Company(Organization):
     
     
 
+class CodeSystem(BaseModel):
+    
+    id: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
+    
+    
+
 class Dataset(BaseModel):
     
     persons: Optional[List[Person]] = Field(None)
     companies: Optional[List[Company]] = Field(None)
     activities: Optional[List[Activity]] = Field(None)
+    code_systems: Optional[List[CodeSystem]] = Field(None)
     
     
 
@@ -259,6 +279,8 @@ WithLocation.update_forward_refs()
 MarriageEvent.update_forward_refs()
 
 Company.update_forward_refs()
+
+CodeSystem.update_forward_refs()
 
 Dataset.update_forward_refs()
 

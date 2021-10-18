@@ -35,6 +35,12 @@ type ClassWithSpaces
     slotWithSpace1: String
   }
 
+type CodeSystem
+  {
+    id: String!
+    name: String
+  }
+
 type Company
   {
     id: String!
@@ -47,6 +53,7 @@ type Concept
   {
     id: String!
     name: String
+    inCodeSystem: CodeSystem
   }
 
 type Dataset
@@ -54,12 +61,14 @@ type Dataset
     persons: [Person]
     companies: [Company]
     activities: [Activity]
+    codeSystems: [CodeSystem]
   }
 
 type DiagnosisConcept
   {
     id: String!
     name: String
+    inCodeSystem: CodeSystem
   }
 
 type EmploymentEvent
@@ -68,6 +77,7 @@ type EmploymentEvent
     endedAtTime: Date
     isCurrent: Boolean
     employedAt: Company
+    type: EmploymentEventType
   }
 
 type Event
@@ -150,6 +160,7 @@ type ProcedureConcept
   {
     id: String!
     name: String
+    inCodeSystem: CodeSystem
   }
 
 type Relationship

@@ -32,6 +32,11 @@ message ClassWithSpaces
  {
   optional slotWithSpace1 String = 1
  }
+message CodeSystem
+ {
+  id String = 1
+  optional name String = 2
+ }
 message Company
  {
   id String = 1
@@ -43,17 +48,20 @@ message Concept
  {
   id String = 1
   optional name String = 2
+  optional inCodeSystem CodeSystem = 3
  }
 message Dataset
  {
   repeated persons Person = 1
   repeated companies Company = 2
   repeated activities Activity = 3
+  repeated codeSystems CodeSystem = 4
  }
 message DiagnosisConcept
  {
   id String = 1
   optional name String = 2
+  optional inCodeSystem CodeSystem = 3
  }
 message EmploymentEvent
  {
@@ -61,6 +69,7 @@ message EmploymentEvent
   optional endedAtTime Date = 2
   optional isCurrent Boolean = 3
   optional employedAt Company = 4
+  optional type EmploymentEventType = 5
  }
 message Event
  {
@@ -125,6 +134,7 @@ message ProcedureConcept
  {
   id String = 1
   optional name String = 2
+  optional inCodeSystem CodeSystem = 3
  }
 message Relationship
  {

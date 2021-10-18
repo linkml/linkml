@@ -20,3 +20,10 @@ None &#8594;  <sub>0..1</sub> [Person](Person.md)
 ## Used by
 
  * [Company](Company.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | schema:ceo |
+

@@ -16,6 +16,7 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 ## Children
 
+ *  [EmploymentEvent➞type](EmploymentEvent_type.md)
  *  [FamilialRelationship➞type](FamilialRelationship_type.md)
 
 ## Used by

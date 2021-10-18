@@ -9,5 +9,6 @@ import lombok.*;
 public class EmploymentEvent extends Event {
 
   private Company employedAt;
+  private String type;
 
 }

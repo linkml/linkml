@@ -7,7 +7,7 @@
 URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;id(i):string;name(i):string%20%3F],[Concept]^-[ProcedureConcept],[MedicalEvent],[Concept])](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;id(i):string;name(i):string%20%3F],[Concept]^-[ProcedureConcept],[MedicalEvent],[Concept])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;id(i):string;name(i):string%20%3F],[Concept]^-[ProcedureConcept],[MedicalEvent],[Concept],[CodeSystem])](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent]++-%20procedure%200..1>[ProcedureConcept&#124;id(i):string;name(i):string%20%3F],[Concept]^-[ProcedureConcept],[MedicalEvent],[Concept],[CodeSystem])
 
 ## Parents
 
@@ -26,3 +26,5 @@ URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureC
      * Range: [String](types/String.md)
  * [name](name.md)  <sub>0..1</sub>
      * Range: [String](types/String.md)
+ * [in code system](in_code_system.md)  <sub>0..1</sub>
+     * Range: [CodeSystem](CodeSystem.md)

@@ -6,6 +6,7 @@
    "RO": "http://purl.obolibrary.org/obo/RO_",
    "ROR": "http://example.org/ror/",
    "biolink": "https://w3id.org/biolink/",
+   "bizcodes": "https://example.org/bizcodes/",
    "core": "https://w3id.org/linkml/tests/core/",
    "dce": "http://purl.org/dc/elements/1.1/",
    "ks": "https://w3id.org/linkml/tests/kitchen_sink/",
@@ -13,6 +14,8 @@
    "linkml": "https://w3id.org/linkml/",
    "pav": "http://purl.org/pav/",
    "prov": "http://www.w3.org/ns/prov#",
+   "schema": "http://schema.org/",
+   "skos": "http://www.w3.org/2004/02/skos/core#",
    "Activity": {
       "@id": "core:Activity"
    },

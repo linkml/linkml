@@ -104,6 +104,38 @@
          "title": "ClassWithSpaces",
          "type": "object"
       },
+      "CodeSystem": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "CodeSystem",
+         "type": "object"
+      },
+      "CodeSystem__identifier_optional": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "CodeSystem",
+         "type": "object"
+      },
       "Company": {
          "additionalProperties": false,
          "description": "",
@@ -137,6 +169,9 @@
             "id": {
                "type": "string"
             },
+            "in_code_system": {
+               "type": "string"
+            },
             "name": {
                "type": "string"
             }
@@ -156,6 +191,11 @@
                   "$ref": "#/$defs/Activity"
                },
                "type": "array"
+            },
+            "code_systems": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/CodeSystem__identifier_optional"
+               }
             },
             "companies": {
                "items": {
@@ -179,6 +219,9 @@
          "description": "",
          "properties": {
             "id": {
+               "type": "string"
+            },
+            "in_code_system": {
                "type": "string"
             },
             "name": {
@@ -216,11 +259,25 @@
             "started_at_time": {
                "format": "date",
                "type": "string"
+            },
+            "type": {
+               "$ref": "#/$defs/EmploymentEventType"
             }
          },
          "required": [],
          "title": "EmploymentEvent",
          "type": "object"
+      },
+      "EmploymentEventType": {
+         "description": "",
+         "enum": [
+            "HIRE",
+            "FIRE",
+            "PROMOTION",
+            "TRANSFER"
+         ],
+         "title": "EmploymentEventType",
+         "type": "string"
       },
       "Event": {
          "additionalProperties": false,
@@ -453,6 +510,9 @@
          "description": "",
          "properties": {
             "id": {
+               "type": "string"
+            },
+            "in_code_system": {
                "type": "string"
             },
             "name": {
