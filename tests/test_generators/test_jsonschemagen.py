@@ -49,9 +49,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         assert ok_address
         assert ok_history
         json_dumper.dump(element=inst, to_file=DATA_JSON)
-        #rdf_dumper.dump(element=inst, to_file=DATA_RDF)
         jsonschemastr = JsonSchemaGenerator(SCHEMA, mergeimports=True, top_class='Dataset').serialize()
-        #print(jsonschemastr)
         with open(JSONSCHEMA_OUT, 'w') as io:
             io.write(jsonschemastr)
         validate_object(inst, SCHEMA, closed=True)

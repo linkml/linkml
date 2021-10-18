@@ -34,7 +34,7 @@ class PythonGenTestCase(unittest.TestCase):
         self.assertEqual("Company(id='ROR:1', name=None, aliases=[], ceo=None)", str(c))
         h = kitchen_module.EmploymentEvent(employed_at=c.id)
         self.assertEqual(
-            "EmploymentEvent(started_at_time=None, ended_at_time=None, is_current=None, employed_at='ROR:1')", str(h))
+            "EmploymentEvent(started_at_time=None, ended_at_time=None, is_current=None, employed_at='ROR:1', type=None)", str(h))
         p = kitchen_module.Person('P:1', has_employment_history=[h])
         assert p.id == 'P:1'
         assert p.has_employment_history[0] is not None
@@ -55,7 +55,7 @@ class PythonGenTestCase(unittest.TestCase):
         p2 = json_loader.loads(p2dict, kitchen_module.Person)
         print(p2)
         self.assertEqual("Person(id='P:1', name=None, has_employment_history=[EmploymentEvent(started_at_time=None, "
-                         "ended_at_time=None, is_current=None, employed_at='ROR:1')], has_familial_relationships=[], "
+                         "ended_at_time=None, is_current=None, employed_at='ROR:1', type=None)], has_familial_relationships=[], "
                          "has_medical_history=[], age_in_years=None, addresses=[], has_birth_event=None, aliases=[])",
                          str(p))
 
@@ -65,7 +65,7 @@ class PythonGenTestCase(unittest.TestCase):
         diagnosis = kitchen_module.DiagnosisConcept(id='CODE:D0001', name='headache')
         event = kitchen_module.MedicalEvent(in_location='GEO:1234', diagnosis=diagnosis)
         print(str(event))
-        self.assertEqual("MedicalEvent(started_at_time=None, ended_at_time=None, is_current=None, in_location='GEO:1234', diagnosis=DiagnosisConcept(id='CODE:D0001', name='headache'), procedure=None)",
+        self.assertEqual("MedicalEvent(started_at_time=None, ended_at_time=None, is_current=None, in_location='GEO:1234', diagnosis=DiagnosisConcept(id='CODE:D0001', name='headache', in_code_system=None), procedure=None)",
                          str(event))
 
 
