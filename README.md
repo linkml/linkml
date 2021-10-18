@@ -32,10 +32,18 @@ As an example, LinkML has been used for the development of the [Biolink Model](h
 
 ## Installation
 
-This project uses [pipenv](https://pipenv-fork.readthedocs.io/en/latest/) for installation. Some IDE's like PyCharm also have direct [support](https://www.jetbrains.com/help/pycharm/pipenv.html) for pipenv.
+Create and activate a virtual environment within which you can install the package:
 
 ```bash
-> pipenv install linkml
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Install and update the package using pip:
+
+
+```bash
+python -m pip install linkml
 ```
 
 Additional [installation](https://linkml.io/linkml/intro/install.html) instructions can be found on the LinkML docs site.
