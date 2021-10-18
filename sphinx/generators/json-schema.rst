@@ -208,6 +208,124 @@ the range is treated as a simple string in the JSON-Schema
 Thus the JSON-Schema loses some information that is useful for
 validation, and for understanding of the schema. 
 
+LinkML also supports the ability to inline multivalued slots as
+dictionaries, where the key is the object identifier. See `Inlining <../schemas/inlining>`_
+
+This example schema supports inlining a list of people as a dictionary:
+
+.. code-block:: yaml
+
+    classes:
+      Container:
+        tree_root: true
+        attributes:
+          persons:
+            range: Person
+            inlined: true
+            multivalued: true
+      Person:
+        attributes:
+          name:
+            identifier: true
+          age:
+            range: integer
+            required: true
+          gender:
+            range: string
+            required: true                    
+
+The following data is conformant according to LinkML semantics:
+
+.. code-block:: json
+
+    {
+     "persons":
+       {
+         "Bob": {
+             "age": 42,
+             "gender": "male"
+         },
+         "Alice": {
+             "age": 37,
+             "gender": "female"
+         }
+       }
+    }
+
+This presents an additional complication when generating JSON-Schema:
+semantically the ``name`` field is required (all identifiers are
+automatically required in json-schema). However, we don't want it to
+be required *in the body of the dictionary* since it is already
+present as a key.
+
+The JSON-Schema generator takes care of this for you by making an
+alternative "laxer" version of the Person class that is used for
+validating the body of the ``persons`` dict.
+
+This is what the underlying JSON-Schema looks like:
+
+.. code-block:: json
+
+   "$defs": {
+      "Person": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "age": {
+               "type": "integer"
+            },
+            "gender": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "name",
+            "age",
+            "gender"
+         ],
+         "title": "Person",
+         "type": "object"
+      },
+      "Person__identifier_optional": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "age": {
+               "type": "integer"
+            },
+            "gender": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "age",
+            "gender"
+         ],
+         "title": "Person",
+         "type": "object"
+      }
+   },
+   "$id": "http://example.org",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": false,
+   "properties": {
+      "persons": {
+         "additionalProperties": {
+            "$ref": "#/$defs/Person__identifier_optional"
+         }
+      }
+   },
+   "title": "example.org",
+   "type": "object"
+
+                
+   
 Patterns
 ^^^^^^^^
 
