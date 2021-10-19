@@ -143,7 +143,7 @@ these as your primary means of expressing your data!
 
 However, if any of the following apply to you, you may want to
 consider LinkML - and remember, you can always compile your LinkML
-schema to ShEx, with the ability to do this for SHACL coming soon!
+schema to ShEx, with a prototype SHACL generator now available.
 
  * you want your datamodel to work for non-RDF representations such as JSON, YAML, and relational databases
  * your user based and developer base is not entirely semantic web / linked data enthusiasts
