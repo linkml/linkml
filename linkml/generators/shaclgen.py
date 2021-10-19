@@ -10,27 +10,11 @@ from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml_runtime.utils.schemaview import SchemaView
 
-#from linkml.generators import shacl_GEN_VERSION
 from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
-from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments, Generator
 
-
-def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
-    pyrange = t.repr
-    if pyrange is None:
-        pyrange = t.base
-    if t.base == 'XSDDateTime':
-        pyrange = 'datetime '
-    if t.base == 'XSDDate':
-        pyrange = 'date'
-    if pyrange is None and t.typeof is not None:
-        pyrange = _get_pyrange(sv.get_type(t.typeof), sv)
-    if pyrange is None:
-        raise Exception(f'No python type for range: {s.range} // {t}')
-    return pyrange
 
 class ShaclGenerator(Generator):
     generatorname = os.path.basename(__file__)
@@ -62,15 +46,20 @@ class ShaclGenerator(Generator):
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  ## TODO
             shape_pv(SH.closed, Literal(True))
+            if c.title is not None:
+                shape_pv(SH.name, Literal(c.title))
+            if c.description is not None:
+                shape_pv(SH.description, Literal(c.description))
             list_node = BNode()
             coll = Collection(g, list_node, [RDF.type])
             shape_pv(SH.ignoredProperties, list_node)
             type_designator = None
+            order = 0
             for s in sv.class_induced_slots(c.name):
+                # fixed in linkml-runtime 1.1.3
                 if s.name in sv.element_by_schema_map():
                     slot_uri = URIRef(sv.get_uri(s, expand=True))
                 else:
-                    logging.warning(f'TODO: FIX SCHEMAVIEW {s.name} not in element_by_schema_map')
                     pfx = sv.schema.default_prefix
                     slot_uri = URIRef(sv.expand_curie(f'{pfx}:{underscore(s.name)}'))
                 pnode = BNode()
@@ -82,6 +71,10 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v)))
                 prop_pv(SH.path, slot_uri)
+                prop_pv_literal(SH.order, order)
+                order += 1
+                prop_pv_literal(SH.name, s.title)
+                prop_pv_literal(SH.description, s.description)
                 if not s.multivalued:
                     prop_pv_literal(SH.maxCount, 1)
                 if s.required:
@@ -97,10 +90,11 @@ class ShaclGenerator(Generator):
                     else:
                         prop_pv(SH.nodeKind, SH.BlankNode)
                 elif r in sv.all_types().values():
-                    if r.uri:
-                        prop_pv(SH.datatype, r.uri)
+                    rt = sv.get_type(r)
+                    if rt.uri:
+                        prop_pv(SH.datatype, rt.uri)
                     else:
-                        logging.error(f'No URI for type {r.name}')
+                        logging.error(f'No URI for type {rt.name}')
                 elif r in sv.all_enums():
                     e = sv.get_enum(r)
                     pv_node = BNode()
@@ -122,14 +116,11 @@ class ShaclGenerator(Generator):
 
 
 @shared_arguments(ShaclGenerator)
-@click.option("--output_directory", default="output", help="Output directory for individually generated class files")
-@click.option("--package", help="Package name where relevant for generated class files")
-@click.option("--template_file", help="Optional jinja2 template to use for class generation")
 @click.command()
-def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
-    """Generate shacl classes to represent a LinkML model"""
-    gen = ShaclGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args)
-    print(gen.serialize(output_directory))
+def cli(yamlfile, **args):
+    """Generate SHACL turtle from a LinkML model"""
+    gen = ShaclGenerator(yamlfile, **args)
+    print(gen.serialize())
 
 
 if __name__ == '__main__':

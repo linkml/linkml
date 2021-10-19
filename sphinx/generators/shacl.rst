@@ -3,6 +3,11 @@ Shacl
 
 .. warning:: Beta implementation, some features may change
 
+Example Output
+--------------
+
+`personinfo.shacl.ttl <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/shacl/personinfo.shacl.ttl>`_
+             
 Overview
 --------
 

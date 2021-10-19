@@ -21,7 +21,6 @@ class ShaclTestCase(unittest.TestCase):
     def test_shacl(self):
         """ shacl  """
         shaclstr = ShaclGenerator(SCHEMA, mergeimports=True).serialize()
-        print(shaclstr)
         with open(OUT, 'w') as stream:
             stream.write(shaclstr)
         # TODO: test shacl validation; pyshacl requires rdflib6
