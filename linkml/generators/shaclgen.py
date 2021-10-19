@@ -30,7 +30,7 @@ class ShaclGenerator(Generator):
         self.schema = self.schemaview.schema
         self.format = format
 
-    def serialize(self) -> None:
+    def serialize(self, **args) -> None:
         g = self.as_graph()
         data = g.serialize(format='turtle' if self.format in ['owl', 'ttl'] else self.format).decode()
         return data
