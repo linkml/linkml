@@ -120,10 +120,8 @@ class ExcelGenerator(Generator):
         if cls.name in self.workbook.sheetnames:
             if slot.range in self.enum_dict:
 
-                # TODO: the below list needs to be dynamically populated with items 
-                # in dropdown
-                # basically the values associated with an enum type
-                valid = '"The,earth,revolves,around,sun"'
+                valid = ','.join(self.enum_dict[slot.range])
+                valid = '"' + valid + '"'
 
                 ws = self.workbook[cls.name]
 
@@ -137,7 +135,7 @@ class ExcelGenerator(Generator):
                 dv = DataValidation(type="list", formula1=valid, allow_blank=True)
                 ws.add_data_validation(dv)
 
-                dv.add(f"{col_letter}1:{col_letter}1048576")
+                dv.add(f"{col_letter}2:{col_letter}1048576")
 
                 wb.save(self.wb_name)
 
