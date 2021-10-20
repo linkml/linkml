@@ -5,6 +5,7 @@ import click
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.utils import get_column_letter
 
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
@@ -126,12 +127,17 @@ class ExcelGenerator(Generator):
 
                 ws = self.workbook[cls.name]
 
+                rows = ws.iter_rows(min_row=1, max_row=1) # returns a generator of rows
+                first_row = next(rows) # get the first row
+                headings = [c.value for c in first_row] # extract the values from the cells
+
+                idx = headings.index(slot.name)
+                col_letter = get_column_letter(idx + 1)
+
                 dv = DataValidation(type="list", formula1=valid, allow_blank=True)
                 ws.add_data_validation(dv)
 
-                # TODO: select the columns from the sheet to which the dropdown is 
-                # to be applied
-                dv.add("B1")
+                dv.add(f"{col_letter}1:{col_letter}1048576")
 
                 wb.save(self.wb_name)
 
