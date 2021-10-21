@@ -1,7 +1,7 @@
 Excel Spreadsheet
 =================
 
-This feature is still in development.
+This generator allows you to create a spreadsheet representation of your LinkML schema.
 
 Example Output
 --------------
@@ -22,11 +22,13 @@ You can create an Excel template of a LinkML schema as follows:
 Currently, in the generated Excel workbook there can be one or more associated worksheets, each corresponding to classes
 from the LinkML schema.
 
-Note that this works best for "flat" or denormalized schemas
+The generator also supports validation at the enum level. In that, each slot with a range property 
+that is of enum type will have associated drop downs for all cells corresponding to that slot in the excel spreadsheet.
 
-Support to be added:
+Note: It works best for "flat" or denormalized schemas.
 
-* If the range of a slot is an enum, the possible values for a field will be constrained through a dropdown
+Additional validation support to be added:
+
 * Color schemes to indicate whether a field is required or recommended
 * Constraints based on the range of a slot, e.g. constraining int fields to be numbers
 * Tooltip notes describing what each field indicates
