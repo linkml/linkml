@@ -811,6 +811,8 @@ class SchemaView(object):
                     v = self.schema.default_range
             if v is not None:
                 setattr(islot, metaslot_name, v)
+        if slot.inlined_as_list:
+            slot.inlined = True
         return deepcopy(islot)
 
     @lru_cache()
@@ -847,14 +849,19 @@ class SchemaView(object):
         """
         if slot.inlined:
             return True
+        elif slot.inlined_as_list:
+            return True
         else:
             range = slot.range
-            id_slot = self.get_identifier_slot(range, imports=imports)
-            if id_slot is None:
-                # must be inlined as has no identifier
-                return True
+            if range in self.all_classes():
+                id_slot = self.get_identifier_slot(range, imports=imports)
+                if id_slot is None:
+                    # must be inlined as has no identifier
+                    return True
+                else:
+                    # not explicitly declared inline and has an identifier: assume is ref, not inlined
+                    return False
             else:
-                # not explicitly declared inline and has an identifier: assume is ref, not inlined
                 return False
 
     @lru_cache()
