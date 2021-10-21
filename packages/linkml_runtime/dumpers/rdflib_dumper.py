@@ -68,7 +68,10 @@ class RDFLibDumper(Dumper):
             t = schemaview.get_type(target_type)
             dt_uri = t.uri
             if dt_uri:
-                return Literal(element, datatype=namespaces.uri_for(dt_uri))
+                if dt_uri == 'xsd:string':
+                    return Literal(element)
+                else:
+                    return Literal(element, datatype=namespaces.uri_for(dt_uri))
             else:
                 logging.error(f'NO DT: {t}')
                 return Literal(element)
@@ -88,6 +91,8 @@ class RDFLibDumper(Dumper):
         for k, v_or_list in element_vars.items():
             if isinstance(v_or_list, list):
                 vs = v_or_list
+            elif isinstance(v_or_list, dict):
+                vs = v_or_list.values()
             else:
                 vs = [v_or_list]
             for v in vs:
