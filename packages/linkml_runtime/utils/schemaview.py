@@ -166,6 +166,9 @@ class SchemaView(object):
             for s in self.schema_map.values():
                 for x in {**s.classes, **s.enums, **s.slots, **s.subsets}.values():
                     x.from_schema = s.id
+                for c in s.classes.values():
+                    for a in c.attributes.values():
+                        a.from_schema = s.id
         return closure
 
 
@@ -197,20 +200,26 @@ class SchemaView(object):
 
     @deprecated("Use `all_slots` instead")
     @lru_cache()
-    def all_slot(self, imports=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slot(self, **kwargs) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
         :param imports: include imports closure
         :return: all slots in schema view
         """
-        return self._get_dict(SLOTS, imports)
+        return self.all_slots(**kwargs)
 
     @lru_cache()
-    def all_slots(self, imports=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slots(self, imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
         :param imports: include imports closure
         :return: all slots in schema view
         """
-        return self._get_dict(SLOTS, imports)
+        d = copy(self._get_dict(SLOTS, imports))
+        if attributes:
+            for c in self.all_classes().values():
+                for aname, a in c.attributes.items():
+                    d[aname] = a
+        return d
+
 
     @deprecated("Use `all_enums` instead")
     @lru_cache()
@@ -304,6 +313,21 @@ class SchemaView(object):
         return d
 
     @lru_cache()
+    def slot_name_mappings(self) -> Dict[str, SlotDefinition]:
+        """
+        Mapping between processed safe slot names and slots.
+
+        For example, a slot may have name 'lives at', the code-safe version is `lives_at`
+        :return: mapping from safe names to slot
+        """
+        m = {}
+        for s in self.all_slots().values():
+            m[underscore(s.name)] = s
+
+        return m
+
+
+    @lru_cache()
     def in_schema(self, element_name: ElementName) -> SchemaDefinitionName:
         """
         :param element_name:
@@ -322,6 +346,9 @@ class SchemaView(object):
             for type_key in [CLASSES, SLOTS, TYPES, ENUMS, SUBSETS]:
                 for k, v in getattr(schema, type_key, {}).items():
                     ix[k] = schema.name
+            for c in schema.classes.values():
+                for aname, a in c.attributes.items():
+                    ix[aname] = schema.name
         return ix
 
     @lru_cache()
@@ -797,6 +824,8 @@ class SchemaView(object):
                     v = self.schema.default_range
             if v is not None:
                 setattr(islot, metaslot_name, v)
+        if slot.inlined_as_list:
+            slot.inlined = True
         return deepcopy(islot)
 
     @lru_cache()
@@ -833,14 +862,19 @@ class SchemaView(object):
         """
         if slot.inlined:
             return True
+        elif slot.inlined_as_list:
+            return True
         else:
             range = slot.range
-            id_slot = self.get_identifier_slot(range, imports=imports)
-            if id_slot is None:
-                # must be inlined as has no identifier
-                return True
+            if range in self.all_classes():
+                id_slot = self.get_identifier_slot(range, imports=imports)
+                if id_slot is None:
+                    # must be inlined as has no identifier
+                    return True
+                else:
+                    # not explicitly declared inline and has an identifier: assume is ref, not inlined
+                    return False
             else:
-                # not explicitly declared inline and has an identifier: assume is ref, not inlined
                 return False
 
     @lru_cache()
