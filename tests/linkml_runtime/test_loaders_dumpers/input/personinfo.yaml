@@ -110,13 +110,20 @@ classes:
 
   Concept:
     is_a: NamedThing
+    attributes:
+      code system:
+        range: code system
 
   DiagnosisConcept:
     is_a: Concept
 
   ProcedureConcept:
     is_a: Concept
-      
+
+  code system:
+    slots:
+      - id
+      - name
 
   Relationship:
     slots:
@@ -162,7 +169,7 @@ classes:
         multivalued: true
       organizations:
         range: Organization
-        inlined_as_list: true
+        inlined_as_list: false
         inlined: true
         multivalued: true
 

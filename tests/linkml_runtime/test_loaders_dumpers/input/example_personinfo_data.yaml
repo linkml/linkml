@@ -20,18 +20,24 @@ persons:
         diagnosis:
           id: CODE:D0001
           name: headache
+          code_system: CODE:D
         procedure:
           id: CODE:P0001
           name: trepanation
+          code_system: CODE:P
     gender: transgender man
     current_address:
       street: 1 foo street
       city: foo city
 organizations:
-  - id: ROR:1
+  ROR:1:
     name: foo
     categories:
       - charity
       - non profit
+  ROR:2:
+    name: bar
+    categories:
+      - shell company
 
   

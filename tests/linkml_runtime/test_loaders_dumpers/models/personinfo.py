@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-20 16:58
+# Generation date: 2021-10-20 18:50
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -32,6 +32,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 GSSO = CurieNamespace('GSSO', 'http://purl.obolibrary.org/obo/GSSO_')
+BIZCODES = CurieNamespace('bizcodes', 'https://example.org/bizcodes/')
 FAMREL = CurieNamespace('famrel', 'https://example.org/FamilialRelations#')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
@@ -72,6 +73,10 @@ class DiagnosisConceptId(ConceptId):
 
 
 class ProcedureConceptId(ConceptId):
+    pass
+
+
+class CodeSystemId(extended_str):
     pass
 
 
@@ -333,12 +338,16 @@ class Concept(NamedThing):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Concept
 
     id: Union[str, ConceptId] = None
+    code_system: Optional[Union[str, CodeSystemId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ConceptId):
             self.id = ConceptId(self.id)
+
+        if self.code_system is not None and not isinstance(self.code_system, CodeSystemId):
+            self.code_system = CodeSystemId(self.code_system)
 
         super().__post_init__(**kwargs)
 
@@ -379,6 +388,30 @@ class ProcedureConcept(Concept):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ProcedureConceptId):
             self.id = ProcedureConceptId(self.id)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class CodeSystem(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = PERSONINFO.CodeSystem
+    class_class_curie: ClassVar[str] = "personinfo:CodeSystem"
+    class_name: ClassVar[str] = "code system"
+    class_model_uri: ClassVar[URIRef] = PERSONINFO.CodeSystem
+
+    id: Union[str, CodeSystemId] = None
+    name: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, CodeSystemId):
+            self.id = CodeSystemId(self.id)
+
+        if self.name is not None and not isinstance(self.name, str):
+            self.name = str(self.name)
 
         super().__post_init__(**kwargs)
 
@@ -516,7 +549,7 @@ class Container(YAMLRoot):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
 
-        self._normalize_inlined_as_list(slot_name="organizations", slot_type=Organization, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(slot_name="organizations", slot_type=Organization, key_name="id", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -573,7 +606,8 @@ class DiagnosisType(EnumDefinitionImpl):
 class OrganizationType(EnumDefinitionImpl):
 
     offshore = PermissibleValue(text="offshore")
-    charity = PermissibleValue(text="charity")
+    charity = PermissibleValue(text="charity",
+                                     meaning=BIZCODES["001"])
 
     _defn = EnumDefinition(
         name="OrganizationType",
@@ -585,6 +619,10 @@ class OrganizationType(EnumDefinitionImpl):
                 PermissibleValue(text="non profit") )
         setattr(cls, "for profit",
                 PermissibleValue(text="for profit") )
+        setattr(cls, "shell company",
+                PermissibleValue(text="shell company") )
+        setattr(cls, "loose organization",
+                PermissibleValue(text="loose organization") )
 
 # Slots
 class slots:
@@ -626,7 +664,7 @@ slots.has_medical_history = Slot(uri=PERSONINFO.has_medical_history, name="has_m
 slots.has_familial_relationships = Slot(uri=PERSONINFO.has_familial_relationships, name="has_familial_relationships", curie=PERSONINFO.curie('has_familial_relationships'),
                    model_uri=PERSONINFO.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]])
 
-slots.in_location = Slot(uri=PERSONINFO.in_location, name="in_location", curie=PERSONINFO.curie('in_location'),
+slots.in_location = Slot(uri=PERSONINFO.in_location, name="in location", curie=PERSONINFO.curie('in_location'),
                    model_uri=PERSONINFO.in_location, domain=None, range=Optional[Union[str, PlaceId]])
 
 slots.current_address = Slot(uri=PERSONINFO.current_address, name="current_address", curie=PERSONINFO.curie('current_address'),
@@ -677,14 +715,17 @@ slots.ended_at_time = Slot(uri=PROV.endedAtTime, name="ended_at_time", curie=PRO
 slots.categories = Slot(uri=PERSONINFO.categories, name="categories", curie=PERSONINFO.curie('categories'),
                    model_uri=PERSONINFO.categories, domain=None, range=Optional[Union[str, List[str]]])
 
-slots.persons = Slot(uri=PERSONINFO.persons, name="persons", curie=PERSONINFO.curie('persons'),
-                   model_uri=PERSONINFO.persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
-
-slots.organizations = Slot(uri=PERSONINFO.organizations, name="organizations", curie=PERSONINFO.curie('organizations'),
-                   model_uri=PERSONINFO.organizations, domain=None, range=Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]])
-
 slots.hasAliases__aliases = Slot(uri=PERSONINFO.aliases, name="hasAliases__aliases", curie=PERSONINFO.curie('aliases'),
                    model_uri=PERSONINFO.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
+
+slots.concept__code_system = Slot(uri=PERSONINFO.code_system, name="concept__code_system", curie=PERSONINFO.curie('code_system'),
+                   model_uri=PERSONINFO.concept__code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
+
+slots.container__persons = Slot(uri=PERSONINFO.persons, name="container__persons", curie=PERSONINFO.curie('persons'),
+                   model_uri=PERSONINFO.container__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
+
+slots.container__organizations = Slot(uri=PERSONINFO.organizations, name="container__organizations", curie=PERSONINFO.curie('organizations'),
+                   model_uri=PERSONINFO.container__organizations, domain=None, range=Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]])
 
 slots.related_to = Slot(uri=PERSONINFO.related_to, name="related to", curie=PERSONINFO.curie('related_to'),
                    model_uri=PERSONINFO.related_to, domain=None, range=Union[str, PersonId])
