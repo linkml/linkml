@@ -365,7 +365,7 @@ class MarkdownGenerator(Generator):
             prop_list('In Subsets', obj.in_subset)
             # from_schema
             # imported_from
-            prop_list('See also', obj.see_also)
+            prop_list('See also', [f'[{v}]({v})' for v in obj.see_also])
             prop_list('Exact Mappings', obj.exact_mappings)
             prop_list('Close Mappings', obj.close_mappings)
             prop_list('Narrow Mappings', obj.narrow_mappings)
