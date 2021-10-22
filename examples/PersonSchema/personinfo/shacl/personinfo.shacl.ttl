@@ -1,0 +1,324 @@
+@prefix ns1: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/linkml/examples/personinfo/Concept> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://schema.org/description> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://schema.org/identifier> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <http://schema.org/image> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/Concept> .
+
+<https://w3id.org/linkml/examples/personinfo/Container> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:class <http://schema.org/Organization> ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/organizations> ],
+        [ ns1:class <http://schema.org/Person> ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/persons> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/Container> .
+
+<https://w3id.org/linkml/examples/personinfo/Event> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/duration> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/is_current> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/Event> .
+
+<https://w3id.org/linkml/examples/personinfo/HasAliases> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:description "A mixin applied to any class that can have aliases/alternateNames" ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/aliases> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/HasAliases> .
+
+<https://w3id.org/linkml/examples/personinfo/NamedThing> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:description "A generic grouping for any identifiable entity" ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://schema.org/description> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <http://schema.org/image> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://schema.org/identifier> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/NamedThing> .
+
+<https://w3id.org/linkml/examples/personinfo/Relationship> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/type> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/related_to> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/Relationship> .
+
+<https://w3id.org/linkml/examples/personinfo/WithLocation> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:class <https://w3id.org/linkml/examples/personinfo/Place> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/in_location> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/WithLocation> .
+
+<http://schema.org/Person> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:description "A person (alive, dead, undead, or fictional)." ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 11 ;
+            ns1:path <http://schema.org/description> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 9 ;
+            ns1:path <http://schema.org/identifier> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 10 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:class <http://schema.org/PostalAddress> ;
+            ns1:description "The address at which a person currently lives" ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 4 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/current_address> ],
+        [ ns1:class <https://w3id.org/linkml/examples/personinfo/MedicalEvent> ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 7 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/has_medical_history> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://schema.org/email> ;
+            ns1:pattern "^\\S+@[\\S+\\.]+\\S+" ],
+        [ ns1:in ( <http://purl.obolibrary.org/obo/GSSO_009254> <http://purl.obolibrary.org/obo/GSSO_009253> <http://purl.obolibrary.org/obo/GSSO_000384> <http://purl.obolibrary.org/obo/GSSO_000372> <http://purl.obolibrary.org/obo/GSSO_000371> <http://purl.obolibrary.org/obo/GSSO_000385> ) ;
+            ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <http://schema.org/gender> ],
+        [ ns1:class <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 6 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/has_familial_relationships> ],
+        [ ns1:maxCount 1 ;
+            ns1:maxInclusive 999 ;
+            ns1:minInclusive 0 ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/age_in_years> ],
+        [ ns1:order 8 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/aliases> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://schema.org/birthDate> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 12 ;
+            ns1:path <http://schema.org/image> ],
+        [ ns1:class <https://w3id.org/linkml/examples/personinfo/EmploymentEvent> ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 5 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/has_employment_history> ] ;
+    ns1:targetClass <http://schema.org/Person> .
+
+<http://schema.org/PostalAddress> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/street> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/postal_code> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/city> ] ;
+    ns1:targetClass <http://schema.org/PostalAddress> .
+
+<https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://schema.org/identifier> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <http://schema.org/image> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://schema.org/description> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> .
+
+<https://w3id.org/linkml/examples/personinfo/EmploymentEvent> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:class <http://schema.org/Organization> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/employed_at> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/duration> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 4 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/is_current> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/EmploymentEvent> .
+
+<https://w3id.org/linkml/examples/personinfo/FamilialRelationship> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:in ( <https://example.org/FamilialRelations#01> <https://example.org/FamilialRelations#02> <https://example.org/FamilialRelations#01> ) ;
+            ns1:maxCount 1 ;
+            ns1:minCount 1 ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/type> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/related_to> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/FamilialRelationship> .
+
+<https://w3id.org/linkml/examples/personinfo/MedicalEvent> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:class <https://w3id.org/linkml/examples/personinfo/ProcedureConcept> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/procedure> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 6 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/is_current> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 4 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:class <https://w3id.org/linkml/examples/personinfo/Place> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/in_location> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 5 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/duration> ],
+        [ ns1:class <https://w3id.org/linkml/examples/personinfo/DiagnosisConcept> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/diagnosis> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/MedicalEvent> .
+
+<https://w3id.org/linkml/examples/personinfo/ProcedureConcept> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://schema.org/identifier> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <http://schema.org/image> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://schema.org/description> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/ProcedureConcept> .
+
+<http://schema.org/Organization> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:description "An organization such as a company or university" ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/founding_date> ],
+        [ ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/aliases> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 6 ;
+            ns1:path <http://schema.org/description> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 5 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 4 ;
+            ns1:path <http://schema.org/identifier> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/mission_statement> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 7 ;
+            ns1:path <http://schema.org/image> ],
+        [ ns1:class <https://w3id.org/linkml/examples/personinfo/Place> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/founding_location> ] ;
+    ns1:targetClass <http://schema.org/Organization> .
+
+<https://w3id.org/linkml/examples/personinfo/Place> a ns1:NodeShape ;
+    ns1:closed true ;
+    ns1:ignoredProperties ( rdf:type ) ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://schema.org/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <http://schema.org/identifier> ],
+        [ ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/examples/personinfo/aliases> ] ;
+    ns1:targetClass <https://w3id.org/linkml/examples/personinfo/Place> .
+
+

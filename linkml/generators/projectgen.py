@@ -23,6 +23,7 @@ from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
+from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
 from linkml.generators.excelgen import ExcelGenerator
@@ -43,6 +44,7 @@ GEN_MAP = {
 #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {}),
 #    'rdf': (RDFGenerator, 'rdf/{name}.ttl', {'context': '{parent}/../jsonld/{name}.context.jsonld'}),
     'shex': (ShExGenerator, 'shex/{name}.shex', {}),
+    'shacl': (ShaclGenerator, 'shacl/{name}.shacl.ttl', {}),
     'sqlddl': (SQLDDLGenerator, 'sqlschema/{name}.sql', {}),
     'java': (SQLDDLGenerator, 'java/{name}.sql', {}),
     'excel': (SQLDDLGenerator, 'excel/{name}.xlsx', {}),
