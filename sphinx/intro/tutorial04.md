@@ -15,7 +15,7 @@ serve as hooks to interoperate data!
 
 ## Example schema
 
-Let's start with the schema we developed in the previous section:
+Let's start with the schema we developed in the previous section, with some minor modifications:
 
 personinfo.yaml:
 
@@ -24,8 +24,13 @@ id: https://w3id.org/linkml/examples/personinfo
 name: personinfo
 prefixes:
   linkml: https://w3id.org/linkml/
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  ORCID: https://orcid.org/
+default_curi_maps:
+  - semweb_context
 imports:
   - linkml:types
+default_prefix: personinfo
 default_range: string
   
 classes:
@@ -55,7 +60,12 @@ classes:
         range: Person
 ```
 
-As well as a collection of person records
+We extended the previous schema in a few ways:
+
+ - we included a *prefix declaration* for the ORCID IDs in our data records
+ - we included an import of standard semantic web prefixes from `semweb_context`
+
+We will use this schema with a collection of data records
 
 data.yaml:
 
@@ -80,22 +90,23 @@ Outputs:
 
 ```ttl
 @prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<ORCID:1234> ns1:age "33" ;
+<https://orcid.org/1234> a ns1:Person ;
+    ns1:age 33 ;
     ns1:full_name "Clark Kent" ;
     ns1:phone "555-555-5555" .
 
-<ORCID:4567> ns1:age "34" ;
+<https://orcid.org/4567> a ns1:Person ;
+    ns1:age 34 ;
     ns1:full_name "Lois Lane" .
 
-[] a ns1:dict ;
-    ns1:persons <ORCID:1234>,
-        <ORCID:4567> .
+[] a ns1:Container ;
+    ns1:persons <https://orcid.org/1234>,
+        <https://orcid.org/4567> .
 ```
 
 This is a start, but it is not ideal - there are existing vocabularies such as [schema.org](http://schema.org) we could be reusing.
-
-There are also some serious problems - there URIs for our two people are not syntactically valid. We need to provide additional information
 
 ## Adding URIs to our schema
 
@@ -118,6 +129,9 @@ prefixes:                                  ## Note are adding 3 new ones here
   ORCID: https://orcid.org/
 imports:
   - linkml:types
+default_curi_maps:
+  - semweb_context
+default_prefix: personinfo
 default_range: string
   
 classes:
@@ -161,30 +175,30 @@ linkml-convert -s personinfo-semantic.yaml -t rdf data.yaml
 Outputs:
 
 ```ttl
-@prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix ns2: <http://schema.org/> .
+@prefix ns1: <http://schema.org/> .
+@prefix ns2: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<https://orcid.org/1234> ns2:name "Clark Kent" ;
-    ns2:telephone "555-555-5555" ;
-    ns1:age "33" .
+<https://orcid.org/1234> a ns1:Person ;
+    ns1:name "Clark Kent" ;
+    ns1:telephone "555-555-5555" ;
+    ns2:age 33 .
 
-<https://orcid.org/4567> ns2:name "Lois Lane" ;
-    ns1:age "34" .
+<https://orcid.org/4567> a ns1:Person ;
+    ns1:name "Lois Lane" ;
+    ns2:age 34 .
 
-[] a ns1:dict ;
-    ns1:persons <https://orcid.org/1234>,
+[] a ns2:Container ;
+    ns2:persons <https://orcid.org/1234>,
         <https://orcid.org/4567> .
+
 ```
 
 Note that the prefixes are hidden but the effect is to reuse URIs such as [schema:telephone](http://schema.org/telephone)
 
 ## JSON-LD contexts
 
-Behind the scenes, the linkml-convert tool is using JSON-LD contexts to convert from JSON to RDF. This is in the following parts:
-
- * A JSON-LD context is generated from the schema
- * the native JSON representation is enhanced with this context, to make it JSON-LD
- * A standard JSON-LD converter (in this case, rdflib) is used to convert to RDF
+You can also generate JSON-LD context files that can be used to add semantics to JSON documents:
 
 ```bash
 gen-jsonld-context --no-metadata personinfo-semantic.yaml
@@ -288,9 +302,6 @@ linkml:Nodeidentifier NONLITERAL
 
 <!-- TODO: SPARQL -->
 
-## RDF support is evolving
-
-RDF support in LinkML is evolving, and future versions will have more direct support.
 
 ## More Info
 

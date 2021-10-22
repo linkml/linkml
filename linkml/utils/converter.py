@@ -40,7 +40,7 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
     The instance data must conform to a LinkML model, and there must be python dataclasses
     generated from that model. The converter works by first using a linkml-runtime loader to
     instantiate in-memory model objects, then dumpers are used to serialize.
-    When converting to or from RDF, a JSON-lD context must also be passed
+    When converting to or from RDF, a JSON-LD context must also be passed
     """
     if module is None:
         if schema is None:
@@ -61,13 +61,17 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
 
     inargs = {}
     outargs = {}
-    if input_format == 'rdf':
+    if input_format == 'json-ld':
         if len(context) == 0:
             if schema is not None:
                 context = [_get_context(schema)]
             else:
                 raise Exception('Must pass in context OR schema for RDF output')
         inargs['contexts'] = list(context)[0]
+    if input_format == 'rdf' or input_format == 'ttl':
+        if sv is None:
+            raise Exception(f'Must pass schema arg')
+        inargs['schemaview'] = sv
     if _is_xsv(input_format):
         if index_slot is None:
             index_slot = infer_index_slot(sv, target_class)
@@ -83,13 +87,18 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
         validation.validate_object(obj, schema)
 
     output_format = _get_format(output, output_format, default='json')
-    if output_format == 'rdf':
+    if output_format == 'json-ld':
         if len(context) == 0:
             if schema is not None:
                 context = [_get_context(schema)]
             else:
                 raise Exception('Must pass in context OR schema for RDF output')
         outargs['contexts'] = list(context)
+        outargs['fmt'] = 'json-ld'
+    if output_format == 'rdf' or output_format == 'ttl':
+        if sv is None:
+            raise Exception(f'Must pass schema arg')
+        outargs['schemaview'] = sv
     if _is_xsv(output_format):
         if index_slot is None:
             index_slot = infer_index_slot(sv, target_class)

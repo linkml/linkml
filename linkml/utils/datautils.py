@@ -7,10 +7,12 @@ from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.dumpers.yaml_dumper import YAMLDumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.dumpers.rdf_dumper import RDFDumper
+from linkml_runtime.dumpers.rdflib_dumper import RDFLibDumper
 from linkml_runtime.dumpers.csv_dumper import CSVDumper
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.loaders.json_loader import JSONLoader
 from linkml_runtime.loaders.rdf_loader import RDFLoader
+from linkml_runtime.loaders.rdflib_loader import RDFLibLoader
 from linkml_runtime.loaders.csv_loader import CSVLoader
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.schemaview import SchemaView
@@ -21,7 +23,9 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 dumpers_loaders = {
     'yaml': (YAMLDumper, YAMLLoader),
     'json': (JSONDumper, JSONLoader),
-    'rdf': (RDFDumper, RDFLoader),
+    'rdf': (RDFLibDumper, RDFLibLoader),
+    'ttl': (RDFLibDumper, RDFLibLoader),
+    'json-ld': (RDFDumper, RDFLoader),
     'csv': (CSVDumper, CSVLoader),
     'tsv': (CSVDumper, CSVLoader),
 }

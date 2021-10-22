@@ -15,6 +15,11 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
+  # DATA PREFIXES
+  P: http://example.org/P/
+  ROR: http://example.org/ror/
+  CODE: http://example.org/code/
+  GEO: http://example.org/geoloc/
 default_prefix: personinfo
 default_range: string
 
@@ -149,6 +154,7 @@ classes:
 
   # TODO: annotate that this is a container/root class
   Container:
+    tree_root: true
     slots:
       - persons
       - organizations
