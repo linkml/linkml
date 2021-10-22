@@ -104,6 +104,7 @@
 <span class="kn">from</span> <span class="nn">linkml.generators.protogen</span> <span class="kn">import</span> <span class="n">ProtoGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.pythongen</span> <span class="kn">import</span> <span class="n">PythonGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.rdfgen</span> <span class="kn">import</span> <span class="n">RDFGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.shaclgen</span> <span class="kn">import</span> <span class="n">ShaclGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.shexgen</span> <span class="kn">import</span> <span class="n">ShExGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.sqlddlgen</span> <span class="kn">import</span> <span class="n">SQLDDLGenerator</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.excelgen</span> <span class="kn">import</span> <span class="n">ExcelGenerator</span>
@@ -124,12 +125,13 @@
 <span class="c1">#    &#39;rdf&#39;: (RDFGenerator, &#39;rdf/{name}.ttl&#39;, {}),</span>
 <span class="c1">#    &#39;rdf&#39;: (RDFGenerator, &#39;rdf/{name}.ttl&#39;, {&#39;context&#39;: &#39;{parent}/../jsonld/{name}.context.jsonld&#39;}),</span>
     <span class="s1">&#39;shex&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">ShExGenerator</span><span class="p">,</span> <span class="s1">&#39;shex/</span><span class="si">{name}</span><span class="s1">.shex&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="s1">&#39;shacl&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">ShaclGenerator</span><span class="p">,</span> <span class="s1">&#39;shacl/</span><span class="si">{name}</span><span class="s1">.shacl.ttl&#39;</span><span class="p">,</span> <span class="p">{}),</span>
     <span class="s1">&#39;sqlddl&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">SQLDDLGenerator</span><span class="p">,</span> <span class="s1">&#39;sqlschema/</span><span class="si">{name}</span><span class="s1">.sql&#39;</span><span class="p">,</span> <span class="p">{}),</span>
     <span class="s1">&#39;java&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">SQLDDLGenerator</span><span class="p">,</span> <span class="s1">&#39;java/</span><span class="si">{name}</span><span class="s1">.sql&#39;</span><span class="p">,</span> <span class="p">{}),</span>
     <span class="s1">&#39;excel&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">SQLDDLGenerator</span><span class="p">,</span> <span class="s1">&#39;excel/</span><span class="si">{name}</span><span class="s1">.xlsx&#39;</span><span class="p">,</span> <span class="p">{}),</span>
 <span class="p">}</span>
 
-<div class="viewcode-block" id="get_local_imports"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.projectgen.get_local_imports">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
+<div class="viewcode-block" id="get_local_imports"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.get_local_imports">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">get_local_imports</span><span class="p">(</span><span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;GETTING IMPORTS = </span><span class="si">{</span><span class="n">schema_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">all_imports</span> <span class="o">=</span> <span class="p">[</span><span class="n">schema_path</span><span class="p">]</span>
@@ -143,7 +145,7 @@
                     <span class="n">all_imports</span> <span class="o">+=</span> <span class="n">get_local_imports</span><span class="p">(</span><span class="n">imp_path</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">all_imports</span></div>
 
-<div class="viewcode-block" id="ProjectConfiguration"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="ProjectConfiguration"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.ProjectConfiguration">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ProjectConfiguration</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Global project configuration, and per-generator configurations</span>
@@ -154,9 +156,9 @@
     <span class="n">excludes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">mergeimports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="ProjectGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.projectgen.ProjectGenerator">[docs]</a><span class="k">class</span> <span class="nc">ProjectGenerator</span><span class="p">:</span>
+<div class="viewcode-block" id="ProjectGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.ProjectGenerator">[docs]</a><span class="k">class</span> <span class="nc">ProjectGenerator</span><span class="p">:</span>
 
-<div class="viewcode-block" id="ProjectGenerator.generate"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.projectgen.ProjectGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProjectConfiguration</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()):</span>
+<div class="viewcode-block" id="ProjectGenerator.generate"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.projectgen.ProjectGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProjectConfiguration</span> <span class="o">=</span> <span class="n">ProjectConfiguration</span><span class="p">()):</span>
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Must pass directory&#39;</span><span class="p">)</span>
         <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

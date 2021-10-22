@@ -55,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shacl</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-output">Example Output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
@@ -109,20 +110,171 @@
 <h1>Shacl<a class="headerlink" href="#shacl" title="Permalink to this headline"></a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Not yet implemented!</p>
+<p>Beta implementation, some features may change</p>
 </div>
+<section id="example-output">
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/shacl/personinfo.shacl.ttl">personinfo.shacl.ttl</a></p>
+</section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p><a class="reference external" href="https://www.w3.org/TR/shacl/">SHACL</a> (Shapes Constraint Language) is a language for validating RDF graphs against a set of conditions</p>
+<p>To run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml &gt; personinfo.schema.json
+</pre></div>
+</div>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
-<p>Coming soon!</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">NamedThing</span><span class="p">:</span>
+  <span class="nt">slots</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
+
+<span class="nt">HasAliases</span><span class="p">:</span>
+  <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">attributes</span><span class="p">:</span>
+    <span class="nt">aliases</span><span class="p">:</span>
+      <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">Person</span><span class="p">:</span>
+  <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
+  <span class="nt">mixins</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
+  <span class="nt">slots</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
+</pre></div>
+</div>
+<p>..code-block:: turtle</p>
+<blockquote>
+<div><dl>
+<dt>&lt;<a class="reference external" href="https://w3id.org/linkml/tests/kitchen_sink/Person">https://w3id.org/linkml/tests/kitchen_sink/Person</a>&gt; a shacl:NodeShape ;</dt><dd><p>shacl:closed true ;
+shacl:ignoredProperties ( rdf:type ) ;
+shacl:property [ shacl:class &lt;https://w3id.org/linkml/tests/kitchen_sink/BirthEvent&gt; ;</p>
+<blockquote>
+<div><blockquote>
+<div><p>shacl:maxCount 1 ;
+shacl:nodeKind shacl:BlankNode ;
+shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/has_birth_event&gt; ],</p>
+</div></blockquote>
+<dl class="simple">
+<dt>[ shacl:maxCount 1 ;</dt><dd><p>shacl:maxInclusive 999 ;
+shacl:minInclusive 0 ;
+shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/age_in_years&gt; ],</p>
+</dd>
+<dt>[ shacl:class &lt;https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship&gt; ;</dt><dd><p>shacl:nodeKind shacl:BlankNode ;
+shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships&gt; ],</p>
+</dd>
+<dt>[ shacl:maxCount 1 ;</dt><dd><p>shacl:path &lt;https://w3id.org/linkml/tests/core/name&gt; ;
+shacl:pattern “^\S+ \S+” ],</p>
+</dd>
+<dt>[ shacl:class &lt;https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent&gt; ;</dt><dd><p>shacl:nodeKind shacl:BlankNode ;
+shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/has_medical_history&gt; ],</p>
+</dd>
+<dt>[ shacl:class &lt;https://w3id.org/linkml/tests/kitchen_sink/Address&gt; ;</dt><dd><p>shacl:nodeKind shacl:BlankNode ;
+shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/addresses&gt; ],</p>
+</dd>
+<dt>[ shacl:maxCount 1 ;</dt><dd><p>shacl:path &lt;https://w3id.org/linkml/tests/core/id&gt; ],</p>
+</dd>
+</dl>
+<p>[ shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/aliases&gt; ],
+[ shacl:class &lt;https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent&gt; ;</p>
+<blockquote>
+<div><p>shacl:nodeKind shacl:BlankNode ;
+shacl:path &lt;https://w3id.org/linkml/tests/kitchen_sink/has_employment_history&gt; ] ;</p>
+</div></blockquote>
+</div></blockquote>
+<p>shacl:targetClass &lt;https://w3id.org/linkml/tests/kitchen_sink/Person&gt; .</p>
+</dd>
+</dl>
+</div></blockquote>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-shacl">
+<h4>gen-shacl<a class="headerlink" href="#gen-shacl" title="Permalink to this headline"></a></h4>
+<p>Generate SHACL turtle from a LinkML model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-shacl <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-f">
+<span id="cmdoption-gen-shacl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-shacl-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=ttl)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>ttl</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-metadata">
+<span id="cmdoption-gen-shacl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-shacl-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-useuris">
+<span id="cmdoption-gen-shacl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-shacl-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-im">
+<span id="cmdoption-gen-shacl-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-shacl-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-log_level">
+<span id="cmdoption-gen-shacl-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-shacl-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-mergeimports">
+<span id="cmdoption-gen-shacl-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-shacl-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-shacl-arg-YAMLFILE">
+<span id="cmdoption-gen-shacl-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-shacl-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.shaclgen.ShaclGenerator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">linkml.generators.shaclgen.</span></span><span class="sig-name descname"><span class="pre">ShaclGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'ttl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/shaclgen.html#ShaclGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.shaclgen.ShaclGenerator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.shaclgen.ShaclGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml/generators/shaclgen.html#ShaclGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.shaclgen.ShaclGenerator.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>

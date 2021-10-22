@@ -293,6 +293,113 @@ identifier for a <code class="docutils literal notranslate"><span class="pre">Pe
 </div>
 <p>Thus the JSON-Schema loses some information that is useful for
 validation, and for understanding of the schema.</p>
+<p>LinkML also supports the ability to inline multivalued slots as
+dictionaries, where the key is the object identifier. See <a class="reference external" href="../schemas/inlining">Inlining</a></p>
+<p>This example schema supports inlining a list of people as a dictionary:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+  <span class="nt">Container</span><span class="p">:</span>
+    <span class="nt">tree_root</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">persons</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+  <span class="nt">Person</span><span class="p">:</span>
+    <span class="nt">attributes</span><span class="p">:</span>
+      <span class="nt">name</span><span class="p">:</span>
+        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="nt">age</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+      <span class="nt">gender</span><span class="p">:</span>
+        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
+        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>The following data is conformant according to LinkML semantics:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+ <span class="nt">&quot;persons&quot;</span><span class="p">:</span>
+   <span class="p">{</span>
+     <span class="nt">&quot;Bob&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+         <span class="nt">&quot;gender&quot;</span><span class="p">:</span> <span class="s2">&quot;male&quot;</span>
+     <span class="p">},</span>
+     <span class="nt">&quot;Alice&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span>
+         <span class="nt">&quot;gender&quot;</span><span class="p">:</span> <span class="s2">&quot;female&quot;</span>
+     <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This presents an additional complication when generating JSON-Schema:
+semantically the <code class="docutils literal notranslate"><span class="pre">name</span></code> field is required (all identifiers are
+automatically required in json-schema). However, we don’t want it to
+be required <em>in the body of the dictionary</em> since it is already
+present as a key.</p>
+<p>The JSON-Schema generator takes care of this for you by making an
+alternative “laxer” version of the Person class that is used for
+validating the body of the <code class="docutils literal notranslate"><span class="pre">persons</span></code> dict.</p>
+<p>This is what the underlying JSON-Schema looks like:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;Person&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+         <span class="p">},</span>
+         <span class="nt">&quot;gender&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+         <span class="p">},</span>
+         <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;age&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;gender&quot;</span>
+      <span class="p">],</span>
+      <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;Person__identifier_optional&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+         <span class="p">},</span>
+         <span class="nt">&quot;gender&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+         <span class="p">},</span>
+         <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+         <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+         <span class="s2">&quot;age&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;gender&quot;</span>
+      <span class="p">],</span>
+      <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+   <span class="p">}</span>
+<span class="p">},</span>
+<span class="nt">&quot;$id&quot;</span><span class="p">:</span> <span class="s2">&quot;http://example.org&quot;</span><span class="p">,</span>
+<span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span>
+<span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+<span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;persons&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="p">{</span>
+         <span class="nt">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/$defs/Person__identifier_optional&quot;</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">},</span>
+<span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;example.org&quot;</span><span class="p">,</span>
+<span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
+</pre></div>
+</div>
 </section>
 <section id="patterns">
 <h3>Patterns<a class="headerlink" href="#patterns" title="Permalink to this headline"></a></h3>

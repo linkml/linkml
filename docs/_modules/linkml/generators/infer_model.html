@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> linkml
-            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -39,18 +38,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
 </ul>
 
@@ -94,7 +89,7 @@
 <span class="kn">from</span> <span class="nn">dateutil.parser</span> <span class="kn">import</span> <span class="n">parse</span>
 
 
-<div class="viewcode-block" id="infer_model"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.infer_model">[docs]</a><span class="k">def</span> <span class="nf">infer_model</span><span class="p">(</span><span class="n">tsvfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s1">&#39;example&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="infer_model"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.infer_model">[docs]</a><span class="k">def</span> <span class="nf">infer_model</span><span class="p">(</span><span class="n">tsvfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s1">&#39;example&#39;</span><span class="p">,</span>
                 <span class="n">schema_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;example&#39;</span><span class="p">,</span>
                 <span class="n">enum_columns</span><span class="o">=</span><span class="p">[],</span>
                 <span class="n">enum_threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
@@ -155,7 +150,7 @@
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">schema</span></div>
 
-<div class="viewcode-block" id="infer_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.infer_range">[docs]</a><span class="k">def</span> <span class="nf">infer_range</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="infer_range"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.infer_range">[docs]</a><span class="k">def</span> <span class="nf">infer_range</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">vals</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">nn_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nn_vals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;string&#39;</span>
@@ -176,14 +171,14 @@
             <span class="k">return</span> <span class="n">t</span>
     <span class="k">return</span> <span class="s1">&#39;string&#39;</span></div>
 
-<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="get_db"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.get_db">[docs]</a><span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">parts</span> <span class="o">=</span> <span class="nb">id</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="is_date"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.is_date">[docs]</a><span class="k">def</span> <span class="nf">is_date</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">fuzzy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="is_date"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.is_date">[docs]</a><span class="k">def</span> <span class="nf">is_date</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">fuzzy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return whether the string can be interpreted as a date.</span>
 
@@ -197,13 +192,13 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Hit"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.Hit">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="Hit"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.Hit">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Hit</span><span class="p">():</span>
     <span class="n">term_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">score</span><span class="p">:</span> <span class="nb">float</span></div>
 
-<div class="viewcode-block" id="get_pv_element"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.get_pv_element">[docs]</a><span class="k">def</span> <span class="nf">get_pv_element</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">zooma_confidence</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="n">Hit</span><span class="p">:</span>
+<div class="viewcode-block" id="get_pv_element"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.get_pv_element">[docs]</a><span class="k">def</span> <span class="nf">get_pv_element</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">zooma_confidence</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="n">Hit</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    uses ZOOMA to guess a meaning of an enum permissible value</span>
 
@@ -268,13 +263,13 @@
 
 
 
-<div class="viewcode-block" id="convert_range"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.convert_range">[docs]</a><span class="k">def</span> <span class="nf">convert_range</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="convert_range"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.convert_range">[docs]</a><span class="k">def</span> <span class="nf">convert_range</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">t</span> <span class="o">=</span> <span class="s1">&#39;string&#39;</span>
     <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
     <span class="k">return</span> <span class="n">t</span></div>
 
-<div class="viewcode-block" id="infer_enum_meanings"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.infer_model.infer_enum_meanings">[docs]</a><span class="k">def</span> <span class="nf">infer_enum_meanings</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<div class="viewcode-block" id="infer_enum_meanings"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.infer_model.infer_enum_meanings">[docs]</a><span class="k">def</span> <span class="nf">infer_enum_meanings</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                         <span class="n">zooma_confidence</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;MEDIUM&#39;</span><span class="p">,</span>
                         <span class="n">cache</span><span class="o">=</span><span class="p">{})</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">e</span> <span class="ow">in</span> <span class="n">schema</span><span class="p">[</span><span class="s1">&#39;enums&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

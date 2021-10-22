@@ -20,6 +20,14 @@ linkml.generators.dotgen module
    :undoc-members:
    :show-inheritance:
 
+linkml.generators.excelgen module
+---------------------------------
+
+.. automodule:: linkml.generators.excelgen
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 linkml.generators.flattener module
 ----------------------------------
 
@@ -48,6 +56,14 @@ linkml.generators.infer\_model module
 -------------------------------------
 
 .. automodule:: linkml.generators.infer_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+linkml.generators.javagen module
+--------------------------------
+
+.. automodule:: linkml.generators.javagen
    :members:
    :undoc-members:
    :show-inheritance:
@@ -100,6 +116,14 @@ linkml.generators.namespacegen module
    :undoc-members:
    :show-inheritance:
 
+linkml.generators.oocodegen module
+----------------------------------
+
+.. automodule:: linkml.generators.oocodegen
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 linkml.generators.owlgen module
 -------------------------------
 
@@ -132,6 +156,14 @@ linkml.generators.protogen module
    :undoc-members:
    :show-inheritance:
 
+linkml.generators.pydanticgen module
+------------------------------------
+
+.. automodule:: linkml.generators.pydanticgen
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 linkml.generators.pythongen module
 ----------------------------------
 
@@ -144,6 +176,14 @@ linkml.generators.rdfgen module
 -------------------------------
 
 .. automodule:: linkml.generators.rdfgen
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+linkml.generators.shaclgen module
+---------------------------------
+
+.. automodule:: linkml.generators.shaclgen
    :members:
    :undoc-members:
    :show-inheritance:

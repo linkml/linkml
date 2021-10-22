@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> linkml
-            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -39,18 +38,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
 </ul>
 
@@ -99,7 +94,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 
 
-<div class="viewcode-block" id="JSONLDGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator">[docs]</a><span class="k">class</span> <span class="nc">JSONLDGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONLDGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator">[docs]</a><span class="k">class</span> <span class="nc">JSONLDGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.2&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;jsonld&#39;</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">]</span>      <span class="c1"># jsonld includes @type and @context.  json is pure JSON</span>
@@ -150,7 +145,7 @@
                 <span class="n">TypeDefinitionName</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="JSONLDGenerator.adjust_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.adjust_slot">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="JSONLDGenerator.adjust_slot"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.adjust_slot">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
             <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
@@ -161,7 +156,7 @@
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mappings&#39;</span><span class="p">,</span> <span class="s1">&#39;exact_mappings&#39;</span><span class="p">,</span> <span class="s1">&#39;broad_mappings&#39;</span><span class="p">,</span> <span class="s1">&#39;close_mappings&#39;</span><span class="p">,</span> <span class="s1">&#39;narrow_mappings&#39;</span><span class="p">,</span> <span class="s1">&#39;related_mappings&#39;</span><span class="p">]:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">f</span><span class="p">)])</span></div>
 
-<div class="viewcode-block" id="JSONLDGenerator.visit_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="JSONLDGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
         <span class="c1"># Slot usage is a construction artifact</span>
@@ -169,18 +164,18 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="JSONLDGenerator.visit_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="JSONLDGenerator.visit_slot"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adjust_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="JSONLDGenerator.visit_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_type">[docs]</a>    <span class="k">def</span> <span class="nf">visit_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="JSONLDGenerator.visit_type"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_type">[docs]</a>    <span class="k">def</span> <span class="nf">visit_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
         <span class="n">typ</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="JSONLDGenerator.visit_subset"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_subset">[docs]</a>    <span class="k">def</span> <span class="nf">visit_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss</span><span class="p">:</span> <span class="n">SubsetDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="JSONLDGenerator.visit_subset"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_subset">[docs]</a>    <span class="k">def</span> <span class="nf">visit_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss</span><span class="p">:</span> <span class="n">SubsetDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="JSONLDGenerator.end_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.end_schema">[docs]</a>    <span class="k">def</span> <span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="JSONLDGenerator.end_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonldgen.JSONLDGenerator.end_schema">[docs]</a>    <span class="k">def</span> <span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="n">base_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">()</span>
 

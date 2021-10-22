@@ -4,6 +4,14 @@ linkml.utils package
 Submodules
 ----------
 
+linkml.utils.converter module
+-----------------------------
+
+.. automodule:: linkml.utils.converter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 linkml.utils.datautils module
 -----------------------------
 
@@ -12,10 +20,34 @@ linkml.utils.datautils module
    :undoc-members:
    :show-inheritance:
 
+linkml.utils.datavalidator module
+---------------------------------
+
+.. automodule:: linkml.utils.datavalidator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+linkml.utils.execute\_tutorial module
+-------------------------------------
+
+.. automodule:: linkml.utils.execute_tutorial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 linkml.utils.generator module
 -----------------------------
 
 .. automodule:: linkml.utils.generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+linkml.utils.helpers module
+---------------------------
+
+.. automodule:: linkml.utils.helpers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -60,26 +92,10 @@ linkml.utils.schemasynopsis module
    :undoc-members:
    :show-inheritance:
 
-linkml.utils.schemautils module
--------------------------------
+linkml.utils.sqltransformer\_old module
+---------------------------------------
 
-.. automodule:: linkml.utils.schemautils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-linkml.utils.sparqlvalidator module
------------------------------------
-
-.. automodule:: linkml.utils.sparqlvalidator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-linkml.utils.sqltransformer module
-----------------------------------
-
-.. automodule:: linkml.utils.sqltransformer
+.. automodule:: linkml.utils.sqltransformer_old
    :members:
    :undoc-members:
    :show-inheritance:

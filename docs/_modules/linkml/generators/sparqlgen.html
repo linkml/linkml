@@ -39,13 +39,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -185,7 +182,7 @@
 <span class="s2">   {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="materialize_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sparqlgen.materialize_schema">[docs]</a><span class="k">def</span> <span class="nf">materialize_schema</span><span class="p">(</span><span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">):</span>
+<div class="viewcode-block" id="materialize_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sparqlgen.materialize_schema">[docs]</a><span class="k">def</span> <span class="nf">materialize_schema</span><span class="p">(</span><span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">):</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span>
     <span class="k">if</span> <span class="s1">&#39;rdf&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="s1">&#39;rdf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Prefix</span><span class="p">(</span><span class="s1">&#39;rdf&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">uri</span><span class="p">))</span>
@@ -206,7 +203,7 @@
             <span class="n">c</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
             <span class="n">s</span><span class="o">.</span><span class="n">slot_uri</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SparqlGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator">[docs]</a><span class="k">class</span> <span class="nc">SparqlGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="SparqlGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator">[docs]</a><span class="k">class</span> <span class="nc">SparqlGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sparql&#39;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
@@ -226,7 +223,7 @@
         <span class="n">queries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sparql</span><span class="p">(</span><span class="n">named_graphs</span><span class="o">=</span><span class="n">named_graphs</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queries</span> <span class="o">=</span> <span class="n">queries</span>
 
-<div class="viewcode-block" id="SparqlGenerator.generate_sparql"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.generate_sparql">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sparql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">named_graphs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SparqlGenerator.generate_sparql"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.generate_sparql">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sparql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">named_graphs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
         <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">named_graphs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -241,7 +238,7 @@
         <span class="n">queries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_sparql</span><span class="p">(</span><span class="n">sparql</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">queries</span></div>
 
-<div class="viewcode-block" id="SparqlGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="SparqlGenerator.serialize"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">directory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">qn</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -250,7 +247,7 @@
                     <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparql</span></div>
 
-<div class="viewcode-block" id="SparqlGenerator.split_sparql"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.split_sparql">[docs]</a>    <span class="k">def</span> <span class="nf">split_sparql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sparql</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="SparqlGenerator.split_sparql"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sparqlgen.SparqlGenerator.split_sparql">[docs]</a>    <span class="k">def</span> <span class="nf">split_sparql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sparql</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">sparql</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">prolog</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="n">queries</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
