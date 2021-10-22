@@ -89,7 +89,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.context_utils</span> <span class="kn">import</span> <span class="n">CONTEXTS_PARAM_TYPE</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">remove_empty_items</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">as_json_object</span>
-
+<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span>
 
 <div class="viewcode-block" id="JSONDumper"><a class="viewcode-back" href="../../../code.html#linkml_runtime.dumpers.json_dumper.JSONDumper">[docs]</a><span class="k">class</span> <span class="nc">JSONDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">):</span>
 
@@ -135,7 +135,41 @@
 <span class="sd">        :param obj:</span>
 <span class="sd">        :return: copy of dictionary with empty lists/dicts and Nones removed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">formatutils</span><span class="o">.</span><span class="n">remove_empty_items</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">hide_protected_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">formatutils</span><span class="o">.</span><span class="n">remove_empty_items</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">hide_protected_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_json_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">contexts</span><span class="p">:</span> <span class="n">CONTEXTS_PARAM_TYPE</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObj</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        As dumps(), except returns a JsonObj, not a string</span>
+
+<span class="sd">        :param element: LinkML object to be emitted</span>
+<span class="sd">        :param contexts: JSON-LD context(s) in the form of:</span>
+<span class="sd">            * file name</span>
+<span class="sd">            * URL</span>
+<span class="sd">            * JSON String</span>
+<span class="sd">            * dict</span>
+<span class="sd">            * JSON Object</span>
+<span class="sd">            * A list containing elements of any type named above</span>
+<span class="sd">        :param inject_type: if True (default), add a @type at the top level</span>
+<span class="sd">        :return: JSON Object representing the element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">as_json_object</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">contexts</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="n">inject_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObj</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        As dumps(), except returns a JsonObj, not a string</span>
+
+<span class="sd">        :param element: LinkML object to be emitted</span>
+<span class="sd">        :param contexts: JSON-LD context(s) in the form of:</span>
+<span class="sd">            * file name</span>
+<span class="sd">            * URL</span>
+<span class="sd">            * JSON String</span>
+<span class="sd">            * dict</span>
+<span class="sd">            * JSON Object</span>
+<span class="sd">            * A list containing elements of any type named above</span>
+<span class="sd">        :param inject_type: if True (default), add a @type at the top level</span>
+<span class="sd">        :return: JSON Object representing the element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">inject_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
 </pre></div>
 
            </div>

@@ -9,18 +9,9 @@ Subpackages
 
    linkml.generators
    linkml.reporting
+   linkml.transformers
    linkml.utils
-
-Submodules
-----------
-
-linkml.cli module
------------------
-
-.. automodule:: linkml.cli
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   linkml.validators
 
 Module contents
 ---------------

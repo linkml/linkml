@@ -108,7 +108,7 @@
              
   <section id="excel-spreadsheet">
 <h1>Excel Spreadsheet<a class="headerlink" href="#excel-spreadsheet" title="Permalink to this headline"></a></h1>
-<p>This feature is still in development.</p>
+<p>This generator allows you to create a spreadsheet representation of your LinkML schema.</p>
 <section id="example-output">
 <h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
 <p>Using the Person LinkML <a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo.yaml">schema</a> as
@@ -122,10 +122,11 @@ input, the generated Excel spreadsheet looks as follows: <a class="reference ext
 </div>
 <p>Currently, in the generated Excel workbook there can be one or more associated worksheets, each corresponding to classes
 from the LinkML schema.</p>
-<p>Note that this works best for “flat” or denormalized schemas</p>
-<p>Support to be added:</p>
+<p>The generator also supports validation at the enum level. In that, each slot with a range property
+that is of enum type will have associated drop downs for all cells corresponding to that slot in the excel spreadsheet.</p>
+<p>Note: It works best for “flat” or denormalized schemas.</p>
+<p>Additional validation support to be added:</p>
 <ul class="simple">
-<li><p>If the range of a slot is an enum, the possible values for a field will be constrained through a dropdown</p></li>
 <li><p>Color schemes to indicate whether a field is required or recommended</p></li>
 <li><p>Constraints based on the range of a slot, e.g. constraining int fields to be numbers</p></li>
 <li><p>Tooltip notes describing what each field indicates</p></li>

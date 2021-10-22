@@ -51,7 +51,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#adding-uris-to-our-schema">Adding URIs to our schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#json-ld-contexts">JSON-LD contexts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-shape-languages">Using Shape Languages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#rdf-support-is-evolving">RDF support is evolving</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#more-info">More Info</a></li>
 </ul>
 </li>
@@ -114,14 +113,19 @@ schema elements can help make your data FAIR, and in particular can
 serve as hooks to interoperate data!</p>
 <section id="example-schema">
 <h2>Example schema<a class="headerlink" href="#example-schema" title="Permalink to this headline"></a></h2>
-<p>Let’s start with the schema we developed in the previous section:</p>
+<p>Let’s start with the schema we developed in the previous section, with some minor modifications:</p>
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
 <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
 <span class="nt">prefixes</span><span class="p">:</span>
   <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
+  <span class="nt">personinfo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
+  <span class="nt">ORCID</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span>
+<span class="nt">default_curi_maps</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">semweb_context</span>
 <span class="nt">imports</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+<span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
 <span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
   
 <span class="nt">classes</span><span class="p">:</span>
@@ -151,7 +155,12 @@ serve as hooks to interoperate data!</p>
         <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
 </pre></div>
 </div>
-<p>As well as a collection of person records</p>
+<p>We extended the previous schema in a few ways:</p>
+<ul class="simple">
+<li><p>we included a <em>prefix declaration</em> for the ORCID IDs in our data records</p></li>
+<li><p>we included an import of standard semantic web prefixes from <code class="docutils literal notranslate"><span class="pre">semweb_context</span></code></p></li>
+</ul>
+<p>We will use this schema with a collection of data records</p>
 <p>data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
@@ -169,21 +178,23 @@ serve as hooks to interoperate data!</p>
 </div>
 <p>Outputs:</p>
 <div class="highlight-ttl notranslate"><div class="highlight"><pre><span></span>@<span class="nv">prefix</span> <span class="nv">ns1</span>: <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">w3id</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">linkml</span><span class="o">/</span><span class="nv">examples</span><span class="o">/</span><span class="nv">personinfo</span><span class="o">/&gt;</span> .
+@<span class="nv">prefix</span> <span class="nv">xsd</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">www</span>.<span class="nv">w3</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">2001</span><span class="o">/</span><span class="nv">XMLSchema</span>#<span class="o">&gt;</span> .
 
-<span class="o">&lt;</span><span class="nv">ORCID</span>:<span class="mi">1234</span><span class="o">&gt;</span> <span class="nv">ns1</span>:<span class="nv">age</span> <span class="s2">&quot;</span><span class="s">33</span><span class="s2">&quot;</span> <span class="c1">;</span>
+<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
+    <span class="nv">ns1</span>:<span class="nv">age</span> <span class="mi">33</span> <span class="c1">;</span>
     <span class="nv">ns1</span>:<span class="nv">full_name</span> <span class="s2">&quot;</span><span class="s">Clark Kent</span><span class="s2">&quot;</span> <span class="c1">;</span>
     <span class="nv">ns1</span>:<span class="nv">phone</span> <span class="s2">&quot;</span><span class="s">555-555-5555</span><span class="s2">&quot;</span> .
 
-<span class="o">&lt;</span><span class="nv">ORCID</span>:<span class="mi">4567</span><span class="o">&gt;</span> <span class="nv">ns1</span>:<span class="nv">age</span> <span class="s2">&quot;</span><span class="s">34</span><span class="s2">&quot;</span> <span class="c1">;</span>
+<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
+    <span class="nv">ns1</span>:<span class="nv">age</span> <span class="mi">34</span> <span class="c1">;</span>
     <span class="nv">ns1</span>:<span class="nv">full_name</span> <span class="s2">&quot;</span><span class="s">Lois Lane</span><span class="s2">&quot;</span> .
 
-[] <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">dict</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">persons</span> <span class="o">&lt;</span><span class="nv">ORCID</span>:<span class="mi">1234</span><span class="o">&gt;</span>,
-        <span class="o">&lt;</span><span class="nv">ORCID</span>:<span class="mi">4567</span><span class="o">&gt;</span> .
+[] <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Container</span> <span class="c1">;</span>
+    <span class="nv">ns1</span>:<span class="nv">persons</span> <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span>,
+        <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> .
 </pre></div>
 </div>
 <p>This is a start, but it is not ideal - there are existing vocabularies such as <a class="reference external" href="http://schema.org">schema.org</a> we could be reusing.</p>
-<p>There are also some serious problems - there URIs for our two people are not syntactically valid. We need to provide additional information</p>
 </section>
 <section id="adding-uris-to-our-schema">
 <h2>Adding URIs to our schema<a class="headerlink" href="#adding-uris-to-our-schema" title="Permalink to this headline"></a></h2>
@@ -203,6 +214,9 @@ serve as hooks to interoperate data!</p>
   <span class="nt">ORCID</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span>
 <span class="nt">imports</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+<span class="nt">default_curi_maps</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">semweb_context</span>
+<span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
 <span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
   
 <span class="nt">classes</span><span class="p">:</span>
@@ -242,18 +256,21 @@ serve as hooks to interoperate data!</p>
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-ttl notranslate"><div class="highlight"><pre><span></span>@<span class="nv">prefix</span> <span class="nv">ns1</span>: <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">w3id</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">linkml</span><span class="o">/</span><span class="nv">examples</span><span class="o">/</span><span class="nv">personinfo</span><span class="o">/&gt;</span> .
-@<span class="nv">prefix</span> <span class="nv">ns2</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">schema</span>.<span class="nv">org</span><span class="o">/&gt;</span> .
+<div class="highlight-ttl notranslate"><div class="highlight"><pre><span></span>@<span class="nv">prefix</span> <span class="nv">ns1</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">schema</span>.<span class="nv">org</span><span class="o">/&gt;</span> .
+@<span class="nv">prefix</span> <span class="nv">ns2</span>: <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">w3id</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">linkml</span><span class="o">/</span><span class="nv">examples</span><span class="o">/</span><span class="nv">personinfo</span><span class="o">/&gt;</span> .
+@<span class="nv">prefix</span> <span class="nv">xsd</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">www</span>.<span class="nv">w3</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">2001</span><span class="o">/</span><span class="nv">XMLSchema</span>#<span class="o">&gt;</span> .
 
-<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span> <span class="nv">ns2</span>:<span class="nv">name</span> <span class="s2">&quot;</span><span class="s">Clark Kent</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns2</span>:<span class="nv">telephone</span> <span class="s2">&quot;</span><span class="s">555-555-5555</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">age</span> <span class="s2">&quot;</span><span class="s">33</span><span class="s2">&quot;</span> .
+<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
+    <span class="nv">ns1</span>:<span class="nv">name</span> <span class="s2">&quot;</span><span class="s">Clark Kent</span><span class="s2">&quot;</span> <span class="c1">;</span>
+    <span class="nv">ns1</span>:<span class="nv">telephone</span> <span class="s2">&quot;</span><span class="s">555-555-5555</span><span class="s2">&quot;</span> <span class="c1">;</span>
+    <span class="nv">ns2</span>:<span class="nv">age</span> <span class="mi">33</span> .
 
-<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> <span class="nv">ns2</span>:<span class="nv">name</span> <span class="s2">&quot;</span><span class="s">Lois Lane</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">age</span> <span class="s2">&quot;</span><span class="s">34</span><span class="s2">&quot;</span> .
+<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
+    <span class="nv">ns1</span>:<span class="nv">name</span> <span class="s2">&quot;</span><span class="s">Lois Lane</span><span class="s2">&quot;</span> <span class="c1">;</span>
+    <span class="nv">ns2</span>:<span class="nv">age</span> <span class="mi">34</span> .
 
-[] <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">dict</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">persons</span> <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span>,
+[] <span class="nv">a</span> <span class="nv">ns2</span>:<span class="nv">Container</span> <span class="c1">;</span>
+    <span class="nv">ns2</span>:<span class="nv">persons</span> <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span>,
         <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> .
 </pre></div>
 </div>
@@ -261,12 +278,7 @@ serve as hooks to interoperate data!</p>
 </section>
 <section id="json-ld-contexts">
 <h2>JSON-LD contexts<a class="headerlink" href="#json-ld-contexts" title="Permalink to this headline"></a></h2>
-<p>Behind the scenes, the linkml-convert tool is using JSON-LD contexts to convert from JSON to RDF. This is in the following parts:</p>
-<ul class="simple">
-<li><p>A JSON-LD context is generated from the schema</p></li>
-<li><p>the native JSON representation is enhanced with this context, to make it JSON-LD</p></li>
-<li><p>A standard JSON-LD converter (in this case, rdflib) is used to convert to RDF</p></li>
-</ul>
+<p>You can also generate JSON-LD context files that can be used to add semantics to JSON documents:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context --no-metadata personinfo-semantic.yaml
 </pre></div>
 </div>
@@ -360,10 +372,6 @@ serve as hooks to interoperate data!</p>
 </pre></div>
 </div>
 <!-- TODO: SPARQL -->
-</section>
-<section id="rdf-support-is-evolving">
-<h2>RDF support is evolving<a class="headerlink" href="#rdf-support-is-evolving" title="Permalink to this headline"></a></h2>
-<p>RDF support in LinkML is evolving, and future versions will have more direct support.</p>
 </section>
 <section id="more-info">
 <h2>More Info<a class="headerlink" href="#more-info" title="Permalink to this headline"></a></h2>

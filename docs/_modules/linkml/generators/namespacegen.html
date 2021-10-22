@@ -39,13 +39,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -89,19 +86,19 @@
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">shared_arguments</span>
 
 
-<div class="viewcode-block" id="NamespaceGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator">[docs]</a><span class="k">class</span> <span class="nc">NamespaceGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
+<div class="viewcode-block" id="NamespaceGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator">[docs]</a><span class="k">class</span> <span class="nc">NamespaceGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="n">PYTHON_GEN_VERSION</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="NamespaceGenerator.gen_namespaces"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.gen_namespaces">[docs]</a>    <span class="k">def</span> <span class="nf">gen_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="NamespaceGenerator.gen_namespaces"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.gen_namespaces">[docs]</a>    <span class="k">def</span> <span class="nf">gen_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n\t\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
             <span class="sa">f</span><span class="s2">&quot;CurieNamespace(&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">pfx</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;),&quot;</span>
             <span class="k">for</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">)</span> <span class="k">if</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span>
         <span class="p">])</span></div>
 
-<div class="viewcode-block" id="NamespaceGenerator.gen_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.gen_schema">[docs]</a>    <span class="k">def</span> <span class="nf">gen_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="NamespaceGenerator.gen_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.gen_schema">[docs]</a>    <span class="k">def</span> <span class="nf">gen_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">split_descripton</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">#              &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split_line</span><span class="p">(</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">),</span> <span class="n">split_len</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
         <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;# Auto generated from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s1"> by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorname</span><span class="si">}</span><span class="s1"> version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorversion</span><span class="si">}</span><span class="s1"></span>
 <span class="s1"># Generation date: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="si">}</span><span class="s1"></span>
