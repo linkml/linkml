@@ -1,0 +1,2 @@
+include versioneer.py
+include linkml/_version.py

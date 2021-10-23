@@ -68,3 +68,6 @@ BIOLINK_MODEL_PYTHON_LOC = "biolink.model"
 
 TurtleSerializer.roundtrip_prefixes = ['']
 
+
+from . import _version
+__version__ = _version.get_versions()['version']
