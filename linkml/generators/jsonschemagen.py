@@ -74,6 +74,7 @@ class JsonSchemaGenerator(Generator):
         self.schemaobj['$schema'] = "http://json-schema.org/draft-07/schema#"
         self.schemaobj['$id'] = self.schema.id
         self.schemaobj['$defs'] = JsonObj()
+        self.schemaobj['required'] = []
 
     def end_schema(self, **_) -> None:
         # create more lax version of every class that is used as an inlined dict reference;
@@ -192,6 +193,9 @@ class JsonSchemaGenerator(Generator):
         if self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name) or \
                 self.topCls is None and cls.tree_root:
             self.schemaobj.properties[underscore(aliased_slot_name)] = prop
+            
+            if slot.required:
+                self.schemaobj.required.append(aliased_slot_name)
 
 
 @shared_arguments(JsonSchemaGenerator)
