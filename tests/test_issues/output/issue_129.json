@@ -119,6 +119,9 @@
          "type": "array"
       }
    },
+   "required": [
+      "id"
+   ],
    "title": "types",
    "type": "object"
 }

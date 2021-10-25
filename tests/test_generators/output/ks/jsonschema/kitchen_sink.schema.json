@@ -568,6 +568,7 @@
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
    "properties": {},
+   "required": [],
    "title": "kitchen_sink",
    "type": "object"
 }

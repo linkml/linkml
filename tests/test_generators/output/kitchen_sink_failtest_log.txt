@@ -469,6 +469,7 @@ Failed validating 'additionalProperties' in schema:
                                   'type': 'array'},
                     'persons': {'items': {'$ref': '#/$defs/Person'},
                                 'type': 'array'}},
+     'required': [],
      'title': 'kitchen_sink',
      'type': 'object'}
 

@@ -592,6 +592,7 @@
          "type": "array"
       }
    },
+   "required": [],
    "title": "kitchen_sink",
    "type": "object"
 }

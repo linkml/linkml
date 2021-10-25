@@ -39,6 +39,7 @@
          "type": "integer"
       }
    },
+   "required": [],
    "title": "issue177",
    "type": "object"
 }
