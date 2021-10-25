@@ -190,10 +190,10 @@ class JsonSchemaGenerator(Generator):
         if slot.maximum_value is not None:
             prop.maximum = slot.maximum_value
         self.clsobj.properties[underscore(aliased_slot_name)] = prop
-        if self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name) or \
-                self.topCls is None and cls.tree_root:
+        if (self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name)) or \
+                (self.topCls is None and cls.tree_root):
             self.schemaobj.properties[underscore(aliased_slot_name)] = prop
-            
+
             if slot.required:
                 self.schemaobj.required.append(aliased_slot_name)
 
