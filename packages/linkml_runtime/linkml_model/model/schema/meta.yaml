@@ -533,7 +533,52 @@ slots:
     exact_mappings:
       - sh:and
     status: testing
-        
+
+  preconditions:
+    aliases:
+      - if
+      - body
+      - antecedents
+    slot_uri: sh:condition
+    description: an expression that must hold in order for the rule to be applicable to an instance
+    range: anonymous_class_expression
+    inlined: true
+    close_mappings:
+      - swrl:body
+  postconditions:
+    aliases:
+      - then
+      - head
+      - consequents
+    description: an expression that must hold for an instance of the class, if the preconditions hold
+    range: anonymous_class_expression
+    inlined: true
+    close_mappings:
+      - swrl:body
+  elseconditions:
+    aliases:
+      - else
+    description: an expression that must hold for an instance of the class, if the preconditions no not hold
+    range: anonymous_class_expression
+    inlined: true
+  bidirectional:
+    aliases:
+      - iff
+      - if and only if
+    description: in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+    range: boolean
+  open_world:
+    description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
+    range: boolean
+  precedence:
+    description: the relative order in which the rule is applied
+    slot_uri: sh:order
+    range: integer
+  deactivated:
+    description: a deactivated rule is not executed by the rules engine
+    slot_uri: sh:deactivated
+    range: boolean
+    
   rules:
     slot_uri: sh:rule
     domain: class_definition
@@ -546,7 +591,7 @@ slots:
   classification_rules:
     domain: class_definition
     multivalued: true
-    range: classification_rule
+    range: anonymous_class_expression
     inlined: true
     description: the collection of classification rules that apply to all members of this class
     status: testing
@@ -1470,80 +1515,19 @@ classes:
       - extensible
       - annotatable
       - common_metadata
-    attributes:
-      preconditions:
-        aliases:
-          - if
-          - body
-          - antecedents
-        slot_uri: sh:condition
-        description: an expression that must hold in order for the rule to be applicable to an instance
-        range: anonymous_class_expression
-        inlined: true
-        close_mappings:
-          - swrl:body
-      postconditions:
-        aliases:
-          - then
-          - head
-          - consequents
-        description: an expression that must hold for an instance of the class, if the preconditions hold
-        range: anonymous_class_expression
-        inlined: true
-        close_mappings:
-          - swrl:body
-      elseconditions:
-        aliases:
-          - else
-        description: an expression that must hold for an instance of the class, if the preconditions no not hold
-        range: anonymous_class_expression
-        inlined: true
-      bidirectional:
-        aliases:
-          - iff
-          - if and only if
-        description: in addition to preconditions entailing postconditions, the postconditions entail the preconditions
-        range: boolean
-      open_world:
-        description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
-        range: boolean
-      precedence:
-        description: the relative order in which the rule is applied
-        slot_uri: sh:order
-        range: integer
-      deactivated:
-        description: a deactivated rule is not executed by the rules engine
-        slot_uri: sh:deactivated
-        range: boolean
+    slots:
+      - preconditions
+      - postconditions
+      - elseconditions
+      - bidirectional
+      - open_world
+      - precedence
+      - deactivated
     close_mappings:
       - sh:TripleRule
       - swrl:Imp
     status: testing
 
-  classification_rule:
-    is_a: class_level_rule
-    aliases:
-      - membership rule
-    description: A rule that determines how to automatically classify an instance as a member of a class
-    mixins:
-      - extensible
-      - annotatable
-      - common_metadata
-    attributes:
-      instance_of:
-        range: class_definition
-      slot_conditions:
-        aliases:
-          - differentiae
-        slot_uri: sh:condition
-        description: an expression that must hold in order for the classification rule to take effect
-        range: slot_definition
-        inlined: true
-        multivalued: true
-        close_mappings:
-          - swrl:body
-    status: testing
-      
   prefix:
     description: prefix URI tuple
     slots:
