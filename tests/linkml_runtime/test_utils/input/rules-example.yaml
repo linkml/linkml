@@ -109,7 +109,7 @@ classes:
   NoncodingGene:
     is_a: Gene
     classification_rules:
-      - instance_of: Gene
+      - is_a: Gene
         slot_conditions:
           encodes:
             none_of:
@@ -117,7 +117,7 @@ classes:
   ProteinCodingGene:
     is_a: Gene
     classification_rules:
-      - instance_of: Gene
+      - is_a: Gene
         slot_conditions:
           encodes:
             range: Protein
@@ -129,7 +129,7 @@ classes:
   GenomicSample:
     is_a: Sample
     classification_rules:
-      - instance_of: Sample
+      - is_a: Sample
         slot_conditions:
           analyte:
             equals_string: DNA
