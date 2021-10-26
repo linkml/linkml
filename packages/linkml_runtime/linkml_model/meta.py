@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-25 15:29
+# Generation date: 2021-10-25 20:23
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -1325,7 +1325,7 @@ class ClassDefinition(Definition):
     tree_root: Optional[Union[bool, Bool]] = None
     unique_keys: Optional[Union[Union[dict, "UniqueKey"], List[Union[dict, "UniqueKey"]]]] = empty_list()
     rules: Optional[Union[Union[dict, "ClassRule"], List[Union[dict, "ClassRule"]]]] = empty_list()
-    classification_rules: Optional[Union[Union[dict, "ClassificationRule"], List[Union[dict, "ClassificationRule"]]]] = empty_list()
+    classification_rules: Optional[Union[Union[dict, AnonymousClassExpression], List[Union[dict, AnonymousClassExpression]]]] = empty_list()
     is_a: Optional[Union[str, ClassDefinitionName]] = None
     mixins: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
     apply_to: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
@@ -1374,7 +1374,7 @@ class ClassDefinition(Definition):
 
         if not isinstance(self.classification_rules, list):
             self.classification_rules = [self.classification_rules] if self.classification_rules is not None else []
-        self.classification_rules = [v if isinstance(v, ClassificationRule) else ClassificationRule(**as_dict(v)) for v in self.classification_rules]
+        self.classification_rules = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.classification_rules]
 
         if self.is_a is not None and not isinstance(self.is_a, ClassDefinitionName):
             self.is_a = ClassDefinitionName(self.is_a)
@@ -1477,97 +1477,6 @@ class ClassRule(ClassLevelRule):
 
         if self.deactivated is not None and not isinstance(self.deactivated, Bool):
             self.deactivated = Bool(self.deactivated)
-
-        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
-
-        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
-
-        if self.description is not None and not isinstance(self.description, str):
-            self.description = str(self.description)
-
-        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
-
-        if self.title is not None and not isinstance(self.title, str):
-            self.title = str(self.title)
-
-        if self.deprecated is not None and not isinstance(self.deprecated, str):
-            self.deprecated = str(self.deprecated)
-
-        if not isinstance(self.todos, list):
-            self.todos = [self.todos] if self.todos is not None else []
-        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
-
-        if not isinstance(self.notes, list):
-            self.notes = [self.notes] if self.notes is not None else []
-        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
-
-        if not isinstance(self.comments, list):
-            self.comments = [self.comments] if self.comments is not None else []
-        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
-
-        if not isinstance(self.examples, list):
-            self.examples = [self.examples] if self.examples is not None else []
-        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
-
-        if not isinstance(self.in_subset, list):
-            self.in_subset = [self.in_subset] if self.in_subset is not None else []
-        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
-
-        if self.from_schema is not None and not isinstance(self.from_schema, URI):
-            self.from_schema = URI(self.from_schema)
-
-        if self.imported_from is not None and not isinstance(self.imported_from, str):
-            self.imported_from = str(self.imported_from)
-
-        if not isinstance(self.see_also, list):
-            self.see_also = [self.see_also] if self.see_also is not None else []
-        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
-
-        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
-            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
-
-        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
-            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
-
-        super().__post_init__(**kwargs)
-
-
-@dataclass
-class ClassificationRule(ClassLevelRule):
-    """
-    A rule that determines how to automatically classify an instance as a member of a class
-    """
-    _inherited_slots: ClassVar[List[str]] = []
-
-    class_class_uri: ClassVar[URIRef] = LINKML.ClassificationRule
-    class_class_curie: ClassVar[str] = "linkml:ClassificationRule"
-    class_name: ClassVar[str] = "classification_rule"
-    class_model_uri: ClassVar[URIRef] = LINKML.ClassificationRule
-
-    instance_of: Optional[Union[str, ClassDefinitionName]] = None
-    slot_conditions: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], List[Union[dict, SlotDefinition]]]] = empty_dict()
-    extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
-    annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
-    description: Optional[str] = None
-    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
-    title: Optional[str] = None
-    deprecated: Optional[str] = None
-    todos: Optional[Union[str, List[str]]] = empty_list()
-    notes: Optional[Union[str, List[str]]] = empty_list()
-    comments: Optional[Union[str, List[str]]] = empty_list()
-    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
-    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
-    from_schema: Optional[Union[str, URI]] = None
-    imported_from: Optional[str] = None
-    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
-    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
-
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.instance_of is not None and not isinstance(self.instance_of, ClassDefinitionName):
-            self.instance_of = ClassDefinitionName(self.instance_of)
-
-        self._normalize_inlined_as_dict(slot_name="slot_conditions", slot_type=SlotDefinition, key_name="name", keyed=True)
 
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
