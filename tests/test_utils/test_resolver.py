@@ -32,6 +32,7 @@ class ResolverTestCase(unittest.TestCase):
                 f.write(as_json(x))
         with open(outfile) as f:
             expected = as_dict(load(f))
+        expected = {k: v for k, v in expected.items() if v != {}}
 
         self.assertEqual(expected, x)
 
