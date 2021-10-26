@@ -13,6 +13,9 @@ prefixes:
   oslc: http://open-services.net/ns/core#
   schema: http://schema.org/
   bibo: http://purl.org/ontology/bibo/
+  swrl: http://www.w3.org/2003/11/swrl#
+  sh: https://w3id.org/shacl/
+  owl: http://www.w3.org/2002/07/owl#
 
 default_prefix: linkml
 default_range: string
@@ -70,6 +73,11 @@ slots:
     slot_uri: dcterms:title
     in_subset:
       - owl
+
+  conforms_to:
+    domain: element
+    description: An established standard to which the element conforms.
+    slot_uri: dcterms:conformsTo
 
   definition_uri:
     domain: element
@@ -479,6 +487,77 @@ slots:
         minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may
         specify both local naming (e.g. subject=disease) and local constraints
 
+  range_expression:
+    domain: slot_expression
+    range: anonymous_class_expression
+    description: A range that is described as a boolean expression combining existing ranges
+    comments:
+      - one use for this is being able to describe a range using any_of expressions, for example to combine two enums
+    status: testing
+    
+  boolean_slot:
+    abstract: true
+    multivalued: true
+    range: expression
+    description: A grouping of slots that expression a boolean operator over a list of operands
+    status: testing
+
+  any_of:
+    description: holds if at least one of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:or
+    status: testing
+        
+  exactly_one_of:
+    description: holds if only one of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:xone
+    status: testing
+        
+  none_of:
+    description: holds if none of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:not
+    status: testing
+        
+  all_of:
+    description: holds if all of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:and
+    status: testing
+        
+  rules:
+    slot_uri: sh:rule
+    domain: class_definition
+    multivalued: true
+    range: class_rule
+    inlined: true
+    description: the collection of rules that apply to all members of this class
+    status: testing
+
+  classification_rules:
+    domain: class_definition
+    multivalued: true
+    range: classification_rule
+    inlined: true
+    description: the collection of classification rules that apply to all members of this class
+    status: testing
+
+  slot_conditions:
+    multivalued: true
+    range: slot_definition
+    inlined: true
+    description: the redefinition of a slot in the context of the containing class definition.
+    status: testing
+    
   attributes:
     domain: class_definition
     multivalued: true
@@ -523,6 +602,8 @@ slots:
     domain: class_definition
     range: boolean
     description: indicator that this is the root class in tree structures
+    notes:
+      - each schema should have at most one tree root
 
   unique_keys:
     domain: class_definition
@@ -620,6 +701,112 @@ slots:
         * class_curie -- CURIE for the containing class
         * class_uri -- URI for the containing class
 
+  value_specification_constant:
+    abstract: true
+    description: Grouping for metamodel slots that constrain the a slot value to equal a specified constant
+    status: testing
+    
+  list_value_specification_constant:
+    abstract: true
+    description: Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant
+    status: testing
+      
+  value_presence:
+    is_a: value_specification_constant
+    domain: slot_definition
+    range: presence_enum
+    inherited: true
+    description: if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)
+    comments:
+      - if set to true this has the same effect as required=true. In contrast, required=false allows a value to be present
+    status: unstable
+
+  equals_string:
+    is_a: value_specification_constant
+    range: string
+    inherited: true
+    description: the slot must have range string and the value of the slot must equal the specified value
+    status: testing
+        
+  equals_number:
+    is_a: value_specification_constant
+    range: integer  ## todo, make the range a union
+    inherited: true
+    description: the slot must have range of a number and the value of the slot must equal the specified value
+    status: unstable
+
+  equals_expression:
+    is_a: value_specification_constant
+    range: string
+    inherited: true
+    description: the value of the slot must equal the value of the evaluated expression
+    comments:
+      - for example, a 'length' slot may have an equals_expression with value '(end-start)+1'
+    todos:
+      - specify expression language
+    see_also:
+      - https://github.com/linkml/linkml/issues/75
+    status: unstable
+
+  minimum_cardinality:
+    is_a: value_specification_constant
+    range: integer
+    inherited: true
+    description: the minimum number of entries for a multivalued slot
+    status: testing
+
+  maximum_cardinality:
+    is_a: value_specification_constant
+    range: integer
+    inherited: true
+    description: the maximum number of entries for a multivalued slot
+    status: testing
+
+  equals_string_in:
+    is_a: list_value_specification_constant
+    range: string
+    multivalued: true
+    inherited: true
+    description: the slot must have range string and the value of the slot must equal one of the specified values
+    status: testing
+
+  equals_number_in:
+    is_a: list_value_specification_constant
+    range: integer
+    multivalued: true
+    inherited: true
+    description: the slot must have range number and the value of the slot must equal one of the specified values
+    status: testing
+    
+  has_member:
+    is_a: list_value_specification_constant
+    range: anonymous_slot_expression
+    #multivalued: true
+    inlined: true
+    description: the values of the slot is multivalued with at least one member satisfying the condition
+    status: testing
+
+  all_members:
+    is_a: list_value_specification_constant
+    range: slot_definition
+    multivalued: true
+    inlined: true
+    description: |-
+      the value of the multiavlued slot is a list where all elements conform to the specified values.
+      this defines a dynamic class with named slots according to matching constraints
+
+      E.g to state that all members of a list are between 1 and 10
+      ```
+      all_members:
+        x:
+          range: integer
+          minimum_value: 10
+          maximum_value: 10
+      ```
+    status: testing
+
+  
+      
   singular_name:
     domain: slot_definition
     description: a name that is used in the singular form
@@ -702,6 +889,8 @@ slots:
       - identifiers and keys are mutually exclusive.  A given domain cannot have both
 
   designates_type:
+    aliases:
+      - type designator
     domain: slot_definition
     range: boolean
     inherited: true
@@ -712,6 +901,7 @@ slots:
   alias:
     domain: slot_definition
     range: string
+    slot_uri: skos:prefLabel
     description: >-
       the name used for a slot in the context of its owning class.  If present, this is used instead of the actual
       slot name.
@@ -950,6 +1140,7 @@ classes:
     slots:
       - description
       - alt_descriptions
+      - title
       - deprecated
       - todos
       - notes
@@ -971,11 +1162,11 @@ classes:
       - common_metadata
     slots:
       - name
-      - title
       - id_prefixes
       - definition_uri
       - aliases
       - local_names
+      - conforms_to
       - mappings
       - exact mappings
       - close mappings
@@ -987,6 +1178,7 @@ classes:
 
   schema_definition:
     description: "a collection of subset, type, slot and class definitions"
+    tree_root: true
     aliases:
       - data dictionary
     is_a: element
@@ -1019,7 +1211,35 @@ classes:
 #      description:
 #        slot_uri: dcterms:description
 
+  type_expression:
+    is_a: expression
+    mixin: true
+    slots:
+      - pattern
+      - equals_string
+      - equals_string_in
+      - equals_number
+      - none_of
+      - exactly_one_of
+      - any_of
+      - all_of
+    slot_usage:
+      any_of:
+        range: anonymous_type_expression
+      all_of:
+        range: anonymous_type_expression
+      exactly_one_of:
+        range: anonymous_type_expression
+      none_of:
+        range: anonymous_type_expression
+
+  anonymous_type_expression:
+    mixins:
+      - type_expression
+      
   type_definition:
+    mixins:
+      - type_expression
     description: A data type definition.
     is_a: element
     slots:
@@ -1027,7 +1247,7 @@ classes:
       - base
       - type_uri
       - repr
-      - pattern
+
 
   subset_definition:
     description: the name and description of a subset
@@ -1063,6 +1283,63 @@ classes:
       - pv_formula
       - permissible_values
 
+  expression:
+    mixin: true
+    abstract: true
+    description: todo
+    status: testing
+
+  anonymous_expression:
+    abstract: true
+    mixins:
+      - expression
+      - extensible
+      - annotatable
+      - common_metadata
+    status: testing
+
+    
+  slot_expression:
+    description: an expression that constrains the range of values a slot can take
+    mixin: true
+    is_a: expression
+    slots:
+      - range
+      - range_expression
+      - required
+      - recommended
+      - minimum_value
+      - maximum_value
+      - pattern
+      - equals_string
+      - equals_string_in
+      - equals_number
+      - equals_expression
+      - minimum_cardinality
+      - maximum_cardinality
+      - has_member
+      - all_members
+      - none_of
+      - exactly_one_of
+      - any_of
+      - all_of
+    slot_usage:
+      any_of:
+        range: anonymous_slot_expression
+      all_of:
+        range: anonymous_slot_expression
+      exactly_one_of:
+        range: anonymous_slot_expression
+      none_of:
+        range: anonymous_slot_expression
+    status: testing
+
+  anonymous_slot_expression:
+    is_a: anonymous_expression
+    mixins:
+      - slot_expression
+    status: testing
+    
   slot_definition:
     description: the definition of a property or a slot
     aliases:
@@ -1075,17 +1352,19 @@ classes:
     is_a: definition
     close_mappings:
       - rdf:Property
+    mixins:
+      - slot_expression
     slots:
       - singular_name
       - domain
-      - range
+      #- range
       - slot_uri
       - multivalued
       - inherited
       - readonly
       - ifabsent
-      - required
-      - recommended
+      #- required
+      #- recommended
       - inlined
       - inlined_as_list
       - key
@@ -1101,9 +1380,10 @@ classes:
       - role
       - is_usage_slot
       - usage_slot_name
-      - minimum_value
-      - maximum_value
-      - pattern
+      #- minimum_value
+      #- maximum_value
+      #- pattern
+      #- equals_string
 
     slot_usage:
       is_a:
@@ -1113,7 +1393,37 @@ classes:
       apply_to:
         range: slot_definition
 
+  class_expression:
+    mixin: true
+    description: A boolean expression that can be used to dynamically determine membership of a class
+    slots:
+      - any_of
+      - exactly_one_of
+      - none_of
+      - all_of
+      - slot_conditions
+    slot_usage:
+      any_of:
+        range: anonymous_class_expression
+      all_of:
+        range: anonymous_class_expression
+      exactly_one_of:
+        range: anonymous_class_expression
+      none_of:
+        range: anonymous_class_expression
+    status: testing
+
+  anonymous_class_expression:
+    is_a: anonymous_expression
+    mixins:
+      - class_expression
+    slots:
+      - is_a
+    status: testing
+        
   class_definition:
+    mixins:
+      - class_expression
     description: the definition of a class or interface
     aliases:
       - table
@@ -1131,6 +1441,9 @@ classes:
       - union_of
       - defining_slots
       - tree_root
+      - unique_keys
+      - rules
+      - classification_rules
     slot_usage:
       is_a:
         range: class_definition
@@ -1138,9 +1451,99 @@ classes:
         range: class_definition
       apply_to:
         range: class_definition
+      rules:
+        range: class_rule
     close_mappings:
       - owl:Class
 
+  class_level_rule:
+    abstract: true
+    description: A rule that is applied to classes
+    status: testing
+    
+  class_rule:
+    is_a: class_level_rule
+    aliases:
+      - if rule
+    description: A rule that applies to instances of a class
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    attributes:
+      preconditions:
+        aliases:
+          - if
+          - body
+          - antecedents
+        slot_uri: sh:condition
+        description: an expression that must hold in order for the rule to be applicable to an instance
+        range: anonymous_class_expression
+        inlined: true
+        close_mappings:
+          - swrl:body
+      postconditions:
+        aliases:
+          - then
+          - head
+          - consequents
+        description: an expression that must hold for an instance of the class, if the preconditions hold
+        range: anonymous_class_expression
+        inlined: true
+        close_mappings:
+          - swrl:body
+      elseconditions:
+        aliases:
+          - else
+        description: an expression that must hold for an instance of the class, if the preconditions no not hold
+        range: anonymous_class_expression
+        inlined: true
+      bidirectional:
+        aliases:
+          - iff
+          - if and only if
+        description: in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+        range: boolean
+      open_world:
+        description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
+        range: boolean
+      precedence:
+        description: the relative order in which the rule is applied
+        slot_uri: sh:order
+        range: integer
+      deactivated:
+        description: a deactivated rule is not executed by the rules engine
+        slot_uri: sh:deactivated
+        range: boolean
+    close_mappings:
+      - sh:TripleRule
+      - swrl:Imp
+    status: testing
+
+  classification_rule:
+    is_a: class_level_rule
+    aliases:
+      - membership rule
+    description: A rule that determines how to automatically classify an instance as a member of a class
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    attributes:
+      instance_of:
+        range: class_definition
+      slot_conditions:
+        aliases:
+          - differentiae
+        slot_uri: sh:condition
+        description: an expression that must hold in order for the classification rule to take effect
+        range: slot_definition
+        inlined: true
+        multivalued: true
+        close_mappings:
+          - swrl:body
+    status: testing
+      
   prefix:
     description: prefix URI tuple
     slots:
@@ -1186,6 +1589,7 @@ classes:
     mixins:
       - extensible
       - annotatable
+      - common_metadata
     slots:
       - unique_key_slots
 
@@ -1205,3 +1609,13 @@ enums:
     notes:
       - Q1: Do we need a CURIEorURIE entry?
       - Q2: Who defines the namespaces for the CURIE form?
+
+      
+
+  presence_enum:
+    description: enumeration of conditions by which a slot value should be set
+    permissible_values:
+      UNCOMMITTED:
+      PRESENT:
+      ABSENT:
+
