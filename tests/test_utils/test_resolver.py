@@ -25,13 +25,14 @@ class ResolverTestCase(unittest.TestCase):
     def test_element_slots(self):
         """ Test all element slots and their inheritence """
         schema = SchemaLoader(env.input_path('resolver3.yaml')).resolve()
-        x = {k: v for k, v in as_dict(schema.slots['s1']).items() if v is not None and v != []}
+        x = {k: v for k, v in as_dict(schema.slots['s1']).items() if v is not None and v != [] and v != {}}
         outfile = env.expected_path('resolver3.json')
         if not os.path.exists(outfile):
             with open(outfile, 'w') as f:
                 f.write(as_json(x))
         with open(outfile) as f:
             expected = as_dict(load(f))
+        expected = {k: v for k, v in expected.items() if v != {}}
 
         self.assertEqual(expected, x)
 
