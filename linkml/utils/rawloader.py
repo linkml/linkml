@@ -13,7 +13,7 @@ from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
 from linkml.utils.mergeutils import set_from_schema
 
 
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M"
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 yaml.error.Mark = YAMLMark
 
 
@@ -29,13 +29,15 @@ def mrf(self, field_name: str) -> None:
 SchemaDefinition.MissingRequiredField = mrf
 
 
-def load_raw_schema(data: Union[str, dict, TextIO],
-                    source_file: Optional[str] = None,
-                    source_file_date: Optional[str] = None,
-                    source_file_size: Optional[int] = None,
-                    base_dir: Optional[str] = None,
-                    merge_modules: Optional[bool] = True,
-                    emit_metadata: Optional[bool] = True) -> SchemaDefinition:
+def load_raw_schema(
+    data: Union[str, dict, TextIO],
+    source_file: Optional[str] = None,
+    source_file_date: Optional[str] = None,
+    source_file_size: Optional[int] = None,
+    base_dir: Optional[str] = None,
+    merge_modules: Optional[bool] = True,
+    emit_metadata: Optional[bool] = True
+) -> SchemaDefinition:
     """ Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
     @param data: URL, file name or block of text YAML Object or open file handle
