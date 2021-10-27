@@ -134,6 +134,7 @@ class ProjectGenerator:
               help="list of artefacts to be included. If not set, defaults to all")  # TODO: make this an enum
 @click.option("--mergeimports/--no-mergeimports",
               default=True,
+              show_default=True,
               help="Merge imports into source file")
 @click.argument('yamlfile')
 def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, mergeimports, generator_arguments: str, **kwargs):

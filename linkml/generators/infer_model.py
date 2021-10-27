@@ -216,9 +216,9 @@ def main():
 
 @main.command()
 @click.argument('tsvfile') ## input TSV (must have column headers
-@click.option('--class_name', '-c', default='example', help='Core class name in schema')
-@click.option('--schema_name', '-n', default='example', help='Schema name')
-@click.option('--sep', '-s', default='\t', help='separator')
+@click.option('--class_name', '-c', default='example', show_default=True, help='Core class name in schema')
+@click.option('--schema_name', '-n', default='example', show_default=True, help='Schema name')
+@click.option('--sep', '-s', default='\t', show_default=True, help='separator')
 @click.option('--enum-columns', '-E', multiple=True, help='column that is forced to be an enum')
 def tsv2model(tsvfile, **args):
     """ Infer a model from a TSV """

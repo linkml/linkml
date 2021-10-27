@@ -173,7 +173,7 @@ class PydanticGenerator(OOCodeGenerator):
 
 
 @shared_arguments(PydanticGenerator)
-@click.option("--output_directory", default="output", help="Output directory for individually generated class files")
+@click.option("--output_directory", default="output", show_default=True, help="Output directory for individually generated class files")
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template_file", help="Optional jinja2 template to use for class generation")
 @click.command()

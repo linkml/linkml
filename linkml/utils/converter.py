@@ -27,6 +27,7 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
               help="Path to schema specified as LinkML yaml")
 @click.option("--validate/--no-validate",
               default=True,
+              show_default=True,
               help="Validate against the schema")
 @click.option("--context", "-c",
               multiple=True,

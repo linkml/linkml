@@ -230,7 +230,7 @@ class YumlGenerator(Generator):
 
 @shared_arguments(YumlGenerator)
 @click.command()
-@click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
+@click.option("--classes", "-c", default=None, show_default=True, multiple=True, help="Class(es) to emit")
 @click.option("--directory", "-d", help="Output directory - if supplied, YUML rendering will be saved in file")
 def cli(yamlfile, **args):
     """ Generate a UML representation of a LinkML model """
