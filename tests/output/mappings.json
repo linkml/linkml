@@ -1,7 +1,7 @@
 {
   "name": "mappings",
-  "title": "LinkML Schema Mappings",
   "description": "LinkML model for mappings",
+  "title": "LinkML Schema Mappings",
   "id": "https://w3id.org/linkml/mappings",
   "version": "2.0.0",
   "imports": [
@@ -209,9 +209,9 @@
       ],
       "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
       "from_schema": "https://w3id.org/linkml/mappings",
-      "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#mappingRelation",
       "multivalued": true,
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -223,9 +223,9 @@
       "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
-      "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#exactMatch",
       "multivalued": true,
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -237,9 +237,9 @@
       "description": "A list of terms from different schemas or terminology systems that have close meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
-      "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#closeMatch",
       "multivalued": true,
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -251,9 +251,9 @@
       "description": "A list of terms from different schemas or terminology systems that have related meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
-      "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#relatedMatch",
       "multivalued": true,
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -265,9 +265,9 @@
       "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
-      "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#narrowMatch",
       "multivalued": true,
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -279,9 +279,9 @@
       "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
       "from_schema": "https://w3id.org/linkml/mappings",
       "is_a": "mappings",
-      "range": "uriorcurie",
       "slot_uri": "http://www.w3.org/2004/02/skos/core#broadMatch",
       "multivalued": true,
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -292,8 +292,8 @@
       ],
       "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
       "from_schema": "https://w3id.org/linkml/mappings",
-      "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     },
     {
@@ -304,16 +304,16 @@
       ],
       "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
       "from_schema": "https://w3id.org/linkml/mappings",
-      "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+      "range": "uriorcurie",
       "@type": "SlotDefinition"
     }
   ],
   "metamodel_version": "1.7.0",
   "source_file": "mappings.yaml",
-  "source_file_date": "Mon Sep 27 21:44:23 2021",
+  "source_file_date": "2021-10-27T23:30:13",
   "source_file_size": 2656,
-  "generation_date": "2021-09-27 21:45",
+  "generation_date": "2021-10-27T23:30:52",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

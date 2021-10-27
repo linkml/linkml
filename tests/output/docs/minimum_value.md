@@ -19,4 +19,6 @@ URI: [linkml:minimum_value](https://w3id.org/linkml/minimum_value)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)

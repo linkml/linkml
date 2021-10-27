@@ -17,14 +17,111 @@ type Annotation implements Annotatable
     annotations: [Annotation]
   }
 
-type ClassDefinition
+type AnonymousClassExpression implements ClassExpression
+  {
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+    isA: Definition
+    anyOf: [AnonymousClassExpression]
+    exactlyOneOf: [AnonymousClassExpression]
+    noneOf: [AnonymousClassExpression]
+    allOf: [AnonymousClassExpression]
+    slotConditions: [SlotDefinition]
+  }
+
+type AnonymousExpression implements Expression, Extensible, Annotatable, CommonMetadata
+  {
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+  }
+
+type AnonymousSlotExpression implements SlotExpression
+  {
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+    range: Element
+    rangeExpression: AnonymousClassExpression
+    required: Boolean
+    recommended: Boolean
+    minimumValue: Integer
+    maximumValue: Integer
+    pattern: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Integer
+    equalsExpression: String
+    minimumCardinality: Integer
+    maximumCardinality: Integer
+    hasMember: AnonymousSlotExpression
+    allMembers: [SlotDefinition]
+    noneOf: [AnonymousSlotExpression]
+    exactlyOneOf: [AnonymousSlotExpression]
+    anyOf: [AnonymousSlotExpression]
+    allOf: [AnonymousSlotExpression]
+  }
+
+type AnonymousTypeExpression implements TypeExpression
+  {
+    pattern: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Integer
+    noneOf: [AnonymousTypeExpression]
+    exactlyOneOf: [AnonymousTypeExpression]
+    anyOf: [AnonymousTypeExpression]
+    allOf: [AnonymousTypeExpression]
+  }
+
+type ClassDefinition implements ClassExpression
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -35,6 +132,7 @@ type ClassDefinition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -63,15 +161,64 @@ type ClassDefinition
     unionOf: [ClassDefinition]
     definingSlots: [SlotDefinition]
     treeRoot: Boolean
+    uniqueKeys: [UniqueKey]
+    rules: [ClassRule]
+    classificationRules: [AnonymousClassExpression]
     isA: ClassDefinition
     mixins: [ClassDefinition]
     applyTo: [ClassDefinition]
+    anyOf: [AnonymousClassExpression]
+    exactlyOneOf: [AnonymousClassExpression]
+    noneOf: [AnonymousClassExpression]
+    allOf: [AnonymousClassExpression]
+    slotConditions: [SlotDefinition]
+  }
+
+interface ClassExpression
+  {
+    anyOf: [AnonymousClassExpression]
+    exactlyOneOf: [AnonymousClassExpression]
+    noneOf: [AnonymousClassExpression]
+    allOf: [AnonymousClassExpression]
+    slotConditions: [SlotDefinition]
+  }
+
+interface ClassLevelRule
+  {
+  }
+
+type ClassRule implements Extensible, Annotatable, CommonMetadata
+  {
+    preconditions: AnonymousClassExpression
+    postconditions: AnonymousClassExpression
+    elseconditions: AnonymousClassExpression
+    bidirectional: Boolean
+    openWorld: Boolean
+    precedence: Integer
+    deactivated: Boolean
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
   }
 
 interface CommonMetadata
   {
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -88,11 +235,11 @@ interface CommonMetadata
 interface Definition
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -103,6 +250,7 @@ interface Definition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -131,11 +279,11 @@ interface Definition
 type Element implements Extensible, Annotatable, CommonMetadata
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -146,6 +294,7 @@ type Element implements Extensible, Annotatable, CommonMetadata
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -162,11 +311,11 @@ type Element implements Extensible, Annotatable, CommonMetadata
 type EnumDefinition
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -177,6 +326,7 @@ type EnumDefinition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -199,6 +349,10 @@ type Example
   {
     value: String
     description: String
+  }
+
+interface Expression
+  {
   }
 
 interface Extensible
@@ -229,6 +383,7 @@ type PermissibleValue implements Extensible, Annotatable, CommonMetadata
     extensions: [Extension]
     annotations: [Annotation]
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -250,11 +405,11 @@ type Prefix
 
 type SchemaDefinition
   {
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -265,6 +420,7 @@ type SchemaDefinition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -298,14 +454,14 @@ type SchemaDefinition
     name: Ncname!
   }
 
-type SlotDefinition
+type SlotDefinition implements SlotExpression
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -316,6 +472,7 @@ type SlotDefinition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -338,14 +495,11 @@ type SlotDefinition
     stringSerialization: String
     singularName: String
     domain: ClassDefinition
-    range: Element
     slotUri: Uriorcurie
     multivalued: Boolean
     inherited: Boolean
     readonly: String
     ifabsent: String
-    required: Boolean
-    recommended: Boolean
     inlined: Boolean
     inlinedAsList: Boolean
     key: Boolean
@@ -361,22 +515,61 @@ type SlotDefinition
     role: String
     isUsageSlot: Boolean
     usageSlotName: String
-    minimumValue: Integer
-    maximumValue: Integer
-    pattern: String
     isA: SlotDefinition
     mixins: [SlotDefinition]
     applyTo: [SlotDefinition]
+    range: Element
+    rangeExpression: AnonymousClassExpression
+    required: Boolean
+    recommended: Boolean
+    minimumValue: Integer
+    maximumValue: Integer
+    pattern: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Integer
+    equalsExpression: String
+    minimumCardinality: Integer
+    maximumCardinality: Integer
+    hasMember: AnonymousSlotExpression
+    allMembers: [SlotDefinition]
+    noneOf: [AnonymousSlotExpression]
+    exactlyOneOf: [AnonymousSlotExpression]
+    anyOf: [AnonymousSlotExpression]
+    allOf: [AnonymousSlotExpression]
+  }
+
+interface SlotExpression
+  {
+    range: Element
+    rangeExpression: AnonymousClassExpression
+    required: Boolean
+    recommended: Boolean
+    minimumValue: Integer
+    maximumValue: Integer
+    pattern: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Integer
+    equalsExpression: String
+    minimumCardinality: Integer
+    maximumCardinality: Integer
+    hasMember: AnonymousSlotExpression
+    allMembers: [SlotDefinition]
+    noneOf: [AnonymousSlotExpression]
+    exactlyOneOf: [AnonymousSlotExpression]
+    anyOf: [AnonymousSlotExpression]
+    allOf: [AnonymousSlotExpression]
   }
 
 type SubsetDefinition
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -387,6 +580,7 @@ type SubsetDefinition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -400,14 +594,14 @@ type SubsetDefinition
     deprecatedElementHasPossibleReplacement: Uriorcurie
   }
 
-type TypeDefinition
+type TypeDefinition implements TypeExpression
   {
     name: String!
-    title: String
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
     aliases: [String]
     localNames: [LocalName]
+    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -418,6 +612,7 @@ type TypeDefinition
     annotations: [Annotation]
     description: String
     altDescriptions: [AltDescription]
+    title: String
     deprecated: String
     todos: [String]
     notes: [String]
@@ -434,13 +629,46 @@ type TypeDefinition
     uri: Uriorcurie
     repr: String
     pattern: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Integer
+    noneOf: [AnonymousTypeExpression]
+    exactlyOneOf: [AnonymousTypeExpression]
+    anyOf: [AnonymousTypeExpression]
+    allOf: [AnonymousTypeExpression]
   }
 
-type UniqueKey implements Extensible, Annotatable
+interface TypeExpression
+  {
+    pattern: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Integer
+    noneOf: [AnonymousTypeExpression]
+    exactlyOneOf: [AnonymousTypeExpression]
+    anyOf: [AnonymousTypeExpression]
+    allOf: [AnonymousTypeExpression]
+  }
+
+type UniqueKey implements Extensible, Annotatable, CommonMetadata
   {
     uniqueKeySlots: [SlotDefinition]!
     extensions: [Extension]
     annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
   }
 
 

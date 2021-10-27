@@ -2,12 +2,20 @@ id	mappings	description
 alt_description		an attributed description
 annotatable		mixin for classes that support annotations
 annotation		a tag/value pair with the semantics of OWL Annotation
+anonymous_class_expression		
+anonymous_expression		
+anonymous_slot_expression		
+anonymous_type_expression		
 class_definition		the definition of a class or interface
+class_expression		A boolean expression that can be used to dynamically determine membership of a class
+class_level_rule		A rule that is applied to classes
+class_rule		A rule that applies to instances of a class
 common_metadata		Generic metadata shared across definitions
 definition		base class for definitions
 element		a named element in the model
 enum_definition		List of values that constrain the range of a slot
 example		usage example and description
+expression		todo
 extensible		mixin for classes that support extension
 extension		a tag/value pair used to add non-model information to an entry
 local_name		an attributed label
@@ -15,7 +23,9 @@ permissible_value		a permissible value, accompanied by intended text and an opti
 prefix		prefix URI tuple
 schema_definition		a collection of subset, type, slot and class definitions
 slot_definition		the definition of a property or a slot
+slot_expression		an expression that constrains the range of values a slot can take
 subset_definition		the name and description of a subset
 type_definition		A data type definition.
+type_expression		
 unique_key		a collection of slots whose values uniquely identify an instance of a class
 

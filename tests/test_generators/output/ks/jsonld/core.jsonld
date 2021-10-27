@@ -202,35 +202,35 @@
       "name": "id",
       "definition_uri": "https://w3id.org/linkml/tests/core/id",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "string",
       "slot_uri": "https://w3id.org/linkml/tests/core/id",
-      "required": true,
       "identifier": true,
       "owner": "Agent",
       "domain_of": [
         "Activity",
         "Agent"
       ],
+      "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
       "name": "name",
       "definition_uri": "https://w3id.org/linkml/tests/core/name",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "string",
       "slot_uri": "https://w3id.org/linkml/tests/core/name",
+      "range": "string",
       "@type": "SlotDefinition"
     },
     {
       "name": "description",
       "definition_uri": "https://w3id.org/linkml/tests/core/description",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "string",
       "slot_uri": "https://w3id.org/linkml/tests/core/description",
       "owner": "Activity",
       "domain_of": [
         "Activity"
       ],
+      "range": "string",
       "@type": "SlotDefinition"
     },
     {
@@ -240,12 +240,12 @@
         "http://www.w3.org/ns/prov#startedAtTime"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "date",
       "slot_uri": "http://www.w3.org/ns/prov#startedAtTime",
       "owner": "Activity",
       "domain_of": [
         "Activity"
       ],
+      "range": "date",
       "@type": "SlotDefinition"
     },
     {
@@ -255,12 +255,12 @@
         "http://www.w3.org/ns/prov#endedAtTime"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "date",
       "slot_uri": "http://www.w3.org/ns/prov#endedAtTime",
       "owner": "Activity",
       "domain_of": [
         "Activity"
       ],
+      "range": "date",
       "@type": "SlotDefinition"
     },
     {
@@ -270,13 +270,13 @@
         "http://www.w3.org/ns/prov#wasInformedBy"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "Activity",
       "slot_uri": "http://www.w3.org/ns/prov#wasInformedBy",
       "owner": "Agent",
       "domain_of": [
         "Activity",
         "Agent"
       ],
+      "range": "Activity",
       "@type": "SlotDefinition"
     },
     {
@@ -286,12 +286,12 @@
         "http://www.w3.org/ns/prov#wasAssociatedWith"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "Agent",
       "slot_uri": "http://www.w3.org/ns/prov#wasAssociatedWith",
       "owner": "Activity",
       "domain_of": [
         "Activity"
       ],
+      "range": "Agent",
       "@type": "SlotDefinition"
     },
     {
@@ -301,12 +301,12 @@
         "http://www.w3.org/ns/prov#actedOnBehalfOf"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "Agent",
       "slot_uri": "http://www.w3.org/ns/prov#actedOnBehalfOf",
       "owner": "Agent",
       "domain_of": [
         "Agent"
       ],
+      "range": "Agent",
       "@type": "SlotDefinition"
     },
     {
@@ -316,8 +316,8 @@
         "http://www.w3.org/ns/prov#wasGeneratedBy"
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "Activity",
       "slot_uri": "http://www.w3.org/ns/prov#wasGeneratedBy",
+      "range": "Activity",
       "@type": "SlotDefinition"
     },
     {
@@ -328,34 +328,34 @@
       ],
       "from_schema": "https://w3id.org/linkml/tests/core",
       "domain": "Activity",
-      "range": "string",
       "slot_uri": "http://www.w3.org/ns/prov#used",
       "owner": "Activity",
       "domain_of": [
         "Activity"
       ],
+      "range": "string",
       "@type": "SlotDefinition"
     },
     {
       "name": "activity_set",
       "definition_uri": "https://w3id.org/linkml/tests/core/activity_set",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "Activity",
       "slot_uri": "https://w3id.org/linkml/tests/core/activity_set",
       "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
+      "range": "Activity",
       "@type": "SlotDefinition"
     },
     {
       "name": "agent_set",
       "definition_uri": "https://w3id.org/linkml/tests/core/agent_set",
       "from_schema": "https://w3id.org/linkml/tests/core",
-      "range": "Agent",
       "slot_uri": "https://w3id.org/linkml/tests/core/agent_set",
       "multivalued": true,
       "inlined": true,
       "inlined_as_list": true,
+      "range": "Agent",
       "@type": "SlotDefinition"
     }
   ],
@@ -401,9 +401,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "core.yaml",
-  "source_file_date": "Tue Oct 26 17:00:19 2021",
+  "source_file_date": "2021-10-27T23:28:23",
   "source_file_size": 1667,
-  "generation_date": "2021-10-26 17:05",
+  "generation_date": "2021-10-27T23:34:11",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",

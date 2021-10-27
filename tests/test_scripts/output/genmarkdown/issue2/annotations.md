@@ -22,7 +22,11 @@ annotatable &#8594;  <sub>0..\*</sub> annotation
 
  * annotatable
  * annotation
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * definition
  * [Element](Element.md)
  * enum_definition

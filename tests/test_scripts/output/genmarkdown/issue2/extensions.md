@@ -21,7 +21,11 @@ extensible &#8594;  <sub>0..\*</sub> extension
 ## Used by
 
  * annotation
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * definition
  * [Element](Element.md)
  * enum_definition

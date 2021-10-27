@@ -19,7 +19,11 @@ URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
 
 ## Used by
 
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * common_metadata
  * definition
  * [Element](Element.md)
@@ -29,3 +33,4 @@ URI: [linkml:deprecated](https://w3id.org/linkml/deprecated)
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key

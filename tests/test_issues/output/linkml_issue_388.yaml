@@ -30,35 +30,35 @@ slots:
     name: c1__a
     description: this-a in the context of C1
     from_schema: https://w3id.org/linkml/examples/personinfo
-    range: my_str
     slot_uri: this:a
     alias: a
     owner: C1
     domain_of:
     - C1
+    range: my_str
   c2__a:
     name: c2__a
     description: this-a in the context of C2
     from_schema: https://w3id.org/linkml/examples/personinfo
-    range: my_int
     slot_uri: this:a
     alias: a
     owner: C2
     domain_of:
     - C2
+    range: my_int
   c3__a:
     name: c3__a
     mappings:
     - other:a
     description: other-a in the context of C3
     from_schema: https://w3id.org/linkml/examples/personinfo
-    range: C1
     slot_uri: other:a
     inlined: true
     alias: a
     owner: C3
     domain_of:
     - C3
+    range: C1
 classes:
   C1:
     name: C1
@@ -94,11 +94,11 @@ classes:
       a:
         name: a
         description: other-a in the context of C3
-        range: C1
         slot_uri: other:a
+        range: C1
     class_uri: this:C3
 metamodel_version: 1.7.0
 source_file: linkml_issue_388.yaml
-source_file_date: Tue Oct 26 17:00:19 2021
+source_file_date: '2021-10-27T23:28:23'
 source_file_size: 648
-generation_date: 2021-10-26 17:05
+generation_date: '2021-10-27T23:35:05'
