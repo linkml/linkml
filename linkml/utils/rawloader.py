@@ -4,6 +4,7 @@ from typing import Union, TextIO, Optional
 from urllib.parse import urlparse
 
 import yaml
+from dateutil.parser import parse, ParserError
 from hbreader import FileInfo, detect_type, HBType
 from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version, SlotDefinition, ClassDefinition
 from linkml_runtime.loaders import yaml_loader
@@ -11,6 +12,8 @@ from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
 
 from linkml.utils.mergeutils import set_from_schema
 
+
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 yaml.error.Mark = YAMLMark
 
 
@@ -26,13 +29,15 @@ def mrf(self, field_name: str) -> None:
 SchemaDefinition.MissingRequiredField = mrf
 
 
-def load_raw_schema(data: Union[str, dict, TextIO],
-                    source_file: Optional[str] = None,
-                    source_file_date: Optional[str] = None,
-                    source_file_size: Optional[int] = None,
-                    base_dir: Optional[str] = None,
-                    merge_modules: Optional[bool] = True,
-                    emit_metadata: Optional[bool] = True) -> SchemaDefinition:
+def load_raw_schema(
+    data: Union[str, dict, TextIO],
+    source_file: Optional[str] = None,
+    source_file_date: Optional[str] = None,
+    source_file_size: Optional[int] = None,
+    base_dir: Optional[str] = None,
+    merge_modules: Optional[bool] = True,
+    emit_metadata: Optional[bool] = True
+) -> SchemaDefinition:
     """ Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
     @param data: URL, file name or block of text YAML Object or open file handle
@@ -84,9 +89,13 @@ def load_raw_schema(data: Union[str, dict, TextIO],
 
     if emit_metadata:
         schema.source_file = schema_metadata.source_file
-        schema.source_file_date = schema_metadata.source_file_date
+        src_date = schema_metadata.source_file_date
+        try:
+            schema.source_file_date = parse(src_date).strftime(DATETIME_FORMAT) if src_date else None
+        except ParserError:
+            schema.source_file_date = src_date
         schema.source_file_size = schema_metadata.source_file_size
-        schema.generation_date = datetime.now().strftime("%Y-%m-%d %H:%M")
+        schema.generation_date = datetime.now().strftime(DATETIME_FORMAT)
     schema.metamodel_version = metamodel_version
 
     set_from_schema(schema)
