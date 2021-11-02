@@ -5,7 +5,7 @@ from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.test_issues.environment import env
 
 
-class ISODateTimeTestCase(unittest.TestCase):
+class RequiredPropertyTestCase(unittest.TestCase):
     def test_iso_date_time(self):
         """Check that the xsd:dateTime format is per ISO 8601 standards."""
 
