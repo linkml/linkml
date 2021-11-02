@@ -6,7 +6,7 @@ from tests.test_issues.environment import env
 
 
 class RequiredPropertyTestCase(unittest.TestCase):
-    def test_iso_date_time(self):
+    def test_required_property_json_schema(self):
         """Check that the xsd:dateTime format is per ISO 8601 standards."""
 
         json_schema_str = JsonSchemaGenerator(
