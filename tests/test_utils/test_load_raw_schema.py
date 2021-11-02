@@ -1,7 +1,6 @@
 import os
 import unittest
-import re
-from typing import Callable, Pattern
+from typing import Callable
 
 from jsonasobj2 import as_json, loads, load, as_dict, JsonObj
 
