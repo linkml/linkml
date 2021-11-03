@@ -4,6 +4,7 @@ Generate JSON-LD contexts
 """
 import logging
 import os
+import csv
 from typing import Dict, Mapping, Union, TextIO, Set, Optional
 
 import click
@@ -65,8 +66,20 @@ class PrefixGenerator(Generator):
             context[k] = v
 
         if output:
-            with open(output, 'w') as outf:
-                outf.write(as_json(context))
+            output_ext = output.split(".")[-1]
+
+            if output_ext == "tsv":
+                mapping: Dict = {}
+                for prefix in sorted(self.emit_prefixes):
+                    mapping[prefix] = self.namespaces[prefix]
+
+                with open(output, 'w') as outf:
+                    writer = csv.writer(outf, delimiter='\t')
+                    for key, value in mapping.items():
+                        writer.writerow([key, value])
+            else:
+                with open(output, 'w') as outf:
+                    outf.write(as_json(context))
         else:
             if format == "tsv":
                 mapping: Dict = {}  # prefix to IRI mapping
@@ -100,6 +113,7 @@ class PrefixGenerator(Generator):
 @shared_arguments(PrefixGenerator)
 @click.command()
 @click.option("--base", help="Base URI for model")
+@click.option("--output", "-o", help="Output file format")
 def cli(yamlfile, **args):
     """ Generate jsonld @context definition from LinkML model """
     print(PrefixGenerator(yamlfile, **args).serialize(**args))
