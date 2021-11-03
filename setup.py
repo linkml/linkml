@@ -15,4 +15,6 @@ NAME = 'linkml'
 setup(
     setup_requires=['pbr'],
     pbr=True,
+    version=versioneer.get_version(),
+    cmdclass=cmdclass,
 )
