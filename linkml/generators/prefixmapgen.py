@@ -4,7 +4,7 @@ Generate JSON-LD contexts
 """
 import logging
 import os
-from typing import Union, TextIO, Set, Optional
+from typing import Dict, Mapping, Union, TextIO, Set, Optional
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -21,7 +21,7 @@ URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 class PrefixGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
-    valid_formats = ['json']
+    valid_formats = ['json', 'tsv']
     visit_all_class_slots = False
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
@@ -50,8 +50,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_) -> None:
-
+    def end_schema(self, base: Optional[str] = None, format: str = valid_formats[0], output: Optional[str] = None, **_) -> None:
         context = JsonObj()
         if base:
             if '://' not in base:
@@ -64,11 +63,20 @@ class PrefixGenerator(Generator):
             context[k] = v
         for k, v in self.slot_class_maps.items():
             context[k] = v
+
         if output:
             with open(output, 'w') as outf:
                 outf.write(as_json(context))
         else:
-            print(as_json(context))
+            if format == "tsv":
+                mapping: Dict = {}  # prefix to IRI mapping
+                for prefix in sorted(self.emit_prefixes):
+                    mapping[prefix] = self.namespaces[prefix]
+                
+                for key, value in mapping.items():
+                    print(key, value, sep='\t')
+            else:
+                print(as_json(context))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         class_def = {}
