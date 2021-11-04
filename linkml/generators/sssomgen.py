@@ -7,10 +7,7 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     LINKML,
     ClassDefinition,
-    EnumDefinition,
     SchemaDefinition,
-    SlotDefinition,
-    TypeDefinition,
 )
 import pandas as pd
 
