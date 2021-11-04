@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-20 18:50
+# Generation date: 2021-11-03 17:38
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -22,8 +22,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String
-from linkml_runtime.utils.metamodelcore import Bool, XSDDate
+from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String, Uriorcurie
+from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE, XSDDate
 
 metamodel_version = "1.7.0"
 
@@ -46,6 +46,13 @@ DEFAULT_ = PERSONINFO
 
 
 # Types
+class CrossReference(Uriorcurie):
+    """ A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF """
+    type_class_uri = RDFS.Resource
+    type_class_curie = "rdfs:Resource"
+    type_name = "CrossReference"
+    type_model_uri = PERSONINFO.CrossReference
+
 
 # Class references
 class NamedThingId(extended_str):
@@ -339,6 +346,7 @@ class Concept(NamedThing):
 
     id: Union[str, ConceptId] = None
     code_system: Optional[Union[str, CodeSystemId]] = None
+    mappings: Optional[Union[Union[str, CrossReference], List[Union[str, CrossReference]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -348,6 +356,10 @@ class Concept(NamedThing):
 
         if self.code_system is not None and not isinstance(self.code_system, CodeSystemId):
             self.code_system = CodeSystemId(self.code_system)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, CrossReference) else CrossReference(v) for v in self.mappings]
 
         super().__post_init__(**kwargs)
 
@@ -720,6 +732,9 @@ slots.hasAliases__aliases = Slot(uri=PERSONINFO.aliases, name="hasAliases__alias
 
 slots.concept__code_system = Slot(uri=PERSONINFO.code_system, name="concept__code_system", curie=PERSONINFO.curie('code_system'),
                    model_uri=PERSONINFO.concept__code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
+
+slots.concept__mappings = Slot(uri=PERSONINFO.mappings, name="concept__mappings", curie=PERSONINFO.curie('mappings'),
+                   model_uri=PERSONINFO.concept__mappings, domain=None, range=Optional[Union[Union[str, CrossReference], List[Union[str, CrossReference]]]])
 
 slots.container__persons = Slot(uri=PERSONINFO.persons, name="container__persons", curie=PERSONINFO.curie('persons'),
                    model_uri=PERSONINFO.container__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])

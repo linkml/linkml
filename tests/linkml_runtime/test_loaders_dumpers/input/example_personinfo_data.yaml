@@ -21,6 +21,9 @@ persons:
           id: CODE:D0001
           name: headache
           code_system: CODE:D
+          mappings:
+            - HP:0002315
+            - SYMP:0000504
         procedure:
           id: CODE:P0001
           name: trepanation

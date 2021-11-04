@@ -25,6 +25,14 @@ emit_prefixes:
   - xsd
   - skos
 
+types:
+
+  CrossReference:
+    typeof: uriorcurie
+    description: A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF
+    base: str
+    uri: rdfs:Resource
+
 classes:
 
   NamedThing:
@@ -113,6 +121,9 @@ classes:
     attributes:
       code system:
         range: code system
+      mappings:
+        multivalued: true
+        range: CrossReference
 
   DiagnosisConcept:
     is_a: Concept
