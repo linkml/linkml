@@ -4,7 +4,7 @@ import unittest
 import logging
 
 from rdflib import Graph, Literal
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, SKOS
 from rdflib import Namespace
 
 from linkml_runtime.loaders import json_loader
@@ -44,6 +44,9 @@ class RdfLibDumperTestCase(unittest.TestCase):
         INFO = Namespace('https://w3id.org/linkml/examples/personinfo/')
         SDO = Namespace('http://schema.org/')
         GSSO = Namespace('http://purl.obolibrary.org/obo/GSSO_')
+        HP = Namespace('http://purl.obolibrary.org/obo/HP_')
+        SYMP = Namespace('http://purl.obolibrary.org/obo/SYMP_')
+        WD = Namespace('http://www.wikidata.org/entity/')
         self.assertIn((P['001'], RDF.type, SDO.Person), g)
         self.assertIn((P['001'], SDO.name, Literal("fred bloggs")), g)
         self.assertIn((P['001'], SDO.email, Literal("fred.bloggs@example.com")), g)
@@ -52,6 +55,10 @@ class RdfLibDumperTestCase(unittest.TestCase):
         #for (s,p,o) in g.triples((None, None, None)):
         #    print(f'{s} {p} {o}')
         self.assertIn((CODE['D0001'], RDF.type, INFO.DiagnosisConcept), g)
+        self.assertIn((CODE['D0001'], RDF.type, INFO.DiagnosisConcept), g)
+        self.assertIn((CODE['D0001'], SKOS.exactMatch, HP['0002315']), g)
+        self.assertIn((CODE['D0001'], SKOS.exactMatch, WD.Q86), g)
+        self.assertIn((CODE['D0001'], SKOS.exactMatch, SYMP['0000504']), g)
         [container] = g.subjects(RDF.type, INFO.Container)
         self.assertIn((container, INFO.organizations, ROR['1']), g)
         self.assertIn((container, INFO.organizations, ROR['2']), g)

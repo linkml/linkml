@@ -16,6 +16,8 @@ prefixes:
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
   bizcodes: https://example.org/bizcodes/
+  HP: http://purl.obolibrary.org/obo/HP_
+  skos: http://www.w3.org/2004/02/skos/core#
 default_prefix: personinfo
 default_range: string
 
@@ -122,6 +124,7 @@ classes:
       code system:
         range: code system
       mappings:
+        slot_uri: skos:exactMatch
         multivalued: true
         range: CrossReference
 

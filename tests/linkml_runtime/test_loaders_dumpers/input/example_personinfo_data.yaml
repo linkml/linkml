@@ -23,7 +23,8 @@ persons:
           code_system: CODE:D
           mappings:
             - HP:0002315
-            - SYMP:0000504
+            - http://purl.obolibrary.org/obo/SYMP_0000504
+            - http://www.wikidata.org/entity/Q86
         procedure:
           id: CODE:P0001
           name: trepanation
