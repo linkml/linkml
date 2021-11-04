@@ -4,6 +4,7 @@ persons:
     primary_email: fred.bloggs@example.com
     age_in_years: 33
     gender: cisgender man
+    depicted_by: https://example.org/pictures/fred.jpg
   - id: P:002
     name: joe schmoe
     primary_email: joe.schmoe@example.com
@@ -21,6 +22,10 @@ persons:
           id: CODE:D0001
           name: headache
           code_system: CODE:D
+          mappings:
+            - HP:0002315
+            - http://purl.obolibrary.org/obo/SYMP_0000504
+            - http://www.wikidata.org/entity/Q86
         procedure:
           id: CODE:P0001
           name: trepanation

@@ -68,12 +68,14 @@ class RDFLibDumper(Dumper):
             t = schemaview.get_type(target_type)
             dt_uri = t.uri
             if dt_uri:
-                if dt_uri == 'xsd:string':
+                if dt_uri == 'rdfs:Resource':
+                    return URIRef(schemaview.expand_curie(element))
+                elif dt_uri == 'xsd:string':
                     return Literal(element)
                 else:
                     return Literal(element, datatype=namespaces.uri_for(dt_uri))
             else:
-                logging.error(f'NO DT: {t}')
+                logging.warning(f'No datatype specified for : {t.name}, using plain Literal')
                 return Literal(element)
         element_vars = {k: v for k, v in vars(element).items() if not k.startswith('_')}
         if len(element_vars) == 0:

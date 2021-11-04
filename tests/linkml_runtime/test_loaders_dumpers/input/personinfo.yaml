@@ -16,6 +16,8 @@ prefixes:
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
   bizcodes: https://example.org/bizcodes/
+  HP: http://purl.obolibrary.org/obo/HP_
+  skos: http://www.w3.org/2004/02/skos/core#
 default_prefix: personinfo
 default_range: string
 
@@ -24,6 +26,19 @@ emit_prefixes:
   - rdfs
   - xsd
   - skos
+
+types:
+
+  CrossReference:
+    typeof: uriorcurie
+    description: A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF
+    base: str
+    uri: rdfs:Resource
+
+  ImageURL:
+    typeof: uri
+    base: str
+    uri: xsd:anyURI
 
 classes:
 
@@ -35,6 +50,7 @@ classes:
       - name
       - description
       - image
+      - depicted_by
     close_mappings:
      - schema:Thing
 
@@ -91,6 +107,7 @@ classes:
     slots:
       - id
       - name
+      - depicted_by
       
   Address:
     class_uri: schema:PostalAddress
@@ -113,6 +130,10 @@ classes:
     attributes:
       code system:
         range: code system
+      mappings:
+        slot_uri: skos:exactMatch
+        multivalued: true
+        range: CrossReference
 
   DiagnosisConcept:
     is_a: Concept
@@ -217,6 +238,9 @@ slots:
     minimum_value: 0
     maximum_value: 999
   related_to:
+    range: NamedThing
+  depicted_by:
+    range: ImageURL
   type:
   street:
   city:

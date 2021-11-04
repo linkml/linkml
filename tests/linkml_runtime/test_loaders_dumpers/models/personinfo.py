@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-20 18:50
+# Generation date: 2021-11-03 18:00
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -22,8 +22,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String
-from linkml_runtime.utils.metamodelcore import Bool, XSDDate
+from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String, Uri, Uriorcurie
+from linkml_runtime.utils.metamodelcore import Bool, URI, URIorCURIE, XSDDate
 
 metamodel_version = "1.7.0"
 
@@ -32,6 +32,7 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 GSSO = CurieNamespace('GSSO', 'http://purl.obolibrary.org/obo/GSSO_')
+HP = CurieNamespace('HP', 'http://purl.obolibrary.org/obo/HP_')
 BIZCODES = CurieNamespace('bizcodes', 'https://example.org/bizcodes/')
 FAMREL = CurieNamespace('famrel', 'https://example.org/FamilialRelations#')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
@@ -40,12 +41,26 @@ PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-SKOS = CurieNamespace('skos', 'http://example.org/UNKNOWN/skos/')
+SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = PERSONINFO
 
 
 # Types
+class CrossReference(Uriorcurie):
+    """ A string URI or CURIE representation of an external identifier, modeled as a Resource in RDF """
+    type_class_uri = RDFS.Resource
+    type_class_curie = "rdfs:Resource"
+    type_name = "CrossReference"
+    type_model_uri = PERSONINFO.CrossReference
+
+
+class ImageURL(Uri):
+    type_class_uri = XSD.anyURI
+    type_class_curie = "xsd:anyURI"
+    type_name = "ImageURL"
+    type_model_uri = PERSONINFO.ImageURL
+
 
 # Class references
 class NamedThingId(extended_str):
@@ -96,6 +111,7 @@ class NamedThing(YAMLRoot):
     name: Optional[str] = None
     description: Optional[str] = None
     image: Optional[str] = None
+    depicted_by: Optional[Union[str, ImageURL]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -111,6 +127,9 @@ class NamedThing(YAMLRoot):
 
         if self.image is not None and not isinstance(self.image, str):
             self.image = str(self.image)
+
+        if self.depicted_by is not None and not isinstance(self.depicted_by, ImageURL):
+            self.depicted_by = ImageURL(self.depicted_by)
 
         super().__post_init__(**kwargs)
 
@@ -254,6 +273,7 @@ class Place(YAMLRoot):
 
     id: Union[str, PlaceId] = None
     name: Optional[str] = None
+    depicted_by: Optional[Union[str, ImageURL]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -264,6 +284,9 @@ class Place(YAMLRoot):
 
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
+
+        if self.depicted_by is not None and not isinstance(self.depicted_by, ImageURL):
+            self.depicted_by = ImageURL(self.depicted_by)
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
@@ -339,6 +362,7 @@ class Concept(NamedThing):
 
     id: Union[str, ConceptId] = None
     code_system: Optional[Union[str, CodeSystemId]] = None
+    mappings: Optional[Union[Union[str, CrossReference], List[Union[str, CrossReference]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -348,6 +372,10 @@ class Concept(NamedThing):
 
         if self.code_system is not None and not isinstance(self.code_system, CodeSystemId):
             self.code_system = CodeSystemId(self.code_system)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, CrossReference) else CrossReference(v) for v in self.mappings]
 
         super().__post_init__(**kwargs)
 
@@ -427,7 +455,7 @@ class Relationship(YAMLRoot):
 
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
-    related_to: Optional[str] = None
+    related_to: Optional[Union[str, NamedThingId]] = None
     type: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -437,8 +465,8 @@ class Relationship(YAMLRoot):
         if self.ended_at_time is not None and not isinstance(self.ended_at_time, XSDDate):
             self.ended_at_time = XSDDate(self.ended_at_time)
 
-        if self.related_to is not None and not isinstance(self.related_to, str):
-            self.related_to = str(self.related_to)
+        if self.related_to is not None and not isinstance(self.related_to, NamedThingId):
+            self.related_to = NamedThingId(self.related_to)
 
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
@@ -674,7 +702,10 @@ slots.age_in_years = Slot(uri=PERSONINFO.age_in_years, name="age_in_years", curi
                    model_uri=PERSONINFO.age_in_years, domain=None, range=Optional[int])
 
 slots.related_to = Slot(uri=PERSONINFO.related_to, name="related_to", curie=PERSONINFO.curie('related_to'),
-                   model_uri=PERSONINFO.related_to, domain=None, range=Optional[str])
+                   model_uri=PERSONINFO.related_to, domain=None, range=Optional[Union[str, NamedThingId]])
+
+slots.depicted_by = Slot(uri=PERSONINFO.depicted_by, name="depicted_by", curie=PERSONINFO.curie('depicted_by'),
+                   model_uri=PERSONINFO.depicted_by, domain=None, range=Optional[Union[str, ImageURL]])
 
 slots.type = Slot(uri=PERSONINFO.type, name="type", curie=PERSONINFO.curie('type'),
                    model_uri=PERSONINFO.type, domain=None, range=Optional[str])
@@ -720,6 +751,9 @@ slots.hasAliases__aliases = Slot(uri=PERSONINFO.aliases, name="hasAliases__alias
 
 slots.concept__code_system = Slot(uri=PERSONINFO.code_system, name="concept__code_system", curie=PERSONINFO.curie('code_system'),
                    model_uri=PERSONINFO.concept__code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
+
+slots.concept__mappings = Slot(uri=SKOS.exactMatch, name="concept__mappings", curie=SKOS.curie('exactMatch'),
+                   model_uri=PERSONINFO.concept__mappings, domain=None, range=Optional[Union[Union[str, CrossReference], List[Union[str, CrossReference]]]])
 
 slots.container__persons = Slot(uri=PERSONINFO.persons, name="container__persons", curie=PERSONINFO.curie('persons'),
                    model_uri=PERSONINFO.container__persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
