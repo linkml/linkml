@@ -25,7 +25,11 @@ class PrefixGenerator(Generator):
     valid_formats = ['json', 'tsv']
     visit_all_class_slots = False
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
+    def __init__(self, 
+                 schema: Union[str, TextIO, SchemaDefinition], 
+                 format: str = valid_formats[0], 
+                 output: Optional[str] = None, 
+                 **kwargs) -> None:
         super().__init__(schema, **kwargs)
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generater.  Preparsed schema will not work")
@@ -33,6 +37,8 @@ class PrefixGenerator(Generator):
         self.default_ns = None
         self.context_body = dict()
         self.slot_class_maps = dict()
+        self.format = format
+        self.output_path = output
 
     def visit_schema(self, base: Optional[str]=None, output: Optional[str]=None, **_):
         # Add any explicitly declared prefixes
@@ -51,7 +57,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[str] = None, format: str = valid_formats[0], output: Optional[str] = None, **_) -> None:
+    def end_schema(self, base: Optional[str] = None, **_) -> None:
         context = JsonObj()
         if base:
             if '://' not in base:
@@ -65,23 +71,23 @@ class PrefixGenerator(Generator):
         for k, v in self.slot_class_maps.items():
             context[k] = v
 
-        if output:
-            output_ext = output.split(".")[-1]
+        if self.output_path:
+            output_ext = self.output_path.split(".")[-1]
 
             if output_ext == "tsv":
                 mapping: Dict = {}
                 for prefix in sorted(self.emit_prefixes):
                     mapping[prefix] = self.namespaces[prefix]
 
-                with open(output, 'w') as outf:
+                with open(self.output_path, 'w') as outf:
                     writer = csv.writer(outf, delimiter='\t')
                     for key, value in mapping.items():
                         writer.writerow([key, value])
             else:
-                with open(output, 'w') as outf:
+                with open(self.output_path, 'w') as outf:
                     outf.write(as_json(context))
         else:
-            if format == "tsv":
+            if self.format == "tsv":
                 mapping: Dict = {}  # prefix to IRI mapping
                 for prefix in sorted(self.emit_prefixes):
                     mapping[prefix] = self.namespaces[prefix]
@@ -113,7 +119,7 @@ class PrefixGenerator(Generator):
 @shared_arguments(PrefixGenerator)
 @click.command()
 @click.option("--base", help="Base URI for model")
-@click.option("--output", "-o", help="Output file format")
+@click.option("--output", "-o", help="Output file path")
 def cli(yamlfile, **args):
     """ Generate jsonld @context definition from LinkML model """
     print(PrefixGenerator(yamlfile, **args).serialize(**args))
