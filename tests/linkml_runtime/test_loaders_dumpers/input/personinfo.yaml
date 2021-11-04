@@ -35,6 +35,11 @@ types:
     base: str
     uri: rdfs:Resource
 
+  ImageURL:
+    typeof: uri
+    base: str
+    uri: xsd:anyURI
+
 classes:
 
   NamedThing:
@@ -101,6 +106,7 @@ classes:
     slots:
       - id
       - name
+      - depicted_by
       
   Address:
     class_uri: schema:PostalAddress
@@ -231,6 +237,9 @@ slots:
     minimum_value: 0
     maximum_value: 999
   related_to:
+    range: NamedThing
+  depicted_by:
+    range: ImageURL
   type:
   street:
   city:
