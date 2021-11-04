@@ -14,7 +14,7 @@ description: |-
      * c
 
   And links, e.g to [Person](Person.md)
-
+license: https://creativecommons.org/publicdomain/zero/1.0/
 default_curi_maps:
   - semweb_context
 imports:
@@ -36,6 +36,7 @@ prefixes:
   skos: http://www.w3.org/2004/02/skos/core#
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
+  wikidata: http://www.wikidata.org/entity/
 default_prefix: ks
 see_also:
   - https://example.org/
@@ -87,6 +88,9 @@ classes:
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+    class_uri: schema:Person
+    exact_mappings:
+      - wd:Q215627
 
   Organization:
     mixins:
@@ -94,6 +98,8 @@ classes:
     slots:
       - id
       - name
+    exact_mappings:
+      - wd:Q43229
 
   Place:
     mixins:
@@ -101,16 +107,22 @@ classes:
     slots:
       - id
       - name
+    exact_mappings:
+      - wd:Q98929991
   Address:
     slots:
       - street
       - city
+    exact_mappings:
+      - wd:Q319608
 
   Concept:
     slots:
       - id
       - name
       - in code system
+    exact_mappings:
+      - wd:Q151885
 
   DiagnosisConcept:
     is_a: Concept
@@ -123,6 +135,8 @@ classes:
       - started at time
       - ended at time
       - is current
+    exact_mappings:
+      - wd:Q1656682
 
   Relationship:
     slots:
@@ -130,6 +144,8 @@ classes:
       - ended at time
       - related to
       - type
+    exact_mappings:
+      - wd:Q7310741
 
   FamilialRelationship:
     is_a: Relationship
@@ -182,6 +198,8 @@ classes:
         range: Person
         slot_uri: schema:ceo
         ## TODO - schemaview requires all attributes to have explicit uri otherwise slot_uri fails
+    exact_mappings:
+      - wd:Q783794
 
   CodeSystem:
     slots:
