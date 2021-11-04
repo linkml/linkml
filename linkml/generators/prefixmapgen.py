@@ -27,8 +27,6 @@ class PrefixGenerator(Generator):
 
     def __init__(self, 
                  schema: Union[str, TextIO, SchemaDefinition], 
-                 format: str = valid_formats[0], 
-                 output: Optional[str] = None, 
                  **kwargs) -> None:
         super().__init__(schema, **kwargs)
         if self.namespaces is None:
@@ -37,8 +35,6 @@ class PrefixGenerator(Generator):
         self.default_ns = None
         self.context_body = dict()
         self.slot_class_maps = dict()
-        self.format = format
-        self.output_path = output
 
     def visit_schema(self, base: Optional[str]=None, output: Optional[str]=None, **_):
         # Add any explicitly declared prefixes
@@ -57,7 +53,7 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: Optional[str] = None, **_) -> None:
+    def end_schema(self, base: Optional[str] = None, output: Optional[str] = None, **_) -> None:
         context = JsonObj()
         if base:
             if '://' not in base:
@@ -71,20 +67,20 @@ class PrefixGenerator(Generator):
         for k, v in self.slot_class_maps.items():
             context[k] = v
 
-        if self.output_path:
-            output_ext = self.output_path.split(".")[-1]
+        if output:
+            output_ext = output.split(".")[-1]
 
             if output_ext == "tsv":
                 mapping: Dict = {}
                 for prefix in sorted(self.emit_prefixes):
                     mapping[prefix] = self.namespaces[prefix]
 
-                with open(self.output_path, 'w') as outf:
+                with open(output, 'w') as outf:
                     writer = csv.writer(outf, delimiter='\t')
                     for key, value in mapping.items():
                         writer.writerow([key, value])
             else:
-                with open(self.output_path, 'w') as outf:
+                with open(output, 'w') as outf:
                     outf.write(as_json(context))
         else:
             if self.format == "tsv":
