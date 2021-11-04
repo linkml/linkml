@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-11-03 17:57
+# Generation date: 2021-11-03 18:00
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -111,6 +111,7 @@ class NamedThing(YAMLRoot):
     name: Optional[str] = None
     description: Optional[str] = None
     image: Optional[str] = None
+    depicted_by: Optional[Union[str, ImageURL]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -126,6 +127,9 @@ class NamedThing(YAMLRoot):
 
         if self.image is not None and not isinstance(self.image, str):
             self.image = str(self.image)
+
+        if self.depicted_by is not None and not isinstance(self.depicted_by, ImageURL):
+            self.depicted_by = ImageURL(self.depicted_by)
 
         super().__post_init__(**kwargs)
 

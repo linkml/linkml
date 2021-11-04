@@ -50,6 +50,7 @@ classes:
       - name
       - description
       - image
+      - depicted_by
     close_mappings:
      - schema:Thing
 
