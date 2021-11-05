@@ -8,35 +8,35 @@
     ns1:property [ ns1:maxCount 1 ;
             ns1:order 1 ;
             ns1:path <https://w3id.org/linkml/tests/core/name> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ],
         [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 2 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_code_system> ] ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_code_system> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Concept> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Dataset> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
+    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/companies> ],
+        [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/activities> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 3 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/code_systems> ],
         [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/persons> ],
-        [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 2 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/activities> ],
-        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/companies> ] ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/persons> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Dataset> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Event> a ns1:NodeShape ;
@@ -80,16 +80,11 @@
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
     ns1:property [ ns1:maxCount 1 ;
-            ns1:order 2 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
-        [ ns1:maxCount 1 ;
             ns1:order 4 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/is_current> ],
-        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
-            ns1:maxCount 1 ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_location> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
         [ ns1:maxCount 1 ;
             ns1:order 3 ;
             ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
@@ -97,7 +92,12 @@
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/married_to> ] ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/married_to> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_location> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Organization> a ns1:NodeShape ;
@@ -106,28 +106,28 @@
     ns1:property [ ns1:maxCount 1 ;
             ns1:order 1 ;
             ns1:path <https://w3id.org/linkml/tests/core/name> ],
-        [ ns1:order 2 ;
-            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ],
         [ ns1:maxCount 1 ;
             ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+        [ ns1:order 2 ;
+            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Organization> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Relationship> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
     ns1:property [ ns1:maxCount 1 ;
-            ns1:order 3 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/type> ],
-        [ ns1:maxCount 1 ;
             ns1:order 0 ;
             ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
         [ ns1:maxCount 1 ;
             ns1:order 2 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/related_to> ],
         [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ] ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/type> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Relationship> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> a ns1:NodeShape ;
@@ -167,20 +167,20 @@
 <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/is_current> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 0 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_location> ],
         [ ns1:maxCount 1 ;
-            ns1:order 3 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/is_current> ],
-        [ ns1:maxCount 1 ;
             ns1:order 1 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 2 ;
-            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ] ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> a ns1:NodeShape ;
@@ -210,37 +210,32 @@
 <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:maxCount 1 ;
-            ns1:order 2 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 4 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/is_current> ],
+    ns1:property [ ns1:in ( <https://example.org/bizcodes/001> <https://example.org/bizcodes/002> <https://example.org/bizcodes/003> <https://example.org/bizcodes/004> ) ;
+            ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/type> ],
         [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 0 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/employed_at> ],
         [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:maxCount 1 ;
             ns1:order 3 ;
             ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
-        [ ns1:in ( <https://example.org/bizcodes/001> <https://example.org/bizcodes/002> <https://example.org/bizcodes/003> <https://example.org/bizcodes/004> ) ;
-            ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/type> ] ;
+        [ ns1:maxCount 1 ;
+            ns1:order 4 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/is_current> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:in ( "SIBLING_OF" "PARENT_OF" "CHILD_OF" ) ;
-            ns1:maxCount 1 ;
-            ns1:minCount 1 ;
-            ns1:order 3 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/type> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
         [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
             ns1:maxCount 1 ;
             ns1:minCount 1 ;
@@ -248,23 +243,31 @@
             ns1:order 2 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/related_to> ],
         [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ] ;
+            ns1:order 0 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:in ( "SIBLING_OF" "PARENT_OF" "CHILD_OF" ) ;
+            ns1:maxCount 1 ;
+            ns1:minCount 1 ;
+            ns1:order 3 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/type> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ;
-            ns1:maxCount 1 ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/diagnosis> ],
-        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
+    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 2 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/procedure> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 4 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/diagnosis> ],
         [ ns1:maxCount 1 ;
             ns1:order 5 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/is_current> ],
@@ -275,77 +278,69 @@
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_location> ],
         [ ns1:maxCount 1 ;
             ns1:order 3 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 4 ;
-            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ] ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ],
-        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
+    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 2 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/in_code_system> ],
         [ ns1:maxCount 1 ;
             ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/core/name> ] ;
+            ns1:path <https://w3id.org/linkml/tests/core/name> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> .
 
 <http://www.w3.org/ns/prov#Agent> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:description "a provence-generating agent" ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <http://www.w3.org/ns/prov#Agent> ;
-            ns1:maxCount 1 ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 1 ;
-            ns1:path <http://www.w3.org/ns/prov#actedOnBehalfOf> ],
-        [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
+    ns1:property [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 2 ;
             ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ],
         [ ns1:maxCount 1 ;
             ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+        [ ns1:class <http://www.w3.org/ns/prov#Agent> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#actedOnBehalfOf> ] ;
     ns1:targetClass <http://www.w3.org/ns/prov#Agent> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Company> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 0 ;
             ns1:path <http://schema.org/ceo> ],
+        [ ns1:order 3 ;
+            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ],
         [ ns1:maxCount 1 ;
             ns1:order 2 ;
-            ns1:path <https://w3id.org/linkml/tests/core/name> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ],
-        [ ns1:order 3 ;
-            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ] ;
+            ns1:path <https://w3id.org/linkml/tests/core/name> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Company> .
 
 <https://w3id.org/linkml/tests/core/Activity> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:description "a provence-generating activity" ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
-            ns1:maxCount 1 ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 3 ;
-            ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+    ns1:property [ ns1:maxCount 1 ;
+            ns1:order 6 ;
+            ns1:path <https://w3id.org/linkml/tests/core/description> ],
         [ ns1:maxCount 1 ;
             ns1:order 2 ;
             ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
@@ -355,59 +350,51 @@
             ns1:order 4 ;
             ns1:path <http://www.w3.org/ns/prov#wasAssociatedWith> ],
         [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 3 ;
+            ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ],
+        [ ns1:maxCount 1 ;
             ns1:order 5 ;
             ns1:path <http://www.w3.org/ns/prov#used> ],
         [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 6 ;
-            ns1:path <https://w3id.org/linkml/tests/core/description> ] ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/core/Activity> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
     ns1:property [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/core/name> ],
-        [ ns1:maxCount 1 ;
             ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/core/name> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Person> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:description "A person, living or dead" ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ;
-            ns1:maxCount 1 ;
-            ns1:nodeKind ns1:BlankNode ;
-            ns1:order 7 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/has_birth_event> ],
-        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Address> ;
-            ns1:nodeKind ns1:BlankNode ;
-            ns1:order 6 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/addresses> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/core/name> ;
-            ns1:pattern "^\\S+ \\S+" ],
-        [ ns1:order 8 ;
-            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ],
-        [ ns1:description "number of years since birth" ;
+    ns1:property [ ns1:description "number of years since birth" ;
             ns1:maxCount 1 ;
             ns1:maxInclusive 999 ;
             ns1:minInclusive 0 ;
             ns1:order 5 ;
             ns1:path <https://w3id.org/linkml/tests/kitchen_sink/age_in_years> ],
-        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ;
-            ns1:nodeKind ns1:BlankNode ;
-            ns1:order 2 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ],
         [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+            ns1:order 1 ;
+            ns1:path <https://w3id.org/linkml/tests/core/name> ;
+            ns1:pattern "^\\S+ \\S+" ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 7 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/has_birth_event> ],
         [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ;
             ns1:nodeKind ns1:BlankNode ;
             ns1:order 4 ;
@@ -415,19 +402,32 @@
         [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ;
             ns1:nodeKind ns1:BlankNode ;
             ns1:order 3 ;
-            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships> ] ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 2 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ],
+        [ ns1:order 8 ;
+            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ],
+        [ ns1:class <https://w3id.org/linkml/tests/kitchen_sink/Address> ;
+            ns1:nodeKind ns1:BlankNode ;
+            ns1:order 6 ;
+            ns1:path <https://w3id.org/linkml/tests/kitchen_sink/addresses> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Person> .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Place> a ns1:NodeShape ;
     ns1:closed true ;
     ns1:ignoredProperties ( rdf:type ) ;
-    ns1:property [ ns1:order 2 ;
-            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ],
-        [ ns1:maxCount 1 ;
+    ns1:property [ ns1:maxCount 1 ;
             ns1:order 0 ;
             ns1:path <https://w3id.org/linkml/tests/core/id> ],
         [ ns1:maxCount 1 ;
             ns1:order 1 ;
-            ns1:path <https://w3id.org/linkml/tests/core/name> ] ;
+            ns1:path <https://w3id.org/linkml/tests/core/name> ],
+        [ ns1:order 2 ;
+            ns1:path <http://www.w3.org/2004/02/skos/core#altLabel> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/kitchen_sink/Place> .
 
