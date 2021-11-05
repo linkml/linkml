@@ -8,14 +8,19 @@ from linkml_runtime.linkml_model.meta import (
     LINKML,
     ClassDefinition,
     SchemaDefinition,
+    SlotDefinition,
+    Definition,
 )
 import pandas as pd
+
+DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
 
 
 class SSSOMGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["tsv"]
+    list_of_slots = []
     msdf_columns = [
         "subject_id",
         "subject_label",
@@ -35,6 +40,14 @@ class SSSOMGenerator(Generator):
         "match_string",
         "comment",
     ]
+    mapping_type_dict = {
+        "related_mappings": "skos:relatedMatch",
+        "broad_mappings": "skos:broadMatch",
+        "narrow_mappings": "skos:narrowMatch",
+        "close_mappings": "skos:closeMatch",
+        "exact_mappings": "skos:exactMatch",
+    }
+
     final_df = pd.DataFrame(columns=msdf_columns)
 
     def __init__(
@@ -49,51 +62,56 @@ class SSSOMGenerator(Generator):
         if output:
             self.output_file = output
         else:
-            self.output_file = "sssom.tsv"
+            self.output_file = DEFAULT_OUTPUT_FILENAME
 
         if format is None:
             format = self.valid_formats[0]
         super().__init__(schema, **kwargs)
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
-        if cls.class_uri:
-            subject_id = cls.class_uri
-            if cls.title:
-                subject_label = cls.title
-            else:
-                subject_label = cls.name
+    def make_msdf(self, row_as_dict: dict) -> None:
+        tmp_df = pd.DataFrame(row_as_dict, index=[0])
+        tmp_df = tmp_df.reindex(columns=self.msdf_columns, fill_value="")
+        self.final_df = pd.concat([self.final_df, tmp_df], ignore_index=True)
 
-            if cls.exact_mappings:
-                predicate_id = "skos:exactMatch"
-                match_type = "skos:exactMatch"
-                for obj in cls.exact_mappings:
-                    object_id = obj
+    def definition_extract_info(self, obj: Definition):
+        if type(obj) is ClassDefinition:
+            obj: ClassDefinition
+            if obj.class_uri:
+                subject_id = obj.class_uri
 
-                    # object_label is a TODO for the future.
-                    object_label = obj  # temporary placeholder
-                    # Create a pandas DataFrame to eventually export s TSV
+        elif type(obj) is SlotDefinition:
+            obj: SlotDefinition
+            if obj.slot_uri:
+                subject_id = obj.slot_uri
+        if obj.title:
+            subject_label = obj.title
+        else:
+            subject_label = obj.name
+
+        for map_key, map_val in self.mapping_type_dict.items():
+            if obj.__dict__[map_key]:
+                predicate_id = map_val
+                match_type = map_val
+                for obj_id in obj.__dict__[map_key]:
+                    object_id = obj_id
+                    # obj_label = "OBJ_LABEL" # Placeholder for the future
                     row_dict = {}
                     row_dict["subject_id"] = subject_id
                     row_dict["subject_label"] = subject_label
                     row_dict["predicate_id"] = predicate_id
                     row_dict["object_id"] = object_id
-                    row_dict["object_label"] = object_label
-                    row_dict["match_type"] = match_type
-                    tmp_df = pd.DataFrame(row_dict, index=[0])
-                    tmp_df = tmp_df.reindex(
-                        columns=self.msdf_columns, fill_value=""
-                    )
-                    self.final_df = pd.concat(
-                        [self.final_df, tmp_df], ignore_index=True
-                    )
+                    # row_dict["object_label"] = object_label
+                    if match_type:
+                        row_dict["match_type"] = match_type
+                    self.make_msdf(row_dict)
 
-            return True
-        else:
-            return False
+    def visit_class(self, cls: ClassDefinition) -> bool:
+        self.definition_extract_info(cls)
 
-    # def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-    #     slot_as_dict = slot._as_dict
-    #     print(slot_as_dict)
+        return True
+
+    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
+        self.definition_extract_info(slot)
 
     # def visit_type(self, typ: TypeDefinition) -> None:
     #     type_as_dict = typ._as_dict

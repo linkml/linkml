@@ -92,6 +92,7 @@ classes:
     exact_mappings:
       - wd:Q215627
 
+
   Organization:
     mixins:
       - HasAliases
@@ -100,6 +101,7 @@ classes:
       - name
     exact_mappings:
       - wd:Q43229
+      - schema:Organization
 
   Place:
     mixins:
@@ -109,12 +111,14 @@ classes:
       - name
     exact_mappings:
       - wd:Q98929991
+
   Address:
     slots:
       - street
       - city
     exact_mappings:
       - wd:Q319608
+      - schema:PostalAddress
 
   Concept:
     slots:
@@ -137,6 +141,7 @@ classes:
       - is current
     exact_mappings:
       - wd:Q1656682
+      - schema:Event
 
   Relationship:
     slots:
