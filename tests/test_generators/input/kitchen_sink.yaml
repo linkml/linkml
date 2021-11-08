@@ -253,6 +253,8 @@ slots:
     range: Company
     in_subset:
       - subset A
+    exact_mappings:
+      - wd:Q2266417
   is current:
     range: boolean
   has employment history:
@@ -261,37 +263,57 @@ slots:
     inlined_as_list: true
     in_subset:
       - subset B
+    broad_mappings:
+      - wd:Q656365
+      - wd:Q309
   has marriage history:
     range: MarriageEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    broad_mappings:
+      - wd:Q8445
+      - wd:Q309
   has medical history:
     range: MedicalEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    exact_mappings:
+      - wd:Q15762873
+    broad_mappings:
+      - wd:Q309
   has familial relationships:
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    broad_mappings:
+      - wd:Q24026687
   married to:
     range: Person
+    exact_mappings:
+      - wd:Q105123727
   in location:
     range: Place
   diagnosis:
     range: DiagnosisConcept
     inlined: true
+    exact_mappings:
+      - wd:Q16644043
   procedure:
     range: ProcedureConcept
     inlined: true
+    exact_mappings:
+      - wd:Q41689629
   addresses:
     range: Address
     multivalued: True
+    exact_mappings:
+      - wd:Q319608
   age in years:
     description: number of years since birth
     range: integer
@@ -300,6 +322,8 @@ slots:
     in_subset:
       - subset A
       - subset B
+    exact_mappings:
+      - wd:Q185836
   related to:
   type:
   street:

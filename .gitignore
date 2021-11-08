@@ -102,3 +102,4 @@ Pipfile.lock
 
 # User defined
 .vscode/*
+tests/test_generators/output/*
