@@ -14,7 +14,7 @@ description: |-
      * c
 
   And links, e.g to [Person](Person.md)
-
+license: https://creativecommons.org/publicdomain/zero/1.0/
 default_curi_maps:
   - semweb_context
 imports:
@@ -36,6 +36,7 @@ prefixes:
   skos: http://www.w3.org/2004/02/skos/core#
   bizcodes: https://example.org/bizcodes/
   schema: http://schema.org/
+  wikidata: http://www.wikidata.org/entity/
 default_prefix: ks
 see_also:
   - https://example.org/
@@ -87,6 +88,10 @@ classes:
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+    class_uri: schema:Person
+    exact_mappings:
+      - wd:Q215627
+
 
   Organization:
     mixins:
@@ -94,6 +99,9 @@ classes:
     slots:
       - id
       - name
+    exact_mappings:
+      - wd:Q43229
+      - schema:Organization
 
   Place:
     mixins:
@@ -101,16 +109,24 @@ classes:
     slots:
       - id
       - name
+    exact_mappings:
+      - wd:Q98929991
+
   Address:
     slots:
       - street
       - city
+    exact_mappings:
+      - wd:Q319608
+      - schema:PostalAddress
 
   Concept:
     slots:
       - id
       - name
       - in code system
+    exact_mappings:
+      - wd:Q151885
 
   DiagnosisConcept:
     is_a: Concept
@@ -123,6 +139,9 @@ classes:
       - started at time
       - ended at time
       - is current
+    exact_mappings:
+      - wd:Q1656682
+      - schema:Event
 
   Relationship:
     slots:
@@ -130,6 +149,8 @@ classes:
       - ended at time
       - related to
       - type
+    exact_mappings:
+      - wd:Q7310741
 
   FamilialRelationship:
     is_a: Relationship
@@ -182,6 +203,8 @@ classes:
         range: Person
         slot_uri: schema:ceo
         ## TODO - schemaview requires all attributes to have explicit uri otherwise slot_uri fails
+    exact_mappings:
+      - wd:Q783794
 
   CodeSystem:
     slots:
@@ -230,6 +253,8 @@ slots:
     range: Company
     in_subset:
       - subset A
+    exact_mappings:
+      - wd:Q2266417
   is current:
     range: boolean
   has employment history:
@@ -238,37 +263,57 @@ slots:
     inlined_as_list: true
     in_subset:
       - subset B
+    broad_mappings:
+      - wd:Q656365
+      - wd:Q309
   has marriage history:
     range: MarriageEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    broad_mappings:
+      - wd:Q8445
+      - wd:Q309
   has medical history:
     range: MedicalEvent
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    exact_mappings:
+      - wd:Q15762873
+    broad_mappings:
+      - wd:Q309
   has familial relationships:
     range: FamilialRelationship
     multivalued: true
     inlined_as_list: true
     in_subset:
       - subset B
+    broad_mappings:
+      - wd:Q24026687
   married to:
     range: Person
+    exact_mappings:
+      - wd:Q105123727
   in location:
     range: Place
   diagnosis:
     range: DiagnosisConcept
     inlined: true
+    exact_mappings:
+      - wd:Q16644043
   procedure:
     range: ProcedureConcept
     inlined: true
+    exact_mappings:
+      - wd:Q41689629
   addresses:
     range: Address
     multivalued: True
+    exact_mappings:
+      - wd:Q319608
   age in years:
     description: number of years since birth
     range: integer
@@ -277,6 +322,8 @@ slots:
     in_subset:
       - subset A
       - subset B
+    exact_mappings:
+      - wd:Q185836
   related to:
   type:
   street:

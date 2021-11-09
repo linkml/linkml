@@ -3,7 +3,7 @@ import unittest
 from linkml.generators.sssomgen import SSSOMGenerator
 from tests.test_generators.environment import env
 
-SCHEMA = env.input_path("kitchen_sink.yaml")
+SCHEMA = env.input_path("kitchen_sink_sssom.yaml")
 OUTPUT_DIR = os.path.join(
     os.path.abspath(os.path.dirname(__file__)), "output/ks/sssom"
 )
