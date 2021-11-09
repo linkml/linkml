@@ -11,14 +11,14 @@
             ns1:nodeKind ns1:IRI ;
             ns1:order 1 ;
             ns1:path <http://www.w3.org/ns/prov#actedOnBehalfOf> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
         [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 2 ;
-            ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ] ;
+            ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ] ;
     ns1:targetClass <http://www.w3.org/ns/prov#Agent> .
 
 <https://w3id.org/linkml/tests/core/Activity> a ns1:NodeShape ;
@@ -26,29 +26,29 @@
     ns1:description "a provence-generating activity" ;
     ns1:ignoredProperties ( rdf:type ) ;
     ns1:property [ ns1:maxCount 1 ;
-            ns1:order 1 ;
-            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 2 ;
-            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
-        [ ns1:maxCount 1 ;
             ns1:order 6 ;
             ns1:path <https://w3id.org/linkml/tests/core/description> ],
-        [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
-            ns1:maxCount 1 ;
-            ns1:nodeKind ns1:IRI ;
-            ns1:order 3 ;
-            ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ],
-        [ ns1:maxCount 1 ;
-            ns1:order 0 ;
-            ns1:path <https://w3id.org/linkml/tests/core/id> ],
         [ ns1:class <http://www.w3.org/ns/prov#Agent> ;
             ns1:maxCount 1 ;
             ns1:nodeKind ns1:IRI ;
             ns1:order 4 ;
             ns1:path <http://www.w3.org/ns/prov#wasAssociatedWith> ],
         [ ns1:maxCount 1 ;
+            ns1:order 0 ;
+            ns1:path <https://w3id.org/linkml/tests/core/id> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 2 ;
+            ns1:path <http://www.w3.org/ns/prov#endedAtTime> ],
+        [ ns1:maxCount 1 ;
+            ns1:order 1 ;
+            ns1:path <http://www.w3.org/ns/prov#startedAtTime> ],
+        [ ns1:maxCount 1 ;
             ns1:order 5 ;
-            ns1:path <http://www.w3.org/ns/prov#used> ] ;
+            ns1:path <http://www.w3.org/ns/prov#used> ],
+        [ ns1:class <https://w3id.org/linkml/tests/core/Activity> ;
+            ns1:maxCount 1 ;
+            ns1:nodeKind ns1:IRI ;
+            ns1:order 3 ;
+            ns1:path <http://www.w3.org/ns/prov#wasInformedBy> ] ;
     ns1:targetClass <https://w3id.org/linkml/tests/core/Activity> .
 
