@@ -115,7 +115,7 @@ class ExcelGenerator(Generator):
     ) -> None:
         """Overridden method to intercept classes and associated slots from generator 
         framework."""
-        wb = load_workbook(self.wb_name)
+        self.workbook = load_workbook(self.wb_name)
 
         if cls.name in self.workbook.sheetnames:
             if slot.range in self.enum_dict:
@@ -137,7 +137,7 @@ class ExcelGenerator(Generator):
 
                 dv.add(f"{col_letter}2:{col_letter}1048576")
 
-                wb.save(self.wb_name)
+                self.workbook.save(self.wb_name)
 
 
 @shared_arguments(ExcelGenerator)
