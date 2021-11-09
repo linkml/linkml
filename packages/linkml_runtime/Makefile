@@ -8,3 +8,6 @@ MODEL_DIR = ../linkml-model/linkml_model/
 
 update_model:
 	cp -pr $(MODEL_DIR)/* linkml_runtime/linkml_model
+
+test:
+	pipenv run python -m unittest
