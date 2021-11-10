@@ -23,6 +23,7 @@ linkml-runtime>=1.1.3, !=1.1.4
 myst-parser
 openpyxl
 parse
+pandas
 prefixcommons>=0.1.7
 prologterms>=0.0.6
 pydantic
