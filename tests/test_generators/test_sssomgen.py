@@ -2,6 +2,8 @@ import os
 import unittest
 from linkml.generators.sssomgen import SSSOMGenerator
 from tests.test_generators.environment import env
+import yaml
+import pandas as pd
 
 SCHEMA = env.input_path("kitchen_sink_sssom.yaml")
 OUTPUT_DIR = os.path.join(
@@ -9,14 +11,14 @@ OUTPUT_DIR = os.path.join(
 )
 OUTPUT_FILENAME = "test_sssom.tsv"
 
+# generate SSSOM file
+SSSOMGenerator(
+    SCHEMA, output=os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
+).serialize()
+
 
 class SSSOMGenTestCase(unittest.TestCase):
     def test_sssomgen(self):
-        # generate SSSOM file
-        SSSOMGenerator(
-            SCHEMA, output=os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
-        ).serialize()
-
         # Test if the generator actually created the output file
         self.assertTrue(
             os.path.exists(os.path.join(OUTPUT_DIR, OUTPUT_FILENAME))
@@ -26,7 +28,18 @@ class SSSOMGenTestCase(unittest.TestCase):
         meta = {}
         curie_map = {}
         curie_flag = False
-        with open(os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)) as sssom_file:
+
+        # Read Input file
+        with open(SCHEMA, "r") as input_yaml:
+            try:
+                input_data = yaml.safe_load(input_yaml)
+            except yaml.YAMLError as exc:
+                print(exc)
+
+        # Read output files
+        output_file = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
+        with open(output_file) as sssom_file:
+            row_count = -1
             for ln in sssom_file:
                 if ln.startswith("#"):
                     if "curie_map" in ln:
@@ -38,9 +51,29 @@ class SSSOMGenTestCase(unittest.TestCase):
                         if "curie_map" not in ln:
                             curie_ln = ln.lstrip("#").rstrip("\n").split(": ")
                             curie_map[curie_ln[0]] = curie_ln[1]
+                else:
+                    # This is the MappingSetDataFrame
+                    row_count += 1
+                    ln = ln.split("\t")
+                    ln[-1] = ln[-1].strip()
+                    if row_count == 0:
+                        msdf = pd.DataFrame(columns=ln)
+                    else:
+                        row_as_list = ln
+                        tmp_df = pd.DataFrame(
+                            [row_as_list], columns=msdf.columns
+                        )
+                        msdf = pd.concat(
+                            [msdf, tmp_df],
+                            ignore_index=True,
+                        )
 
+        # Assertions
         self.assertEqual(len(meta), 5)
-        self.assertEqual(len(curie_map), 16)
+        self.assertEqual(len(curie_map), len(input_data["prefixes"]))
+
+        for id in msdf["subject_id"].iteritems():
+            self.assertFalse(" " in id[1])
 
 
 if __name__ == "__main__":
