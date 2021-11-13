@@ -126,7 +126,7 @@ def cli(input, output=None, input_format=None, output_format=None,
             raise Exception(f'Must pass one of --endpoint-url OR --input')
         input_format = _get_format(input, input_format)
         results = validator.validate_file(input, format=input_format)
-    output_format = _get_format(output, output_format, default='json', show_default=True)
+    output_format = _get_format(output, output_format, default='json')
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(results, output)
