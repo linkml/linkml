@@ -1,19 +1,111 @@
 Python
 ======
 
-Example Output
---------------
+.. seealso:: `using python <../data/python>`_
 
-`personinfo.py <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py>`_
 
 Overview
 --------
 
+The Python generator will generate a Python object model from a LinkML schema
 
-.. seealso:: `using python <../data/python>`_
+To run:
 
-Docs
-----
+.. code:: bash
+
+   gen-python personinfo.yaml > personinfo.py
+
+Example output:   
+
+`personinfo.py <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py>`_
+
+This object model can now be used to create, load, and serialize
+objects. For example:
+
+.. code:: python
+
+    from personinfo import Person
+    p1 = Person('P1', name='John Smith')          
+
+The linkml-runtime framework can be used to serialize these objects to
+JSON, YAML, RDF, and TSV, as well as to load them
+
+Dataclasses
+^^^^^^^^^^^
+
+We use the standard `Python dataclasses framework <https://docs.python.org/3/library/dataclasses.html>`_
+
+Note that there is an alternative pydanticgen generator for using
+Pydantic, see `pydanticgen <pydanticgen>`_
+
+Inheritance
+^^^^^^^^^^^
+
+The linkml is_a slot is mapped to superclasses in the generated
+classes. Note that mixins are not currently handled in the same way -
+we avoid multiple inheritance. Instead, mixins are "rolled down" to
+their implementing classes.
+
+The root term for all classes is the class YAMLRoot in the
+linkml-runtime.
+
+Object Creation
+^^^^^^^^^^^^^^^
+
+Generated class include specific initialization code in ``post_init``
+that is permissive in how objects are created. For example, when
+adding inlined objects any of the following can be used:
+
+.. code:: python
+
+    event = EmploymentEvent(...)
+    # method 1: creation with objects
+    p1 = Person('P1', name='John Smith', employment_history=[event])
+    
+    # method 2: creation with dicts
+    p1 = Person('P1', name='John Smith', employment_history=[{...}])
+
+    # method 3: implicit lists
+    p1 = Person('P1', name='John Smith', employment_history={...})
+
+Non-inlined references
+^^^^^^^^^^^^^^^^^^^^^^
+
+In LinkML schemas, references to other objects can be declared as
+`inlined <../schemas/inlining>`_. If a reference is *not* inlined,
+and the referenced object has an identifier, then the value of the
+reference will be that identifier.
+
+In the generated python, class are created for these foreign keys
+
+For example, in the personinfo schema, the employment event class
+references organization via a non-inlined reference, so the following
+code is generated:
+
+.. code:: python
+          
+    class OrganizationId(NamedThingId):
+
+    ...
+    
+    @dataclass
+    class EmploymentEvent(Event):
+
+        employed_at: Optional[Union[str, OrganizationId]] = None
+    
+
+Types
+^^^^^
+
+In LinkML types represent terminal scalar values and are mapped to
+built in Python objects such integers.
+
+For user-defined types, a class is created which inherits from that
+Python base type.
+
+    
+Code Docs
+---------
 
 Command Line
 ^^^^^^^^^^^^
