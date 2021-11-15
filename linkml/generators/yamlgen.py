@@ -32,9 +32,9 @@ class YAMLGenerator(Generator):
 
 @shared_arguments(YAMLGenerator)
 @click.command()
-@click.option("--raw/--no-raw", default=False,
+@click.option("--raw/--no-raw", default=False, show_default=True,
               help="Use the raw loader and do not inject additional information")
-@click.option("--validateonly/--generate", "-v/-g", default=False,
+@click.option("--validateonly/--generate", "-v/-g", default=False, show_default=True,
               help="Just validate / generate output (default: generate)")
 def cli(yamlfile, raw: bool, **args):
     """ Validate input and produce fully resolved yaml equivalent """

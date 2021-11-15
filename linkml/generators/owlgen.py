@@ -452,15 +452,19 @@ class OwlSchemaGenerator(Generator):
               help="Output file name")
 @click.option("--type-objects/--no-type-objects",
               default=True,
+              show_default=True,
               help="If true, will model linkml types as objects, not literals")
 @click.option("--metaclasses/--no-metaclasses",
               default=True,
+              show_default=True,
               help="If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL")
 @click.option("--add-ols-annotations/--no-add-ols-annotations",
               default=True,
+              show_default=True,
               help="If true, auto-include annotations from https://www.ebi.ac.uk/ols/docs/installation-guide")
 @click.option("--ontology-iri-suffix",
               default='.owl.ttl',
+              show_default=True,
               help="Suffix to append to schema id to generate OWL Ontology IRI")
 def cli(yamlfile, **kwargs):
     """ Generate an OWL representation of a LinkML model

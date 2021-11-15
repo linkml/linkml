@@ -871,10 +871,10 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command()
-@click.option("--head/--no-head", default=True, help="Emit metadata heading")
-@click.option("--genmeta/--no-genmeta", default=False, help="Generating metamodel. Only use this for generating meta.py")
-@click.option("--classvars/--no-classvars", default=True, help="Generate CLASSVAR info")
-@click.option("--slots/--no-slots", default=True, help="Generate Slot information")
+@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
+@click.option("--genmeta/--no-genmeta", default=False, show_default=True, help="Generating metamodel. Only use this for generating meta.py")
+@click.option("--classvars/--no-classvars", default=True, show_default=True, help="Generate CLASSVAR info")
+@click.option("--slots/--no-slots", default=True, show_default=True, help="Generate Slot information")
 def cli(yamlfile, head=True, genmeta=False, classvars=True, slots=True, **args):
     """Generate python classes to represent a LinkML model"""
     print(PythonGenerator(yamlfile, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(emit_metadata=head, **args))

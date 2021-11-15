@@ -168,9 +168,9 @@ class ContextGenerator(Generator):
 @shared_arguments(ContextGenerator)
 @click.command()
 @click.option("--base", help="Base URI for model")
-@click.option("--prefixes/--no-prefixes",  default=True, help="Emit context for prefixes (default=--prefixes)")
-@click.option("--model/--no-model",  default=True, help="Emit context for model elements (default=--model)")
-@click.option("--flatprefixes/--no-flatprefixes", default=False, help="Emit non-parsable prefixes as an object")
+@click.option("--prefixes/--no-prefixes",  default=True, show_default=True, help="Emit context for prefixes (default=--prefixes)")
+@click.option("--model/--no-model",  default=True, show_default=True, help="Emit context for model elements (default=--model)")
+@click.option("--flatprefixes/--no-flatprefixes", default=False, show_default=True, help="Emit non-parsable prefixes as an object")
 def cli(yamlfile, **args):
     """ Generate jsonld @context definition from LinkML model """
     print(ContextGenerator(yamlfile, **args).serialize(**args))

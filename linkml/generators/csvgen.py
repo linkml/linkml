@@ -55,7 +55,7 @@ class CsvGenerator(Generator):
 
 @shared_arguments(CsvGenerator)
 @click.command()
-@click.option("--root", "-r", default=None, multiple=True, help="Class(es) to transform")
+@click.option("--root", "-r", multiple=True, help="Class(es) to transform")
 def cli(yamlfile, root=None, **args):
     """ Generate CSV/TSV file from LinkML model """
     print(CsvGenerator(yamlfile, **args).serialize(classes=root, **args))

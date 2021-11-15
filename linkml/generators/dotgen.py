@@ -98,7 +98,7 @@ class DotGenerator(Generator):
 @click.command()
 @click.option("--directory", "-d", help="Output directory - if supplied, a graph per class will be generated")
 @click.option("--out", "-o", help="Target file -- if supplied, one large graph will be generated")
-@click.option("--classname", "-c", default=None, multiple=True, help="Class(es) to transform")
+@click.option("--classname", "-c", multiple=True, help="Class(es) to transform")
 def cli(yamlfile, out, **args):
     """ Generate graphviz representations of the LinkML model """
     DotGenerator(yamlfile, **args).serialize(filename=out, **args)

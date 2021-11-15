@@ -447,7 +447,7 @@ from {model_path} import *
 
 @shared_arguments(SQLDDLGenerator)
 @click.command()
-@click.option("--dialect", default='sqlite', help="""
+@click.option("--dialect", default='sqlite', show_default=True, help="""
 SQL-Alchemy dialect, e.g. sqlite, mysql+odbc
 """)
 @click.option("--sqla-file",  help="""
@@ -456,10 +456,10 @@ Path to sqlalchemy generated python
 @click.option("--python-import",  help="""
 Python import header for generated sql-alchemy code
 """)
-@click.option("--direct-mapping/--no-direct-mapping", default=False, help="""
+@click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="""
 Map classes directly to 
 """)
-@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, help="Emit FK declarations")
+@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
 def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
     """ Generate SQL DDL representation """
     gen = SQLDDLGenerator(yamlfile, **args)
