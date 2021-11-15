@@ -13,7 +13,7 @@ Options:
 
   --not-closed / --closed         Set additionalProperties=False if closed
                                   otherwise true if not closed at the global
-                                  level
+                                  level  [default: True]
 
   -f, --format [json]             Output format (default=json)
   --metadata / --no-metadata      Include metadata in output

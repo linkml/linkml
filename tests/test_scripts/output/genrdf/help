@@ -6,6 +6,8 @@ Options:
   -o, --output TEXT               Output file name
   --context TEXT                  JSONLD context file (default:
                                   https://w3id.org/linkml/meta.context.jsonld)
+                                  [default:
+                                  https://w3id.org/linkml/meta.context.jsonld]
 
   -f, --format [ttl|json-ld|n3|nquads|nt|nt11|ntriples|trig|trix|ttl|turtle|xml]
                                   Output format (default=ttl)

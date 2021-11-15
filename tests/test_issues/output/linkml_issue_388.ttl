@@ -9,7 +9,7 @@
         <https://example.org/this/C3> ;
     linkml:default_prefix "this" ;
     linkml:default_range <https://example.org/this/my_str> ;
-    linkml:generation_date "2021-11-13T01:57:57"^^xsd:dateTime ;
+    linkml:generation_date "2021-11-15T22:54:12"^^xsd:dateTime ;
     linkml:id <https://w3id.org/linkml/examples/personinfo> ;
     linkml:metamodel_version "1.7.0" ;
     linkml:prefixes [ linkml:prefix_prefix "other" ;
@@ -22,7 +22,7 @@
         <https://example.org/this/c2__a>,
         <https://example.org/this/c3__a> ;
     linkml:source_file "linkml_issue_388.yaml" ;
-    linkml:source_file_date "2021-11-13T01:52:34"^^xsd:dateTime ;
+    linkml:source_file_date "2021-11-15T22:47:15"^^xsd:dateTime ;
     linkml:source_file_size 648 ;
     linkml:types <https://example.org/this/my_int>,
         <https://example.org/this/my_str> .

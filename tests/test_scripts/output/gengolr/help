@@ -3,7 +3,7 @@ Usage: gen-golr-views [OPTIONS] YAMLFILE
   Generate GOLR representation of a LinkML model
 
 Options:
-  -d, --dir TEXT                  Output directory
+  -d, --dir TEXT                  Output directory  [default: golr-views]
   -f, --format [golr]             Output format (default=golr)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)

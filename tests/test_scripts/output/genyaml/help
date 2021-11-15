@@ -4,11 +4,11 @@ Usage: gen-yaml [OPTIONS] YAMLFILE
 
 Options:
   --raw / --no-raw                Use the raw loader and do not inject
-                                  additional information
+                                  additional information  [default: False]
 
   -v, --validateonly / -g, --generate
                                   Just validate / generate output (default:
-                                  generate)
+                                  generate)  [default: False]
 
   -f, --format [yaml]             Output format (default=yaml)
   --metadata / --no-metadata      Include metadata in output

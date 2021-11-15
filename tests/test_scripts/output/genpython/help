@@ -3,12 +3,12 @@ Usage: gen-python [OPTIONS] YAMLFILE
   Generate python classes to represent a LinkML model
 
 Options:
-  --head / --no-head              Emit metadata heading
+  --head / --no-head              Emit metadata heading  [default: True]
   --genmeta / --no-genmeta        Generating metamodel. Only use this for
-                                  generating meta.py
+                                  generating meta.py  [default: False]
 
-  --classvars / --no-classvars    Generate CLASSVAR info
-  --slots / --no-slots            Generate Slot information
+  --classvars / --no-classvars    Generate CLASSVAR info  [default: True]
+  --slots / --no-slots            Generate Slot information  [default: True]
   -f, --format [py]               Output format (default=py)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
