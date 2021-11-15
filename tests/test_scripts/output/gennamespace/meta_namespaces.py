@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by namespacegen.py version: 0.9.0
-# Generation date: 2021-03-24 16:48
+# Generation date: 2021-10-27T23:35:42
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -39,7 +39,9 @@ class BiolinkNameSpace:
         CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
         CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#'),
         CurieNamespace('schema', 'http://schema.org/'),
+        CurieNamespace('sh', 'https://w3id.org/shacl/'),
         CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#'),
+        CurieNamespace('swrl', 'http://www.w3.org/2003/11/swrl#'),
         CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#'),
     ]
 

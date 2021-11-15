@@ -39,6 +39,9 @@ fields:
 - id: alt_descriptions
   display_name: alt_descriptions
   cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated

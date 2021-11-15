@@ -10,9 +10,6 @@ fields:
     is combined with the default prefix to form the globally unique subject of the
     target class.
   display_name: name
-- id: title
-  description: the official title of the element
-  display_name: title
 - id: id_prefixes
   description: the identifier of this class or slot must begin with the URIs referenced
     by this prefix
@@ -27,6 +24,9 @@ fields:
 - id: local_names
   display_name: local_names
   cardinality: multi
+- id: conforms_to
+  description: An established standard to which the element conforms.
+  display_name: conforms_to
 - id: mappings
   description: A list of terms from different schemas or terminology systems that
     have comparable meaning. These may include terms that are precisely equivalent,
@@ -73,6 +73,9 @@ fields:
 - id: alt_descriptions
   display_name: alt_descriptions
   cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated
@@ -169,11 +172,6 @@ fields:
     \ slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n\
     \    S1: Y\n\nimplicitly asserts that X is an instance of C1\n"
   display_name: domain
-- id: range
-  description: "defines the type of the object of the slot.  Given the following slot\
-    \ definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n \
-    \   S1: Y\n\nimplicitly asserts Y is an instance of C2\n"
-  display_name: range
 - id: slot_uri
   description: predicate of this slot for semantic web application
   display_name: slot_uri
@@ -195,13 +193,6 @@ fields:
     \  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the\
     \ containing class"
   display_name: ifabsent
-- id: required
-  description: true means that the slot must be present in the loaded definition
-  display_name: required
-- id: recommended
-  description: true means that the slot should be present in the loaded definition,
-    but this is not required
-  display_name: recommended
 - id: inlined
   description: True means that keyed or identified slot appears in an outer structure
     by value.  False means that only the key or identifier for the slot appears within
@@ -260,17 +251,6 @@ fields:
 - id: usage_slot_name
   description: The name of the slot referenced in the slot_usage
   display_name: usage_slot_name
-- id: minimum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    higher than this
-  display_name: minimum_value
-- id: maximum_value
-  description: for slots with ranges of type number, the value must be equal to or
-    lowe than this
-  display_name: maximum_value
-- id: pattern
-  description: the string value of the slot must conform to this regular expression
-  display_name: pattern
 - id: is_a
   description: specifies single-inheritance between classes or slots. While multiple
     inheritance is not allowed, mixins can be provided effectively providing the same
@@ -293,4 +273,81 @@ fields:
     to this class, and then adding an apply_to pointing to the gene class. The new
     slot will be 'injected into' the gene class.
   display_name: slot_definition_apply_to
+  cardinality: multi
+- id: range
+  description: "defines the type of the object of the slot.  Given the following slot\
+    \ definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n \
+    \   S1: Y\n\nimplicitly asserts Y is an instance of C2\n"
+  display_name: range
+- id: range_expression
+  description: A range that is described as a boolean expression combining existing
+    ranges
+  display_name: range_expression
+- id: required
+  description: true means that the slot must be present in the loaded definition
+  display_name: required
+- id: recommended
+  description: true means that the slot should be present in the loaded definition,
+    but this is not required
+  display_name: recommended
+- id: minimum_value
+  description: for slots with ranges of type number, the value must be equal to or
+    higher than this
+  display_name: minimum_value
+- id: maximum_value
+  description: for slots with ranges of type number, the value must be equal to or
+    lowe than this
+  display_name: maximum_value
+- id: pattern
+  description: the string value of the slot must conform to this regular expression
+  display_name: pattern
+- id: equals_string
+  description: the slot must have range string and the value of the slot must equal
+    the specified value
+  display_name: equals_string
+- id: equals_string_in
+  description: the slot must have range string and the value of the slot must equal
+    one of the specified values
+  display_name: equals_string_in
+  cardinality: multi
+- id: equals_number
+  description: the slot must have range of a number and the value of the slot must
+    equal the specified value
+  display_name: equals_number
+- id: equals_expression
+  description: the value of the slot must equal the value of the evaluated expression
+  display_name: equals_expression
+- id: minimum_cardinality
+  description: the minimum number of entries for a multivalued slot
+  display_name: minimum_cardinality
+- id: maximum_cardinality
+  description: the maximum number of entries for a multivalued slot
+  display_name: maximum_cardinality
+- id: has_member
+  description: the values of the slot is multivalued with at least one member satisfying
+    the condition
+  display_name: has_member
+- id: all_members
+  description: "the value of the multiavlued slot is a list where all elements conform\
+    \ to the specified values.\nthis defines a dynamic class with named slots according\
+    \ to matching constraints\n\nE.g to state that all members of a list are between\
+    \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n\
+    \    maximum_value: 10\n```"
+  display_name: all_members
+  cardinality: multi
+- id: none_of
+  description: holds if none of the expressions hold
+  display_name: slot_expression_none_of
+  cardinality: multi
+- id: exactly_one_of
+  description: holds if only one of the expressions hold
+  display_name: slot_expression_exactly_one_of
+  cardinality: multi
+- id: any_of
+  description: holds if at least one of the expressions hold
+  display_name: slot_expression_any_of
+  cardinality: multi
+- id: all_of
+  description: holds if all of the expressions hold
+  display_name: slot_expression_all_of
   cardinality: multi

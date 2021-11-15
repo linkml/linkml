@@ -26,6 +26,7 @@ A metamodel for defining linked open data schemas
 
 ### Enums
 
+ * [presence_enum](presence_enum.md) - enumeration of conditions by which a slot value should be set
  * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values
 
 ### Subsets

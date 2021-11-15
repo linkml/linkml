@@ -19,7 +19,11 @@ None &#8594;  <sub>0..1</sub> uriorcurie
 
 ## Used by
 
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * common_metadata
  * definition
  * [Element](Element.md)
@@ -29,6 +33,7 @@ None &#8594;  <sub>0..1</sub> uriorcurie
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key
 
 ## Other properties
 

@@ -29,13 +29,21 @@ class RawLoaderTestCase(unittest.TestCase):
         schema.source_file = os.path.basename(schema.source_file)
         if addl_checks:
             addl_checks(schema)
+
         self.assertTrue(isinstance(schema.metamodel_version, str))
         expected.metamodel_version = schema.metamodel_version
+
+        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}" # date in ISO 8601 format
         self.assertTrue(isinstance(schema.source_file_date, str))
+        self.assertRegex(schema.source_file_date, pattern)
         expected.source_file_date = schema.source_file_date
+
         self.assertTrue(isinstance(schema.source_file_size, int))
         expected.source_file_size = schema.source_file_size
+        
         self.assertTrue(isinstance(schema.generation_date, str))
+        self.assertRegex(schema.generation_date, pattern)
+        
         expected.generation_date = schema.generation_date
         self.assertEqual(expected, loads(as_json(schema)))
 

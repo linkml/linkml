@@ -20,3 +20,10 @@ URI: [linkml:designates_type](https://w3id.org/linkml/designates_type)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | type designator |
+

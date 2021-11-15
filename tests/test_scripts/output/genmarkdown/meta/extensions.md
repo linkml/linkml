@@ -21,7 +21,11 @@ URI: [linkml:extensions](https://w3id.org/linkml/extensions)
 ## Used by
 
  * [Annotation](Annotation.md)
+ * [AnonymousClassExpression](AnonymousClassExpression.md)
+ * [AnonymousExpression](AnonymousExpression.md)
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [ClassDefinition](ClassDefinition.md)
+ * [ClassRule](ClassRule.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
  * [EnumDefinition](EnumDefinition.md)

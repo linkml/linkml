@@ -19,7 +19,11 @@ URI: [linkml:imported_from](https://w3id.org/linkml/imported_from)
 
 ## Used by
 
+ * [AnonymousClassExpression](AnonymousClassExpression.md)
+ * [AnonymousExpression](AnonymousExpression.md)
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [ClassDefinition](ClassDefinition.md)
+ * [ClassRule](ClassRule.md)
  * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
@@ -29,3 +33,4 @@ URI: [linkml:imported_from](https://w3id.org/linkml/imported_from)
  * [SlotDefinition](SlotDefinition.md)
  * [SubsetDefinition](SubsetDefinition.md)
  * [TypeDefinition](TypeDefinition.md)
+ * [UniqueKey](UniqueKey.md)

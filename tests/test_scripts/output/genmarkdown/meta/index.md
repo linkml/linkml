@@ -8,6 +8,12 @@ A metamodel for defining linked open data schemas
 ### Classes
 
  * [AltDescription](AltDescription.md) - an attributed description
+ * [AnonymousExpression](AnonymousExpression.md)
+     * [AnonymousClassExpression](AnonymousClassExpression.md)
+     * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [AnonymousTypeExpression](AnonymousTypeExpression.md)
+ * [ClassLevelRule](ClassLevelRule.md) - A rule that is applied to classes
+     * [ClassRule](ClassRule.md) - A rule that applies to instances of a class
  * [Element](Element.md) - a named element in the model
      * [Definition](Definition.md) - base class for definitions
          * [ClassDefinition](ClassDefinition.md) - the definition of a class or interface
@@ -27,8 +33,14 @@ A metamodel for defining linked open data schemas
 ### Mixins
 
  * [Annotatable](Annotatable.md) - mixin for classes that support annotations
+ * [ClassExpression](ClassExpression.md) - A boolean expression that can be used to dynamically determine membership of a class
  * [CommonMetadata](CommonMetadata.md) - Generic metadata shared across definitions
+ * [Expression](Expression.md) - todo
+     * [SlotExpression](SlotExpression.md) - an expression that constrains the range of values a slot can take
+     * [TypeExpression](TypeExpression.md)
  * [Extensible](Extensible.md) - mixin for classes that support extension
+ * [SlotExpression](SlotExpression.md) - an expression that constrains the range of values a slot can take
+ * [TypeExpression](TypeExpression.md)
 
 ### Slots
 
@@ -43,14 +55,35 @@ A metamodel for defining linked open data schemas
      * [slot_definition➞apply_to](slot_definition_apply_to.md)
  * [attributes](attributes.md) - Inline definition of slots
  * [base](base.md) - python base type that implements this type definition
+ * [bidirectional](bidirectional.md) - in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+ * [boolean_slot](boolean_slot.md) - A grouping of slots that expression a boolean operator over a list of operands
+     * [all_of](all_of.md) - holds if all of the expressions hold
+         * [class_expression➞all_of](class_expression_all_of.md)
+         * [slot_expression➞all_of](slot_expression_all_of.md)
+         * [type_expression➞all_of](type_expression_all_of.md)
+     * [any_of](any_of.md) - holds if at least one of the expressions hold
+         * [class_expression➞any_of](class_expression_any_of.md)
+         * [slot_expression➞any_of](slot_expression_any_of.md)
+         * [type_expression➞any_of](type_expression_any_of.md)
+     * [exactly_one_of](exactly_one_of.md) - holds if only one of the expressions hold
+         * [class_expression➞exactly_one_of](class_expression_exactly_one_of.md)
+         * [slot_expression➞exactly_one_of](slot_expression_exactly_one_of.md)
+         * [type_expression➞exactly_one_of](type_expression_exactly_one_of.md)
+     * [none_of](none_of.md) - holds if none of the expressions hold
+         * [class_expression➞none_of](class_expression_none_of.md)
+         * [slot_expression➞none_of](slot_expression_none_of.md)
+         * [type_expression➞none_of](type_expression_none_of.md)
  * [class_uri](class_uri.md) - URI of the class in an RDF environment
  * [classes](classes.md) - class definitions
+ * [classification_rules](classification_rules.md) - the collection of classification rules that apply to all members of this class
  * [code_set](code_set.md) - the identifier of an enumeration code set.
  * [code_set_tag](code_set_tag.md) - the version tag of the enumeration code set
  * [code_set_version](code_set_version.md) - the version identifier of the enumeration code set
  * [comments](comments.md) - notes and comments about an element intended for external consumption
+ * [conforms_to](conforms_to.md) - An established standard to which the element conforms.
  * [created_by](created_by.md) - agent that created the element
  * [created_on](created_on.md) - time at which the element was created
+ * [deactivated](deactivated.md) - a deactivated rule is not executed by the rules engine
  * [default_curi_maps](default_curi_maps.md) - ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables
  * [default_prefix](default_prefix.md) - default and base prefix -- used for ':' identifiers, @base and @vocab
  * [default_range](default_range.md) - default slot range to be used if range element is omitted from a slot definition
@@ -63,6 +96,7 @@ A metamodel for defining linked open data schemas
  * [designates_type](designates_type.md) - True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
  * [domain](domain.md) - defines the type of the subject of the slot.  Given the following slot definition
  * [domain_of](domain_of.md) - the class(es) that reference the slot in a "slots" or "slot_usage" context
+ * [elseconditions](elseconditions.md) - an expression that must hold for an instance of the class, if the preconditions no not hold
  * [emit_prefixes](emit_prefixes.md) - a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models.
  * [enums](enums.md) - enumerated ranges
  * [examples](examples.md) - example usages of an element
@@ -92,6 +126,11 @@ A metamodel for defining linked open data schemas
  * [key](key.md) - True means that the key slot(s) uniquely identify the container.
  * [last_updated_on](last_updated_on.md) - time at which the element was last updated
  * [license](license.md) - license for the schema
+ * [list_value_specification_constant](list_value_specification_constant.md) - Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant
+     * [all_members](all_members.md) - the value of the multiavlued slot is a list where all elements conform to the specified values.
+     * [equals_number_in](equals_number_in.md) - the slot must have range number and the value of the slot must equal one of the specified values
+     * [equals_string_in](equals_string_in.md) - the slot must have range string and the value of the slot must equal one of the specified values
+     * [has_member](has_member.md) - the values of the slot is multivalued with at least one member satisfying the condition
  * [local_name_source](local_name_source.md) - the ncname of the source of the name
  * [local_name_value](local_name_value.md) - a name assigned to an element in a given ontology
  * [local_names](local_names.md)
@@ -115,21 +154,29 @@ A metamodel for defining linked open data schemas
  * [name](name.md) - the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * [schema_definition➞name](schema_definition_name.md)
  * [notes](notes.md) - editorial notes about an element intended for internal consumption
+ * [open_world](open_world.md) - if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
  * [owner](owner.md) - the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
  * [pattern](pattern.md) - the string value of the slot must conform to this regular expression
  * [permissible_values](permissible_values.md) - A list of possible values for a slot range
+ * [postconditions](postconditions.md) - an expression that must hold for an instance of the class, if the preconditions hold
+ * [precedence](precedence.md) - the relative order in which the rule is applied
+ * [preconditions](preconditions.md) - an expression that must hold in order for the rule to be applicable to an instance
  * [prefix_prefix](prefix_prefix.md) - the nsname (sans ':' for a given prefix)
  * [prefix_reference](prefix_reference.md) - A URI associated with a given prefix
  * [prefixes](prefixes.md) - prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes
  * [pv_formula](pv_formula.md) - Defines the specific formula to be used to generate the permissible values.
  * [range](range.md) - defines the type of the object of the slot.  Given the following slot definition
+ * [range_expression](range_expression.md) - A range that is described as a boolean expression combining existing ranges
  * [readonly](readonly.md) - If present, slot is read only.  Text explains why
  * [recommended](recommended.md) - true means that the slot should be present in the loaded definition, but this is not required
  * [repr](repr.md) - the name of the python object that implements this type definition
  * [required](required.md) - true means that the slot must be present in the loaded definition
  * [role](role.md) - the role played by the slot range
+ * [rules](rules.md) - the collection of rules that apply to all members of this class
+     * [class_definition➞rules](class_definition_rules.md)
  * [see_also](see_also.md) - a reference
  * [singular_name](singular_name.md) - a name that is used in the singular form
+ * [slot_conditions](slot_conditions.md) - the redefinition of a slot in the context of the containing class definition.
  * [schema_definition➞slots](slot_definitions.md) - slot definitions
  * [slot_uri](slot_uri.md) - predicate of this slot for semantic web application
  * [slot_usage](slot_usage.md) - the redefinition of a slot in the context of the containing class definition.
@@ -156,11 +203,19 @@ A metamodel for defining linked open data schemas
  * [usage_slot_name](usage_slot_name.md) - The name of the slot referenced in the slot_usage
  * [value](value.md) - example value
  * [example➞description](value_description.md) - description of what the value is doing
+ * [value_specification_constant](value_specification_constant.md) - Grouping for metamodel slots that constrain the a slot value to equal a specified constant
+     * [equals_expression](equals_expression.md) - the value of the slot must equal the value of the evaluated expression
+     * [equals_number](equals_number.md) - the slot must have range of a number and the value of the slot must equal the specified value
+     * [equals_string](equals_string.md) - the slot must have range string and the value of the slot must equal the specified value
+     * [maximum_cardinality](maximum_cardinality.md) - the maximum number of entries for a multivalued slot
+     * [minimum_cardinality](minimum_cardinality.md) - the minimum number of entries for a multivalued slot
+     * [value_presence](value_presence.md) - if true then a value must be present (for lists there must be at least one value). If false then a value must be absent (for lists, must be empty)
  * [values_from](values_from.md) - the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
  * [version](version.md) - particular version of schema
 
 ### Enums
 
+ * [presence_enum](presence_enum.md) - enumeration of conditions by which a slot value should be set
  * [pv_formula_options](pv_formula_options.md) - The formula used to generate the set of permissible values from the code_set values
 
 ### Subsets

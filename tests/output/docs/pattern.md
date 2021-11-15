@@ -19,5 +19,9 @@ URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [AnonymousTypeExpression](AnonymousTypeExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
  * [TypeDefinition](TypeDefinition.md)
+ * [TypeExpression](TypeExpression.md)

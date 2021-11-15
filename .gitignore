@@ -99,3 +99,6 @@ tests/test_config.ini
 
 # Don't lock
 Pipfile.lock
+
+# User defined
+.vscode/*

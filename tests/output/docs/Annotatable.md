@@ -12,6 +12,8 @@ URI: [linkml:Annotatable](https://w3id.org/linkml/Annotatable)
 ## Mixin for
 
  * [Annotation](Annotation.md) (mixin)  - a tag/value pair with the semantics of OWL Annotation
+ * [AnonymousExpression](AnonymousExpression.md) (mixin) 
+ * [ClassRule](ClassRule.md) (mixin)  - A rule that applies to instances of a class
  * [Element](Element.md) (mixin)  - a named element in the model
  * [PermissibleValue](PermissibleValue.md) (mixin)  - a permissible value, accompanied by intended text and an optional mapping to a concept URI
  * [UniqueKey](UniqueKey.md) (mixin)  - a collection of slots whose values uniquely identify an instance of a class

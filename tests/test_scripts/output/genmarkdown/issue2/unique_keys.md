@@ -19,6 +19,7 @@ class_definition &#8594;  <sub>0..\*</sub> unique_key
 
 ## Used by
 
+ * class_definition
 
 ## Other properties
 

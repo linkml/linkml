@@ -19,7 +19,11 @@ URI: [linkml:todos](https://w3id.org/linkml/todos)
 
 ## Used by
 
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * common_metadata
  * definition
  * [Element](Element.md)
@@ -29,3 +33,4 @@ URI: [linkml:todos](https://w3id.org/linkml/todos)
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key

@@ -20,3 +20,10 @@ URI: [linkml:alias](https://w3id.org/linkml/alias)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | skos:prefLabel |
+

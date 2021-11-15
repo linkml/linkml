@@ -35,6 +35,7 @@ sphinx-click = "*"
 myst-parser = "*"
 jinja2 = "*"
 pydantic = "*"
+pandas = "*"
 
 [dev-packages]
 nbconvert = "*"

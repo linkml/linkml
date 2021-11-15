@@ -19,7 +19,11 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
 
 ## Used by
 
+ * [AnonymousClassExpression](AnonymousClassExpression.md)
+ * [AnonymousExpression](AnonymousExpression.md)
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [ClassDefinition](ClassDefinition.md)
+ * [ClassRule](ClassRule.md)
  * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
@@ -29,6 +33,7 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
  * [SlotDefinition](SlotDefinition.md)
  * [SubsetDefinition](SubsetDefinition.md)
  * [TypeDefinition](TypeDefinition.md)
+ * [UniqueKey](UniqueKey.md)
 
 ## Other properties
 

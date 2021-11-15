@@ -19,6 +19,7 @@ URI: [linkml:unique_keys](https://w3id.org/linkml/unique_keys)
 
 ## Used by
 
+ * [ClassDefinition](ClassDefinition.md)
 
 ## Other properties
 

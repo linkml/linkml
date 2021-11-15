@@ -7,12 +7,15 @@ Generic metadata shared across definitions
 URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Example],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata&#124;description:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[PermissibleValue],[Element],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Example],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata&#124;description:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[PermissibleValue],[Element],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Example],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[UniqueKey]uses%20-.->[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[ClassRule]uses%20-.->[CommonMetadata],[AnonymousExpression]uses%20-.->[CommonMetadata],[UniqueKey],[PermissibleValue],[Element],[ClassRule],[AnonymousExpression],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Example],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[UniqueKey]uses%20-.->[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[ClassRule]uses%20-.->[CommonMetadata],[AnonymousExpression]uses%20-.->[CommonMetadata],[UniqueKey],[PermissibleValue],[Element],[ClassRule],[AnonymousExpression],[AltDescription])
 
 ## Mixin for
 
+ * [AnonymousExpression](AnonymousExpression.md) (mixin) 
+ * [ClassRule](ClassRule.md) (mixin)  - A rule that applies to instances of a class
  * [Element](Element.md) (mixin)  - a named element in the model
  * [PermissibleValue](PermissibleValue.md) (mixin)  - a permissible value, accompanied by intended text and an optional mapping to a concept URI
+ * [UniqueKey](UniqueKey.md) (mixin)  - a collection of slots whose values uniquely identify an instance of a class
 
 ## Referenced by Class
 
@@ -28,6 +31,10 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
      * in subsets: (owl)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](types/String.md)
+     * in subsets: (owl)
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)
