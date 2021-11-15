@@ -7,7 +7,7 @@ a permissible value, accompanied by intended text and an optional mapping to a c
 URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
@@ -58,6 +58,13 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+
+### Mixed in from common_metadata:
+
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](String.md)
+     * in subsets: (owl)
 
 ### Mixed in from common_metadata:
 

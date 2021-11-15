@@ -157,7 +157,6 @@ slots:
     imported_from: linkml:annotations
     is_a: extensions
     domain: annotatable
-    range: annotation
     slot_uri: linkml:annotations
     multivalued: true
     inlined: true
@@ -165,6 +164,7 @@ slots:
     domain_of:
     - annotatable
     - annotation
+    range: annotation
   extensions:
     name: extensions
     definition_uri: https://w3id.org/linkml/extensions
@@ -172,7 +172,6 @@ slots:
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions
     domain: extensible
-    range: extension
     slot_uri: linkml:extensions
     multivalued: true
     inlined: true
@@ -180,6 +179,7 @@ slots:
     domain_of:
     - extension
     - extensible
+    range: extension
   extension_tag:
     name: extension_tag
     definition_uri: https://w3id.org/linkml/extension_tag
@@ -187,13 +187,13 @@ slots:
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions
     domain: extension
-    range: uriorcurie
     slot_uri: linkml:tag
-    required: true
     alias: tag
     owner: extension
     domain_of:
     - extension
+    range: uriorcurie
+    required: true
   extension_value:
     name: extension_value
     definition_uri: https://w3id.org/linkml/extension_value
@@ -201,13 +201,13 @@ slots:
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions
     domain: extension
-    range: string
     slot_uri: linkml:value
-    required: true
     alias: value
     owner: extension
     domain_of:
     - extension
+    range: string
+    required: true
 classes:
   my class:
     name: my class
@@ -287,6 +287,6 @@ classes:
     class_uri: linkml:Extensible
 metamodel_version: 1.7.0
 source_file: issue_167b.yaml
-source_file_date: Tue Jul 20 18:41:38 2021
+source_file_date: '2021-10-27T23:28:23'
 source_file_size: 818
-generation_date: 2021-07-20 18:45
+generation_date: '2021-10-27T23:34:42'

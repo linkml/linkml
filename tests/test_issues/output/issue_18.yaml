@@ -15,65 +15,65 @@ slots:
     definition_uri: http://example.org/tests/issue18/c1s1
     description: Slot with implicit range
     from_schema: http://example.org/tests/issue18
-    range: c2
     slot_uri: http://example.org/tests/issue18/c1s1
     owner: c1
     domain_of:
     - c1
     inverse: c2s1
+    range: c2
   c2s1:
     name: c2s1
     definition_uri: http://example.org/tests/issue18/c2s1
     description: Slot whose domain, range and inverse comes entirely from c1s1
     from_schema: http://example.org/tests/issue18
-    range: c1
     slot_uri: http://example.org/tests/issue18/c2s1
     owner: c2
     domain_of:
     - c2
     inverse: c1s1
+    range: c1
   c1s2:
     name: c1s2
     definition_uri: http://example.org/tests/issue18/c1s2
     description: Slot with explicit domain_of and range
     from_schema: http://example.org/tests/issue18
-    range: c2
     slot_uri: http://example.org/tests/issue18/c1s2
     inlined: true
     owner: c1
     domain_of:
     - c1
     inverse: c2s2
+    range: c2
   c2s2:
     name: c2s2
     definition_uri: http://example.org/tests/issue18/c2s2
     description: Second slot with explicit domain_of and range
     from_schema: http://example.org/tests/issue18
     domain: c2
-    range: c1
     slot_uri: http://example.org/tests/issue18/c2s2
     inlined: true
     inverse: c1s2
+    range: c1
   c3s1:
     name: c3s1
     definition_uri: http://example.org/tests/issue18/c3s1
     from_schema: http://example.org/tests/issue18
-    range: c4
     slot_uri: http://example.org/tests/issue18/c3s1
     inlined: true
     owner: c3
     domain_of:
     - c3
     inverse: c4s1
+    range: c4
   c4s1:
     name: c4s1
     definition_uri: http://example.org/tests/issue18/c4s1
     description: c4 gets injected as the domain
     from_schema: http://example.org/tests/issue18
     domain: c4
-    range: c3
     slot_uri: http://example.org/tests/issue18/c4s1
     inverse: c3s1
+    range: c3
 classes:
   c1:
     name: c1
@@ -105,6 +105,6 @@ classes:
     class_uri: http://example.org/tests/issue18/C4
 metamodel_version: 1.7.0
 source_file: issue_18.yaml
-source_file_date: Wed Mar 24 16:43:50 2021
+source_file_date: '2021-10-27T23:28:23'
 source_file_size: 671
-generation_date: 2021-03-24 16:47
+generation_date: '2021-10-27T23:34:43'

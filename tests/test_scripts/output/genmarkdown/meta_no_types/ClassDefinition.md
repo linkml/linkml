@@ -7,11 +7,15 @@ the definition of a class or interface
 URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Definition],[ClassDefinition]<apply_to%200..*-%20[ClassDefinition&#124;class_uri:uriorcurie%20%3F;subclass_of:uriorcurie%20%3F;tree_root:boolean%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;title(i):string%20%3F;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[ClassDefinition]<mixins%200..*-%20[ClassDefinition],[ClassDefinition]<is_a%200..1-%20[ClassDefinition],[SlotDefinition]<defining_slots%200..*-%20[ClassDefinition],[ClassDefinition]<union_of%200..*-%20[ClassDefinition],[SlotDefinition]<attributes%200..*-++[ClassDefinition],[SlotDefinition]<slot_usage%200..*-++[ClassDefinition],[SlotDefinition]<slots%200..*-%20[ClassDefinition],[SchemaDefinition]++-%20classes%200..*>[ClassDefinition],[SlotDefinition]-%20domain%200..1>[ClassDefinition],[SlotDefinition]-%20domain_of%200..*>[ClassDefinition],[Definition]^-[ClassDefinition],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Definition],[ClassDefinition]<apply_to%200..*-%20[ClassDefinition&#124;class_uri:uriorcurie%20%3F;subclass_of:uriorcurie%20%3F;tree_root:boolean%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;title(i):string%20%3F;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[ClassDefinition]<mixins%200..*-%20[ClassDefinition],[ClassDefinition]<is_a%200..1-%20[ClassDefinition],[SlotDefinition]<defining_slots%200..*-%20[ClassDefinition],[ClassDefinition]<union_of%200..*-%20[ClassDefinition],[SlotDefinition]<attributes%200..*-++[ClassDefinition],[SlotDefinition]<slot_usage%200..*-++[ClassDefinition],[SlotDefinition]<slots%200..*-%20[ClassDefinition],[SchemaDefinition]++-%20classes%200..*>[ClassDefinition],[SlotDefinition]-%20domain%200..1>[ClassDefinition],[SlotDefinition]-%20domain_of%200..*>[ClassDefinition],[Definition]^-[ClassDefinition],[Annotation],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[UniqueKey],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Definition],[ClassRule],[ClassExpression],[ClassDefinition]<apply_to%200..*-%20[ClassDefinition&#124;class_uri:uriorcurie%20%3F;subclass_of:uriorcurie%20%3F;tree_root:boolean%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[ClassDefinition]<mixins%200..*-%20[ClassDefinition],[ClassDefinition]<is_a%200..1-%20[ClassDefinition],[AnonymousClassExpression]<classification_rules%200..*-++[ClassDefinition],[ClassRule]<rules%200..*-++[ClassDefinition],[UniqueKey]<unique_keys%200..*-++[ClassDefinition],[SlotDefinition]<defining_slots%200..*-%20[ClassDefinition],[ClassDefinition]<union_of%200..*-%20[ClassDefinition],[SlotDefinition]<attributes%200..*-++[ClassDefinition],[SlotDefinition]<slot_usage%200..*-++[ClassDefinition],[SlotDefinition]<slots%200..*-%20[ClassDefinition],[SchemaDefinition]++-%20classes%200..*>[ClassDefinition],[SlotDefinition]-%20domain%200..1>[ClassDefinition],[SlotDefinition]-%20domain_of%200..*>[ClassDefinition],[ClassDefinition]uses%20-.->[ClassExpression],[Definition]^-[ClassDefinition],[AnonymousClassExpression],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[UniqueKey],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Definition],[ClassRule],[ClassExpression],[ClassDefinition]<apply_to%200..*-%20[ClassDefinition&#124;class_uri:uriorcurie%20%3F;subclass_of:uriorcurie%20%3F;tree_root:boolean%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[ClassDefinition]<mixins%200..*-%20[ClassDefinition],[ClassDefinition]<is_a%200..1-%20[ClassDefinition],[AnonymousClassExpression]<classification_rules%200..*-++[ClassDefinition],[ClassRule]<rules%200..*-++[ClassDefinition],[UniqueKey]<unique_keys%200..*-++[ClassDefinition],[SlotDefinition]<defining_slots%200..*-%20[ClassDefinition],[ClassDefinition]<union_of%200..*-%20[ClassDefinition],[SlotDefinition]<attributes%200..*-++[ClassDefinition],[SlotDefinition]<slot_usage%200..*-++[ClassDefinition],[SlotDefinition]<slots%200..*-%20[ClassDefinition],[SchemaDefinition]++-%20classes%200..*>[ClassDefinition],[SlotDefinition]-%20domain%200..1>[ClassDefinition],[SlotDefinition]-%20domain_of%200..*>[ClassDefinition],[ClassDefinition]uses%20-.->[ClassExpression],[Definition]^-[ClassDefinition],[AnonymousClassExpression],[Annotation],[AltDescription])
 
 ## Parents
 
  *  is_a: [Definition](Definition.md) - base class for definitions
+
+## Uses Mixin
+
+ *  mixin: [ClassExpression](ClassExpression.md) - A boolean expression that can be used to dynamically determine membership of a class
 
 ## Referenced by Class
 
@@ -52,6 +56,15 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
  * [tree_root](tree_root.md)  <sub>0..1</sub>
      * Description: indicator that this is the root class in tree structures
      * Range: [Boolean](Boolean.md)
+ * [unique_keys](unique_keys.md)  <sub>0..\*</sub>
+     * Description: Set of unique keys for this slot
+     * Range: [UniqueKey](UniqueKey.md)
+ * [class_definition➞rules](class_definition_rules.md)  <sub>0..\*</sub>
+     * Description: the collection of rules that apply to all members of this class
+     * Range: [ClassRule](ClassRule.md)
+ * [classification_rules](classification_rules.md)  <sub>0..\*</sub>
+     * Description: the collection of classification rules that apply to all members of this class
+     * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
  * [class_definition➞is_a](class_definition_is_a.md)  <sub>0..1</sub>
      * Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
      * Range: [ClassDefinition](ClassDefinition.md)
@@ -68,10 +81,6 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](String.md)
      * in subsets: (owl)
- * [title](title.md)  <sub>0..1</sub>
-     * Description: the official title of the element
-     * Range: [String](String.md)
-     * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](Ncname.md)
@@ -82,6 +91,9 @@ URI: [linkml:ClassDefinition](https://w3id.org/linkml/ClassDefinition)
      * Range: [String](String.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
+ * [conforms_to](conforms_to.md)  <sub>0..1</sub>
+     * Description: An established standard to which the element conforms.
+     * Range: [String](String.md)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](Uriorcurie.md)
@@ -131,6 +143,36 @@ We call the slot with the serialization the s-slot, the slots used in the {}s ar
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects
 For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
      * Range: [String](String.md)
+
+### Mixed in from class_expression:
+
+ * [class_expression➞any_of](class_expression_any_of.md)  <sub>0..\*</sub>
+     * Description: holds if at least one of the expressions hold
+     * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
+
+### Mixed in from class_expression:
+
+ * [class_expression➞exactly_one_of](class_expression_exactly_one_of.md)  <sub>0..\*</sub>
+     * Description: holds if only one of the expressions hold
+     * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
+
+### Mixed in from class_expression:
+
+ * [class_expression➞none_of](class_expression_none_of.md)  <sub>0..\*</sub>
+     * Description: holds if none of the expressions hold
+     * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
+
+### Mixed in from class_expression:
+
+ * [class_expression➞all_of](class_expression_all_of.md)  <sub>0..\*</sub>
+     * Description: holds if all of the expressions hold
+     * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
+
+### Mixed in from class_expression:
+
+ * [slot_conditions](slot_conditions.md)  <sub>0..\*</sub>
+     * Description: the redefinition of a slot in the context of the containing class definition.
+     * Range: [SlotDefinition](SlotDefinition.md)
 
 ## Other properties
 

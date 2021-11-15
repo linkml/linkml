@@ -11,8 +11,11 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
 
 ## Mixin for
 
+ * [AnonymousExpression](AnonymousExpression.md) (mixin) 
+ * [ClassRule](ClassRule.md) (mixin)  - A rule that applies to instances of a class
  * [Element](Element.md) (mixin)  - a named element in the model
  * [PermissibleValue](PermissibleValue.md) (mixin)  - a permissible value, accompanied by intended text and an optional mapping to a concept URI
+ * [UniqueKey](UniqueKey.md) (mixin)  - a collection of slots whose values uniquely identify an instance of a class
 
 ## Referenced by Class
 
@@ -28,6 +31,10 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
      * in subsets: (owl)
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](types/String.md)
+     * in subsets: (owl)
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)

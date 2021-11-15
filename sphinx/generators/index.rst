@@ -12,6 +12,7 @@ A LinkML *generator* is code that transforms a linkml schema into a datamodel ex
    json-schema
    markdown
    python
+   pydantic
    java
    sqlddl
    graphql

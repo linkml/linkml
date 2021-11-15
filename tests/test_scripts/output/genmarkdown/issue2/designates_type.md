@@ -20,3 +20,10 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | type designator |
+

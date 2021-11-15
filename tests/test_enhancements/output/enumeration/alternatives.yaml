@@ -268,88 +268,88 @@ slots:
     name: allEnums__entry_name
     description: Name of the particular enum permutation
     from_schema: http://example.org/test/alternatives
-    range: string
     slot_uri: evidence:entry_name
-    required: true
     identifier: true
     alias: entry_name
     owner: all_enums
     domain_of:
     - all_enums
+    range: string
+    required: true
   allEnums__code_1:
     name: allEnums__code_1
     from_schema: http://example.org/test/alternatives
-    range: open_enum
     slot_uri: evidence:code_1
     multivalued: true
-    required: true
     alias: code_1
     owner: all_enums
     domain_of:
     - all_enums
+    range: open_enum
+    required: true
   allEnums__code_2:
     name: allEnums__code_2
     from_schema: http://example.org/test/alternatives
-    range: constrained_enum_2
     slot_uri: evidence:code_2
     alias: code_2
     owner: all_enums
     domain_of:
     - all_enums
+    range: constrained_enum_2
   allEnums__code_3:
     name: allEnums__code_3
     from_schema: http://example.org/test/alternatives
-    range: constrained_enum_3
     slot_uri: evidence:code_3
     alias: code_3
     owner: all_enums
     domain_of:
     - all_enums
+    range: constrained_enum_3
   allEnums__code_4:
     name: allEnums__code_4
     from_schema: http://example.org/test/alternatives
-    range: constrained_enum_4
     slot_uri: evidence:code_4
     alias: code_4
     owner: all_enums
     domain_of:
     - all_enums
+    range: constrained_enum_4
   allEnums__code_5:
     name: allEnums__code_5
     from_schema: http://example.org/test/alternatives
-    range: constrained_enum_4
     slot_uri: evidence:code_5
     alias: code_5
     owner: all_enums
     domain_of:
     - all_enums
+    range: constrained_enum_4
   allEnums__code_6:
     name: allEnums__code_6
     from_schema: http://example.org/test/alternatives
-    range: constrained_enum_4
     slot_uri: evidence:code_6
     alias: code_6
     owner: all_enums
     domain_of:
     - all_enums
+    range: constrained_enum_4
   allEnums__code_7:
     name: allEnums__code_7
     from_schema: http://example.org/test/alternatives
-    range: constrained_evidence
     slot_uri: evidence:code_7
     alias: code_7
     owner: all_enums
     domain_of:
     - all_enums
+    range: constrained_evidence
   allEnums__code_8:
     name: allEnums__code_8
     from_schema: http://example.org/test/alternatives
-    range: mapped_evidence
     slot_uri: evidence:code_8
     alias: code_8
     owner: all_enums
     domain_of:
     - all_enums
+    range: mapped_evidence
 classes:
   all_enums:
     name: all_enums
@@ -373,8 +373,8 @@ classes:
         identifier: true
       code_1:
         name: code_1
-        range: open_enum
         multivalued: true
+        range: open_enum
         required: true
       code_2:
         name: code_2
@@ -400,6 +400,6 @@ classes:
     class_uri: evidence:AllEnums
 metamodel_version: 1.7.0
 source_file: alternatives.yaml
-source_file_date: Wed Jun  9 21:45:31 2021
+source_file_date: '2021-10-27T23:28:23'
 source_file_size: 2692
-generation_date: 2021-06-09 21:49
+generation_date: '2021-10-27T23:33:53'

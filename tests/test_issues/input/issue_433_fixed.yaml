@@ -1,0 +1,46 @@
+# this file has been derived from iSamplesSchemaBasic0.3.yml
+id: http://resource.isamples.org/schema/0.3
+name: physicalSample
+prefixes:
+    isam: http://resource.isamples.org/schema/
+    xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: isam
+
+classes:
+  PhysicalSampleRecord:
+    description:
+      This is a data object that is a digital representation of a physical
+      sample, and thus shares the same identifier as the physical object. It
+      provides  descriptive properties for any iSamples physical sample, URI
+      for the metadata record is same as URI for physical sample-- digital object
+      is considered twin of physical object, a representation. IGSN is recommended.
+      Must be a URI that can be dereferenced on the web.
+    slots:
+      - id
+      - sampleidentifier
+      - label
+    slot_usage:
+      label:
+        required: true
+      sampleidentifier:
+        required: true
+
+slots:
+  id:
+    identifier: true
+    range: string
+    description: identifier for the JSON object. JSON-LD context should map this to @id
+  label:
+    range: string
+    description: a human intelligible string used to identify a thing, i.e. the
+      name to use for the thing; should be unique in the scope of a sample collection
+      or dataset.
+  sampleidentifier:
+    range: string
+    domain: PhysicalSampleRecord
+    description: URI that identifies the physical sample described by this record
+
+types:
+  string:
+    base: str
+    uri: xsd:string

@@ -3,11 +3,15 @@ import unittest
 import logging
 import json
 from rdflib import Graph, URIRef
+import tempfile
+import csv
+import re
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
+from tests.test_generators import output
 from tests.test_prefixes.environment import env
 
 SCHEMA = env.input_path('prefixtest.yaml')
@@ -15,6 +19,7 @@ OWL_OUTPUT = env.expected_path('prefixtest.owl.ttl')
 RDF_OUTPUT = env.expected_path('prefixtest.rdf.nt')
 PM_OUTPUT = env.expected_path('prefixtest.prefixmap.json')
 CONTEXT_OUTPUT = env.expected_path('prefixtest.context.jsonld')
+TSV_OUTPUT = env.expected_path('prefix_map_prefixtest.tsv')
 
 
 class PrefixTestCase(unittest.TestCase):
@@ -80,6 +85,28 @@ class PrefixTestCase(unittest.TestCase):
                 logging.error(f'Missing key: {k}')
                 fails += 1
         assert fails == 0
+
+        # unit test when format option tsv is supplied
+        tsv_str = PrefixGenerator(SCHEMA, format="tsv", mergeimports=True).serialize()
+
+        actual_tsv_dict = {}
+        split_tsv = re.split(r'\n+', tsv_str)
+        for elem in split_tsv:
+            pair = re.split(r'\t+', elem)
+            
+            if len(pair) == 2:
+                actual_tsv_dict[pair[0]] = pair[1]
+
+        expected_tsv_dict = {}
+        with open(TSV_OUTPUT) as fd:
+            rd = csv.reader(fd, delimiter="\t", quotechar='"')
+            for row in rd:
+                expected_tsv_dict[row[0]] = row[1]
+
+        expected_tsv_dict = dict(sorted(expected_tsv_dict.items()))
+
+        self.assertDictEqual(actual_tsv_dict, expected_tsv_dict)
+
 
     def test_jsonldcontext(self):
         out = ContextGenerator(SCHEMA, mergeimports=True).serialize()

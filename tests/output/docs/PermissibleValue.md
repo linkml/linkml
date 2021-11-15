@@ -61,6 +61,13 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 ### Mixed in from common_metadata:
 
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](types/String.md)
+     * in subsets: (owl)
+
+### Mixed in from common_metadata:
+
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)

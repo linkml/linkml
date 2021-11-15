@@ -7,17 +7,23 @@ the definition of a property or a slot
 URI: [linkml:SlotDefinition](https://w3id.org/linkml/SlotDefinition)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[UniqueKey],[SubsetDefinition],[SlotDefinition]<apply_to%200..*-%20[SlotDefinition&#124;singular_name:string%20%3F;slot_uri:uriorcurie%20%3F;multivalued:boolean%20%3F;inherited:boolean%20%3F;readonly:string%20%3F;ifabsent:string%20%3F;required:boolean%20%3F;recommended:boolean%20%3F;inlined:boolean%20%3F;inlined_as_list:boolean%20%3F;key:boolean%20%3F;identifier:boolean%20%3F;designates_type:boolean%20%3F;alias:string%20%3F;symmetric:boolean%20%3F;is_class_field:boolean%20%3F;role:string%20%3F;is_usage_slot:boolean%20%3F;usage_slot_name:string%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;title(i):string%20%3F;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotDefinition]<mixins%200..*-%20[SlotDefinition],[SlotDefinition]<is_a%200..1-%20[SlotDefinition],[SlotDefinition]<inverse%200..1-%20[SlotDefinition],[SlotDefinition]<subproperty_of%200..1-%20[SlotDefinition],[ClassDefinition]<domain_of%200..*-%20[SlotDefinition],[Definition]<owner%200..1-%20[SlotDefinition],[Element]<range%200..1-%20[SlotDefinition],[ClassDefinition]<domain%200..1-%20[SlotDefinition],[ClassDefinition]++-%20attributes%200..*>[SlotDefinition],[ClassDefinition]-%20defining_slots%200..*>[SlotDefinition],[SchemaDefinition]++-%20slots%200..*>[SlotDefinition],[ClassDefinition]++-%20slot_usage%200..*>[SlotDefinition],[ClassDefinition]-%20slots%200..*>[SlotDefinition],[UniqueKey]-%20unique_key_slots%201..*>[SlotDefinition],[Definition]^-[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Element],[Definition],[ClassDefinition],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[UniqueKey],[SubsetDefinition],[SlotDefinition]<apply_to%200..*-%20[SlotDefinition&#124;singular_name:string%20%3F;slot_uri:uriorcurie%20%3F;multivalued:boolean%20%3F;inherited:boolean%20%3F;readonly:string%20%3F;ifabsent:string%20%3F;required:boolean%20%3F;recommended:boolean%20%3F;inlined:boolean%20%3F;inlined_as_list:boolean%20%3F;key:boolean%20%3F;identifier:boolean%20%3F;designates_type:boolean%20%3F;alias:string%20%3F;symmetric:boolean%20%3F;is_class_field:boolean%20%3F;role:string%20%3F;is_usage_slot:boolean%20%3F;usage_slot_name:string%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;title(i):string%20%3F;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotDefinition]<mixins%200..*-%20[SlotDefinition],[SlotDefinition]<is_a%200..1-%20[SlotDefinition],[SlotDefinition]<inverse%200..1-%20[SlotDefinition],[SlotDefinition]<subproperty_of%200..1-%20[SlotDefinition],[ClassDefinition]<domain_of%200..*-%20[SlotDefinition],[Definition]<owner%200..1-%20[SlotDefinition],[Element]<range%200..1-%20[SlotDefinition],[ClassDefinition]<domain%200..1-%20[SlotDefinition],[ClassDefinition]++-%20attributes%200..*>[SlotDefinition],[ClassDefinition]-%20defining_slots%200..*>[SlotDefinition],[SchemaDefinition]++-%20slots%200..*>[SlotDefinition],[ClassDefinition]++-%20slot_usage%200..*>[SlotDefinition],[ClassDefinition]-%20slots%200..*>[SlotDefinition],[UniqueKey]-%20unique_key_slots%201..*>[SlotDefinition],[Definition]^-[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Element],[Definition],[ClassDefinition],[Annotation],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[UniqueKey],[SubsetDefinition],[SlotExpression],[SlotDefinition]<apply_to%200..*-%20[SlotDefinition&#124;singular_name:string%20%3F;slot_uri:uriorcurie%20%3F;multivalued:boolean%20%3F;inherited:boolean%20%3F;readonly:string%20%3F;ifabsent:string%20%3F;inlined:boolean%20%3F;inlined_as_list:boolean%20%3F;key:boolean%20%3F;identifier:boolean%20%3F;designates_type:boolean%20%3F;alias:string%20%3F;symmetric:boolean%20%3F;is_class_field:boolean%20%3F;role:string%20%3F;is_usage_slot:boolean%20%3F;usage_slot_name:string%20%3F;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotDefinition]<mixins%200..*-%20[SlotDefinition],[SlotDefinition]<is_a%200..1-%20[SlotDefinition],[SlotDefinition]<inverse%200..1-%20[SlotDefinition],[SlotDefinition]<subproperty_of%200..1-%20[SlotDefinition],[ClassDefinition]<domain_of%200..*-%20[SlotDefinition],[Definition]<owner%200..1-%20[SlotDefinition],[ClassDefinition]<domain%200..1-%20[SlotDefinition],[SlotExpression]++-%20all_members%200..*>[SlotDefinition],[ClassDefinition]++-%20attributes%200..*>[SlotDefinition],[ClassDefinition]-%20defining_slots%200..*>[SlotDefinition],[ClassExpression]++-%20slot_conditions%200..*>[SlotDefinition],[SchemaDefinition]++-%20slots%200..*>[SlotDefinition],[ClassDefinition]++-%20slot_usage%200..*>[SlotDefinition],[ClassDefinition]-%20slots%200..*>[SlotDefinition],[UniqueKey]-%20unique_key_slots%201..*>[SlotDefinition],[SlotDefinition]uses%20-.->[SlotExpression],[Definition]^-[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Element],[Definition],[ClassExpression],[ClassDefinition],[AnonymousSlotExpression],[AnonymousClassExpression],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[UniqueKey],[SubsetDefinition],[SlotExpression],[SlotDefinition]<apply_to%200..*-%20[SlotDefinition&#124;singular_name:string%20%3F;slot_uri:uriorcurie%20%3F;multivalued:boolean%20%3F;inherited:boolean%20%3F;readonly:string%20%3F;ifabsent:string%20%3F;inlined:boolean%20%3F;inlined_as_list:boolean%20%3F;key:boolean%20%3F;identifier:boolean%20%3F;designates_type:boolean%20%3F;alias:string%20%3F;symmetric:boolean%20%3F;is_class_field:boolean%20%3F;role:string%20%3F;is_usage_slot:boolean%20%3F;usage_slot_name:string%20%3F;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F;abstract(i):boolean%20%3F;mixin(i):boolean%20%3F;values_from(i):uriorcurie%20*;created_by(i):uriorcurie%20%3F;created_on(i):datetime%20%3F;last_updated_on(i):datetime%20%3F;modified_by(i):uriorcurie%20%3F;status(i):uriorcurie%20%3F;string_serialization(i):string%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotDefinition]<mixins%200..*-%20[SlotDefinition],[SlotDefinition]<is_a%200..1-%20[SlotDefinition],[SlotDefinition]<inverse%200..1-%20[SlotDefinition],[SlotDefinition]<subproperty_of%200..1-%20[SlotDefinition],[ClassDefinition]<domain_of%200..*-%20[SlotDefinition],[Definition]<owner%200..1-%20[SlotDefinition],[ClassDefinition]<domain%200..1-%20[SlotDefinition],[SlotExpression]++-%20all_members%200..*>[SlotDefinition],[ClassDefinition]++-%20attributes%200..*>[SlotDefinition],[ClassDefinition]-%20defining_slots%200..*>[SlotDefinition],[ClassExpression]++-%20slot_conditions%200..*>[SlotDefinition],[SchemaDefinition]++-%20slots%200..*>[SlotDefinition],[ClassDefinition]++-%20slot_usage%200..*>[SlotDefinition],[ClassDefinition]-%20slots%200..*>[SlotDefinition],[UniqueKey]-%20unique_key_slots%201..*>[SlotDefinition],[SlotDefinition]uses%20-.->[SlotExpression],[Definition]^-[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Element],[Definition],[ClassExpression],[ClassDefinition],[AnonymousSlotExpression],[AnonymousClassExpression],[Annotation],[AltDescription])
 
 ## Parents
 
  *  is_a: [Definition](Definition.md) - base class for definitions
 
+## Uses Mixin
+
+ *  mixin: [SlotExpression](SlotExpression.md) - an expression that constrains the range of values a slot can take
+
 ## Referenced by Class
 
+ *  **None** *[all_members](all_members.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[attributes](attributes.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[ClassDefinition](ClassDefinition.md)** *[defining_slots](defining_slots.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[inverse](inverse.md)*  <sub>0..1</sub>  **[SlotDefinition](SlotDefinition.md)**
+ *  **None** *[slot_conditions](slot_conditions.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞apply_to](slot_definition_apply_to.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞is_a](slot_definition_is_a.md)*  <sub>0..1</sub>  **[SlotDefinition](SlotDefinition.md)**
  *  **[SlotDefinition](SlotDefinition.md)** *[slot_definition➞mixins](slot_definition_mixins.md)*  <sub>0..\*</sub>  **[SlotDefinition](SlotDefinition.md)**
@@ -47,18 +53,6 @@ the declaration
 implicitly asserts that X is an instance of C1
 
      * Range: [ClassDefinition](ClassDefinition.md)
- * [range](range.md)  <sub>0..1</sub>
-     * Description: defines the type of the object of the slot.  Given the following slot definition
-  S1:
-    domain: C1
-    range:  C2
-the declaration
-  X:
-    S1: Y
-
-implicitly asserts Y is an instance of C2
-
-     * Range: [Element](Element.md)
  * [slot_uri](slot_uri.md)  <sub>0..1</sub>
      * Description: predicate of this slot for semantic web application
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -83,12 +77,6 @@ implicitly asserts Y is an instance of C2
   * class_curie -- CURIE for the containing class
   * class_uri -- URI for the containing class
      * Range: [String](types/String.md)
- * [required](required.md)  <sub>0..1</sub>
-     * Description: true means that the slot must be present in the loaded definition
-     * Range: [Boolean](types/Boolean.md)
- * [recommended](recommended.md)  <sub>0..1</sub>
-     * Description: true means that the slot should be present in the loaded definition, but this is not required
-     * Range: [Boolean](types/Boolean.md)
  * [inlined](inlined.md)  <sub>0..1</sub>
      * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
      * Range: [Boolean](types/Boolean.md)
@@ -134,15 +122,6 @@ implicitly asserts Y is an instance of C2
  * [usage_slot_name](usage_slot_name.md)  <sub>0..1</sub>
      * Description: The name of the slot referenced in the slot_usage
      * Range: [String](types/String.md)
- * [minimum_value](minimum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or higher than this
-     * Range: [Integer](types/Integer.md)
- * [maximum_value](maximum_value.md)  <sub>0..1</sub>
-     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
-     * Range: [Integer](types/Integer.md)
- * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
-     * Range: [String](types/String.md)
  * [slot_definition➞is_a](slot_definition_is_a.md)  <sub>0..1</sub>
      * Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
      * Range: [SlotDefinition](SlotDefinition.md)
@@ -159,10 +138,6 @@ implicitly asserts Y is an instance of C2
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](types/String.md)
      * in subsets: (owl)
- * [title](title.md)  <sub>0..1</sub>
-     * Description: the official title of the element
-     * Range: [String](types/String.md)
-     * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
@@ -173,6 +148,9 @@ implicitly asserts Y is an instance of C2
      * Range: [String](types/String.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
+ * [conforms_to](conforms_to.md)  <sub>0..1</sub>
+     * Description: An established standard to which the element conforms.
+     * Range: [String](types/String.md)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -222,6 +200,139 @@ We call the slot with the serialization the s-slot, the slots used in the {}s ar
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects
 For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
      * Range: [String](types/String.md)
+
+### Mixed in from slot_expression:
+
+ * [range](range.md)  <sub>0..1</sub>
+     * Description: defines the type of the object of the slot.  Given the following slot definition
+  S1:
+    domain: C1
+    range:  C2
+the declaration
+  X:
+    S1: Y
+
+implicitly asserts Y is an instance of C2
+
+     * Range: [Element](Element.md)
+
+### Mixed in from slot_expression:
+
+ * [range_expression](range_expression.md)  <sub>0..1</sub>
+     * Description: A range that is described as a boolean expression combining existing ranges
+     * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
+
+### Mixed in from slot_expression:
+
+ * [required](required.md)  <sub>0..1</sub>
+     * Description: true means that the slot must be present in the loaded definition
+     * Range: [Boolean](types/Boolean.md)
+
+### Mixed in from slot_expression:
+
+ * [recommended](recommended.md)  <sub>0..1</sub>
+     * Description: true means that the slot should be present in the loaded definition, but this is not required
+     * Range: [Boolean](types/Boolean.md)
+
+### Mixed in from slot_expression:
+
+ * [minimum_value](minimum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or higher than this
+     * Range: [Integer](types/Integer.md)
+
+### Mixed in from slot_expression:
+
+ * [maximum_value](maximum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
+     * Range: [Integer](types/Integer.md)
+
+### Mixed in from slot_expression:
+
+ * [pattern](pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to this regular expression
+     * Range: [String](types/String.md)
+
+### Mixed in from slot_expression:
+
+ * [equals_string](equals_string.md)  <sub>0..1</sub>
+     * Description: the slot must have range string and the value of the slot must equal the specified value
+     * Range: [String](types/String.md)
+
+### Mixed in from slot_expression:
+
+ * [equals_string_in](equals_string_in.md)  <sub>0..\*</sub>
+     * Description: the slot must have range string and the value of the slot must equal one of the specified values
+     * Range: [String](types/String.md)
+
+### Mixed in from slot_expression:
+
+ * [equals_number](equals_number.md)  <sub>0..1</sub>
+     * Description: the slot must have range of a number and the value of the slot must equal the specified value
+     * Range: [Integer](types/Integer.md)
+
+### Mixed in from slot_expression:
+
+ * [equals_expression](equals_expression.md)  <sub>0..1</sub>
+     * Description: the value of the slot must equal the value of the evaluated expression
+     * Range: [String](types/String.md)
+
+### Mixed in from slot_expression:
+
+ * [minimum_cardinality](minimum_cardinality.md)  <sub>0..1</sub>
+     * Description: the minimum number of entries for a multivalued slot
+     * Range: [Integer](types/Integer.md)
+
+### Mixed in from slot_expression:
+
+ * [maximum_cardinality](maximum_cardinality.md)  <sub>0..1</sub>
+     * Description: the maximum number of entries for a multivalued slot
+     * Range: [Integer](types/Integer.md)
+
+### Mixed in from slot_expression:
+
+ * [has_member](has_member.md)  <sub>0..1</sub>
+     * Description: the values of the slot is multivalued with at least one member satisfying the condition
+     * Range: [AnonymousSlotExpression](AnonymousSlotExpression.md)
+
+### Mixed in from slot_expression:
+
+ * [all_members](all_members.md)  <sub>0..\*</sub>
+     * Description: the value of the multiavlued slot is a list where all elements conform to the specified values.
+this defines a dynamic class with named slots according to matching constraints
+
+E.g to state that all members of a list are between 1 and 10
+```
+all_members:
+  x:
+    range: integer
+    minimum_value: 10
+    maximum_value: 10
+```
+     * Range: [SlotDefinition](SlotDefinition.md)
+
+### Mixed in from slot_expression:
+
+ * [slot_expression➞none_of](slot_expression_none_of.md)  <sub>0..\*</sub>
+     * Description: holds if none of the expressions hold
+     * Range: [AnonymousSlotExpression](AnonymousSlotExpression.md)
+
+### Mixed in from slot_expression:
+
+ * [slot_expression➞exactly_one_of](slot_expression_exactly_one_of.md)  <sub>0..\*</sub>
+     * Description: holds if only one of the expressions hold
+     * Range: [AnonymousSlotExpression](AnonymousSlotExpression.md)
+
+### Mixed in from slot_expression:
+
+ * [slot_expression➞any_of](slot_expression_any_of.md)  <sub>0..\*</sub>
+     * Description: holds if at least one of the expressions hold
+     * Range: [AnonymousSlotExpression](AnonymousSlotExpression.md)
+
+### Mixed in from slot_expression:
+
+ * [slot_expression➞all_of](slot_expression_all_of.md)  <sub>0..\*</sub>
+     * Description: holds if all of the expressions hold
+     * Range: [AnonymousSlotExpression](AnonymousSlotExpression.md)
 
 ## Other properties
 

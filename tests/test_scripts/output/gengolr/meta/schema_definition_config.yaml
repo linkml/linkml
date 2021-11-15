@@ -5,9 +5,6 @@ display_name: schema_definition
 document_category: schema_definition
 weight: 20
 fields:
-- id: title
-  description: the official title of the element
-  display_name: title
 - id: id_prefixes
   description: the identifier of this class or slot must begin with the URIs referenced
     by this prefix
@@ -22,6 +19,9 @@ fields:
 - id: local_names
   display_name: local_names
   cardinality: multi
+- id: conforms_to
+  description: An established standard to which the element conforms.
+  display_name: conforms_to
 - id: mappings
   description: A list of terms from different schemas or terminology systems that
     have comparable meaning. These may include terms that are precisely equivalent,
@@ -68,6 +68,9 @@ fields:
 - id: alt_descriptions
   display_name: alt_descriptions
   cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated

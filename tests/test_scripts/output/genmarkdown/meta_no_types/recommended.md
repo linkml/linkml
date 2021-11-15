@@ -19,7 +19,9 @@ URI: [linkml:recommended](https://w3id.org/linkml/recommended)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
 
 ## Other properties
 

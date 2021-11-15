@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-08-19 19:06\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-10-27T23:35:32\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "IAO": {
          "@id": "http://purl.obolibrary.org/obo/IAO_",
@@ -15,11 +15,19 @@
       "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "schema": "http://schema.org/",
+      "sh": "https://w3id.org/shacl/",
       "skos": "http://www.w3.org/2004/02/skos/core#",
+      "swrl": "http://www.w3.org/2003/11/swrl#",
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://w3id.org/linkml/",
       "abstract": {
          "@type": "xsd:boolean"
+      },
+      "all_members": {
+         "@type": "@id"
+      },
+      "all_of": {
+         "@type": "@id"
       },
       "alt_descriptions": {
          "@type": "@id"
@@ -27,10 +35,19 @@
       "annotations": {
          "@type": "@id"
       },
+      "any_of": {
+         "@type": "@id"
+      },
       "apply_to": {
          "@type": "@id"
       },
       "attributes": {
+         "@type": "@id"
+      },
+      "bidirectional": {
+         "@type": "xsd:boolean"
+      },
+      "boolean_slot": {
          "@type": "@id"
       },
       "broad_mappings": {
@@ -40,6 +57,9 @@
          "@type": "@id"
       },
       "classes": {
+         "@type": "@id"
+      },
+      "classification_rules": {
          "@type": "@id"
       },
       "close_mappings": {
@@ -53,6 +73,9 @@
       },
       "created_on": {
          "@type": "xsd:dateTime"
+      },
+      "deactivated": {
+         "@type": "xsd:boolean"
       },
       "default_range": {
          "@type": "@id"
@@ -78,10 +101,22 @@
       "domain_of": {
          "@type": "@id"
       },
+      "elseconditions": {
+         "@type": "@id"
+      },
       "enums": {
          "@type": "@id"
       },
+      "equals_number": {
+         "@type": "xsd:integer"
+      },
+      "equals_number_in": {
+         "@type": "xsd:integer"
+      },
       "exact_mappings": {
+         "@type": "@id"
+      },
+      "exactly_one_of": {
          "@type": "@id"
       },
       "examples": {
@@ -98,6 +133,9 @@
       },
       "generation_date": {
          "@type": "xsd:dateTime"
+      },
+      "has_member": {
+         "@type": "@id"
       },
       "id": {
          "@type": "@id"
@@ -144,11 +182,17 @@
       "mappings": {
          "@type": "@id"
       },
+      "maximum_cardinality": {
+         "@type": "xsd:integer"
+      },
       "maximum_value": {
          "@type": "xsd:integer"
       },
       "meaning": {
          "@type": "@id"
+      },
+      "minimum_cardinality": {
+         "@type": "xsd:integer"
       },
       "minimum_value": {
          "@type": "xsd:integer"
@@ -169,10 +213,25 @@
       "narrow_mappings": {
          "@type": "@id"
       },
+      "none_of": {
+         "@type": "@id"
+      },
+      "open_world": {
+         "@type": "xsd:boolean"
+      },
       "owner": {
          "@type": "@id"
       },
       "permissible_values": {
+         "@type": "@id"
+      },
+      "postconditions": {
+         "@type": "@id"
+      },
+      "precedence": {
+         "@type": "xsd:integer"
+      },
+      "preconditions": {
          "@type": "@id"
       },
       "prefix_reference": {
@@ -192,6 +251,9 @@
       "range": {
          "@type": "@id"
       },
+      "range_expression": {
+         "@type": "@id"
+      },
       "recommended": {
          "@type": "xsd:boolean"
       },
@@ -201,7 +263,13 @@
       "required": {
          "@type": "xsd:boolean"
       },
+      "rules": {
+         "@type": "@id"
+      },
       "see_also": {
+         "@type": "@id"
+      },
+      "slot_conditions": {
          "@type": "@id"
       },
       "slots": {
@@ -255,6 +323,14 @@
       },
       "unique_keys": {
          "@type": "@id"
+      },
+      "value_presence": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         }
       },
       "values_from": {
          "@type": "@id"

@@ -19,7 +19,11 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
 
 ## Used by
 
+ * [AnonymousClassExpression](AnonymousClassExpression.md)
+ * [AnonymousExpression](AnonymousExpression.md)
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [ClassDefinition](ClassDefinition.md)
+ * [ClassRule](ClassRule.md)
  * [CommonMetadata](CommonMetadata.md)
  * [Definition](Definition.md)
  * [Element](Element.md)
@@ -29,6 +33,7 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
  * [SlotDefinition](SlotDefinition.md)
  * [SubsetDefinition](SubsetDefinition.md)
  * [TypeDefinition](TypeDefinition.md)
+ * [UniqueKey](UniqueKey.md)
 
 ## Other properties
 

@@ -49,9 +49,15 @@
 <li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Python</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example-output">Example Output</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dataclasses">Dataclasses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inheritance">Inheritance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#object-creation">Object Creation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#non-inlined-references">Non-inlined references</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#types">Types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#code-docs">Code Docs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
 </ul>
@@ -117,19 +123,90 @@
              
   <section id="python">
 <h1>Python<a class="headerlink" href="#python" title="Permalink to this headline"></a></h1>
-<section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
-<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py">personinfo.py</a></p>
-</section>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="../data/python">using python</a></p>
 </div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<p>The Python generator will generate a Python object model from a LinkML schema</p>
+<p>To run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-python personinfo.yaml &gt; personinfo.py
+</pre></div>
+</div>
+<p>Example output:</p>
+<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/personinfo.py">personinfo.py</a></p>
+<p>This object model can now be used to create, load, and serialize
+objects. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;John Smith&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The linkml-runtime framework can be used to serialize these objects to
+JSON, YAML, RDF, and TSV, as well as to load them</p>
+<section id="dataclasses">
+<h3>Dataclasses<a class="headerlink" href="#dataclasses" title="Permalink to this headline"></a></h3>
+<p>We use the standard <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">Python dataclasses framework</a></p>
+<p>Note that there is an alternative pydanticgen generator for using
+Pydantic, see <a class="reference external" href="pydanticgen">pydanticgen</a></p>
 </section>
-<section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<section id="inheritance">
+<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h3>
+<p>The linkml is_a slot is mapped to superclasses in the generated
+classes. Note that mixins are not currently handled in the same way -
+we avoid multiple inheritance. Instead, mixins are “rolled down” to
+their implementing classes.</p>
+<p>The root term for all classes is the class YAMLRoot in the
+linkml-runtime.</p>
+</section>
+<section id="object-creation">
+<h3>Object Creation<a class="headerlink" href="#object-creation" title="Permalink to this headline"></a></h3>
+<p>Generated class include specific initialization code in <code class="docutils literal notranslate"><span class="pre">post_init</span></code>
+that is permissive in how objects are created. For example, when
+adding inlined objects any of the following can be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">event</span> <span class="o">=</span> <span class="n">EmploymentEvent</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="c1"># method 1: creation with objects</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;John Smith&#39;</span><span class="p">,</span> <span class="n">employment_history</span><span class="o">=</span><span class="p">[</span><span class="n">event</span><span class="p">])</span>
+
+<span class="c1"># method 2: creation with dicts</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;John Smith&#39;</span><span class="p">,</span> <span class="n">employment_history</span><span class="o">=</span><span class="p">[{</span><span class="o">...</span><span class="p">}])</span>
+
+<span class="c1"># method 3: implicit lists</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;John Smith&#39;</span><span class="p">,</span> <span class="n">employment_history</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="non-inlined-references">
+<h3>Non-inlined references<a class="headerlink" href="#non-inlined-references" title="Permalink to this headline"></a></h3>
+<p>In LinkML schemas, references to other objects can be declared as
+<a class="reference external" href="../schemas/inlining">inlined</a>. If a reference is <em>not</em> inlined,
+and the referenced object has an identifier, then the value of the
+reference will be that identifier.</p>
+<p>In the generated python, class are created for these foreign keys</p>
+<p>For example, in the personinfo schema, the employment event class
+references organization via a non-inlined reference, so the following
+code is generated:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">OrganizationId</span><span class="p">(</span><span class="n">NamedThingId</span><span class="p">):</span>
+
+<span class="o">...</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">EmploymentEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+
+    <span class="n">employed_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OrganizationId</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</section>
+<section id="types">
+<h3>Types<a class="headerlink" href="#types" title="Permalink to this headline"></a></h3>
+<p>In LinkML types represent terminal scalar values and are mapped to
+built in Python objects such integers.</p>
+<p>For user-defined types, a class is created which inherits from that
+Python base type.</p>
+</section>
+</section>
+<section id="code-docs">
+<h2>Code Docs<a class="headerlink" href="#code-docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
 <section id="gen-python">

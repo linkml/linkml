@@ -194,7 +194,6 @@
       "imported_from": "linkml:annotations",
       "is_a": "extensions",
       "domain": "Annotatable",
-      "range": "Annotation",
       "slot_uri": "https://w3id.org/linkml/annotations",
       "multivalued": true,
       "inlined": true,
@@ -203,6 +202,7 @@
         "Annotatable",
         "Annotation"
       ],
+      "range": "Annotation",
       "@type": "SlotDefinition"
     },
     {
@@ -212,7 +212,6 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
       "domain": "Extensible",
-      "range": "Extension",
       "slot_uri": "https://w3id.org/linkml/extensions",
       "multivalued": true,
       "inlined": true,
@@ -221,6 +220,7 @@
         "Extension",
         "Extensible"
       ],
+      "range": "Extension",
       "@type": "SlotDefinition"
     },
     {
@@ -230,14 +230,14 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
       "domain": "Extension",
-      "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/tag",
-      "required": true,
       "alias": "tag",
       "owner": "Extension",
       "domain_of": [
         "Extension"
       ],
+      "range": "uriorcurie",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -247,14 +247,14 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
       "domain": "Extension",
-      "range": "string",
       "slot_uri": "https://w3id.org/linkml/value",
-      "required": true,
       "alias": "value",
       "owner": "Extension",
       "domain_of": [
         "Extension"
       ],
+      "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     }
   ],
@@ -369,9 +369,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "issue_167b.yaml",
-  "source_file_date": "Tue Jul 20 18:41:38 2021",
+  "source_file_date": "2021-10-27T23:28:23",
   "source_file_size": 818,
-  "generation_date": "2021-07-20 18:45",
+  "generation_date": "2021-10-27T23:34:37",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

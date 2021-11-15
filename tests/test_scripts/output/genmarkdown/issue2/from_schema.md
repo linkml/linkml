@@ -19,7 +19,11 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
 
 ## Used by
 
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * common_metadata
  * definition
  * [Element](Element.md)
@@ -29,6 +33,7 @@ URI: [linkml:from_schema](https://w3id.org/linkml/from_schema)
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key
 
 ## Other properties
 

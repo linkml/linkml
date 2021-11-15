@@ -10,9 +10,6 @@ fields:
     is combined with the default prefix to form the globally unique subject of the
     target class.
   display_name: name
-- id: title
-  description: the official title of the element
-  display_name: title
 - id: id_prefixes
   description: the identifier of this class or slot must begin with the URIs referenced
     by this prefix
@@ -27,6 +24,9 @@ fields:
 - id: local_names
   display_name: local_names
   cardinality: multi
+- id: conforms_to
+  description: An established standard to which the element conforms.
+  display_name: conforms_to
 - id: mappings
   description: A list of terms from different schemas or terminology systems that
     have comparable meaning. These may include terms that are precisely equivalent,
@@ -73,6 +73,9 @@ fields:
 - id: alt_descriptions
   display_name: alt_descriptions
   cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated
@@ -132,3 +135,32 @@ fields:
 - id: pattern
   description: the string value of the slot must conform to this regular expression
   display_name: pattern
+- id: equals_string
+  description: the slot must have range string and the value of the slot must equal
+    the specified value
+  display_name: equals_string
+- id: equals_string_in
+  description: the slot must have range string and the value of the slot must equal
+    one of the specified values
+  display_name: equals_string_in
+  cardinality: multi
+- id: equals_number
+  description: the slot must have range of a number and the value of the slot must
+    equal the specified value
+  display_name: equals_number
+- id: none_of
+  description: holds if none of the expressions hold
+  display_name: type_expression_none_of
+  cardinality: multi
+- id: exactly_one_of
+  description: holds if only one of the expressions hold
+  display_name: type_expression_exactly_one_of
+  cardinality: multi
+- id: any_of
+  description: holds if at least one of the expressions hold
+  display_name: type_expression_any_of
+  cardinality: multi
+- id: all_of
+  description: holds if all of the expressions hold
+  display_name: type_expression_all_of
+  cardinality: multi

@@ -19,7 +19,11 @@ URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
 
 ## Used by
 
+ * anonymous_class_expression
+ * anonymous_expression
+ * anonymous_slot_expression
  * class_definition
+ * class_rule
  * common_metadata
  * definition
  * [Element](Element.md)
@@ -29,3 +33,4 @@ URI: [linkml:alt_descriptions](https://w3id.org/linkml/alt_descriptions)
  * slot_definition
  * subset_definition
  * type_definition
+ * unique_key

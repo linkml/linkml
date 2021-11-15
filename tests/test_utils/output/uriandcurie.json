@@ -96,62 +96,62 @@
       "name": "id",
       "definition_uri": "http://example.org/test/uriandcurieid",
       "from_schema": "http://example.org/test/uriandcurie",
-      "range": "objectidentifier",
       "slot_uri": "http://example.org/test/uriandcurieid",
-      "required": true,
       "identifier": true,
       "owner": "C1",
       "domain_of": [
         "C1"
       ],
+      "range": "objectidentifier",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
       "name": "hasCurie",
       "definition_uri": "http://example.org/test/uriandcuriehasCurie",
       "from_schema": "http://example.org/test/uriandcurie",
-      "range": "curie",
       "slot_uri": "http://example.org/test/uriandcuriehasCurie",
       "owner": "C1",
       "domain_of": [
         "C1"
       ],
+      "range": "curie",
       "@type": "SlotDefinition"
     },
     {
       "name": "hasURI",
       "definition_uri": "http://example.org/test/uriandcuriehasURI",
       "from_schema": "http://example.org/test/uriandcurie",
-      "range": "uri",
       "slot_uri": "http://example.org/test/uriandcuriehasURI",
       "owner": "C1",
       "domain_of": [
         "C1"
       ],
+      "range": "uri",
       "@type": "SlotDefinition"
     },
     {
       "name": "hasNcName",
       "definition_uri": "http://example.org/test/uriandcuriehasNcName",
       "from_schema": "http://example.org/test/uriandcurie",
-      "range": "ncname",
       "slot_uri": "http://example.org/test/uriandcuriehasNcName",
       "owner": "C1",
       "domain_of": [
         "C1"
       ],
+      "range": "ncname",
       "@type": "SlotDefinition"
     },
     {
       "name": "id2",
       "definition_uri": "http://example.org/test/uriandcurieid2",
       "from_schema": "http://example.org/test/uriandcurie",
-      "range": "nodeidentifier",
       "slot_uri": "http://example.org/test/uriandcurieid2",
       "owner": "C1",
       "domain_of": [
         "C1"
       ],
+      "range": "nodeidentifier",
       "@type": "SlotDefinition"
     }
   ],
@@ -174,9 +174,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "uriandcurie.yaml",
-  "source_file_date": "Sun Jun  6 23:06:00 2021",
+  "source_file_date": "2021-10-27T23:28:23",
   "source_file_size": 1427,
-  "generation_date": "2021-06-06 23:10",
+  "generation_date": "2021-10-27T23:37:17",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

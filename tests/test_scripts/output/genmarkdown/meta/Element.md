@@ -7,7 +7,7 @@ a named element in the model
 URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;title:string%20%3F;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;description:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotDefinition]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;title:string%20%3F;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;description:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotDefinition]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;aliases:string%20*;conforms_to:string%20%3F;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotExpression]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[SlotExpression],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeDefinition],[SubsetDefinition],[SlotDefinition],[SchemaDefinition],[LocalName],[Extension],[Extensible],[Example],[EnumDefinition],[LocalName]<local_names%200..*-++[Element&#124;name:string;id_prefixes:ncname%20*;definition_uri:uriorcurie%20%3F;aliases:string%20*;conforms_to:string%20%3F;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotExpression]-%20range%200..1>[Element],[Element]uses%20-.->[Extensible],[Element]uses%20-.->[Annotatable],[Element]uses%20-.->[CommonMetadata],[Element]^-[TypeDefinition],[Element]^-[SubsetDefinition],[Element]^-[SchemaDefinition],[Element]^-[EnumDefinition],[Element]^-[Definition],[SlotExpression],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
@@ -36,10 +36,6 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](types/String.md)
      * in subsets: (owl)
- * [title](title.md)  <sub>0..1</sub>
-     * Description: the official title of the element
-     * Range: [String](types/String.md)
-     * in subsets: (owl)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](types/Ncname.md)
@@ -50,6 +46,9 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
      * Range: [String](types/String.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
+ * [conforms_to](conforms_to.md)  <sub>0..1</sub>
+     * Description: An established standard to which the element conforms.
+     * Range: [String](types/String.md)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](types/Uriorcurie.md)
@@ -92,6 +91,13 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+
+### Mixed in from common_metadata:
+
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](types/String.md)
+     * in subsets: (owl)
 
 ### Mixed in from common_metadata:
 

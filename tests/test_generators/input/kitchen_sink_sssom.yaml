@@ -1,0 +1,354 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+description: |-
+  Kitchen Sink Schema
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+license: https://creativecommons.org/publicdomain/zero/1.0/
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+  - core
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+  CODE: http://example.org/code/
+  ROR: http://example.org/ror/
+  A: http://example.org/activities/
+  P: http://example.org/person/
+  skos: http://www.w3.org/2004/02/skos/core#
+  bizcodes: https://example.org/bizcodes/
+  schema: http://schema.org/
+  wikidata: http://www.wikidata.org/entity/
+default_prefix: ks
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    description: >-
+      test subset A
+    comments:
+      - this subset is meaningless, it is just here for testing
+    aliases:
+      - A
+  subset B:
+    description: >-
+      test subset B
+    aliases:
+      - B
+
+classes:
+
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        slot_uri: skos:altLabel
+        multivalued: true
+
+  Friend:
+    abstract: true
+    slots:
+      - name
+
+  Person:
+    description: A person, living or dead
+    in_subset:
+      - subset A
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+      - has employment history
+      - has familial relationships
+      - has medical history
+      - age in years
+      - addresses
+      - has birth event
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+    class_uri: schema:Person
+    exact_mappings:
+      - wd:Q215627
+
+
+  Organization:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+    exact_mappings:
+      - wd:Q43229
+      - schema:Organization
+
+  Place:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+    exact_mappings:
+      - wd:Q98929991
+
+  Address:
+    slots:
+      - street
+      - city
+    exact_mappings:
+      - wd:Q319608
+      - schema:PostalAddress
+
+  Concept:
+    slots:
+      - id
+      - name
+      - in code system
+    exact_mappings:
+      - wd:Q151885
+
+  DiagnosisConcept:
+    is_a: Concept
+
+  ProcedureConcept:
+    is_a: Concept
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+    exact_mappings:
+      - wd:Q1656682
+      - schema:Event
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - related to
+      - type
+    exact_mappings:
+      - wd:Q7310741
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
+  BirthEvent:
+    is_a: Event
+    slots:
+      - in location
+
+  EmploymentEvent:
+    is_a: Event
+    slots:
+      - employed at
+      - type
+    slot_usage:
+      type:
+        range: EmploymentEventType
+        required: false
+
+  MedicalEvent:
+    is_a: Event
+    slots:
+      - in location
+      - diagnosis
+      - procedure
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+        slot_uri: schema:ceo
+        ## TODO - schemaview requires all attributes to have explicit uri otherwise slot_uri fails
+    exact_mappings:
+      - wd:Q783794
+
+  CodeSystem:
+    slots:
+      - id
+      - name
+
+  Dataset:
+    tree_root: true
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      code systems:
+        range: CodeSystem
+        inlined: true
+        multivalued: true
+
+  FakeClass:
+    deprecated: this is not a real class, we are using it to test deprecation
+    attributes:
+      test_attribute:
+
+  class with spaces:
+    attributes:
+      slot with space 1:
+  subclass test:
+    is_a: class with spaces
+    attributes:
+      slot with space 2:
+        range: class with spaces
+
+slots:
+  employed at:
+    range: Company
+    in_subset:
+      - subset A
+    exact_mappings:
+      - wd:Q2266417
+  is current:
+    range: boolean
+  has employment history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+    broad_mappings:
+      - wd:Q656365
+      - wd:Q309
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+    broad_mappings:
+      - wd:Q8445
+      - wd:Q309
+  has medical history:
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+    exact_mappings:
+      - wd:Q15762873
+    broad_mappings:
+      - wd:Q309
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+    broad_mappings:
+      - wd:Q24026687
+  married to:
+    range: Person
+    exact_mappings:
+      - wd:Q105123727
+  in location:
+    range: Place
+  diagnosis:
+    range: DiagnosisConcept
+    inlined: true
+    exact_mappings:
+      - wd:Q16644043
+  procedure:
+    range: ProcedureConcept
+    inlined: true
+    exact_mappings:
+      - wd:Q41689629
+  addresses:
+    range: Address
+    multivalued: True
+    exact_mappings:
+      - wd:Q319608
+  age in years:
+    description: number of years since birth
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+    in_subset:
+      - subset A
+      - subset B
+    exact_mappings:
+      - wd:Q185836
+  related to:
+  type:
+  street:
+  city:
+  has birth event:
+    range: BirthEvent
+  in code system:
+    range: CodeSystem
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  DiagnosisType:
+    permissible_values:
+      TODO:
+  EmploymentEventType:
+    permissible_values:
+      HIRE:
+        meaning: bizcodes:001
+      FIRE:
+        meaning: bizcodes:002
+      PROMOTION:
+        meaning: bizcodes:003
+      TRANSFER:
+        meaning: bizcodes:004
