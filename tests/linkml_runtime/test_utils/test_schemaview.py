@@ -16,6 +16,7 @@ SCHEMA_WITH_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink.yaml')
 
 yaml_loader = YAMLLoader()
 
+
 class SchemaViewTestCase(unittest.TestCase):
 
     def test_schemaview(self):
@@ -33,17 +34,14 @@ class SchemaViewTestCase(unittest.TestCase):
         logging.debug(e.annotations)
         e = view.get_element('has employment history')
         logging.debug(e.annotations)
-        #assert list(view.annotation_dict('employed at')[]
+        # assert list(view.annotation_dict('employed at')[]
 
-        # Test get_element_by_prefix - should this be its own method?
-        # Can schemaview be a pytest fixture?
-        elements = view.get_element_by_prefix("ORCID:1234")
+        elements = view.get_elements_applicable_by_identifier("ORCID:1234")
         assert "Person" in elements
-        elements = view.get_element_by_prefix("PMID:1234")
+        elements = view.get_elements_applicable_by_identifier("PMID:1234")
         assert "Organization" in elements
-        elements = view.get_element_by_prefix("TEST:1234")
+        elements = view.get_elements_applicable_by_identifier("TEST:1234")
         assert "anatomical entity" not in elements
-
 
         if True:
             # this section is mostly for debugging
@@ -76,7 +74,6 @@ class SchemaViewTestCase(unittest.TestCase):
 
         # -- TEST CLASS SLOTS --
 
-
         self.assertCountEqual(['id', 'name',  ## From Thing
                                'has employment history', 'has familial relationships', 'has medical history',
                                'age in years', 'addresses', 'has birth event', ## From Person
@@ -93,7 +90,7 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.get_class('agent').class_uri == 'prov:Agent'
         assert view.get_uri('agent') == 'prov:Agent'
         logging.debug(view.get_class('Company').class_uri)
-        #assert view.get_class('Company').class_uri == 'prov:Agent'
+        # assert view.get_class('Company').class_uri == 'prov:Agent'
         assert view.get_uri('Company') == 'ks:Company'
 
         for c in ['Company', 'Person', 'Organization',]:
@@ -116,14 +113,13 @@ class SchemaViewTestCase(unittest.TestCase):
 
         a = view.get_class('activity')
         self.assertCountEqual(a.exact_mappings, ['prov:Activity'])
-        logging.debug(view.get_mappings('activity',expand=True))
+        logging.debug(view.get_mappings('activity', expand=True))
         self.assertCountEqual(view.get_mappings('activity')['exact'], ['prov:Activity'])
         self.assertCountEqual(view.get_mappings('activity', expand=True)['exact'], ['http://www.w3.org/ns/prov#Activity'])
 
         u = view.usage_index()
         for k, v in u.items():
             logging.debug(f' {k} = {v}')
-
 
         # test methods also work for attributes
         leaves = view.class_leaves()
@@ -140,9 +136,9 @@ class SchemaViewTestCase(unittest.TestCase):
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
 
-        #for e in view.all_element(imports=True):
+        # for e in view.all_element(imports=True):
         #    logging.debug(view.annotation_dict(e))
-        #logging.debug(u)
+        # logging.debug(u)
 
     def test_rollup_rolldown(self):
         # no import schema
@@ -168,8 +164,6 @@ class SchemaViewTestCase(unittest.TestCase):
         assert 'Thing' not in view.all_class()
         assert 'Person' not in view.all_class()
         assert 'Adult' in view.all_class()
-
-
 
     def test_caching(self):
         """
@@ -229,11 +223,10 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.induced_slot('age in years', 'Person').minimum_value == 0
         assert view.induced_slot('age in years', 'Adult').minimum_value == 16
 
-
         assert view.get_class('agent').class_uri == 'prov:Agent'
         assert view.get_uri('agent') == 'prov:Agent'
         logging.debug(view.get_class('Company').class_uri)
-        #assert view.get_class('Company').class_uri == 'prov:Agent'
+        # assert view.get_class('Company').class_uri == 'prov:Agent'
         assert view.get_uri('Company') == 'ks:Company'
         assert view.get_uri('Company', expand=True) == 'https://w3id.org/linkml/tests/kitchen_sink/Company'
         logging.debug(view.get_uri("TestClass"))

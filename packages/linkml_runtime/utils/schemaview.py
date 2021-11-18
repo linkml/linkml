@@ -544,7 +544,7 @@ class SchemaView(object):
 
         """
 
-        return self.get_elements_applicable_by_prefix(Namespace.namespaces.prefix_for(identifier))
+        return self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_prefix(self, prefix: str) -> List[str]:
