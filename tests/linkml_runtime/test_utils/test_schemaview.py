@@ -8,7 +8,6 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.schemaops import roll_up, roll_down
-from linkml_runtime.utils.namespaces import Namespaces
 from tests.test_utils import INPUT_DIR
 
 SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
