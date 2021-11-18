@@ -1,0 +1,58 @@
+@prefix CODE: <http://example.org/code/> .
+@prefix GEO: <http://example.org/GEO/> .
+@prefix P: <http://example.org/P/> .
+@prefix ROR: <http://example.org/ror/> .
+@prefix ns1: <http://www.w3.org/ns/prov#> .
+@prefix ns2: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix ns3: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+P:001 a ns3:Person ;
+    ns3:email "fred.bloggs@example.com" ;
+    ns3:gender <http://purl.obolibrary.org/obo/GSSO_000371> ;
+    ns3:name "fred bloggs" ;
+    ns2:age_in_years 33 .
+
+P:002 a ns3:Person ;
+    ns3:email "joe.schmoe@example.com" ;
+    ns3:gender <http://purl.obolibrary.org/obo/GSSO_000372> ;
+    ns3:name "joe schmoe" ;
+    ns2:current_address [ a ns3:PostalAddress ;
+            ns2:city "foo city" ;
+            ns2:street "1 foo street" ] ;
+    ns2:has_employment_history [ a ns2:EmploymentEvent ;
+            ns1:startedAtTime "2019-01-01"^^xsd:date ;
+            ns2:employed_at ROR:1 ;
+            ns2:is_current true ] ;
+    ns2:has_familial_relationships [ a ns2:FamilialRelationship ;
+            ns2:related_to P:001 ;
+            ns2:type <https://example.org/FamilialRelations#01> ] ;
+    ns2:has_medical_history [ a ns2:MedicalEvent ;
+            ns1:startedAtTime "2019-01-01"^^xsd:date ;
+            ns2:diagnosis CODE:D0001 ;
+            ns2:in_location GEO:1234 ;
+            ns2:procedure CODE:P0001 ] .
+
+CODE:D0001 a ns2:DiagnosisConcept ;
+    ns3:name "headache" ;
+    ns2:code_system CODE:D .
+
+CODE:P0001 a ns2:ProcedureConcept ;
+    ns3:name "trepanation" ;
+    ns2:code_system CODE:P .
+
+ROR:2 a ns3:Organization ;
+    ns3:name "bar" ;
+    ns2:categories "shell company" .
+
+ROR:1 a ns3:Organization ;
+    ns3:name "foo" ;
+    ns2:categories <https://example.org/bizcodes/001>,
+        "non profit" .
+
+[] a ns2:Container ;
+    ns2:organizations ROR:1,
+        ROR:2 ;
+    ns2:persons P:001,
+        P:002 .
+

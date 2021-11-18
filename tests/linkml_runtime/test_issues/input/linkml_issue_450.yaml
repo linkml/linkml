@@ -1,0 +1,19 @@
+id: https://w3id.org/linkml/examples/test
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: my_str
+default_curi_maps:
+  - semweb_context
+
+types:
+  entity:
+    base: str
+    uri: rdfs:Resource
+
+classes:
+  C1:
+    attributes:
+      a:
+        range: entity
+
+

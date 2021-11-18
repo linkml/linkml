@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-08-19 17:51
+# Generation date: 2021-10-25 20:23
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -42,7 +42,9 @@ PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SH = CurieNamespace('sh', 'https://w3id.org/shacl/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+SWRL = CurieNamespace('swrl', 'http://www.w3.org/2003/11/swrl#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LINKML
 
@@ -112,6 +114,7 @@ class CommonMetadata(YAMLRoot):
 
     description: Optional[str] = None
     alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
     deprecated: Optional[str] = None
     todos: Optional[Union[str, List[str]]] = empty_list()
     notes: Optional[Union[str, List[str]]] = empty_list()
@@ -129,6 +132,9 @@ class CommonMetadata(YAMLRoot):
             self.description = str(self.description)
 
         self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
@@ -189,6 +195,7 @@ class Element(YAMLRoot):
     definition_uri: Optional[Union[str, URIorCURIE]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
     local_names: Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]] = empty_dict()
+    conforms_to: Optional[str] = None
     mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
@@ -199,6 +206,7 @@ class Element(YAMLRoot):
     annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
     description: Optional[str] = None
     alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
     deprecated: Optional[str] = None
     todos: Optional[Union[str, List[str]]] = empty_list()
     notes: Optional[Union[str, List[str]]] = empty_list()
@@ -229,6 +237,9 @@ class Element(YAMLRoot):
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
         self._normalize_inlined_as_dict(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", keyed=True)
+
+        if self.conforms_to is not None and not isinstance(self.conforms_to, str):
+            self.conforms_to = str(self.conforms_to)
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -262,6 +273,9 @@ class Element(YAMLRoot):
             self.description = str(self.description)
 
         self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
@@ -319,7 +333,6 @@ class SchemaDefinition(Element):
 
     name: Union[str, SchemaDefinitionName] = None
     id: Union[str, URI] = None
-    title: Optional[str] = None
     version: Optional[str] = None
     imports: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     license: Optional[str] = None
@@ -351,9 +364,6 @@ class SchemaDefinition(Element):
             self.MissingRequiredField("id")
         if not isinstance(self.id, URI):
             self.id = URI(self.id)
-
-        if self.title is not None and not isinstance(self.title, str):
-            self.title = str(self.title)
 
         if self.version is not None and not isinstance(self.version, str):
             self.version = str(self.version)
@@ -410,11 +420,62 @@ class SchemaDefinition(Element):
 
 
 @dataclass
+class AnonymousTypeExpression(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = ["pattern", "equals_string", "equals_string_in", "equals_number"]
+
+    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousTypeExpression
+    class_class_curie: ClassVar[str] = "linkml:AnonymousTypeExpression"
+    class_name: ClassVar[str] = "anonymous_type_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.AnonymousTypeExpression
+
+    pattern: Optional[str] = None
+    equals_string: Optional[str] = None
+    equals_string_in: Optional[Union[str, List[str]]] = empty_list()
+    equals_number: Optional[int] = None
+    none_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
+
+        if self.equals_string is not None and not isinstance(self.equals_string, str):
+            self.equals_string = str(self.equals_string)
+
+        if not isinstance(self.equals_string_in, list):
+            self.equals_string_in = [self.equals_string_in] if self.equals_string_in is not None else []
+        self.equals_string_in = [v if isinstance(v, str) else str(v) for v in self.equals_string_in]
+
+        if self.equals_number is not None and not isinstance(self.equals_number, int):
+            self.equals_number = int(self.equals_number)
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.all_of]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class TypeDefinition(Element):
     """
     A data type definition.
     """
-    _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr"]
+    _inherited_slots: ClassVar[List[str]] = ["base", "uri", "repr", "pattern", "equals_string", "equals_string_in", "equals_number"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.TypeDefinition
     class_class_curie: ClassVar[str] = "linkml:TypeDefinition"
@@ -426,6 +487,14 @@ class TypeDefinition(Element):
     base: Optional[str] = None
     uri: Optional[Union[str, URIorCURIE]] = None
     repr: Optional[str] = None
+    pattern: Optional[str] = None
+    equals_string: Optional[str] = None
+    equals_string_in: Optional[Union[str, List[str]]] = empty_list()
+    equals_number: Optional[int] = None
+    none_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, AnonymousTypeExpression], List[Union[dict, AnonymousTypeExpression]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
@@ -444,6 +513,35 @@ class TypeDefinition(Element):
 
         if self.repr is not None and not isinstance(self.repr, str):
             self.repr = str(self.repr)
+
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
+
+        if self.equals_string is not None and not isinstance(self.equals_string, str):
+            self.equals_string = str(self.equals_string)
+
+        if not isinstance(self.equals_string_in, list):
+            self.equals_string_in = [self.equals_string_in] if self.equals_string_in is not None else []
+        self.equals_string_in = [v if isinstance(v, str) else str(v) for v in self.equals_string_in]
+
+        if self.equals_number is not None and not isinstance(self.equals_number, int):
+            self.equals_number = int(self.equals_number)
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.all_of]
 
         super().__post_init__(**kwargs)
 
@@ -582,12 +680,347 @@ class EnumDefinition(Element):
         super().__post_init__(**kwargs)
 
 
+class Expression(YAMLRoot):
+    """
+    todo
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.Expression
+    class_class_curie: ClassVar[str] = "linkml:Expression"
+    class_name: ClassVar[str] = "expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.Expression
+
+
+@dataclass
+class TypeExpression(Expression):
+    _inherited_slots: ClassVar[List[str]] = ["pattern", "equals_string", "equals_string_in", "equals_number"]
+
+    class_class_uri: ClassVar[URIRef] = LINKML.TypeExpression
+    class_class_curie: ClassVar[str] = "linkml:TypeExpression"
+    class_name: ClassVar[str] = "type_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.TypeExpression
+
+    pattern: Optional[str] = None
+    equals_string: Optional[str] = None
+    equals_string_in: Optional[Union[str, List[str]]] = empty_list()
+    equals_number: Optional[int] = None
+    none_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], List[Union[dict, "AnonymousTypeExpression"]]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
+
+        if self.equals_string is not None and not isinstance(self.equals_string, str):
+            self.equals_string = str(self.equals_string)
+
+        if not isinstance(self.equals_string_in, list):
+            self.equals_string_in = [self.equals_string_in] if self.equals_string_in is not None else []
+        self.equals_string_in = [v if isinstance(v, str) else str(v) for v in self.equals_string_in]
+
+        if self.equals_number is not None and not isinstance(self.equals_number, int):
+            self.equals_number = int(self.equals_number)
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.all_of]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class AnonymousExpression(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousExpression
+    class_class_curie: ClassVar[str] = "linkml:AnonymousExpression"
+    class_name: ClassVar[str] = "anonymous_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.AnonymousExpression
+
+    extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
+    annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
+
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+
+        if self.deprecated is not None and not isinstance(self.deprecated, str):
+            self.deprecated = str(self.deprecated)
+
+        if not isinstance(self.todos, list):
+            self.todos = [self.todos] if self.todos is not None else []
+        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
+
+        if not isinstance(self.notes, list):
+            self.notes = [self.notes] if self.notes is not None else []
+        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
+
+        if not isinstance(self.comments, list):
+            self.comments = [self.comments] if self.comments is not None else []
+        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
+
+        if not isinstance(self.examples, list):
+            self.examples = [self.examples] if self.examples is not None else []
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
+
+        if not isinstance(self.in_subset, list):
+            self.in_subset = [self.in_subset] if self.in_subset is not None else []
+        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
+
+        if self.from_schema is not None and not isinstance(self.from_schema, URI):
+            self.from_schema = URI(self.from_schema)
+
+        if self.imported_from is not None and not isinstance(self.imported_from, str):
+            self.imported_from = str(self.imported_from)
+
+        if not isinstance(self.see_also, list):
+            self.see_also = [self.see_also] if self.see_also is not None else []
+        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
+
+        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
+            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
+
+        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
+            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class SlotExpression(Expression):
+    """
+    an expression that constrains the range of values a slot can take
+    """
+    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "minimum_value", "maximum_value", "pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+
+    class_class_uri: ClassVar[URIRef] = LINKML.SlotExpression
+    class_class_curie: ClassVar[str] = "linkml:SlotExpression"
+    class_name: ClassVar[str] = "slot_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.SlotExpression
+
+    range: Optional[Union[str, ElementName]] = None
+    range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
+    required: Optional[Union[bool, Bool]] = None
+    recommended: Optional[Union[bool, Bool]] = None
+    minimum_value: Optional[int] = None
+    maximum_value: Optional[int] = None
+    pattern: Optional[str] = None
+    equals_string: Optional[str] = None
+    equals_string_in: Optional[Union[str, List[str]]] = empty_list()
+    equals_number: Optional[int] = None
+    equals_expression: Optional[str] = None
+    minimum_cardinality: Optional[int] = None
+    maximum_cardinality: Optional[int] = None
+    has_member: Optional[Union[dict, "AnonymousSlotExpression"]] = None
+    all_members: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, "SlotDefinition"]], List[Union[dict, "SlotDefinition"]]]] = empty_dict()
+    none_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.range is not None and not isinstance(self.range, ElementName):
+            self.range = ElementName(self.range)
+
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
+            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+
+        if self.required is not None and not isinstance(self.required, Bool):
+            self.required = Bool(self.required)
+
+        if self.recommended is not None and not isinstance(self.recommended, Bool):
+            self.recommended = Bool(self.recommended)
+
+        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
+            self.minimum_value = int(self.minimum_value)
+
+        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
+            self.maximum_value = int(self.maximum_value)
+
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
+
+        if self.equals_string is not None and not isinstance(self.equals_string, str):
+            self.equals_string = str(self.equals_string)
+
+        if not isinstance(self.equals_string_in, list):
+            self.equals_string_in = [self.equals_string_in] if self.equals_string_in is not None else []
+        self.equals_string_in = [v if isinstance(v, str) else str(v) for v in self.equals_string_in]
+
+        if self.equals_number is not None and not isinstance(self.equals_number, int):
+            self.equals_number = int(self.equals_number)
+
+        if self.equals_expression is not None and not isinstance(self.equals_expression, str):
+            self.equals_expression = str(self.equals_expression)
+
+        if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
+            self.minimum_cardinality = int(self.minimum_cardinality)
+
+        if self.maximum_cardinality is not None and not isinstance(self.maximum_cardinality, int):
+            self.maximum_cardinality = int(self.maximum_cardinality)
+
+        if self.has_member is not None and not isinstance(self.has_member, AnonymousSlotExpression):
+            self.has_member = AnonymousSlotExpression(**as_dict(self.has_member))
+
+        self._normalize_inlined_as_dict(slot_name="all_members", slot_type=SlotDefinition, key_name="name", keyed=True)
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.all_of]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class AnonymousSlotExpression(AnonymousExpression):
+    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "minimum_value", "maximum_value", "pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+
+    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
+    class_class_curie: ClassVar[str] = "linkml:AnonymousSlotExpression"
+    class_name: ClassVar[str] = "anonymous_slot_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
+
+    range: Optional[Union[str, ElementName]] = None
+    range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
+    required: Optional[Union[bool, Bool]] = None
+    recommended: Optional[Union[bool, Bool]] = None
+    minimum_value: Optional[int] = None
+    maximum_value: Optional[int] = None
+    pattern: Optional[str] = None
+    equals_string: Optional[str] = None
+    equals_string_in: Optional[Union[str, List[str]]] = empty_list()
+    equals_number: Optional[int] = None
+    equals_expression: Optional[str] = None
+    minimum_cardinality: Optional[int] = None
+    maximum_cardinality: Optional[int] = None
+    has_member: Optional[Union[dict, "AnonymousSlotExpression"]] = None
+    all_members: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, "SlotDefinition"]], List[Union[dict, "SlotDefinition"]]]] = empty_dict()
+    none_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], List[Union[dict, "AnonymousSlotExpression"]]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.range is not None and not isinstance(self.range, ElementName):
+            self.range = ElementName(self.range)
+
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
+            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+
+        if self.required is not None and not isinstance(self.required, Bool):
+            self.required = Bool(self.required)
+
+        if self.recommended is not None and not isinstance(self.recommended, Bool):
+            self.recommended = Bool(self.recommended)
+
+        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
+            self.minimum_value = int(self.minimum_value)
+
+        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
+            self.maximum_value = int(self.maximum_value)
+
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
+
+        if self.equals_string is not None and not isinstance(self.equals_string, str):
+            self.equals_string = str(self.equals_string)
+
+        if not isinstance(self.equals_string_in, list):
+            self.equals_string_in = [self.equals_string_in] if self.equals_string_in is not None else []
+        self.equals_string_in = [v if isinstance(v, str) else str(v) for v in self.equals_string_in]
+
+        if self.equals_number is not None and not isinstance(self.equals_number, int):
+            self.equals_number = int(self.equals_number)
+
+        if self.equals_expression is not None and not isinstance(self.equals_expression, str):
+            self.equals_expression = str(self.equals_expression)
+
+        if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
+            self.minimum_cardinality = int(self.minimum_cardinality)
+
+        if self.maximum_cardinality is not None and not isinstance(self.maximum_cardinality, int):
+            self.maximum_cardinality = int(self.maximum_cardinality)
+
+        if self.has_member is not None and not isinstance(self.has_member, AnonymousSlotExpression):
+            self.has_member = AnonymousSlotExpression(**as_dict(self.has_member))
+
+        self._normalize_inlined_as_dict(slot_name="all_members", slot_type=SlotDefinition, key_name="name", keyed=True)
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.all_of]
+
+        super().__post_init__(**kwargs)
+
+
 @dataclass
 class SlotDefinition(Definition):
     """
     the definition of a property or a slot
     """
-    _inherited_slots: ClassVar[List[str]] = ["domain", "range", "multivalued", "inherited", "readonly", "ifabsent", "required", "recommended", "inlined", "inlined_as_list", "key", "identifier", "designates_type", "role", "minimum_value", "maximum_value", "pattern"]
+    _inherited_slots: ClassVar[List[str]] = ["domain", "multivalued", "inherited", "readonly", "ifabsent", "inlined", "inlined_as_list", "key", "identifier", "designates_type", "role", "range", "required", "recommended", "minimum_value", "maximum_value", "pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.SlotDefinition
     class_class_curie: ClassVar[str] = "linkml:SlotDefinition"
@@ -597,14 +1030,11 @@ class SlotDefinition(Definition):
     name: Union[str, SlotDefinitionName] = None
     singular_name: Optional[str] = None
     domain: Optional[Union[str, ClassDefinitionName]] = None
-    range: Optional[Union[str, ElementName]] = None
     slot_uri: Optional[Union[str, URIorCURIE]] = None
     multivalued: Optional[Union[bool, Bool]] = None
     inherited: Optional[Union[bool, Bool]] = None
     readonly: Optional[str] = None
     ifabsent: Optional[str] = None
-    required: Optional[Union[bool, Bool]] = None
-    recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
     inlined_as_list: Optional[Union[bool, Bool]] = None
     key: Optional[Union[bool, Bool]] = None
@@ -620,12 +1050,28 @@ class SlotDefinition(Definition):
     role: Optional[str] = None
     is_usage_slot: Optional[Union[bool, Bool]] = None
     usage_slot_name: Optional[str] = None
-    minimum_value: Optional[int] = None
-    maximum_value: Optional[int] = None
-    pattern: Optional[str] = None
     is_a: Optional[Union[str, SlotDefinitionName]] = None
     mixins: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
     apply_to: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
+    range: Optional[Union[str, ElementName]] = None
+    range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
+    required: Optional[Union[bool, Bool]] = None
+    recommended: Optional[Union[bool, Bool]] = None
+    minimum_value: Optional[int] = None
+    maximum_value: Optional[int] = None
+    pattern: Optional[str] = None
+    equals_string: Optional[str] = None
+    equals_string_in: Optional[Union[str, List[str]]] = empty_list()
+    equals_number: Optional[int] = None
+    equals_expression: Optional[str] = None
+    minimum_cardinality: Optional[int] = None
+    maximum_cardinality: Optional[int] = None
+    has_member: Optional[Union[dict, AnonymousSlotExpression]] = None
+    all_members: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, "SlotDefinition"]], List[Union[dict, "SlotDefinition"]]]] = empty_dict()
+    none_of: Optional[Union[Union[dict, AnonymousSlotExpression], List[Union[dict, AnonymousSlotExpression]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, AnonymousSlotExpression], List[Union[dict, AnonymousSlotExpression]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, AnonymousSlotExpression], List[Union[dict, AnonymousSlotExpression]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, AnonymousSlotExpression], List[Union[dict, AnonymousSlotExpression]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
@@ -638,9 +1084,6 @@ class SlotDefinition(Definition):
 
         if self.domain is not None and not isinstance(self.domain, ClassDefinitionName):
             self.domain = ClassDefinitionName(self.domain)
-
-        if self.range is not None and not isinstance(self.range, ElementName):
-            self.range = ElementName(self.range)
 
         if self.slot_uri is not None and not isinstance(self.slot_uri, URIorCURIE):
             self.slot_uri = URIorCURIE(self.slot_uri)
@@ -656,12 +1099,6 @@ class SlotDefinition(Definition):
 
         if self.ifabsent is not None and not isinstance(self.ifabsent, str):
             self.ifabsent = str(self.ifabsent)
-
-        if self.required is not None and not isinstance(self.required, Bool):
-            self.required = Bool(self.required)
-
-        if self.recommended is not None and not isinstance(self.recommended, Bool):
-            self.recommended = Bool(self.recommended)
 
         if self.inlined is not None and not isinstance(self.inlined, Bool):
             self.inlined = Bool(self.inlined)
@@ -709,15 +1146,6 @@ class SlotDefinition(Definition):
         if self.usage_slot_name is not None and not isinstance(self.usage_slot_name, str):
             self.usage_slot_name = str(self.usage_slot_name)
 
-        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
-            self.minimum_value = int(self.minimum_value)
-
-        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
-            self.maximum_value = int(self.maximum_value)
-
-        if self.pattern is not None and not isinstance(self.pattern, str):
-            self.pattern = str(self.pattern)
-
         if self.is_a is not None and not isinstance(self.is_a, SlotDefinitionName):
             self.is_a = SlotDefinitionName(self.is_a)
 
@@ -728,6 +1156,148 @@ class SlotDefinition(Definition):
         if not isinstance(self.apply_to, list):
             self.apply_to = [self.apply_to] if self.apply_to is not None else []
         self.apply_to = [v if isinstance(v, SlotDefinitionName) else SlotDefinitionName(v) for v in self.apply_to]
+
+        if self.range is not None and not isinstance(self.range, ElementName):
+            self.range = ElementName(self.range)
+
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
+            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+
+        if self.required is not None and not isinstance(self.required, Bool):
+            self.required = Bool(self.required)
+
+        if self.recommended is not None and not isinstance(self.recommended, Bool):
+            self.recommended = Bool(self.recommended)
+
+        if self.minimum_value is not None and not isinstance(self.minimum_value, int):
+            self.minimum_value = int(self.minimum_value)
+
+        if self.maximum_value is not None and not isinstance(self.maximum_value, int):
+            self.maximum_value = int(self.maximum_value)
+
+        if self.pattern is not None and not isinstance(self.pattern, str):
+            self.pattern = str(self.pattern)
+
+        if self.equals_string is not None and not isinstance(self.equals_string, str):
+            self.equals_string = str(self.equals_string)
+
+        if not isinstance(self.equals_string_in, list):
+            self.equals_string_in = [self.equals_string_in] if self.equals_string_in is not None else []
+        self.equals_string_in = [v if isinstance(v, str) else str(v) for v in self.equals_string_in]
+
+        if self.equals_number is not None and not isinstance(self.equals_number, int):
+            self.equals_number = int(self.equals_number)
+
+        if self.equals_expression is not None and not isinstance(self.equals_expression, str):
+            self.equals_expression = str(self.equals_expression)
+
+        if self.minimum_cardinality is not None and not isinstance(self.minimum_cardinality, int):
+            self.minimum_cardinality = int(self.minimum_cardinality)
+
+        if self.maximum_cardinality is not None and not isinstance(self.maximum_cardinality, int):
+            self.maximum_cardinality = int(self.maximum_cardinality)
+
+        if self.has_member is not None and not isinstance(self.has_member, AnonymousSlotExpression):
+            self.has_member = AnonymousSlotExpression(**as_dict(self.has_member))
+
+        self._normalize_inlined_as_dict(slot_name="all_members", slot_type=SlotDefinition, key_name="name", keyed=True)
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.all_of]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class ClassExpression(YAMLRoot):
+    """
+    A boolean expression that can be used to dynamically determine membership of a class
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.ClassExpression
+    class_class_curie: ClassVar[str] = "linkml:ClassExpression"
+    class_name: ClassVar[str] = "class_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.ClassExpression
+
+    any_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    none_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    slot_conditions: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], List[Union[dict, SlotDefinition]]]] = empty_dict()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.all_of]
+
+        self._normalize_inlined_as_dict(slot_name="slot_conditions", slot_type=SlotDefinition, key_name="name", keyed=True)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class AnonymousClassExpression(AnonymousExpression):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousClassExpression
+    class_class_curie: ClassVar[str] = "linkml:AnonymousClassExpression"
+    class_name: ClassVar[str] = "anonymous_class_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.AnonymousClassExpression
+
+    is_a: Optional[Union[str, DefinitionName]] = None
+    any_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    none_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, "AnonymousClassExpression"], List[Union[dict, "AnonymousClassExpression"]]]] = empty_list()
+    slot_conditions: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], List[Union[dict, SlotDefinition]]]] = empty_dict()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.is_a is not None and not isinstance(self.is_a, DefinitionName):
+            self.is_a = DefinitionName(self.is_a)
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.all_of]
+
+        self._normalize_inlined_as_dict(slot_name="slot_conditions", slot_type=SlotDefinition, key_name="name", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -753,9 +1323,17 @@ class ClassDefinition(Definition):
     union_of: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
     defining_slots: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
     tree_root: Optional[Union[bool, Bool]] = None
+    unique_keys: Optional[Union[Union[dict, "UniqueKey"], List[Union[dict, "UniqueKey"]]]] = empty_list()
+    rules: Optional[Union[Union[dict, "ClassRule"], List[Union[dict, "ClassRule"]]]] = empty_list()
+    classification_rules: Optional[Union[Union[dict, AnonymousClassExpression], List[Union[dict, AnonymousClassExpression]]]] = empty_list()
     is_a: Optional[Union[str, ClassDefinitionName]] = None
     mixins: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
     apply_to: Optional[Union[Union[str, ClassDefinitionName], List[Union[str, ClassDefinitionName]]]] = empty_list()
+    any_of: Optional[Union[Union[dict, AnonymousClassExpression], List[Union[dict, AnonymousClassExpression]]]] = empty_list()
+    exactly_one_of: Optional[Union[Union[dict, AnonymousClassExpression], List[Union[dict, AnonymousClassExpression]]]] = empty_list()
+    none_of: Optional[Union[Union[dict, AnonymousClassExpression], List[Union[dict, AnonymousClassExpression]]]] = empty_list()
+    all_of: Optional[Union[Union[dict, AnonymousClassExpression], List[Union[dict, AnonymousClassExpression]]]] = empty_list()
+    slot_conditions: Optional[Union[Dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], List[Union[dict, SlotDefinition]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
@@ -788,6 +1366,16 @@ class ClassDefinition(Definition):
         if self.tree_root is not None and not isinstance(self.tree_root, Bool):
             self.tree_root = Bool(self.tree_root)
 
+        self._normalize_inlined_as_dict(slot_name="unique_keys", slot_type=UniqueKey, key_name="unique_key_slots", keyed=False)
+
+        if not isinstance(self.rules, list):
+            self.rules = [self.rules] if self.rules is not None else []
+        self.rules = [v if isinstance(v, ClassRule) else ClassRule(**as_dict(v)) for v in self.rules]
+
+        if not isinstance(self.classification_rules, list):
+            self.classification_rules = [self.classification_rules] if self.classification_rules is not None else []
+        self.classification_rules = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.classification_rules]
+
         if self.is_a is not None and not isinstance(self.is_a, ClassDefinitionName):
             self.is_a = ClassDefinitionName(self.is_a)
 
@@ -798,6 +1386,148 @@ class ClassDefinition(Definition):
         if not isinstance(self.apply_to, list):
             self.apply_to = [self.apply_to] if self.apply_to is not None else []
         self.apply_to = [v if isinstance(v, ClassDefinitionName) else ClassDefinitionName(v) for v in self.apply_to]
+
+        if not isinstance(self.any_of, list):
+            self.any_of = [self.any_of] if self.any_of is not None else []
+        self.any_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.any_of]
+
+        if not isinstance(self.exactly_one_of, list):
+            self.exactly_one_of = [self.exactly_one_of] if self.exactly_one_of is not None else []
+        self.exactly_one_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.exactly_one_of]
+
+        if not isinstance(self.none_of, list):
+            self.none_of = [self.none_of] if self.none_of is not None else []
+        self.none_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.none_of]
+
+        if not isinstance(self.all_of, list):
+            self.all_of = [self.all_of] if self.all_of is not None else []
+        self.all_of = [v if isinstance(v, AnonymousClassExpression) else AnonymousClassExpression(**as_dict(v)) for v in self.all_of]
+
+        self._normalize_inlined_as_dict(slot_name="slot_conditions", slot_type=SlotDefinition, key_name="name", keyed=True)
+
+        super().__post_init__(**kwargs)
+
+
+class ClassLevelRule(YAMLRoot):
+    """
+    A rule that is applied to classes
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.ClassLevelRule
+    class_class_curie: ClassVar[str] = "linkml:ClassLevelRule"
+    class_name: ClassVar[str] = "class_level_rule"
+    class_model_uri: ClassVar[URIRef] = LINKML.ClassLevelRule
+
+
+@dataclass
+class ClassRule(ClassLevelRule):
+    """
+    A rule that applies to instances of a class
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.ClassRule
+    class_class_curie: ClassVar[str] = "linkml:ClassRule"
+    class_name: ClassVar[str] = "class_rule"
+    class_model_uri: ClassVar[URIRef] = LINKML.ClassRule
+
+    preconditions: Optional[Union[dict, AnonymousClassExpression]] = None
+    postconditions: Optional[Union[dict, AnonymousClassExpression]] = None
+    elseconditions: Optional[Union[dict, AnonymousClassExpression]] = None
+    bidirectional: Optional[Union[bool, Bool]] = None
+    open_world: Optional[Union[bool, Bool]] = None
+    precedence: Optional[int] = None
+    deactivated: Optional[Union[bool, Bool]] = None
+    extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
+    annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.preconditions is not None and not isinstance(self.preconditions, AnonymousClassExpression):
+            self.preconditions = AnonymousClassExpression(**as_dict(self.preconditions))
+
+        if self.postconditions is not None and not isinstance(self.postconditions, AnonymousClassExpression):
+            self.postconditions = AnonymousClassExpression(**as_dict(self.postconditions))
+
+        if self.elseconditions is not None and not isinstance(self.elseconditions, AnonymousClassExpression):
+            self.elseconditions = AnonymousClassExpression(**as_dict(self.elseconditions))
+
+        if self.bidirectional is not None and not isinstance(self.bidirectional, Bool):
+            self.bidirectional = Bool(self.bidirectional)
+
+        if self.open_world is not None and not isinstance(self.open_world, Bool):
+            self.open_world = Bool(self.open_world)
+
+        if self.precedence is not None and not isinstance(self.precedence, int):
+            self.precedence = int(self.precedence)
+
+        if self.deactivated is not None and not isinstance(self.deactivated, Bool):
+            self.deactivated = Bool(self.deactivated)
+
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
+
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+
+        if self.deprecated is not None and not isinstance(self.deprecated, str):
+            self.deprecated = str(self.deprecated)
+
+        if not isinstance(self.todos, list):
+            self.todos = [self.todos] if self.todos is not None else []
+        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
+
+        if not isinstance(self.notes, list):
+            self.notes = [self.notes] if self.notes is not None else []
+        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
+
+        if not isinstance(self.comments, list):
+            self.comments = [self.comments] if self.comments is not None else []
+        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
+
+        if not isinstance(self.examples, list):
+            self.examples = [self.examples] if self.examples is not None else []
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
+
+        if not isinstance(self.in_subset, list):
+            self.in_subset = [self.in_subset] if self.in_subset is not None else []
+        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
+
+        if self.from_schema is not None and not isinstance(self.from_schema, URI):
+            self.from_schema = URI(self.from_schema)
+
+        if self.imported_from is not None and not isinstance(self.imported_from, str):
+            self.imported_from = str(self.imported_from)
+
+        if not isinstance(self.see_also, list):
+            self.see_also = [self.see_also] if self.see_also is not None else []
+        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
+
+        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
+            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
+
+        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
+            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
         super().__post_init__(**kwargs)
 
@@ -934,6 +1664,7 @@ class PermissibleValue(YAMLRoot):
     extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
     annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
     alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, AltDescription]], List[Union[dict, AltDescription]]]] = empty_dict()
+    title: Optional[str] = None
     deprecated: Optional[str] = None
     todos: Optional[Union[str, List[str]]] = empty_list()
     notes: Optional[Union[str, List[str]]] = empty_list()
@@ -970,6 +1701,9 @@ class PermissibleValue(YAMLRoot):
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
 
         self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
 
         if self.deprecated is not None and not isinstance(self.deprecated, str):
             self.deprecated = str(self.deprecated)
@@ -1028,6 +1762,20 @@ class UniqueKey(YAMLRoot):
     unique_key_slots: Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]] = None
     extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
     annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, AltDescription]], List[Union[dict, AltDescription]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, Example], List[Union[dict, Example]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.unique_key_slots):
@@ -1039,6 +1787,53 @@ class UniqueKey(YAMLRoot):
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
 
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+
+        if self.deprecated is not None and not isinstance(self.deprecated, str):
+            self.deprecated = str(self.deprecated)
+
+        if not isinstance(self.todos, list):
+            self.todos = [self.todos] if self.todos is not None else []
+        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
+
+        if not isinstance(self.notes, list):
+            self.notes = [self.notes] if self.notes is not None else []
+        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
+
+        if not isinstance(self.comments, list):
+            self.comments = [self.comments] if self.comments is not None else []
+        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
+
+        if not isinstance(self.examples, list):
+            self.examples = [self.examples] if self.examples is not None else []
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
+
+        if not isinstance(self.in_subset, list):
+            self.in_subset = [self.in_subset] if self.in_subset is not None else []
+        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
+
+        if self.from_schema is not None and not isinstance(self.from_schema, URI):
+            self.from_schema = URI(self.from_schema)
+
+        if self.imported_from is not None and not isinstance(self.imported_from, str):
+            self.imported_from = str(self.imported_from)
+
+        if not isinstance(self.see_also, list):
+            self.see_also = [self.see_also] if self.see_also is not None else []
+        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
+
+        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
+            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
+
+        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
+            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
         super().__post_init__(**kwargs)
 
@@ -1060,6 +1855,19 @@ class PvFormulaOptions(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="PvFormulaOptions",
         description="The formula used to generate the set of permissible values from the code_set values",
+    )
+
+class PresenceEnum(EnumDefinitionImpl):
+    """
+    enumeration of conditions by which a slot value should be set
+    """
+    UNCOMMITTED = PermissibleValue(text="UNCOMMITTED")
+    PRESENT = PermissibleValue(text="PRESENT")
+    ABSENT = PermissibleValue(text="ABSENT")
+
+    _defn = EnumDefinition(
+        name="PresenceEnum",
+        description="enumeration of conditions by which a slot value should be set",
     )
 
 # Slots

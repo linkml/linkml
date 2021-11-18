@@ -127,6 +127,8 @@ class FormatUtilsTestCase(unittest.TestCase):
             self.assertTrue(is_empty(thing), msg=f"{thing} should clock in as empty")
         for thing in non_empty_things:
             self.assertFalse(is_empty(thing))
+        obj = JsonObj([])
+        assert is_empty(obj)
 
     def test_remove_empty_items(self):
         """ Test the various remove empty items paths """
@@ -145,19 +147,11 @@ class FormatUtilsTestCase(unittest.TestCase):
     def test_enumerations_case(self):
         self.assertEqual("""[
    "state",
-   {
-      "text": "1",
-      "description": "production",
-      "meaning": "http://ontologies.r.us/wonderful/states/19923"
-   }
+   "1"
 ]""", as_json(remove_empty_items(json.loads(issue_157_1), hide_protected_keys=True)))
         self.assertEqual("""[
    "namedstate",
-   {
-      "text": "production",
-      "description": "production",
-      "meaning": "http://ontologies.r.us/wonderful/states/19923"
-   }
+   "production"
 ]""", as_json(remove_empty_items(json.loads(issue_157_2), hide_protected_keys=True)))
 
 if __name__ == '__main__':

@@ -47,14 +47,23 @@ subsets:
     aliases:
       - B
 
+# --
+# Classes
+# --
 classes:
 
+  # --
+  # Mixins
+  # --
   HasAliases:
     mixin: true
     attributes:
       aliases:
         multivalued: true
 
+    # --
+    # Main Classes
+    # --
   Thing:
     slots:
       - id
@@ -260,7 +269,9 @@ slots:
       - subset A
       - subset B
   related to:
+    range: Thing
   type:
+    range: string
   street:
   city:
   has birth event:
