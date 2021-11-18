@@ -108,7 +108,7 @@ def is_empty(v: Any) -> bool:
     return v is None or (isinstance(v, (dict, list)) and not v) or (isinstance(v, JsonObj) and not as_dict(v))
 
 
-def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool=False) -> Any:
+def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool = False) -> Any:
     """
     Recursively iterate over obj removing any empty internal entries.  Note:  this returns a _copy_ of obj of we are
     dealing with a list or a dictionary.
@@ -133,13 +133,21 @@ def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool
     :return: copy of obj with empty items removed or None if obj itself is "empty"
     """
     if is_list(obj):
+        # for discussion of logic, see: https://github.com/linkml/linkml-runtime/issues/42
         obj_list = [e for e in [remove_empty_items(l, hide_protected_keys=hide_protected_keys, inside=True)
-                                for l in as_json_obj(obj)] if not is_empty(e)]
+                                for l in obj if l != '_root'] if not is_empty(e)]
         return obj_list if not inside or not is_empty(obj_list) else None
     elif is_dict(obj):
         obj_dict = {k: v for k, v in [(k2, remove_empty_items(v2, hide_protected_keys=hide_protected_keys, inside=True))
                                       for k2, v2 in items(obj)] if not is_empty(v)}
-        if hide_protected_keys and len(obj_dict) == 1 and list(obj_dict.keys())[0].startswith('_'):
+
+        # https://github.com/linkml/linkml/issues/119
+        # Remove the additional level of nesting with enums
+        if len(obj_dict) == 1 and list(obj_dict.keys())[0] == '_code':
+            enum_text = list(obj_dict.values())[0].get('text', None)
+            if enum_text is not None:
+                return enum_text
+        if hide_protected_keys and len(obj_dict) == 1 and str(list(obj_dict.keys())[0]).startswith('_'):
             inner_element = list(obj_dict.values())[0]
             if isinstance(inner_element, dict):
                 obj_dict = inner_element

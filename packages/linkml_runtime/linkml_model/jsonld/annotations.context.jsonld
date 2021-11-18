@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from annotations.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-08-19 17:50\n    Schema: annotations\n    \n    id: https://w3id.org/linkml/annotations\n    description: Annotations mixin\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from annotations.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-10-22 21:37\n    Schema: annotations\n    \n    id: https://w3id.org/linkml/annotations\n    description: Annotations mixin\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "linkml": "https://w3id.org/linkml/",
       "@vocab": "https://w3id.org/linkml/",

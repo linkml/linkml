@@ -1,0 +1,250 @@
+id: https://w3id.org/linkml/examples/rules
+title: Rules example
+name: rules
+description: This demonstrates the use of rules to be introduced in linkml 1.2
+license: https://creativecommons.org/publicdomain/zero/1.0/
+see_also:
+  - https://github.com/orgs/linkml/projects/3
+  - https://github.com/linkml/linkml/issues/75
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/rules/
+  skos: http://www.w3.org/2004/02/skos/core#
+  pav: http://purl.org/pav/
+  schema: http://schema.org/
+  sh: https://w3id.org/shacl/
+
+default_prefix: ex
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+
+#==================================
+# Slots                           #
+#==================================
+slots:
+  id:
+  primary_address:
+    range: Address
+  street_address:
+  country:
+  postal_code:
+  telephone:
+  fiction_status:
+  age:
+    range: int
+  encodes:
+    range: SeqFeature
+  
+  analyte:
+    required: true
+    # union ranges: https://github.com/linkml/linkml/issues/215
+    any_of:
+      - range: MissingValueEnum
+      - range: AnalyteEnum
+  vital_status:
+    required: true
+    any_of:
+      - range: MissingValueEnum
+      - range: VitalStatusEnum
+  familial_relationship:
+    abstract: true
+  parents:
+    is_a: familial_relationships
+  ancestors:
+    is_a: familial_relationships
+  children:
+    is_a: familial_relationships
+    inverse: parents
+  descendants:
+    is_a: familial_relationships
+    inverse: ancestors
+
+    
+#==================================
+# Classes                         #
+#==================================
+
+classes:
+  # https://json-schema.org/understanding-json-schema/reference/conditionals.html
+  Address:
+    slots:
+      - street_address
+      - country
+    rules:
+      - preconditions:
+          slot_conditions:
+            country:
+              any_of:
+                - equals_string: USA
+                - equals_string: USA_territory
+        postconditions:
+          slot_conditions:
+            postal_code:
+              pattern: "[0-9]{5}(-[0-9]{4})?"
+            telephone:
+              pattern: "^\\+1 "
+
+  
+  SeqFeature:
+    slots:
+      - id
+  Gene:
+    is_a: SeqFeature
+    slots:
+      - encodes
+  NoncodingGene:
+    is_a: Gene
+    classification_rules:
+      - is_a: Gene
+        slot_conditions:
+          encodes:
+            none_of:
+              range: Protein
+  ProteinCodingGene:
+    is_a: Gene
+    classification_rules:
+      - is_a: Gene
+        slot_conditions:
+          encodes:
+            range: Protein
+          
+  Sample:
+    slots:
+      - id
+      - analyte
+  GenomicSample:
+    is_a: Sample
+    classification_rules:
+      - is_a: Sample
+        slot_conditions:
+          analyte:
+            equals_string: DNA
+
+            
+  Person:
+    slots:
+      - id
+      - name
+      - age
+      - employer_name
+      - vital_status
+      - primary_address
+      - fiction_status
+      - parents
+      - ancestors
+      - children
+      - descendants
+    rules:
+      - postconditions:
+          slot_conditions:
+            fiction_status:
+              equals_string: NOT_REAL
+        preconditions:
+          any_of:
+            - slot_conditions:
+                age:
+                  minimum_value: 500
+            - slot_conditions:
+                vital_status:
+                  equals_string: UNDEAD   ## forces eval using enum text
+            - slot_conditions:
+                primary_address:
+                  range_expression:
+                    slot_conditions:
+                      country:
+                        any_of:
+                          - equals_string: Narnia
+                          - equals_string: Lilliput
+      - postconditions:
+          slot_conditions:
+            employer_name:
+              equals_expression: "employer/name"
+      - postconditions:
+          slot_conditions:
+            ancestors:
+              has_member:
+                equals_expression: parent
+
+  FunctionalAnnotation:
+    attributes:
+      gene:
+      relation:
+      term:
+      modifiers:
+      evidence_type:
+      references:
+      term_ancestors:
+      term_subsets:
+    rules:
+      - postconditions:
+          none_of:
+            - title: IPI should not be used with GO:0003824 catalytic activity or descendents
+              see_also: [GORULE:0000007]
+              #exact_mappings: [GORULE:0000007]
+              all_of:
+              - slot_conditions:
+                  evidence_type:
+                    equals_string: IPI
+                  term_ancestors:
+                    has_member:
+                      equals_string: GO:0003824
+            - title: No annotations should be made to uninformative high level terms
+              see_also: [GORULE:0000008]
+              any_of:
+                - slot_conditions:
+                    term_subsets:
+                      has_member:
+                        equals_string: gocheck_do_not_annotate
+                - slot_conditions:
+                    term_subsets:
+                      has_member:
+                        equals_string: gocheck_do_not_manually_annotate
+                    evidence_type:
+                      none_of:
+                        - equals_string_in: [IEA, ISS, ISO, IBA]
+            - title: ND evidence code should be to root nodes only, and no terms other than root nodes can have the evidence code ND
+              see_also: [GORULE:0000011]
+              slot_conditions:
+                evidence_type:
+                  equals_string: ND
+                term:
+                  none_of:
+                    - equals_string_in: [GO:0008150, GO:0003674, GO:0005575]
+            
+                
+#==================================
+# Enums
+#==================================
+
+enums:
+  AnalyteEnum:
+    permissible_values:
+      DNA:
+      PROTEIN:
+  MissingValueEnum:
+    permissible_values:
+      INAPPLICABLE:
+      NOT_COLLECTED:
+      RESTRICTED:
+      OTHER:
+  VitalStatusEnum:
+    permissible_values:
+      LIVING:
+      DEAD:
+      UNDEAD:
+    
+              
