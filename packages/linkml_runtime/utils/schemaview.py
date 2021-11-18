@@ -4,15 +4,11 @@ import logging
 from functools import lru_cache
 from copy import copy
 from collections import defaultdict
-from typing import List, Any, Dict, Union, Mapping, Tuple
-from dataclasses import dataclass
+from typing import Mapping, Tuple
 from linkml_runtime.utils.namespaces import Namespaces
-from linkml_runtime.utils.formatutils import camelcase, underscore
-
 
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
-from linkml_runtime.linkml_model.annotations import Annotation, Annotatable
 
 logger = logging.getLogger(__name__)
 
@@ -481,7 +477,6 @@ class SchemaView(object):
             e = self.get_subset(element, imports=imports)
         return e
 
-
     def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False) -> str:
         """
         Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
@@ -532,36 +527,51 @@ class SchemaView(object):
         return uri
 
     @lru_cache(CACHE_SIZE)
-    def get_element_by_prefix(
-            self,
-            identifier: str
-    ) -> List[str]:
+    def get_elements_applicable_by_identifier(self, identifier: str) -> List[str]:
         """
         Get a Model element by prefix.
 
         Parameters
         ----------
         identifier: str
-            The identifier as a CURIE
+            The identifier in CURIE form
 
         Returns
         -------
         Optional[str]
-                The model element corresponding to the given URI/CURIE as available via
+                The model element corresponding to the given identifier as available via
+                the id_prefixes mapped to that element.
+
+        """
+
+        return self.get_elements_applicable_by_prefix(Namespace.namespaces.prefix_for(identifier))
+
+    @lru_cache(CACHE_SIZE)
+    def get_elements_applicable_by_prefix(self, prefix: str) -> List[str]:
+        """
+        Get a Model element by prefix.
+
+        Parameters
+        ----------
+        prefix: str
+            The prefix of a CURIE
+
+        Returns
+        -------
+        Optional[str]
+                The model element corresponding to the given prefix as available via
                 the id_prefixes mapped to that element.
 
         """
         categories = []
-        if ":" in identifier:
-            id_components = identifier.split(":")
-            prefix = id_components[0]
-            elements = self.all_element()
-            for category, category_element in elements.items():
-                if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
-                    categories.append(category_element.name)
+        elements = self.all_element()
+        for category, category_element in elements.items():
+            if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
+                categories.append(category_element.name)
+
         if len(categories) == 0:
             logger.warning("no element found for the given curie using id_prefixes attribute"
-                           ": %s, try get_mappings?", identifier)
+                           ": %s, try get_mappings method?", prefix)
 
         return categories
 
