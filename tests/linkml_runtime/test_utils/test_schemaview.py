@@ -8,7 +8,7 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.schemaops import roll_up, roll_down
-
+from linkml_runtime.utils.namespaces import Namespaces
 from tests.test_utils import INPUT_DIR
 
 SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
@@ -27,18 +27,18 @@ class SchemaViewTestCase(unittest.TestCase):
         all_cls = view.all_class()
         logging.debug(f'n_cls = {len(all_cls)}')
 
-        e = view.get_element('is current')
         assert list(view.annotation_dict('is current').values()) == ['bar']
         logging.debug(view.annotation_dict('employed at'))
         e = view.get_element('employed at')
         logging.debug(e.annotations)
         e = view.get_element('has employment history')
         logging.debug(e.annotations)
-        # assert list(view.annotation_dict('employed at')[]
 
         elements = view.get_elements_applicable_by_identifier("ORCID:1234")
         assert "Person" in elements
         elements = view.get_elements_applicable_by_identifier("PMID:1234")
+        assert "Organization" in elements
+        elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
         assert "Organization" in elements
         elements = view.get_elements_applicable_by_identifier("TEST:1234")
         assert "anatomical entity" not in elements

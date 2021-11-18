@@ -122,7 +122,6 @@ class SchemaView(object):
                 namespaces.add_prefixmap(cmap, include_defaults=False)
         return namespaces
 
-
     def load_import(self, imp: str, from_schema: SchemaDefinition = None):
         if from_schema is None:
             from_schema = self.schema
@@ -543,8 +542,11 @@ class SchemaView(object):
                 the id_prefixes mapped to that element.
 
         """
-
-        return self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
+        categories = self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
+        if len(categories) == 0:
+            logger.warning("no element found for the given curie using id_prefixes attribute"
+                           ": %s, try get_mappings method?", identifier)
+        return categories
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_prefix(self, prefix: str) -> List[str]:
@@ -568,10 +570,6 @@ class SchemaView(object):
         for category, category_element in elements.items():
             if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
                 categories.append(category_element.name)
-
-        if len(categories) == 0:
-            logger.warning("no element found for the given curie using id_prefixes attribute"
-                           ": %s, try get_mappings method?", prefix)
 
         return categories
 

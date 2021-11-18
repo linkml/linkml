@@ -17,6 +17,7 @@ description: |-
 
 default_curi_maps:
   - semweb_context
+  - monarch_context
 prefixes:
   pav: http://purl.org/pav/
   dce: http://purl.org/dc/elements/1.1/
