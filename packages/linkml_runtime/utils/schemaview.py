@@ -674,16 +674,19 @@ class SchemaView(object):
         :return: index keyed by mapping type
         """
         e = self.get_element(element_name, imports=imports)
-        m_dict = {
-            'self': [self.get_uri(element_name, imports=imports, expand=False)],
-            'native': [self.get_uri(element_name, imports=imports, expand=False, native=True)],
-            'exact': e.exact_mappings,
-            'narrow': e.narrow_mappings,
-            'broad': e.broad_mappings,
-            'related': e.related_mappings,
-            'close': e.close_mappings,
-            'undefined': e.mappings
-        }
+        if isinstance(e,ClassDefinition) or isinstance(e,SlotDefinition) or isinstance(e, TypeDefinition):
+            m_dict = {
+                'self': [self.get_uri(element_name, imports=imports, expand=False)],
+                'native': [self.get_uri(element_name, imports=imports, expand=False, native=True)],
+                'exact': e.exact_mappings,
+                'narrow': e.narrow_mappings,
+                'broad': e.broad_mappings,
+                'related': e.related_mappings,
+                'close': e.close_mappings,
+                'undefined': e.mappings
+            }
+        else:
+            m_dict = {}
         if expand:
             for k, vs in m_dict.items():
                 m_dict[k] = [self.expand_curie(v) for v in vs]

@@ -32,6 +32,8 @@ class SchemaViewTestCase(unittest.TestCase):
         element = view.get_element(SlotDefinitionName('has employment history'))
         logging.debug(element.annotations)
 
+        mapping = view.get_mapping_index()
+        assert mapping is not None
         if True:
             for sn, s in view.all_slot().items():
                 logging.info(f'SN = {sn} RANGE={s.range}')
