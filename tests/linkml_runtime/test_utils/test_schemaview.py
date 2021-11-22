@@ -34,8 +34,12 @@ class SchemaViewTestCase(unittest.TestCase):
 
         mapping = view.get_mapping_index()
         assert mapping is not None
+
+        category_mapping = view.get_category_by_mapping("GO:0005198")
+        assert category_mapping == ['ks:Activity']
+
         if True:
-            for sn, s in view.all_slot().items():
+            for sn, s in view.all_slots().items():
                 logging.info(f'SN = {sn} RANGE={s.range}')
             # this section is mostly for debugging
             for cn in all_cls.keys():
