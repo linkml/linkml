@@ -674,7 +674,7 @@ class SchemaView(object):
         :return: index keyed by mapping type
         """
         e = self.get_element(element_name, imports=imports)
-        if isinstance(e,ClassDefinition) or isinstance(e,SlotDefinition) or isinstance(e, TypeDefinition):
+        if isinstance(e, ClassDefinition) or isinstance(e, SlotDefinition) or isinstance(e, TypeDefinition):
             m_dict = {
                 'self': [self.get_uri(element_name, imports=imports, expand=False)],
                 'native': [self.get_uri(element_name, imports=imports, expand=False, native=True)],
@@ -704,7 +704,7 @@ class SchemaView(object):
         """
         ix = defaultdict(list)
         for en in self.all_elements(imports=imports):
-            for mapping_type, vs in self.get_mappings(en, imports=imports, expand=expand):
+            for mapping_type, vs in self.get_mappings(en, imports=imports, expand=expand).items():
                 for v in vs:
                     ix[v].append((mapping_type, self.get_element(en, imports=imports)))
         return ix
