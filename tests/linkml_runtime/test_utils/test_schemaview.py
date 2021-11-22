@@ -36,7 +36,7 @@ class SchemaViewTestCase(unittest.TestCase):
         assert mapping is not None
 
         category_mapping = view.get_category_by_mapping("GO:0005198")
-        assert category_mapping == ['ks:Activity']
+        assert category_mapping == ['activity']
 
         if True:
             for sn, s in view.all_slots().items():

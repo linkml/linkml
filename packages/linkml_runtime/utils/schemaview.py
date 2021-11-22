@@ -693,20 +693,14 @@ class SchemaView(object):
 
         return m_dict
 
-    def get_category_by_mapping(self, mapping_id: URIorCURIE) -> List[URIorCURIE]:
+    def get_category_by_mapping(self, mapping_id: URIorCURIE) -> List[str]:
         categories = []
-        mapping_index = self.get_mapping_index()
-        for model_item, model_item_mappings in mapping_index.items():
-            model_item_class_definition = self.get_mappings(model_item_mappings[0][1].name, imports=True, expand=False)
-            if model_item == 'ks:Activity':
-
-                for key, mapping_list in model_item_class_definition.items():
-                    if key not in ('exact', 'narrow', 'broad', 'related', 'close'):
-                        continue
-                    else:
-                        if mapping_id in mapping_list:
-                            print(mapping_id)
-                            categories.append(model_item)
+        elements = self.all_elements()
+        for el in elements:
+            element = self.get_element(el)
+            mappings = element.exact_mappings + element.close_mappings + element.narrow_mappings + element.broad_mappings
+            if mapping_id in mappings:
+                categories.append(element.name)
         return categories
 
     def get_mapping_index(self, imports=True, expand=False) -> Dict[URIorCURIE, List[Tuple[MAPPING_TYPE, Element]]]:
