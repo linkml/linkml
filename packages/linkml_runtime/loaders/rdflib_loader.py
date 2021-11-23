@@ -38,7 +38,8 @@ class RDFLibLoader(Loader):
         :param graph: rdflib Graph that holds instances of target_class
         :param schemaview: schema to which graph conforms
         :param target_class: class which root nodes should instantiate
-        :param prefix_map:
+        :param prefix_map: additional prefix mappings for data objects
+        :param ignore_unmapped_predicates: if True then a predicate that has no mapping to a slot does not raise an error
         :return: all instances of target class type
         """
         namespaces = schemaview.namespaces()
@@ -170,6 +171,7 @@ class RDFLibLoader(Loader):
         :param prefix_map: map of prefixes used in data
         :param fmt: format of source if it isn't an existing Graph
         :param metadata: source information. Used by some loaders to record where information came from
+        :param kwargs: additional arguments passed to from_rdf_graph
         :return: Instance of target_class
         """
         if isinstance(source, Graph):
