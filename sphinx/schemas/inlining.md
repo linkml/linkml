@@ -143,10 +143,6 @@ data:
 ```
 
 
-## Note on JSON-Schema validation
-
-Currently JSON-Schema validation will fail on any structures inlined as dicts.
-
 ## Inlining with non-JSON serializations
 
 The concept of inlining only makes sense with JSON-like tree-oriented data serializations:
