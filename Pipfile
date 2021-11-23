@@ -36,6 +36,8 @@ myst-parser = "*"
 jinja2 = "*"
 pydantic = "*"
 pandas = "*"
+fastapi = "*"
+uvicorn = "*"
 
 [dev-packages]
 nbconvert = "*"
