@@ -786,8 +786,11 @@ class SchemaView(object):
         cls = self.get_class(class_name, imports)
         islot = None
         if slot is not None:
+            # case 1: there is an explicit declaration of the slot
             islot = deepcopy(slot)
         else:
+            # case 2: no independent slot definition, declared as an attribute
+            # (can be attribute of the class, or an ancestor)
             for an in self.class_ancestors(class_name):
                 a = self.get_class(an, imports)
                 if slot_name in a.attributes:
@@ -800,11 +803,15 @@ class SchemaView(object):
             'maximum_value': lambda x, y: min(x, y),
             'minimum_value': lambda x, y: max(x, y),
         }
-        for metaslot_name in SlotDefinition._inherited_slots:
+        for metaslot_name in self._metaslots_for_slot():
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(islot, metaslot_name, None)
-            for an in reversed(self.class_ancestors(class_name)):
+            if metaslot_name in SlotDefinition._inherited_slots:
+                propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
+            else:
+                propagated_from = [class_name]
+            for an in reversed(propagated_from):
                 islot.owner = an
                 a = self.get_class(an, imports)
                 anc_slot_usage = a.slot_usage.get(slot_name, {})
@@ -827,6 +834,11 @@ class SchemaView(object):
         if slot.inlined_as_list:
             slot.inlined = True
         return deepcopy(islot)
+
+    @lru_cache()
+    def _metaslots_for_slot(self):
+        fake_slot = SlotDefinition('__FAKE')
+        return vars(fake_slot).keys()
 
     @lru_cache()
     def class_induced_slots(self, class_name: CLASS_NAME = None, imports=True) -> List[SlotDefinition]:
