@@ -775,7 +775,7 @@ class SchemaView(object):
         has all properties materialized.
 
         This makes use of schema slots, such as attributes, slot_usage. It also uses ancestor relationships
-        to infer missing values
+        to infer missing values, for inheritable slots
 
         :param slot_name: slot to be queries
         :param class_name: class used as context
@@ -803,6 +803,7 @@ class SchemaView(object):
             'maximum_value': lambda x, y: min(x, y),
             'minimum_value': lambda x, y: max(x, y),
         }
+        # iterate through all metaslots, and potentially populate metaslot value for induced slot
         for metaslot_name in self._metaslots_for_slot():
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
