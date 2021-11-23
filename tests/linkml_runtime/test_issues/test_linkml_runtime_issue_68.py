@@ -16,8 +16,8 @@ classes:
             - slot1
         slot_usage:
             slot2:
-                 description: induced slot2
-                 required: true
+                description: induced slot2
+                required: true
 slots:
     slot1:
         description: non-induced slot1
@@ -29,6 +29,9 @@ slots:
 
 
 class Issue68TestCase(TestCase):
+    """
+    Note: linkml-runtime issue 68 was moved to https://github.com/linkml/linkml/issues/479
+    """
     def test_issue_68(self):
         view = SchemaView(schema_str)
 
