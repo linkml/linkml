@@ -8,3 +8,15 @@ RDF = CurieNamespace('rdf', RDF)
 RDFS = CurieNamespace('rdfs', RDFS)
 SKOS = CurieNamespace('skos', SKOS)
 XSD = CurieNamespace('xsd', XSD)
+
+class MappingError(ValueError):
+    """
+    An error when mapping elements of a LinkML model to runtime objects
+    """
+    pass
+
+class DataNotFoundError(ValueError):
+    """
+    An error in which data cannot be found
+    """
+    pass
