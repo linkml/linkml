@@ -25,17 +25,33 @@ classes:
     class2:
         is_a: class1
         
-    mixin1:
+    mixin1a:
         mixin: true
         slot_usage:
             slot2:
                 description: mixin slot2
                 required: false
-                range: mixin1
-    class2_1:
+                range: mixin1a
+                
+    mixin1b:
+        mixin: true
+        slot_usage:
+            slot2:
+                description: mixin slot2
+                required: false
+                range: mixin1b
+                
+    class2_1a:
         is_a: class2
         mixins:
-          - mixin1
+          - mixin1a
+          - mixin1b
+          
+    class2_1b:
+        is_a: class2
+        mixins:
+          - mixin1b
+          - mixin1a
           
     class0:
           
@@ -89,12 +105,19 @@ class Issue68TestCase(TestCase):
         assert s3_induced_c2.description == None
         assert s3_induced_c2.range == 'class0'
 
-        # mixins take priority
-        s2_induced_c2_1 = view.induced_slot('slot2', 'class2_1')
-        assert not s2_induced_c2_1.required
-        logging.info(f"s2_induced_c2_1.description: {s2_induced_c2_1.description}")
-        assert s2_induced_c2_1.description == "non-induced slot2"
-        assert s2_induced_c2_1.range == 'mixin1'
+        # mixins take priority over is-a
+        # mixins specified in order of priority
+        s2_induced_c2_1a = view.induced_slot('slot2', 'class2_1a')
+        assert not s2_induced_c2_1a.required
+        logging.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1a.description}")
+        assert s2_induced_c2_1a.description == "non-induced slot2"
+        assert s2_induced_c2_1a.range == 'mixin1a'
+
+        s2_induced_c2_1b = view.induced_slot('slot2', 'class2_1b')
+        assert not s2_induced_c2_1b.required
+        logging.info(f"s2_induced_c2_1a.description: {s2_induced_c2_1b.description}")
+        assert s2_induced_c2_1b.description == "non-induced slot2"
+        assert s2_induced_c2_1b.range == 'mixin1b'
 
 
 
