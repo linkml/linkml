@@ -696,7 +696,7 @@ class SchemaView(object):
         Determines whether the given name is the name of a mixin
         in the model. An element is a mixin if one of its properties is "is_mixin:true"
 
-        :param element_name: The name or alias of an element in the Biolink Model
+        :param element_name: The name or alias of an element in the model
         :return: boolean
         """
 
