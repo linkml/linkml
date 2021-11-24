@@ -704,6 +704,25 @@ class SchemaView(object):
         is_mixin = element.mixin if isinstance(element, Definition) else False
         return is_mixin
 
+    @lru_cache()
+    def inverse(self, slot_name: SlotDefinition):
+        """
+        Determines whether the given name is a relationship, and if that relationship has an inverse, returns
+        the inverse.
+
+        :param slot_name: The name or alias of an element in the model
+        :return: inverse_name
+
+        """
+        element = self.get_element(slot_name)
+        print(element.name)
+        inverse = element.inverse if isinstance(element, SlotDefinition) else False
+        if not inverse:
+            for inv_slot_name, slot_definition in self.all_slots().items():
+                if slot_definition.inverse == element.name:
+                    inverse = slot_definition.name
+        return inverse
+
     def get_mapping_index(self, imports=True, expand=False) -> Dict[URIorCURIE, List[Tuple[MAPPING_TYPE, Element]]]:
         """
         Returns an index of all elements keyed by the mapping value.

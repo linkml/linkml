@@ -35,6 +35,9 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.is_mixin('WithLocation')
         assert not view.is_mixin('BirthEvent')
 
+        assert view.inverse('employment history of') == 'has employment history'
+        assert view.inverse('has employment history') == 'employment history of'
+
         if True:
             for sn, s in view.all_slot().items():
                 logging.info(f'SN = {sn} RANGE={s.range}')
