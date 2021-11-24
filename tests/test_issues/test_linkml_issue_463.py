@@ -30,13 +30,20 @@ class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
     env = env
 
     def test_inlined(self):
-        """ Make sure that enums are generated as part of the output """
+        """ Ensure that inlined lists without identifiers work """
         gen = PythonGenerator(env.input_path('linkml_issue_463.yaml'))
         pystr = gen.serialize()
-        print(pystr)
+        #print(pystr)
+        with open(env.expected_path('linkml_issue_463.py'), 'w') as stream:
+            stream.write(pystr)
         module = compile_python(pystr)
+        # test: construction via objects using append
+        type_obj = module.TypeObj(label='foo type', system='bar system')
+        contained = module.Contained(label='n1', type=type_obj)
+        container = module.Container(contains=[])
+        container.contains.append(contained)
+        # TODO: this currently yields "TypeError: unhashable type: 'TypeObj'"
         obj = yaml_loader.loads(data_str, target_class=module.Container)
-        print(obj)
 
 
 if __name__ == '__main__':
