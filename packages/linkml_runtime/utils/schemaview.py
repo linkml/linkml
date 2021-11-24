@@ -315,15 +315,29 @@ class SchemaView(object):
     @lru_cache()
     def slot_name_mappings(self) -> Dict[str, SlotDefinition]:
         """
-        Mapping between processed safe slot names and slots.
+        Mapping between processed safe slot names (following naming conventions)  and slots.
 
         For example, a slot may have name 'lives at', the code-safe version is `lives_at`
+
         :return: mapping from safe names to slot
         """
         m = {}
         for s in self.all_slots().values():
             m[underscore(s.name)] = s
+        return m
 
+    @lru_cache()
+    def class_name_mappings(self) -> Dict[str, ClassDefinition]:
+        """
+        Mapping between processed safe class names (following naming conventions) and classes.
+
+        For example, a class may have name 'named thing', the code-safe version is `NamedThing`
+
+        :return: mapping from safe names to class
+        """
+        m = {}
+        for s in self.all_classes().values():
+            m[camelcase(s.name)] = s
         return m
 
 
