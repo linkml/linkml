@@ -690,6 +690,20 @@ class SchemaView(object):
 
         return m_dict
 
+    @lru_cache()
+    def is_mixin(self, element_name: Union[ElementName, Element]):
+        """
+        Determines whether the given name is the name of a mixin
+        in the model. An element is a mixin if one of its properties is "is_mixin:true"
+
+        :param element_name: The name or alias of an element in the Biolink Model
+        :return: boolean
+        """
+
+        element = self.get_element(element_name)
+        is_mixin = element.mixin if isinstance(element, Definition) else False
+        return is_mixin
+
     def get_mapping_index(self, imports=True, expand=False) -> Dict[URIorCURIE, List[Tuple[MAPPING_TYPE, Element]]]:
         """
         Returns an index of all elements keyed by the mapping value.
@@ -705,7 +719,6 @@ class SchemaView(object):
                 for v in vs:
                     ix[v].append((mapping_type, self.get_element(en, imports=imports)))
         return ix
-
 
     @lru_cache()
     def is_relationship(self, class_name: CLASS_NAME = None, imports=True) -> bool:
