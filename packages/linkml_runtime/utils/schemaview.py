@@ -694,14 +694,14 @@ class SchemaView(object):
         return m_dict
 
     def get_element_by_mapping(self, mapping_id: URIorCURIE) -> List[str]:
-        categories = []
+        model_elements = []
         elements = self.all_elements()
         for el in elements:
             element = self.get_element(el)
             mappings = element.exact_mappings + element.close_mappings + element.narrow_mappings + element.broad_mappings
             if mapping_id in mappings:
-                categories.append(element.name)
-        return categories
+                model_elements.append(element.name)
+        return model_elements
 
     def get_mapping_index(self, imports=True, expand=False) -> Dict[URIorCURIE, List[Tuple[MAPPING_TYPE, Element]]]:
         """
