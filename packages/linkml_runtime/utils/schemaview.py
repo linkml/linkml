@@ -693,7 +693,7 @@ class SchemaView(object):
 
         return m_dict
 
-    def get_category_by_mapping(self, mapping_id: URIorCURIE) -> List[str]:
+    def get_element_by_mapping(self, mapping_id: URIorCURIE) -> List[str]:
         categories = []
         elements = self.all_elements()
         for el in elements:

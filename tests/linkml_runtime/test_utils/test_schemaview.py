@@ -35,7 +35,7 @@ class SchemaViewTestCase(unittest.TestCase):
         mapping = view.get_mapping_index()
         assert mapping is not None
 
-        category_mapping = view.get_category_by_mapping("GO:0005198")
+        category_mapping = view.get_element_by_mapping("GO:0005198")
         assert category_mapping == ['activity']
 
         if True:
