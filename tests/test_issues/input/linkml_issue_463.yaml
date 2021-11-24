@@ -17,10 +17,17 @@ classes:
     slots:
       - contains
 
+  TypeObj:
+    slots:
+      - label
+      - system
+
 slots:
   type:
     required: true
+    range: TypeObj
   label:
+  system:
   contains:
     multivalued: true
     range: Contained

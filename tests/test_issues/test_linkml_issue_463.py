@@ -15,9 +15,13 @@ from tests.test_issues.environment import env
 data_str = """
 contains:
  - label: n1
-   type: t
+   type:
+     label: foo type
+     system: bar system
  - label: n2
-   type: t
+   type:
+     label: foo type
+     system: bar system
 """
 
 
@@ -29,7 +33,7 @@ class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
         """ Make sure that enums are generated as part of the output """
         gen = PythonGenerator(env.input_path('linkml_issue_463.yaml'))
         pystr = gen.serialize()
-        #print(pystr)
+        print(pystr)
         module = compile_python(pystr)
         obj = yaml_loader.loads(data_str, target_class=module.Container)
         print(obj)
