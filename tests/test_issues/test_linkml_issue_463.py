@@ -3,14 +3,21 @@ import unittest
 
 import jsonasobj
 import jsonschema
+from linkml_runtime.loaders import yaml_loader
+from linkml_runtime.utils.compile_python import compile_python
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.pythongen import PythonGenerator
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 
 data_str = """
-TODO
+contains:
+ - label: n1
+   type: t
+ - label: n2
+   type: t
 """
 
 
@@ -20,7 +27,12 @@ class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
 
     def test_inlined(self):
         """ Make sure that enums are generated as part of the output """
-        TODO
+        gen = PythonGenerator(env.input_path('linkml_issue_463.yaml'))
+        pystr = gen.serialize()
+        #print(pystr)
+        module = compile_python(pystr)
+        obj = yaml_loader.loads(data_str, target_class=module.Container)
+        print(obj)
 
 
 if __name__ == '__main__':

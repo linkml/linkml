@@ -24,5 +24,7 @@ slots:
   contains:
     multivalued: true
     range: Contained
+    inlined: true
+    inlined_as_list: true
     
 
