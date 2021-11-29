@@ -676,11 +676,11 @@ class SchemaView(object):
         :return: Optional[str]
 
         """
-        categories = self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
-        if len(categories) == 0:
+        elements = self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
+        if len(elements) == 0:
             logger.warning("no element found for the given curie using id_prefixes attribute"
                            ": %s, try get_mappings method?", identifier)
-        return categories
+        return elements
 
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_prefix(self, prefix: str) -> List[str]:
@@ -692,13 +692,13 @@ class SchemaView(object):
         :return: Optional[str]
 
         """
-        categories = []
+        elements = []
         elements = self.all_element()
         for category, category_element in elements.items():
             if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
-                categories.append(category_element.name)
+                elements.append(category_element.name)
 
-        return categories
+        return elements
 
     @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[MAPPING_TYPE, List[URIorCURIE]]:
