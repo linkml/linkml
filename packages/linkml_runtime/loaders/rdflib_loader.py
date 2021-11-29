@@ -9,7 +9,7 @@ from rdflib.term import Node, BNode, Literal
 from rdflib.namespace import RDF
 
 from linkml_runtime import MappingError, DataNotFoundError
-from linkml_runtime.linkml_model import ClassDefinitionName
+from linkml_runtime.linkml_model import ClassDefinitionName, TypeDefinition, EnumDefinition, ClassDefinition
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinition
@@ -30,7 +30,9 @@ class RDFLibLoader(Loader):
     """
     def from_rdf_graph(self, graph: Graph, schemaview: SchemaView, target_class: Type[YAMLRoot],
                        prefix_map: Dict[str, str] = None,
-                       ignore_unmapped_predicates = False) -> List[YAMLRoot]:
+                       cast_literals: bool = True,
+                       allow_unprocessed_triples: bool = True,
+                       ignore_unmapped_predicates: bool = False) -> List[YAMLRoot]:
         """
         Loads objects from graph into lists of the python target_class structure,
         recursively walking RDF graph from instances of target_class.
@@ -43,12 +45,22 @@ class RDFLibLoader(Loader):
         :return: all instances of target class type
         """
         namespaces = schemaview.namespaces()
+        uri_to_class_map = {}
+        for cn, c in schemaview.all_classes().items():
+            uri = schemaview.get_uri(c, expand=True)
+            if uri in uri_to_class_map:
+                c2 = uri_to_class_map[uri]
+                if c2.name in schemaview.class_ancestors(cn):
+                    continue
+                else:
+                    logging.error(f'Inconsistent URI to class map: {uri} -> {c2.name}, {c.name}')
+            uri_to_class_map[uri] = c
         # data prefix map: supplements or overrides existing schema prefix map
         if prefix_map:
             for k, v in prefix_map.items():
                 namespaces[k] = v
                 graph.namespace_manager.bind(k, URIRef(v))
-        # Step 1: Create stub root dicts
+        # Step 1: Create stub root dict-objects
         target_class_uriref: URIRef = target_class.class_class_uri
         root_dicts: List[ANYDICT] = []
         root_subjects: List[VALID_SUBJECT] = list(graph.subjects(RDF.type, target_class_uriref))
@@ -58,9 +70,12 @@ class RDFLibLoader(Loader):
         node_tuples_to_visit = [(subject, target_class.class_name) for subject in root_subjects]
         uri_to_slot: Dict[str, SlotDefinition]  ## lookup table for RDF predicates -> slots
         uri_to_slot = {URIRef(schemaview.get_uri(s, expand=True)): s for s in schemaview.all_slots().values()}
-        processed: Set[VALID_SUBJECT] = set()  ## track nodes already visited
+        processed: Set[VALID_SUBJECT] = set()  ## track nodes already visited, or already scheduled
+        for n, _ in node_tuples_to_visit:
+            processed.add(n)
         obj_map: Dict[VALID_SUBJECT, ANYDICT] = {}  ## map from an RDF node to its dict representation
         unmapped_predicates = set()
+        processed_triples: Set[Tuple] = set()
         while len(node_tuples_to_visit) > 0:
             subject, subject_class = node_tuples_to_visit.pop()
             processed.add(subject)
@@ -68,11 +83,22 @@ class RDFLibLoader(Loader):
             if subject in root_subjects:
                 root_dicts.append(dict_obj)
             obj_map[subject] = dict_obj
+            type_designator_slot = schemaview.get_type_designator_slot(subject_class)
+            if type_designator_slot:
+                td_iri = schemaview.get_uri(type_designator_slot, expand=True)
+                type_vals = list(graph.objects(subject, URIRef(td_iri)))
+                if len(type_vals) > 0:
+                    type_classes = [uri_to_class_map[str(x)] for x in type_vals]
+                    if len(type_classes) > 1:
+                        raise ValueError(f'Ambiguous types for {subject} == {type_classes}')
+                    logging.info(f'Replacing {subject_class} with {type_classes}')
+                    subject_class = type_classes[0].name
             # process all triples for this node
             for (_, p, o) in graph.triples((subject, None, None)):
+                processed_triples.add((subject,p,o))
                 logging.debug(f' Processing triple {subject} {p} {o}, subject type = {subject_class}')
                 if p == RDF.type:
-                    logging.debug(f'Ignoring RDF.type for {subject} {o}, we automatically infer this')
+                    logging.debug(f'Ignoring RDF.type for {subject} {o}, we automatically infer this from {subject_class}')
                 elif p not in uri_to_slot:
                     if ignore_unmapped_predicates:
                         unmapped_predicates.add(p)
@@ -80,20 +106,42 @@ class RDFLibLoader(Loader):
                         raise MappingError(f'No pred for {p} {type(p)}')
                 else:
                     slot = schemaview.induced_slot(uri_to_slot[p].name, subject_class)
+                    range_applicable_elements = schemaview.slot_applicable_range_elements(slot)
                     is_inlined = schemaview.is_inlined(slot)
                     slot_name = underscore(slot.name)
                     if isinstance(o, Literal):
+                        if EnumDefinition.class_name in range_applicable_elements:
+                            logging.debug(f'Assuming no meaning assigned for value {o} for Enum {slot.range}')
+                        elif TypeDefinition.class_name not in range_applicable_elements:
+                            raise ValueError(f'Cannot map Literal {o} to a slot {slot.name} whose range {slot.range} is not a type;')
                         v = o.value
+                    elif isinstance(o, BNode):
+                        if not is_inlined:
+                            logging.error(f'blank nodes should be inlined; {slot_name}={o} in {subject}')
+                        v = Pointer(o)
                     else:
-                        v = namespaces.curie_for(o)
-                        if slot.range in schemaview.all_enums():
+                        if ClassDefinition.class_name in range_applicable_elements:
+                            v = namespaces.curie_for(o)
+                            if v is None:
+                                logging.debug(f'No CURIE for {p}={o} in {subject} [{subject_class}]')
+                                v = str(o)
+                        elif EnumDefinition.class_name in range_applicable_elements:
                             # if a PV has a meaning URI declared, map this
                             # back to a text representation
+                            v = namespaces.curie_for(o)
                             e = schemaview.get_enum(slot.range)
                             for pv in e.permissible_values.values():
                                 if v == pv.meaning or str(o) == pv.meaning:
                                     v = pv.text
                                     break
+                        elif TypeDefinition.class_name in range_applicable_elements:
+                            if cast_literals:
+                                v = namespaces.curie_for(o)
+                                if v is None:
+                                    v = str(o)
+                                logging.debug(f'Casting {o} to string')
+                            else:
+                                raise ValueError(f'Expected literal value ({range_applicable_elements}) for {slot_name}={o}')
                         if is_inlined:
                             # the object of the triple may not yet be processed;
                             # we store a pointer to o, and then replace this later
@@ -105,11 +153,19 @@ class RDFLibLoader(Loader):
                     else:
                         dict_obj[slot_name] = v
                     if o not in processed:
-                        # if o instantiates a class, add to list of nodes to be visited
+                        # if o instantiates a class, add to list of nodes to be visited.
+                        # force type based on range constraint
                         if slot.range in schemaview.all_classes():
                             node_tuples_to_visit.append((o, ClassDefinitionName(slot.range)))
         if unmapped_predicates:
             logging.info(f'Unmapped predicated: {unmapped_predicates}')
+        unprocessed_triples = set(graph.triples((None, None, None))) - processed_triples
+        logging.info(f'Triple processed = {len(processed_triples)}, unprocessed = {len(unprocessed_triples)}')
+        if len(unprocessed_triples) > 0:
+            if not allow_unprocessed_triples:
+                for t in unprocessed_triples:
+                    logging.warning(f'  Unprocessed: {t}')
+                raise ValueError(f'Unprocessed triples: {len(unprocessed_triples)}')
         # Step 2: replace inline pointers with object dicts
         def repl(v):
             if isinstance(v, Pointer):
@@ -150,7 +206,6 @@ class RDFLibLoader(Loader):
             if id_slot is not None:
                 raise Exception(f'Unexpected blank node {node}, type {cn} expects {id_slot.name} identifier')
             return {}
-
 
 
     def load(self, source: Union[str, TextIO, Graph], target_class: Type[YAMLRoot], *,

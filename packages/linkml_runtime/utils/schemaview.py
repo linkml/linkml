@@ -4,7 +4,7 @@ import logging
 from functools import lru_cache
 from copy import copy, deepcopy
 from collections import defaultdict
-from typing import Mapping, Tuple
+from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 
@@ -802,6 +802,17 @@ class SchemaView(object):
         if slot is not None:
             # case 1: there is an explicit declaration of the slot
             islot = deepcopy(slot)
+            slot_anc_names = self.slot_ancestors(slot_name, reflexive=True)
+            # inheritable slot: first propagate from ancestors
+            for anc_sn in reversed(slot_anc_names):
+                anc_slot = self.get_slot(anc_sn)
+                for metaslot_name in SlotDefinition._inherited_slots:
+                    if getattr(anc_slot, metaslot_name, None):
+                        setattr(islot, metaslot_name, deepcopy(getattr(anc_slot, metaslot_name)))
+            # then override with this
+            #for metaslot_name in SlotDefinition._inherited_slots:
+            #    if getattr(slot, metaslot_name, None):
+            #        setattr(islot, metaslot_name, deepcopy(getattr(slot, metaslot_name)))
         else:
             # case 2: no independent slot definition, declared as an attribute
             # (can be attribute of the class, or an ancestor)
@@ -879,6 +890,19 @@ class SchemaView(object):
                 return s
         return None
 
+    @lru_cache()
+    def get_type_designator_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
+        """
+        :param cn: class name
+        :param imports:
+        :return: name of slot that acts as type designator for the given class
+        """
+        for sn in self.class_slots(cn, imports=imports):
+            s = self.induced_slot(sn, cn, imports=imports)
+            if s.designates_type:
+                return s
+        return None
+
     def is_inlined(self, slot: SlotDefinition, imports=True) -> bool:
         """
         True if slot is inferred or asserted inline
@@ -903,6 +927,52 @@ class SchemaView(object):
                     return False
             else:
                 return False
+
+    def slot_applicable_range_elements(self, slot: SlotDefinition) -> List[ClassDefinitionName]:
+        """
+        Returns all applicable metamodel elements for a slot range
+        (metamodel class names returned: class_definition, enum_definition, type_definition)
+
+        Typically any given slot has exactly one range, and one metamodel element type,
+        but a proposed feature in LinkML 1.2 is range expressions, where ranges can be defined as unions
+
+        Additionally, if linkml:Any is a class_uri then this maps to the any element
+
+        :param slot:
+        :return: list of element types
+        """
+        is_any = False
+        range_types = []
+        for r in self.slot_range_as_union(slot):
+            if r in self.all_classes():
+                range_types.append(ClassDefinition.class_name)
+                rc = self.get_class(r)
+                if rc.class_uri == 'linkml:Any':
+                    is_any = True
+            if is_any or r in self.all_enums():
+                range_types.append(EnumDefinition.class_name)
+            if is_any or r in self.all_types():
+                range_types.append(TypeDefinition.class_name)
+        if not range_types:
+            raise ValueError(f'Unrecognized range: {r}')
+        return range_types
+
+    def slot_range_as_union(self, slot: SlotDefinition) -> List[EnumDefinitionName]:
+        """
+        Returns all applicable ranges for a slot
+
+        Typically any given slot has exactly one range, and one metamodel element type,
+        but a proposed feature in LinkML 1.2 is range expressions, where ranges can be defined as unions
+
+        :param slot:
+        :return: list of ranges
+        """
+        r = slot.range
+        range_union_of = [r]
+        for x in slot.exactly_one_of + slot.any_of:
+            if x.range:
+                range_union_of.append(x.range)
+        return range_union_of
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:

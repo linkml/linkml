@@ -3,7 +3,7 @@ import os
 import unittest
 import logging
 
-from rdflib import Graph, Literal
+from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, SKOS, XSD
 from rdflib import Namespace
 
@@ -15,7 +15,8 @@ from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
-from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address
+from tests.test_loaders_dumpers.models.personinfo import Container, Person, Address, Organization, OrganizationType
+from tests.test_loaders_dumpers.models.node_object import NodeObject, Triple
 
 SCHEMA = os.path.join(INPUT_DIR, 'personinfo.yaml')
 DATA = os.path.join(INPUT_DIR, 'example_personinfo_data.yaml')
@@ -69,6 +70,16 @@ blank_node_test_ttl = """
             personinfo:street "1 foo street" ] .
 """
 
+P = Namespace('http://example.org/P/')
+ROR = Namespace('http://example.org/ror/')
+CODE = Namespace('http://example.org/code/')
+INFO = Namespace('https://w3id.org/linkml/examples/personinfo/')
+SDO = Namespace('http://schema.org/')
+GSSO = Namespace('http://purl.obolibrary.org/obo/GSSO_')
+HP = Namespace('http://purl.obolibrary.org/obo/HP_')
+SYMP = Namespace('http://purl.obolibrary.org/obo/SYMP_')
+WD = Namespace('http://www.wikidata.org/entity/')
+
 class RdfLibDumperTestCase(unittest.TestCase):
 
     def test_rdflib_dumper(self):
@@ -78,15 +89,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         rdflib_dumper.dump(container, schemaview=view, to_file=OUT, prefix_map=prefix_map)
         g = Graph()
         g.parse(OUT, format='ttl')
-        P = Namespace('http://example.org/P/')
-        ROR = Namespace('http://example.org/ror/')
-        CODE = Namespace('http://example.org/code/')
-        INFO = Namespace('https://w3id.org/linkml/examples/personinfo/')
-        SDO = Namespace('http://schema.org/')
-        GSSO = Namespace('http://purl.obolibrary.org/obo/GSSO_')
-        HP = Namespace('http://purl.obolibrary.org/obo/HP_')
-        SYMP = Namespace('http://purl.obolibrary.org/obo/SYMP_')
-        WD = Namespace('http://www.wikidata.org/entity/')
+
         self.assertIn((P['001'], RDF.type, SDO.Person), g)
         self.assertIn((P['001'], SDO.name, Literal("fred bloggs")), g)
         self.assertIn((P['001'], SDO.email, Literal("fred.bloggs@example.com")), g)
@@ -109,6 +112,38 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertIn((container, INFO.persons, P['002']), g)
         container: Container = rdflib_loader.load(OUT, target_class=Container, schemaview=view, prefix_map=prefix_map)
         self._check_objs(view, container)
+        #print(yaml_dumper.dumps(container))
+        #person = next(p for p in container.persons if p.id == 'P:002')
+        #mh = person.has_medical_history[0]
+
+    def test_enums(self):
+        view = SchemaView(SCHEMA)
+        org1type1 = OrganizationType('non profit')  ## no meaning declared
+        org1type2 = OrganizationType('charity')     ## meaning URI is declared
+        assert not org1type1.meaning
+        assert org1type2.meaning
+        org1 = Organization('ROR:1', categories=[org1type1, org1type2])
+        print(org1.categories)
+        g = rdflib_dumper.as_rdf_graph(org1, schemaview=view, prefix_map=prefix_map)
+        print(g)
+        cats = list(g.objects(ROR['1'], INFO['categories']))
+        print(cats)
+        self.assertCountEqual([Literal('non profit'), URIRef('https://example.org/bizcodes/001')], cats)
+        orgs = rdflib_loader.from_rdf_graph(g, target_class=Organization, schemaview=view)
+        assert len(orgs) == 1
+        [org1x] = orgs
+        catsx = org1x.categories
+        print(catsx)
+        self.assertCountEqual([org1type1, org1type2], catsx)
+
+    def test_undeclared_prefix(self):
+        view = SchemaView(SCHEMA)
+        org1 = Organization('foo')  # not a CURIE or URI
+        with self.assertRaises(Exception) as context:
+            rdflib_dumper.as_rdf_graph(org1, schemaview=view)
+        org1 = Organization('http://example.org/foo/o1')
+        rdflib_dumper.as_rdf_graph(org1, schemaview=view)
+
 
 
     def test_rdflib_loader(self):
@@ -207,6 +242,67 @@ class RdfLibDumperTestCase(unittest.TestCase):
         self.assertEqual(med.diagnosis.name, 'headache')
         self.assertEqual(med.diagnosis.code_system, 'CODE:D')
 
+
+    def test_edge_cases(self):
+        """
+        Tests various edge cases:
+
+         - unprocessed triples (triples that cannot be reached via root objects)
+         - mismatch between expected range categories (Type vs Class) and value (Literal vs Node)
+         - complex range expressions (e.g. modeling a range as being EITHER string OR object
+        """
+        # schema with following characterics:
+        #  - reified triples
+        #  - object has a complex union range (experimental new feature)
+        view = SchemaView(os.path.join(INPUT_DIR, 'complex_range_example.yaml'))
+        graph = Graph()
+        taxon_prefix_map = {
+            'NCBITaxon': 'http://purl.obolibrary.org/obo/NCBITaxon_',
+            'RO': 'http://purl.obolibrary.org/obo/RO_',
+        }
+        # this graph has the following characteristics
+        #  - blank nodes to represent statements
+        #  - some triples not reachable from roots
+        #  - implicit schema with complex ranges (rdf:object has range of either node or literal)
+        graph.parse(os.path.join(INPUT_DIR, 'bacteria-taxon-class.ttl'), format='ttl')
+        objs = rdflib_loader.from_rdf_graph(graph, target_class=NodeObject,
+                                            schemaview=view,
+                                            cast_literals=False,    ## strict
+                                            allow_unprocessed_triples=True,  ## known issue
+                                            prefix_map=taxon_prefix_map)
+        [obj] = objs
+        for x in obj.statements:
+            assert x.subject is None
+            assert x.predicate is not None
+            assert x.object is not None
+            logging.info(f'  x={x}')
+        # ranges that are objects are contracted
+        assert Triple(subject=None, predicate='rdfs:subClassOf', object='owl:Thing') in obj.statements
+        assert Triple(subject=None, predicate='rdfs:subClassOf', object='NCBITaxon:1') in obj.statements
+        # string ranges
+        assert Triple(subject=None, predicate='rdfs:label', object='Bacteria') in obj.statements
+        with self.assertRaises(ValueError) as context:
+            rdflib_loader.from_rdf_graph(graph, target_class=NodeObject,
+                                         schemaview=view,
+                                         cast_literals=False,
+                                         allow_unprocessed_triples=False,
+                                         prefix_map=taxon_prefix_map)
+            logging.error(f'Passed unexpectedly: there are known to be unreachable triples')
+        # removing complex range, object has a range of string
+        view.schema.slots['object'].exactly_one_of = []
+        view.set_modified()
+        rdflib_loader.from_rdf_graph(graph, target_class=NodeObject,
+                                     schemaview=view,
+                                     cast_literals=True,   ## required to pass
+                                     allow_unprocessed_triples=True,
+                                     prefix_map=taxon_prefix_map)
+        with self.assertRaises(ValueError) as context:
+            rdflib_loader.from_rdf_graph(graph, target_class=NodeObject,
+                                         schemaview=view,
+                                         cast_literals=False,
+                                         allow_unprocessed_triples=True,
+                                         prefix_map=taxon_prefix_map)
+            logging.error(f'Passed unexpectedly: rdf:object is known to have a mix of literals and nodes')
 
 
 if __name__ == '__main__':
