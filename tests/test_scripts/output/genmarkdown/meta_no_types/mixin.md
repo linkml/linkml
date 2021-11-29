@@ -28,5 +28,5 @@ URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | trait |
-| **See also:** | | https://en.wikipedia.org/wiki/Mixin |
+| **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
 

@@ -25,7 +25,7 @@ URI: [biolink:opposite_of](https://w3id.org/biolink/vocab/opposite_of)
 
 |  |  |  |
 | --- | --- | --- |
-| **See also:** | | https://doi.org/10.1101/108977 |
-|  | | https://github.com/biolink/biolink-model/issues/657 |
+| **See also:** | | [https://doi.org/10.1101/108977](https://doi.org/10.1101/108977) |
+|  | | [https://github.com/biolink/biolink-model/issues/657](https://github.com/biolink/biolink-model/issues/657) |
 | **Exact Mappings:** | | RO:0002604 |
 

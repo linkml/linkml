@@ -29,5 +29,5 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 | --- | --- | --- |
 | **Comments:** | | This is to be used where not all data is expected to conform to having a required field |
 |  | | If a slot is recommended, and it is not populated, applications must not treat this as an error. Applications may use this to inform the user of missing data |
-| **See also:** | | https://github.com/linkml/linkml/issues/177 |
+| **See also:** | | [https://github.com/linkml/linkml/issues/177](https://github.com/linkml/linkml/issues/177) |
 

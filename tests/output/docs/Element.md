@@ -173,5 +173,5 @@ URI: [linkml:Element](https://w3id.org/linkml/Element)
 
 |  |  |  |
 | --- | --- | --- |
-| **See also:** | | https://en.wikipedia.org/wiki/Data_element |
+| **See also:** | | [https://en.wikipedia.org/wiki/Data_element](https://en.wikipedia.org/wiki/Data_element) |
 

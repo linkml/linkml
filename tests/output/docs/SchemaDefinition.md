@@ -129,5 +129,5 @@ URI: [linkml:SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | data dictionary |
-| **See also:** | | https://en.wikipedia.org/wiki/Data_dictionary |
+| **See also:** | | [https://en.wikipedia.org/wiki/Data_dictionary](https://en.wikipedia.org/wiki/Data_dictionary) |
 

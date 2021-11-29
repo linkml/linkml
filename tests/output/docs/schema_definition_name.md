@@ -29,5 +29,5 @@ URI: [linkml:schema_definition_name](https://w3id.org/linkml/schema_definition_n
 | **Mappings:** | | rdfs:label |
 |  | | schema:name |
 | **In Subsets:** | | owl |
-| **See also:** | | https://en.wikipedia.org/wiki/Data_element_name |
+| **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
 

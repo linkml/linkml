@@ -28,5 +28,5 @@ definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | trait |
-| **See also:** | | https://en.wikipedia.org/wiki/Mixin |
+| **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
 

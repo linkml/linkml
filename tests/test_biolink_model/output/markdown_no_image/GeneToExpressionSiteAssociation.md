@@ -96,5 +96,5 @@ In an RDF database, nodes will typically have an rdf:type triples. This can be t
 
 |  |  |  |
 | --- | --- | --- |
-| **See also:** | | https://github.com/monarch-initiative/ingest-artifacts/tree/master/sources/BGee |
+| **See also:** | | [https://github.com/monarch-initiative/ingest-artifacts/tree/master/sources/BGee](https://github.com/monarch-initiative/ingest-artifacts/tree/master/sources/BGee) |
 

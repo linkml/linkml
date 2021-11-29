@@ -29,5 +29,5 @@ None &#8594;  <sub>0..1</sub> [String](String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | for example, a 'length' slot may have an equals_expression with value '(end-start)+1' |
-| **See also:** | | https://github.com/linkml/linkml/issues/75 |
+| **See also:** | | [https://github.com/linkml/linkml/issues/75](https://github.com/linkml/linkml/issues/75) |
 

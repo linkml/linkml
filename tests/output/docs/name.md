@@ -35,5 +35,5 @@ URI: [linkml:name](https://w3id.org/linkml/name)
 | **Mappings:** | | rdfs:label |
 |  | | schema:name |
 | **In Subsets:** | | owl |
-| **See also:** | | https://en.wikipedia.org/wiki/Data_element_name |
+| **See also:** | | [https://en.wikipedia.org/wiki/Data_element_name](https://en.wikipedia.org/wiki/Data_element_name) |
 

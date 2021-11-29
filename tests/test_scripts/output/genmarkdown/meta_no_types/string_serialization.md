@@ -30,5 +30,5 @@ URI: [linkml:string_serialization](https://w3id.org/linkml/string_serialization)
 
 |  |  |  |
 | --- | --- | --- |
-| **See also:** | | https://github.com/linkml/issues/128 |
+| **See also:** | | [https://github.com/linkml/issues/128](https://github.com/linkml/issues/128) |
 
