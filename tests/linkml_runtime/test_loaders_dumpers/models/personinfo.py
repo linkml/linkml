@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-11-03 18:00
+# Generation date: 2021-11-27T19:59:07
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -88,6 +88,14 @@ class DiagnosisConceptId(ConceptId):
 
 
 class ProcedureConceptId(ConceptId):
+    pass
+
+
+class OperationProcedureConceptId(ProcedureConceptId):
+    pass
+
+
+class ImagingProcedureConceptId(ProcedureConceptId):
     pass
 
 
@@ -410,12 +418,56 @@ class ProcedureConcept(Concept):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.ProcedureConcept
 
     id: Union[str, ProcedureConceptId] = None
+    subtype: Optional[Union[str, ConceptId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, ProcedureConceptId):
             self.id = ProcedureConceptId(self.id)
+
+        if self.subtype is not None and not isinstance(self.subtype, ConceptId):
+            self.subtype = ConceptId(self.subtype)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class OperationProcedureConcept(ProcedureConcept):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = PERSONINFO.OperationProcedureConcept
+    class_class_curie: ClassVar[str] = "personinfo:OperationProcedureConcept"
+    class_name: ClassVar[str] = "OperationProcedureConcept"
+    class_model_uri: ClassVar[URIRef] = PERSONINFO.OperationProcedureConcept
+
+    id: Union[str, OperationProcedureConceptId] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, OperationProcedureConceptId):
+            self.id = OperationProcedureConceptId(self.id)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class ImagingProcedureConcept(ProcedureConcept):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = PERSONINFO.ImagingProcedureConcept
+    class_class_curie: ClassVar[str] = "personinfo:ImagingProcedureConcept"
+    class_name: ClassVar[str] = "ImagingProcedureConcept"
+    class_model_uri: ClassVar[URIRef] = PERSONINFO.ImagingProcedureConcept
+
+    id: Union[str, ImagingProcedureConceptId] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, ImagingProcedureConceptId):
+            self.id = ImagingProcedureConceptId(self.id)
 
         super().__post_init__(**kwargs)
 
@@ -709,6 +761,9 @@ slots.depicted_by = Slot(uri=PERSONINFO.depicted_by, name="depicted_by", curie=P
 
 slots.type = Slot(uri=PERSONINFO.type, name="type", curie=PERSONINFO.curie('type'),
                    model_uri=PERSONINFO.type, domain=None, range=Optional[str])
+
+slots.subtype = Slot(uri=PERSONINFO.subtype, name="subtype", curie=PERSONINFO.curie('subtype'),
+                   model_uri=PERSONINFO.subtype, domain=None, range=Optional[Union[str, ConceptId]])
 
 slots.street = Slot(uri=PERSONINFO.street, name="street", curie=PERSONINFO.curie('street'),
                    model_uri=PERSONINFO.street, domain=None, range=Optional[str])
