@@ -669,18 +669,11 @@ class SchemaView(object):
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_identifier(self, identifier: str) -> List[str]:
         """
-        Get a Model element by prefix.
+        Get a model element by identifier.  The model element corresponding to the given identifier as available via
+        the id_prefixes mapped to that element.
 
-        Parameters
-        ----------
-        identifier: str
-            The identifier in CURIE form
-
-        Returns
-        -------
-        Optional[str]
-                The model element corresponding to the given identifier as available via
-                the id_prefixes mapped to that element.
+        :param identifier:
+        :return: Optional[str]
 
         """
         categories = self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
@@ -692,18 +685,11 @@ class SchemaView(object):
     @lru_cache(CACHE_SIZE)
     def get_elements_applicable_by_prefix(self, prefix: str) -> List[str]:
         """
-        Get a Model element by prefix.
+        Get a model element by prefix. The model element corresponding to the given prefix as available via
+        the id_prefixes mapped to that element.
 
-        Parameters
-        ----------
-        prefix: str
-            The prefix of a CURIE
-
-        Returns
-        -------
-        Optional[str]
-                The model element corresponding to the given prefix as available via
-                the id_prefixes mapped to that element.
+        :param prefix: the prefix of a CURIE
+        :return: Optional[str]
 
         """
         categories = []
