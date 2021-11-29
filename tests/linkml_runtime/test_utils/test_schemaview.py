@@ -32,6 +32,12 @@ class SchemaViewTestCase(unittest.TestCase):
         element = view.get_element(SlotDefinitionName('has employment history'))
         logging.debug(element.annotations)
 
+        assert view.is_mixin('WithLocation')
+        assert not view.is_mixin('BirthEvent')
+
+        assert view.inverse('employment history of') == 'has employment history'
+        assert view.inverse('has employment history') == 'employment history of'
+        
         mapping = view.get_mapping_index()
         assert mapping is not None
 

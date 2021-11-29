@@ -707,6 +707,38 @@ class SchemaView(object):
 
         return m_dict
 
+    @lru_cache()
+    def is_mixin(self, element_name: Union[ElementName, Element]):
+        """
+        Determines whether the given name is the name of a mixin
+        in the model. An element is a mixin if one of its properties is "is_mixin:true"
+
+        :param element_name: The name or alias of an element in the model
+        :return: boolean
+        """
+
+        element = self.get_element(element_name)
+        is_mixin = element.mixin if isinstance(element, Definition) else False
+        return is_mixin
+
+    @lru_cache()
+    def inverse(self, slot_name: SlotDefinition):
+        """
+        Determines whether the given name is a relationship, and if that relationship has an inverse, returns
+        the inverse.
+
+        :param slot_name: The name or alias of an element in the model
+        :return: inverse_name
+
+        """
+        element = self.get_element(slot_name)
+        inverse = element.inverse if isinstance(element, SlotDefinition) else False
+        if not inverse:
+            for inv_slot_name, slot_definition in self.all_slots().items():
+                if slot_definition.inverse == element.name:
+                    inverse = slot_definition.name
+        return inverse
+
     def get_element_by_mapping(self, mapping_id: URIorCURIE) -> List[str]:
         model_elements = []
         elements = self.all_elements()
@@ -732,7 +764,6 @@ class SchemaView(object):
                 for v in vs:
                     ix[v].append((mapping_type, self.get_element(en, imports=imports)))
         return ix
-
 
     @lru_cache()
     def is_relationship(self, class_name: CLASS_NAME = None, imports=True) -> bool:

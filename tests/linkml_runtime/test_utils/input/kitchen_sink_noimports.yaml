@@ -228,6 +228,9 @@ slots:
       - subset B
     annotations:
       "ks:mv": 1
+  employment history of:
+    inverse: has employment history
+    domain: EmploymentEvent
   has marriage history:
     range: MarriageEvent
     multivalued: true
