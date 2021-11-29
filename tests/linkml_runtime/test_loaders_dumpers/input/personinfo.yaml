@@ -140,6 +140,15 @@ classes:
 
   ProcedureConcept:
     is_a: Concept
+    slots:
+      - subtype
+
+
+  OperationProcedureConcept:
+    is_a: ProcedureConcept
+
+  ImagingProcedureConcept:
+    is_a: ProcedureConcept
 
   code system:
     slots:
@@ -242,6 +251,9 @@ slots:
   depicted_by:
     range: ImageURL
   type:
+  subtype:
+    designates_type: true
+    range: Concept
   street:
   city:
   mission_statement:

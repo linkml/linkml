@@ -2,7 +2,7 @@ import os
 import unittest
 import logging
 
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.schemaops import roll_up, roll_down
@@ -37,9 +37,15 @@ class SchemaViewTestCase(unittest.TestCase):
 
         assert view.inverse('employment history of') == 'has employment history'
         assert view.inverse('has employment history') == 'employment history of'
+        
+        mapping = view.get_mapping_index()
+        assert mapping is not None
+
+        category_mapping = view.get_element_by_mapping("GO:0005198")
+        assert category_mapping == ['activity']
 
         if True:
-            for sn, s in view.all_slot().items():
+            for sn, s in view.all_slots().items():
                 logging.info(f'SN = {sn} RANGE={s.range}')
             # this section is mostly for debugging
             for cn in all_cls.keys():
@@ -240,6 +246,36 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.get_uri('TestClass', expand=True) == 'https://w3id.org/linkml/tests/core/TestClass'
 
         assert view.get_uri('string') == 'xsd:string'
+
+    def test_slot_inheritance(self):
+        schema = SchemaDefinition(id='test', name='test')
+        view = SchemaView(schema)
+        view.add_class(ClassDefinition('C', slots=['s1', 's2']))
+        view.add_class(ClassDefinition('D'))
+        view.add_class(ClassDefinition('Z'))
+        view.add_class(ClassDefinition('W'))
+        #view.add_class(ClassDefinition('C2',
+        #                               is_a='C')
+        #                              # slot_usage=[SlotDefinition(s1, range='C2')])
+        view.add_slot(SlotDefinition('s1', multivalued=True, range='D'))
+        view.add_slot(SlotDefinition('s2', is_a='s1'))
+        view.add_slot(SlotDefinition('s3', is_a='s2', mixins=['m1']))
+        view.add_slot(SlotDefinition('s4', is_a='s2', mixins=['m1'], range='W'))
+        view.add_slot(SlotDefinition('m1', mixin=True, multivalued=False, range='Z'))
+        slot1 = view.induced_slot('s1', 'C')
+        assert not slot1.is_a
+        self.assertEqual('D', slot1.range)
+        assert slot1.multivalued
+        slot2 = view.induced_slot('s2', 'C')
+        self.assertEqual(slot2.is_a, 's1')
+        self.assertEqual('D', slot2.range)
+        assert slot2.multivalued
+        slot3 = view.induced_slot('s3', 'C')
+        assert slot3.multivalued
+        self.assertEqual('Z', slot3.range)
+        slot4 = view.induced_slot('s4', 'C')
+        assert slot4.multivalued
+        self.assertEqual('W', slot4.range)
 
 
 if __name__ == '__main__':

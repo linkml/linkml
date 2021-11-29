@@ -30,6 +30,7 @@ persons:
           id: CODE:P0001
           name: trepanation
           code_system: CODE:P
+          subtype: personinfo:OperationProcedureConcept
     gender: transgender man
     current_address:
       street: 1 foo street

@@ -1,0 +1,109 @@
+@prefix sparqlfun: <https://w3id.org/sparqlfun/> .
+@prefix NCBITaxon: <http://purl.obolibrary.org/obo/NCBITaxon_> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sesame: <http://www.openrdf.org/schema/sesame#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix fn: <http://www.w3.org/2005/xpath-functions#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix hint: <http://www.bigdata.com/queryHints#> .
+@prefix bd: <http://www.bigdata.com/rdf#> .
+@prefix bds: <http://www.bigdata.com/rdf/search#> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> a rdf:Resource .
+
+_:b0 a rdf:Statement ;
+	rdf:predicate <http://purl.obolibrary.org/obo/ncbitaxon#has_rank> ;
+	rdf:object <http://purl.obolibrary.org/obo/NCBITaxon_superkingdom> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b0 .
+
+_:b1 a rdf:Statement ;
+	rdf:predicate <https://w3id.org/biolink/vocab/category> ;
+	rdf:object <https://w3id.org/biolink/vocab/OrganismTaxon> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b1 .
+
+_:b2 a rdf:Statement ;
+	rdf:predicate <https://w3id.org/biolink/vocab/category> ;
+	rdf:object <https://w3id.org/biolink/vocab/NamedThing> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b2 .
+
+_:b3 a rdf:Statement ;
+	rdf:predicate rdf:type ;
+	rdf:object owl:Class .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b3 .
+
+_:b4 a rdf:Statement ;
+	rdf:predicate rdfs:isDefinedBy ;
+	rdf:object <http://purl.obolibrary.org/obo/ncbitaxon.owl> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b4 .
+
+_:b5 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/BFO_0000001> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b5 .
+
+_:b6 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/BFO_0000002> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b6 .
+
+_:b7 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/BFO_0000004> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b7 .
+
+_:b8 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/BFO_0000040> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b8 .
+
+_:b9 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object owl:Thing .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b9 .
+
+_:b10 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/NCBITaxon_1> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b10 .
+
+_:b11 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/NCBITaxon_131567> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b11 .
+
+_:b12 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/NCBITaxon_2> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b12 .
+
+_:b13 a rdf:Statement ;
+	rdf:predicate rdfs:subClassOf ;
+	rdf:object <http://purl.obolibrary.org/obo/OBI_0100026> .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b13 .
+
+_:b14 a rdf:Statement ;
+	rdf:predicate rdfs:label ;
+	rdf:object "Bacteria" .
+
+<http://purl.obolibrary.org/obo/NCBITaxon_2> sparqlfun:statements _:b14 .
+
+_:b15 a rdf:Statement ;
+	rdf:predicate rdfs:comment ;
+	rdf:object "Unprocessed triple, not connected to root node" .

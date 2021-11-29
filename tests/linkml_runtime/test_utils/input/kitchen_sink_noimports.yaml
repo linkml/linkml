@@ -191,6 +191,8 @@ classes:
       - description
     exact_mappings:
       - prov:Activity
+    narrow_mappings:
+      - GO:0005198
 
   agent:
     description: "a provence-generating agent"

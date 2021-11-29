@@ -1,0 +1,83 @@
+id: https://w3id.org/example/
+name: sparqlfun-RDF
+title: sparqlfun RDF module
+description: >-
+  Abstractions for working with RDF and RDFS triples
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  ex: https://w3id.org/example/
+  sparqlfun: https://w3id.org/sparqlfun/
+  linkml: https://w3id.org/linkml/
+  sh: http://www.w3.org/ns/shacl#
+  
+default_prefix: ex
+default_range: string
+
+default_curi_maps:
+  - semweb_context
+
+imports:
+  - linkml:types
+
+
+classes:
+
+
+  triple:
+    aliases:
+      - statement
+    description: >-
+      Represents an RDF triple
+    slots:
+      - subject
+      - predicate
+      - object
+    class_uri: rdf:Statement
+
+  node:
+    slots:
+      - id
+
+  node object:
+    class_uri: rdf:Resource
+    is_a: node
+    slots:
+      - id
+      - statements
+
+
+
+slots:
+  id:
+    identifier: true
+    description: >-
+      An identifier for an element. Note blank node ids are not unique across databases
+  subject:
+    range: node
+    slot_uri: rdf:subject
+  predicate:
+    range: node
+    slot_uri: rdf:predicate
+  object:
+    description: >-
+      a literal or node representing the object of the triple
+    exactly_one_of:
+      - range: string
+      - range: node
+    slot_uri: rdf:object
+    range: string
+    inlined: false
+  graph:
+    description: >-
+      Graph to which the triple belongs
+    range: node
+  statements:
+    slot_uri: sparqlfun:statements
+    range: triple
+    multivalued: true
+
+  type:
+    range: node
+
+

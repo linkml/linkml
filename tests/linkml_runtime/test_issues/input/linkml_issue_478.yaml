@@ -1,0 +1,26 @@
+id: https://example.com/test-naming-conventions
+name: test-naming-conventions
+default_range: foo bar
+
+classes:
+  foo bar:
+  named thing:
+    slots:
+      - id
+      - preferred label
+      - SOURCE
+  biosample processing:
+    is_a: named thing
+    attributes:
+      processingMethod:
+      5' sequence:
+
+  too   much   whitespace:
+
+  5' sequencing:
+    is_a: named thing
+
+slots:
+  id:
+  preferred label:
+  SOURCE:
