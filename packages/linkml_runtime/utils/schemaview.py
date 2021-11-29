@@ -715,7 +715,6 @@ class SchemaView(object):
 
         """
         element = self.get_element(slot_name)
-        print(element.name)
         inverse = element.inverse if isinstance(element, SlotDefinition) else False
         if not inverse:
             for inv_slot_name, slot_definition in self.all_slots().items():
