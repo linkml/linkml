@@ -692,13 +692,13 @@ class SchemaView(object):
         :return: Optional[str]
 
         """
-        elements = []
+        applicable_elements = []
         elements = self.all_element()
         for category, category_element in elements.items():
             if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
-                elements.append(category_element.name)
+                applicable_elements.append(category_element.name)
 
-        return elements
+        return applicable_elements
 
     @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[MAPPING_TYPE, List[URIorCURIE]]:
