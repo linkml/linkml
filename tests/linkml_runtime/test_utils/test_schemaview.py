@@ -6,7 +6,6 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, 
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.schemaops import roll_up, roll_down
-
 from tests.test_utils import INPUT_DIR
 
 SCHEMA_NO_IMPORTS = os.path.join(INPUT_DIR, 'kitchen_sink_noimports.yaml')
@@ -25,6 +24,21 @@ class SchemaViewTestCase(unittest.TestCase):
         all_cls = view.all_classes()
         logging.debug(f'n_cls = {len(all_cls)}')
 
+        assert list(view.annotation_dict('is current').values()) == ['bar']
+        logging.debug(view.annotation_dict('employed at'))
+        e = view.get_element('employed at')
+        logging.debug(e.annotations)
+        e = view.get_element('has employment history')
+        logging.debug(e.annotations)
+
+        elements = view.get_elements_applicable_by_identifier("ORCID:1234")
+        assert "Person" in elements
+        elements = view.get_elements_applicable_by_identifier("PMID:1234")
+        assert "Organization" in elements
+        elements = view.get_elements_applicable_by_identifier("http://www.ncbi.nlm.nih.gov/pubmed/1234")
+        assert "Organization" in elements
+        elements = view.get_elements_applicable_by_identifier("TEST:1234")
+        assert "anatomical entity" not in elements
         assert list(view.annotation_dict(SlotDefinitionName('is current')).values()) == ['bar']
         logging.debug(view.annotation_dict(SlotDefinitionName('employed at')))
         element = view.get_element(SlotDefinitionName('employed at'))
@@ -94,6 +108,7 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.get_class('agent').class_uri == 'prov:Agent'
         assert view.get_uri('agent') == 'prov:Agent'
         logging.debug(view.get_class('Company').class_uri)
+
         assert view.get_uri('Company') == 'ks:Company'
 
         # test induced slots
@@ -131,7 +146,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
         a = view.get_class('activity')
         self.assertCountEqual(a.exact_mappings, ['prov:Activity'])
-        logging.debug(view.get_mappings('activity',expand=True))
+        logging.debug(view.get_mappings('activity', expand=True))
         self.assertCountEqual(view.get_mappings('activity')['exact'], ['prov:Activity'])
         self.assertCountEqual(view.get_mappings('activity', expand=True)['exact'], ['http://www.w3.org/ns/prov#Activity'])
 
@@ -168,6 +183,7 @@ class SchemaViewTestCase(unittest.TestCase):
         # check to make sure rolled-up classes are deleted
         assert view.class_descendants(element_name, reflexive=False) == []
         roll_down(view, view.class_leaves())
+
         for element_name in view.all_classes():
             c = view.get_class(element_name)
             logging.debug(f'{element_name}')
@@ -177,7 +193,7 @@ class SchemaViewTestCase(unittest.TestCase):
         assert 'Thing' not in view.all_classes()
         assert 'Person' not in view.all_classes()
         assert 'Adult' in view.all_classes()
-
+        
     def test_caching(self):
         """
         Determine if cache is reset after modifications made to schema
@@ -239,6 +255,7 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.get_class('agent').class_uri == 'prov:Agent'
         assert view.get_uri('agent') == 'prov:Agent'
         logging.debug(view.get_class('Company').class_uri)
+
         assert view.get_uri('Company') == 'ks:Company'
         assert view.get_uri('Company', expand=True) == 'https://w3id.org/linkml/tests/kitchen_sink/Company'
         logging.debug(view.get_uri("TestClass"))

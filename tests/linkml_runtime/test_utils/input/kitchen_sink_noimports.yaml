@@ -17,6 +17,7 @@ description: |-
 
 default_curi_maps:
   - semweb_context
+  - monarch_context
 prefixes:
   pav: http://purl.org/pav/
   dce: http://purl.org/dc/elements/1.1/
@@ -74,6 +75,11 @@ classes:
       - subset A
     mixins:
       - HasAliases
+    id_prefixes:
+      - ORCID
+      - DOI
+      - ZFIN
+      - WB
     slots:
       - has employment history
       - has familial relationships
@@ -95,6 +101,10 @@ classes:
     is_a: Thing
     mixins:
       - HasAliases
+    id_prefixes:
+      - PMID
+      - ZFIN
+      - WB
 
   Place:
     mixins:

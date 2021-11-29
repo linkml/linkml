@@ -6,10 +6,14 @@ from copy import copy, deepcopy
 from collections import defaultdict
 from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
-from deprecated.classic import deprecated
-
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
+from deprecated.classic import deprecated
+from linkml_runtime.utils.context_utils import parse_import_map
+from linkml_runtime.linkml_model.meta import *
+
+logger = logging.getLogger(__name__)
+
 
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
@@ -622,7 +626,6 @@ class SchemaView(object):
             e = self.get_subset(element, imports=imports)
         return e
 
-
     def get_uri(self, element: Union[ElementName, Element], imports=True, expand=False, native=False) -> str:
         """
         Return the CURIE or URI for a schema element. If the schema defines a specific URI, this is
@@ -676,6 +679,40 @@ class SchemaView(object):
                 if pfx in ns:
                     return ns[pfx] + local_id
         return uri
+
+    @lru_cache(CACHE_SIZE)
+    def get_elements_applicable_by_identifier(self, identifier: str) -> List[str]:
+        """
+        Get a model element by identifier.  The model element corresponding to the given identifier as available via
+        the id_prefixes mapped to that element.
+
+        :param identifier:
+        :return: Optional[str]
+
+        """
+        elements = self.get_elements_applicable_by_prefix(self.namespaces().prefix_for(identifier))
+        if len(elements) == 0:
+            logger.warning("no element found for the given curie using id_prefixes attribute"
+                           ": %s, try get_mappings method?", identifier)
+        return elements
+
+    @lru_cache(CACHE_SIZE)
+    def get_elements_applicable_by_prefix(self, prefix: str) -> List[str]:
+        """
+        Get a model element by prefix. The model element corresponding to the given prefix as available via
+        the id_prefixes mapped to that element.
+
+        :param prefix: the prefix of a CURIE
+        :return: Optional[str]
+
+        """
+        applicable_elements = []
+        elements = self.all_element()
+        for category, category_element in elements.items():
+            if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
+                applicable_elements.append(category_element.name)
+
+        return applicable_elements
 
     @lru_cache()
     def get_mappings(self, element_name: ElementName = None, imports=True, expand=False) -> Dict[MAPPING_TYPE, List[URIorCURIE]]:
