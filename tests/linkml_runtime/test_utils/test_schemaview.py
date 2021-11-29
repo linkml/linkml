@@ -32,8 +32,14 @@ class SchemaViewTestCase(unittest.TestCase):
         element = view.get_element(SlotDefinitionName('has employment history'))
         logging.debug(element.annotations)
 
+        mapping = view.get_mapping_index()
+        assert mapping is not None
+
+        category_mapping = view.get_element_by_mapping("GO:0005198")
+        assert category_mapping == ['activity']
+
         if True:
-            for sn, s in view.all_slot().items():
+            for sn, s in view.all_slots().items():
                 logging.info(f'SN = {sn} RANGE={s.range}')
             # this section is mostly for debugging
             for cn in all_cls.keys():
