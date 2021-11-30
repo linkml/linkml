@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-11-29T23:10:06
+# Generation date: 2021-11-30T18:38:24
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
