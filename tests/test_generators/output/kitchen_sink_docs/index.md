@@ -48,7 +48,7 @@ And links, e.g to [Person](Person.md)
  * [HasAliases](HasAliases.md)
  * [WithLocation](WithLocation.md)
 
-### Slots
+### Fields
 
  * [acted on behalf of](acted_on_behalf_of.md)
  * [activity set](activity_set.md)
