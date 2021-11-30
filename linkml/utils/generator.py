@@ -3,6 +3,7 @@ import logging
 from contextlib import redirect_stdout
 from io import StringIO
 from typing import List, Set, Union, TextIO, Optional, cast, Callable, Type, Dict
+import re
 
 import click
 from click import Command, Argument, Option
@@ -625,7 +626,7 @@ class Generator(metaclass=abc.ABCMeta):
             else:
                 return s
         slot_name_normalized = underscore(slot_name).lower()
-        slot_name_normalized_singular = f'{slot_name_normalized}'.replace('s', '')
+        slot_name_normalized_singular = re.sub(r's$', '', slot_name_normalized)
         if slot_name_normalized == 'classes':
             slot_name_normalized_singular = 'class'
         if self.metamodel_name_map is not None and slot_name_normalized in self.metamodel_name_map:
