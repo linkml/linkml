@@ -31,7 +31,7 @@ pyjsg>=0.11.6
 pyldmod>=2.0.5
 pyshex>=0.7.20
 pyshexc>=0.8.3
-python-dateutil>=2.8.1
+python-dateutil
 pyyaml~=5.1
 rdflib-jsonld>=0.5.0, <=0.6.1
 rdflib-pyldmod-compat>=0.1.2c
