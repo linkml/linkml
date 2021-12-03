@@ -16,6 +16,18 @@ prefixes:
 default_prefix: core
 license: https://creativecommons.org/publicdomain/zero/1.0/
 
+types:
+  phone number type:
+    pattern: ^[\\+\\d+ +][\\d\\- ]+$
+    base: str
+  age in years type:
+    base: int
+# TODO: update on model update
+#    minimum_value: 0
+#    maximum_value: 999
+
+
+
 classes:
 
   activity:
