@@ -20,8 +20,10 @@ types:
   phone number type:
     pattern: ^[\\+\\d+ +][\\d\\- ]+$
     base: str
+    uri: xsd:string
   age in years type:
     base: int
+    uri: xsd:integer
 # TODO: update on model update
 #    minimum_value: 0
 #    maximum_value: 999
