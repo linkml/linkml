@@ -11,12 +11,10 @@ from linkml_runtime.dumpers import yaml_dumper
 
 from linkml_runtime.utils.schemaview import SchemaView
 
-#from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation, Element, \
     SlotDefinition, SlotDefinitionName, Definition, DefinitionName, EnumDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
-from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments, Generator
 
 
@@ -28,6 +26,14 @@ class DocGenerator(Generator):
 
     Currently the provided templates are for markdown but this framework allows direct generation
     to rst, html, etc
+
+    This will generate a single document for every
+
+    - class, enum, type, slot
+    - subset
+    - imported schema
+
+    It will also create an index file
     """
     generatorname = os.path.basename(__file__)
     generatorversion = '0.0.1'
@@ -45,9 +51,16 @@ class DocGenerator(Generator):
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         self.template_file = template_file
+        self.format = format
         self.directory = directory
 
     def serialize(self, directory: str = None) -> None:
+        """
+        Serialize a schema as a collection of documents
+
+        :param directory: relative or absolute path to directory in which documents are to be written
+        :return:
+        """
         sv = self.schemaview
         if directory is None:
             directory = self.directory
@@ -95,13 +108,33 @@ class DocGenerator(Generator):
             self._write(out_str, directory, n)
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
+        """
+        Writes a string in desired format (e.g. markdown) to the appropriate file in a directory
+
+        :param out_str: string to be written
+        :param directory: location
+        :param name: base name - should correspond to element name
+        :return:
+        """
         path = Path(directory)
         path.mkdir(parents=True, exist_ok=True)
-        with open(path / f'{name}.md', 'w') as stream:
+        if self.format == 'markdown':
+            file_name = f'{name}.md'
+        else:
+            file_name = f'{name}.{self.format}'
+        with open(path / file_name, 'w') as stream:
             stream.write(out_str)
 
 
     def _get_template(self, element_type: str) -> Template:
+        """
+        Create a jinja2 template object for a given schema element type
+
+        The default location for templates is in the linkml/docgen folder,
+        but this can be overriden
+        :param element_type: e.g. class, enum, index, subset, ...
+        :return:
+        """
         if self.template_mappings and element_type in self.template_mappings:
             path = self.template_mappings[element_type]
             # TODO: relative paths
@@ -117,16 +150,41 @@ class DocGenerator(Generator):
 
 
     def name(self, element: Element) -> str:
+        """
+        Returns the name of the element in its canonical form
+
+        :param element:
+        :return:
+        """
         if type(element).class_name == 'slot_definition':
             return underscore(element.name)
         else:
             return camelcase(element.name)
 
-    def uri(self, element: Element) -> str:
+    def uri(self, element: Element, expand=True) -> str:
+        """
+        Fetches the URI string for the relevant element
+
+        :param element:
+        :return:
+        """
         if isinstance(element, EnumDefinition):
             # TODO: fix schema view to handle URIs for enums
             return self.name(element)
-        return self.schemaview.get_uri(element, expand=True)
+        return self.schemaview.get_uri(element, expand=expand)
+
+    def uri_link(self, element: Element) -> str:
+        """
+        Returns a link string (default: markdown links) for a schema element
+
+        :param element:
+        :return:
+        """
+        uri = self.uri(element)
+        curie = self.uri(element, expand=False)
+        sc = element.from_schema
+        return f'[{curie}]({uri})'
+
 
     def link(self, e: Union[Definition, DefinitionName]) -> str:
         if e is None:

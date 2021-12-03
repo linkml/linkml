@@ -17,14 +17,14 @@ To run:
 
 .. code:: bash
 
-   gen-json-schema personinfo.yaml > personinfo.schema.json
+   gen-shacl personinfo.yaml > personinfo.shacl.ttl
 
 
 
 Docs
 ----
 
-
+Example Input:
 
 .. code-block:: yaml
 
@@ -48,8 +48,9 @@ Docs
       - age_in_years
       - gender
 
+Example Output:
 
-..code-block:: turtle
+.. code-block:: turtle
 
     <https://w3id.org/linkml/tests/kitchen_sink/Person> a shacl:NodeShape ;
         shacl:closed true ;
