@@ -879,6 +879,26 @@ class SchemaView(object):
         return [self.induced_slot(sn, class_name, imports=imports) for sn in self.class_slots(class_name)]
 
     @lru_cache()
+    def induced_class(self, class_name: CLASS_NAME = None) -> ClassDefinition:
+        """
+        Generate an induced class
+
+        - the class will have no slots
+        - the class will have one attribute per `class_induced_slots`
+
+        Induced slots are represented as attributes as these are fully locally owner by the class
+        :param class_name: base class name
+        :param imports:
+        :return: induced class
+        """
+        c = deepcopy(self.get_class(class_name))
+        attrs = self.class_induced_slots(c.name)
+        for a in attrs:
+            c.attributes[a.name] = a
+        c.slots = []
+        return c
+
+    @lru_cache()
     def get_identifier_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
         """
         :param cn: class name
