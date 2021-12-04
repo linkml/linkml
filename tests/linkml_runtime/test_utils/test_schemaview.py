@@ -4,7 +4,7 @@ import logging
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
-from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 
 from tests.test_utils import INPUT_DIR
@@ -125,7 +125,10 @@ class SchemaViewTestCase(unittest.TestCase):
 
         u = view.usage_index()
         for k, v in u.items():
+            print(f' {k} = {v}')
             logging.debug(f' {k} = {v}')
+        assert SchemaUsage(used_by='FamilialRelationship', slot='related to',
+                           metaslot='range', used='Person', inferred=False) in u['Person']
 
         # test methods also work for attributes
         leaves = view.class_leaves()
