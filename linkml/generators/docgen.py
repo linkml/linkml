@@ -27,6 +27,21 @@ class DocGenerator(Generator):
     Currently the provided templates are for markdown but this framework allows direct generation
     to rst, html, etc
 
+    This works via jinja2 templates (found in docgen/ folder). By default, only markdown templates
+    are provided. You can either override these, or you can create entirely different templates
+    e.g. for html, latex, etc
+
+    The template folder is expected to have files:
+
+        - class.FMT.jinja2
+        - enum.FMT.jinja2
+        - type.FMT.jinja2
+        - slot.FMT.jinja2
+        - schema.FMT.jinja2
+        - subset.FMT.jinja2
+        - index.FMT.jinja2
+
+    Most of these accept a jinja2 variable `element`, except index, schema, which accept `schema`. See docgen for examples
     This will generate a single document for every
 
     - class, enum, type, slot
@@ -37,22 +52,35 @@ class DocGenerator(Generator):
     """
     generatorname = os.path.basename(__file__)
     generatorversion = '0.0.1'
-    valid_formats = ['markdown']
+    valid_formats = ['markdown', 'rst', 'html', 'latex']
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory = None
+    template_directory = None
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
-                 template_file: str = None,
                  directory: str = None,
+                 template_directory: str = None,
                  format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
+        """
+        Creates a generator object that can write documents to a directory from a schema
+
+        :param schema: path to schema file or schema object
+        :param directory: directory in which to write documents
+        :param template_directory: directory for custom templates
+        :param format: only markdown is supported by default
+        :param genmeta:
+        :param gen_classvars:
+        :param gen_slots:
+        :param kwargs:
+        """
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
-        self.template_file = template_file
         self.format = format
         self.directory = directory
+        self.template_directory = template_directory
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -118,13 +146,21 @@ class DocGenerator(Generator):
         """
         path = Path(directory)
         path.mkdir(parents=True, exist_ok=True)
-        if self.format == 'markdown':
-            file_name = f'{name}.md'
-        else:
-            file_name = f'{name}.{self.format}'
+        file_name = f'{name}.{self._file_suffix()}'
         with open(path / file_name, 'w') as stream:
             stream.write(out_str)
 
+    def _file_suffix(self):
+        """
+        File suffix to be used for both outputs and template files
+
+        Template files are assumed to be of the form TYPE.FILE_SUFFIX.jinja2
+        :return:
+        """
+        if self.format == 'markdown':
+            return 'md'
+        else:
+            return self.format
 
     def _get_template(self, element_type: str) -> Template:
         """
@@ -142,10 +178,19 @@ class DocGenerator(Generator):
             env = Environment()
             return env.get_template(path)
         else:
-            folder = pkg_resources.resource_filename(__name__, 'docgen')
+            base_file_name = f'{element_type}.{self._file_suffix()}.jinja2'
+            folder = None
+            if self.template_directory:
+                p = Path(self.template_directory) / base_file_name
+                if (Path(self.template_directory) / base_file_name).is_file():
+                    folder = self.template_directory
+                else:
+                    logging.warning(f'Could not find {base_file_name} in {self.template_directory} - falling back to default')
+            if not folder:
+                folder = pkg_resources.resource_filename(__name__, 'docgen')
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
-            return env.get_template(f'{element_type}.md.jinja2')
+            return env.get_template(base_file_name)
 
 
 
@@ -187,6 +232,12 @@ class DocGenerator(Generator):
 
 
     def link(self, e: Union[Definition, DefinitionName]) -> str:
+        """
+        Render an element as a hyperlink
+
+        :param e:
+        :return:
+        """
         if e is None:
             return 'NONE'
         if not isinstance(e, Definition):
@@ -207,13 +258,24 @@ class DocGenerator(Generator):
             rel_path = f'{subfolder}/{n}'
         else:
             rel_path = n
-        return f'[{n}]({rel_path})'
+        return f'[{n}]({rel_path}.md)'
 
-    def inheritance_tree(self, element: Definition, children:bool = True, **kwargs) -> str:
-        s, depth = self._tree(element, **kwargs)
+    def inheritance_tree(self, element: Definition, children: bool = True, **kwargs) -> str:
+        """
+        Show an element in the context of its is-a hierachy
+
+        Limitations: currently only implemented for markdown (uses nested bullets)
+
+        :param element: slot or class to be shown
+        :param children: if true, show direct children
+        :param mixins: if true, show mixins alongside each element
+        :param kwargs:
+        :return:
+        """
+        s, depth = self._tree(element, focus=element.name, **kwargs)
         if children:
             for c in self.schemaview.class_children(element.name, mixins=False):
-                s += self._tree_info(self.schemaview.get_class(c), depth+1, focus=element.name, **kwargs)
+                s += self._tree_info(self.schemaview.get_class(c), depth+1, **kwargs)
         return s
 
     def _tree(self, element: Definition, mixins=True, descriptions=False, focus: DefinitionName = None) -> Tuple[str, int]:
@@ -231,7 +293,7 @@ class DocGenerator(Generator):
         indent = ' ' * depth * 4
         name = self.name(element)
         if element.name == focus:
-            lname = name
+            lname = f'**{name}**'
         else:
             lname = self.link(element)
         s = f'{indent}* {lname}'
@@ -245,6 +307,15 @@ class DocGenerator(Generator):
         return s
 
     def bullet(self, e: Element, meta_slot: SlotDefinitionName, backquote = False) -> str:
+        """
+        Render tag-value for an element as a bullet
+
+        Limitations: currently hardcoded to be markdown
+        :param e: element that holds the property, e.g. Person
+        :param meta_slot: metamodel property to be shown, e.g. comments
+        :param backquote: if true, render as backquote
+        :return: formatted string
+        """
         v = getattr(e, meta_slot, None)
         if v:
             if backquote:
@@ -255,6 +326,12 @@ class DocGenerator(Generator):
             return ''
 
     def number_value_range(self, e: Union[SlotDefinition, TypeDefinition]) -> str:
+        """
+        Render the minimum and maximum values for a slot or type as a range, e.g 5-100
+
+        :param e:
+        :return:
+        """
         r = None
         if isinstance(e, TypeDefinition):
             # TODO: new version
@@ -270,6 +347,11 @@ class DocGenerator(Generator):
         return r
 
     def cardinality(self, slot: SlotDefinition) -> str:
+        """
+        Render combination of required, multivalued, and recommended as a range, e.g. 0..*
+        :param slot:
+        :return:
+        """
         if slot.required:
             min = '1'
         else:
@@ -278,14 +360,26 @@ class DocGenerator(Generator):
             max = '*'
         else:
             max = '1'
-        return f'{min}..{max}'
+        if slot.recommended:
+            info = ' _recommended_'
+        else:
+            info = ''
+        return f'{min}..{max}{info}'
 
     def yaml(self, element: Element, inferred=False) -> str:
+        """
+        Render element as YAML
+
+        :param element:
+        :param inferred: (classes only) show all induced slots as attributes
+        :return: yaml string
+        """
         if not inferred:
             return yaml_dumper.dumps(element)
         else:
             if not isinstance(element, ClassDefinition):
                 raise ValueError(f'Inferred only applicable for classes, not {element.name} {type(element)}')
+            # TODO: move this code to schemaview
             c = deepcopy(element)
             attrs = self.schemaview.class_induced_slots(c.name)
             for a in attrs:
@@ -296,11 +390,18 @@ class DocGenerator(Generator):
 
 
 @shared_arguments(DocGenerator)
-@click.option("--template_file", help="Optional jinja2 template to use for class generation")
+@click.option("--directory", "-d", required=True, help="Folder to which document files are written")
+@click.option("--template-directory", help="Folder in which custom templates are kept")
 @click.command()
-def cli(yamlfile, template_file=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
-    """Generate pydantic classes to represent a LinkML model"""
-    gen = DocGenerator(yamlfile, template_file=template_file, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args)
+def cli(yamlfile, directory, template_directory, **args):
+    """Generate documentation folder from a LinkML YAML schema
+
+    Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
+
+    If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
+    each type of entity inside
+    """
+    gen = DocGenerator(yamlfile, directory=directory, template_directory=template_directory, **args)
     print(gen.serialize())
 
 

@@ -17,10 +17,10 @@ URI: {{ gen.uri_link(element) }}
 
 ## Slots
 
-| Name | Range | Description | Cardinality | Info |
+| Name | Range | Cardinality | Description  | Info |
 | ---  | --- | --- | --- | --- |
 {% for s in schemaview.class_induced_slots(element.name) -%}
-| {{gen.link(s)}} | {{gen.link(s.range)}} | {{s.description}} | {{ gen.cardinality(s) }} | . |
+| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{s.description}}  | . |
 {% endfor %}
 
 ## Usages
@@ -29,7 +29,7 @@ URI: {{ gen.uri_link(element) }}
 | used by | used in | type | used |
 | ---  | --- | --- | --- |
 {% for usage in schemaview.usage_index().get(element.name) -%}
-| {{usage.used_by}} | {{usage.slot}} | {{usage.metaslot}} | {{usage.used }} |
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
 {% endfor %}
 {% endif %}
 
