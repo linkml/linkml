@@ -4,7 +4,7 @@ import logging
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
-from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
 
@@ -135,6 +135,13 @@ class SchemaViewTestCase(unittest.TestCase):
             assert s.range == 'date'
             assert s.slot_uri == 'prov:startedAtTime'
             self.assertEqual(s.owner, c, 'owner does not match')
+            c_induced = view.induced_class(c)
+            # an induced class should have no slots
+            assert c_induced.slots == []
+            assert c_induced.attributes != []
+            s2 = c_induced.attributes['started at time']
+            assert s2.range == 'date'
+            assert s2.slot_uri == 'prov:startedAtTime'
         # test slot_usage
         assert view.induced_slot('age in years', 'Person').minimum_value == 0
         assert view.induced_slot('age in years', 'Adult').minimum_value == 16
@@ -152,7 +159,10 @@ class SchemaViewTestCase(unittest.TestCase):
 
         u = view.usage_index()
         for k, v in u.items():
+            #print(f' {k} = {v}')
             logging.debug(f' {k} = {v}')
+        assert SchemaUsage(used_by='FamilialRelationship', slot='related to',
+                           metaslot='range', used='Person', inferred=False) in u['Person']
 
         # test methods also work for attributes
         leaves = view.class_leaves()
@@ -246,7 +256,7 @@ class SchemaViewTestCase(unittest.TestCase):
             assert view.induced_slot('name', c).range == 'string'
         for c in ['Event', 'EmploymentEvent', 'MedicalEvent']:
             s = view.induced_slot('started at time', c)
-            print(f's={s.range} // c = {c}')
+            #print(f's={s.range} // c = {c}')
             assert s.range == 'date'
             assert s.slot_uri == 'prov:startedAtTime'
         assert view.induced_slot('age in years', 'Person').minimum_value == 0

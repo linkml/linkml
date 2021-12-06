@@ -69,6 +69,7 @@ class SchemaUsage():
     slot: SlotDefinitionName
     metaslot: SlotDefinitionName
     used: ElementName
+    inferred: bool = None
 
 
 @dataclass
@@ -959,6 +960,26 @@ class SchemaView(object):
         return [self.induced_slot(sn, class_name, imports=imports) for sn in self.class_slots(class_name)]
 
     @lru_cache()
+    def induced_class(self, class_name: CLASS_NAME = None) -> ClassDefinition:
+        """
+        Generate an induced class
+
+        - the class will have no slots
+        - the class will have one attribute per `class_induced_slots`
+
+        Induced slots are represented as attributes as these are fully locally owner by the class
+        :param class_name: base class name
+        :param imports:
+        :return: induced class
+        """
+        c = deepcopy(self.get_class(class_name))
+        attrs = self.class_induced_slots(c.name)
+        for a in attrs:
+            c.attributes[a.name] = a
+        c.slots = []
+        return c
+
+    @lru_cache()
     def get_identifier_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
         """
         :param cn: class name
@@ -1058,11 +1079,14 @@ class SchemaView(object):
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
         """
-        :return: dictionary keyed by used elements
+        Fetch an index that shows the ways in which each element is used
+
+        :return: dictionary of SchemaUsages keyed by used elements
         """
         ROLES = ['domain', 'range']
         ix = defaultdict(list)
         for cn, c in self.all_classes().items():
+            direct_slots = c.slots
             for sn in self.class_slots(cn):
                 s = self.induced_slot(sn, cn)
                 for k in ROLES:
@@ -1072,8 +1096,10 @@ class SchemaView(object):
                     else:
                         vl = [v]
                     for x in vl:
-                        u = SchemaUsage(used_by=cn, slot=sn, metaslot=k, used=x)
-                        ix[x].append(u)
+                        if x is not None:
+                            u = SchemaUsage(used_by=cn, slot=sn, metaslot=k, used=x)
+                            u.inferred = sn in direct_slots
+                            ix[x].append(u)
         return ix
 
     # MUTATION OPERATIONS
