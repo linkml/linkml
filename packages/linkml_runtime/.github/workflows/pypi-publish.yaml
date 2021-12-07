@@ -13,35 +13,24 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v2.2.2
       with:
         python-version: 3.8
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install wheel
+    - name: Install Poetry
+      uses: snok/install-poetry@v1.1.6
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
 
-    - name: build a binary wheel dist
-      run: |
-        rm -fr dist
-        python setup.py bdist_wheel sdist
+    - name: Install dependencies
+      run: poetry install --no-interaction
+
+    - name: Build source and wheel archives
+      run: poetry build
 
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@v1.2.2
       with:
         user: __token__
         password: ${{ secrets.pypi_password }}
-
-    - name: Update metadata
-      run: |
-          git add AUTHORS ChangeLog
-          if [[ ! -z $(git status -s AUTHORS ChangeLog) ]]
-          then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git commit -m 'PBR AUTHORS and ChangeLog update' AUTHORS ChangeLog
-            git push
-          fi
-
-
