@@ -70,7 +70,7 @@ jobs:
       #----------------------------------------------
       - name: Generate coverage results
         run: |
-          poetry run coverage run
+          poetry run coverage run --source=linkml-runtime -m unittest discover
           poetry run coverage xml
           poetry run coverage report -m
     
