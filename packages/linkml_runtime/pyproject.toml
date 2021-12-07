@@ -55,6 +55,9 @@ rdflib-pyldmod-compat = "*"
 requests = "*"
 shexjsg = "==0.*,>=0.7.0"
 
+[tool.poetry.dev-dependencies]
+coverage = "^6.2"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
