@@ -12,13 +12,18 @@ OUT_PATH = env.expected_path('personinfo.relational.yaml')
 RSCHEMA_EXPANDED = env.expected_path('personinfo.relational.expanded.yaml')
 
 
-class SQLTransformerTestCase(unittest.TestCase):
+class RelationalModelTransformerTestCase(unittest.TestCase):
     """
-    Tests transformation from a linkml model to a relational model (independent of SQL)
+    Tests transformation from a linkml model to a relational model (independent of SQL).
+    
+    Note: This tests the transformation between one LinkML model and another.
+    
+    The input model may include mulitvalued fields, but these are transformed away in 
+    the relational representation.
     """
 
     def test_sqlt_basic(self):
-        """ DDL  """
+        """Test Relational Model Transform on personinfo.yaml schema."""
         sv = SchemaView(SCHEMA)
         sqltr = RelationalModelTransformer(sv)
         result = sqltr.transform()
@@ -58,11 +63,6 @@ class SQLTransformerTestCase(unittest.TestCase):
             self.assertEqual(a1.range, 'NewsEvent')
             a2 = c.attributes[f'{cn}_id']
             self.assertEqual(a2.range, cn)
-
-
-
-
-
 
 
 if __name__ == '__main__':
