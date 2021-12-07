@@ -64,11 +64,20 @@ jobs:
       #----------------------------------------------
       - name: Run tests
         run: poetry run python -m unittest discover
-    
+
       #----------------------------------------------
       #              coverage report   
       #----------------------------------------------
-      - name: generate coverage report
+      - name: Generate coverage results
+        run: |
+          poetry run coverage run
+          poetry run coverage xml
+          poetry run coverage report -m
+    
+      #----------------------------------------------
+      #           upload coverage results
+      #----------------------------------------------
+      - name: Generate coverage report
         uses: codecov/codecov-action@v1.0.5
         with:
           name: codecov-results-${{ matrix.python-version }}
