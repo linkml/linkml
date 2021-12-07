@@ -38,6 +38,10 @@ class ShaclGenerator(Generator):
     def as_graph(self) -> None:
         sv = self.schemaview
         g = Graph()
+        g.bind("sh", SH)
+        for pfx in self.schema.prefixes.values():
+            g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
+
         for c in sv.all_classes().values():
             def shape_pv(p, v):
                 if v is not None:
