@@ -103,7 +103,7 @@ You can run the test suite in the following way:
 
 
 ```
-poetry run pytest -vs tests/
+poetry run python -m unittest discover
 ```
 
 ## Code style
