@@ -1,6 +1,7 @@
 # linkml-runtime
 [![Pyversions](https://img.shields.io/pypi/pyversions/linkml-runtime.svg)](https://pypi.python.org/pypi/linkml-runtime)
 ![](https://github.com/linkml/linkml-runtime/workflows/Build/badge.svg)
+[![badge](https://img.shields.io/badge/launch-binder-579ACA.svg)](https://mybinder.org/v2/gh/linkml/linkml-runtime/main?filepath=notebooks)
 [![PyPi](https://img.shields.io/pypi/v/linkml-runtime.svg)](https://pypi.python.org/pypi/linkml)
 
 Runtime support for linkml generated models
@@ -24,4 +25,4 @@ It also includes the [SchemaView](https://linkml.io/linkml/developers/manipulati
 
 ## Notebooks
 
-See the [notebooks](https://github.com/linkml/linkml/tree/main/notebooks) folder for examples
+See the [notebooks](https://github.com/linkml/linkml-runtime/tree/main/notebooks) folder for examples
