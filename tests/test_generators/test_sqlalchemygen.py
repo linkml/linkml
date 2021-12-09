@@ -1,6 +1,8 @@
 import os
+import re
 import sqlite3
 import unittest
+import tempfile
 from pathlib import Path
 
 from linkml_runtime.dumpers import yaml_dumper
@@ -36,8 +38,38 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         """
         gen = SQLAlchemyGenerator(SCHEMA)
         code = gen.generate_sqla()
-        with open(OUT_PATH, 'w') as stream:
+
+        new_file, filename = tempfile.mkstemp()
+        temp_py_filepath = filename + ".py"
+        
+        with open(temp_py_filepath, 'w') as stream:
             stream.write(code)
+        
+        py_file_list = []
+        with open(temp_py_filepath) as file:
+            lines = file.readlines()
+            py_file_list = [line.rstrip() for line in lines]
+
+        tbl_list = []
+        for item in py_file_list:
+            res = re.search(r"Table\('(.*?)',", item)
+            if res:
+                tbl_list.append(res.group(1))
+                
+        self.assertTrue(all(x in tbl_list for x in ["NamedThing",
+                                                    "Person",
+                                                    "Organization",
+                                                    "Place",
+                                                    "Address",
+                                                    "Event",
+                                                    "Concept",
+                                                    "DiagnosisConcept",
+                                                    "ProcedureConcept",
+                                                    "Relationship",
+                                                    "FamilialRelationship",
+                                                    "EmploymentEvent",
+                                                    "MedicalEvent"]),
+                        f"Expected classes from personinfo schema not written to {temp_py_filepath}")
 
     def test_sqla_basic_declatative(self):
         """
@@ -45,13 +77,51 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         """
         gen = SQLAlchemyGenerator(SCHEMA)
         code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
-        with open(OUT_PATH_DECLARATIVE, 'w') as stream:
+
+        new_file, filename = tempfile.mkstemp()
+        temp_py_filepath = filename + ".py"
+        
+        with open(temp_py_filepath, 'w') as stream:
             stream.write(code)
+        
+        py_file_list = []
+        with open(temp_py_filepath) as file:
+            lines = file.readlines()
+            py_file_list = [line.rstrip() for line in lines]
+
+        tbl_list = []
+        for item in py_file_list:
+            res = re.search(r"class\s(.*?)\(", item)
+            if res:
+                tbl_list.append(res.group(1))
+
+        self.assertTrue(all(x in tbl_list for x in ["NamedThing",
+                                                    "Person",
+                                                    "Organization",
+                                                    "Place",
+                                                    "Address",
+                                                    "Event",
+                                                    "Concept",
+                                                    "DiagnosisConcept",
+                                                    "ProcedureConcept",
+                                                    "Relationship",
+                                                    "FamilialRelationship",
+                                                    "EmploymentEvent",
+                                                    "MedicalEvent"]),
+                        f"Expected classes from personinfo schema not written to {temp_py_filepath}")
 
     def test_sqla_compile(self):
         gen = SQLAlchemyGenerator(SCHEMA)
-        module = gen.compile_sqla(compile_python_dataclasses=True)
-        print(module)
+        personinfo_module = gen.compile_sqla(compile_python_dataclasses=True)
+        p1 = personinfo_module.Person(id='P1', name='John Doe', age_in_years=22)
+
+        # test three attributes with values supplied above
+        self.assertTrue(hasattr(p1, "id"), f"'id' attribute not found in {p1}")
+        self.assertTrue(hasattr(p1, "name"), f"'name' attribute not found in {p1}")
+        self.assertTrue(hasattr(p1, "age_in_years"), f"'age_in_years' attribute not found in {p1}")
+
+        # test one or more attributes without values supplied during initialization
+        self.assertTrue(hasattr(p1, "description"), f"'description' attribute not found in {p1}")
 
     def test_sqla_imperative_exec(self):
         Path(DB).unlink(missing_ok=True)
