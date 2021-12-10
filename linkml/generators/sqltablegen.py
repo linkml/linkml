@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from enum import unique
 from typing import List, Dict, Union, TextIO
 
-from sqlalchemy import *
+from sqlalchemy import MetaData, Table, ForeignKey, Column, create_mock_engine
+from sqlalchemy.types import Enum, Text, Integer, Float, Boolean, Date, Time, DateTime
 
 from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, Annotation, \
     ClassDefinitionName, Prefix
