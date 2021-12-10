@@ -527,11 +527,15 @@ class SchemaLoader:
         """
         if slot.name not in merged_slots:
             if slot.is_a:
-                if slot.is_a in self.schema.slots:
-                    self.merge_slot(self.schema.slots[slot.is_a], merged_slots)
-                    merge_slots(slot, self.schema.slots[slot.is_a])
-                else:
-                    self.raise_value_error(f'Slot: "{slot.name}" - unknown is_a reference: {slot.is_a}', slot.is_a)
+                try:
+                    if slot.is_a in self.schema.slots:
+                        self.merge_slot(self.schema.slots[slot.is_a], merged_slots)
+                        merge_slots(slot, self.schema.slots[slot.is_a])
+                    else:
+                        self.raise_value_error(f'Slot: "{slot.name}" - unknown is_a reference: {slot.is_a}', slot.is_a)
+                except RecursionError:
+                        self.raise_value_error(f'Slot: "{slot.name}" - recursive is_a reference: {slot.is_a}', slot.is_a)
+
             for mixin in slot.mixins:
                 if mixin in self.schema.slots:
                     self.merge_slot(self.schema.slots[mixin], merged_slots)
