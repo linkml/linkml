@@ -3,6 +3,7 @@
 ![](https://github.com/linkml/linkml-runtime/workflows/Build/badge.svg)
 [![badge](https://img.shields.io/badge/launch-binder-579ACA.svg)](https://mybinder.org/v2/gh/linkml/linkml-runtime/main?filepath=notebooks)
 [![PyPi](https://img.shields.io/pypi/v/linkml-runtime.svg)](https://pypi.python.org/pypi/linkml)
+[![codecov](https://codecov.io/gh/linkml/linkml-runtime/branch/main/graph/badge.svg?token=FOBHNSK5WG)](https://codecov.io/gh/linkml/linkml-runtime)
 
 Runtime support for linkml generated models
 

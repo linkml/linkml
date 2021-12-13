@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "linkml_runtime"
+version = "1.1.10"
+description = "Runtime environment for LinkML, the Linked open data modeling language"
+authors = [
+    "Chris Mungall <cjmungall@lbl.gov>",
+    "Harold Solbrig <solbrig@jhu.edu>",
+    "Sierra Moxon <smoxon@lbl.gov>",
+    "Bill Duncan <wdduncan@lbl.gov>"
+]
+
+readme = "README.md"
+
+homepage = "https://github.com/linkml/linkml-runtime"
+repository = "https://github.com/linkml/linkml-runtime"
+documentation = "https://github.com/linkml/linkml-runtime"
+
+keywords = ["linkml", "metamodel", "schema visualization", "rdf", "owl", "yaml"]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9"
+]
+
+packages = [
+    { include = "linkml_runtime" }
+]
+
+[tool.poetry.scripts]
+comparefiles = "linkml_runtime.utils.comparefiles:cli"
+
+[tool.poetry.dependencies]
+python = "^3.7.1"
+
+click = "*"
+deprecated = "*"
+hbreader = "*"
+json-flattener = ">=0.1.7"
+jsonasobj2 = "==1.*,>=1.0.0,>=1.0.4"
+jsonschema = ">=3.2.0"
+prefixcommons = "*"
+pyldmod = "*"
+pyyaml = "==5.*,>=5.1.0"
+rdflib = "==5.*,>=5.0.0"
+rdflib-jsonld = "<=0.6.1,>=0.5.0"
+rdflib-pyldmod-compat = "*"
+requests = "*"
+shexjsg = "==0.*,>=0.7.0"
+
+[tool.poetry.dev-dependencies]
+coverage = "^6.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

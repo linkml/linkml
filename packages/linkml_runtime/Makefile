@@ -10,4 +10,4 @@ update_model:
 	cp -pr $(MODEL_DIR)/* linkml_runtime/linkml_model
 
 test:
-	pipenv run python -m unittest
+	poetry run python -m unittest discover

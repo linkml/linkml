@@ -1,69 +1,86 @@
-name: Build
+# Built from:
+# https://docs.github.com/en/actions/guides/building-and-testing-python
+# https://github.com/snok/install-poetry#workflows-and-tips
 
-on:
-  push:
-    branches: [ main ]
+name: Build and test linkml-runtime
+
+on: [push, pull_request]
 
 jobs:
-  update-requirements:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  test:
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-
-      - name: Update requirements file
-        run: |
-          python -m pip install --upgrade pip
-          pip install pipenv-to-requirements
-          pipenv_to_requirements
-
-      - name: Check in requirements.txt and requirements-dev.txt
-        run: |
-          git add requirements*.txt
-          if [[ ! -z $(git status -s requirements*.txt) ]]
-          then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git commit -m 'Automatically generated requirements.txt and requirements-dev.txt' requirements*.txt
-            git push
-          fi
-
-  unittests:
-    needs: update-requirements
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7.1, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install pipenv
-      uses: dschep/install-pipenv-action@v1
-    - name: Install dependencies and run
-      run: |
-        pipenv install --dev
-        pipenv run python -m unittest
+      #----------------------------------------------
+      #       check-out repo and set-up python     
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v2
 
-  update-outputs:
-    needs: unittests
-    runs-on: ubuntu-latest
-    steps:
-      - if: ${{ matrix.python-version == '3.9' }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      #----------------------------------------------
+      #          install & configure poetry         
+      #----------------------------------------------
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.1.1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true      
+
+      #----------------------------------------------
+      #       load cached venv if cache exists      
+      #----------------------------------------------
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      #----------------------------------------------
+      # install dependencies if cache does not exist 
+      #----------------------------------------------
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+        
+      #----------------------------------------------
+      #    install your root project, if required 
+      #----------------------------------------------      
+      - name: Install library
+        run: poetry install --no-interaction
+            
+      #----------------------------------------------
+      #              run test suite   
+      #----------------------------------------------
+      - name: Run tests
+        run: poetry run python -m unittest discover
+
+      #----------------------------------------------
+      #              coverage report   
+      #----------------------------------------------
+      - name: Generate coverage results
         run: |
-          find tests -name output -exec git add --force {} \;
-          if [[ ! -z $(git status -s tests) ]]
-          then
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git commit -m 'Automated adding outputs from tests' tests
-            git push
-          fi
+          poetry run coverage run -m unittest discover
+          poetry run coverage xml
+          poetry run coverage report -m
+    
+      #----------------------------------------------
+      #           upload coverage results
+      #----------------------------------------------
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v1.0.5
+        with:
+          name: codecov-results-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true
