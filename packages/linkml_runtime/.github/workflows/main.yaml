@@ -77,7 +77,7 @@ jobs:
       #----------------------------------------------
       #           upload coverage results
       #----------------------------------------------
-      - name: Generate coverage report
+      - name: Upload coverage report
         uses: codecov/codecov-action@v1.0.5
         with:
           name: codecov-results-${{ matrix.python-version }}
