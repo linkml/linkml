@@ -1389,9 +1389,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2021-12-11T03:09:16",
+  "source_file_date": "2021-12-14T22:49:27",
   "source_file_size": 5771,
-  "generation_date": "2021-12-11T03:14:15",
+  "generation_date": "2021-12-14T22:55:07",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",
