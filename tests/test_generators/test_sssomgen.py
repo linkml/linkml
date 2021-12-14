@@ -3,7 +3,6 @@ import unittest
 from linkml.generators.sssomgen import SSSOMGenerator
 from tests.test_generators.environment import env
 import yaml
-import pandas as pd
 
 SCHEMA = env.input_path("kitchen_sink_sssom.yaml")
 OUTPUT_DIR = os.path.join(
@@ -28,6 +27,7 @@ class SSSOMGenTestCase(unittest.TestCase):
         meta = {}
         curie_map = {}
         curie_flag = False
+        msdf_as_dict = {}
 
         # Read Input file
         with open(SCHEMA, "r") as input_yaml:
@@ -56,24 +56,19 @@ class SSSOMGenTestCase(unittest.TestCase):
                     row_count += 1
                     ln = ln.split("\t")
                     ln[-1] = ln[-1].strip()
+
                     if row_count == 0:
-                        msdf = pd.DataFrame(columns=ln)
+                        msdf_columns = ln
+                        for col in msdf_columns:
+                            msdf_as_dict[col] = []
                     else:
-                        row_as_list = ln
-                        tmp_df = pd.DataFrame(
-                            [row_as_list], columns=msdf.columns
-                        )
-                        msdf = pd.concat(
-                            [msdf, tmp_df],
-                            ignore_index=True,
-                        )
+                        for idx, value in enumerate(msdf_columns):
+                            msdf_as_dict[value].append(ln[idx])
 
         # Assertions
         self.assertEqual(len(meta), 5)
         self.assertEqual(len(curie_map), len(input_data["prefixes"]))
-
-        for id in msdf["subject_id"].iteritems():
-            self.assertFalse(" " in id[1])
+        self.assertFalse(" " in msdf_as_dict["subject_id"])
 
 
 if __name__ == "__main__":
