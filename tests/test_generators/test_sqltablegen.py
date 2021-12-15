@@ -71,8 +71,8 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         """Test case for the get_sql_range() method."""
         gen = SQLTableGenerator(SCHEMA)
 
-        loader = SchemaLoader(data=SCHEMA)
-        schema_def_str = loader.resolve()
+        # loader = SchemaLoader(data=SCHEMA)
+        # schema_def_str = loader.resolve()
 
         case_1_slot = SlotDefinition(name="id", 
                                     definition_uri="https://w3id.org/linkml/examples/personinfo/id",
@@ -98,13 +98,13 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
                                     range='NonExistentRange')
 
         # Slot range in list of schema classes
-        actual_1_output = gen.get_sql_range(case_1_slot, schema_def_str)
+        actual_1_output = gen.get_sql_range(case_1_slot)
 
         # Slot range in list of schema enums
-        actual_2_output = gen.get_sql_range(case_2_slot, schema_def_str)
+        actual_2_output = gen.get_sql_range(case_2_slot)
 
         # Slot not present in schema
-        actual_3_output = gen.get_sql_range(case_3_slot, schema_def_str)
+        actual_3_output = gen.get_sql_range(case_3_slot)
 
         self.assertIsInstance(actual_1_output, Text)
         self.assertIsInstance(actual_2_output, Enum)
