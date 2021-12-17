@@ -7,7 +7,7 @@ elif sys.version_info >= (3, 10, 0):
         _create_fn
 
     def dataclasses_init_fn_with_kwargs(fields, std_fields, kw_only_fields, frozen, has_post_init,
-                 self_name, globals):
+                                        self_name, globals, slots):
         # fields contains both real fields and InitVar pseudo-fields.
 
         # Make sure we don't have fields without defaults following fields
@@ -34,7 +34,7 @@ elif sys.version_info >= (3, 10, 0):
 
         body_lines = []
         for f in fields:
-            line = _field_init(f, frozen, locals, self_name)
+            line = _field_init(f, frozen, locals, self_name, slots)
             # line is None means that this field doesn't require
             # initialization (it's a pseudo-field).  Just skip it.
             if line:
