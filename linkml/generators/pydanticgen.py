@@ -98,7 +98,7 @@ class PydanticGenerator(OOCodeGenerator):
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
 
-    def serialize(self) -> None:
+    def serialize(self) -> str:
         sv = self.schemaview
 
         if self.template_file is not None:
