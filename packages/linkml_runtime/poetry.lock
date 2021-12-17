@@ -342,6 +342,18 @@ rdflib = ">=4.2.0"
 testfixtures = "*"
 
 [[package]]
+name = "rdflib-shim"
+version = "1.0.1"
+description = "Shim for rdflib 5 and 6 incompatibilities"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+rdflib = ">=5.0.0"
+rdflib-jsonld = "0.6.1"
+
+[[package]]
 name = "requests"
 version = "2.26.0"
 description = "Python HTTP for Humans."
@@ -435,7 +447,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "85b3ecabe64aa1a5973ddf4b2ea232cccd7f1b71b57d54b719a4316a3d1d6ac7"
+content-hash = "e70a438b8ad6df568b6213c04bf2230bdefb5bf538265f35014e392d08991ce1"
 
 [metadata.files]
 antlr4-python3-runtime = [
@@ -701,6 +713,10 @@ rdflib-jsonld = [
 rdflib-pyldmod-compat = [
     {file = "rdflib-pyldmod-compat-0.1.2.tar.gz", hash = "sha256:bfba0064d8b2584afdbef5d54bac3ac1dd4c13b64aaeba7a43812c2f35ca13c6"},
     {file = "rdflib_pyldmod_compat-0.1.2-py3-none-any.whl", hash = "sha256:68aa05d4f4d8f46241e0c37e631b4747f18a356d8accc5bae204350d2f314196"},
+]
+rdflib-shim = [
+    {file = "rdflib_shim-1.0.1-py3-none-any.whl", hash = "sha256:04c51dd7399c1a2b81caa42acf02b6e088f661d0c642e6fd60a67bd510b6a9f7"},
+    {file = "rdflib_shim-1.0.1.tar.gz", hash = "sha256:aa465a8bcc19018e4aac0598551378d05d4f89525e4aa2e9b6eea7b6d1acb3c0"},
 ]
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
