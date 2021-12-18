@@ -119,7 +119,7 @@ class PydanticGenerator(OOCodeGenerator):
 
         return enums
 
-    def serialize(self) -> None:
+    def serialize(self) -> str:
         sv = self.schemaview
 
         if self.template_file is not None:

@@ -12,7 +12,6 @@ from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     Definition,
 )
-import pandas as pd
 
 DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
 
@@ -49,8 +48,6 @@ class SSSOMGenerator(Generator):
         "exact_mappings": "skos:exactMatch",
     }
 
-    final_df = pd.DataFrame(columns=msdf_columns)
-
     def __init__(
         self,
         schema: Union[str, TextIO, SchemaDefinition],
@@ -60,6 +57,7 @@ class SSSOMGenerator(Generator):
     ) -> None:
 
         self.sourcefile = schema
+        self.table_as_list = []
         if output:
             self.output_file = output
         else:
@@ -69,10 +67,14 @@ class SSSOMGenerator(Generator):
             format = self.valid_formats[0]
         super().__init__(schema, **kwargs)
 
-    def make_msdf(self, row_as_dict: dict) -> None:
-        tmp_df = pd.DataFrame(row_as_dict, index=[0])
-        tmp_df = tmp_df.reindex(columns=self.msdf_columns, fill_value="")
-        self.final_df = pd.concat([self.final_df, tmp_df], ignore_index=True)
+    def make_msdf_list(self, row_as_dict: dict) -> None:
+        list_of_row = []
+        for col_name in self.msdf_columns:
+            if col_name in row_as_dict.keys():
+                list_of_row.append(row_as_dict[col_name])
+            else:
+                list_of_row.append("")
+        self.table_as_list.append(list_of_row)
 
     def definition_extract_info(self, obj: Definition):
         subject_source = obj.from_schema
@@ -108,7 +110,8 @@ class SSSOMGenerator(Generator):
                         row_dict["subject_source"] = subject_source
                         if match_type:
                             row_dict["match_type"] = match_type
-                        self.make_msdf(row_dict)
+
+                        self.make_msdf_list(row_dict)
 
         elif type(obj) is EnumDefinition:
             if obj.permissible_values:
@@ -137,9 +140,7 @@ class SSSOMGenerator(Generator):
                         row_dict["subject_source"] = subject_source
                         row_dict["subject_category"] = subject_category
 
-                        self.make_msdf(row_dict)
-
-                pass
+                        self.make_msdf_list(row_dict)
         else:
             raise (
                 TypeError(
@@ -185,7 +186,13 @@ class SSSOMGenerator(Generator):
                     sssom_tsv.write("#" + k + ": \n")
                     for pref, uri in v.items():
                         sssom_tsv.write("# " + pref + ": " + uri + "\n")
-        self.final_df.to_csv(self.output_file, sep="\t", index=None, mode="a")
+
+            # Write column names first
+            sssom_tsv.writelines("\t".join(self.msdf_columns) + "\n")
+            # Write the msdf next
+            sssom_tsv.writelines(
+                "\t".join(i) + "\n" for i in self.table_as_list
+            )
 
 
 @shared_arguments(SSSOMGenerator)

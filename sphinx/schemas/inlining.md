@@ -83,7 +83,7 @@ data:
 
 ## Inlining as a dictionary
 
-To force inlining as a list, set [inlined_as_list](https://w3id.org/linkml/inlined_as_list) to `false`
+To force inlining as a dictionary, set [inlined_as_list](https://w3id.org/linkml/inlined_as_list) to `false`
 
 This is a slight variant on inlining as a list - here a dictionary keyed by identifier is provided
 
