@@ -96,12 +96,17 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 else:
                     logging.info(f'Success!')
         elif block.is_stdout():
-            if last_block.output.strip() != block.content.strip():
-                err(f'Mismatch: {str(last_block.output)} != {block.content}')
+            if 'compare_rdf' in block.annotations:
+                logging.warning('SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427')
+            elif last_block.output:
+                if last_block.output.strip() != block.content.strip():
+                    err(f'Mismatch: {str(last_block.output)} != {block.content}')
+                else:
+                    logging.info(f'Hurray! Contents match!')
             else:
-                logging.info(f'Hurray! Contents match!')
+                logging.info('No comparison performed')
         else:
-            logging.error(f'Ignoring block: {block}')
+            logging.warning(f'Ignoring block: {block}')
         last_block = block
     return errs
 
