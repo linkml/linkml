@@ -50,6 +50,10 @@ classes:
 
 We use yaml comment syntax (i.e the part after `#`) for comments - these are ignored by the parser.
 
+Depicted as:
+
+![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++-%20persons%200..*>[Person|id:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F],[Container])
+
 Note that we haven't declared ranges for some fields, but the *default_range* directive at the schema level ensures things default to string.
 
 ## Example data

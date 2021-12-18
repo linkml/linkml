@@ -92,6 +92,7 @@ Outputs:
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
    "properties": {},
+   "required": [],
    "title": "personinfo",
    "type": "object"
 }

@@ -1,5 +1,10 @@
 # Semantic Enumerations
 
-More documentation coming soon
+## Using Enums with Ontologies
 
-For now, check [enumerations notebook](https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb)
+![enums](../enums-and-ontologies)
+
+## Examples (Jupyter Notebooks)
+
+ * [enumerations notebook](https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb)
+
