@@ -36,6 +36,10 @@ linkml:Objectidentifier IRI
 
 linkml:Nodeidentifier NONLITERAL
 
+core:PhoneNumberType xsd:string
+
+core:AgeInYearsType xsd:integer
+
 core:Activity CLOSED {
     (  $core:Activity_tes (  prov:startedAtTime @linkml:Date ? ;
           prov:endedAtTime @linkml:Date ? ;

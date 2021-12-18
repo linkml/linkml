@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-17T22:44:57
+# Generation date: 2021-12-18T03:01:09
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -50,10 +50,24 @@ PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = KS
 
 
 # Types
+class PhoneNumberType(str):
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "phone number type"
+    type_model_uri = KS.PhoneNumberType
+
+
+class AgeInYearsType(int):
+    type_class_uri = XSD.integer
+    type_class_curie = "xsd:integer"
+    type_name = "age in years type"
+    type_model_uri = KS.AgeInYearsType
+
 
 # Class references
 class PersonId(extended_str):

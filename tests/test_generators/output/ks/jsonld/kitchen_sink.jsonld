@@ -260,6 +260,23 @@
       "uri": "http://www.w3.org/ns/shex#nonLiteral",
       "repr": "str",
       "@type": "TypeDefinition"
+    },
+    {
+      "name": "phone_number_type",
+      "definition_uri": "https://w3id.org/linkml/tests/core/PhoneNumberType",
+      "from_schema": "https://w3id.org/linkml/tests/core",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "pattern": "^[\\\\+\\\\d+ +][\\\\d\\\\- ]+$",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "age_in_years_type",
+      "definition_uri": "https://w3id.org/linkml/tests/core/AgeInYearsType",
+      "from_schema": "https://w3id.org/linkml/tests/core",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
     }
   ],
   "enums": [
@@ -980,6 +997,9 @@
     },
     {
       "name": "Person",
+      "id_prefixes": [
+        "P"
+      ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
       "description": "A person, living or dead",
       "in_subset": [
@@ -1006,6 +1026,9 @@
     },
     {
       "name": "Organization",
+      "id_prefixes": [
+        "ROR"
+      ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Organization",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mixins": [
@@ -1050,6 +1073,9 @@
     },
     {
       "name": "Concept",
+      "id_prefixes": [
+        "CODE"
+      ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slots": [
@@ -1389,9 +1415,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2021-12-17T22:39:51",
-  "source_file_size": 5771,
-  "generation_date": "2021-12-17T22:44:52",
+  "source_file_date": "2021-12-18T02:55:23",
+  "source_file_size": 5858,
+  "generation_date": "2021-12-18T03:01:04",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

@@ -9,6 +9,10 @@ URI: [ks:Concept](https://w3id.org/linkml/tests/kitchen_sink/Concept)
 
 [![img](https://yuml.me/diagram/nofunky;dir:TB/class/[ProcedureConcept],[DiagnosisConcept],[CodeSystem]<in%20code%20system%200..1-%20[Concept&#124;id:string;name:string%20%3F],[Concept]^-[ProcedureConcept],[Concept]^-[DiagnosisConcept],[CodeSystem])](https://yuml.me/diagram/nofunky;dir:TB/class/[ProcedureConcept],[DiagnosisConcept],[CodeSystem]<in%20code%20system%200..1-%20[Concept&#124;id:string;name:string%20%3F],[Concept]^-[ProcedureConcept],[Concept]^-[DiagnosisConcept],[CodeSystem])
 
+## Identifier prefixes
+
+ * CODE
+
 ## Children
 
  * [DiagnosisConcept](DiagnosisConcept.md)

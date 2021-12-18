@@ -5,6 +5,10 @@ PREFIX linkml: <https://w3id.org/linkml/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 
 
+<PhoneNumberType> xsd:string
+
+<AgeInYearsType> xsd:integer
+
 linkml:String xsd:string
 
 linkml:Integer xsd:integer
