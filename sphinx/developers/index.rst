@@ -12,5 +12,6 @@ Developers guide
    organization
    notebooks
    manipulating-schemas
+   tool-developer-guide
    contributing-code
 
