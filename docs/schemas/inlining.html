@@ -56,7 +56,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#inlining-as-a-list">Inlining as a list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inlining-as-a-dictionary">Inlining as a dictionary</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inlining-a-single-valued-object">Inlining a single-valued object</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#note-on-json-schema-validation">Note on JSON-Schema validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inlining-with-non-json-serializations">Inlining with non-JSON serializations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-should-inlining-be-used">When should inlining be used?</a></li>
 </ul>
@@ -70,6 +69,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -177,7 +177,7 @@
 </section>
 <section id="inlining-as-a-dictionary">
 <h2>Inlining as a dictionary<a class="headerlink" href="#inlining-as-a-dictionary" title="Permalink to this headline"></a></h2>
-<p>To force inlining as a list, set <a class="reference external" href="https://w3id.org/linkml/inlined_as_list">inlined_as_list</a> to <code class="docutils literal notranslate"><span class="pre">false</span></code></p>
+<p>To force inlining as a dictionary, set <a class="reference external" href="https://w3id.org/linkml/inlined_as_list">inlined_as_list</a> to <code class="docutils literal notranslate"><span class="pre">false</span></code></p>
 <p>This is a slight variant on inlining as a list - here a dictionary keyed by identifier is provided</p>
 <p><strong>Note</strong> this is only possible if the range of the slot is a class that has an identifier slot</p>
 <p>schema:</p>
@@ -222,10 +222,6 @@
       <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mammals</span>
 </pre></div>
 </div>
-</section>
-<section id="note-on-json-schema-validation">
-<h2>Note on JSON-Schema validation<a class="headerlink" href="#note-on-json-schema-validation" title="Permalink to this headline"></a></h2>
-<p>Currently JSON-Schema validation will fail on any structures inlined as dicts.</p>
 </section>
 <section id="inlining-with-non-json-serializations">
 <h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Permalink to this headline"></a></h2>
