@@ -87,6 +87,8 @@ classes:
     slot_usage:
       name:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+    id_prefixes:
+      - P
 
   Organization:
     mixins:
@@ -94,6 +96,9 @@ classes:
     slots:
       - id
       - name
+    id_prefixes:
+      - ROR
+
 
   Place:
     mixins:
@@ -111,6 +116,8 @@ classes:
       - id
       - name
       - in code system
+    id_prefixes:
+      - CODE
 
   DiagnosisConcept:
     is_a: Concept
