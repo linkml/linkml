@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -109,79 +110,6 @@ the docs.</p>
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
-<section id="gen-prefix-map">
-<h4>gen-prefix-map<a class="headerlink" href="#gen-prefix-map" title="Permalink to this headline"></a></h4>
-<p>Generate jsonld &#64;context definition from LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-prefix-map <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
-</pre></div>
-</div>
-<p class="rubric">Options</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-base">
-<span class="sig-name descname"><span class="pre">--base</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;base&gt;</span></span><a class="headerlink" href="#cmdoption-gen-prefix-map-base" title="Permalink to this definition"></a></dt>
-<dd><p>Base URI for model</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-o">
-<span id="cmdoption-gen-prefix-map-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-prefix-map-o" title="Permalink to this definition"></a></dt>
-<dd><p>Output file path</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-f">
-<span id="cmdoption-gen-prefix-map-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-prefix-map-f" title="Permalink to this definition"></a></dt>
-<dd><p>Output format (default=json)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>json | tsv</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-metadata">
-<span id="cmdoption-gen-prefix-map-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-prefix-map-metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–metadata)</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-useuris">
-<span id="cmdoption-gen-prefix-map-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-prefix-map-useuris" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–useuris)</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-im">
-<span id="cmdoption-gen-prefix-map-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-prefix-map-im" title="Permalink to this definition"></a></dt>
-<dd><p>Import mapping file</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-log_level">
-<span id="cmdoption-gen-prefix-map-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-prefix-map-log_level" title="Permalink to this definition"></a></dt>
-<dd><p>Logging level (default=WARNING)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-mergeimports">
-<span id="cmdoption-gen-prefix-map-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-prefix-map-mergeimports" title="Permalink to this definition"></a></dt>
-<dd><p>Merge imports into source file (default=mergeimports)</p>
-</dd></dl>
-
-<p class="rubric">Arguments</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-prefix-map-arg-YAMLFILE">
-<span id="cmdoption-gen-prefix-map-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-prefix-map-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
-<dd><p>Required argument</p>
-</dd></dl>
-
-</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>

@@ -263,6 +263,7 @@ enums:
 LinkML goes beyond most frameworks and allows your enums to be backed by external ontologies. For example, this enum is backed by [GSSO](http://obofoundry.org/ontology/gsso)
 
 ```yaml
+
 prefixes:
   GGSO: http://purl.obolibrary.org/obo/GSSO_
 
@@ -285,11 +286,21 @@ enums:
 
 ## Subsets
 
-Elements of a schema can be partitioned into named [subsets](https://w3id.org/linkml/SubsetDefinition). These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposs.
+Elements of a schema can be partitioned into named [subsets](https://w3id.org/linkml/SubsetDefinition). These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposes.
 
+## Metamodel
 
+The LinkML *metamodel* describes LinkML itself. All LinkML schemas
+instantiate the [subsets](https://w3id.org/linkml/SchemaDefinition)
+class in the metamodel, and all elements of a schema instantiate other
+metamodel classes.
 
+All metamodel elements are in the [https://w3id.org/linkml/](https://w3id.org/linkml/) namespace, e.g:
 
+ * [https://w3id.org/linkml/SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
+ * [https://w3id.org/linkml/ClassDefinition](https://w3id.org/linkml/ClassDefinition)
+ * [https://w3id.org/linkml/SlotDefinition](https://w3id.org/linkml/SlotDefinition)
+ * [https://w3id.org/linkml/EnumDefinition](https://w3id.org/linkml/EnumDefinition)
+ * [https://w3id.org/linkml/TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 
-
-
+![metamodel](../images/metamodel.png)

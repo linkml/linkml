@@ -177,21 +177,21 @@ serve as hooks to interoperate data!</p>
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-ttl notranslate"><div class="highlight"><pre><span></span>@<span class="nv">prefix</span> <span class="nv">ns1</span>: <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">w3id</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">linkml</span><span class="o">/</span><span class="nv">examples</span><span class="o">/</span><span class="nv">personinfo</span><span class="o">/&gt;</span> .
-@<span class="nv">prefix</span> <span class="nv">xsd</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">www</span>.<span class="nv">w3</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">2001</span><span class="o">/</span><span class="nv">XMLSchema</span>#<span class="o">&gt;</span> .
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
 
-<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">age</span> <span class="mi">33</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">full_name</span> <span class="s2">&quot;</span><span class="s">Clark Kent</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">phone</span> <span class="s2">&quot;</span><span class="s">555-555-5555</span><span class="s2">&quot;</span> .
+<span class="nv">&lt;https://orcid.org/1234&gt;</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">age</span> <span class="mi">33</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">full_name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">phone</span> <span class="s">&quot;555-555-5555&quot;</span> <span class="p">.</span>
 
-<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">age</span> <span class="mi">34</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">full_name</span> <span class="s2">&quot;</span><span class="s">Lois Lane</span><span class="s2">&quot;</span> .
+<span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">age</span> <span class="mi">34</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">full_name</span> <span class="s">&quot;Lois Lane&quot;</span> <span class="p">.</span>
 
-[] <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Container</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">persons</span> <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span>,
-        <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> .
+<span class="p">[]</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Container</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">persons</span> <span class="nv">&lt;https://orcid.org/1234&gt;</span><span class="p">,</span>
+        <span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="p">.</span>
 </pre></div>
 </div>
 <p>This is a start, but it is not ideal - there are existing vocabularies such as <a class="reference external" href="http://schema.org">schema.org</a> we could be reusing.</p>
@@ -256,25 +256,28 @@ serve as hooks to interoperate data!</p>
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-ttl notranslate"><div class="highlight"><pre><span></span>@<span class="nv">prefix</span> <span class="nv">ns1</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">schema</span>.<span class="nv">org</span><span class="o">/&gt;</span> .
-@<span class="nv">prefix</span> <span class="nv">ns2</span>: <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">w3id</span>.<span class="nv">org</span><span class="o">/</span><span class="nv">linkml</span><span class="o">/</span><span class="nv">examples</span><span class="o">/</span><span class="nv">personinfo</span><span class="o">/&gt;</span> .
-@<span class="nv">prefix</span> <span class="nv">xsd</span>: <span class="o">&lt;</span><span class="nv">http</span>:<span class="o">//</span><span class="nv">www</span>.<span class="nv">w3</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">2001</span><span class="o">/</span><span class="nv">XMLSchema</span>#<span class="o">&gt;</span> .
+<!-- COMPARE_RDF -->
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;http://schema.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">ns2:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
 
-<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">name</span> <span class="s2">&quot;</span><span class="s">Clark Kent</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">telephone</span> <span class="s2">&quot;</span><span class="s">555-555-5555</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns2</span>:<span class="nv">age</span> <span class="mi">33</span> .
+<span class="nv">&lt;https://orcid.org/1234&gt;</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">telephone</span> <span class="s">&quot;555-555-5555&quot;</span> <span class="p">;</span>
+    <span class="nn">ns2</span><span class="p">:</span><span class="nt">age</span> <span class="mi">33</span> <span class="p">.</span>
 
-<span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> <span class="nv">a</span> <span class="nv">ns1</span>:<span class="nv">Person</span> <span class="c1">;</span>
-    <span class="nv">ns1</span>:<span class="nv">name</span> <span class="s2">&quot;</span><span class="s">Lois Lane</span><span class="s2">&quot;</span> <span class="c1">;</span>
-    <span class="nv">ns2</span>:<span class="nv">age</span> <span class="mi">34</span> .
+<span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Lois Lane&quot;</span> <span class="p">;</span>
+    <span class="nn">ns2</span><span class="p">:</span><span class="nt">age</span> <span class="mi">34</span> <span class="p">.</span>
 
-[] <span class="nv">a</span> <span class="nv">ns2</span>:<span class="nv">Container</span> <span class="c1">;</span>
-    <span class="nv">ns2</span>:<span class="nv">persons</span> <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">1234</span><span class="o">&gt;</span>,
-        <span class="o">&lt;</span><span class="nv">https</span>:<span class="o">//</span><span class="nv">orcid</span>.<span class="nv">org</span><span class="o">/</span><span class="mi">4567</span><span class="o">&gt;</span> .
+<span class="p">[]</span> <span class="kt">a</span> <span class="nn">ns2</span><span class="p">:</span><span class="nt">Container</span> <span class="p">;</span>
+    <span class="nn">ns2</span><span class="p">:</span><span class="nt">persons</span> <span class="nv">&lt;https://orcid.org/1234&gt;</span><span class="p">,</span>
+        <span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="p">.</span>
 </pre></div>
 </div>
 <p>Note that the prefixes are hidden but the effect is to reuse URIs such as <a class="reference external" href="http://schema.org/telephone">schema:telephone</a></p>
+<p>This can be visualized using <a class="reference external" href="https://www.ldf.fi/service/rdf-grapher">rdf-grapher</a> as:</p>
+<p><img alt="rdf-visualization" src="https://www.ldf.fi/service/rdf-grapher?rdf=%40prefix+ns1%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E+.%0D%0A%40prefix+ns2%3A+%3Chttps%3A%2F%2Fw3id.org%2Flinkml%2Fexamples%2Fpersoninfo%2F%3E+.%0D%0A%40prefix+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+.%0D%0A%0D%0A%3Chttps%3A%2F%2Forcid.org%2F1234%3E+a+ns1%3APerson+%3B%0D%0A++++ns1%3Aname+%22Clark+Kent%22+%3B%0D%0A++++ns1%3Atelephone+%22555-555-5555%22+%3B%0D%0A++++ns2%3Aage+33+.%0D%0A%0D%0A%3Chttps%3A%2F%2Forcid.org%2F4567%3E+a+ns1%3APerson+%3B%0D%0A++++ns1%3Aname+%22Lois+Lane%22+%3B%0D%0A++++ns2%3Aage+34+.%0D%0A%0D%0A%5B%5D+a+ns2%3AContainer+%3B%0D%0A++++ns2%3Apersons+%3Chttps%3A%2F%2Forcid.org%2F1234%3E%2C%0D%0A++++++++%3Chttps%3A%2F%2Forcid.org%2F4567%3E+.%0D%0A&amp;from=ttl&amp;to=png" /></p>
 </section>
 <section id="json-ld-contexts">
 <h2>JSON-LD contexts<a class="headerlink" href="#json-ld-contexts" title="Permalink to this headline"></a></h2>
@@ -369,6 +372,52 @@ serve as hooks to interoperate data!</p>
        <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">[</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="p">]</span>
     <span class="p">)</span>
 <span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-shacl --no-metadata personinfo-semantic.yaml &gt; personinfo.shacl.ttl
+</pre></div>
+</div>
+<p>Outputs:</p>
+<!-- COMPARE_RDF -->
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">personinfo:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdf:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">schema:</span><span class="w"> </span><span class="nv">&lt;http://schema.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">sh:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/shacl#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">personinfo</span><span class="p">:</span><span class="nt">Container</span> <span class="kt">a</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">NodeShape</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">closed</span> <span class="l">true</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">ignoredProperties</span> <span class="p">(</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">property</span> <span class="p">[</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">class</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">nodeKind</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">IRI</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">order</span> <span class="mi">0</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">persons</span> <span class="p">]</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">targetClass</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">Container</span> <span class="p">.</span>
+
+<span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="kt">a</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">NodeShape</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">closed</span> <span class="l">true</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">ignoredProperties</span> <span class="p">(</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">property</span> <span class="p">[</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">maxCount</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">maxInclusive</span> <span class="mi">200</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">minInclusive</span> <span class="mi">0</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">order</span> <span class="mi">4</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">age</span> <span class="p">],</span>
+        <span class="p">[</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">description</span> <span class="s">&quot;name of the person&quot;</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">maxCount</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">minCount</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">order</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">name</span> <span class="p">],</span>
+        <span class="p">[</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">maxCount</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">order</span> <span class="mi">0</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">id</span> <span class="p">],</span>
+        <span class="p">[</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">description</span> <span class="s">&quot;other names for the person&quot;</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">order</span> <span class="mi">2</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">aliases</span> <span class="p">],</span>
+        <span class="p">[</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">maxCount</span> <span class="mi">1</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">order</span> <span class="mi">3</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">telephone</span> <span class="p">;</span>
+            <span class="nn">sh</span><span class="p">:</span><span class="nt">pattern</span> <span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span> <span class="p">]</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">targetClass</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="p">.</span>
 </pre></div>
 </div>
 <!-- TODO: SPARQL -->
