@@ -1,6 +1,6 @@
 # Inheritance
 
-## Linking classes and slots with is_a
+## Linking classes and slots with `is_a`
 
 The [is_a](https://w3id.org/linkml/is_a) metamodel slot can be used to define a backbone hierarchy for your class. All inheritable metamodel slots are propagated down the is_a hierarchy.
 
@@ -33,7 +33,7 @@ Here Person will inherit the four slots from NamedThing.
 
 **Note**: Slots can also be organized in hierarchies using `is_a`.
 
-## abstract classes and slots
+## Abstract classes and slots
 
 A model class (or slot) may be tagged with its [abstract](https://w3id.org/linkml/abstract) slot set to the boolean value `true`, to define whether it is abstract. This has comparable meaning to that in the computing science Object Oriented Paradigm: another class (or slot) can use the abstract class (or slot) as part of its inheritance hierarchy, but the abstract class itself _cannot_ be directly instantiated.
 
@@ -50,19 +50,19 @@ classes:
 
 ```
 
-This forces data providers to always provide a more specific class than the generic "NamedThing"
+This forces data providers to always provide a more specific class than the generic "`NamedThing`".
 
 Some generators may also choose to utilize abstract tags, e.g to mask generation of abstract classes.
 
 **Note**: Slots can also be declared abstract.
 
 
-## mixin classes and slots
+## Mixin classes and slots
 
 * The [mixin](https://w3id.org/linkml/mixin) boolean slot to declare a class as a mixin
 * The [mixins](https://w3id.org/linkml/mixins) multiavlued slot which specifies a range of mixin parents.
 
-Mixin parents operate similarly to is_a parents, but they do not have the constraint if forming a tree.
+Mixin parents operate similarly to `is_a` parents, but they do not have the constraint of forming a tree.
 
 Mixins can be extremely helpful in a number of ways: 1) to generalize a set
 of attributes that can apply to classes in different parts of the class hierarchy, 2) reduce duplication of
@@ -100,6 +100,3 @@ classes:
 ```
 
 Note that `is_a` has the characteristics of homeomorphicity: `is_a` **SHOULD** only connect either (1) two mixins (2) two non-mixin elements
-
-
-
