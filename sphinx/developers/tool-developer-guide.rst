@@ -102,7 +102,7 @@ but current thinking is to have different categories:
     * The next level would include class inheritance and slots, and
       basic enums
     * The level above this would include slot inheritance, and slot
-      overrides with slot_usage
+      overrides with `slot_usage`
     * The highest level would include boolean expressions and rules
 
 - A *metadata* conformance level that pertains to informational
@@ -116,7 +116,7 @@ but current thinking is to have different categories:
 
 The LinkML framework provides some functionality for being able to do
 transformations "down" levels. For example, a rich schema that uses
-inheritance and slot_usage can be "rolled down" to a schema that
+inheritance and `slot_usage` can be "rolled down" to a schema that
 includes only leaf elements, with inferred slots materialized as
 attributes. The resulting schema will be less rich, but may be
 sufficient for certain kinds of applications.
@@ -129,18 +129,18 @@ Other Languages
 LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.
 
-For example, in Pythonif you want a list of slots for that class you can use `class_slots
+For example, in Python, if you want a list of slots for that class you can use `class_slots
 <manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots>_`. But
-what if you are building a generic javascript data entry widget that
+what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?
 
 There are a few broad approaches here:
 
 - 1. Use the direct output of your language's YAML/JSON parser, and
   implement logic ad-hoc
-- 2. Develop a full blown analog of the python SchemaView class for
+- 2. Develop a full blown analog of the Python SchemaView class for
   your language
-- 3. Write python code to transform LinkML YAML into a native form
+- 3. Write Python code to transform LinkML YAML into a native form
   geared for your application
 
 
@@ -148,26 +148,26 @@ The first approach may be easiest, but we would only recommend this
 for simple schemas (low structural conformance -- see above).
 
 If you are interested in approach 2, please make an issue on our
-github repo so we can coordinate! We may have suggestions for general
+GitHub repo so we can coordinate! We may have suggestions for general
 strategies for bootstrapping. And we may already have prototype
 implementations for your language.
 
 For example, we have a prototype Java code generator that can create
-java classes for any LinkML model. The LinkML metamodel is in LinkML,
-so this can be used to make a java object model for LinkML itself,
+Java classes for any LinkML model. The LinkML metamodel is in LinkML,
+so this can be used to make a Java object model for LinkML itself,
 which can help bootstrap efforts to make domain logical libraries.
 
 General Guidelines for applications
 -----------------------------------
 
 These guidelines apply to how applications should use elements of the
-LinkML metamodel
+LinkML metamodel.
 
 - Applications should use `title <https://w3id.org/linkml/>_` to
   obtain the user-friendly name for a slot. For example a
   spreadsheet-like data entry tool should display these as column
   headers
-- If title field is not available, use the `name` slot
+- If `title` field is not available, use the `name` slot
 - The `description <https://w3id.org/linkml/description>_` slot should
   be used to provide information to users, e.g. as tool-tips
 - The `pattern <https://w3id.org/linkml/pattern>_` slot should be used
@@ -222,8 +222,8 @@ There are three broad approaches:
 - 2. Define configuration files
 - 3. Add schema hints
 
-the first approach is out of scope for this guide -- but if you do go
-down this route, the LinkMK framework provides various utilities that
+The first approach is out of scope for this guide -- but if you do go
+down this route, the LinkML framework provides various utilities that
 may help, such as the ability to generate custom language bindings.
 
 The other two approaches are fairly similar and involve providing a
@@ -241,7 +241,7 @@ It is easy to roll your own configuration format, but we would
 recommend creating a schema for your configuration data model. An
 example of this is `KGViz Schema
 <https://berkeleybop.github.io/kgviz-model/>_` which is a stylesheet
-language for visualizing ontology graphs, based on graphviz.
+language for visualizing ontology graphs, based on `Graphviz<https://graphviz.org/>`.
 
 Schema Hints
 ~~~~~~~~~~~~
@@ -334,6 +334,7 @@ slots:
 prefixes:
   wgs: http://www.w3.org/2003/01/geo/wgs84_pos#
   schema: http://schema.org/
+
 slots:
   latitude:
     domain: geolocation value
@@ -389,11 +390,11 @@ user specify this? Is the quantity captured as a single parseable text
 string, or is a complex object used?
 
 The modeling decisions will vary based on the use case. However, if
-certain conventions are followed then generic applications can be made
-'smart'
+certain conventions are followed, then generic applications can be made
+'smart'.
 
 For example, if we model quantity values as classes and reuse the
-concept from the standard qudt vocabulary:
+concept from the standard `qudt<http://qudt.org/>` vocabulary:
 
 ```yaml
   quantity value:
@@ -420,7 +421,7 @@ concept from the standard qudt vocabulary:
 Then applications can be aware of the semantics of this field and act
 accordingly; for example:
 
- - allow free text entry and use a library like quantulum to parse
+ - allow free text entry and use a library like `quantulum<https://github.com/marcolagi/quantulum>` to parse
    into structured form
  - allow for conversion between units
  - use sliders to allow input
@@ -431,10 +432,10 @@ Using other frameworks
 ----------------------
 
 You should also feel free to build applications that use other
-frameworks - you can compile to these from LinkML. But be aware that
-you will be restricted to the expressivity of that language - e.g. a
+frameworks. You can compile to these from LinkML, but be aware that
+you will be restricted to the expressivity of that language--e.g. a
 project like json-edit can only make use of what is expressible in
-json-schema.
+JSON Schema.
 
 If considering a non-LinkML framework for form-based data entry we
 would strongly recommend SHACL + DASH. See `Form Generation using
