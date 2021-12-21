@@ -22,11 +22,11 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "cachetools"
-version = "4.2.4"
+version = "5.0.0"
 description = "Extensible memoizing collections and decorators"
 category = "main"
 optional = false
-python-versions = "~=3.5"
+python-versions = "~=3.7"
 
 [[package]]
 name = "certifi"
@@ -94,7 +94,7 @@ dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "im
 
 [[package]]
 name = "frozendict"
-version = "2.1.1"
+version = "2.1.2"
 description = "A simple immutable dictionary"
 category = "main"
 optional = false
@@ -118,7 +118,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "importlib-metadata"
-version = "4.9.0"
+version = "4.10.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
@@ -131,7 +131,7 @@ zipp = ">=0.5"
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 perf = ["ipython"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pyfakefs", "flufl.flake8", "pytest-perf (>=0.9.2)", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
 name = "importlib-resources"
@@ -195,7 +195,7 @@ hbreader = "*"
 
 [[package]]
 name = "jsonschema"
-version = "4.3.1"
+version = "4.3.2"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
 optional = false
@@ -301,20 +301,21 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [[package]]
 name = "rdflib"
-version = "6.0.2"
+version = "6.1.1"
 description = "RDFLib is a Python library for working with RDF, a simple yet powerful language for representing information."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
+importlib-metadata = {version = "*", markers = "python_version < \"3.8.0\""}
 isodate = "*"
 pyparsing = "*"
 
 [package.extras]
 docs = ["sphinx (<5)", "sphinxcontrib-apidoc"]
 html = ["html5lib"]
-tests = ["html5lib", "networkx", "nose (==1.3.7)", "nose-timer", "coverage", "black (==21.6b0)", "flake8", "doctest-ignore-unicode (==0.1.2)"]
+tests = ["berkeleydb", "html5lib", "networkx", "pytest", "pytest-cov", "pytest-subtests"]
 
 [[package]]
 name = "rdflib-jsonld"
@@ -342,7 +343,7 @@ testfixtures = "*"
 
 [[package]]
 name = "rdflib-shim"
-version = "1.0.1"
+version = "1.0.3"
 description = "Shim for rdflib 5 and 6 incompatibilities"
 category = "main"
 optional = false
@@ -372,14 +373,14 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
 name = "shexjsg"
-version = "0.7.1"
+version = "0.8.1"
 description = "ShExJSG - Astract Syntax Tree for the ShEx 2.0 language"
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-pyjsg = ">=0.11.5"
+pyjsg = ">=0.11.9"
 
 [[package]]
 name = "six"
@@ -446,7 +447,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "8ce232c8b4e69247b6087757c48c5d9d53bc140c914483b2f4f34a6ef2f29e8d"
+content-hash = "d990cd7da3ae0810757f84a56f3cdddeaec07f7bfff8444d4e843fae0e3679f7"
 
 [metadata.files]
 antlr4-python3-runtime = [
@@ -457,8 +458,8 @@ attrs = [
     {file = "attrs-21.2.0.tar.gz", hash = "sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb"},
 ]
 cachetools = [
-    {file = "cachetools-4.2.4-py3-none-any.whl", hash = "sha256:92971d3cb7d2a97efff7c7bb1657f21a8f5fb309a37530537c71b1774189f2d1"},
-    {file = "cachetools-4.2.4.tar.gz", hash = "sha256:89ea6f1b638d5a73a4f9226be57ac5e4f399d22770b92355f92dcb0f7f001693"},
+    {file = "cachetools-5.0.0-py3-none-any.whl", hash = "sha256:8fecd4203a38af17928be7b90689d8083603073622229ca7077b72d8e5a976e4"},
+    {file = "cachetools-5.0.0.tar.gz", hash = "sha256:486471dfa8799eb7ec503a8059e263db000cdda20075ce5e48903087f79d5fd6"},
 ]
 certifi = [
     {file = "certifi-2021.10.8-py2.py3-none-any.whl", hash = "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"},
@@ -530,8 +531,18 @@ deprecated = [
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
 ]
 frozendict = [
-    {file = "frozendict-2.1.1-py3-none-any.whl", hash = "sha256:bbad8ef1a428f5e6f7e195742fd739f56a5a602f9cf9bbe86f55a4848b1fabd6"},
-    {file = "frozendict-2.1.1.tar.gz", hash = "sha256:655b879217dd445a2023e16154cc231febef802b5c812d5c2e822280ad69e1dc"},
+    {file = "frozendict-2.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3cbb8bd5ddbdd1db1caa670586b50f9e665e60b1c095add5aa04d9e2bedf5f00"},
+    {file = "frozendict-2.1.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:513a3f3a8ff2767492570c78c158845a1cc7b4c954fc9f78ed313b2463727cae"},
+    {file = "frozendict-2.1.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:3b4ac7aafd613959a055818c3e9844822196c874b9c8bf118b6c1419ff1fbbdc"},
+    {file = "frozendict-2.1.2-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bb1ebca998c68c3bf28ce70f14a392431bbe01bfa610e3e9e635176d9ecbba71"},
+    {file = "frozendict-2.1.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c0e09b7159fee7c6dafd727dec2ea7a135f47458dd3996705f9a64e3fca3bf73"},
+    {file = "frozendict-2.1.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:79666516d594ced95a294869988dba2daff89d9d274061f7138e1c49e49428ce"},
+    {file = "frozendict-2.1.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:3cdc8602e398d28887484226a493ae6e96ff3532b4368d4d49ab96c5ee7eb61d"},
+    {file = "frozendict-2.1.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2cfe6d89d2af7b97726a5f789d73b5298eb067a9348a8cc8f0834fdc5349b125"},
+    {file = "frozendict-2.1.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:afaaa4fc0343af15f1153d9e09660f6c388ab1d6d01147bbd7f7979e723258df"},
+    {file = "frozendict-2.1.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f45f7a724e93653f0d446e0cc99e09bda4835f16de08eb1de3b007537e18daa1"},
+    {file = "frozendict-2.1.2-py3-none-any.whl", hash = "sha256:a0650a673ce6e320e8b25a38f4620f42382c081b2088051c81073a67f14bac32"},
+    {file = "frozendict-2.1.2.tar.gz", hash = "sha256:2eb92fbe8dde37075ed0e5dd3dac88a850a04ccfc646d20f3412b72220ddbaf2"},
 ]
 hbreader = [
     {file = "hbreader-0.9.1-py3-none-any.whl", hash = "sha256:9a6e76c9d1afc1b977374a5dc430a1ebb0ea0488205546d4678d6e31cc5f6801"},
@@ -542,8 +553,8 @@ idna = [
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-4.9.0-py3-none-any.whl", hash = "sha256:e8b45564028bc25f8c99f546616112a6df5de6655893d7eb74c9a99680dc9751"},
-    {file = "importlib_metadata-4.9.0.tar.gz", hash = "sha256:ee50794eccb0ec340adbc838344ebb9a6ff2bcba78f752d31fc716497e2149d6"},
+    {file = "importlib_metadata-4.10.0-py3-none-any.whl", hash = "sha256:b7cf7d3fef75f1e4c80a96ca660efbd51473d7e8f39b5ab9210febc7809012a4"},
+    {file = "importlib_metadata-4.10.0.tar.gz", hash = "sha256:92a8b58ce734b2a4494878e0ecf7d79ccd7a128b5fc6014c401e0b61f006f0f6"},
 ]
 importlib-resources = [
     {file = "importlib_resources-5.4.0-py3-none-any.whl", hash = "sha256:33a95faed5fc19b4bc16b29a6eeae248a3fe69dd55d4d229d2b480e23eeaad45"},
@@ -566,8 +577,8 @@ jsonasobj2 = [
     {file = "jsonasobj2-1.0.4.tar.gz", hash = "sha256:f50b1668ef478004aa487b2d2d094c304e5cb6b79337809f4a1f2975cc7fbb4e"},
 ]
 jsonschema = [
-    {file = "jsonschema-4.3.1-py3-none-any.whl", hash = "sha256:91ffbad994d766041c6003d5f8f475cceb890c30084bd0e64847ccb1c10e48bb"},
-    {file = "jsonschema-4.3.1.tar.gz", hash = "sha256:0070ca8dd5bf47941d1e9d8bc115a3654b1138cfb8aff44f3e3527276107314f"},
+    {file = "jsonschema-4.3.2-py3-none-any.whl", hash = "sha256:8697a10a5a5edc922d2eb8556c7f35e814436f3ed8278ec2f65d40e9312d7c80"},
+    {file = "jsonschema-4.3.2.tar.gz", hash = "sha256:cca171fb7544de15ccda236bf78d58434d769c9a2ce21d44e0d209e39eeb8876"},
 ]
 lxml = [
     {file = "lxml-4.7.1-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:d546431636edb1d6a608b348dd58cc9841b81f4116745857b6cb9f8dadb2725f"},
@@ -702,8 +713,8 @@ pyyaml = [
     {file = "PyYAML-5.4.1.tar.gz", hash = "sha256:607774cbba28732bfa802b54baa7484215f530991055bb562efbed5b2f20a45e"},
 ]
 rdflib = [
-    {file = "rdflib-6.0.2-py3-none-any.whl", hash = "sha256:b7642daac8cdad1ba157fecb236f5d1b2aa1de64e714dcee80d65e2b794d88a6"},
-    {file = "rdflib-6.0.2.tar.gz", hash = "sha256:6136ae056001474ee2aff5fc5b956e62a11c3a9c66bb0f3d9c0aaa5fbb56854e"},
+    {file = "rdflib-6.1.1-py3-none-any.whl", hash = "sha256:fc81cef513cd552d471f2926141396b633207109d0154c8e77926222c70367fe"},
+    {file = "rdflib-6.1.1.tar.gz", hash = "sha256:8dbfa0af2990b98471dacbc936d6494c997ede92fd8ed693fb84ee700ef6f754"},
 ]
 rdflib-jsonld = [
     {file = "rdflib-jsonld-0.6.1.tar.gz", hash = "sha256:eda5a42a2e09f80d4da78e32b5c684bccdf275368f1541e6b7bcddfb1382a0e0"},
@@ -714,16 +725,16 @@ rdflib-pyldmod-compat = [
     {file = "rdflib_pyldmod_compat-0.1.2-py3-none-any.whl", hash = "sha256:68aa05d4f4d8f46241e0c37e631b4747f18a356d8accc5bae204350d2f314196"},
 ]
 rdflib-shim = [
-    {file = "rdflib_shim-1.0.1-py3-none-any.whl", hash = "sha256:04c51dd7399c1a2b81caa42acf02b6e088f661d0c642e6fd60a67bd510b6a9f7"},
-    {file = "rdflib_shim-1.0.1.tar.gz", hash = "sha256:aa465a8bcc19018e4aac0598551378d05d4f89525e4aa2e9b6eea7b6d1acb3c0"},
+    {file = "rdflib_shim-1.0.3-py3-none-any.whl", hash = "sha256:7a853e7750ef1e9bf4e35dea27d54e02d4ed087de5a9e0c329c4a6d82d647081"},
+    {file = "rdflib_shim-1.0.3.tar.gz", hash = "sha256:d955d11e2986aab42b6830ca56ac6bc9c893abd1d049a161c6de2f1b99d4fc0d"},
 ]
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
     {file = "requests-2.26.0.tar.gz", hash = "sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7"},
 ]
 shexjsg = [
-    {file = "ShExJSG-0.7.1-py2.py3-none-any.whl", hash = "sha256:788991c4df2ca9b24258fb68c94107c3e140c70bbe398fb15f00338d2a9155e5"},
-    {file = "ShExJSG-0.7.1.tar.gz", hash = "sha256:89fb39a4448f50fd4988108a0a2c7096aa51dd15cd89fef0bc3ad96e04929929"},
+    {file = "ShExJSG-0.8.1-py2.py3-none-any.whl", hash = "sha256:33749e8c90a30cca2cb6e23f94268bed5217a6f7c04d584e64fcb6869b60972b"},
+    {file = "ShExJSG-0.8.1.tar.gz", hash = "sha256:3768c3b9ea011a832cb6f50ba3275678b27ce60a2024fc55cfc897e9031cf838"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
