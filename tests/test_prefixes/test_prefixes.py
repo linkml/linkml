@@ -40,7 +40,7 @@ class PrefixTestCase(unittest.TestCase):
         ])
 
     # TODO: restore. See: https://github.com/linkml/linkml/issues/537
-    @unittest.skip()
+    @unittest.skip('https://github.com/linkml/linkml/issues/537')
     def test_rdfgen(self):
         # TODO: ttl output fails - check why
         # TODO: imports do not seem to work
