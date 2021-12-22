@@ -49,8 +49,5 @@ class Issue532TestCase(TestEnvironmentTestCase):
             results = validator.validate_object(bad_obj)
 
 
-
-
-
 if __name__ == '__main__':
     unittest.main()
