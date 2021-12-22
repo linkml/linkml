@@ -264,54 +264,56 @@ number of rows and columns may be embedding too much application logic
 in the schema. Instead we encourage thinking of "semantic types". For
 example, you could define two types:
 
-```yaml
-types:
+.. code-block:: yaml
 
-  NameString:
-    typeof: string
-    pattern: "^[^\\n]$"
-    description: A description that holds a human readable name
-    comments:
-     - This is designed to support different styles of names from
-       multiple languages, but certain characters such as newlines are
-       never in names
+  types:
+  
+    NameString:
+      typeof: string
+      pattern: "^[^\\n]$"
+      description: A description that holds a human readable name
+      comments:
+       - This is designed to support different styles of names from
+         multiple languages, but certain characters such as newlines are
+         never in names
+  
+    FormattedString:
+      typeof: string
+      description: >-
+        A string in which characters such as newlines are
+        permitted and used for formatting
+  
+  slots:
+    full_name:
+      range: NameString
+    address:
+      range: FormattedString
 
-  FormattedString:
-    typeof: string
-    description: >-
-      A string in which characters such as newlines are
-      permitted and used for formatting
 
-slots:
-  full_name:
-    range: NameString
-  address:
-    range: FormattedString
-
-```
 
 And then hardcode these types into the application.
 
 A more flexible approach would be instead to use annotations on the
 types:
 
-```yaml
-types:
+.. code-block:: yaml
+                
+  types:
+  
+    NameString:
+      typeof: string
+      pattern: "^[^\\n]$"
+      description: ...
+      annotations:
+        dash.singleLine: true
+  
+    FormattedString:
+      typeof: string
+      description: ...
+      annotations:
+        dash.singleLine: false
+  
 
-  NameString:
-    typeof: string
-    pattern: "^[^\\n]$"
-    description: ...
-    annotations:
-      dash.singleLine: true
-
-  FormattedString:
-    typeof: string
-    description: ...
-    annotations:
-      dash.singleLine: false
-
-```
 
 This is better as you can reuse the same vocabulary on different
 types, and you introduce decoupling between specific schemas and your
@@ -330,30 +332,31 @@ Consider a schema that reuses standard vocabularies such as wgs84 for
 slots:
 
 
-```yaml
-prefixes:
-  wgs: http://www.w3.org/2003/01/geo/wgs84_pos#
-  schema: http://schema.org/
+.. code-block:: yaml
 
-slots:
-  latitude:
-    domain: geolocation value
-    range: decimal degree
-    description: >-
-      latitude
-    slot_uri: wgs:lat
-    exact_mappings:
-      - schema:latitude
+  prefixes:
+    wgs: http://www.w3.org/2003/01/geo/wgs84_pos#
+    schema: http://schema.org/
+  
+  slots:
+    latitude:
+      domain: geolocation value
+      range: decimal degree
+      description: >-
+        latitude
+      slot_uri: wgs:lat
+      exact_mappings:
+        - schema:latitude
+  
+    longitude:
+      domain: geolocation value
+      range: decimal degree
+      description: >-
+        longitude
+      slot_uri: wgs:long
+      exact_mappings:
+        - schema:longitude
 
-  longitude:
-    domain: geolocation value
-    range: decimal degree
-    description: >-
-      longitude
-    slot_uri: wgs:long
-    exact_mappings:
-      - schema:longitude
-```
 
 Applications may choose to have specific behavior for lat-long fields,
 for example, including a map widget. Applications may also choose to
@@ -396,27 +399,29 @@ certain conventions are followed, then generic applications can be made
 For example, if we model quantity values as classes and reuse the
 concept from the standard `qudt<http://qudt.org/>` vocabulary:
 
-```yaml
-  quantity value:
-    description: >-
-      A simple quantity, e.g. 2cm
-    attributes:
-      verbatim:
-        description: >-
-          Unnormalized atomic string representation, should in syntax {number} {unit}
-      has unit:
-        description: >-
-          The unit of the quantity
-        slot_uri: qudt:unit
-      has numeric value:
-        description: >-
-          The number part of the quantity
-        range:
-          double
-    class_uri: qudt:QuantityValue
-    mappings:
-      - schema:QuantityValue
-```
+.. code-block:: yaml
+
+    quantity value:
+      description: >-
+        A simple quantity, e.g. 2cm
+      attributes:
+        verbatim:
+          description: >-
+            Unnormalized atomic string representation, should in syntax {number} {unit}
+        has unit:
+          description: >-
+            The unit of the quantity
+          slot_uri: qudt:unit
+        has numeric value:
+          description: >-
+            The number part of the quantity
+          range:
+            double
+      class_uri: qudt:QuantityValue
+      mappings:
+        - schema:QuantityValue
+
+
 
 Then applications can be aware of the semantics of this field and act
 accordingly; for example:

@@ -25,7 +25,7 @@ class JsonSchemaDataValidator(DataValidator):
         return self.validate_object(obj)
 
     def validate_object(self, data: YAMLRoot, target_class: Type[YAMLRoot] = None,
-                        closed: bool = True):
+                        closed: bool = True) -> None:
         """
         validates instance data against a schema
 
@@ -93,6 +93,9 @@ def cli(input, module, target_class, output=None, input_format=None,
                 raise Exception('--index-slot is required for CSV input')
         inargs['index_slot'] = index_slot
         inargs['schema'] = schema
+    if datautils._is_rdf_format(input_format):
+        inargs['schemaview'] = sv
+        inargs['fmt'] = input_format
     obj = loader.load(source=input,  target_class=py_target_class, **inargs)
     # Validation
     if schema is None:
