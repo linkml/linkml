@@ -679,7 +679,9 @@ class SchemaLoader:
             if base_slot is not None:
                 for metaslot_name in base_slot.__dict__.keys():
                     current_val = getattr(new_slot, metaslot_name)
-                    if not current_val and metaslot_name not in ['inverse']:
+                    if not current_val and metaslot_name not in ['inverse', 'aliases',
+                                                                 'exact_mappings', 'narrow_mappings',
+                                                                 'broad_mappings', 'close_mappings']:
                         new_val = deepcopy(getattr(base_slot, metaslot_name))
                         if new_val:
                             setattr(new_slot, metaslot_name, new_val)
