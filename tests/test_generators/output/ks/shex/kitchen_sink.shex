@@ -1,10 +1,10 @@
 BASE <https://w3id.org/linkml/tests/kitchen_sink/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX linkml: <https://w3id.org/linkml/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX schema: <http://schema.org/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX schema1: <http://schema.org/>
 PREFIX core: <https://w3id.org/linkml/tests/core/>
 
 
@@ -94,7 +94,7 @@ core:Agent CLOSED {
 <Company> CLOSED {
     (  $<Company_tes> (  &<Organization_tes> ;
           rdf:type [ <Organization> ] ? ;
-          schema:ceo @<Person> ?
+          schema1:ceo @<Person> ?
        ) ;
        rdf:type [ <Company> ]
     )

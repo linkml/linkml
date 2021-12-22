@@ -9,7 +9,7 @@ Options:
                                   [default:
                                   https://w3id.org/linkml/meta.context.jsonld]
 
-  -f, --format [ttl|json-ld|n3|nquads|nt|nt11|ntriples|trig|trix|ttl|turtle|xml]
+  -f, --format [ttl|hext|json-ld|n3|nquads|nt|nt11|ntriples|trig|trix|ttl|turtle|xml]
                                   Output format (default=ttl)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
