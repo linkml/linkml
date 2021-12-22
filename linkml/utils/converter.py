@@ -1,5 +1,5 @@
 import click
-from linkml.utils import validation
+from linkml.utils import validation, datautils
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -62,17 +62,11 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
 
     inargs = {}
     outargs = {}
-    if input_format == 'json-ld':
-        if len(context) == 0:
-            if schema is not None:
-                context = [_get_context(schema)]
-            else:
-                raise Exception('Must pass in context OR schema for RDF output')
-        inargs['contexts'] = list(context)[0]
-    if input_format == 'rdf' or input_format == 'ttl':
+    if datautils._is_rdf_format(input_format):
         if sv is None:
             raise Exception(f'Must pass schema arg')
         inargs['schemaview'] = sv
+        inargs['fmt'] = input_format
     if _is_xsv(input_format):
         if index_slot is None:
             index_slot = infer_index_slot(sv, target_class)

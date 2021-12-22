@@ -25,13 +25,14 @@ dumpers_loaders = {
     'json': (JSONDumper, JSONLoader),
     'rdf': (RDFLibDumper, RDFLibLoader),
     'ttl': (RDFLibDumper, RDFLibLoader),
-    'json-ld': (RDFDumper, RDFLoader),
+    'json-ld': (RDFLibDumper, RDFLibLoader),
     'csv': (CSVDumper, CSVLoader),
     'tsv': (CSVDumper, CSVLoader),
 }
 
 aliases = {
     'ttl': 'rdf',
+    'jsonld': 'json-ld',
 }
 
 def _get_format(path: str, specified_format: str =None, default=None):
@@ -54,6 +55,10 @@ def _get_format(path: str, specified_format: str =None, default=None):
 
 def _is_xsv(fmt: str) -> bool:
     return fmt == 'csv' or fmt == 'tsv'
+
+def _is_rdf_format(fmt: str) -> bool:
+    return fmt == 'rdf' or fmt == 'ttl' or fmt == 'json-ld'
+
 
 def get_loader(fmt: str) -> Loader:
     return dumpers_loaders[fmt][1]()
