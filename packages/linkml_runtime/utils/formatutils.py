@@ -131,6 +131,10 @@ def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool
 
     Note that this will also convert Decimals to floats or ints; this is necessary
     as both json dumpers and yaml dumpers will encode Decimal types by default.
+    See https://github.com/linkml/linkml/issues
+    
+    This is easier than fixing the individual serializers, described here:
+    
     - JSON: https://bugs.python.org/issue16535, https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
     - YAML: https://stackoverflow.com/questions/21695705/dump-an-python-object-as-yaml-file/51261042, https://github.com/yaml/pyyaml/pull/372
 
