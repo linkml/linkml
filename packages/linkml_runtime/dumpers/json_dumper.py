@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from typing import Dict
 
 from deprecated.classic import deprecated
@@ -41,8 +42,16 @@ class JSONDumper(Dumper):
         :param inject_type: if True (default), add a @type at the top level
         :return: JSON Object representing the element
         """
+        def default(o):
+            if isinstance(o, YAMLRoot):
+                return remove_empty_items(o, hide_protected_keys=True)
+            elif isinstance(o, Decimal):
+                # https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
+                return str(o)
+            else:
+                return json.JSONDecoder().decode(o)
         return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
-                          default=lambda o: remove_empty_items(o, hide_protected_keys=True) if isinstance(o, YAMLRoot) else json.JSONDecoder().decode(o),
+                          default=default,
                           indent='  ')
 
 
