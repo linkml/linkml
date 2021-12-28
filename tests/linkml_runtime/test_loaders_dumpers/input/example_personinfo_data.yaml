@@ -41,9 +41,16 @@ organizations:
     categories:
       - charity
       - non profit
+    score: 1
+    min_salary: 99999.00
   ROR:2:
     name: bar
     categories:
       - shell company
+    score: 1.5
+  ROR:3:
+    score: "1"
+  ROR:4:
+    score: 1.0
 
   
