@@ -89,6 +89,8 @@ classes:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
     id_prefixes:
       - P
+    exact_mappings:
+      - schema:Person
 
   Organization:
     mixins:
@@ -121,6 +123,8 @@ classes:
 
   DiagnosisConcept:
     is_a: Concept
+    close_mappings:
+      - biolink:Disease
 
   ProcedureConcept:
     is_a: Concept
@@ -267,6 +271,8 @@ slots:
     range: Person
   in location:
     range: Place
+    annotations:
+      "biolink:opposite": location_of
   diagnosis:
     range: DiagnosisConcept
     inlined: true
@@ -303,12 +309,24 @@ enums:
     permissible_values:
       TODO:
   EmploymentEventType:
+    description: codes for different kinds of employment/HR related events
+    aliases:
+      - HR code
     permissible_values:
       HIRE:
         meaning: bizcodes:001
+        description: event for a new employee
       FIRE:
         meaning: bizcodes:002
+        annotations:
+          "biolink:opposite": HIRE
       PROMOTION:
         meaning: bizcodes:003
+        description: promotion event
       TRANSFER:
         meaning: bizcodes:004
+        description: transfer internally
+  other codes:
+    permissible_values:
+      a b:
+      1+2:
