@@ -1,0 +1,14 @@
+persons:
+  - id: ORCID:1234
+    full_name: Superman
+    has_organizational_relationships:
+      - related_to: ROR:1
+        relationship_type: MEMBER_OF
+  - id: ORCID:3000
+    full_name: Jor El
+    has_familial_relationships:
+      - related_to: ORCID:1234
+        relationship_type: PARENT_OF
+organizations:
+  - id: ROR:1
+    full_name: Justice League
