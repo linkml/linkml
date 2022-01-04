@@ -1,13 +1,12 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 import yaml
-from jsonasobj2 import JsonObj
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.dumpers import json_dumper
 
 
-def _remove_names(obj: Any) -> Any:
+def _remove_names(obj: Any, parent: Optional[str]) -> Any:
     """
     Remove `name` keys from dictionary objects, where that dictionary is already keyed by name
 
@@ -28,13 +27,16 @@ def _remove_names(obj: Any) -> Any:
         Person:
           description: ...
 
-    :param obj:
+    Also compacts representation of prefixes
+
+    :param obj: dictionary object to recursively transform
+    :param parent: key for parent dict
     :return:
     """
     if isinstance(obj, dict):
-        return {k: _remove_names(v) for k, v in obj.items() if k != 'name'}
+        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None}
     elif isinstance(obj, list):
-        return [_remove_names(x) for x in obj]
+        return [_remove_names(x, parent) for x in obj]
     else:
         return obj
 
@@ -50,9 +52,14 @@ def schema_as_dict(schema: SchemaDefinition) -> Dict:
     :param schema:
     :return: minimal canonical dictionary object
     """
-    obj = json_dumper.to_dict(schema, inject_type=False)
+    obj = json_dumper.to_dict(schema)
+    if '@type' in obj:
+        del obj['@type']
     obj['prefixes'] = {k: v['prefix_reference'] for k, v in obj.get('prefixes', {}).items()}
-    obj = _remove_names(obj)
+    for k, v in obj.get('enums', {}).items():
+        for pv in v.get('permissible_values', {}).values():
+            del pv['text']
+    obj = _remove_names(obj, None)
     return obj
 
 def schema_as_yaml_dump(schema: SchemaDefinition) -> str:

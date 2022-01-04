@@ -31,6 +31,8 @@ default_prefix: ks
 default_range: string
 see_also:
   - https://example.org/
+imports:
+  - linkml:types
 
 subsets:
 
