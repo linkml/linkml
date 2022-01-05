@@ -100,7 +100,7 @@ class PydanticGenerator(OOCodeGenerator):
         return TYPEMAP.get(t.base, t.base)
 
     @staticmethod
-    def generate_enums(all_enums: dict[EnumDefinitionName, EnumDefinition]) -> dict[str, dict]:
+    def generate_enums(all_enums: Dict[EnumDefinitionName, EnumDefinition]) -> Dict[str, dict]:
         # TODO: make an explicit class to represent how an enum is passed to the template
         enums = {}
         for enum_name, enum_orignal in all_enums.items():
