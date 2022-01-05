@@ -6,7 +6,6 @@ from linkml.utils.datautils import infer_root_class
 from tests.test_issues.environment import env
 
 SCHEMA = env.input_path('issue_494/slot_usage_example.yaml')
-DATA = env.input_path('issue_494/data.yaml')
 
 
 class AmbiguousInferredTargetClass(unittest.TestCase):
