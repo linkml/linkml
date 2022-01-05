@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-05T01:10:56
+# Generation date: 2022-01-05T22:54:18
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -182,7 +182,9 @@ class Person(YAMLRoot):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
+        if not isinstance(self.has_familial_relationships, list):
+            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []

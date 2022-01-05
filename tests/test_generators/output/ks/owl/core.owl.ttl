@@ -18,10 +18,10 @@ linkml:SubsetDefinition a owl:Class ;
         core:Agent ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     skos:definition "core schema imported by kitchen_sink    " ;
-    linkml:generation_date "2022-01-05T01:10:50" ;
+    linkml:generation_date "2022-01-05T22:54:10" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "core.yaml" ;
-    linkml:source_file_date "2022-01-05T01:06:03" ;
+    linkml:source_file_date "2022-01-05T22:48:09" ;
     linkml:source_file_size 1902 .
 
 core:AgeInYearsType a owl:Class,
@@ -123,17 +123,17 @@ core:Agent a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "agent" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass core:Agent ;
-            owl:onProperty prov:actedOnBehalfOf ],
+            owl:onClass linkml:String ;
+            owl:onProperty core:id ;
+            owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass core:Activity ;
             owl:onProperty prov:wasInformedBy ],
         [ a owl:Restriction ;
-            owl:onClass linkml:String ;
-            owl:onProperty core:id ;
-            owl:qualifiedCardinality 1 ] ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass core:Agent ;
+            owl:onProperty prov:actedOnBehalfOf ] ;
     skos:definition "a provence-generating agent" ;
     skos:exactMatch prov:Agent .
 
@@ -142,32 +142,32 @@ core:Activity a owl:Class,
     rdfs:label "activity" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:Date ;
-            owl:onProperty prov:startedAtTime ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty prov:used ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty core:description ],
+            owl:onClass core:Agent ;
+            owl:onProperty prov:wasAssociatedWith ],
         [ a owl:Restriction ;
             owl:onClass linkml:String ;
             owl:onProperty core:id ;
             owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass core:Agent ;
-            owl:onProperty prov:wasAssociatedWith ],
+            owl:onClass linkml:Date ;
+            owl:onProperty prov:startedAtTime ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass core:Activity ;
+            owl:onProperty prov:wasInformedBy ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Date ;
             owl:onProperty prov:endedAtTime ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass core:Activity ;
-            owl:onProperty prov:wasInformedBy ] ;
+            owl:onClass linkml:String ;
+            owl:onProperty core:description ] ;
     skos:definition "a provence-generating activity" ;
     skos:exactMatch prov:Activity .
 
