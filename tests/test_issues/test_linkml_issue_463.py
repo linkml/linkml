@@ -22,7 +22,7 @@ contains:
 
 
 
-class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
+class IssuePythonInlinedAsDictCase(TestEnvironmentTestCase):
     env = env
 
     def test_inlined(self):
@@ -39,6 +39,15 @@ class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
         # obj = yaml_loader.loads(data_str, target_class=Container)
         # TODO: this currently yields "TypeError: unhashable type: 'TypeObj'"
         obj = yaml_loader.loads(data_str, target_class=module.Container)
+        ok1 = False
+        ok2 = False
+        for c in obj.contains:
+            if c.label == 'n1' and c.type.label == 'n1 label':
+                ok1 = True
+            if c.label == 'n2' and c.type.label == 'n2 label':
+                ok2 = True
+        assert ok1
+        assert ok2
 
 
 if __name__ == '__main__':
