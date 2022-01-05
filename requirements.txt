@@ -19,7 +19,7 @@ jinja2
 jsonasobj2~=1.0, >=1.0.3
 jsonschema>=3.0.1
 linkml-runtime-api
-linkml-runtime>=1.1.9
+linkml-runtime>=1.1.12
 myst-parser
 openpyxl
 pandas
