@@ -89,6 +89,13 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
                 for a in sv.class_ancestors(r):
                     refs[a] += 1
     candidates = [cn for cn in sv.all_class().keys() if cn not in refs]
+
+    # throw Exception if unambiguous root cannot be inferred
+    if len(candidates) > 1:
+        raise RuntimeError(f"Multiple potential target classes found: {candidates}. "
+                           "Please specify a target using --target_class or by adding "
+                           "tree_root: true to the relevant class in the schema.")
+
     if len(candidates) == 1:
         return candidates[0]
     else:
