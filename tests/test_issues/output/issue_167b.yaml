@@ -188,6 +188,7 @@ slots:
     imported_from: linkml:extensions
     domain: extension
     slot_uri: linkml:tag
+    key: true
     alias: tag
     owner: extension
     domain_of:
@@ -287,6 +288,6 @@ classes:
     class_uri: linkml:Extensible
 metamodel_version: 1.7.0
 source_file: issue_167b.yaml
-source_file_date: '2021-10-27T23:28:23'
+source_file_date: '2022-01-05T01:06:03'
 source_file_size: 818
-generation_date: '2021-10-27T23:34:42'
+generation_date: '2022-01-05T01:11:11'

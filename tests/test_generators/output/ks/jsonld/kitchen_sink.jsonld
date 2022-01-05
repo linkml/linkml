@@ -309,23 +309,46 @@
     {
       "name": "EmploymentEventType",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType",
+      "aliases": [
+        "HR code"
+      ],
+      "description": "codes for different kinds of employment/HR related events",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "permissible_values": [
         {
           "text": "HIRE",
+          "description": "event for a new employee",
           "meaning": "bizcodes:001"
         },
         {
           "text": "FIRE",
-          "meaning": "bizcodes:002"
+          "meaning": "bizcodes:002",
+          "annotations": [
+            {
+              "tag": "biolink:opposite",
+              "value": "HIRE"
+            }
+          ]
         },
         {
           "text": "PROMOTION",
+          "description": "promotion event",
           "meaning": "bizcodes:003"
         },
         {
           "text": "TRANSFER",
+          "description": "transfer internally",
           "meaning": "bizcodes:004"
+        }
+      ]
+    },
+    {
+      "name": "other codes",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/OtherCodes",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "permissible_values": [
+        {
+          "text": "a b"
         }
       ]
     }
@@ -441,6 +464,13 @@
     {
       "name": "in_location",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+      "annotations": [
+        {
+          "tag": "biolink:opposite",
+          "value": "location_of",
+          "@type": "Annotation"
+        }
+      ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
       "owner": "WithLocation",
@@ -1001,6 +1031,9 @@
         "P"
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "exact_mappings": [
+        "schema:Person"
+      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"
@@ -1090,6 +1123,9 @@
     {
       "name": "DiagnosisConcept",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+      "close_mappings": [
+        "biolink:Disease"
+      ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "Concept",
       "slots": [
@@ -1415,9 +1451,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2021-12-28T21:59:02",
-  "source_file_size": 5858,
-  "generation_date": "2021-12-28T22:04:17",
+  "source_file_date": "2022-01-05T01:06:03",
+  "source_file_size": 6345,
+  "generation_date": "2022-01-05T01:10:47",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

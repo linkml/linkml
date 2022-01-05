@@ -1,5 +1,5 @@
 # Auto generated from ordering.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-28T22:05:48
+# Generation date: 2022-01-05T01:12:11
 # Schema: test_inherited_id
 #
 # id: https://example.org/inheritedid

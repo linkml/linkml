@@ -18,11 +18,18 @@ class DiagnosisType(str, Enum):
     
 
 class EmploymentEventType(str, Enum):
-    
+    """
+    codes for different kinds of employment/HR related events
+    """
     HIRE = "HIRE"
     FIRE = "FIRE"
     PROMOTION = "PROMOTION"
     TRANSFER = "TRANSFER"
+    
+
+class OtherCodes(str, Enum):
+    
+    a_b = "a b"
     
 
 

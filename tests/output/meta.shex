@@ -61,7 +61,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Annotatable> ] ? ;
           <annotations> @<Annotation> *
        ) ;
-       rdf:type [ <Annotation> ] ?
+       rdf:type [ <Annotation> ]
     )
 }
 
@@ -372,7 +372,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
              <value> @<String> ;
              <extensions> @<Extension> *
           ) ;
-          rdf:type [ <Extension> ] ?
+          rdf:type [ <Extension> ]
        )
     } OR @<Annotation>
 )

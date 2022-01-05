@@ -323,7 +323,10 @@ Failed validating 'additionalProperties' in schema:
                                    'required': [],
                                    'title': 'EmploymentEvent',
                                    'type': 'object'},
-               'EmploymentEventType': {'description': '',
+               'EmploymentEventType': {'description': 'codes for different '
+                                                      'kinds of '
+                                                      'employment/HR '
+                                                      'related events',
                                        'enum': ['HIRE',
                                                 'FIRE',
                                                 'PROMOTION',
@@ -397,6 +400,10 @@ Failed validating 'additionalProperties' in schema:
                                 'required': ['id'],
                                 'title': 'Organization',
                                 'type': 'object'},
+               'OtherCodes': {'description': '',
+                              'enum': ['a b'],
+                              'title': 'OtherCodes',
+                              'type': 'string'},
                'Person': {'additionalProperties': False,
                           'description': 'A person, living or dead',
                           'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},

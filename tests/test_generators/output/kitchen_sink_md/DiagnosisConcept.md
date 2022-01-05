@@ -48,6 +48,8 @@ Direct:
 
 ```yaml
 name: DiagnosisConcept
+close_mappings:
+- biolink:Disease
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
 is_a: Concept
 
@@ -57,6 +59,8 @@ Induced:
 
 ```yaml
 name: DiagnosisConcept
+close_mappings:
+- biolink:Disease
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
 is_a: Concept
 attributes:

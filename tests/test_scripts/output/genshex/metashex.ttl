@@ -1685,7 +1685,7 @@
     shex:closed true ;
     shex:expression [ a shex:EachOf ;
             shex:expressions ( <https://w3id.org/linkml/Annotation_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
+                        shex:min 1 ;
                         shex:predicate rdf:type ;
                         shex:valueExpr [ a shex:NodeConstraint ;
                                 shex:values ( <https://w3id.org/linkml/Annotation> ) ] ] ) ] .
@@ -1698,7 +1698,7 @@
                 shex:closed true ;
                 shex:expression [ a shex:EachOf ;
                         shex:expressions ( <https://w3id.org/linkml/Extension_tes> [ a shex:TripleConstraint ;
-                                    shex:min 0 ;
+                                    shex:min 1 ;
                                     shex:predicate rdf:type ;
                                     shex:valueExpr [ a shex:NodeConstraint ;
                                             shex:values ( <https://w3id.org/linkml/Extension> ) ] ] ) ] ] <https://w3id.org/linkml/Annotation> ) .

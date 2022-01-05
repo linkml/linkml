@@ -97,8 +97,9 @@ And links, e.g to [Person](Person.md)
 ### Enums
 
  * [DiagnosisType](DiagnosisType.md)
- * [EmploymentEventType](EmploymentEventType.md)
+ * [EmploymentEventType](EmploymentEventType.md) - codes for different kinds of employment/HR related events
  * [FamilialRelationshipType](FamilialRelationshipType.md)
+ * [other codes](other codes.md)
 
 ### Subsets
 

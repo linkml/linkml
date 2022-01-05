@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-28T22:04:26
+# Generation date: 2022-01-05T01:10:56
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -767,19 +767,36 @@ class DiagnosisType(EnumDefinitionImpl):
     )
 
 class EmploymentEventType(EnumDefinitionImpl):
-
+    """
+    codes for different kinds of employment/HR related events
+    """
     HIRE = PermissibleValue(text="HIRE",
+                               description="event for a new employee",
                                meaning=BIZCODES["001"])
     FIRE = PermissibleValue(text="FIRE",
                                meaning=BIZCODES["002"])
     PROMOTION = PermissibleValue(text="PROMOTION",
+                                         description="promotion event",
                                          meaning=BIZCODES["003"])
     TRANSFER = PermissibleValue(text="TRANSFER",
+                                       description="transfer internally",
                                        meaning=BIZCODES["004"])
 
     _defn = EnumDefinition(
         name="EmploymentEventType",
+        description="codes for different kinds of employment/HR related events",
     )
+
+class OtherCodes(EnumDefinitionImpl):
+
+    _defn = EnumDefinition(
+        name="OtherCodes",
+    )
+
+    @classmethod
+    def _addvals(cls):
+        setattr(cls, "a b",
+                PermissibleValue(text="a b") )
 
 # Slots
 class slots:
