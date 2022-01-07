@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-22 21:39
+# Generation date: 2021-12-28T23:40:29
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -37,7 +37,8 @@ DEFAULT_ = LINKML
 # Types
 
 # Class references
-
+class ExtensionTag(URIorCURIE):
+    pass
 
 
 @dataclass
@@ -52,22 +53,22 @@ class Extension(YAMLRoot):
     class_name: ClassVar[str] = "extension"
     class_model_uri: ClassVar[URIRef] = LINKML.Extension
 
-    tag: Union[str, URIorCURIE] = None
+    tag: Union[str, ExtensionTag] = None
     value: str = None
-    extensions: Optional[Union[Union[dict, "Extension"], List[Union[dict, "Extension"]]]] = empty_list()
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, "Extension"]], List[Union[dict, "Extension"]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.tag):
             self.MissingRequiredField("tag")
-        if not isinstance(self.tag, URIorCURIE):
-            self.tag = URIorCURIE(self.tag)
+        if not isinstance(self.tag, ExtensionTag):
+            self.tag = ExtensionTag(self.tag)
 
         if self._is_empty(self.value):
             self.MissingRequiredField("value")
         if not isinstance(self.value, str):
             self.value = str(self.value)
 
-        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -84,10 +85,10 @@ class Extensible(YAMLRoot):
     class_name: ClassVar[str] = "extensible"
     class_model_uri: ClassVar[URIRef] = LINKML.Extensible
 
-    extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
 
