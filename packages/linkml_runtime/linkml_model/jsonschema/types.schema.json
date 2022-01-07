@@ -4,6 +4,7 @@
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
    "properties": {},
+   "required": [],
    "title": "types",
    "type": "object"
 }

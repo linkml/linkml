@@ -30,6 +30,7 @@ slots:
     range: uriorcurie
     alias: tag
     required: true
+    key: true
 
   extension_value:
     description: the actual annotation

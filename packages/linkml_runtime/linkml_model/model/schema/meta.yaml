@@ -16,6 +16,8 @@ prefixes:
   swrl: http://www.w3.org/2003/11/swrl#
   sh: https://w3id.org/shacl/
   owl: http://www.w3.org/2002/07/owl#
+  qb: http://purl.org/linked-data/cube#
+  prov: http://www.w3.org/ns/prov#
 
 default_prefix: linkml
 default_range: string
@@ -62,7 +64,7 @@ slots:
     slot_uri: rdfs:label
     in_subset:
       - owl
-    mappings:
+    exact_mappings:
       - schema:name
     see_also:
       - https://en.wikipedia.org/wiki/Data_element_name
@@ -206,6 +208,17 @@ slots:
     slot_uri: bibo:status
     examples:
       - value: "bibo:draft"
+      
+  source:
+    domain: element
+    range: uriorcurie
+    description: A related resource from which the element is derived.
+    slot_uri: dcterms:source
+    close_mappings:
+      - prov:wasDerivedFrom
+      - schema:isBasedOn
+    comments:
+      - The described resource may be derived from the related resource in whole or in part
 
   # --------------------------------------------------------------
   # Slots that are common to slot definition and class definition
@@ -350,7 +363,7 @@ slots:
     slot_uri: pav:version
     in_subset:
       - owl
-    mappings:
+    exact_mappings:
       - schema:schemaVersion
 
   imports:
@@ -571,7 +584,7 @@ slots:
     description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
     range: boolean
   precedence:
-    description: the relative order in which the rule is applied
+    description: the relative order in which the element occurs
     slot_uri: sh:order
     range: integer
   deactivated:
@@ -656,15 +669,27 @@ slots:
     multivalued: true
     inlined: true
     description: Set of unique keys for this slot
-    mappings:
+    exact_mappings:
       - owl:hasKey
 
+  unique_key_name:
+    domain: unique_key
+    key: true
+    required: true
+    description: name of the unique key
+    
   unique_key_slots:
     domain: unique_key
     multivalued: true
     required: true
     range: slot_definition
     description: list of slot names that form a key
+    
+  slot_names_unique:
+    domain: definition
+    range: boolean
+    description: if true then induced/mangled slot names are not created for class_usage and attributes
+    
 
   # -----------------------------------
   # Slot definition slots
@@ -733,7 +758,7 @@ slots:
     domain: slot_definition
     range: string
     inherited: true
-    description:  >-
+    description:  |-
       function that provides a default value for the slot.  Possible values for this slot are defined in
       biolink.utils.ifabsent_functions.default_library:
         * [Tt]rue -- boolean True
@@ -745,6 +770,8 @@ slots:
         * slot_uri -- URI for the slot
         * class_curie -- CURIE for the containing class
         * class_uri -- URI for the containing class
+    close_mappings:
+      - sh:defaultValue
 
   value_specification_constant:
     abstract: true
@@ -985,11 +1012,50 @@ slots:
     description: Ontology property which this slot is a subproperty of
     slot_uri: rdfs:subPropertyOf
 
-  symmetric:
+  relational_logical_characteristic:
+    abstract: true
     domain: slot_definition
     range: boolean
-    description: True means that any instance of  d s r implies that there is also an instance of r s d
+    description: A property of a slot that pertains to its logical properties
 
+  symmetric:
+    is_a: relational_logical_characteristic
+    description: If s is symmetric, and i.s=v, then v.s=i
+    
+  asymmetric:
+    is_a: relational_logical_characteristic
+    description: If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i
+    comments:
+      - asymmetry is the combination of antisymmetry and irreflexivity
+
+  reflexive:
+    is_a: relational_logical_characteristic
+    description: If s is reflexive, then i.s=i for all instances i
+    comments:
+      - it is rare for a property to be reflexive, this characteristic is added for completeness, consider instead locally_reflexive
+
+  irreflexive:
+    is_a: relational_logical_characteristic
+    description: If s is irreflexive, then there exists no i such i.s=i
+
+  locally_reflexive:
+    is_a: relational_logical_characteristic
+    description: If s is locally_reflexive, then i.s=i for all instances i where s if a class slot for the type of i
+
+  transitive:
+    is_a: relational_logical_characteristic
+    description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
+
+  transitive_form_of:
+    range: slot_definition
+    description: If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive
+    comments:
+      - Example: ancestor_of is the transitive_form_of parent_of
+
+  reflexive_transitive_form_of:
+    is_a: transitive_form_of
+    description: transitive_form_of including the reflexive case
+        
   inverse:
     domain: slot_definition
     range: slot_definition
@@ -1175,6 +1241,71 @@ slots:
     multivalued: true
     inlined: true
 
+  slot_group:
+    domain: slot_definition
+    range: slot_definition
+    description: allows for grouping of related slots into a grouping slot that serves the role of a group
+    slot_uri: sh:group
+    range_expression:
+      slot_conditions:
+        - is_grouping_slot:
+            equals_expression: true
+
+  is_grouping_slot:
+    domain: slot_definition
+    range: boolean
+    description: true if this slot is a grouping slot
+    close_mappings:
+      - sh:PropertyGroup
+
+  # paths
+
+  followed_by:
+    description: in a sequential list, this indicates the next member
+    range: expression
+  reversed:
+    description: true if the slot is to be inversed
+    range: boolean
+  traverse:
+    description: the slot to traverse
+    range: slot_definition
+  path_rule:
+    description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+    domain: slot_definition
+    range: path_expression
+      
+  # -----------------------------------
+  # Relational Roles
+  # -----------------------------------
+  represents_relationship:
+    aliases:
+      - is_reified
+    description: true if this class represents a relationship rather than an entity
+    domain: class_definition
+    range: boolean
+    inherited: true
+    status: testing
+    see_also:
+      - rdf:Statement
+      - https://patterns.dataincubator.org/book/qualified-relation.html
+    comments:
+      - in the context of Entity-Relationship (ER) modeling, this is used to state that a class models a relationship between entities, and should be drawn with a diamond
+      - in the context of RDF, this should be used when instances of the class are `rdf:Statement`s
+      - in the context of property graphs, this should be used when a class is used to represent an edge that connects nodes
+      
+  relational_role:
+    aliases:
+      - reification_role
+    description: the role a slot on a relationship class plays, for example, the subject, object or predicate roles
+    domain: slot_definition
+    range: relational_role_enum
+    inherited: true
+    status: testing
+    comments:
+      - this should only be used on slots that are applicable to class that represent relationships
+      - in the context of RDF, this should be used for slots that can be modeled using the RDF reification vocabulary
+      - in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes
+    
 #==================================
 # Classes                         #
 #==================================
@@ -1194,6 +1325,7 @@ classes:
       - in_subset
       - from_schema
       - imported_from
+      - source
       - see_also
       - deprecated element has exact replacement
       - deprecated element has possible replacement
@@ -1218,6 +1350,7 @@ classes:
       - related mappings
       - narrow mappings
       - broad mappings
+      - precedence
     see_also:
       - https://en.wikipedia.org/wiki/Data_element
 
@@ -1247,6 +1380,7 @@ classes:
       - source_file_date
       - source_file_size
       - generation_date
+      - slot_names_unique
     see_also:
       - https://en.wikipedia.org/wiki/Data_dictionary
     slot_usage:
@@ -1264,6 +1398,8 @@ classes:
       - equals_string
       - equals_string_in
       - equals_number
+      - minimum_value
+      - maximum_value
       - none_of
       - exactly_one_of
       - any_of
@@ -1327,11 +1463,13 @@ classes:
       - code_set_version
       - pv_formula
       - permissible_values
+    close_mappings:
+      - qb:HierarchicalCodeList
 
   expression:
     mixin: true
     abstract: true
-    description: todo
+    description: general mixin for any class that can represent some form of expression
     status: testing
 
   anonymous_expression:
@@ -1342,6 +1480,35 @@ classes:
       - annotatable
       - common_metadata
     status: testing
+
+  path_expression:
+    description: An expression that describes an abstract path from an object to another through a sequence of slot lookups
+    mixins:
+      - expression
+      - extensible
+      - annotatable
+      - common_metadata
+    status: testing
+    slots:
+      - followed_by
+      - none_of
+      - any_of
+      - all_of
+      - exactly_one_of
+      - reversed
+      - traverse
+      - range_expression
+    slot_usage:
+      followed_by:
+        range: path_expression
+      any_of:
+        range: path_expression
+      exactly_one_of:
+        range: path_expression
+      none_of:
+        range: path_expression
+      all_of:
+        range: path_expression
 
     
   slot_expression:
@@ -1402,14 +1569,11 @@ classes:
     slots:
       - singular_name
       - domain
-      #- range
       - slot_uri
       - multivalued
       - inherited
       - readonly
       - ifabsent
-      #- required
-      #- recommended
       - inlined
       - inlined_as_list
       - key
@@ -1420,15 +1584,22 @@ classes:
       - domain_of
       - subproperty_of
       - symmetric
+      - reflexive
+      - locally_reflexive
+      - irreflexive
+      - asymmetric
+      - transitive
       - inverse
       - is_class_field
+      - transitive_form_of
+      - reflexive_transitive_form_of
       - role
       - is_usage_slot
       - usage_slot_name
-      #- minimum_value
-      #- maximum_value
-      #- pattern
-      #- equals_string
+      - relational_role
+      - slot_group
+      - is_grouping_slot
+      - path_rule
 
     slot_usage:
       is_a:
@@ -1489,6 +1660,8 @@ classes:
       - unique_keys
       - rules
       - classification_rules
+      - slot_names_unique
+      - represents_relationship
     slot_usage:
       is_a:
         range: class_definition
@@ -1575,7 +1748,9 @@ classes:
       - annotatable
       - common_metadata
     slots:
+      - unique_key_name
       - unique_key_slots
+
 
 
 #==================================
@@ -1602,4 +1777,28 @@ enums:
       UNCOMMITTED:
       PRESENT:
       ABSENT:
+
+  relational_role_enum:
+    description: enumeration of roles a slot on a relationship class can play
+    permissible_values:
+      SUBJECT:
+        meaning: rdf:subject
+        description: a slot with this role connects a relationship to its subject/source node
+#        exact_mappings:
+#          - owl:annotatedSource
+      OBJECT:
+        meaning: rdf:object
+        description: a slot with this role connects a relationship to its object/target node
+#        exact_mappings:
+#          - owl:annotatedTarget
+      PREDICATE:
+        meaning: rdf:predicate
+        description: a slot with this role connects a relationship to its predicate/property
+#        exact_mappings:
+#          - owl:annotatedProperty
+      NODE:
+        description: a slot with this role connects a symmetric relationship to a node that represents either subject or object node
+      OTHER_ROLE:
+        description: a slot with this role connects a relationship to a node that is not subject/object/predicate
+
 

@@ -149,7 +149,7 @@
                         "https://w3id.org/linkml/Extension"
                      ]
                   },
-                  "min": 0
+                  "min": 1
                }
             ]
          }

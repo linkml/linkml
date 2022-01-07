@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-10-22 21:37\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-12-28T23:38:53\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "IAO": {
          "@id": "http://purl.obolibrary.org/obo/IAO_",
@@ -12,6 +12,8 @@
       "oslc": "http://open-services.net/ns/core#",
       "owl": "http://www.w3.org/2002/07/owl#",
       "pav": "http://purl.org/pav/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "qb": "http://purl.org/linked-data/cube#",
       "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "schema": "http://schema.org/",
@@ -47,8 +49,14 @@
       "apply_to": {
          "@type": "@id"
       },
+      "asymmetric": {
+         "@type": "xsd:boolean"
+      },
       "attributes": {
          "@type": "@id"
+      },
+      "bidirectional": {
+         "@type": "xsd:boolean"
       },
       "boolean_slot": {
          "@type": "@id"
@@ -65,36 +73,6 @@
       },
       "classification_rules": {
          "@type": "@id"
-      },
-      "instance_of": {
-         "@type": "@id"
-      },
-      "slot_conditions": {
-         "@type": "@id"
-      },
-      "bidirectional": {
-         "@type": "xsd:boolean"
-      },
-      "deactivated": {
-         "@type": "xsd:boolean",
-         "@id": "sh:deactivated"
-      },
-      "elseconditions": {
-         "@type": "@id"
-      },
-      "open_world": {
-         "@type": "xsd:boolean"
-      },
-      "postconditions": {
-         "@type": "@id"
-      },
-      "precedence": {
-         "@type": "xsd:integer",
-         "@id": "sh:order"
-      },
-      "preconditions": {
-         "@type": "@id",
-         "@id": "sh:condition"
       },
       "close_mappings": {
          "@type": "@id",
@@ -116,6 +94,10 @@
       "created_on": {
          "@type": "xsd:dateTime",
          "@id": "pav:createdOn"
+      },
+      "deactivated": {
+         "@type": "xsd:boolean",
+         "@id": "sh:deactivated"
       },
       "default_range": {
          "@type": "@id"
@@ -144,10 +126,16 @@
       "domain_of": {
          "@type": "@id"
       },
+      "elseconditions": {
+         "@type": "@id"
+      },
       "enums": {
          "@type": "@id"
       },
       "equals_number": {
+         "@type": "xsd:integer"
+      },
+      "equals_number_in": {
          "@type": "xsd:integer"
       },
       "exact_mappings": {
@@ -166,6 +154,9 @@
       "extensions": {
          "@type": "@id"
       },
+      "followed_by": {
+         "@type": "@id"
+      },
       "from_schema": {
          "@type": "@id",
          "@id": "skos:inScheme"
@@ -173,7 +164,7 @@
       "generation_date": {
          "@type": "xsd:dateTime"
       },
-      "has_members": {
+      "has_member": {
          "@type": "@id"
       },
       "id": {
@@ -202,10 +193,16 @@
          "@type": "@id",
          "@id": "owl:inverseOf"
       },
+      "irreflexive": {
+         "@type": "xsd:boolean"
+      },
       "is_a": {
          "@type": "@id"
       },
       "is_class_field": {
+         "@type": "xsd:boolean"
+      },
+      "is_grouping_slot": {
          "@type": "xsd:boolean"
       },
       "is_usage_slot": {
@@ -227,15 +224,24 @@
       "local_names": {
          "@type": "@id"
       },
+      "locally_reflexive": {
+         "@type": "xsd:boolean"
+      },
       "mappings": {
          "@type": "@id",
          "@id": "skos:mappingRelation"
+      },
+      "maximum_cardinality": {
+         "@type": "xsd:integer"
       },
       "maximum_value": {
          "@type": "xsd:integer"
       },
       "meaning": {
          "@type": "@id"
+      },
+      "minimum_cardinality": {
+         "@type": "xsd:integer"
       },
       "minimum_value": {
          "@type": "xsd:integer"
@@ -264,11 +270,28 @@
       "notes": {
          "@id": "skos:editorialNote"
       },
+      "open_world": {
+         "@type": "xsd:boolean"
+      },
       "owner": {
+         "@type": "@id"
+      },
+      "path_rule": {
          "@type": "@id"
       },
       "permissible_values": {
          "@type": "@id"
+      },
+      "postconditions": {
+         "@type": "@id"
+      },
+      "precedence": {
+         "@type": "xsd:integer",
+         "@id": "sh:order"
+      },
+      "preconditions": {
+         "@type": "@id",
+         "@id": "sh:condition"
       },
       "prefix_reference": {
          "@type": "@id"
@@ -293,11 +316,34 @@
       "recommended": {
          "@type": "xsd:boolean"
       },
+      "reflexive": {
+         "@type": "xsd:boolean"
+      },
+      "reflexive_transitive_form_of": {
+         "@type": "@id"
+      },
       "related_mappings": {
          "@type": "@id",
          "@id": "skos:relatedMatch"
       },
+      "relational_logical_characteristic": {
+         "@type": "xsd:boolean"
+      },
+      "relational_role": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         }
+      },
+      "represents_relationship": {
+         "@type": "xsd:boolean"
+      },
       "required": {
+         "@type": "xsd:boolean"
+      },
+      "reversed": {
          "@type": "xsd:boolean"
       },
       "rules": {
@@ -311,14 +357,28 @@
       "singular_name": {
          "@id": "skos:altLabel"
       },
+      "slot_conditions": {
+         "@type": "@id"
+      },
       "slots": {
          "@type": "@id"
+      },
+      "slot_group": {
+         "@type": "@id",
+         "@id": "sh:group"
+      },
+      "slot_names_unique": {
+         "@type": "xsd:boolean"
       },
       "slot_uri": {
          "@type": "@id"
       },
       "slot_usage": {
          "@type": "@id"
+      },
+      "source": {
+         "@type": "@id",
+         "@id": "dcterms:source"
       },
       "source_file_date": {
          "@type": "xsd:dateTime"
@@ -347,6 +407,15 @@
       "text": "@id",
       "title": {
          "@id": "dcterms:title"
+      },
+      "transitive": {
+         "@type": "xsd:boolean"
+      },
+      "transitive_form_of": {
+         "@type": "@id"
+      },
+      "traverse": {
+         "@type": "@id"
       },
       "tree_root": {
          "@type": "xsd:boolean"
