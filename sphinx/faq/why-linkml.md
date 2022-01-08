@@ -151,6 +151,11 @@ schema to ShEx, with a prototype SHACL generator now available.
 
 Full disclosure: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.
 
+See also:
+
+ * [ShEx generator](https://linkml.io/linkml/generators/shex.html)
+ * [SHACL generator](https://linkml.io/linkml/generators/shacl.html)
+
 ## Why should I use LinkML over SQL DDL?
 
 SQL Data Description Language (DDL; or simply "CREATE TABLE"
@@ -243,11 +248,30 @@ columns (via [title](https://w3id.org/linkml/title)). We have a
 human-friendly textual description. Both of these could be used to
 drive dynamic tooltips in an application that collects or displays data.
 
+See also:
 
+ * [SQL Table generator](https://linkml.io/linkml/generators/sqlddl.html)
 
 ## Why should I use LinkML over UML?
 
-TODO
+UML is a powerful language for software engineer diagramming. [UML
+Class Diagrams](https://en.wikipedia.org/wiki/Class_diagram) provide a
+standard way to draw a class hierarchy for a program, that has some
+similarities to LinkML.
+
+There are a number of reasons to use LinkML over UML
+
+* The UML standard is large and complex
+* UML is more geared towards software engineering and includes features not needed for data modeling, such as operations
+* UML tools are complex and expensive (both financially and in terms of learning curves)
+* In contrast LinkML makes it easy to author schemas using nothing more than a text editor
+* All the tooling for LinkML is free and open
+* LinkML has the ability to compile to other frameworks
+* LinkML has facilities for semantic modeling, not anticipated in UML
+
+Currently there is no way to generate complete UML from a LinkML schema.
+
+However, the yUML generator (used in [the markdown generator](https://linkml.io/linkml/generators/markdown.html)) can be used to make yUML diagrams for any class or schema.
 
 ## Why should I use LinkML over OWL?
 
@@ -267,12 +291,35 @@ large "terminological" ontology.
 
 It *is* possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
-[ChemSchema](https://cmungall.github.io/chem-schema/ontology.html) for
+[ChemSchema](https://chemkg.github.io/chemrof/ontology.html) for
 an example, and see also the
-[linkml-owl](https://github.com/linkml/linkml-owl) framework.
+[linkml-owl](https://github.com/chemkg/chemrof) framework.
 
+See also:
+
+ * [OWL generator](https://linkml.io/linkml/generators/owl.html)
+
+## Why should I use LinkML over Custom spreadsheets?
+
+It is common in many projects for metadata elements and data dictionaries to be maintained as ad-hoc spreadsheets.
+
+Doing this in the absence of any over-arching framework can be
+problematic. It is easy for mistakes to creep into these spreadsheets
+unnoticed, often the semantics are unclear, and when developers are
+asked to write validators or UIs driven by these spreadsheets the lack
+of clear semantics can lead to repetitive error-prone code that is
+costly to maintain.
+
+LinkML provides a more systematic way to manage data dictionaries and metadata elements.
+
+Historically this has required use of YAML files to maintain a schema,
+which can be offputting to non-technical metadata curators. A new framework allows the best of both worlds:
+
+ * [SchemaSheets](https://github.com/linkml/schemasheets) -- author schemas as spreadsheets
+
+This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of linkml.
 
 ## Why should I use LinkML over CSV-on-the-web?
 
-
 TODO
+

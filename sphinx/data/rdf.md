@@ -4,6 +4,10 @@ LinkML can be used to structure data housed as RDF triples, and to convert data 
 
 Our philosophy is to allow reuse of semantic web and linked data tooling without forcing a commitment to the full RDF stack, which many developers find [daunting or off-putting](https://us2ts.org/2019/posts/program-session-x.html)
 
+## Converting and validating RDF
+
+Both `linkml-convert` and `linkml-validate` (see previous section) will work with RDF data. Any RDF serialization format that is supported by RDFLib can be used.
+
 ## JSON-LD
 
 JSON-LD contexts can be generated from any LinkML schema. These are
@@ -21,13 +25,12 @@ Note there are some features missing from JSON-LD generation:
 
 These should be addressed in future LinkML releases
 
-## ShEx
+## ShEx and SHACL
 
-A ShEx shapefile can be generated from any LinkML schema
+A ShEx or SHACL shapefile can be generated from any LinkML schema
 
-## SHACL
-
-SHACL support will be added in the future
+ * [ShEx generator](https://linkml.io/linkml/generators/shex.html)
+ * [SHACL generator](https://linkml.io/linkml/generators/shacl.html)
 
 ## OWL
 
