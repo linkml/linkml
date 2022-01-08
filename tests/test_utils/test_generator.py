@@ -651,7 +651,7 @@ classes:
         # see see https://github.com/linkml/linkml/issues/562
         # in 1.2 series of the data model, 'integer' becomes a neighbor of 'definition'
         if 'integer' in neighbor_refs.typerefs:
-            del neighbor_refs.typerefs['integer']
+             neighbor_refs.typerefs.remove('integer')
 
         self.assertEqual(References(classrefs={'element', 'subset_definition', 'slot_definition', 'local_name',
                                                'extension', 'example', 'class_definition', 'definition',
