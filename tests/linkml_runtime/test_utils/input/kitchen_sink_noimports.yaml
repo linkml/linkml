@@ -224,7 +224,7 @@ slots:
         value: ["v1", "v2", "v3"]
       - tag: "ks:a3"
         value: 'a3.1'
-      - tag: "ks:a3"
+      - tag: "ks:a3_2"
         value: 'v3.2'
   is current:
     range: boolean
