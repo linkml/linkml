@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from enum import unique
 from typing import List, Dict, Union, TextIO
 
-from sqlalchemy import *
+from sqlalchemy import MetaData, Table, ForeignKey, Column, create_mock_engine
+from sqlalchemy.types import Enum, Text, Integer, Float, Boolean, Date, Time, DateTime
 
 from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, Annotation, \
     ClassDefinitionName, Prefix
@@ -14,6 +15,8 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer
 from linkml.utils.generator import Generator
+from linkml.utils.schemaloader import SchemaLoader
+from tests.test_generators.test_sqlddlgen import SCHEMA
 
 
 class SqlNamingPolicy(Enum):
@@ -184,11 +187,17 @@ class SQLTableGenerator(Generator):
         return ddl_str
 
     # TODO: merge with code from sqlddlgen
-    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition):
+    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
         """
         returns a SQL Alchemy column type
         """
         range = slot.range
+
+        # if no SchemaDefinition is explicitly provided as an argument
+        # then simply use the schema that is provided to the SQLTableGenerator() object
+        if not schema:
+            schema = SchemaLoader(data=self.schema).resolve()
+
         if range in schema.classes:
             # FKs treated as Text
             return Text()

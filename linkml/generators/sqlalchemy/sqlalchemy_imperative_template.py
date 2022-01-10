@@ -23,15 +23,19 @@ from {{model_path}} import *
 
 {% for c in classes %}
 tbl_{{c.alias}} = Table('{{c.name}}', metadata,
-    {% for s in c.attributes.values() -%}
+    {%- for s in c.attributes.values() %}
     Column('{{s.name}}',
-           Text,
-           {% if 'foreign_key' in s.annotations -%} ForeignKey('{{ s.annotations['foreign_key'].value }}'), {% endif %}
-           {% if 'primary_key' in s.annotations -%} primary_key=True, {% endif %}
-           ),
-    {% endfor %}
+          Text,
+          {% if 'foreign_key' in s.annotations -%}
+            ForeignKey('{{ s.annotations['foreign_key'].value }}'), 
+          {% endif -%}
+          {% if 'primary_key' in s.annotations -%} 
+            primary_key=True 
+          {%- endif -%}
+          ),
+    {%- endfor %}
 )
-{% endfor %}
+{% endfor -%}
 
 # -- Mappings --
 
