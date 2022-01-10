@@ -7,56 +7,60 @@ CREATE TABLE activity (
 	was_informed_by TEXT, 
 	was_associated_with TEXT, 
 	used TEXT, 
-	description TEXT, 
-	PRIMARY KEY (id)
+	description TEXT
 );
 
 CREATE TABLE "Address" (
 	street TEXT, 
-	city TEXT, 
-	PRIMARY KEY (street, city)
+	city TEXT
 );
 
 CREATE TABLE agent (
 	id TEXT NOT NULL, 
 	acted_on_behalf_of TEXT, 
-	was_informed_by TEXT, 
-	PRIMARY KEY (id)
+	was_informed_by TEXT
 );
 
 CREATE TABLE "BirthEvent" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
-	in_location TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location)
+	in_location TEXT
+);
+
+CREATE TABLE class_with_spaces (
+	slot_with_space_1 TEXT
+);
+
+CREATE TABLE "CodeSystem" (
+	id TEXT NOT NULL, 
+	name TEXT
 );
 
 CREATE TABLE "Company" (
 	id TEXT NOT NULL, 
 	name TEXT, 
 	aliases TEXT, 
-	ceo TEXT, 
-	PRIMARY KEY (id)
+	ceo TEXT
 );
 
 CREATE TABLE "Concept" (
 	id TEXT NOT NULL, 
 	name TEXT, 
-	PRIMARY KEY (id)
+	in_code_system TEXT
 );
 
 CREATE TABLE "Dataset" (
 	persons TEXT, 
 	companies TEXT, 
 	activities TEXT, 
-	PRIMARY KEY (persons, companies, activities)
+	code_systems TEXT
 );
 
 CREATE TABLE "DiagnosisConcept" (
 	id TEXT NOT NULL, 
 	name TEXT, 
-	PRIMARY KEY (id)
+	in_code_system TEXT
 );
 
 CREATE TABLE "EmploymentEvent" (
@@ -64,22 +68,24 @@ CREATE TABLE "EmploymentEvent" (
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	employed_at TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, employed_at)
+	type VARCHAR(9)
 );
 
 CREATE TABLE "Event" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
-	is_current BOOLEAN, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current)
+	is_current BOOLEAN
+);
+
+CREATE TABLE "FakeClass" (
+	test_attribute TEXT
 );
 
 CREATE TABLE "FamilialRelationship" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	type VARCHAR(10) NOT NULL, 
-	related_to TEXT NOT NULL, 
-	PRIMARY KEY (started_at_time, ended_at_time, type, related_to)
+	related_to TEXT NOT NULL
 );
 
 CREATE TABLE "MarriageEvent" (
@@ -87,8 +93,7 @@ CREATE TABLE "MarriageEvent" (
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
 	married_to TEXT, 
-	in_location TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, married_to, in_location)
+	in_location TEXT
 );
 
 CREATE TABLE "MedicalEvent" (
@@ -97,15 +102,13 @@ CREATE TABLE "MedicalEvent" (
 	is_current BOOLEAN, 
 	in_location TEXT, 
 	diagnosis TEXT, 
-	procedure TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location, diagnosis, procedure)
+	procedure TEXT
 );
 
 CREATE TABLE "Organization" (
 	id TEXT NOT NULL, 
 	name TEXT, 
-	aliases TEXT, 
-	PRIMARY KEY (id)
+	aliases TEXT
 );
 
 CREATE TABLE "Person" (
@@ -117,27 +120,29 @@ CREATE TABLE "Person" (
 	age_in_years INTEGER, 
 	addresses TEXT, 
 	has_birth_event TEXT, 
-	aliases TEXT, 
-	PRIMARY KEY (id)
+	aliases TEXT
 );
 
 CREATE TABLE "Place" (
 	id TEXT NOT NULL, 
 	name TEXT, 
-	aliases TEXT, 
-	PRIMARY KEY (id)
+	aliases TEXT
 );
 
 CREATE TABLE "ProcedureConcept" (
 	id TEXT NOT NULL, 
 	name TEXT, 
-	PRIMARY KEY (id)
+	in_code_system TEXT
 );
 
 CREATE TABLE "Relationship" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	related_to TEXT, 
-	type TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, related_to, type)
+	type TEXT
+);
+
+CREATE TABLE subclass_test (
+	slot_with_space_1 TEXT, 
+	slot_with_space_2 TEXT
 );
