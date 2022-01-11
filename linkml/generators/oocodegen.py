@@ -1,4 +1,6 @@
 import abc
+import re
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Optional, List
 
@@ -73,6 +75,32 @@ class OOCodeGenerator(Generator):
 
     def make_multivalued(self, range: str) -> str:
         return f'List<{range}>'
+
+    def replace_invalid_identifier_character(self, char: str) -> str:
+        if char.isalpha() or char.isnumeric() or char == '_':
+            return char
+        else:
+            return underscore(unicodedata.name(char))
+
+    def generate_enum_label(self, value: str) -> str:
+        label = underscore(value)
+        if label.isidentifier():
+            return label
+        else:
+            # add an underscore if the value starts with a digit
+            label = re.sub('(?=^\d)','_', label)
+
+            safe_label = ""
+            for character in label:
+                safe_label += self.replace_invalid_identifier_character(character)
+
+            return safe_label
+
+
+
+            # if not number or letter or underscore
+
+
 
     def create_documents(self) -> List[OODocument]:
         """

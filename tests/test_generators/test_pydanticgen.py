@@ -60,13 +60,14 @@ enums:
 """
 
         sv = SchemaView(unit_test_schema)
-        enums = PydanticGenerator.generate_enums(sv.all_enums())
+        gen = PydanticGenerator(schema=unit_test_schema)
+        enums = gen.generate_enums(sv.all_enums())
         assert enums
         enum = enums['TestEnum']
         assert enum
-        assert enum['values']['value_0'] == '123'
-        assert enum['values']['value_1'] == '+'
-        assert enum['values']['value_2'] == 'This & that, plus maybe a 🎩'
+        assert enum['values']['_123'] == '123'
+        assert enum['values']['PLUS_SIGN'] == '+'
+        assert enum['values']['This_AMPERSAND_that_plus_maybe_a_TOP_HAT'] == 'This & that, plus maybe a 🎩'
         assert enum['values']['Ohio'] == 'Ohio'
 
 if __name__ == '__main__':
