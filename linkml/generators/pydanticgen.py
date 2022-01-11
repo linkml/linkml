@@ -1,17 +1,14 @@
 import os
-import logging
-from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 from copy import deepcopy
+from typing import Union, TextIO, Dict
 
 import click
 from jinja2 import Template
-
-from linkml_runtime.utils.schemaview import SchemaView
-
-#from linkml.generators import pydantic_GEN_VERSION
+# from linkml.generators import pydantic_GEN_VERSION
 from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation, \
     EnumDefinitionName, EnumDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -80,6 +77,7 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     if pyrange is None:
         raise Exception(f'No python type for range: {s.range} // {t}')
     return pyrange
+
 
 class PydanticGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)

@@ -48,7 +48,7 @@ class Person(BaseModel):
     has_employment_history: Optional[List[EmploymentEvent]] = Field(None)
     has_familial_relationships: Optional[List[FamilialRelationship]] = Field(None)
     has_medical_history: Optional[List[MedicalEvent]] = Field(None)
-    age_in_years: Optional[int] = Field(None, description="number of years since birth", ge=0, le=999)
+    age_in_years: Optional[int] = Field(None, description="""number of years since birth""", ge=0, le=999)
     addresses: Optional[List[Address]] = Field(None)
     has_birth_event: Optional[BirthEvent] = Field(None)
     aliases: Optional[List[str]] = Field(None)
