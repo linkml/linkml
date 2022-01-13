@@ -27,7 +27,9 @@ jobs:
       run: poetry install --no-interaction
 
     - name: Build source and wheel archives
-      run: poetry build
+      run: |
+        poetry version $(git describe --tags --abbrev=0)
+        poetry build
 
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@v1.2.2
