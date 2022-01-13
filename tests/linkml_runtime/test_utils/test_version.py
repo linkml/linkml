@@ -1,3 +1,7 @@
+import unittest
+
 import linkml_runtime
 
-print(linkml_runtime.__version__)
+class TestPackageVersion(unittest.TestCase):
+    def test_package_version(self):
+        self.assertIsNotNone(linkml_runtime.__version__)
