@@ -62,7 +62,7 @@ bad-data.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:1234
     age: 33
@@ -87,7 +87,7 @@ better-data-v1.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:1234
     full_name: Lois Lane
@@ -113,7 +113,7 @@ better-data-v2.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:4567
     full_name: Lois Lane
