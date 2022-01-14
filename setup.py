@@ -9,6 +9,7 @@ if sys.version_info < (3, 7, 6):
 NAME = 'linkml'
 
 setup(
+    name=NAME,
     setup_requires=['pbr'],
     pbr=True,
 )
