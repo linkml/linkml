@@ -1204,19 +1204,32 @@ class SchemaView(object):
         dest = self.schema
         for k, v in schema.prefixes.items():
             if k not in dest.prefixes:
-                dest.prefixes[k] = copy(y)
+                dest.prefixes[k] = copy(v)
         for k, v in schema.classes.items():
             if k not in dest.classes:
-                dest.classes[k] = copy(y)
+                dest.classes[k] = copy(v)
         for k, v in schema.slots.items():
             if k not in dest.slots:
-                dest.slots[k] = copy(y)
+                dest.slots[k] = copy(v)
         for k, v in schema.types.items():
             if k not in dest.types:
-                dest.types[k] = copy(y)
+                dest.types[k] = copy(v)
         for k, v in schema.enums.items():
             if k not in dest.types:
-                dest.enums[k] = copy(y)
+                dest.enums[k] = copy(v)
+        self.set_modified()
+
+    def merge_imports(self):
+        """
+        Merges the full imports closure
+
+        :return:
+        """
+        schema = self.schema
+        to_merge = [s2 for s2 in self.all_schema(imports=True) if s2 != schema]
+        for s2 in to_merge:
+            self.merge_schema(s2)
+        schema.imports = []
         self.set_modified()
 
     def copy_schema(self, new_name: str = None) -> SchemaDefinition:
