@@ -1,6 +1,7 @@
 import os
 import unittest
 import logging
+from copy import copy
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
@@ -273,6 +274,20 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.get_uri('TestClass', expand=True) == 'https://w3id.org/linkml/tests/core/TestClass'
 
         assert view.get_uri('string') == 'xsd:string'
+
+    def test_merge_imports(self):
+        """
+        ensure merging and merging imports closure works
+        """
+        view = SchemaView(SCHEMA_WITH_IMPORTS)
+        all_c = copy(view.all_classes())
+        all_c_noi = copy(view.all_classes(imports=False))
+        assert len(all_c_noi) < len(all_c)
+        view.merge_imports()
+        all_c2 = copy(view.all_classes())
+        self.assertCountEqual(all_c, all_c2)
+        all_c2_noi = copy(view.all_classes(imports=False))
+        assert len(all_c2_noi) == len(all_c2)
 
     def test_slot_inheritance(self):
         schema = SchemaDefinition(id='test', name='test')
