@@ -88,19 +88,13 @@ class OOCodeGenerator(Generator):
             return label
         else:
             # add an underscore if the value starts with a digit
-            label = re.sub('(?=^\d)','_', label)
+            label = re.sub('(?=^\d)','number_', label)
 
             safe_label = ""
             for character in label:
                 safe_label += self.replace_invalid_identifier_character(character)
 
             return safe_label
-
-
-
-            # if not number or letter or underscore
-
-
 
     def create_documents(self) -> List[OODocument]:
         """

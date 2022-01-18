@@ -65,7 +65,7 @@ enums:
         assert enums
         enum = enums['TestEnum']
         assert enum
-        assert enum['values']['_123'] == '123'
+        assert enum['values']['number_123'] == '123'
         assert enum['values']['PLUS_SIGN'] == '+'
         assert enum['values']['This_AMPERSAND_that_plus_maybe_a_TOP_HAT'] == 'This & that, plus maybe a 🎩'
         assert enum['values']['Ohio'] == 'Ohio'
