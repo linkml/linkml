@@ -18,9 +18,7 @@ class DiagnosisType(str, Enum):
     
 
 class EmploymentEventType(str, Enum):
-    """
-    codes for different kinds of employment/HR related events
-    """
+    
     HIRE = "HIRE"
     FIRE = "FIRE"
     PROMOTION = "PROMOTION"
