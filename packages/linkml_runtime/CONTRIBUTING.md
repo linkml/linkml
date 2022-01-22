@@ -1,6 +1,6 @@
 # Contribution Guidelines
 
-When contributing to this repository, please first discuss the change you wish to make via an issue, email, or any other method, with the owners of this repository before issuing a pull request.
+When contributing to this repository, please first discuss the changes you wish to make via an issue, email, or any other method, with the owners of this repository before issuing a pull request.
 
 ## How to contribute
 
@@ -13,6 +13,7 @@ You can use the [Issues](https://github.com/linkml/linkml-runtime/issues) tab to
 * Describe the behavior you observed after following the steps and point out what exactly is the problem with that behavior.
 * Explain which behavior you expected to see instead and why.
 * Provide screenshots of the expected or actual behaviour where applicable.
+* Tag the issue with appropriate label names. For ex., if your issue is about a bug that needs to be fixed in the repo, tag the issue with the `bug` label from the list of [labels](https://github.com/linkml/linkml-runtime/labels). If an appropriate label name doesn't exist, create one, with a name that clearly encapsulates the topic of the issue.
 
 ### The development lifecycle
 
@@ -23,7 +24,7 @@ You can use the [Issues](https://github.com/linkml/linkml-runtime/issues) tab to
 
 Note: All the development must be done on a branch on your fork.
 
-> An LBL engineer must review and accept your pull request. A code review (which happens with both the contributor and the reviewer present) is required for contributing.
+> A code review (which happens with both the contributor and the reviewer present) is required for contributing.
 
 ## Development environment setup
 
@@ -37,16 +38,23 @@ poetry install
 3. Run any python scripts or CLI commands by prefixing with `poetry run`.
 
 ```
-poetry run python your_script.py
-poetry run pytest
+poetry run python your_script.py  # ex of how to run standalone python script
+poetry run pytest # ex of how to invoke CLI tools
+```
+
+4. Refer to the poetry docs for details on how to use the [add](https://python-poetry.org/docs/cli/#add), [update](https://python-poetry.org/docs/cli/#update) and [remove](https://python-poetry.org/docs/cli/#remove) commands.
+
+### Creating `requirements.txt`
+
+To export the list of dependents from the `poetry.lock` file into a `requirements.txt` file, use the following command:
+
+```
+poetry export -f requirements.txt --output requirements.txt
 ```
 
 ## Release process
 
 Once the code has been merged into the `main` branch on this repo, there are a few steps that need to be completed to ensure a release is complete.
-
-* If there are any new authors on the repository, add them to the [AUTHORS](AUTHORS) file.
-* Update the [ChangeLog](ChangeLog) with a brief summary of the changes introduced in the latest release.
 
 ### Creating a release
 
@@ -60,7 +68,7 @@ Once the code has been merged into the `main` branch on this repo, there are a f
 
 ## Testing
 
-All code added to the linkml-runtime source must have tests. The repo uses pytest to run tests. The test code is located in the tests subdirectory.
+All code added to the linkml-runtime source must have tests. The repo uses the native `unittest` module to run tests. The test code is located in the tests subdirectory.
 
 You can run the test suite in the following way:
 
