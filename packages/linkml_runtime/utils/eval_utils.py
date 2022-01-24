@@ -99,13 +99,23 @@ def eval_(node, bindings={}):
     if isinstance(node, ast.Num):
         return node.n
     elif isinstance(node, ast.Str):
-        return node.value
+        if 's' in vars(node):
+            return node.s
+        else:
+            return node.value
     elif isinstance(node, ast.Constant):
+        return node.value
+    elif isinstance(node, ast.NameConstant):
+        # can be removed when python 3.7 is no longer supported
         return node.value
     elif isinstance(node, ast.Name):
         return bindings.get(node.id)
     elif isinstance(node, ast.Subscript):
-        k = eval_(node.slice, bindings)
+        if isinstance(node.slice, ast.Index):
+            # required for python 3.7
+            k = eval_(node.slice.value, bindings)
+        else:
+            k = eval_(node.slice, bindings)
         v = eval_(node.value, bindings)
         return v[k]
     elif isinstance(node, ast.Attribute):
