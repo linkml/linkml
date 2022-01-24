@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TextIO, Union, Optional, Callable, Dict, Type, Any
+from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 
 from hbreader import FileInfo, hbread
 from jsonasobj2 import as_dict
@@ -34,7 +34,7 @@ class Loader(ABC):
 
     def load_source(self,
                     source: Union[str, dict, TextIO],
-                    loader: Callable[[Union[str, Dict], FileInfo], Optional[Dict]],
+                    loader: Callable[[Union[str, Dict], FileInfo], Optional[Union[Dict, List]]],
                     target_class: Type[YAMLRoot],
                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
                     metadata: Optional[FileInfo] = None) -> Optional[YAMLRoot]:
@@ -58,8 +58,13 @@ class Loader(ABC):
         else:
             data = source
         data_as_dict = loader(data, metadata)
-        return target_class(data_as_dict) if isinstance(data_as_dict, list) else \
-               target_class(**as_dict(data_as_dict)) if data_as_dict is not None else None
+        if data_as_dict:
+            if isinstance(data_as_dict, list):
+                return [target_class(**as_dict(x)) for x in data_as_dict]
+            else:
+                return target_class(**as_dict(data_as_dict))
+        else:
+            return None
 
     @abstractmethod
     def load(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
