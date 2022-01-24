@@ -47,7 +47,6 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     :return: inferred value, or None if not inference performed
     """
     cls_name = type(obj).class_name
-    #print(f'   GETTING INDUCED={slot_name}')
     slot = schemaview.induced_slot(slot_name, cls_name)
     logging.debug(f'   CONF={config}')
     if config.use_string_serialization:
@@ -96,7 +95,10 @@ def infer_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName], s
 def infer_all_slot_values(obj: YAMLRoot, schemaview: SchemaView,
                           policy: Policy = Policy.STRICT, config: Config = Config()):
     """
-    Walks object tree inferring all slot values
+    Walks object tree inferring all slot values.
+
+    - if a slot has a string_serialization metaslot, apply this
+    - if a slot has a equals_expression metaslot, apply this. See :func:`eval_expr()`
 
     :param obj:
     :param schemaview:
