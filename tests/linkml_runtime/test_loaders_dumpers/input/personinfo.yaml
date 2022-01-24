@@ -40,6 +40,9 @@ types:
     base: str
     uri: xsd:anyURI
 
+  SalaryType:
+    typeof: decimal
+
 classes:
 
   NamedThing:
@@ -97,9 +100,22 @@ classes:
       - founding_date
       - founding_location
       - categories
+      - score
+      - min_salary
     slot_usage:
       categories:
         range: OrganizationType
+    rules:
+      - postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 0
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 80000.00
+            
+            
 
   Place:
     mixins:
@@ -176,6 +192,7 @@ classes:
     is_a: Event
     slots:
       - employed_at
+      - salary
 
   MedicalEvent:
     is_a: Event
@@ -246,6 +263,11 @@ slots:
     range: integer
     minimum_value: 0
     maximum_value: 999
+  score:
+    description: A score between 0 and 5, represented as a decimal
+    range: decimal
+    minimum_value: 0.0
+    maximum_value: 5.0
   related_to:
     range: NamedThing
   depicted_by:
@@ -281,6 +303,10 @@ slots:
   categories:
     multivalued: true
 
+  salary:
+    range: SalaryType
+  min_salary:
+    range: SalaryType
 
     
 enums:

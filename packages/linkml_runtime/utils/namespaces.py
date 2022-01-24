@@ -185,7 +185,7 @@ class Namespaces(CaseInsensitiveDict):
 
     def uri_or_curie_for(self, prefix: Union[str, URIRef], suffix: str) -> str:
         """ Return a CURIE for prefix/suffix in possible, else a URI """
-        if isinstance(prefix, URIRef) or ':/' in prefix:
+        if isinstance(prefix, URIRef) or ':/' in str(prefix):
             prefix_as_uri = str(prefix)
             for k, v in self.items():
                 if not k.startswith('@') and prefix_as_uri == str(v):

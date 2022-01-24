@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-11-27T19:59:07
+# Generation date: 2021-12-26T18:13:04
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -22,8 +22,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String, Uri, Uriorcurie
-from linkml_runtime.utils.metamodelcore import Bool, URI, URIorCURIE, XSDDate
+from linkml_runtime.linkml_model.types import Boolean, Date, Decimal, Float, Integer, String, Uri, Uriorcurie
+from linkml_runtime.utils.metamodelcore import Bool, Decimal, URI, URIorCURIE, XSDDate
 
 metamodel_version = "1.7.0"
 
@@ -60,6 +60,13 @@ class ImageURL(Uri):
     type_class_curie = "xsd:anyURI"
     type_name = "ImageURL"
     type_model_uri = PERSONINFO.ImageURL
+
+
+class SalaryType(Decimal):
+    type_class_uri = XSD.decimal
+    type_class_curie = "xsd:decimal"
+    type_name = "SalaryType"
+    type_model_uri = PERSONINFO.SalaryType
 
 
 # Class references
@@ -242,6 +249,8 @@ class Organization(NamedThing):
     founding_date: Optional[str] = None
     founding_location: Optional[Union[str, PlaceId]] = None
     categories: Optional[Union[Union[str, "OrganizationType"], List[Union[str, "OrganizationType"]]]] = empty_list()
+    score: Optional[Decimal] = None
+    min_salary: Optional[Union[Decimal, SalaryType]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -262,6 +271,12 @@ class Organization(NamedThing):
         if not isinstance(self.categories, list):
             self.categories = [self.categories] if self.categories is not None else []
         self.categories = [v if isinstance(v, OrganizationType) else OrganizationType(v) for v in self.categories]
+
+        if self.score is not None and not isinstance(self.score, Decimal):
+            self.score = Decimal(self.score)
+
+        if self.min_salary is not None and not isinstance(self.min_salary, SalaryType):
+            self.min_salary = SalaryType(self.min_salary)
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
@@ -562,10 +577,14 @@ class EmploymentEvent(Event):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.EmploymentEvent
 
     employed_at: Optional[Union[str, OrganizationId]] = None
+    salary: Optional[Union[Decimal, SalaryType]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.employed_at is not None and not isinstance(self.employed_at, OrganizationId):
             self.employed_at = OrganizationId(self.employed_at)
+
+        if self.salary is not None and not isinstance(self.salary, SalaryType):
+            self.salary = SalaryType(self.salary)
 
         super().__post_init__(**kwargs)
 
@@ -753,6 +772,9 @@ slots.current_address = Slot(uri=PERSONINFO.current_address, name="current_addre
 slots.age_in_years = Slot(uri=PERSONINFO.age_in_years, name="age_in_years", curie=PERSONINFO.curie('age_in_years'),
                    model_uri=PERSONINFO.age_in_years, domain=None, range=Optional[int])
 
+slots.score = Slot(uri=PERSONINFO.score, name="score", curie=PERSONINFO.curie('score'),
+                   model_uri=PERSONINFO.score, domain=None, range=Optional[Decimal])
+
 slots.related_to = Slot(uri=PERSONINFO.related_to, name="related_to", curie=PERSONINFO.curie('related_to'),
                    model_uri=PERSONINFO.related_to, domain=None, range=Optional[Union[str, NamedThingId]])
 
@@ -800,6 +822,12 @@ slots.ended_at_time = Slot(uri=PROV.endedAtTime, name="ended_at_time", curie=PRO
 
 slots.categories = Slot(uri=PERSONINFO.categories, name="categories", curie=PERSONINFO.curie('categories'),
                    model_uri=PERSONINFO.categories, domain=None, range=Optional[Union[str, List[str]]])
+
+slots.salary = Slot(uri=PERSONINFO.salary, name="salary", curie=PERSONINFO.curie('salary'),
+                   model_uri=PERSONINFO.salary, domain=None, range=Optional[Union[Decimal, SalaryType]])
+
+slots.min_salary = Slot(uri=PERSONINFO.min_salary, name="min_salary", curie=PERSONINFO.curie('min_salary'),
+                   model_uri=PERSONINFO.min_salary, domain=None, range=Optional[Union[Decimal, SalaryType]])
 
 slots.hasAliases__aliases = Slot(uri=PERSONINFO.aliases, name="hasAliases__aliases", curie=PERSONINFO.curie('aliases'),
                    model_uri=PERSONINFO.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])

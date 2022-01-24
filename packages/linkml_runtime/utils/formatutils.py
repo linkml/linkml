@@ -1,10 +1,13 @@
 import re
-from typing import List, Any
+from decimal import Decimal
+from numbers import Number
+from typing import List, Any, Union
 
 from jsonasobj2 import JsonObj, as_dict, is_list, is_dict, items, as_json_obj
 
 ws_pattern = re.compile(r'\s+')
 us_pattern = re.compile(r'_+')
+
 
 
 def camelcase(txt: str) -> str:
@@ -126,6 +129,14 @@ def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool
 
     The above situation ONLY applies when there is ONE k,v pair and v is a dictionary
 
+    Note that this will also convert Decimals to floats or ints; this is necessary
+    as both json dumpers and yaml dumpers will encode Decimal types by default.
+    See https://github.com/linkml/linkml/issues
+    
+    This is easier than fixing the individual serializers, described here:
+    
+    - JSON: https://bugs.python.org/issue16535, https://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
+    - YAML: https://stackoverflow.com/questions/21695705/dump-an-python-object-as-yaml-file/51261042, https://github.com/yaml/pyyaml/pull/372
 
     :param obj: Object to be tweaked
     :param hide_protected_keys: True means remove keys that begin with an underscore
@@ -154,5 +165,13 @@ def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool
         return obj_dict if not inside or not is_empty(obj_dict) else None
     elif is_empty(obj):
         return None
+    elif isinstance(obj, Decimal):
+        # note that attempting to implement https://bugs.python.org/issue16535
+        # will not work for yaml serializations
+        v = str(obj)
+        if '.' in v and not v.endswith('.0'):
+            return float(obj)
+        else:
+            return int(obj)
     else:
         return obj
