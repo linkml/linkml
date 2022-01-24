@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Union, TextIO, Optional, Dict, Type
 
 from hbreader import FileInfo
@@ -15,8 +16,7 @@ class JSONLoader(Loader):
             data_as_dict = json.loads(data) if isinstance(data, str) else data
             typ = data_as_dict.pop('@type', None)
             if typ and typ != target_class.__name__:
-                # TODO: connect this up with the logging facility or warning?
-                print(f"Warning: input type mismatch. Expected: {target_class.__name__}, Actual: {typ}")
+                logging.warning(f"Warning: input type mismatch. Expected: {target_class.__name__}, Actual: {typ}")
             return self.json_clean(data_as_dict)
 
         if not metadata:
