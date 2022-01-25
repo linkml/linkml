@@ -1,12 +1,6 @@
 import unittest
 
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.loaders import yaml_loader
-from linkml_runtime.utils.compile_python import compile_python
-
-from linkml.generators.pythongen import PythonGenerator
-from tests.test_issues.environment import env
-from tests.utils.test_environment import TestEnvironmentTestCase
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
