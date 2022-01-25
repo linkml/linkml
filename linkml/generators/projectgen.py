@@ -2,7 +2,7 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Union, Dict, List, Any
+from typing import Union, Dict, List, Any, Type
 from functools import lru_cache
 from dataclasses import dataclass, field
 
@@ -29,6 +29,11 @@ from linkml.generators.sqlddlgen import SQLDDLGenerator
 from linkml.generators.excelgen import ExcelGenerator
 from linkml.generators.javagen import JavaGenerator
 
+PATH_FSTRING = str
+GENERATOR_NAME = str
+ARG_DICT = Dict[str, Any]
+CONFIG_TUPLE = Tuple[Type[Generator], PATH_FSTRING, ARG_DICT]
+GEN_MAP = Dict[GENERATOR_NAME, CONFIG_TUPLE]
 GEN_MAP = {
     'graphql': (GraphqlGenerator, 'graphql/{name}.graphql', {}),
     'jsonldcontext': (ContextGenerator, 'jsonld/{name}.context.jsonld', {}),
@@ -70,7 +75,7 @@ class ProjectConfiguration:
     Global project configuration, and per-generator configurations
     """
     directory: str = 'tmp'
-    generator_args: Dict[str, Dict[str,Any]] = field(default_factory=lambda: defaultdict(dict))
+    generator_args: Dict[str, Dict[str, Any]] = field(default_factory=lambda: defaultdict(dict))
     includes: List[str] = None
     excludes: List[str] = None
     mergeimports: bool = None
@@ -109,7 +114,9 @@ class ProjectGenerator:
                 gen = gen_cls(local_path, **all_gen_args)
                 serialize_args = {'mergeimports': config.mergeimports}
                 for k, v in all_gen_args.items():
-                    serialize_args[k] = v.format(name=name, parent=parent_dir)
+                    if isinstance(v, str):
+                        v = v.format(name=name, parent=parent_dir)
+                    serialize_args[k] = v
                 logging.info(f' ARGS: {serialize_args}')
                 gen_dump = gen.serialize(**serialize_args)
                 if parts[-1] != '':
