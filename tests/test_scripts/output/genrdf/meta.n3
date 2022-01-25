@@ -2744,6 +2744,10 @@ linkml:CommonMetadata a linkml:ClassDefinition ;
         linkml:todos .
 
 linkml:mappings a linkml:SlotDefinition ;
+    skos:altLabel "alternate identifiers",
+        "alternate ids",
+        "identifiers",
+        "xrefs" ;
     skos:definition "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective." ;
     skos:inScheme linkml:mappings ;
     skos:mappingRelation skos:mappingRelation ;
@@ -3153,33 +3157,33 @@ linkml:meta a linkml:SchemaDefinition ;
         "xsd" ;
     linkml:enums linkml:presence_enum,
         linkml:pv_formula_options ;
-    linkml:generation_date "2022-01-05T01:12:21"^^xsd:dateTime ;
+    linkml:generation_date "2022-01-25T03:29:38"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:mappings,
         linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "pav" ;
-            linkml:prefix_reference pav: ],
-        [ linkml:prefix_prefix "owl" ;
-            linkml:prefix_reference owl: ],
+    linkml:prefixes [ linkml:prefix_prefix "OIO" ;
+            linkml:prefix_reference OIO: ],
         [ linkml:prefix_prefix "sh" ;
             linkml:prefix_reference sh1: ],
-        [ linkml:prefix_prefix "bibo" ;
-            linkml:prefix_reference bibo: ],
-        [ linkml:prefix_prefix "OIO" ;
-            linkml:prefix_reference OIO: ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ],
-        [ linkml:prefix_prefix "swrl" ;
-            linkml:prefix_reference swrl: ],
-        [ linkml:prefix_prefix "skos" ;
-            linkml:prefix_reference skos: ],
         [ linkml:prefix_prefix "schema" ;
             linkml:prefix_reference schema1: ],
+        [ linkml:prefix_prefix "bibo" ;
+            linkml:prefix_reference bibo: ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference pav: ],
+        [ linkml:prefix_prefix "skos" ;
+            linkml:prefix_reference skos: ],
+        [ linkml:prefix_prefix "swrl" ;
+            linkml:prefix_reference swrl: ],
         [ linkml:prefix_prefix "oslc" ;
-            linkml:prefix_reference oslc: ] ;
+            linkml:prefix_reference oslc: ],
+        [ linkml:prefix_prefix "owl" ;
+            linkml:prefix_reference owl: ] ;
     linkml:slots linkml:abstract,
         linkml:alias,
         linkml:aliases,
@@ -3349,7 +3353,7 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "2022-01-05T01:07:33"^^xsd:dateTime ;
+    linkml:source_file_date "2022-01-25T03:25:26"^^xsd:dateTime ;
     linkml:source_file_size 45186 ;
     linkml:subsets linkml:owl ;
     linkml:types linkml:boolean,
