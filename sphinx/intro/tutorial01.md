@@ -92,6 +92,7 @@ Outputs:
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
    "properties": {},
+   "required": [],
    "title": "personinfo",
    "type": "object"
 }
@@ -185,7 +186,7 @@ This will produce an RDF/turtle file as follows
 ```turtle
 @prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
 
-[] a ns1:dict ;
+[] a ns1:Person ;
     ns1:age "32" ;
     ns1:full_name "Clark Kent" ;
     ns1:id "ORCID:1234" ;

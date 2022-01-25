@@ -54,6 +54,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#types">Types</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#enums">Enums</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#subsets">Subsets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metamodel">Metamodel</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
@@ -368,7 +369,23 @@ re-declare</p>
 </section>
 <section id="subsets">
 <h2>Subsets<a class="headerlink" href="#subsets" title="Permalink to this headline"></a></h2>
-<p>Elements of a schema can be partitioned into named <a class="reference external" href="https://w3id.org/linkml/SubsetDefinition">subsets</a>. These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposs.</p>
+<p>Elements of a schema can be partitioned into named <a class="reference external" href="https://w3id.org/linkml/SubsetDefinition">subsets</a>. These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposes.</p>
+</section>
+<section id="metamodel">
+<h2>Metamodel<a class="headerlink" href="#metamodel" title="Permalink to this headline"></a></h2>
+<p>The LinkML <em>metamodel</em> describes LinkML itself. All LinkML schemas
+instantiate the <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">subsets</a>
+class in the metamodel, and all elements of a schema instantiate other
+metamodel classes.</p>
+<p>All metamodel elements are in the <a class="reference external" href="https://w3id.org/linkml/">https://w3id.org/linkml/</a> namespace, e.g:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">https://w3id.org/linkml/SchemaDefinition</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/ClassDefinition">https://w3id.org/linkml/ClassDefinition</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/SlotDefinition">https://w3id.org/linkml/SlotDefinition</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/EnumDefinition">https://w3id.org/linkml/EnumDefinition</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/TypeDefinition">https://w3id.org/linkml/TypeDefinition</a></p></li>
+</ul>
+<p><img alt="metamodel" src="../_images/metamodel.png" /></p>
 </section>
 </section>
 

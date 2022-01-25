@@ -49,8 +49,13 @@
 <li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">CSVs and Tabular Data</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#conversion">Conversion</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#on-the-fly-denormalization">On the fly denormalization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conversion">Conversion</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#conventions-for-working-with-tabular-data">Conventions for working with tabular data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#container-objects">Container objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#on-the-fly-denormalization">On the fly denormalization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-relational-databases">Working with Relational Databases</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inference-of-schemas-from-tabular-data">Inference of schemas from tabular data</a></li>
 </ul>
 </li>
@@ -60,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -101,10 +107,55 @@
 <section id="conversion">
 <h2>Conversion<a class="headerlink" href="#conversion" title="Permalink to this headline"></a></h2>
 <p>the <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> script can be used to convert between CSVs/TSVs and other formats like JSON/RDF. The same tooling for <a class="reference internal" href="validating-data.html"><span class="doc std std-doc">validating-data</span></a> operate in the same way.</p>
+<section id="conventions-for-working-with-tabular-data">
+<h3>Conventions for working with tabular data<a class="headerlink" href="#conventions-for-working-with-tabular-data" title="Permalink to this headline"></a></h3>
+<p>LinkML allows you to create schemas with complex nested data - these
+don’t necessarily have a simple unified mapping to
+tables/TSVs. However, you can still work with tabular representations
+if your schema has a certain “shape” and you provide sufficient hints.</p>
+</section>
+<section id="container-objects">
+<h3>Container objects<a class="headerlink" href="#container-objects" title="Permalink to this headline"></a></h3>
+<p>See <span class="xref myst">part 2 of the tutorial</span> for more on container objects.</p>
+<p>To serialize your data objects as TSVs, it’s assumed that you have a
+class in your schema that serves the role of <em>container</em>. It can be
+called whatever you like. You can also annotate this with
+<a class="reference external" href="https://w3id.org/linkml/tree_root">tree_root</a> set to true. This class will have a multivalued slot pointing at the list of things you want to serialize in the TSV. This slot is known as the <em>index slot</em></p>
+<p>For example, in the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a> schema, the Container class has two possible index slots:</p>
+<p><a class="reference external" href="https://yuml.me/diagram/nofunky;dir:TB/class/%5BPerson%5D,%5BOrganization%5D,%5BOrganization%5D%3Corganizations%200..*-++%5BContainer%5D,%5BPerson%5D%3Cpersons%200..*-++%5BContainer%5D"><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BPerson%5D,%5BOrganization%5D,%5BOrganization%5D%3Corganizations%200..*-++%5BContainer%5D,%5BPerson%5D%3Cpersons%200..*-++%5BContainer%5D" /></a></p>
+<ul class="simple">
+<li><p>persons: points at a list of Person objects</p></li>
+<li><p>organizations: points at a list of Organization objects</p></li>
+</ul>
+<p>You can only serialize one of these in any one TSV (using more advanced techniques you could create a union class for Person and Organization and serialize this, but this is outside the scope of this tutorial)</p>
+<p>The linkml command line tools for conversion and validation will do
+their best to guess the index slot and the container, but if there is
+no unambiguous choice, then have to provide these using the following
+arguments:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="o">-</span><span class="n">C</span><span class="p">,</span> <span class="o">--</span><span class="n">target</span><span class="o">-</span><span class="k">class</span> <span class="nc">TEXT</span>         <span class="n">name</span> <span class="n">of</span> <span class="k">class</span> <span class="nc">in</span> <span class="n">datamodel</span> <span class="n">that</span> <span class="n">the</span> <span class="n">root</span>
+                                  <span class="n">node</span> <span class="n">instantiates</span>
+
+  <span class="o">-</span><span class="n">S</span><span class="p">,</span> <span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">slot</span> <span class="n">TEXT</span>           <span class="n">top</span> <span class="n">level</span> <span class="n">slot</span><span class="o">.</span> <span class="n">Required</span> <span class="k">for</span> <span class="n">CSV</span>
+                                  <span class="n">dumping</span><span class="o">/</span><span class="n">loading</span>
+</pre></div>
+</div>
+<p>For example, to serialize the organizations in the provided YAML data file in this repository, you can run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert -t tsv -s examples/PersonSchema/personinfo.yaml -C Container -S organizations examples/PersonSchema/data/example_personinfo_data.yaml
+</pre></div>
+</div>
+<p>Note that currently serializing the person objects won’t work, as the Person class is too nested to be serialized as TSV</p>
 </section>
 <section id="on-the-fly-denormalization">
-<h2>On the fly denormalization<a class="headerlink" href="#on-the-fly-denormalization" title="Permalink to this headline"></a></h2>
-<p>See <a class="reference external" href="https://github.com/cmungall/json-flattener/">https://github.com/cmungall/json-flattener/</a></p>
+<h3>On the fly denormalization<a class="headerlink" href="#on-the-fly-denormalization" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://github.com/cmungall/json-flattener/">json-flattener/</a> library is used to do on-the-fly denormalizations. For example:</p>
+<ul class="simple">
+<li><p>multivalued slots are serialized using a <code class="docutils literal notranslate"><span class="pre">|</span></code> separator</p></li>
+<li><p>nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be <code class="docutils literal notranslate"><span class="pre">persons_name</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="working-with-relational-databases">
+<h2>Working with Relational Databases<a class="headerlink" href="#working-with-relational-databases" title="Permalink to this headline"></a></h2>
 </section>
 <section id="inference-of-schemas-from-tabular-data">
 <h2>Inference of schemas from tabular data<a class="headerlink" href="#inference-of-schemas-from-tabular-data" title="Permalink to this headline"></a></h2>

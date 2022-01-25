@@ -28,3 +28,10 @@ URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisC
      * Range: [String](String.md)
  * [in code system](in_code_system.md)  <sub>0..1</sub>
      * Range: [CodeSystem](CodeSystem.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Close Mappings:** | | biolink:Disease |
+

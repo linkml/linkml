@@ -1,7 +1,12 @@
 Excel Spreadsheet
 =================
 
-This generator allows you to create a spreadsheet representation of your LinkML schema.
+This generator allows you to create a spreadsheet template from your
+LinkML schema.
+
+.. seealso:: `SchemaSheets <https://github.com/linkml/schemasheets>`_
+             for maintaining schemas as spreadsheets
+
 
 Example Output
 --------------

@@ -260,6 +260,23 @@
       "uri": "http://www.w3.org/ns/shex#nonLiteral",
       "repr": "str",
       "@type": "TypeDefinition"
+    },
+    {
+      "name": "phone_number_type",
+      "definition_uri": "https://w3id.org/linkml/tests/core/PhoneNumberType",
+      "from_schema": "https://w3id.org/linkml/tests/core",
+      "base": "str",
+      "uri": "http://www.w3.org/2001/XMLSchema#string",
+      "pattern": "^[\\\\+\\\\d+ +][\\\\d\\\\- ]+$",
+      "@type": "TypeDefinition"
+    },
+    {
+      "name": "age_in_years_type",
+      "definition_uri": "https://w3id.org/linkml/tests/core/AgeInYearsType",
+      "from_schema": "https://w3id.org/linkml/tests/core",
+      "base": "int",
+      "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "@type": "TypeDefinition"
     }
   ],
   "enums": [
@@ -292,23 +309,46 @@
     {
       "name": "EmploymentEventType",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType",
+      "aliases": [
+        "HR code"
+      ],
+      "description": "codes for different kinds of employment/HR related events",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "permissible_values": [
         {
           "text": "HIRE",
+          "description": "event for a new employee",
           "meaning": "bizcodes:001"
         },
         {
           "text": "FIRE",
-          "meaning": "bizcodes:002"
+          "meaning": "bizcodes:002",
+          "annotations": [
+            {
+              "tag": "biolink:opposite",
+              "value": "HIRE"
+            }
+          ]
         },
         {
           "text": "PROMOTION",
+          "description": "promotion event",
           "meaning": "bizcodes:003"
         },
         {
           "text": "TRANSFER",
+          "description": "transfer internally",
           "meaning": "bizcodes:004"
+        }
+      ]
+    },
+    {
+      "name": "other codes",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/OtherCodes",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "permissible_values": [
+        {
+          "text": "a b"
         }
       ]
     }
@@ -424,6 +464,13 @@
     {
       "name": "in_location",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+      "annotations": [
+        {
+          "tag": "biolink:opposite",
+          "value": "location_of",
+          "@type": "Annotation"
+        }
+      ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
       "owner": "WithLocation",
@@ -980,7 +1027,13 @@
     },
     {
       "name": "Person",
+      "id_prefixes": [
+        "P"
+      ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "exact_mappings": [
+        "schema:Person"
+      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"
@@ -1006,6 +1059,9 @@
     },
     {
       "name": "Organization",
+      "id_prefixes": [
+        "ROR"
+      ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Organization",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "mixins": [
@@ -1050,6 +1106,9 @@
     },
     {
       "name": "Concept",
+      "id_prefixes": [
+        "CODE"
+      ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slots": [
@@ -1064,6 +1123,9 @@
     {
       "name": "DiagnosisConcept",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+      "close_mappings": [
+        "biolink:Disease"
+      ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "Concept",
       "slots": [
@@ -1389,9 +1451,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2021-11-23T21:02:17",
-  "source_file_size": 5771,
-  "generation_date": "2021-11-23T21:07:37",
+  "source_file_date": "2022-01-18T22:12:16",
+  "source_file_size": 6345,
+  "generation_date": "2022-01-18T22:17:28",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

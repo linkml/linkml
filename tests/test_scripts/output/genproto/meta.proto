@@ -7,7 +7,7 @@ message AltDescription
 // a tag/value pair with the semantics of OWL Annotation
 message Annotation
  {
-  tag Uriorcurie = 1
+  optional tag Uriorcurie = 1
   value String = 2
   repeated extensions Extension = 3
   repeated annotations Annotation = 4
@@ -219,7 +219,7 @@ message Example
 // a tag/value pair used to add non-model information to an entry
 message Extension
  {
-  tag Uriorcurie = 1
+  optional tag Uriorcurie = 1
   value String = 2
   repeated extensions Extension = 3
  }

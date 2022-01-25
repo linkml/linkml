@@ -1,0 +1,11 @@
+## Identifier and Mapping Information
+
+{% if element.id_prefixes %}
+### Valid ID Prefixes
+
+Instances of this class *should* have identifiers with one of the following prefixes:
+{% for p in element.id_prefixes %}
+* {{p}}
+{% endfor %}
+
+{% endif %}

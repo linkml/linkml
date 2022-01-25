@@ -144,7 +144,8 @@ class JsonSchemaGenerator(Generator):
             id_slot = None
             for sn in range_cls.slots:
                 s = self.schema.slots[sn]
-                if s.identifier or s.key:
+                # TODO: extension_tag should be declared as a key in extensions.yaml in metamodel
+                if s.identifier or s.key or (s.alias == 'tag' and (range_cls == 'extension' or range_cls == 'annotation')):
                     id_slot = s
                     break
             # If inline we have to include redefined slots

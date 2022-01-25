@@ -113,5 +113,5 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
 |  |  |  |
 | --- | --- | --- |
-| **See also:** | | https://en.wikipedia.org/wiki/Data_element_definition |
+| **See also:** | | [https://en.wikipedia.org/wiki/Data_element_definition](https://en.wikipedia.org/wiki/Data_element_definition) |
 

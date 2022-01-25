@@ -1,7 +1,9 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <https://w3id.org/linkml/AltDescription_tes> a shex:EachOf ;
@@ -335,7 +337,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Annotation> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#definition> ;
+                shex:predicate skos:definition ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -343,7 +345,7 @@
                 shex:valueExpr <https://w3id.org/linkml/AltDescription> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:predicate dcterms:title ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -355,11 +357,11 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#editorialNote> ;
+                shex:predicate skos:editorialNote ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#note> ;
+                shex:predicate skos:note ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -371,7 +373,7 @@
                 shex:valueExpr <https://w3id.org/linkml/SubsetDefinition> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#inScheme> ;
+                shex:predicate skos:inScheme ;
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -448,7 +450,7 @@
     shex:expressions ( [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#example> ;
+                shex:predicate skos:example ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -475,7 +477,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Ncname> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 1 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#altLabel> ;
+                shex:predicate skos:altLabel ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] ) .
 
 <https://w3id.org/linkml/Nodeidentifier> a shex:NodeConstraint ;
@@ -500,7 +502,7 @@
                         shex:values ( <https://w3id.org/linkml/CommonMetadata> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#definition> ;
+                shex:predicate skos:definition ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -524,7 +526,7 @@
                 shex:valueExpr <https://w3id.org/linkml/AltDescription> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:predicate dcterms:title ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -536,11 +538,11 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#editorialNote> ;
+                shex:predicate skos:editorialNote ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#note> ;
+                shex:predicate skos:note ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -552,7 +554,7 @@
                 shex:valueExpr <https://w3id.org/linkml/SubsetDefinition> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#inScheme> ;
+                shex:predicate skos:inScheme ;
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -602,7 +604,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/license> ;
+                shex:predicate dcterms:license ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -677,7 +679,7 @@
                         shex:values ( <https://w3id.org/linkml/SlotExpression> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#altLabel> ;
+                shex:predicate skos:altLabel ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -725,7 +727,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Boolean> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#prefLabel> ;
+                shex:predicate skos:prefLabel ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -945,7 +947,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Annotation> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#definition> ;
+                shex:predicate skos:definition ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -953,7 +955,7 @@
                 shex:valueExpr <https://w3id.org/linkml/AltDescription> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:predicate dcterms:title ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -965,11 +967,11 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#editorialNote> ;
+                shex:predicate skos:editorialNote ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#note> ;
+                shex:predicate skos:note ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -981,7 +983,7 @@
                 shex:valueExpr <https://w3id.org/linkml/SubsetDefinition> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#inScheme> ;
+                shex:predicate skos:inScheme ;
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1048,7 +1050,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Annotation> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#definition> ;
+                shex:predicate skos:definition ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1056,7 +1058,7 @@
                 shex:valueExpr <https://w3id.org/linkml/AltDescription> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:predicate dcterms:title ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1068,11 +1070,11 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#editorialNote> ;
+                shex:predicate skos:editorialNote ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#note> ;
+                shex:predicate skos:note ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1084,7 +1086,7 @@
                 shex:valueExpr <https://w3id.org/linkml/SubsetDefinition> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#inScheme> ;
+                shex:predicate skos:inScheme ;
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1420,7 +1422,7 @@
     shex:expressions ( [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#definition> ;
+                shex:predicate skos:definition ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1428,7 +1430,7 @@
                 shex:valueExpr <https://w3id.org/linkml/AltDescription> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:predicate dcterms:title ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1440,11 +1442,11 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#editorialNote> ;
+                shex:predicate skos:editorialNote ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#note> ;
+                shex:predicate skos:note ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1456,7 +1458,7 @@
                 shex:valueExpr <https://w3id.org/linkml/SubsetDefinition> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#inScheme> ;
+                shex:predicate skos:inScheme ;
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1499,7 +1501,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#altLabel> ;
+                shex:predicate skos:altLabel ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1507,31 +1509,31 @@
                 shex:valueExpr <https://w3id.org/linkml/LocalName> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/conformsTo> ;
+                shex:predicate dcterms:conformsTo ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#mappingRelation> ;
+                shex:predicate skos:mappingRelation ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+                shex:predicate skos:exactMatch ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#closeMatch> ;
+                shex:predicate skos:closeMatch ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#relatedMatch> ;
+                shex:predicate skos:relatedMatch ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#narrowMatch> ;
+                shex:predicate skos:narrowMatch ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#broadMatch> ;
+                shex:predicate skos:broadMatch ;
                 shex:valueExpr <https://w3id.org/linkml/Uriorcurie> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1543,7 +1545,7 @@
                 shex:valueExpr <https://w3id.org/linkml/Annotation> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#definition> ;
+                shex:predicate skos:definition ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1551,7 +1553,7 @@
                 shex:valueExpr <https://w3id.org/linkml/AltDescription> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://purl.org/dc/terms/title> ;
+                shex:predicate dcterms:title ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1563,11 +1565,11 @@
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#editorialNote> ;
+                shex:predicate skos:editorialNote ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#note> ;
+                shex:predicate skos:note ;
                 shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
                 shex:max -1 ;
                 shex:min 0 ;
@@ -1579,7 +1581,7 @@
                 shex:valueExpr <https://w3id.org/linkml/SubsetDefinition> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
-                shex:predicate <http://www.w3.org/2004/02/skos/core#inScheme> ;
+                shex:predicate skos:inScheme ;
                 shex:valueExpr <https://w3id.org/linkml/Uri> ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 0 ;
@@ -1683,7 +1685,7 @@
     shex:closed true ;
     shex:expression [ a shex:EachOf ;
             shex:expressions ( <https://w3id.org/linkml/Annotation_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
+                        shex:min 1 ;
                         shex:predicate rdf:type ;
                         shex:valueExpr [ a shex:NodeConstraint ;
                                 shex:values ( <https://w3id.org/linkml/Annotation> ) ] ] ) ] .
@@ -1696,7 +1698,7 @@
                 shex:closed true ;
                 shex:expression [ a shex:EachOf ;
                         shex:expressions ( <https://w3id.org/linkml/Extension_tes> [ a shex:TripleConstraint ;
-                                    shex:min 0 ;
+                                    shex:min 1 ;
                                     shex:predicate rdf:type ;
                                     shex:valueExpr [ a shex:NodeConstraint ;
                                             shex:values ( <https://w3id.org/linkml/Extension> ) ] ] ) ] ] <https://w3id.org/linkml/Annotation> ) .

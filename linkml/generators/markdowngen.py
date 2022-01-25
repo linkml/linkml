@@ -118,7 +118,7 @@ class MarkdownGenerator(Generator):
 
         with open(self.exist_warning(self.dir_path(cls)), 'w') as clsfile:
             with redirect_stdout(clsfile):
-                class_curi = self.namespaces.uri_or_curie_for(self.namespaces._base, camelcase(cls.name))
+                class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
                 class_uri = self.namespaces.uri_for(class_curi)
                 self.element_header(cls, cls.name, class_curi, class_uri)
                 print()
@@ -224,7 +224,8 @@ class MarkdownGenerator(Generator):
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         with open(self.exist_warning(self.dir_path(slot)), 'w') as slotfile:
             with redirect_stdout(slotfile):
-                slot_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(slot.name))
+                import logging
+                slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
                 slot_uri = self.namespaces.uri_for(slot_curie)
                 self.element_header(slot,aliased_slot_name, slot_curie, slot_uri)
                 self.mappings(slot)
@@ -254,7 +255,7 @@ class MarkdownGenerator(Generator):
     def visit_enum(self, enum: EnumDefinition) -> None:
         with open(self.exist_warning(self.dir_path(enum)), 'w') as enumfile:
             with redirect_stdout(enumfile):
-                enum_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(enum.name))
+                enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
                 enum_uri = self.namespaces.uri_for(enum_curie)
                 self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
                 self.element_properties(enum)
@@ -262,7 +263,7 @@ class MarkdownGenerator(Generator):
     def visit_subset(self, subset: SubsetDefinition) -> None:
         with open(self.exist_warning(self.dir_path(subset)), 'w') as subsetfile:
             with redirect_stdout(subsetfile):
-                curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(subset.name))
+                curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
                 uri = self.namespaces.uri_for(curie)
                 self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri)
                 # TODO: consider showing hierarchy within a subset
@@ -365,7 +366,7 @@ class MarkdownGenerator(Generator):
             prop_list('In Subsets', obj.in_subset)
             # from_schema
             # imported_from
-            prop_list('See also', obj.see_also)
+            prop_list('See also', [f'[{v}]({v})' for v in obj.see_also])
             prop_list('Exact Mappings', obj.exact_mappings)
             prop_list('Close Mappings', obj.close_mappings)
             prop_list('Narrow Mappings', obj.narrow_mappings)

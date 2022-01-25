@@ -1,0 +1,61 @@
+# {{ gen.name(element) }}
+
+{{ element.description }}
+
+URI: {{ gen.uri_link(element) }}
+
+
+{% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
+
+## Inheritance
+
+{{ gen.inheritance_tree(element, mixins=True) }}
+{% else %}
+<!-- no inheritance hierarchy -->
+{% endif %}
+
+
+## Slots
+
+| Name | Range | Cardinality | Description  | Info |
+| ---  | --- | --- | --- | --- |
+{% for s in schemaview.class_induced_slots(element.name) -%}
+| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{s.description}}  | . |
+{% endfor %}
+
+## Usages
+
+{% if schemaview.usage_index().get(element.name) %}
+| used by | used in | type | used |
+| ---  | --- | --- | --- |
+{% for usage in schemaview.usage_index().get(element.name) -%}
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+{% endfor %}
+{% endif %}
+
+{% include "common_metadata.md.jinja2" %}
+
+
+{% if element.rules or element.classification_rules %}
+
+## Rules
+
+TODO
+
+{% endif %}
+
+## LinkML Specification
+
+<!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
+
+Direct:
+
+```yaml
+{{gen.yaml(element)}}
+```
+
+Induced:
+
+```yaml
+{{gen.yaml(element, inferred=True)}}
+```

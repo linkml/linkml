@@ -48,7 +48,7 @@ And links, e.g to [Person](Person.md)
  * [HasAliases](HasAliases.md)
  * [WithLocation](WithLocation.md)
 
-### Slots
+### Fields
 
  * [acted on behalf of](acted_on_behalf_of.md)
  * [activity set](activity_set.md)
@@ -97,8 +97,9 @@ And links, e.g to [Person](Person.md)
 ### Enums
 
  * [DiagnosisType](DiagnosisType.md)
- * [EmploymentEventType](EmploymentEventType.md)
+ * [EmploymentEventType](EmploymentEventType.md) - codes for different kinds of employment/HR related events
  * [FamilialRelationshipType](FamilialRelationshipType.md)
+ * [other codes](other codes.md)
 
 ### Subsets
 
@@ -126,6 +127,7 @@ And links, e.g to [Person](Person.md)
 
 #### Defined
 
+ * [AgeInYearsType](AgeInYearsType.md)  (**int**) 
  * [Boolean](Boolean.md)  (**Bool**)  - A binary (true or false) value
  * [Date](Date.md)  (**XSDDate**)  - a date (year, month and day) in an idealized calendar
  * [Datetime](Datetime.md)  (**XSDDateTime**)  - The combination of a date and time
@@ -136,6 +138,7 @@ And links, e.g to [Person](Person.md)
  * [Ncname](Ncname.md)  (**NCName**)  - Prefix part of CURIE
  * [Nodeidentifier](Nodeidentifier.md)  (**NodeIdentifier**)  - A URI, CURIE or BNODE that represents a node in a model.
  * [Objectidentifier](Objectidentifier.md)  (**ElementIdentifier**)  - A URI or CURIE that represents an object in the model.
+ * [PhoneNumberType](PhoneNumberType.md)  (**str**) 
  * [String](String.md)  (**str**)  - A character string
  * [Time](Time.md)  (**XSDTime**)  - A time object represents a (local) time of day, independent of any particular day
  * [Uri](Uri.md)  (**URI**)  - a complete URI

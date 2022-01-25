@@ -39,6 +39,8 @@ class PrefixTestCase(unittest.TestCase):
             'http://schema.org/isPartOf'
         ])
 
+    # TODO: restore. See: https://github.com/linkml/linkml/issues/537
+    @unittest.skip('https://github.com/linkml/linkml/issues/537')
     def test_rdfgen(self):
         # TODO: ttl output fails - check why
         # TODO: imports do not seem to work

@@ -1,0 +1,22 @@
+# {{ gen.name(element) }}
+
+{{ element.description }}
+
+URI: {{ gen.uri(element) }}
+
+
+{% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}
+
+## Inheritance
+
+{{ gen.inheritance_tree(element, mixins=True) }}
+{% else %}
+<!-- no inheritance hierarchy -->
+{% endif %}
+
+## Properties
+
+ * Range: {{element.range}}
+
+{% include "common_metadata.md.jinja2" %}
+

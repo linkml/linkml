@@ -1,0 +1,16 @@
+# {{ gen.name(element) }}
+
+{{ element.description }}
+
+URI: {{ gen.uri(element) }}
+
+## Permissible Values
+
+| Value | Meaning | Description | Info |
+| --- | --- | --- | --- |
+{% for pv in element.permissible_values.values() -%}
+| {{pv.text}} | {{pv.meaning}} | {{pv.description}} | |
+{% endfor %}
+
+{% include "common_metadata.md.jinja2" %}
+

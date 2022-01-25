@@ -223,6 +223,7 @@
       "imported_from": "linkml:extensions",
       "domain": "Extension",
       "slot_uri": "https://w3id.org/linkml/tag",
+      "key": true,
       "alias": "tag",
       "owner": "Extension",
       "domain_of": [
@@ -315,9 +316,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "simple_uri_test.yaml",
-  "source_file_date": "2021-11-23T21:02:17",
+  "source_file_date": "2022-01-18T22:12:16",
   "source_file_size": 480,
-  "generation_date": "2021-11-23T21:08:31",
+  "generation_date": "2022-01-18T22:18:33",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/extensions.context.jsonld",

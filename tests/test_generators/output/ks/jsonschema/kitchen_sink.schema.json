@@ -269,7 +269,7 @@
          "type": "object"
       },
       "EmploymentEventType": {
-         "description": "",
+         "description": "codes for different kinds of employment/HR related events",
          "enum": [
             "HIRE",
             "FIRE",
@@ -424,6 +424,14 @@
          ],
          "title": "Organization",
          "type": "object"
+      },
+      "OtherCodes": {
+         "description": "",
+         "enum": [
+            "a b"
+         ],
+         "title": "OtherCodes",
+         "type": "string"
       },
       "Person": {
          "additionalProperties": false,

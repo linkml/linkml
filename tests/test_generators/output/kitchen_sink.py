@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-11-23T21:07:44
+# Generation date: 2022-01-18T22:17:37
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -50,10 +50,24 @@ PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = KS
 
 
 # Types
+class PhoneNumberType(str):
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "phone number type"
+    type_model_uri = KS.PhoneNumberType
+
+
+class AgeInYearsType(int):
+    type_class_uri = XSD.integer
+    type_class_curie = "xsd:integer"
+    type_name = "age in years type"
+    type_model_uri = KS.AgeInYearsType
+
 
 # Class references
 class PersonId(extended_str):
@@ -168,7 +182,9 @@ class Person(YAMLRoot):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
+        if not isinstance(self.has_familial_relationships, list):
+            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
@@ -753,19 +769,36 @@ class DiagnosisType(EnumDefinitionImpl):
     )
 
 class EmploymentEventType(EnumDefinitionImpl):
-
+    """
+    codes for different kinds of employment/HR related events
+    """
     HIRE = PermissibleValue(text="HIRE",
+                               description="event for a new employee",
                                meaning=BIZCODES["001"])
     FIRE = PermissibleValue(text="FIRE",
                                meaning=BIZCODES["002"])
     PROMOTION = PermissibleValue(text="PROMOTION",
+                                         description="promotion event",
                                          meaning=BIZCODES["003"])
     TRANSFER = PermissibleValue(text="TRANSFER",
+                                       description="transfer internally",
                                        meaning=BIZCODES["004"])
 
     _defn = EnumDefinition(
         name="EmploymentEventType",
+        description="codes for different kinds of employment/HR related events",
     )
+
+class OtherCodes(EnumDefinitionImpl):
+
+    _defn = EnumDefinition(
+        name="OtherCodes",
+    )
+
+    @classmethod
+    def _addvals(cls):
+        setattr(cls, "a b",
+                PermissibleValue(text="a b") )
 
 # Slots
 class slots:

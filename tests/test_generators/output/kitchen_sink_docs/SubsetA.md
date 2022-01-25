@@ -14,7 +14,7 @@ URI: [ks:subset_A](https://w3id.org/linkml/tests/kitchen_sink/subset_A)
 ### Traits
 
 
-### Slots
+### Fields
 
  * [age in years](age_in_years.md) - number of years since birth
  * [employed at](employed_at.md)

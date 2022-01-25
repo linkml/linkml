@@ -228,9 +228,9 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
 
 
 BASE <http://example.org/model/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 
 <String> xsd:string

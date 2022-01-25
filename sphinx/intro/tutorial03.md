@@ -50,6 +50,10 @@ classes:
 
 We use yaml comment syntax (i.e the part after `#`) for comments - these are ignored by the parser.
 
+Depicted as:
+
+![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++-%20persons%200..*>[Person|id:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F],[Container])
+
 Note that we haven't declared ranges for some fields, but the *default_range* directive at the schema level ensures things default to string.
 
 ## Example data
@@ -62,7 +66,7 @@ bad-data.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:1234
     age: 33
@@ -87,7 +91,7 @@ better-data-v1.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:1234
     full_name: Lois Lane
@@ -113,7 +117,7 @@ better-data-v2.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:4567
     full_name: Lois Lane
@@ -154,11 +158,11 @@ gen-json-schema personinfo.yaml > personinfo.schema.json
 
 <!-- FAIL -->
 ```bash
-jsonschema -i bad-data.yaml personinfo.schema.json
+jsonschema -i bad-data.json personinfo.schema.json
 ```
 
 In general this should give you similar results, with some caveats:
-
+ - the `bad-data.yaml` can be converted to `bad-data.json` using https://www.json2yaml.com/.
  - the `linkml-validator` will first perform an internal conversion prior to using the jsonschema validator, and some errors may be caught at that stage
  - the conversion process may mask some errors - e.g. if a slot has range integer and is supplied as a string, implicit conversion is used
 

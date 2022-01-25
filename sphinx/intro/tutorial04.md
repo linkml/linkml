@@ -88,7 +88,7 @@ linkml-convert -s personinfo.yaml -t rdf data.yaml
 
 Outputs:
 
-```ttl
+```turtle
 @prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -174,7 +174,8 @@ linkml-convert -s personinfo-semantic.yaml -t rdf data.yaml
 
 Outputs:
 
-```ttl
+<!-- COMPARE_RDF -->
+```turtle
 @prefix ns1: <http://schema.org/> .
 @prefix ns2: <https://w3id.org/linkml/examples/personinfo/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -195,6 +196,10 @@ Outputs:
 ```
 
 Note that the prefixes are hidden but the effect is to reuse URIs such as [schema:telephone](http://schema.org/telephone)
+
+This can be visualized using [rdf-grapher](https://www.ldf.fi/service/rdf-grapher) as:
+
+![rdf-visualization](https://www.ldf.fi/service/rdf-grapher?rdf=%40prefix+ns1%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E+.%0D%0A%40prefix+ns2%3A+%3Chttps%3A%2F%2Fw3id.org%2Flinkml%2Fexamples%2Fpersoninfo%2F%3E+.%0D%0A%40prefix+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+.%0D%0A%0D%0A%3Chttps%3A%2F%2Forcid.org%2F1234%3E+a+ns1%3APerson+%3B%0D%0A++++ns1%3Aname+%22Clark+Kent%22+%3B%0D%0A++++ns1%3Atelephone+%22555-555-5555%22+%3B%0D%0A++++ns2%3Aage+33+.%0D%0A%0D%0A%3Chttps%3A%2F%2Forcid.org%2F4567%3E+a+ns1%3APerson+%3B%0D%0A++++ns1%3Aname+%22Lois+Lane%22+%3B%0D%0A++++ns2%3Aage+34+.%0D%0A%0D%0A%5B%5D+a+ns2%3AContainer+%3B%0D%0A++++ns2%3Apersons+%3Chttps%3A%2F%2Forcid.org%2F1234%3E%2C%0D%0A++++++++%3Chttps%3A%2F%2Forcid.org%2F4567%3E+.%0D%0A&from=ttl&to=png)
 
 ## JSON-LD contexts
 
@@ -298,6 +303,58 @@ linkml:Nodeidentifier NONLITERAL
        rdf:type [ schema:Person ]
     )
 }
+```
+
+
+```bash
+gen-shacl --no-metadata personinfo-semantic.yaml > personinfo.shacl.ttl
+```
+
+Outputs:
+
+<!-- COMPARE_RDF -->
+```turtle
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema: <http://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+personinfo:Container a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:class schema:Person ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path personinfo:persons ] ;
+    sh:targetClass personinfo:Container .
+
+schema:Person a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:maxInclusive 200 ;
+            sh:minInclusive 0 ;
+            sh:order 4 ;
+            sh:path personinfo:age ],
+        [ sh:description "name of the person" ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 1 ;
+            sh:path schema:name ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path personinfo:id ],
+        [ sh:description "other names for the person" ;
+            sh:order 2 ;
+            sh:path personinfo:aliases ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema:telephone ;
+            sh:pattern "^[\\d\\(\\)\\-]+$" ] ;
+    sh:targetClass schema:Person .
+
+
 ```
 
 <!-- TODO: SPARQL -->

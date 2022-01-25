@@ -96,6 +96,7 @@ owl
 personinfo.py
 prefixmap
 protobuf
+shacl
 shex
 sqlschema
 ```
