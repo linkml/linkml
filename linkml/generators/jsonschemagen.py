@@ -196,7 +196,7 @@ class JsonSchemaGenerator(Generator):
             self.schemaobj.properties[underscore(aliased_slot_name)] = prop
 
             if slot.required:
-                self.schemaobj.required.append(aliased_slot_name)
+                self.schemaobj.required.append(underscore(aliased_slot_name))
 
 
 @shared_arguments(JsonSchemaGenerator)
