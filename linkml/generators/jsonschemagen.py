@@ -65,6 +65,8 @@ class JsonSchemaGenerator(Generator):
         self.inline = inline
         self.schemaobj = JsonObj(title=self.schema.name,
                                  type="object",
+                                 metamodel_version=self.schema.metamodel_version,
+                                 version=self.schema.version if self.schema.version else None,
                                  properties={},
                                  additionalProperties=not_closed)
         for p, c in self.entryProperties.items():

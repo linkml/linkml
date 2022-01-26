@@ -23,6 +23,11 @@ package {{ doc.package }};
 import java.util.List;
 import lombok.*;
 
+
+{% if metamodel_version %}/* metamodel_version: {{metamodel_version}} */{% endif %}
+{% if model_version %}/* version: {{model_version}} */{% endif %}
+
+
 {% if cls.source_class.description %}/**
   {{ cls.source_class.description }}
 **/{% endif %}
@@ -78,7 +83,7 @@ class JavaGenerator(OOCodeGenerator):
         self.directory = directory
         for oodoc in oodocs:
             cls = oodoc.classes[0]
-            code = template_obj.render(doc=oodoc, cls=cls)
+            code = template_obj.render(doc=oodoc, cls=cls, metamodel_version=self.schema.metamodel_version, model_version=self.schema.version)
 
             os.makedirs(directory, exist_ok=True)
             filename = f'{oodoc.name}.java'

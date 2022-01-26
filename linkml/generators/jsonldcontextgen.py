@@ -81,6 +81,8 @@ class ContextGenerator(Generator):
                 comments += f'''
     Generation date: {self.schema.generation_date}
     Schema: {self.schema.name}
+    metamodel version: {self.schema.metamodel_version}
+    model version: {self.schema.version if self.schema.version else None}
     '''
             comments += f'''
     id: {self.schema.id}

@@ -37,6 +37,12 @@ class ShExGenerator(Generator):
             self.namespaces[METAMODEL_NAMESPACE_NAME] = METAMODEL_NAMESPACE
         self.meta = Namespace(self.namespaces.join(self.namespaces[METAMODEL_NAMESPACE_NAME], ''))  # URI for the metamodel
         self.base = Namespace(self.namespaces.join(self.namespaces._base, ''))    # Base URI for what is being modeled
+        self.generate_header()
+
+    def generate_header(self):
+        print(f"# metamodel_version: {self.schema.metamodel_version}")
+        if self.schema.version:
+            print(f"# version: {self.schema.version}")
 
     def visit_schema(self, **_):
         # Adjust the schema context to include the base model URI

@@ -24,6 +24,9 @@ from enum import Enum
 from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
 
+metamodel_version = {{metamodel_version}}
+version = {{version if version else None}}
+
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
     {% if e.description -%}
@@ -178,7 +181,7 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
         return code
 
 

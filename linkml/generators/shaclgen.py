@@ -29,6 +29,12 @@ class ShaclGenerator(Generator):
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         self.format = format
+        self.generate_header()
+
+    def generate_header(self):
+        print(f"# metamodel_version: {self.schema.metamodel_version}")
+        if self.schema.version:
+            print(f"# version: {self.schema.version}")
 
     def serialize(self, **args) -> None:
         g = self.as_graph()
