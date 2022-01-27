@@ -1,4 +1,4 @@
-id: clinical_measurement
+# metamodel_version: 1.7.0# version: 1.8.2id: clinical_measurement
 schema_generating: true
 description: A clinical measurement is a special kind of attribute which results from
   a laboratory observation from a subject individual or sample. Measurements can be

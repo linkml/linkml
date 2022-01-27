@@ -1,4 +1,4 @@
-id: sequence_variant
+# metamodel_version: 1.7.0# version: 1.8.2id: sequence_variant
 schema_generating: true
 description: An allele that varies in its sequence from what is considered the reference
   allele at that locus.

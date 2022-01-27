@@ -4045,6 +4045,7 @@
    "$id": "https://w3id.org/linkml/meta",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {
       "aliases": {
          "items": {
@@ -4310,6 +4311,7 @@
       "name"
    ],
    "title": "meta",
-   "type": "object"
+   "type": "object",
+   "version": "2.0.0"
 }
 

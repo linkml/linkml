@@ -14210,8 +14210,10 @@
    "$id": "https://w3id.org/biolink/biolink-model",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {},
    "required": [],
    "title": "Biolink-Model",
-   "type": "object"
+   "type": "object",
+   "version": "1.8.2"
 }

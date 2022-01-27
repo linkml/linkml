@@ -1,5 +1,5 @@
 # Auto generated from core.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-27T02:25:50
+# Generation date: 2022-01-27T02:54:26
 # Schema: core
 #
 # id: https://w3id.org/linkml/tests/core
@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.types import Date, String
 from linkml_runtime.utils.metamodelcore import XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

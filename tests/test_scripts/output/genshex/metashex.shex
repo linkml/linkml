@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>

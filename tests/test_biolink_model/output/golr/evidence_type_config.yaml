@@ -1,4 +1,4 @@
-id: evidence_type
+# metamodel_version: 1.7.0# version: 1.8.2id: evidence_type
 schema_generating: true
 description: Class of evidence that supports an association
 display_name: evidence type

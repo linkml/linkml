@@ -1,4 +1,4 @@
-id: study_population
+# metamodel_version: 1.7.0# version: 1.8.2id: study_population
 schema_generating: true
 description: A group of people banded together or treated as a group as participants
   in a research study.

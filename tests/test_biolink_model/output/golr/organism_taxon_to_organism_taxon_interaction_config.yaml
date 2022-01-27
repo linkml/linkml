@@ -1,4 +1,4 @@
-id: organism_taxon_to_organism_taxon_interaction
+# metamodel_version: 1.7.0# version: 1.8.2id: organism_taxon_to_organism_taxon_interaction
 schema_generating: true
 description: 'An interaction relationship between two taxa. This may be a symbiotic
   relationship (encompassing mutualism and parasitism), or it may be non-symbiotic.

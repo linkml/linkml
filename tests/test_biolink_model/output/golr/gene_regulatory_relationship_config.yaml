@@ -1,4 +1,4 @@
-id: gene_regulatory_relationship
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_regulatory_relationship
 schema_generating: true
 description: A regulatory relationship between two genes
 display_name: gene regulatory relationship

@@ -1,4 +1,4 @@
-id: genomic_sequence_localization
+# metamodel_version: 1.7.0# version: 1.8.2id: genomic_sequence_localization
 schema_generating: true
 description: A relationship between a sequence feature and a genomic entity it is
   localized to. The reference entity may be a chromosome, chromosome region or information

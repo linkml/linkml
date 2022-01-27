@@ -1,4 +1,4 @@
-id: cell_line
+# metamodel_version: 1.7.0# version: 1.8.2id: cell_line
 schema_generating: true
 display_name: cell line
 document_category: cell line

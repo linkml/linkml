@@ -1,5 +1,10 @@
 
-# Biolink-Model schema
+# Biolink-Model
+
+
+**metamodel version:** 1.7.0
+
+**version:** 1.8.2
 
 
 Entity and association taxonomy and datamodel for life-sciences data

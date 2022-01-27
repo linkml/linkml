@@ -1,4 +1,4 @@
-id: macromolecular_machine_to_cellular_component_association
+# metamodel_version: 1.7.0# version: 1.8.2id: macromolecular_machine_to_cellular_component_association
 schema_generating: true
 description: A functional association between a macromolecular machine (gene, gene
   product or complex) and a cellular component (as represented in the GO cellular

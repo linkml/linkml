@@ -1,4 +1,4 @@
-id: drug_to_gene_association
+# metamodel_version: 1.7.0# version: 1.8.2id: drug_to_gene_association
 schema_generating: true
 description: An interaction between a drug and a gene or gene product.
 display_name: drug to gene association

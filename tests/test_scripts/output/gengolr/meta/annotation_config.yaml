@@ -1,4 +1,4 @@
-id: annotation
+# metamodel_version: 1.7.0# version: 2.0.0id: annotation
 schema_generating: true
 description: a tag/value pair with the semantics of OWL Annotation
 display_name: annotation

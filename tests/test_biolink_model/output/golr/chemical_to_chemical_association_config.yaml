@@ -1,4 +1,4 @@
-id: chemical_to_chemical_association
+# metamodel_version: 1.7.0# version: 1.8.2id: chemical_to_chemical_association
 schema_generating: true
 description: A relationship between two chemical entities. This can encompass actual
   interactions as well as temporal causal edges, e.g. one chemical converted to another.

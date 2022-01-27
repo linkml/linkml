@@ -1,4 +1,4 @@
-id: chemical_to_pathway_association
+# metamodel_version: 1.7.0# version: 1.8.2id: chemical_to_pathway_association
 schema_generating: true
 description: An interaction between a chemical entity and a biological process or
   pathway.

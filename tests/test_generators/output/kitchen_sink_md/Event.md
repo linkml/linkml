@@ -25,6 +25,7 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 | [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
 | [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
 | [is_current](is_current.md) | [boolean](boolean.md) | 0..1 | None  | . |
+| [metadata](metadata.md) | [AnyObject](AnyObject.md) | 0..1 | Example of a slot that has an unconstrained range  | . |
 
 
 ## Usages
@@ -51,6 +52,7 @@ slots:
 - started at time
 - ended at time
 - is current
+- metadata
 
 ```
 
@@ -77,5 +79,11 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     owner: Event
     range: boolean
+  metadata:
+    name: metadata
+    description: Example of a slot that has an unconstrained range
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    owner: Event
+    range: AnyObject
 
 ```

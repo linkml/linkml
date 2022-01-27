@@ -1,4 +1,4 @@
-id: exon_to_transcript_relationship
+# metamodel_version: 1.7.0# version: 1.8.2id: exon_to_transcript_relationship
 schema_generating: true
 description: A transcript is formed from multiple exons
 display_name: exon to transcript relationship

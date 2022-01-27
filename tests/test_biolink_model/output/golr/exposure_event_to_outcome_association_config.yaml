@@ -1,4 +1,4 @@
-id: exposure_event_to_outcome_association
+# metamodel_version: 1.7.0# version: 1.8.2id: exposure_event_to_outcome_association
 schema_generating: true
 description: An association between an exposure event and an outcome.
 display_name: exposure event to outcome association

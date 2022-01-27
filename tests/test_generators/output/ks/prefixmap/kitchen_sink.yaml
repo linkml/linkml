@@ -21,5 +21,8 @@
    },
    "Agent": {
       "@id": "prov:Agent"
+   },
+   "AnyObject": {
+      "@id": "linkml:Any"
    }
 }

@@ -1,4 +1,4 @@
-id: genotype_to_variant_association
+# metamodel_version: 1.7.0# version: 1.8.2id: genotype_to_variant_association
 schema_generating: true
 description: Any association between a genotype and a sequence variant.
 display_name: genotype to variant association

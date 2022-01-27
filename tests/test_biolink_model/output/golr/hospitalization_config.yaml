@@ -1,4 +1,4 @@
-id: hospitalization
+# metamodel_version: 1.7.0# version: 1.8.2id: hospitalization
 schema_generating: true
 display_name: hospitalization
 document_category: hospitalization

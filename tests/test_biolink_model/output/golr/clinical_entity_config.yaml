@@ -1,4 +1,4 @@
-id: clinical_entity
+# metamodel_version: 1.7.0# version: 1.8.2id: clinical_entity
 schema_generating: true
 description: Any entity or process that exists in the clinical domain and outside
   the biological realm. Diseases are placed under biological entities

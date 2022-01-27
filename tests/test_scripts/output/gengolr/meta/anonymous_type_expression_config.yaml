@@ -1,4 +1,4 @@
-id: anonymous_type_expression
+# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_type_expression
 schema_generating: true
 display_name: anonymous_type_expression
 document_category: anonymous_type_expression

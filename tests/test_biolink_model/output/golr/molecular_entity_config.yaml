@@ -1,4 +1,4 @@
-id: molecular_entity
+# metamodel_version: 1.7.0# version: 1.8.2id: molecular_entity
 schema_generating: true
 description: A gene, gene product, small molecule or macromolecule (including protein
   complex)"

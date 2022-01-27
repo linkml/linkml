@@ -1,4 +1,4 @@
-id: socioeconomic_attribute
+# metamodel_version: 1.7.0# version: 1.8.2id: socioeconomic_attribute
 schema_generating: true
 description: Attributes relating to a socioeconomic manifestation
 display_name: socioeconomic attribute

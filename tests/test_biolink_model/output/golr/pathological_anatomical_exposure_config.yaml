@@ -1,4 +1,4 @@
-id: pathological_anatomical_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: pathological_anatomical_exposure
 schema_generating: true
 description: An abnormal anatomical structure, when viewed as an exposure, representing
   an precondition, leading to or influencing an outcome, e.g. thrombosis leading to

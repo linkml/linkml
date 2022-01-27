@@ -1,4 +1,4 @@
-id: phenotypic_feature
+# metamodel_version: 1.7.0# version: 1.8.2id: phenotypic_feature
 schema_generating: true
 display_name: phenotypic feature
 document_category: phenotypic feature

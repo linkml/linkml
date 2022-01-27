@@ -68,6 +68,12 @@ core:Agent CLOSED {
     )
 }
 
+<AnyObject> CLOSED {
+    (  $<AnyObject_tes> rdf:type . * ;
+       rdf:type [ linkml:Any ] ?
+    )
+}
+
 <BirthEvent> CLOSED {
     (  $<BirthEvent_tes> (  &<Event_tes> ;
           rdf:type [ <Event> ] ? ;
@@ -142,7 +148,8 @@ core:Agent CLOSED {
     CLOSED {
        (  $<Event_tes> (  prov:startedAtTime @linkml:Date ? ;
              prov:endedAtTime @linkml:Date ? ;
-             <is_current> @linkml:Boolean ?
+             <is_current> @linkml:Boolean ? ;
+             <metadata> @<AnyObject> ?
           ) ;
           rdf:type [ <Event> ] ?
        )

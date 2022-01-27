@@ -1,4 +1,4 @@
-id: disease_or_phenotypic_feature_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: disease_or_phenotypic_feature_exposure
 schema_generating: true
 description: A disease or phenotypic feature state, when viewed as an exposure, represents
   an precondition, leading to or influencing an outcome, e.g. HIV predisposing an

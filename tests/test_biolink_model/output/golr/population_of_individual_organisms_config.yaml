@@ -1,4 +1,4 @@
-id: population_of_individual_organisms
+# metamodel_version: 1.7.0# version: 1.8.2id: population_of_individual_organisms
 schema_generating: true
 description: A collection of individuals from the same taxonomic class distinguished
   by one or more characteristics.  Characteristics can include, but are not limited

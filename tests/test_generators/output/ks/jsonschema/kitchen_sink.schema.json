@@ -69,6 +69,14 @@
          "title": "Agent",
          "type": "object"
       },
+      "AnyObject": {
+         "additionalProperties": true,
+         "description": "Example of unconstrained class",
+         "properties": {},
+         "required": [],
+         "title": "AnyObject",
+         "type": "object"
+      },
       "BirthEvent": {
          "additionalProperties": false,
          "description": "",
@@ -82,6 +90,10 @@
             },
             "is_current": {
                "type": "boolean"
+            },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
             },
             "started_at_time": {
                "format": "date",
@@ -256,6 +268,10 @@
             "is_current": {
                "type": "boolean"
             },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
+            },
             "started_at_time": {
                "format": "date",
                "type": "string"
@@ -289,6 +305,10 @@
             },
             "is_current": {
                "type": "boolean"
+            },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
             },
             "started_at_time": {
                "format": "date",
@@ -364,6 +384,10 @@
             "married_to": {
                "type": "string"
             },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
+            },
             "started_at_time": {
                "format": "date",
                "type": "string"
@@ -389,6 +413,10 @@
             },
             "is_current": {
                "type": "boolean"
+            },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
             },
             "procedure": {
                "$ref": "#/$defs/ProcedureConcept"
@@ -575,8 +603,10 @@
    "$id": "https://w3id.org/linkml/tests/kitchen_sink",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {},
    "required": [],
    "title": "kitchen_sink",
-   "type": "object"
+   "type": "object",
+   "version": null
 }

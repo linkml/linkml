@@ -616,6 +616,20 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "metadata",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
+      "description": "Example of a slot that has an unconstrained range",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
+      "inlined": true,
+      "owner": "Event",
+      "domain_of": [
+        "Event"
+      ],
+      "range": "AnyObject",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "id",
       "definition_uri": "https://w3id.org/linkml/tests/core/id",
       "from_schema": "https://w3id.org/linkml/tests/core",
@@ -1158,7 +1172,8 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "is_current"
+        "is_current",
+        "metadata"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Event",
@@ -1202,6 +1217,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "in_location"
       ],
       "slot_usage": {},
@@ -1217,6 +1233,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "employed_at",
         "EmploymentEvent_type"
       ],
@@ -1233,6 +1250,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "in_location",
         "diagnosis",
         "procedure"
@@ -1265,6 +1283,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "married_to",
         "in_location"
       ],
@@ -1411,6 +1430,18 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "AnyObject",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+      "mappings": [
+        "linkml:Any"
+      ],
+      "description": "Example of unconstrained class",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Any",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "Activity",
       "definition_uri": "https://w3id.org/linkml/tests/core/Activity",
       "mappings": [
@@ -1451,9 +1482,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2022-01-27T02:21:23",
-  "source_file_size": 6345,
-  "generation_date": "2022-01-27T02:25:45",
+  "source_file_date": "2022-01-27T02:49:45",
+  "source_file_size": 6551,
+  "generation_date": "2022-01-27T02:54:22",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

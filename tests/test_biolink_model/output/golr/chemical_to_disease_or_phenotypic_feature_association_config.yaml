@@ -1,4 +1,4 @@
-id: chemical_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.7.0# version: 1.8.2id: chemical_to_disease_or_phenotypic_feature_association
 schema_generating: true
 description: An interaction between a chemical entity and a phenotype or disease,
   where the presence of the chemical gives rise to or exacerbates the phenotype.

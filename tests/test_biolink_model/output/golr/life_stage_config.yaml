@@ -1,4 +1,4 @@
-id: life_stage
+# metamodel_version: 1.7.0# version: 1.8.2id: life_stage
 schema_generating: true
 description: A stage of development or growth of an organism, including post-natal
   adult stages

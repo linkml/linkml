@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-05T01:12:09
+# Generation date: 2022-01-27T02:55:52
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -28,6 +28,7 @@ from linkml_runtime.linkml_model.types import Boolean, Datetime, Integer, Ncname
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
+version = "2.0.0"
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

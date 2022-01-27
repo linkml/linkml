@@ -1,4 +1,4 @@
-id: subset_definition
+# metamodel_version: 1.7.0# version: 2.0.0id: subset_definition
 schema_generating: true
 description: the name and description of a subset
 display_name: subset_definition

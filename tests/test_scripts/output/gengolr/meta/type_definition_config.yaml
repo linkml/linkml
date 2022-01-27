@@ -1,4 +1,4 @@
-id: type_definition
+# metamodel_version: 1.7.0# version: 2.0.0id: type_definition
 schema_generating: true
 description: A data type definition.
 display_name: type_definition

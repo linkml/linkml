@@ -1,5 +1,5 @@
 # Auto generated from issue_260.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2022-01-27T02:54:55
 # Schema: issue_260
 #
 # id: http://example.org/tests/issue_260
@@ -27,6 +27,7 @@ from ..issue_260.issue_260b import C260b
 from .issue_260c import C260c
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

@@ -1,4 +1,4 @@
-id: dataset_summary
+# metamodel_version: 1.7.0# version: 1.8.2id: dataset_summary
 schema_generating: true
 description: an item that holds summary level information about a dataset.
 display_name: dataset summary

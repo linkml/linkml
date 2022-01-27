@@ -1,4 +1,4 @@
-id: biological_process
+# metamodel_version: 1.7.0# version: 1.8.2id: biological_process
 schema_generating: true
 description: One or more causally connected executions of molecular functions
 display_name: biological process

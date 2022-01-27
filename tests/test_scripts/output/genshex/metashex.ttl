@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .

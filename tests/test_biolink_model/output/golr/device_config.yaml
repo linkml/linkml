@@ -1,4 +1,4 @@
-id: device
+# metamodel_version: 1.7.0# version: 1.8.2id: device
 schema_generating: true
 description: A thing made or adapted for a particular purpose, especially a piece
   of mechanical or electronic equipment

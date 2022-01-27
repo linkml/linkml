@@ -1,4 +1,4 @@
-id: disease_to_exposure_event_association
+# metamodel_version: 1.7.0# version: 1.8.2id: disease_to_exposure_event_association
 schema_generating: true
 description: An association between an exposure event and a disease.
 display_name: disease to exposure event association

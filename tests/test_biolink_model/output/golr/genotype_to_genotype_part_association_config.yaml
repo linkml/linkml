@@ -1,4 +1,4 @@
-id: genotype_to_genotype_part_association
+# metamodel_version: 1.7.0# version: 1.8.2id: genotype_to_genotype_part_association
 schema_generating: true
 description: Any association between one genotype and a genotypic entity that is a
   sub-component of it

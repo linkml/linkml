@@ -1,4 +1,4 @@
-id: transcript_to_gene_relationship
+# metamodel_version: 1.7.0# version: 1.8.2id: transcript_to_gene_relationship
 schema_generating: true
 description: A gene is a collection of transcripts
 display_name: transcript to gene relationship

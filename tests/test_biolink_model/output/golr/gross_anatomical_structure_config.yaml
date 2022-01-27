@@ -1,4 +1,4 @@
-id: gross_anatomical_structure
+# metamodel_version: 1.7.0# version: 1.8.2id: gross_anatomical_structure
 schema_generating: true
 display_name: gross anatomical structure
 document_category: gross anatomical structure

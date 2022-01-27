@@ -1,4 +1,4 @@
-id: class_rule
+# metamodel_version: 1.7.0# version: 2.0.0id: class_rule
 schema_generating: true
 description: A rule that applies to instances of a class
 display_name: class_rule

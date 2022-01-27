@@ -28,6 +28,7 @@ SELECT ?g ?s ?p WHERE {
    prov:startedAtTime,
    prov:endedAtTime,
    ks:is_current,
+   ks:metadata,
    rdf:type ))
  }
  

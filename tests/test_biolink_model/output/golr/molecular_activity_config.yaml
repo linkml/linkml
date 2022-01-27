@@ -1,4 +1,4 @@
-id: molecular_activity
+# metamodel_version: 1.7.0# version: 1.8.2id: molecular_activity
 schema_generating: true
 description: An execution of a molecular function carried out by a gene product or
   macromolecular complex.

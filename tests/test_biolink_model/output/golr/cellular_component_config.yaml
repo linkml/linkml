@@ -1,4 +1,4 @@
-id: cellular_component
+# metamodel_version: 1.7.0# version: 1.8.2id: cellular_component
 schema_generating: true
 description: A location in or around a cell
 display_name: cellular component

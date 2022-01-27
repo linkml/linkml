@@ -1,5 +1,5 @@
 # Auto generated from python_types.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2022-01-27T02:54:11
 # Schema: ptypes
 #
 # id: http://examples.org/linkml/test/ptypes
@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Datetime, Double, F
 from linkml_runtime.utils.metamodelcore import Bool, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

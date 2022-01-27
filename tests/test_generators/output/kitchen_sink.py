@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-27T02:25:53
+# Generation date: 2022-01-27T02:54:30
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -28,6 +28,7 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Integer, String
 from linkml_runtime.utils.metamodelcore import Bool, XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -367,6 +368,7 @@ class Event(YAMLRoot):
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
     is_current: Optional[Union[bool, Bool]] = None
+    metadata: Optional[Union[dict, "AnyObject"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
@@ -671,6 +673,8 @@ class SubclassTest(ClassWithSpaces):
         super().__post_init__(**kwargs)
 
 
+AnyObject = Any
+
 @dataclass
 class Activity(YAMLRoot):
     """
@@ -857,6 +861,9 @@ slots.has_birth_event = Slot(uri=KS.has_birth_event, name="has birth event", cur
 
 slots.in_code_system = Slot(uri=KS.in_code_system, name="in code system", curie=KS.curie('in_code_system'),
                    model_uri=KS.in_code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
+
+slots.metadata = Slot(uri=KS.metadata, name="metadata", curie=KS.curie('metadata'),
+                   model_uri=KS.metadata, domain=None, range=Optional[Union[dict, AnyObject]])
 
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=KS.id, domain=None, range=URIRef)

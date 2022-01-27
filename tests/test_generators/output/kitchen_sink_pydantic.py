@@ -4,6 +4,9 @@ from enum import Enum
 from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
 
+metamodel_version = None
+version = None
+
 
 class FamilialRelationshipType(str, Enum):
     
@@ -112,6 +115,7 @@ class Event(BaseModel):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
+    metadata: Optional[AnyObject] = Field(None, description="""Example of a slot that has an unconstrained range""")
     
     
 
@@ -139,6 +143,7 @@ class BirthEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
+    metadata: Optional[AnyObject] = Field(None, description="""Example of a slot that has an unconstrained range""")
     
     
 
@@ -149,6 +154,7 @@ class EmploymentEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
+    metadata: Optional[AnyObject] = Field(None, description="""Example of a slot that has an unconstrained range""")
     
     
 
@@ -160,6 +166,7 @@ class MedicalEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
+    metadata: Optional[AnyObject] = Field(None, description="""Example of a slot that has an unconstrained range""")
     
     
 
@@ -176,6 +183,7 @@ class MarriageEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
+    metadata: Optional[AnyObject] = Field(None, description="""Example of a slot that has an unconstrained range""")
     
     
 
@@ -221,6 +229,15 @@ class SubclassTest(ClassWithSpaces):
     slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
     slot_with_space_1: Optional[str] = Field(None)
     
+    
+
+class AnyObject(BaseModel):
+    """
+    Example of unconstrained class
+    """
+    
+    
+    None
     
 
 class Activity(BaseModel):
@@ -294,6 +311,8 @@ FakeClass.update_forward_refs()
 ClassWithSpaces.update_forward_refs()
 
 SubclassTest.update_forward_refs()
+
+AnyObject.update_forward_refs()
 
 Activity.update_forward_refs()
 

@@ -1,4 +1,4 @@
-id: biological_process_or_activity
+# metamodel_version: 1.7.0# version: 1.8.2id: biological_process_or_activity
 schema_generating: true
 description: Either an individual molecular activity, or a collection of causally
   connected molecular activities in a biological system.

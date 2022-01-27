@@ -1,5 +1,10 @@
 
-# core schema
+# core
+
+
+**metamodel version:** 1.7.0
+
+**version:** None
 
 
 core schema imported by kitchen_sink

@@ -1,4 +1,4 @@
-id: pairwise_gene_to_gene_interaction
+# metamodel_version: 1.7.0# version: 1.8.2id: pairwise_gene_to_gene_interaction
 schema_generating: true
 description: An interaction between two genes or two gene products. May be physical
   (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein

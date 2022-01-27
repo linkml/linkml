@@ -1,5 +1,5 @@
 # Auto generated from linkml_issue_384.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-27T02:26:33
+# Generation date: 2022-01-27T02:55:08
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -25,6 +25,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.linkml_model.types import Float, Integer, String
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

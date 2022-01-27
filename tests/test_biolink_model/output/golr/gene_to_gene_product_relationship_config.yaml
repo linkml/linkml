@@ -1,4 +1,4 @@
-id: gene_to_gene_product_relationship
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_to_gene_product_relationship
 schema_generating: true
 description: A gene is transcribed and potentially translated to a gene product
 display_name: gene to gene product relationship

@@ -1,4 +1,4 @@
-id: case_to_phenotypic_feature_association
+# metamodel_version: 1.7.0# version: 1.8.2id: case_to_phenotypic_feature_association
 schema_generating: true
 description: An association between a case (e.g. individual patient) and a phenotypic
   feature in which the individual has or has had the phenotype.

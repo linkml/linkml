@@ -1,4 +1,4 @@
-id: gene
+# metamodel_version: 1.7.0# version: 1.8.2id: gene
 schema_generating: true
 description: A region (or regions) that includes all of the sequence elements necessary
   to encode a functional transcript. A gene locus may include regulatory regions,

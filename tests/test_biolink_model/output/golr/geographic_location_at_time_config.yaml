@@ -1,4 +1,4 @@
-id: geographic_location_at_time
+# metamodel_version: 1.7.0# version: 1.8.2id: geographic_location_at_time
 schema_generating: true
 description: a location that can be described in lat/long coordinates, for a particular
   time

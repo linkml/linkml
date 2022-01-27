@@ -1,4 +1,4 @@
-id: exon
+# metamodel_version: 1.7.0# version: 1.8.2id: exon
 schema_generating: true
 description: A region of the transcript sequence within a gene which is not removed
   from the primary RNA transcript by RNA splicing.

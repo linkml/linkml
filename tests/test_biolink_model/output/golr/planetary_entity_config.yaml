@@ -1,4 +1,4 @@
-id: planetary_entity
+# metamodel_version: 1.7.0# version: 1.8.2id: planetary_entity
 schema_generating: true
 description: Any entity or process that exists at the level of the whole planet
 display_name: planetary entity

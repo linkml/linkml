@@ -1,4 +1,4 @@
-id: named_thing
+# metamodel_version: 1.7.0# version: 1.8.2id: named_thing
 schema_generating: true
 description: a databased entity or concept/class
 display_name: named thing

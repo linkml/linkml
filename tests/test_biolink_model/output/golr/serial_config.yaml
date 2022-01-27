@@ -1,4 +1,4 @@
-id: serial
+# metamodel_version: 1.7.0# version: 1.8.2id: serial
 schema_generating: true
 description: This class may rarely be instantiated except if use cases of a given
   knowledge graph support its utility.

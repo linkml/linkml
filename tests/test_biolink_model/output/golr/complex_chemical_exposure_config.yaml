@@ -1,4 +1,4 @@
-id: complex_chemical_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: complex_chemical_exposure
 schema_generating: true
 description: A complex chemical exposure is an intake of a chemical mixture (e.g.
   gasoline), other than a drug.

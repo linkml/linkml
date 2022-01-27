@@ -1,4 +1,4 @@
-id: cell_line_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.7.0# version: 1.8.2id: cell_line_to_disease_or_phenotypic_feature_association
 schema_generating: true
 description: An relationship between a cell line and a disease or a phenotype, where
   the cell line is derived from an individual with that disease or phenotype.

@@ -1,5 +1,10 @@
 
-# mappings schema
+# mappings
+
+
+**metamodel version:** 1.7.0
+
+**version:** 2.0.0
 
 
 LinkML model for mappings

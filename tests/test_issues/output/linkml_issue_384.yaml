@@ -386,6 +386,6 @@ classes:
     class_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
 metamodel_version: 1.7.0
 source_file: linkml_issue_384.yaml
-source_file_date: '2022-01-27T02:21:23'
+source_file_date: '2022-01-27T02:49:45'
 source_file_size: 1220
-generation_date: '2022-01-27T02:26:32'
+generation_date: '2022-01-27T02:55:07'

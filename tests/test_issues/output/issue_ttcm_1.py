@@ -1,5 +1,5 @@
 # Auto generated from resourcedescription.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-05T01:11:30
+# Generation date: 2022-01-27T02:55:12
 # Schema: resourcedescription
 #
 # id: https://hotecosystem.org/tccm/resourcedescription
@@ -31,6 +31,7 @@ from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

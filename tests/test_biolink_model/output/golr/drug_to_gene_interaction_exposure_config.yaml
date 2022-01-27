@@ -1,4 +1,4 @@
-id: drug_to_gene_interaction_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: drug_to_gene_interaction_exposure
 schema_generating: true
 description: drug to gene interaction exposure is a drug exposure is where the interactions
   of the drug with specific genes are known to constitute an 'exposure' to the organism,

@@ -1,4 +1,4 @@
-id: enum_definition
+# metamodel_version: 1.7.0# version: 2.0.0id: enum_definition
 schema_generating: true
 description: List of values that constrain the range of a slot
 display_name: enum_definition

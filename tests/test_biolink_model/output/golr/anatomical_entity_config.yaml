@@ -1,4 +1,4 @@
-id: anatomical_entity
+# metamodel_version: 1.7.0# version: 1.8.2id: anatomical_entity
 schema_generating: true
 description: A subcellular location, cell type or gross anatomical part
 display_name: anatomical entity

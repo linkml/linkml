@@ -1,4 +1,4 @@
-id: genomic_background_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: genomic_background_exposure
 schema_generating: true
 description: A genomic background exposure is where an individual's specific genomic
   background of genes, sequence variants or other pre-existing genomic conditions

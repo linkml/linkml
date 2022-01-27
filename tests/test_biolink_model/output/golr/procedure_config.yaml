@@ -1,4 +1,4 @@
-id: procedure
+# metamodel_version: 1.7.0# version: 1.8.2id: procedure
 schema_generating: true
 description: A series of actions conducted in a certain order or manner
 display_name: procedure
