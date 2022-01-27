@@ -104,10 +104,30 @@ sqlschema
 
 ## See Also
 
+### GitHub Guides
+
+We recommend maintaing your source for your schema, plus all generated products in GitHub
+
+Some resources to help you:
+
+* [software carpentry guide](https://swcarpentry.github.io/git-novice/)
+* We hace created a [slide deck on GitHub](https://docs.google.com/presentation/u/0/d/1ydkB8y3cPYcDZYCT9DcENQk6gwWr0xR6/) for LinkML users
+
 ### ProjectGen docs
 
  * [project-generator](generators/project-generator)
 
 ### linkml-model-template
 
-The [linkml/linkml-model-template](https://github.com/linkml/linkml-model-template) utility will allow you to set up a whole GitHub repository, with a Makefile that can be used to regenerate all downstream products
+The [linkml/linkml-model-template](https://github.com/linkml/linkml-model-template) utility will allow you to set up a whole GitHub repository, with a Makefile that can be used to regenerate all downstream products. However, note that this uses an older version of the templates.
+
+### Registering your schema
+
+Once you have authored a schema, generated a full project, and are
+managing everything in GitHub, you may want to consider registering
+your schema. To do this, make a GitHub Pull Request (PR) on the main
+[linkml-registry](https://linkml.io/linkml-registry/home/) metadata
+file, which is here:
+
+https://github.com/linkml/linkml-registry/blob/main/models.yaml
+

@@ -11,6 +11,7 @@ FAQ
    why-linkml
    installation
    modeling
+   tools
    getting-help
    contributing
    troubleshooting

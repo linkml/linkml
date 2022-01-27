@@ -9,8 +9,7 @@ over the linkml metamodel, for example:
 - Tools that analyze schemas or align schemas or schema elements
 - Tools that auto-genete APIs from schemas
 - Generic faceted data browsers that flexibly operate over multiple
-  schemas (see   `this draft
-  <https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit>_`
+  schemas (see   `this draft <https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit>`_
 - Schema editors for LinkML itself
 
   
@@ -24,11 +23,11 @@ over the linkml metamodel, for example:
           anything about the linkml metamodel.
 
 An example of a generic-schema driven editing application is json-editor
-`<https://github.com/json-editor/json-editor>_`, which provides a way
+`<https://github.com/json-editor/json-editor>`_, which provides a way
 to create instance data for an arbitrary JSON-Schema.
 
 Another example is `DataHarmonizer
-<https://github.com/cidgoh/DataHarmonizer>_` which provides a
+<https://github.com/cidgoh/DataHarmonizer>`_ which provides a
 spreadsheet-like data entry interface for any "flat" LinkML schema.
 
           
@@ -37,7 +36,7 @@ General Considerations
 
 Any generic LinkML application will be driven by a LinkML *model*
 (schema), which itself conforms to the `LinkML metamodel
-<https://w3id.org/linkml>_`. It follows that these applications will
+<https://w3id.org/linkml>`_. It follows that these applications will
 itself need to conform to that model.
 
 One challenge is that the LinkML metamodel includes many different
@@ -51,7 +50,7 @@ syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of "business logic" associated with a
 model. For example, the rules that govern `inheritance and refinement
-of slots <../schemas/inheritance>_`.
+of slots <../schemas/inheritance>`_.
 
 For Python applications, the SchemaView library provides this business
 logic, but currently this logic must be re-implemented for different
@@ -121,7 +120,7 @@ includes only leaf elements, with inferred slots materialized as
 attributes. The resulting schema will be less rich, but may be
 sufficient for certain kinds of applications.
 
-See the `YAML Generator <../generators/yaml>_` for one such tool
+See the `YAML Generator <../generators/yaml>`_ for one such tool
 
 Other Languages
 ---------------
@@ -130,7 +129,7 @@ LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.
 
 For example, in Python, if you want a list of slots for that class you can use `class_slots
-<manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots>_`. But
+<manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots>`_. But
 what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?
 
@@ -163,23 +162,23 @@ General Guidelines for applications
 These guidelines apply to how applications should use elements of the
 LinkML metamodel.
 
-- Applications should use `title <https://w3id.org/linkml/>_` to
+- Applications should use `title <https://w3id.org/linkml/>`_ to
   obtain the user-friendly name for a slot. For example a
   spreadsheet-like data entry tool should display these as column
   headers
 - If `title` field is not available, use the `name` slot
-- The `description <https://w3id.org/linkml/description>_` slot should
+- The `description <https://w3id.org/linkml/description>`_ slot should
   be used to provide information to users, e.g. as tool-tips
-- The `pattern <https://w3id.org/linkml/pattern>_` slot should be used
+- The `pattern <https://w3id.org/linkml/pattern>`_ slot should be used
   to constrain values entered by the user
-- The `required <https://w3id.org/linkml/required>_` slot should be used
+- The `required <https://w3id.org/linkml/required>`_ slot should be used
   to indicate to users if a field is not filled in. Applications MAY
   choose to still allow such data to be saved, e.g. if the user is in
   an intermediate state
-- The `multivalued <https://w3id.org/linkml/multivalued>_` slot should
+- The `multivalued <https://w3id.org/linkml/multivalued>`_ slot should
   be used to indicate whether data should be inputted or displayed as
   a list/set
-- The `range <https://w3id.org/linkml/range>_` slot should
+- The `range <https://w3id.org/linkml/range>`_ slot should
   be used to constrain values for a slot. The application should also
   apply relevant logic to this calculation depending on conformance
   level supported.
@@ -240,7 +239,7 @@ potentially be tweaked by an individual user.
 It is easy to roll your own configuration format, but we would
 recommend creating a schema for your configuration data model. An
 example of this is `KGViz Schema
-<https://berkeleybop.github.io/kgviz-model/>_` which is a stylesheet
+<https://berkeleybop.github.io/kgviz-model/>`_ which is a stylesheet
 language for visualizing ontology graphs, based on `Graphviz<https://graphviz.org/>`.
 
 Schema Hints
@@ -320,7 +319,7 @@ types, and you introduce decoupling between specific schemas and your
 application.
 
 In this case, we are reusing the `dash vocabulary
-<https://datashapes.org/forms.html>_` which is intended for exactly
+<https://datashapes.org/forms.html>`_ which is intended for exactly
 this kind of purpose. Furthermore, if you compile your schema to SHACL
 then it will have the dash annotations, allowing you to leverage
 generic SHACL applications (next section).
@@ -444,4 +443,4 @@ JSON Schema.
 
 If considering a non-LinkML framework for form-based data entry we
 would strongly recommend SHACL + DASH. See `Form Generation using
-SHACL and DASH <https://datashapes.org/forms.html>_`.
+SHACL and DASH <https://datashapes.org/forms.html>`_.
