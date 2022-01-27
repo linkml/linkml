@@ -1,0 +1,2303 @@
+name: personinfo_relational
+id: https://w3id.org/linkml/examples/personinfo_relational
+imports:
+- linkml:types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  personinfo:
+    prefix_prefix: personinfo
+    prefix_reference: https://w3id.org/linkml/examples/personinfo/
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  schema:
+    prefix_prefix: schema
+    prefix_reference: http://schema.org/
+  rdfs:
+    prefix_prefix: rdfs
+    prefix_reference: http://www.w3.org/2000/01/rdf-schema#
+  prov:
+    prefix_prefix: prov
+    prefix_reference: http://www.w3.org/ns/prov#
+  GSSO:
+    prefix_prefix: GSSO
+    prefix_reference: http://purl.obolibrary.org/obo/GSSO_
+  famrel:
+    prefix_prefix: famrel
+    prefix_reference: https://example.org/FamilialRelations#
+  rr:
+    prefix_prefix: rr
+    prefix_reference: http://www.w3.org/ns/r2rml#
+default_prefix: https://w3id.org/linkml/examples/personinfo_relational/
+default_range: string
+subsets:
+  basic_subset:
+    name: basic_subset
+    description: A subset of the schema that handles basic information
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+types:
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDTime
+    uri: xsd:dateTime
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    description: a complete URI
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    comments:
+    - Used for inheritence and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+enums:
+  FamilialRelationshipType:
+    name: FamilialRelationshipType
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    permissible_values:
+      SIBLING_OF:
+        text: SIBLING_OF
+        meaning: famrel:01
+      PARENT_OF:
+        text: PARENT_OF
+        meaning: famrel:02
+      CHILD_OF:
+        text: CHILD_OF
+        meaning: famrel:01
+  GenderType:
+    name: GenderType
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    permissible_values:
+      nonbinary man:
+        text: nonbinary man
+        meaning: GSSO:009254
+      nonbinary woman:
+        text: nonbinary woman
+        meaning: GSSO:009253
+      transgender woman:
+        text: transgender woman
+        meaning: GSSO:000384
+      transgender man:
+        text: transgender man
+        meaning: GSSO:000372
+      cisgender man:
+        text: cisgender man
+        meaning: GSSO:000371
+      cisgender woman:
+        text: cisgender woman
+        meaning: GSSO:000385
+  DiagnosisType:
+    name: DiagnosisType
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+slots:
+  has_employment_history:
+    name: has_employment_history
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    domain: Person
+    range: EmploymentEvent
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/has_employment_history
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+    inverse: employmentEvent__Person_id
+  has_familial_relationships:
+    name: has_familial_relationships
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    domain: Person
+    range: FamilialRelationship
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/has_familial_relationships
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+    inverse: familialRelationship__Person_id
+  has_medical_history:
+    name: has_medical_history
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    domain: Person
+    range: MedicalEvent
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/has_medical_history
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+    inverse: medicalEvent__Person_id
+  aliases:
+    name: aliases
+    exact_mappings: &id001
+    - schema:alternateName
+    annotations: &id002
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/aliases
+    multivalued: true
+  persons:
+    name: persons
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    domain: Container
+    range: Person
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/persons
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+    inverse: person__Container_id
+  organizations:
+    name: organizations
+    annotations: &id003
+      primary_key:
+        tag: primary_key
+        value: 'true'
+      original_slot:
+        tag: original_slot
+        value: organizations
+      foreign_key:
+        tag: foreign_key
+        value: Organization.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Organization
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/organizations
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  namedThing__id:
+    name: namedThing__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: NamedThing
+    domain_of:
+    - NamedThing
+  namedThing__name:
+    name: namedThing__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: NamedThing
+    domain_of:
+    - NamedThing
+  namedThing__description:
+    name: namedThing__description
+    mappings:
+    - schema:description
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:description
+    alias: description
+    owner: NamedThing
+    domain_of:
+    - NamedThing
+  namedThing__image:
+    name: namedThing__image
+    mappings:
+    - schema:image
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:image
+    alias: image
+    owner: NamedThing
+    domain_of:
+    - NamedThing
+  person__primary_email:
+    name: person__primary_email
+    mappings:
+    - schema:email
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:email
+    alias: primary_email
+    owner: Person
+    domain_of:
+    - Person
+    pattern: ^\S+@[\S+\.]+\S+
+  person__birth_date:
+    name: person__birth_date
+    mappings:
+    - schema:birthDate
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:birthDate
+    alias: birth_date
+    owner: Person
+    domain_of:
+    - Person
+  person__age_in_years:
+    name: person__age_in_years
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: integer
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/age_in_years
+    alias: age_in_years
+    owner: Person
+    domain_of:
+    - Person
+    minimum_value: 0
+    maximum_value: 999
+  person__gender:
+    name: person__gender
+    mappings:
+    - schema:gender
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: GenderType
+    slot_uri: schema:gender
+    alias: gender
+    owner: Person
+    domain_of:
+    - Person
+  person__current_address:
+    name: person__current_address
+    annotations:
+      foreign_key:
+        tag: foreign_key
+        value: Address.id
+    description: The address at which a person currently lives
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Address
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/current_address
+    alias: current_address
+    owner: Person
+    domain_of:
+    - Person
+  person__id:
+    name: person__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: Person
+    domain_of:
+    - Person
+  person__name:
+    name: person__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: Person
+    domain_of:
+    - Person
+  person__description:
+    name: person__description
+    mappings:
+    - schema:description
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:description
+    alias: description
+    owner: Person
+    domain_of:
+    - Person
+  person__image:
+    name: person__image
+    mappings:
+    - schema:image
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:image
+    alias: image
+    owner: Person
+    domain_of:
+    - Person
+  person__Container_id:
+    name: person__Container_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      foreign_key:
+        tag: foreign_key
+        value: Container.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Container
+    slot_uri: rdf:subject
+    alias: Container_id
+    owner: Person
+    domain_of:
+    - Person
+    inverse: persons
+  organization__mission_statement:
+    name: organization__mission_statement
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/mission_statement
+    alias: mission_statement
+    owner: Organization
+    domain_of:
+    - Organization
+  organization__founding_date:
+    name: organization__founding_date
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/founding_date
+    alias: founding_date
+    owner: Organization
+    domain_of:
+    - Organization
+  organization__founding_location:
+    name: organization__founding_location
+    annotations:
+      foreign_key:
+        tag: foreign_key
+        value: Place.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Place
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/founding_location
+    alias: founding_location
+    owner: Organization
+    domain_of:
+    - Organization
+  organization__id:
+    name: organization__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: Organization
+    domain_of:
+    - Organization
+  organization__name:
+    name: organization__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: Organization
+    domain_of:
+    - Organization
+  organization__description:
+    name: organization__description
+    mappings:
+    - schema:description
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:description
+    alias: description
+    owner: Organization
+    domain_of:
+    - Organization
+  organization__image:
+    name: organization__image
+    mappings:
+    - schema:image
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:image
+    alias: image
+    owner: Organization
+    domain_of:
+    - Organization
+  place__id:
+    name: place__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: Place
+    domain_of:
+    - Place
+  place__name:
+    name: place__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: Place
+    domain_of:
+    - Place
+  address__id:
+    name: address__id
+    annotations:
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: rr:BlankNode
+      autoincrement:
+        tag: autoincrement
+        value: 'true'
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: integer
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/id
+    required: true
+    identifier: true
+    alias: id
+    owner: Address
+    domain_of:
+    - Address
+  address__street:
+    name: address__street
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/street
+    alias: street
+    owner: Address
+    domain_of:
+    - Address
+  address__city:
+    name: address__city
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/city
+    alias: city
+    owner: Address
+    domain_of:
+    - Address
+  address__postal_code:
+    name: address__postal_code
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/postal_code
+    alias: postal_code
+    owner: Address
+    domain_of:
+    - Address
+  event__started_at_time:
+    name: event__started_at_time
+    mappings:
+    - prov:startedAtTime
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:startedAtTime
+    alias: started_at_time
+    owner: Event
+    domain_of:
+    - Event
+  event__ended_at_time:
+    name: event__ended_at_time
+    mappings:
+    - prov:endedAtTime
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:endedAtTime
+    alias: ended_at_time
+    owner: Event
+    domain_of:
+    - Event
+  event__duration:
+    name: event__duration
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: float
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/duration
+    alias: duration
+    owner: Event
+    domain_of:
+    - Event
+  event__is_current:
+    name: event__is_current
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: boolean
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/is_current
+    alias: is_current
+    owner: Event
+    domain_of:
+    - Event
+  concept__id:
+    name: concept__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: Concept
+    domain_of:
+    - Concept
+  concept__name:
+    name: concept__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: Concept
+    domain_of:
+    - Concept
+  concept__description:
+    name: concept__description
+    mappings:
+    - schema:description
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:description
+    alias: description
+    owner: Concept
+    domain_of:
+    - Concept
+  concept__image:
+    name: concept__image
+    mappings:
+    - schema:image
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:image
+    alias: image
+    owner: Concept
+    domain_of:
+    - Concept
+  diagnosisConcept__id:
+    name: diagnosisConcept__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: DiagnosisConcept
+    domain_of:
+    - DiagnosisConcept
+  diagnosisConcept__name:
+    name: diagnosisConcept__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: DiagnosisConcept
+    domain_of:
+    - DiagnosisConcept
+  diagnosisConcept__description:
+    name: diagnosisConcept__description
+    mappings:
+    - schema:description
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:description
+    alias: description
+    owner: DiagnosisConcept
+    domain_of:
+    - DiagnosisConcept
+  diagnosisConcept__image:
+    name: diagnosisConcept__image
+    mappings:
+    - schema:image
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:image
+    alias: image
+    owner: DiagnosisConcept
+    domain_of:
+    - DiagnosisConcept
+  procedureConcept__id:
+    name: procedureConcept__id
+    mappings:
+    - schema:identifier
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:identifier
+    required: true
+    identifier: true
+    alias: id
+    owner: ProcedureConcept
+    domain_of:
+    - ProcedureConcept
+  procedureConcept__name:
+    name: procedureConcept__name
+    mappings:
+    - schema:name
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:name
+    alias: name
+    owner: ProcedureConcept
+    domain_of:
+    - ProcedureConcept
+  procedureConcept__description:
+    name: procedureConcept__description
+    mappings:
+    - schema:description
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:description
+    alias: description
+    owner: ProcedureConcept
+    domain_of:
+    - ProcedureConcept
+  procedureConcept__image:
+    name: procedureConcept__image
+    mappings:
+    - schema:image
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: schema:image
+    alias: image
+    owner: ProcedureConcept
+    domain_of:
+    - ProcedureConcept
+  relationship__started_at_time:
+    name: relationship__started_at_time
+    mappings:
+    - prov:startedAtTime
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:startedAtTime
+    alias: started_at_time
+    owner: Relationship
+    domain_of:
+    - Relationship
+  relationship__ended_at_time:
+    name: relationship__ended_at_time
+    mappings:
+    - prov:endedAtTime
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:endedAtTime
+    alias: ended_at_time
+    owner: Relationship
+    domain_of:
+    - Relationship
+  relationship__related_to:
+    name: relationship__related_to
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/related_to
+    alias: related_to
+    owner: Relationship
+    domain_of:
+    - Relationship
+  relationship__type:
+    name: relationship__type
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/type
+    alias: type
+    owner: Relationship
+    domain_of:
+    - Relationship
+  familialRelationship__id:
+    name: familialRelationship__id
+    annotations:
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: rr:BlankNode
+      autoincrement:
+        tag: autoincrement
+        value: 'true'
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: integer
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/id
+    required: true
+    identifier: true
+    alias: id
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+  familialRelationship__started_at_time:
+    name: familialRelationship__started_at_time
+    mappings:
+    - prov:startedAtTime
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:startedAtTime
+    alias: started_at_time
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+  familialRelationship__ended_at_time:
+    name: familialRelationship__ended_at_time
+    mappings:
+    - prov:endedAtTime
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:endedAtTime
+    alias: ended_at_time
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+  familialRelationship__related_to:
+    name: familialRelationship__related_to
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/related_to
+    alias: related_to
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+  familialRelationship__type:
+    name: familialRelationship__type
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: FamilialRelationshipType
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/type
+    required: true
+    alias: type
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+  familialRelationship__Person_id:
+    name: familialRelationship__Person_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      foreign_key:
+        tag: foreign_key
+        value: Person.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Person
+    slot_uri: rdf:subject
+    alias: Person_id
+    owner: FamilialRelationship
+    domain_of:
+    - FamilialRelationship
+    inverse: has_familial_relationships
+  employmentEvent__id:
+    name: employmentEvent__id
+    annotations:
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: rr:BlankNode
+      autoincrement:
+        tag: autoincrement
+        value: 'true'
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: integer
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/id
+    required: true
+    identifier: true
+    alias: id
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+  employmentEvent__employed_at:
+    name: employmentEvent__employed_at
+    annotations:
+      foreign_key:
+        tag: foreign_key
+        value: Organization.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Organization
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/employed_at
+    alias: employed_at
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+  employmentEvent__started_at_time:
+    name: employmentEvent__started_at_time
+    mappings:
+    - prov:startedAtTime
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:startedAtTime
+    alias: started_at_time
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+  employmentEvent__ended_at_time:
+    name: employmentEvent__ended_at_time
+    mappings:
+    - prov:endedAtTime
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:endedAtTime
+    alias: ended_at_time
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+  employmentEvent__duration:
+    name: employmentEvent__duration
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: float
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/duration
+    alias: duration
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+  employmentEvent__is_current:
+    name: employmentEvent__is_current
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: boolean
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/is_current
+    alias: is_current
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+  employmentEvent__Person_id:
+    name: employmentEvent__Person_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      foreign_key:
+        tag: foreign_key
+        value: Person.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Person
+    slot_uri: rdf:subject
+    alias: Person_id
+    owner: EmploymentEvent
+    domain_of:
+    - EmploymentEvent
+    inverse: has_employment_history
+  medicalEvent__id:
+    name: medicalEvent__id
+    annotations:
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: rr:BlankNode
+      autoincrement:
+        tag: autoincrement
+        value: 'true'
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: integer
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/id
+    required: true
+    identifier: true
+    alias: id
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__in_location:
+    name: medicalEvent__in_location
+    annotations:
+      foreign_key:
+        tag: foreign_key
+        value: Place.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Place
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/in_location
+    alias: in_location
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__started_at_time:
+    name: medicalEvent__started_at_time
+    mappings:
+    - prov:startedAtTime
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:startedAtTime
+    alias: started_at_time
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__ended_at_time:
+    name: medicalEvent__ended_at_time
+    mappings:
+    - prov:endedAtTime
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: date
+    slot_uri: prov:endedAtTime
+    alias: ended_at_time
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__duration:
+    name: medicalEvent__duration
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: float
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/duration
+    alias: duration
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__is_current:
+    name: medicalEvent__is_current
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: boolean
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/is_current
+    alias: is_current
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__Person_id:
+    name: medicalEvent__Person_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      foreign_key:
+        tag: foreign_key
+        value: Person.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Person
+    slot_uri: rdf:subject
+    alias: Person_id
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+    inverse: has_medical_history
+  medicalEvent__diagnosis_id:
+    name: medicalEvent__diagnosis_id
+    annotations:
+      original_slot:
+        tag: original_slot
+        value: diagnosis
+      foreign_key:
+        tag: foreign_key
+        value: DiagnosisConcept.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: DiagnosisConcept
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/diagnosis_id
+    inlined: true
+    alias: diagnosis_id
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  medicalEvent__procedure_id:
+    name: medicalEvent__procedure_id
+    annotations:
+      original_slot:
+        tag: original_slot
+        value: procedure
+      foreign_key:
+        tag: foreign_key
+        value: ProcedureConcept.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: ProcedureConcept
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/procedure_id
+    inlined: true
+    alias: procedure_id
+    owner: MedicalEvent
+    domain_of:
+    - MedicalEvent
+  container__id:
+    name: container__id
+    annotations:
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: rr:BlankNode
+      autoincrement:
+        tag: autoincrement
+        value: 'true'
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: integer
+    slot_uri: https://w3id.org/linkml/examples/personinfo_relational/id
+    required: true
+    identifier: true
+    alias: id
+    owner: Container
+    domain_of:
+    - Container
+  personAliases__Person_id:
+    name: personAliases__Person_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      primary_key:
+        tag: primary_key
+        value: 'true'
+      foreign_key:
+        tag: foreign_key
+        value: Person.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Person
+    slot_uri: rdf:subject
+    alias: Person_id
+    owner: Person_aliases
+    domain_of:
+    - Person_aliases
+  personAliases__aliases:
+    name: personAliases__aliases
+    mappings:
+    - rdf:object
+    exact_mappings:
+    - schema:alternateName
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: rdf:object
+    multivalued: false
+    alias: aliases
+    owner: Person_aliases
+    domain_of:
+    - Person_aliases
+  organizationAliases__Organization_id:
+    name: organizationAliases__Organization_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      primary_key:
+        tag: primary_key
+        value: 'true'
+      foreign_key:
+        tag: foreign_key
+        value: Organization.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Organization
+    slot_uri: rdf:subject
+    alias: Organization_id
+    owner: Organization_aliases
+    domain_of:
+    - Organization_aliases
+  organizationAliases__aliases:
+    name: organizationAliases__aliases
+    mappings:
+    - rdf:object
+    exact_mappings:
+    - schema:alternateName
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: rdf:object
+    multivalued: false
+    alias: aliases
+    owner: Organization_aliases
+    domain_of:
+    - Organization_aliases
+  placeAliases__Place_id:
+    name: placeAliases__Place_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      primary_key:
+        tag: primary_key
+        value: 'true'
+      foreign_key:
+        tag: foreign_key
+        value: Place.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Place
+    slot_uri: rdf:subject
+    alias: Place_id
+    owner: Place_aliases
+    domain_of:
+    - Place_aliases
+  placeAliases__aliases:
+    name: placeAliases__aliases
+    mappings:
+    - rdf:object
+    exact_mappings:
+    - schema:alternateName
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: string
+    slot_uri: rdf:object
+    multivalued: false
+    alias: aliases
+    owner: Place_aliases
+    domain_of:
+    - Place_aliases
+  containerOrganizations__Container_id:
+    name: containerOrganizations__Container_id
+    mappings:
+    - rdf:subject
+    annotations:
+      rdfs:subPropertyOf:
+        tag: rdfs:subPropertyOf
+        value: rdf:subject
+      primary_key:
+        tag: primary_key
+        value: 'true'
+      foreign_key:
+        tag: foreign_key
+        value: Container.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Container
+    slot_uri: rdf:subject
+    alias: Container_id
+    owner: Container_organizations
+    domain_of:
+    - Container_organizations
+  containerOrganizations__organizations_id:
+    name: containerOrganizations__organizations_id
+    mappings:
+    - rdf:object
+    annotations:
+      primary_key:
+        tag: primary_key
+        value: 'true'
+      original_slot:
+        tag: original_slot
+        value: organizations
+      foreign_key:
+        tag: foreign_key
+        value: Organization.id
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    range: Organization
+    slot_uri: rdf:object
+    multivalued: false
+    inlined: true
+    inlined_as_list: true
+    alias: organizations_id
+    owner: Container_organizations
+    domain_of:
+    - Container_organizations
+classes:
+  NamedThing:
+    name: NamedThing
+    mappings:
+    - personinfo:NamedThing
+    description: A generic grouping for any identifiable entity
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - namedThing__id
+    - namedThing__name
+    - namedThing__description
+    - namedThing__image
+    attributes:
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: NamedThing
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: NamedThing
+      description:
+        name: description
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:description
+        owner: NamedThing
+      image:
+        name: image
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:image
+        owner: NamedThing
+    class_uri: personinfo:NamedThing
+  Person:
+    name: Person
+    mappings:
+    - schema:Person
+    description: A person (alive, dead, undead, or fictional).
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - person__primary_email
+    - person__birth_date
+    - person__age_in_years
+    - person__gender
+    - person__current_address
+    - person__id
+    - person__name
+    - person__description
+    - person__image
+    - person__Container_id
+    attributes:
+      primary_email:
+        name: primary_email
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:email
+        owner: Person
+        pattern: ^\S+@[\S+\.]+\S+
+      birth_date:
+        name: birth_date
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:birthDate
+        owner: Person
+      age_in_years:
+        name: age_in_years
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: integer
+        owner: Person
+        minimum_value: 0
+        maximum_value: 999
+      gender:
+        name: gender
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: GenderType
+        slot_uri: schema:gender
+        owner: Person
+      current_address:
+        name: current_address
+        annotations:
+          foreign_key:
+            tag: foreign_key
+            value: Address.id
+        description: The address at which a person currently lives
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Address
+        owner: Person
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: Person
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: Person
+      description:
+        name: description
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:description
+        owner: Person
+      image:
+        name: image
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:image
+        owner: Person
+      Container_id:
+        name: Container_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          foreign_key:
+            tag: foreign_key
+            value: Container.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Container
+        slot_uri: rdf:subject
+        inverse: persons
+    class_uri: schema:Person
+  Organization:
+    name: Organization
+    mappings:
+    - schema:Organization
+    description: An organization such as a company or university
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - organization__mission_statement
+    - organization__founding_date
+    - organization__founding_location
+    - organization__id
+    - organization__name
+    - organization__description
+    - organization__image
+    attributes:
+      mission_statement:
+        name: mission_statement
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Organization
+      founding_date:
+        name: founding_date
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Organization
+      founding_location:
+        name: founding_location
+        annotations:
+          foreign_key:
+            tag: foreign_key
+            value: Place.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Place
+        owner: Organization
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: Organization
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: Organization
+      description:
+        name: description
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:description
+        owner: Organization
+      image:
+        name: image
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:image
+        owner: Organization
+    class_uri: schema:Organization
+  Place:
+    name: Place
+    mappings:
+    - personinfo:Place
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - place__id
+    - place__name
+    attributes:
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: Place
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: Place
+    class_uri: personinfo:Place
+  Address:
+    name: Address
+    mappings:
+    - schema:PostalAddress
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - address__id
+    - address__street
+    - address__city
+    - address__postal_code
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: integer
+        identifier: true
+      street:
+        name: street
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Address
+      city:
+        name: city
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Address
+      postal_code:
+        name: postal_code
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Address
+    class_uri: schema:PostalAddress
+  Event:
+    name: Event
+    mappings:
+    - personinfo:Event
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - event__started_at_time
+    - event__ended_at_time
+    - event__duration
+    - event__is_current
+    attributes:
+      started_at_time:
+        name: started_at_time
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:startedAtTime
+        owner: Event
+      ended_at_time:
+        name: ended_at_time
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:endedAtTime
+        owner: Event
+      duration:
+        name: duration
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: float
+        owner: Event
+      is_current:
+        name: is_current
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: boolean
+        owner: Event
+    class_uri: personinfo:Event
+  Concept:
+    name: Concept
+    mappings:
+    - personinfo:Concept
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - concept__id
+    - concept__name
+    - concept__description
+    - concept__image
+    attributes:
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: Concept
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: Concept
+      description:
+        name: description
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:description
+        owner: Concept
+      image:
+        name: image
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:image
+        owner: Concept
+    class_uri: personinfo:Concept
+  DiagnosisConcept:
+    name: DiagnosisConcept
+    mappings:
+    - personinfo:DiagnosisConcept
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - diagnosisConcept__id
+    - diagnosisConcept__name
+    - diagnosisConcept__description
+    - diagnosisConcept__image
+    attributes:
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: DiagnosisConcept
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: DiagnosisConcept
+      description:
+        name: description
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:description
+        owner: DiagnosisConcept
+      image:
+        name: image
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:image
+        owner: DiagnosisConcept
+    class_uri: personinfo:DiagnosisConcept
+  ProcedureConcept:
+    name: ProcedureConcept
+    mappings:
+    - personinfo:ProcedureConcept
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - procedureConcept__id
+    - procedureConcept__name
+    - procedureConcept__description
+    - procedureConcept__image
+    attributes:
+      id:
+        name: id
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:identifier
+        identifier: true
+        owner: ProcedureConcept
+      name:
+        name: name
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:name
+        owner: ProcedureConcept
+      description:
+        name: description
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:description
+        owner: ProcedureConcept
+      image:
+        name: image
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: schema:image
+        owner: ProcedureConcept
+    class_uri: personinfo:ProcedureConcept
+  Relationship:
+    name: Relationship
+    mappings:
+    - personinfo:Relationship
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - relationship__started_at_time
+    - relationship__ended_at_time
+    - relationship__related_to
+    - relationship__type
+    attributes:
+      started_at_time:
+        name: started_at_time
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:startedAtTime
+        owner: Relationship
+      ended_at_time:
+        name: ended_at_time
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:endedAtTime
+        owner: Relationship
+      related_to:
+        name: related_to
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Relationship
+      type:
+        name: type
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: Relationship
+    class_uri: personinfo:Relationship
+  FamilialRelationship:
+    name: FamilialRelationship
+    mappings:
+    - personinfo:FamilialRelationship
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - familialRelationship__id
+    - familialRelationship__started_at_time
+    - familialRelationship__ended_at_time
+    - familialRelationship__related_to
+    - familialRelationship__type
+    - familialRelationship__Person_id
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: integer
+        identifier: true
+      started_at_time:
+        name: started_at_time
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:startedAtTime
+        owner: FamilialRelationship
+      ended_at_time:
+        name: ended_at_time
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:endedAtTime
+        owner: FamilialRelationship
+      related_to:
+        name: related_to
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        owner: FamilialRelationship
+      type:
+        name: type
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: FamilialRelationshipType
+        required: true
+        owner: FamilialRelationship
+      Person_id:
+        name: Person_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          foreign_key:
+            tag: foreign_key
+            value: Person.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Person
+        slot_uri: rdf:subject
+        inverse: has_familial_relationships
+    class_uri: personinfo:FamilialRelationship
+  EmploymentEvent:
+    name: EmploymentEvent
+    mappings:
+    - personinfo:EmploymentEvent
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - employmentEvent__id
+    - employmentEvent__employed_at
+    - employmentEvent__started_at_time
+    - employmentEvent__ended_at_time
+    - employmentEvent__duration
+    - employmentEvent__is_current
+    - employmentEvent__Person_id
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: integer
+        identifier: true
+      employed_at:
+        name: employed_at
+        annotations:
+          foreign_key:
+            tag: foreign_key
+            value: Organization.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Organization
+        owner: EmploymentEvent
+      started_at_time:
+        name: started_at_time
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:startedAtTime
+        owner: EmploymentEvent
+      ended_at_time:
+        name: ended_at_time
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:endedAtTime
+        owner: EmploymentEvent
+      duration:
+        name: duration
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: float
+        owner: EmploymentEvent
+      is_current:
+        name: is_current
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: boolean
+        owner: EmploymentEvent
+      Person_id:
+        name: Person_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          foreign_key:
+            tag: foreign_key
+            value: Person.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Person
+        slot_uri: rdf:subject
+        inverse: has_employment_history
+    class_uri: personinfo:EmploymentEvent
+  MedicalEvent:
+    name: MedicalEvent
+    mappings:
+    - personinfo:MedicalEvent
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - medicalEvent__id
+    - medicalEvent__in_location
+    - medicalEvent__started_at_time
+    - medicalEvent__ended_at_time
+    - medicalEvent__duration
+    - medicalEvent__is_current
+    - medicalEvent__Person_id
+    - medicalEvent__diagnosis_id
+    - medicalEvent__procedure_id
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: integer
+        identifier: true
+      in_location:
+        name: in_location
+        annotations:
+          foreign_key:
+            tag: foreign_key
+            value: Place.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Place
+        owner: MedicalEvent
+      started_at_time:
+        name: started_at_time
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:startedAtTime
+        owner: MedicalEvent
+      ended_at_time:
+        name: ended_at_time
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: date
+        slot_uri: prov:endedAtTime
+        owner: MedicalEvent
+      duration:
+        name: duration
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: float
+        owner: MedicalEvent
+      is_current:
+        name: is_current
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: boolean
+        owner: MedicalEvent
+      Person_id:
+        name: Person_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          foreign_key:
+            tag: foreign_key
+            value: Person.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Person
+        slot_uri: rdf:subject
+        inverse: has_medical_history
+      diagnosis_id:
+        name: diagnosis_id
+        annotations:
+          original_slot:
+            tag: original_slot
+            value: diagnosis
+          foreign_key:
+            tag: foreign_key
+            value: DiagnosisConcept.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: DiagnosisConcept
+        inlined: true
+        alias: diagnosis_id
+        owner: MedicalEvent
+      procedure_id:
+        name: procedure_id
+        annotations:
+          original_slot:
+            tag: original_slot
+            value: procedure
+          foreign_key:
+            tag: foreign_key
+            value: ProcedureConcept.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: ProcedureConcept
+        inlined: true
+        alias: procedure_id
+        owner: MedicalEvent
+    class_uri: personinfo:MedicalEvent
+  Container:
+    name: Container
+    mappings:
+    - personinfo:Container
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - container__id
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: integer
+        identifier: true
+    class_uri: personinfo:Container
+  Person_aliases:
+    name: Person_aliases
+    mappings:
+    - rdf:Statement
+    annotations:
+      linkml:derived_from:
+        tag: linkml:derived_from
+        value: Person
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: linkml:JoinTable
+    comments:
+    - Generated from Person.aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - personAliases__Person_id
+    - personAliases__aliases
+    attributes:
+      Person_id:
+        name: Person_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: Person.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Person
+        slot_uri: rdf:subject
+      aliases:
+        name: aliases
+        exact_mappings:
+        - schema:alternateName
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: rdf:object
+        multivalued: false
+        owner: Person
+    class_uri: rdf:Statement
+  Organization_aliases:
+    name: Organization_aliases
+    mappings:
+    - rdf:Statement
+    annotations:
+      linkml:derived_from:
+        tag: linkml:derived_from
+        value: Organization
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: linkml:JoinTable
+    comments:
+    - Generated from Organization.aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - organizationAliases__Organization_id
+    - organizationAliases__aliases
+    attributes:
+      Organization_id:
+        name: Organization_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: Organization.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Organization
+        slot_uri: rdf:subject
+      aliases:
+        name: aliases
+        exact_mappings:
+        - schema:alternateName
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: rdf:object
+        multivalued: false
+        owner: Organization
+    class_uri: rdf:Statement
+  Place_aliases:
+    name: Place_aliases
+    mappings:
+    - rdf:Statement
+    annotations:
+      linkml:derived_from:
+        tag: linkml:derived_from
+        value: Place
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: linkml:JoinTable
+    comments:
+    - Generated from Place.aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - placeAliases__Place_id
+    - placeAliases__aliases
+    attributes:
+      Place_id:
+        name: Place_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: Place.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Place
+        slot_uri: rdf:subject
+      aliases:
+        name: aliases
+        exact_mappings: *id001
+        annotations: *id002
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: string
+        slot_uri: rdf:object
+        multivalued: false
+        owner: Place
+    class_uri: rdf:Statement
+  Container_organizations:
+    name: Container_organizations
+    mappings:
+    - rdf:Statement
+    annotations:
+      linkml:derived_from:
+        tag: linkml:derived_from
+        value: Container
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: linkml:JoinTable
+    comments:
+    - Generated from Container.organizations
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    slots:
+    - containerOrganizations__Container_id
+    - containerOrganizations__organizations_id
+    attributes:
+      Container_id:
+        name: Container_id
+        annotations:
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: Container.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Container
+        slot_uri: rdf:subject
+      organizations_id:
+        name: organizations_id
+        annotations: *id003
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        range: Organization
+        slot_uri: rdf:object
+        multivalued: false
+        inlined: true
+        inlined_as_list: true
+        alias: organizations_id
+        owner: Container
+    class_uri: rdf:Statement
