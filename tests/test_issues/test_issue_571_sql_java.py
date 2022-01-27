@@ -1,32 +1,37 @@
-import unittest
-from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition, ClassDefinition
+from linkml.generators.projectgen import ProjectGenerator, ProjectConfiguration
 from linkml_runtime.dumpers import yaml_dumper
-from linkml.generators.yamlgen import YAMLGenerator
-from linkml.generators.sqlddlgen import SQLDDLGenerator
-from linkml.generators.javagen import JavaGenerator
-from linkml.generators.projectgen import ProjectGenerator
+from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition, ClassDefinition
+from tests.test_generators.environment import env
+import filecmp
+import os
+import unittest
 
-# import os
-# from contextlib import redirect_stdout
-# from tests.test_generators.environment import env
+SCHEMA = env.input_path('kitchen_sink.yaml')
 
-# SCHEMA = env.input_path('kitchen_sink.yaml')
-# JAVA_DIR = env.expected_path('kitchen_sink_java')
 PACKAGE = 'org.sink.kitchen'
 
+OUT_DIR = 'output/issue_571'
+OUT_SUFFIX = 'issue_571'
+YAML_FILE = 'issue_571.yaml'
+SQL_FILE = 'issue_571.sql'
+SQL_DIR = 'sqlschema'
+JAVA_DIR = 'java'
 
-class BasicExample(unittest.TestCase):
+OUTDIR = env.outdir
+DEEPER_OUT = os.path.join(env.outdir, OUT_SUFFIX)
+YAML_PATH = os.path.join(DEEPER_OUT, YAML_FILE)
+SQL_PATH = os.path.join(DEEPER_OUT, SQL_DIR, SQL_FILE)
+JAVA_PATH = os.path.join(DEEPER_OUT, JAVA_DIR, SQL_FILE)
+
+
+class SqlVsJava(unittest.TestCase):
     """An illustration of failed java generation will go here.
     Right now I'm just getting used to unittest"""
 
-    # def test_valid_math(self):
-    #     self.assertEqual(1, 2 / 2)
+    def test_sql_vs_java(self):
 
-    # def test_bogus_math(self):
-    #     self.assertEqual(1, 0.5 + 0.501)
-
-    def test_sql_ddl_gen(self):
-        # todo make the schema creation a fixture and split out the different generations
+        # todo make the schema creation a fixture and split out the different generations ?
+        # todo switch to kitchen sink instead of crating my own schema?
         schema_id = 'http://example.com/issue_571_schema'
         issue_571_schema = SchemaDefinition(name="issue_571_schema", id=schema_id)
         issue_571_schema.imports.append("https://w3id.org/linkml/types")
@@ -41,22 +46,42 @@ class BasicExample(unittest.TestCase):
         issue_571_class2.slots.append('test_id')
         issue_571_schema.classes['issue_571_class1'] = issue_571_class1
         issue_571_schema.classes['issue_571_class2'] = issue_571_class2
-        # dumped_yaml = yaml_dumper.dumps(issue_571_schema)
-        # print(dumped_yaml)
-        # PREVIOUSLY
-        # Exception: Class has no from_schema
-        # generated_yaml = YAMLGenerator(issue_571_schema).serialize()
-        # print(generated_yaml)
-        # PREVIOUSLY
-        # ERROR:root:No PK for issue_571_class1
-        generated_sql = SQLDDLGenerator(issue_571_schema).serialize()
-        print(generated_sql)
-        gen = JavaGenerator(issue_571_schema, package=PACKAGE)
-        # md =
-        gen.serialize(directory='output/issue_571')
-        ts_type = type(issue_571_schema)
-        self.assertEqual(ts_type, SchemaDefinition)
+
+        yaml_dumper.dump(issue_571_schema, YAML_PATH)
+
+        # yaml_dumper.dump(SCHEMA, YAML_PATH)
+
+        config = ProjectConfiguration()
+        config.directory = DEEPER_OUT
+        config.generator_args['jsonschema'] = {"top_class": "issue_571_class1"}
+        pgen = ProjectGenerator()
+        pgen.generate(YAML_PATH, config)
+
+        if os.path.isfile(SQL_PATH):
+            if os.path.isfile(JAVA_PATH):
+                identical_files = filecmp.cmp(SQL_PATH, JAVA_PATH)
+                self.assertFalse(identical_files, msg=f"""There's a SQL DDL file {JAVA_PATH} 
+                that's identical with the expected {SQL_PATH}""")
+            else:
+                print(f"{JAVA_PATH} is not accessible")
+        else:
+            print(f"{SQL_PATH} is not accessible")
 
 
 if __name__ == "__main__":
     unittest.main()
+
+# from contextlib import redirect_stdout
+
+# dumped_yaml = yaml_dumper.dumps(issue_571_schema)
+# print(dumped_yaml)
+# PREVIOUSLY
+# Exception: Class has no from_schema
+# generated_yaml = YAMLGenerator(issue_571_schema).serialize()
+# print(generated_yaml)
+# PREVIOUSLY
+# ERROR:root:No PK for issue_571_class1
+# generated_sql = SQLDDLGenerator(issue_571_schema).serialize()
+# print(generated_sql)
+# jgen = JavaGenerator(issue_571_schema, package=PACKAGE)
+# jgen.serialize(directory=OUT_DIR)
