@@ -199,7 +199,7 @@ class SQLDDLGenerator(Generator):
         self.generate_header()
 
     def _is_hidden(self, cls: ClassDefinition) -> bool:
-        if cls.mixin or cls.abstract:
+        if cls.mixin or cls.abstract or self.is_class_unconstrained(cls):
             return True
 
     def _class_name_to_table(self, cn: ClassDefinitionName) -> str:

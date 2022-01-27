@@ -37,6 +37,7 @@ class JsonSchemaTestCase(unittest.TestCase):
         #p = [p for p in persons if p.id == 'P:002'][0]
         ok_address = False
         ok_history = False
+        ok_metadata = True
         for p in inst.persons:
             for a in p.addresses:
                 print(f'{p.id} address = {a.street}')
@@ -46,13 +47,24 @@ class JsonSchemaTestCase(unittest.TestCase):
                 print(f'{p.id} history = {h}')
                 if h.in_location == 'GEO:1234' and h.diagnosis.name == 'headache':
                     ok_history = True
+                # test the metadata slot, which has an unconstrained range
+                if h.metadata:
+                    if h.metadata.anything.goes:
+                        ok_metadata = True
         assert ok_address
         assert ok_history
         json_dumper.dump(element=inst, to_file=DATA_JSON)
-        jsonschemastr = JsonSchemaGenerator(SCHEMA, mergeimports=True, top_class='Dataset').serialize()
+        gen = JsonSchemaGenerator(SCHEMA, mergeimports=True, top_class='Dataset')
+        jsonschemastr = gen.serialize()
         with open(JSONSCHEMA_OUT, 'w') as io:
             io.write(jsonschemastr)
         validate_object(inst, SCHEMA, closed=True)
+
+        # test for https://github.com/linkml/linkml/issues/579
+        jso = json.loads(jsonschemastr)
+        assert '$defs' in jso
+        any_obj = jso['$defs']['AnyObject']
+        assert any_obj['additionalProperties']
 
         # test for expected failures
         # FAILDATA contains a set of json objects each of which
