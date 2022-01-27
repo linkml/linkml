@@ -24,7 +24,7 @@ We have a slack channel for the core team and adopted of bleeding edge new featu
 
 ## How do I register my schema?
 
-You can make a GitHub Pull Request (PR) on the main registery metadata file, which is here:
+You can make a GitHub Pull Request (PR) on the main [linkml-registry](https://linkml.io/linkml-registry/home/) metadata file, which is here:
 
 https://github.com/linkml/linkml-registry/blob/main/models.yaml
 
