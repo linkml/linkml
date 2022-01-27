@@ -134,6 +134,7 @@ classes:
       - started at time
       - ended at time
       - is current
+      - metadata
 
   Relationship:
     slots:
@@ -236,6 +237,11 @@ classes:
       slot with space 2:
         range: class with spaces
 
+
+  AnyObject:
+    class_uri: linkml:Any
+    description: Example of unconstrained class
+
 slots:
   employed at:
     range: Company
@@ -298,6 +304,9 @@ slots:
     range: BirthEvent
   in code system:
     range: CodeSystem
+  metadata:
+    range: AnyObject
+    description: Example of a slot that has an unconstrained range
 
 enums:
   FamilialRelationshipType:

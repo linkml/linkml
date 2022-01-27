@@ -88,11 +88,14 @@ class JsonSchemaGenerator(Generator):
     def visit_class(self, cls: ClassDefinition) -> bool:
         if cls.mixin or cls.abstract:
             return False
+        additional_properties = False
+        if self.is_class_unconstrained(cls):
+            additional_properties = True
         self.clsobj = JsonObj(title=camelcase(cls.name),
                               type='object',
                               properties=JsonObj(),
                               required=[],
-                              additionalProperties=False,
+                              additionalProperties=additional_properties,
                               description=be(cls.description))
         return True
 

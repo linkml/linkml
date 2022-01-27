@@ -22,6 +22,11 @@ persons:
           id: CODE:P0001
           name: trepanation
           in_code_system: ProcedureCodes
+        # the metadata slot has an unconstrained range
+        metadata:
+          anything:
+            goes:
+              here:
     addresses:
       - street: 1 foo street
         city: foo city
