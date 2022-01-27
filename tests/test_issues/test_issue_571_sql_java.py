@@ -25,8 +25,8 @@ JAVA_PATH = os.path.join(DEEPER_OUT, JAVA_DIR, SQL_FILE)
 
 
 class SqlVsJava(unittest.TestCase):
-    """An illustration of failed java generation will go here.
-    Right now I'm just getting used to unittest"""
+    """Is there a SQL DDL file in the Java output dir?
+    Does it match the SQL DDL file in the SQL output dir?"""
 
     def test_sql_vs_java(self):
 
