@@ -1,5 +1,5 @@
 # Auto generated from inheritedid.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-28T20:07:49
+# Generation date: 2022-01-28T21:50:17
 # Schema: test_inherited_id
 #
 # id: https://example.org/inheritedid
