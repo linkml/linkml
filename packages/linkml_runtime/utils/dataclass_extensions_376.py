@@ -115,7 +115,7 @@ elif sys.version_info >= (3, 9, 0):
                           locals=locals,
                           globals=globals,
                           return_type=None)
-elif sys.version_info >= (3, 8, 0):
+elif sys.version_info >= (3, 8, 1):
     from dataclasses import MISSING, _HAS_DEFAULT_FACTORY, _POST_INIT_NAME, _FIELD_INITVAR, _init_param, _field_init, \
         _create_fn
 
