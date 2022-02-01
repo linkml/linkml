@@ -121,7 +121,7 @@ elif sys.version_info.minor == 7:
                           locals=locals,
                           globals=globals,
                           return_type=None)
-elif sys.version_info.major == 8 and sys.version_info.minor == 0:
+elif sys.version_info.minor == 8 and sys.version_info.micro == 0:
     # Taken from 3.8.0
     # Dataclass takes 4 arguments
     from dataclasses import MISSING, _HAS_DEFAULT_FACTORY, _field_init, _FIELD_INITVAR, _POST_INIT_NAME, _init_param, \
@@ -175,7 +175,7 @@ elif sys.version_info.major == 8 and sys.version_info.minor == 0:
                           locals=locals,
                           globals=globals,
                           return_type=None)
-elif sys.version_info.major == 8 and sys.version_info.minor > 0:
+elif sys.version_info.minor == 8 and sys.version_info.micro > 0:
     # Taken from 3.8.12
     # Dataclass takes 4 arguments
     from dataclasses import MISSING, _HAS_DEFAULT_FACTORY, _field_init, _FIELD_INITVAR, _POST_INIT_NAME, _init_param, \
@@ -229,7 +229,7 @@ elif sys.version_info.major == 8 and sys.version_info.minor > 0:
                           locals=locals,
                           globals=globals,
                           return_type=None)
-elif sys.version_info.major == 9:
+elif sys.version_info.minor == 9:
     # Taken from 3.9.10
     # Dataclass takes 5 arguments
     from dataclasses import MISSING, _HAS_DEFAULT_FACTORY, _field_init, _FIELD_INITVAR, _POST_INIT_NAME, _init_param, \
