@@ -4,6 +4,14 @@ from rdflib import RDF, RDFS, SKOS, XSD, OWL
 import rdflib_shim
 shim = rdflib_shim.RDFLIB_SHIM
 
+# use importlib.metadata to read the version provided
+# by the package during installation. Do not hardcode
+# the version in the code
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:
+    import importlib_metadata
+
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 TCCM = CurieNamespace('tccm', 'https://ontologies.r.us/tccm/')
 OWL = CurieNamespace('owl', OWL)
@@ -11,6 +19,9 @@ RDF = CurieNamespace('rdf', RDF)
 RDFS = CurieNamespace('rdfs', RDFS)
 SKOS = CurieNamespace('skos', SKOS)
 XSD = CurieNamespace('xsd', XSD)
+
+__version__ = importlib_metadata.version(__name__)
+
 
 class MappingError(ValueError):
     """
