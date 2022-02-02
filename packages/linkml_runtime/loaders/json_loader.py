@@ -18,7 +18,6 @@ class JSONLoader(Loader):
                 return self.json_clean(data_as_dict)
             typ = data_as_dict.pop('@type', None)
             if typ and typ != target_class.__name__:
-                # TODO: connect this up with the logging facility or warning?
                 logging.warning(f"Warning: input type mismatch. Expected: {target_class.__name__}, Actual: {typ}")
             return self.json_clean(data_as_dict)
 
