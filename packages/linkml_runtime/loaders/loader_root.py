@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 
 from hbreader import FileInfo, hbread
-from jsonasobj2 import as_dict
+from jsonasobj2 import as_dict, JsonObj
 
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -37,7 +37,7 @@ class Loader(ABC):
                     loader: Callable[[Union[str, Dict], FileInfo], Optional[Union[Dict, List]]],
                     target_class: Type[YAMLRoot],
                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-                    metadata: Optional[FileInfo] = None) -> Optional[YAMLRoot]:
+                    metadata: Optional[FileInfo] = None) -> Optional[Union[YAMLRoot, List[YAMLRoot]]]:
         """ Base loader - convert a file, url, string, open file handle or dictionary into an instance
         of target_class
 
@@ -61,14 +61,34 @@ class Loader(ABC):
         if data_as_dict:
             if isinstance(data_as_dict, list):
                 return [target_class(**as_dict(x)) for x in data_as_dict]
+            elif isinstance(data_as_dict, dict):
+                return target_class(**data_as_dict)
+            elif isinstance(data_as_dict, JsonObj):
+                return [target_class(**as_dict(x)) for x in data_as_dict]
             else:
-                return target_class(**as_dict(data_as_dict))
+                raise ValueError(f'Unexpected type {data_as_dict}')
         else:
             return None
 
+    def load(self, *args, **kwargs) -> YAMLRoot:
+        """
+        Load source as an instance of target_class
+        @param source: source file/text/url to load
+        @param target_class: destination class
+        @param base_dir: scoping directory for source if it is a file or url
+        @param metadata: metadata about the source
+        @param _: extensions
+        @return: instance of target_class
+        """
+        results = self.load_any(*args, **kwargs)
+        if isinstance(results, YAMLRoot):
+            return results
+        else:
+            raise ValueError(f'Result is not a list: {results}')
+
     @abstractmethod
-    def load(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
-             metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
+    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
+             metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
         """
         Load source as an instance of target_class
         @param source: source file/text/url to load
@@ -79,6 +99,17 @@ class Loader(ABC):
         @return: instance of target_class
         """
         raise NotImplementedError()
+
+    def loads_any(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+        """
+        Load source as a string
+        @param source: source
+        @param target_class: destination class
+        @param metadata: metadata about the source
+        @param _: extensions
+        @return: instance of taarget_class
+        """
+        return self.load_any(source, target_class, metadata=metadata)
 
     def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
         """
