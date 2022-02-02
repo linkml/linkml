@@ -84,13 +84,14 @@ class Loader(ABC):
         if isinstance(results, YAMLRoot):
             return results
         else:
-            raise ValueError(f'Result is not a list: {results}')
+            raise ValueError(f'Result is not an instance of YAMLRoot: {type(results)}')
 
     @abstractmethod
     def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
              metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
         """
-        Load source as an instance of target_class
+        Load source as an instance of target_class, or list of instances of target_class
+
         @param source: source file/text/url to load
         @param target_class: destination class
         @param base_dir: scoping directory for source if it is a file or url
@@ -102,7 +103,7 @@ class Loader(ABC):
 
     def loads_any(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
         """
-        Load source as a string
+        Load source as a string as an instance of target_class, or list of instances of target_class
         @param source: source
         @param target_class: destination class
         @param metadata: metadata about the source
