@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from typing import Union, TextIO, Dict
+from typing import Union, TextIO, Dict, List
 
 import click
 from jinja2 import Template
@@ -23,9 +23,21 @@ from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
+from pydantic.dataclasses import dataclass
+from pydantic.typing import ForwardRef
 
-metamodel_version = {{metamodel_version}}
-version = {{version if version else None}}
+metamodel_version = "{{metamodel_version}}"
+version = "{{version if version else None}}"
+
+# Pydantic config and validators
+class PydanticConfig:
+    \"\"\" Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ \"\"\"
+
+    validate_assignment = True
+    validate_all = True
+    underscore_attrs_are_private = True
+    extra = 'forbid'
+    arbitrary_types_allowed = True  # TODO re-evaluate this
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
@@ -40,6 +52,7 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 
 {% for c in schema.classes.values() %}
+@dataclass(config=PydanticConfig)
 class {{ c.name }}( 
                    {%- if c.is_a %}{{c.is_a}}{% else %}BaseModel{% endif -%}
                    {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
@@ -62,8 +75,10 @@ class {{ c.name }}(
     {% endif %}
 {% endfor %}
 
-{% for c in schema.classes.values() %}
-{{ c.name }}.update_forward_refs()
+# Update forward refs
+# see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+{% for c in schema.classes.values() -%}
+{{ c.name }}.__pydantic_model__.update_forward_refs()
 {% endfor %}
 """
 
@@ -116,6 +131,41 @@ class PydanticGenerator(OOCodeGenerator):
 
         return enums
 
+    def sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+        """
+        sort classes such that if C is a child of P then C appears after P in the list
+
+        Overridden method include mixin classes
+
+        TODO: This should move to SchemaView
+        """
+        clist = list(clist)
+        slist = []  # sorted
+        while len(clist) > 0:
+            can_add = False
+            for i in range(len(clist)):
+                candidate = clist[i]
+                can_add = False
+                if candidate.is_a:
+                    candidates = [candidate.is_a] + candidate.mixins
+                else:
+                    candidates = candidate.mixins
+                if not candidates:
+                    can_add = True
+                else:
+                    if set(candidates) <= set([p.name for p in slist]):
+                        can_add = True
+                if can_add:
+                    slist = slist + [candidate]
+                    del clist[i]
+                    break
+            if not can_add:
+                raise ValueError(
+                    f'could not find suitable element in {clist} that does not ref {slist}'
+                )
+        return slist
+
+
     def serialize(self) -> str:
         sv = self.schemaview
 
@@ -129,17 +179,21 @@ class PydanticGenerator(OOCodeGenerator):
         sv = self.schemaview
         schema = sv.schema
         #print(f'# SV c={sv.all_classes().keys()}')
-        pyschema = SchemaDefinition(id=schema.id, name=schema.name, description=schema.description)
-
+        pyschema = SchemaDefinition(id=schema.id, name=schema.name, description=schema.description.replace("\"", "\\\""))
         enums = self.generate_enums(sv.all_enums())
 
-        for class_name, class_original in sv.all_classes().items():
+        sorted_classes = self.sort_classes(list(sv.all_classes().values()))
+
+        for class_original in sorted_classes:
             class_def: ClassDefinition
             class_def = deepcopy(class_original)
+            class_name = class_original.name
             class_def.name = camelcase(class_original.name)
             if class_def.is_a:
                 class_def.is_a = camelcase(class_def.is_a)
             class_def.mixins = [camelcase(p) for p in class_def.mixins]
+            if class_def.description:
+                class_def.description = class_def.description.replace("\"", "\\\"")
             pyschema.classes[class_def.name] = class_def
             for attribute in list(class_def.attributes.keys()):
                 del class_def.attributes[attribute]
@@ -148,6 +202,8 @@ class PydanticGenerator(OOCodeGenerator):
                 s = deepcopy(sv.induced_slot(sn, class_name))
                 # logging.error(f'Induced slot {class_name}.{sn} == {s.name} {s.range}')
                 s.name = underscore(s.name)
+                if s.description:
+                    s.description = s.description.replace("\"", "\\\"")
                 class_def.attributes[s.name] = s
                 collection_key = None
                 if s.range in sv.all_classes():
