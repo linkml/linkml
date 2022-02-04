@@ -62,17 +62,16 @@ class {{ c.name }}(
     {{ c.description }}
     \"\"\"
     {%- endif %}
-    {% for attr in c.attributes.values() -%}
+    {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(None
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
     )
-    {% endfor %}
-    {% if not c.attributes %}
+    {% else -%}
     None
-    {% endif %}
+    {% endfor %}
 {% endfor %}
 
 # Update forward refs
