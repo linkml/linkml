@@ -66,7 +66,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -111,10 +110,10 @@ behavior of some tools.</p>
 <section id="description">
 <h2>description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/description">description</a> slot can be used to provide a human-readable description of any schema element</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
-      <span class="no">A person (alive, dead, undead, or fictional).</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">A person (alive, dead, undead, or fictional).</span><span class="w"></span>
 </pre></div>
 </div>
 <p>descriptions can include markdown</p>
@@ -135,16 +134,22 @@ behavior of some tools.</p>
 <h2>aliases<a class="headerlink" href="#aliases" title="Permalink to this headline"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/aliases">aliases</a> slot can be used to define a list of aliases for a class or slot. This is useful for adding synonymous names to your class (or slot), that serve either as hints for human users, or to enhance search and findability over your model</p>
 <p>Example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span>
-  <span class="nt">aliases</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">human being</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">individual</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">human being</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">individual</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="deprecation">
 <h2>deprecation<a class="headerlink" href="#deprecation" title="Permalink to this headline"></a></h2>
-<p>…</p>
+<p>Any schema element can be deprecated, with a reason provided; optionally, a replacement can be provided</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Agent</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">deprecated</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the concept of Agent was too abstract, use Person instead</span><span class="w"></span>
+<span class="w">    </span><span class="nt">deprecated_element_has_exact_replacement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
 <section id="others-slots">
 <h2>others slots<a class="headerlink" href="#others-slots" title="Permalink to this headline"></a></h2>

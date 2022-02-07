@@ -146,6 +146,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inline</span> <span class="o">=</span> <span class="n">inline</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                                  <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                                 <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
+                                 <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                                  <span class="n">properties</span><span class="o">=</span><span class="p">{},</span>
                                  <span class="n">additionalProperties</span><span class="o">=</span><span class="n">not_closed</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entryProperties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -169,11 +171,14 @@
 <div class="viewcode-block" id="JsonSchemaGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">additional_properties</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="n">additional_properties</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clsobj</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
                               <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">,</span>
                               <span class="n">properties</span><span class="o">=</span><span class="n">JsonObj</span><span class="p">(),</span>
                               <span class="n">required</span><span class="o">=</span><span class="p">[],</span>
-                              <span class="n">additionalProperties</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                              <span class="n">additionalProperties</span><span class="o">=</span><span class="n">additional_properties</span><span class="p">,</span>
                               <span class="n">description</span><span class="o">=</span><span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -225,7 +230,8 @@
             <span class="n">id_slot</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">range_cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                <span class="c1"># TODO: extension_tag should be declared as a key in extensions.yaml in metamodel</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">key</span> <span class="ow">or</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">alias</span> <span class="o">==</span> <span class="s1">&#39;tag&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">range_cls</span> <span class="o">==</span> <span class="s1">&#39;extension&#39;</span> <span class="ow">or</span> <span class="n">range_cls</span> <span class="o">==</span> <span class="s1">&#39;annotation&#39;</span><span class="p">)):</span>
                     <span class="n">id_slot</span> <span class="o">=</span> <span class="n">s</span>
                     <span class="k">break</span>
             <span class="c1"># If inline we have to include redefined slots</span>
@@ -276,7 +282,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">prop</span>
 
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span><span class="o">.</span><span class="n">required</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schemaobj</span><span class="o">.</span><span class="n">required</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">))</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">JsonSchemaGenerator</span><span class="p">)</span>
@@ -288,7 +294,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="s2">&quot;--top-class&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Top level class; slots of this class will become top level properties in the json-schema</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--not-closed/--closed&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--not-closed/--closed&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Set additionalProperties=False if closed otherwise true if not closed at the global level</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

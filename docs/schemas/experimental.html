@@ -64,7 +64,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -106,19 +105,19 @@
 <h2>LinkML Any type<a class="headerlink" href="#linkml-any-type" title="Permalink to this headline"></a></h2>
 <p>LinkML is currently best suited to ‘strict’ schemas, and doesn’t have full support for being able to model arbitrary dictionaries/objects. Each slot must have a defined range, the range must be exactly one of a Class, Type, or Enum. It is currently impossible to define unions of these core ranges.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> type is an experimental feature for allowing arbitrary objects</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 
-  <span class="nt">MetaObject</span><span class="p">:</span>
-    <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">linkml:Any</span>
+<span class="w">  </span><span class="nt">MetaObject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:Any</span><span class="w"></span>
 
-  <span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 
-  <span class="nt">Person</span><span class="p">:</span>
-   <span class="nt">attributes</span><span class="p">:</span>
-     <span class="nt">id</span><span class="p">:</span>
-     <span class="nt">name</span><span class="p">:</span>
-     <span class="nt">metadata</span><span class="p">:</span>
-       <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MetaObject</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MetaObject</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -127,23 +126,23 @@
 <p>A subset of slots for a class can be declared as <a class="reference external" href="https://w3id.org/linkml/">defining
 slots</a>, indicating that membership of the
 class can be inferred based on ranges of those slots</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 
-  <span class="nt">Interaction</span><span class="p">:</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">subject</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">  </span><span class="nt">Interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
 
-  <span class="nt">ProteinProteinInteraction</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Interaction</span>
-    <span class="nt">slot_usage</span><span class="p">:</span>
-      <span class="nt">subject</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Protein</span>
-      <span class="nt">object</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Protein</span>
-    <span class="nt">defining_slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">subject</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">  </span><span class="nt">ProteinProteinInteraction</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Interaction</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span><span class="w"></span>
+<span class="w">      </span><span class="nt">object</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span><span class="w"></span>
+<span class="w">    </span><span class="nt">defining_slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This indicates that if we have an interaction object <code class="docutils literal notranslate"><span class="pre">I</span></code>, and the subject and object slot values for <code class="docutils literal notranslate"><span class="pre">I</span></code> are both of type Protein, then <code class="docutils literal notranslate"><span class="pre">I</span></code> can be inferred to be of type ProteinProteinInteraction</p>

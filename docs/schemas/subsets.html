@@ -46,7 +46,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -84,12 +83,12 @@
 <h1>in_subset<a class="headerlink" href="#in-subset" title="Permalink to this headline"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">in_subset</span></code> slot can be used tag your class (or slot) to belong to a pre-defined subset.</p>
 <p>The actual subset names are defined as part of the Schema definition.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">genetically interacts with</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">interacts with</span>
-    <span class="nt">domain</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
-    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gene</span>
-    <span class="nt">in_subset</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">translator_minimal</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">genetically interacts with</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interacts with</span><span class="w"></span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
+<span class="w">    </span><span class="nt">in_subset</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">translator_minimal</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Here we define the predicate slot <code class="docutils literal notranslate"><span class="pre">genetically</span> <span class="pre">interacts</span> <span class="pre">with</span></code> as part of the <code class="docutils literal notranslate"><span class="pre">translator_minimal</span></code> subset.</p>

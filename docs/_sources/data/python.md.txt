@@ -31,6 +31,8 @@ class Person(NamedThing):
     aliases: Optional[Union[str, List[str]]] = empty_list()
 ```
 
+The generated python classes have additional functinality to help with serializing/deserializing.
+
 ## Use in programs
 
 This can be used for programmatic manipulation, e.g:

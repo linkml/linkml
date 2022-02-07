@@ -13,7 +13,7 @@ See [github.com/linkml](https://github.com/linkml)
     - code needed by linkml python object models
     - utility code such as [schemaview](manipulating-schemas)
     - includes metamodel (linkml_runtime.linkml_model)
-* [linkml-runtime-api](https://github.com/linkml-runtime-api) **NEW**
+* [linkml-runtime-api](https://github.com/linkml-dataops) **NEW**
   - extension to runtime to provide:
      - a change/patch API over data
      - a query API over data

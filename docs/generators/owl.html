@@ -176,6 +176,122 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-owl">
+<h4>gen-owl<a class="headerlink" href="#gen-owl" title="Permalink to this headline"></a></h4>
+<p>Generate an OWL representation of a LinkML model</p>
+<p>Examples:</p>
+<blockquote>
+<div><p>gen-owl –no-metaclasses –no-type-objects</p>
+</div></blockquote>
+<p>For more info, see: <a class="reference external" href="https://linkml.io/linkml/generators/owl">https://linkml.io/linkml/generators/owl</a></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-owl <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-o">
+<span id="cmdoption-gen-owl-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-o" title="Permalink to this definition"></a></dt>
+<dd><p>Output file name</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-type-objects">
+<span id="cmdoption-gen-owl-no-type-objects"></span><span class="sig-name descname"><span class="pre">--type-objects</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-type-objects</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-type-objects" title="Permalink to this definition"></a></dt>
+<dd><p>If true, will model linkml types as objects, not literals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-metaclasses">
+<span id="cmdoption-gen-owl-no-metaclasses"></span><span class="sig-name descname"><span class="pre">--metaclasses</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metaclasses</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-metaclasses" title="Permalink to this definition"></a></dt>
+<dd><p>If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-add-ols-annotations">
+<span id="cmdoption-gen-owl-no-add-ols-annotations"></span><span class="sig-name descname"><span class="pre">--add-ols-annotations</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-add-ols-annotations</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-add-ols-annotations" title="Permalink to this definition"></a></dt>
+<dd><p>If true, auto-include annotations from <a class="reference external" href="https://www.ebi.ac.uk/ols/docs/installation-guide">https://www.ebi.ac.uk/ols/docs/installation-guide</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-ontology-iri-suffix">
+<span class="sig-name descname"><span class="pre">--ontology-iri-suffix</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;ontology_iri_suffix&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-ontology-iri-suffix" title="Permalink to this definition"></a></dt>
+<dd><p>Suffix to append to schema id to generate OWL Ontology IRI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>.owl.ttl</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-f">
+<span id="cmdoption-gen-owl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=owl)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>owl | ttl | json-ld | xml | n3 | turtle | ttl | ntriples | nt | nt11 | nquads | trix | trig | hext</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-metadata">
+<span id="cmdoption-gen-owl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-useuris">
+<span id="cmdoption-gen-owl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-im">
+<span id="cmdoption-gen-owl-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-log_level">
+<span id="cmdoption-gen-owl-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-mergeimports">
+<span id="cmdoption-gen-owl-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-arg-YAMLFILE">
+<span id="cmdoption-gen-owl-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
