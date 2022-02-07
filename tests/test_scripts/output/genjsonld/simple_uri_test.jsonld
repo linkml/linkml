@@ -316,9 +316,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "simple_uri_test.yaml",
-  "source_file_date": "2022-02-07T16:38:15",
+  "source_file_date": "2022-02-07T17:08:00",
   "source_file_size": 480,
-  "generation_date": "2022-02-07T16:50:12",
+  "generation_date": "2022-02-07T17:13:53",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/extensions.context.jsonld",
