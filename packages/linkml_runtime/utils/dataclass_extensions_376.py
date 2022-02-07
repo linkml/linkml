@@ -1,5 +1,20 @@
 import sys
 
+# The purpose behind the set of changes below is to change two signatures in the dataclasses
+# generated code.  The first is to add the **kwargs at the end:
+#     def __init__(self, a1, a2, ..., p1=k1, p2=k2, ...pn=kn, **kwargs)
+#
+# this allows any named parameter that isn't in the list to pass through the dataclasses init section.
+#
+# The second change is to the __post_init__ itself:
+#     def __post_init__(self, ...,  **kwargs)
+#
+# This gives control over error reporting and the like back to the generated python, which
+# allows it to give line numbers and other things.
+#
+# NOTE: we copy the _init_fn(...) signature from the python supplied dataclasses.py and change
+#       the two lines.
+
 if sys.version_info < (3, 7, 0):
     raise NotImplementedError("LinkML requires Python 3.7 or later to run")
 elif sys.version_info >= (3, 10, 0):
