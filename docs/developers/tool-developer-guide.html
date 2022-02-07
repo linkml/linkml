@@ -114,8 +114,7 @@ over the linkml metamodel, for example:</p>
 <li><p>Tools that analyze schemas or align schemas or schema elements</p></li>
 <li><p>Tools that auto-genete APIs from schemas</p></li>
 <li><p>Generic faceted data browsers that flexibly operate over multiple
-schemas (see   <cite>this draft
-&lt;https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit&gt;_</cite></p></li>
+schemas (see   <a class="reference external" href="https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit">this draft</a></p></li>
 <li><p>Schema editors for LinkML itself</p></li>
 </ul>
 <div class="admonition note">
@@ -130,16 +129,16 @@ work with other schemas, and hence does not need to know
 anything about the linkml metamodel.</p>
 </div>
 <p>An example of a generic-schema driven editing application is json-editor
-<cite>&lt;https://github.com/json-editor/json-editor&gt;_</cite>, which provides a way
+<a class="reference external" href="https://github.com/json-editor/json-editor">https://github.com/json-editor/json-editor</a>, which provides a way
 to create instance data for an arbitrary JSON-Schema.</p>
-<p>Another example is <cite>DataHarmonizer
-&lt;https://github.com/cidgoh/DataHarmonizer&gt;_</cite> which provides a
+<p>[react-jsonschema-form](<a class="reference external" href="https://rjsf-team.github.io/react-jsonschema-form/">https://rjsf-team.github.io/react-jsonschema-form/</a>)
+is based on the same idea.</p>
+<p>Another example is <a class="reference external" href="https://github.com/cidgoh/DataHarmonizer">DataHarmonizer</a> which provides a
 spreadsheet-like data entry interface for any “flat” LinkML schema.</p>
 <section id="general-considerations">
 <h2>General Considerations<a class="headerlink" href="#general-considerations" title="Permalink to this headline"></a></h2>
 <p>Any generic LinkML application will be driven by a LinkML <em>model</em>
-(schema), which itself conforms to the <cite>LinkML metamodel
-&lt;https://w3id.org/linkml&gt;_</cite>. It follows that these applications will
+(schema), which itself conforms to the <a class="reference external" href="https://w3id.org/linkml">LinkML metamodel</a>. It follows that these applications will
 itself need to conform to that model.</p>
 <p>One challenge is that the LinkML metamodel includes many different
 features, not all of which may be required for a particular
@@ -150,8 +149,8 @@ profile.</p>
 syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of “business logic” associated with a
-model. For example, the rules that govern <cite>inheritance and refinement
-of slots &lt;../schemas/inheritance&gt;_</cite>.</p>
+model. For example, the rules that govern <a class="reference external" href="../schemas/inheritance">inheritance and refinement
+of slots</a>.</p>
 <p>For Python applications, the SchemaView library provides this business
 logic, but currently this logic must be re-implemented for different
 languages. This may be a concern if you are building web applications
@@ -197,7 +196,7 @@ and basic builtin types, as well as cardinalities</p></li>
 <li><p>The next level would include class inheritance and slots, and
 basic enums</p></li>
 <li><p>The level above this would include slot inheritance, and slot
-overrides with slot_usage</p></li>
+overrides with <cite>slot_usage</cite></p></li>
 <li><p>The highest level would include boolean expressions and rules</p></li>
 </ul>
 </div></blockquote>
@@ -217,62 +216,61 @@ slot uris, and mappings</p></li>
 </ul>
 <p>The LinkML framework provides some functionality for being able to do
 transformations “down” levels. For example, a rich schema that uses
-inheritance and slot_usage can be “rolled down” to a schema that
+inheritance and <cite>slot_usage</cite> can be “rolled down” to a schema that
 includes only leaf elements, with inferred slots materialized as
 attributes. The resulting schema will be less rich, but may be
 sufficient for certain kinds of applications.</p>
-<p>See the <cite>YAML Generator &lt;../generators/yaml&gt;_</cite> for one such tool</p>
+<p>See the <a class="reference external" href="../generators/yaml">YAML Generator</a> for one such tool</p>
 </section>
 <section id="other-languages">
 <h2>Other Languages<a class="headerlink" href="#other-languages" title="Permalink to this headline"></a></h2>
 <p>LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.</p>
-<p>For example, in Pythonif you want a list of slots for that class you can use <cite>class_slots
-&lt;manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots&gt;_</cite>. But
-what if you are building a generic javascript data entry widget that
+<p>For example, in Python, if you want a list of slots for that class you can use <a class="reference external" href="manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots">class_slots</a>. But
+what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?</p>
 <p>There are a few broad approaches here:</p>
 <ul class="simple">
 <li><p>1. Use the direct output of your language’s YAML/JSON parser, and
 implement logic ad-hoc</p></li>
-<li><p>2. Develop a full blown analog of the python SchemaView class for
+<li><p>2. Develop a full blown analog of the Python SchemaView class for
 your language</p></li>
-<li><p>3. Write python code to transform LinkML YAML into a native form
+<li><p>3. Write Python code to transform LinkML YAML into a native form
 geared for your application</p></li>
 </ul>
 <p>The first approach may be easiest, but we would only recommend this
 for simple schemas (low structural conformance – see above).</p>
 <p>If you are interested in approach 2, please make an issue on our
-github repo so we can coordinate! We may have suggestions for general
+GitHub repo so we can coordinate! We may have suggestions for general
 strategies for bootstrapping. And we may already have prototype
 implementations for your language.</p>
 <p>For example, we have a prototype Java code generator that can create
-java classes for any LinkML model. The LinkML metamodel is in LinkML,
-so this can be used to make a java object model for LinkML itself,
+Java classes for any LinkML model. The LinkML metamodel is in LinkML,
+so this can be used to make a Java object model for LinkML itself,
 which can help bootstrap efforts to make domain logical libraries.</p>
 </section>
 <section id="general-guidelines-for-applications">
 <h2>General Guidelines for applications<a class="headerlink" href="#general-guidelines-for-applications" title="Permalink to this headline"></a></h2>
 <p>These guidelines apply to how applications should use elements of the
-LinkML metamodel</p>
+LinkML metamodel.</p>
 <ul class="simple">
-<li><p>Applications should use <cite>title &lt;https://w3id.org/linkml/&gt;_</cite> to
+<li><p>Applications should use <a class="reference external" href="https://w3id.org/linkml/">title</a> to
 obtain the user-friendly name for a slot. For example a
 spreadsheet-like data entry tool should display these as column
 headers</p></li>
-<li><p>If title field is not available, use the <cite>name</cite> slot</p></li>
-<li><p>The <cite>description &lt;https://w3id.org/linkml/description&gt;_</cite> slot should
+<li><p>If <cite>title</cite> field is not available, use the <cite>name</cite> slot</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/description">description</a> slot should
 be used to provide information to users, e.g. as tool-tips</p></li>
-<li><p>The <cite>pattern &lt;https://w3id.org/linkml/pattern&gt;_</cite> slot should be used
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/pattern">pattern</a> slot should be used
 to constrain values entered by the user</p></li>
-<li><p>The <cite>required &lt;https://w3id.org/linkml/required&gt;_</cite> slot should be used
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/required">required</a> slot should be used
 to indicate to users if a field is not filled in. Applications MAY
 choose to still allow such data to be saved, e.g. if the user is in
 an intermediate state</p></li>
-<li><p>The <cite>multivalued &lt;https://w3id.org/linkml/multivalued&gt;_</cite> slot should
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/multivalued">multivalued</a> slot should
 be used to indicate whether data should be inputted or displayed as
 a list/set</p></li>
-<li><p>The <cite>range &lt;https://w3id.org/linkml/range&gt;_</cite> slot should
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/range">range</a> slot should
 be used to constrain values for a slot. The application should also
 apply relevant logic to this calculation depending on conformance
 level supported.</p></li>
@@ -320,8 +318,8 @@ and feel. But in general UX can be improved by customizing things.</p>
 </ol>
 </li>
 </ul>
-<p>the first approach is out of scope for this guide – but if you do go
-down this route, the LinkMK framework provides various utilities that
+<p>The first approach is out of scope for this guide – but if you do go
+down this route, the LinkML framework provides various utilities that
 may help, such as the ability to generate custom language bindings.</p>
 <p>The other two approaches are fairly similar and involve providing a
 mechanism for a generic application to customize look, feel, and
@@ -333,9 +331,8 @@ configurations for controlling colors, shapes, sizes, etc. These could
 potentially be tweaked by an individual user.</p>
 <p>It is easy to roll your own configuration format, but we would
 recommend creating a schema for your configuration data model. An
-example of this is <cite>KGViz Schema
-&lt;https://berkeleybop.github.io/kgviz-model/&gt;_</cite> which is a stylesheet
-language for visualizing ontology graphs, based on graphviz.</p>
+example of this is <a class="reference external" href="https://berkeleybop.github.io/kgviz-model/">KGViz Schema</a> which is a stylesheet
+language for visualizing ontology graphs, based on <cite>Graphviz&lt;https://graphviz.org/&gt;</cite>.</p>
 </section>
 <section id="schema-hints">
 <h3>Schema Hints<a class="headerlink" href="#schema-hints" title="Permalink to this headline"></a></h3>
@@ -354,71 +351,53 @@ of granularity you provide here. However, specifying the precise
 number of rows and columns may be embedding too much application logic
 in the schema. Instead we encourage thinking of “semantic types”. For
 example, you could define two types:</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>yaml
-types:</p>
-<blockquote>
-<div><dl>
-<dt>NameString:</dt><dd><p>typeof: string
-pattern: “^[^\n]$”
-description: A description that holds a human readable name
-comments:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>This is designed to support different styles of names from
-multiple languages, but certain characters such as newlines are
-never in names</p></li>
-</ul>
-</div></blockquote>
-</dd>
-<dt>FormattedString:</dt><dd><p>typeof: string
-description: &gt;-</p>
-<blockquote>
-<div><p>A string in which characters such as newlines are
-permitted and used for formatting</p>
-</div></blockquote>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="simple">
-<dt>slots:</dt><dd><dl class="simple">
-<dt>full_name:</dt><dd><p>range: NameString</p>
-</dd>
-<dt>address:</dt><dd><p>range: FormattedString</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">NameString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[^\\n]$&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A description that holds a human readable name</span><span class="w"></span>
+<span class="w">    </span><span class="nt">comments</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This is designed to support different styles of names from</span><span class="w"></span>
+<span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">multiple languages, but certain characters such as newlines are</span><span class="w"></span>
+<span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">never in names</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">FormattedString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">A string in which characters such as newlines are</span><span class="w"></span>
+<span class="w">      </span><span class="no">permitted and used for formatting</span><span class="w"></span>
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NameString</span><span class="w"></span>
+<span class="w">  </span><span class="nt">address</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FormattedString</span><span class="w"></span>
+</pre></div>
+</div>
 <p>And then hardcode these types into the application.</p>
 <p>A more flexible approach would be instead to use annotations on the
 types:</p>
-<p><a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>yaml
-types:</p>
-<blockquote>
-<div><dl>
-<dt>NameString:</dt><dd><p>typeof: string
-pattern: “^[^\n]$”
-description: …
-annotations:</p>
-<blockquote>
-<div><p>dash.singleLine: true</p>
-</div></blockquote>
-</dd>
-<dt>FormattedString:</dt><dd><p>typeof: string
-description: …
-annotations:</p>
-<blockquote>
-<div><p>dash.singleLine: false</p>
-</div></blockquote>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">NameString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[^\\n]$&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">dash.singleLine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">FormattedString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">dash.singleLine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+</pre></div>
+</div>
 <p>This is better as you can reuse the same vocabulary on different
 types, and you introduce decoupling between specific schemas and your
 application.</p>
-<p>In this case, we are reusing the <cite>dash vocabulary
-&lt;https://datashapes.org/forms.html&gt;_</cite> which is intended for exactly
+<p>In this case, we are reusing the <a class="reference external" href="https://datashapes.org/forms.html">dash vocabulary</a> which is intended for exactly
 this kind of purpose. Furthermore, if you compile your schema to SHACL
 then it will have the dash annotations, allowing you to leverage
 generic SHACL applications (next section).</p>
@@ -427,46 +406,30 @@ generic SHACL applications (next section).</p>
 <h3>Using ontologies and standard vocabularies to drive behavior<a class="headerlink" href="#using-ontologies-and-standard-vocabularies-to-drive-behavior" title="Permalink to this headline"></a></h3>
 <p>Consider a schema that reuses standard vocabularies such as wgs84 for
 slots:</p>
-<p><a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a>yaml
-prefixes:</p>
-<blockquote>
-<div><p>wgs: <a class="reference external" href="http://www.w3.org/2003/01/geo">http://www.w3.org/2003/01/geo</a>/wgs84_pos#
-schema: <a class="reference external" href="http://schema.org/">http://schema.org/</a></p>
-</div></blockquote>
-<dl>
-<dt>slots:</dt><dd><dl>
-<dt>latitude:</dt><dd><p>domain: geolocation value
-range: decimal degree
-description: &gt;-</p>
-<blockquote>
-<div><p>latitude</p>
-</div></blockquote>
-<p>slot_uri: wgs:lat
-exact_mappings:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>schema:latitude</p></li>
-</ul>
-</div></blockquote>
-</dd>
-<dt>longitude:</dt><dd><p>domain: geolocation value
-range: decimal degree
-description: &gt;-</p>
-<blockquote>
-<div><p>longitude</p>
-</div></blockquote>
-<p>slot_uri: wgs:long
-exact_mappings:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>schema:longitude</p></li>
-</ul>
-</div></blockquote>
-</dd>
-</dl>
-</dd>
-</dl>
-<p><a href="#id21"><span class="problematic" id="id22">``</span></a><a href="#id23"><span class="problematic" id="id24">`</span></a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">wgs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.w3.org/2003/01/geo/wgs84_pos#</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">latitude</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">geolocation value</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal degree</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">latitude</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wgs:lat</span><span class="w"></span>
+<span class="w">    </span><span class="nt">exact_mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:latitude</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">longitude</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">geolocation value</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal degree</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">longitude</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wgs:long</span><span class="w"></span>
+<span class="w">    </span><span class="nt">exact_mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:longitude</span><span class="w"></span>
+</pre></div>
+</div>
 <p>Applications may choose to have specific behavior for lat-long fields,
 for example, including a map widget. Applications may also choose to
 use mappings as well as the primary URI.</p>
@@ -496,54 +459,36 @@ precision/error bars? Is the unit baked in to the slot, or does the
 user specify this? Is the quantity captured as a single parseable text
 string, or is a complex object used?</p>
 <p>The modeling decisions will vary based on the use case. However, if
-certain conventions are followed then generic applications can be made
-‘smart’</p>
+certain conventions are followed, then generic applications can be made
+‘smart’.</p>
 <p>For example, if we model quantity values as classes and reuse the
-concept from the standard qudt vocabulary:</p>
-<dl>
-<dt><a href="#id25"><span class="problematic" id="id26">``</span></a><a href="#id27"><span class="problematic" id="id28">`</span></a>yaml</dt><dd><dl>
-<dt>quantity value:</dt><dd><dl>
-<dt>description: &gt;-</dt><dd><p>A simple quantity, e.g. 2cm</p>
-</dd>
-<dt>attributes:</dt><dd><dl>
-<dt>verbatim:</dt><dd><dl class="simple">
-<dt>description: &gt;-</dt><dd><p>Unnormalized atomic string representation, should in syntax {number} {unit}</p>
-</dd>
-</dl>
-</dd>
-<dt>has unit:</dt><dd><dl class="simple">
-<dt>description: &gt;-</dt><dd><p>The unit of the quantity</p>
-</dd>
-</dl>
-<p>slot_uri: qudt:unit</p>
-</dd>
-<dt>has numeric value:</dt><dd><dl class="simple">
-<dt>description: &gt;-</dt><dd><p>The number part of the quantity</p>
-</dd>
-<dt>range:</dt><dd><p>double</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>class_uri: qudt:QuantityValue
-mappings:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>schema:QuantityValue</p></li>
-</ul>
-</div></blockquote>
-</dd>
-</dl>
-</dd>
-</dl>
-<p><a href="#id29"><span class="problematic" id="id30">``</span></a><a href="#id31"><span class="problematic" id="id32">`</span></a></p>
+concept from the standard <cite>qudt&lt;http://qudt.org/&gt;</cite> vocabulary:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">quantity value</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">    </span><span class="no">A simple quantity, e.g. 2cm</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">verbatim</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">        </span><span class="no">Unnormalized atomic string representation, should in syntax {number} {unit}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">has unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">        </span><span class="no">The unit of the quantity</span><span class="w"></span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qudt:unit</span><span class="w"></span>
+<span class="w">    </span><span class="nt">has numeric value</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">        </span><span class="no">The number part of the quantity</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">double</span><span class="w"></span>
+<span class="w">  </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qudt:QuantityValue</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:QuantityValue</span><span class="w"></span>
+</pre></div>
+</div>
 <p>Then applications can be aware of the semantics of this field and act
 accordingly; for example:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>allow free text entry and use a library like quantulum to parse
+<li><p>allow free text entry and use a library like <cite>quantulum&lt;https://github.com/marcolagi/quantulum&gt;</cite> to parse
 into structured form</p></li>
 <li><p>allow for conversion between units</p></li>
 <li><p>use sliders to allow input</p></li>
@@ -555,13 +500,13 @@ into structured form</p></li>
 <section id="using-other-frameworks">
 <h2>Using other frameworks<a class="headerlink" href="#using-other-frameworks" title="Permalink to this headline"></a></h2>
 <p>You should also feel free to build applications that use other
-frameworks - you can compile to these from LinkML. But be aware that
-you will be restricted to the expressivity of that language - e.g. a
+frameworks. You can compile to these from LinkML, but be aware that
+you will be restricted to the expressivity of that language–e.g. a
 project like json-edit can only make use of what is expressible in
-json-schema.</p>
+JSON Schema.</p>
 <p>If considering a non-LinkML framework for form-based data entry we
-would strongly recommend SHACL + DASH. See <cite>Form Generation using
-SHACL and DASH &lt;https://datashapes.org/forms.html&gt;_</cite>.</p>
+would strongly recommend SHACL + DASH. See <a class="reference external" href="https://datashapes.org/forms.html">Form Generation using
+SHACL and DASH</a>.</p>
 </section>
 </section>
 

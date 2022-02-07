@@ -123,22 +123,22 @@ pip install linkml
 <p>Our first schema consists of a single <em>class</em> <code class="docutils literal notranslate"><span class="pre">Person</span></code>, with a number of <em>slots</em>:</p>
 <p>First create a file</p>
 <p>personinfo.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span>
-  <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
-<span class="nt">imports</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
-<span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-  
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-      <span class="nt">full_name</span><span class="p">:</span>
-      <span class="nt">aliases</span><span class="p">:</span>
-      <span class="nt">phone</span><span class="p">:</span>
-      <span class="nt">age</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
 </pre></div>
 </div>
 <p>(note that all files are available in the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/tutorial">examples/tutorial</a> folder of this repository)</p>
@@ -150,41 +150,41 @@ pip install linkml
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;$defs&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;Person&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-         <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="p">{</span>
-               <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">{</span>
-               <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;full_name&quot;</span><span class="p">:</span> <span class="p">{</span>
-               <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="p">{</span>
-               <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;phone&quot;</span><span class="p">:</span> <span class="p">{</span>
-               <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">}</span>
-         <span class="p">},</span>
-         <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[],</span>
-         <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
-      <span class="p">}</span>
-   <span class="p">},</span>
-   <span class="nt">&quot;$id&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/examples/personinfo&quot;</span><span class="p">,</span>
-   <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span>
-   <span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-   <span class="nt">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span>
-   <span class="nt">&quot;required&quot;</span><span class="p">:</span> <span class="p">[],</span>
-   <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;personinfo&quot;</span><span class="p">,</span>
-   <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Person&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;aliases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">         </span><span class="p">},</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Person&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">},</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;$id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;personinfo&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Don’t worry if you don’t know much about JSON-Schema. This is just an illustration that LinkML can be used in combination with a number of frameworks.</p>
@@ -193,10 +193,10 @@ pip install linkml
 <h2>Creating and validating data<a class="headerlink" href="#creating-and-validating-data" title="Permalink to this headline"></a></h2>
 <p>Let’s create an example data file. The file will contain an <em>instance</em> of the class we defined in our <code class="docutils literal notranslate"><span class="pre">personinfo.yaml</span></code> schema:</p>
 <p>data.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-<span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-<span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">32</span>
-<span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
+<span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Validate:</p>
@@ -206,11 +206,11 @@ pip install linkml
 <p>You should see no errors. This means your data is valid. Success!</p>
 <p>To see an example of data not validating:</p>
 <p>bad-data.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-<span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-<span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">32</span>
-<span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
-<span class="nt">made_up_field</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
+<span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span><span class="w"></span>
+<span class="nt">made_up_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
 </pre></div>
 </div>
 <!-- FAIL -->
@@ -230,12 +230,12 @@ pip install linkml
 </ul>
 <p>There are various complexities involved in going between these, but YAML and JSON are basically interchangeable with LinkML</p>
 <p>data.json:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
- <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span>
- <span class="nt">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span>
- <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
- <span class="nt">&quot;phone&quot;</span><span class="p">:</span> <span class="s2">&quot;555-555-5555&quot;</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;555-555-5555&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will validate in the same way as the equivalent YAML file:</p>
@@ -254,7 +254,7 @@ pip install linkml
 <!-- MATCHES data.ttl -->
 <div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo/&gt;</span><span class="w"> </span><span class="p">.</span>
 
-<span class="p">[]</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">dict</span> <span class="p">;</span>
+<span class="p">[]</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
     <span class="nn">ns1</span><span class="p">:</span><span class="nt">age</span> <span class="s">&quot;32&quot;</span> <span class="p">;</span>
     <span class="nn">ns1</span><span class="p">:</span><span class="nt">full_name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
     <span class="nn">ns1</span><span class="p">:</span><span class="nt">id</span> <span class="s">&quot;ORCID:1234&quot;</span> <span class="p">;</span>
@@ -262,6 +262,9 @@ pip install linkml
 </pre></div>
 </div>
 <p>If you are not familiar with RDF that’s OK! RDF is just one of the possible ways of working with LinkML.</p>
+<p>If you are familiar with RDF, the first thing you will likely notice
+is that we are not reusing standard URIs for our properties and
+classes. Don’t worry! We will get to this later.</p>
 </section>
 <section id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>

@@ -48,7 +48,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
@@ -60,10 +59,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-sql-ddl">Why should I use LinkML over SQL DDL?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-uml">Why should I use LinkML over UML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-owl">Why should I use LinkML over OWL?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-custom-spreadsheets">Why should I use LinkML over Custom spreadsheets?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-csv-on-the-web">Why should I use LinkML over CSV-on-the-web?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -123,76 +124,76 @@
 <li><p>you lack a computable way of mapping your column headers to a standard data dictionary, vocabulary</p></li>
 </ul>
 <p>LinkML provides an easy way of making your data computable. You can start with a very simple schema, with a single class, and one slot per column in your TSV; for example, for a dataset where the rows represent people:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-      <span class="nt">name</span><span class="p">:</span>
-      <span class="nt">email</span><span class="p">:</span>
-      <span class="nt">age</span><span class="p">:</span>
-      <span class="nt">occupation</span><span class="p">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">occupation</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
 <p>this is already useful as it states which column headers are expected in your data.</p>
 <p>you can later expand that to provide constraints on the values each column:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span> <span class="c1">## this ensures the id field is unique</span>
-      <span class="nt">name</span><span class="p">:</span>
-      <span class="nt">email</span><span class="p">:</span>
-        <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;\\S+@[\\S\\.]+\\S+&quot;</span>   <span class="c1">## regular expression</span>
-      <span class="nt">age</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-        <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-        <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">999</span>
-      <span class="nt">occupation_class</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">job_code</span>   <span class="c1">## enumeration</span>
-    <span class="nt">unique_keys</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">email is unique</span>
-        <span class="nt">unique_key_slots</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">email</span>
-<span class="nt">enums</span><span class="p">:</span>
-  <span class="nt">job_code</span><span class="p">:</span>
-    <span class="nt">scientific</span><span class="p">:</span>
-    <span class="nt">technical</span><span class="p">:</span>
-    <span class="nt">service</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1">## this ensures the id field is unique</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@[\\S\\.]+\\S+&quot;</span><span class="w">   </span><span class="c1">## regular expression</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
+<span class="w">      </span><span class="nt">occupation_class</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">job_code</span><span class="w">   </span><span class="c1">## enumeration</span><span class="w"></span>
+<span class="w">    </span><span class="nt">unique_keys</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">email is unique</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">email</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">job_code</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">scientific</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">technical</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
 </pre></div>
 </div>
 <p>You can also provide textual descriptions and additional metadata on the columns that may be useful for human users</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">unique identifier</span>
-      <span class="nt">name</span><span class="p">:</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the full name of the person</span>
-      <span class="nt">email</span><span class="p">:</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the persons email address</span>
-      <span class="nt">age</span><span class="p">:</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the age of the person in years</span>
-      <span class="nt">occupation_class</span><span class="p">:</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the kind of job the person has</span>
-      <span class="l l-Scalar l-Scalar-Plain">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unique identifier</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the full name of the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the persons email address</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the age of the person in years</span><span class="w"></span>
+<span class="w">      </span><span class="nt">occupation_class</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the kind of job the person has</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
 <p>If you like, you can provide both linked data IRIs to your schema elements, or mappings to existing systems, for example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
-  <span class="nt">schema</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
-  <span class="nt">foaf</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://xmlns.com/foaf/0.1/</span>
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:identifier</span>
-      <span class="nt">name</span><span class="p">:</span>
-        <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:name</span>
-      <span class="nt">email</span><span class="p">:</span>
-        <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:email</span>
-        <span class="nt">exact_mappings</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">foaf:email</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">foaf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://xmlns.com/foaf/0.1/</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:identifier</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:email</span><span class="w"></span>
+<span class="w">        </span><span class="nt">exact_mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foaf:email</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This has a number of advantages:</p>
@@ -239,6 +240,11 @@ schema to ShEx, with a prototype SHACL generator now available.</p>
 <li><p>your emphasis is more on data modeling rather than validation</p></li>
 </ul>
 <p>Full disclosure: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/shex.html">ShEx generator</a></p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/shacl.html">SHACL generator</a></p></li>
+</ul>
 </section>
 <section id="why-should-i-use-linkml-over-sql-ddl">
 <h2>Why should I use LinkML over SQL DDL?<a class="headerlink" href="#why-should-i-use-linkml-over-sql-ddl" title="Permalink to this headline"></a></h2>
@@ -275,56 +281,75 @@ descriptions to fields, and it can be challenging to introspect
 these. LinkML provides a simple easy to use way to provide rich
 metadata about your fields.</p>
 <p>Compare:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">sample</span> <span class="p">(</span>
-  <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>  <span class="c1">-- unique sample id</span>
-  <span class="n">individual_id</span> <span class="nb">TEXT</span> <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">id</span><span class="p">),</span>
-  <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span>
-  <span class="n">disease</span> <span class="nb">TEXT</span><span class="p">,</span>
-  <span class="n">src</span> <span class="nb">TEXT</span><span class="p">,</span>
-  <span class="n">collec_location</span> <span class="nb">TEXT</span> <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">geoloc</span><span class="p">.</span><span class="n">id</span><span class="p">),</span>
-  <span class="p">...</span>
-<span class="p">);</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">sample</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w">  </span><span class="c1">-- unique sample id</span>
+<span class="w">  </span><span class="n">individual_id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">id</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">disease</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">src</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">collec_location</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">geoloc</span><span class="p">.</span><span class="n">id</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="p">...</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>with:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Sample</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">identifier</span>
-        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;SAMPLEDB:SAM\\d{8}&quot;</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A unique identifier for the sample</span>
-      <span class="nt">name</span><span class="p">:</span>
-        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sample name</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A human-readable name for the sample</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NarrativeText</span>
-      <span class="nt">disease</span><span class="p">:</span>
-        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">disease</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the disease with which the patient was diagnosed</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span>
-      <span class="nt">src</span><span class="p">:</span>
-        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tissue source</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the anatomical location from which the tissue was sampled</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span>
-        <span class="nt">todos</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">model this using an ontology term instead</span>
-      <span class="nt">collec_location</span><span class="p">:</span>
-        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">collection location</span>
-        <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the geocoordinates of the site where the sampling was obtained</span>
-        <span class="nt">notes</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">this should NOT be the site of processing</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GeoLoc</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Sample</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">identifier</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SAMPLEDB:SAM\\d{8}&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A unique identifier for the sample</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sample name</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A human-readable name for the sample</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NarrativeText</span><span class="w"></span>
+<span class="w">      </span><span class="nt">disease</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the disease with which the patient was diagnosed</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span><span class="w"></span>
+<span class="w">      </span><span class="nt">src</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tissue source</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the anatomical location from which the tissue was sampled</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span><span class="w"></span>
+<span class="w">        </span><span class="nt">todos</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model this using an ontology term instead</span><span class="w"></span>
+<span class="w">      </span><span class="nt">collec_location</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collection location</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the geocoordinates of the site where the sampling was obtained</span><span class="w"></span>
+<span class="w">        </span><span class="nt">notes</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">this should NOT be the site of processing</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GeoLoc</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Here we have a standard way of providing human-readable names for our
 columns (via <a class="reference external" href="https://w3id.org/linkml/title">title</a>). We have a
 human-friendly textual description. Both of these could be used to
 drive dynamic tooltips in an application that collects or displays data.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/sqlddl.html">SQL Table generator</a></p></li>
+</ul>
 </section>
 <section id="why-should-i-use-linkml-over-uml">
 <h2>Why should I use LinkML over UML?<a class="headerlink" href="#why-should-i-use-linkml-over-uml" title="Permalink to this headline"></a></h2>
-<p>TODO</p>
+<p>UML is a powerful language for software engineer diagramming. <a class="reference external" href="https://en.wikipedia.org/wiki/Class_diagram">UML
+Class Diagrams</a> provide a
+standard way to draw a class hierarchy for a program, that has some
+similarities to LinkML.</p>
+<p>There are a number of reasons to use LinkML over UML</p>
+<ul class="simple">
+<li><p>The UML standard is large and complex</p></li>
+<li><p>UML is more geared towards software engineering and includes features not needed for data modeling, such as operations</p></li>
+<li><p>UML tools are complex and expensive (both financially and in terms of learning curves)</p></li>
+<li><p>In contrast LinkML makes it easy to author schemas using nothing more than a text editor</p></li>
+<li><p>All the tooling for LinkML is free and open</p></li>
+<li><p>LinkML has the ability to compile to other frameworks</p></li>
+<li><p>LinkML has facilities for semantic modeling, not anticipated in UML</p></li>
+</ul>
+<p>Currently there is no way to generate complete UML from a LinkML schema.</p>
+<p>However, the yUML generator (used in <a class="reference external" href="https://linkml.io/linkml/generators/markdown.html">the markdown generator</a>) can be used to make yUML diagrams for any class or schema.</p>
 </section>
 <section id="why-should-i-use-linkml-over-owl">
 <h2>Why should I use LinkML over OWL?<a class="headerlink" href="#why-should-i-use-linkml-over-owl" title="Permalink to this headline"></a></h2>
@@ -341,12 +366,34 @@ heuristic procedure, and will not give you sensible results from a
 large “terminological” ontology.</p>
 <p>It <em>is</em> possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
-<a class="reference external" href="https://cmungall.github.io/chem-schema/ontology.html">ChemSchema</a> for
+<a class="reference external" href="https://chemkg.github.io/chemrof/ontology.html">ChemSchema</a> for
 an example, and see also the
-<a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> framework.</p>
+<a class="reference external" href="https://github.com/chemkg/chemrof">linkml-owl</a> framework.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/owl.html">OWL generator</a></p></li>
+</ul>
+</section>
+<section id="why-should-i-use-linkml-over-custom-spreadsheets">
+<h2>Why should I use LinkML over Custom spreadsheets?<a class="headerlink" href="#why-should-i-use-linkml-over-custom-spreadsheets" title="Permalink to this headline"></a></h2>
+<p>It is common in many projects for metadata elements and data dictionaries to be maintained as ad-hoc spreadsheets.</p>
+<p>Doing this in the absence of any over-arching framework can be
+problematic. It is easy for mistakes to creep into these spreadsheets
+unnoticed, often the semantics are unclear, and when developers are
+asked to write validators or UIs driven by these spreadsheets the lack
+of clear semantics can lead to repetitive error-prone code that is
+costly to maintain.</p>
+<p>LinkML provides a more systematic way to manage data dictionaries and metadata elements.</p>
+<p>Historically this has required use of YAML files to maintain a schema,
+which can be offputting to non-technical metadata curators. A new framework allows the best of both worlds:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/schemasheets">SchemaSheets</a> – author schemas as spreadsheets</p></li>
+</ul>
+<p>This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of linkml.</p>
 </section>
 <section id="why-should-i-use-linkml-over-csv-on-the-web">
 <h2>Why should I use LinkML over CSV-on-the-web?<a class="headerlink" href="#why-should-i-use-linkml-over-csv-on-the-web" title="Permalink to this headline"></a></h2>
+<p>TODO</p>
 </section>
 </section>
 

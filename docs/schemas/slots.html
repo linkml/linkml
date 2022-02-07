@@ -58,6 +58,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#inverse">inverse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logical-characteristics">logical characteristics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
@@ -72,7 +73,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -118,15 +118,16 @@ are applicable to that class.</p>
  &quot;name&quot;: &quot;....&quot;,
  &quot;email&quot;: &quot;....&quot;,
  ...
+}
 </pre></div>
 </div>
 <p>then <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">email</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code> should all be valid slots, as in the following schema:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">email</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">email</span><span class="w"></span>
 </pre></div>
 </div>
 <p>If we have tabular data</p>
@@ -150,49 +151,49 @@ are applicable to that class.</p>
 <p>Each slot must have a <a class="reference external" href="https://w3id.org/linkml/range">range</a> - if this is not declared explicitly, then <a class="reference external" href="https://w3id.org/linkml/default_range">default_range</a> is used.</p>
 <p>The range must be one of:</p>
 <ul class="simple">
-<li><p>A <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">ClassDefinition</a></p></li>
-<li><p>A <a class="reference external" href="https://w3id.org/linkml/SlotDefinition">SlotDefinition</a></p></li>
-<li><p>An <a class="reference external" href="https://w3id.org/linkml/EnumDefinition">EnumDefinition</a></p></li>
+<li><p>A <a class="reference external" href="https://w3id.org/linkml/ClassDefinition">ClassDefinition</a>, when the value of the slot is a complex object</p></li>
+<li><p>A <a class="reference external" href="https://w3id.org/linkml/TypeDefinition">TypeDefinition</a>, when the value of the slot is an atomic object</p></li>
+<li><p>An <a class="reference external" href="https://w3id.org/linkml/EnumDefinition">EnumDefinition</a>, when the value of the slot is a token that represents a vocabulary element</p></li>
 </ul>
 <p>Examples:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
-  <span class="nt">gender</span><span class="p">:</span>
-    <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:gender</span>
-    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GenderType</span>  <span class="c1">## range is an enum</span>
-  <span class="nt">has_medical_history</span><span class="p">:</span>
-    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MedicalEvent</span> <span class="c1">## range is a class</span>
-    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="nt">age_in_years</span><span class="p">:</span>
-    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>  <span class="c1">## range is a type</span>
-    <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-    <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">999</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gender</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:gender</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GenderType</span><span class="w">  </span><span class="c1">## range is an enum</span><span class="w"></span>
+<span class="w">  </span><span class="nt">has_medical_history</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MedicalEvent</span><span class="w"> </span><span class="c1">## range is a class</span><span class="w"></span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">age_in_years</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w">  </span><span class="c1">## range is a type</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="slot-usage">
 <h2>slot_usage<a class="headerlink" href="#slot-usage" title="Permalink to this headline"></a></h2>
-<p>The <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a> slot can be used to specify how a particular slot ought to be used in a class.</p>
+<p>The <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a> slot can be used to refine the meaning of a slot in the context of a particular class.</p>
 <p>For example, imagine a schema with a generic “Relationship” class:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">Relationship</span><span class="p">:</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">started_at_time</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ended_at_time</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">related_to</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">type</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Relationship</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">started_at_time</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ended_at_time</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">related_to</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">type</span><span class="w"></span>
 </pre></div>
 </div>
 <p>with subtypes such as <code class="docutils literal notranslate"><span class="pre">FamilialRelationship</span></code>, <code class="docutils literal notranslate"><span class="pre">BusinessRelationship</span></code>, etc</p>
 <p>we can use <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> to constrain the meaning of more generic slots such as <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">related</span> <span class="pre">to</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">FamilialRelationship</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Relationship</span>
-    <span class="nt">slot_usage</span><span class="p">:</span>
-      <span class="nt">type</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FamilialRelationshipType</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">related to</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">FamilialRelationship</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relationship</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FamilialRelationshipType</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">related to</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -201,9 +202,9 @@ are applicable to that class.</p>
 <p>If a slot is declared as an <a class="reference external" href="https://w3id.org/linkml/">identifier</a>
 then it serves as a unique key for members of that class. It can also
 be used for <a class="reference internal" href="inlining.html"><span class="doc std std-doc">inlining</span></a> as a dict in JSON serializations.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
-  <span class="nt">id</span><span class="p">:</span>
-    <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>the range of an identifier can be any type, but it is a good idea to have these be of type <a class="reference external" href="https://w3id.org/linkml/uriorcurie">uriorcurie</a></p>
@@ -214,11 +215,11 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <h3>multivalued<a class="headerlink" href="#multivalued" title="Permalink to this headline"></a></h3>
 <p>The <a class="reference external" href="https://w3id.org/linkml/multivalued">multivalued</a> indicates that the range of the slot is a list</p>
 <p>Example:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
-  <span class="nt">has_medical_history</span><span class="p">:</span>
-    <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MedicalEvent</span>
-    <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">has_medical_history</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MedicalEvent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -236,11 +237,22 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <section id="inverse">
 <h2>inverse<a class="headerlink" href="#inverse" title="Permalink to this headline"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">inverse</span></code> slot can be used to specify the inverse predicate of a given predicate slot relationship.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">parent_of</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">famlially_related_to</span>
-    <span class="nt">inverse</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">child_of</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">parent_of</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">famlially_related_to</span><span class="w"></span>
+<span class="w">    </span><span class="nt">inverse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">child_of</span><span class="w"></span>
 </pre></div>
 </div>
+</section>
+<section id="logical-characteristics">
+<h2>logical characteristics<a class="headerlink" href="#logical-characteristics" title="Permalink to this headline"></a></h2>
+<p>Additional logical characteristics can be specified for a slot; these are all boolean:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/transitive">transitive</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/symmetric">symmetric</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/symmetric">antisymmetric</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/reflexive">reflexive</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/locally_reflexive">locally_reflexive</a></p></li>
+</ul>
 </section>
 </section>
 

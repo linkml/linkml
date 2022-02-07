@@ -48,7 +48,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">FAQ: General</a><ul>
@@ -57,11 +56,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-is-linkml-licensed">How is LinkML licensed?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#who-uses-linkml">Who uses LinkML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#is-linkml-only-for-python-developers">Is LinkML only for Python developers?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#do-i-need-to-be-a-developer-to-use-linkml">Do I need to be a developer to use LinkML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-cite-linkml">How do I cite LinkML?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -130,17 +131,57 @@ are in the public domain through a CC-0 waiver.</p>
 <h2>Who uses LinkML?<a class="headerlink" href="#who-uses-linkml" title="Permalink to this headline"></a></h2>
 <p>A subset of groups using LinkML can be found via the
 <a class="reference external" href="https://linkml.io/linkml-registry/registry/">linkml-registry</a></p>
+<p>LinkML is used in a number of major database resource projects. Many
+of these are centered around genomics and managing complex biological
+or environmental data, but the framework is completely domain neutral.</p>
+<p>Users include:</p>
+<ul class="simple">
+<li><p>The National Microbiome Data Collaborative</p></li>
+<li><p>The Center for Cancer Data Harmonization</p></li>
+<li><p>The Alliance of Genome Resources</p></li>
+<li><p>The Biomedical Data Translator project</p></li>
+<li><p>The iSamples project</p></li>
+</ul>
+<p>See <a class="reference external" href="https://linkml.io/linkml/examples.html">Examples of use</a> for more
+info on current uses.</p>
 </section>
 <section id="is-linkml-only-for-python-developers">
 <h2>Is LinkML only for Python developers?<a class="headerlink" href="#is-linkml-only-for-python-developers" title="Permalink to this headline"></a></h2>
 <p>Definitely not! While the core framework is written in Python, and
 there is strong support for Python developers in the form of
-generation of Python dataclasses from a model, uses are not restricted
+<span class="xref myst">generation of Python dataclasses</span> from a model, uses are not restricted
 to Python developers.</p>
 <p>For example, some users of LinkML compile their schema down to
 JSON-Schema and then use JSON-Schema toolchains in their language of choice.</p>
 <p>And note that there is increasing support for generating object models
 in other languages, with java generators under active development!</p>
+</section>
+<section id="do-i-need-to-be-a-developer-to-use-linkml">
+<h2>Do I need to be a developer to use LinkML?<a class="headerlink" href="#do-i-need-to-be-a-developer-to-use-linkml" title="Permalink to this headline"></a></h2>
+<p>You don’t need to be a developer to use LinkML. You can create schemas
+without writing any code.</p>
+<p>For now it helps to have some basic familiarity with core data
+modeling concepts, and the basics of object-oriented design. In future
+we will add additional training material for non-modelers giving a
+gentle introduction to these topics.</p>
+<p>LinkML schemas are maintained as YAML files, so it helps to have some
+basic understanding of YAML syntax. Many developers will use IDEs for
+editing YAML, which helps avoid a lot of common pitfalls. You may want
+the advice of a local friendly developer on what a good YAML editing
+environment is for your workflow.</p>
+<p><a class="reference external" href="https://github.com/linkml/schemasheets">schemasheets</a> is a tool that
+allows schemas to be edited as google sheets or excel files. Currently
+it still takes a little bit of technical expertise to get up and
+running though.</p>
+<p>We recommend managing all of your schema products using GitHub. If you
+have not used GitHub or version control systems before, this may be a
+little daunting. You may need some assistance from someone technical
+to get you set up with a workflow here. There is a lot of expertise
+here in the OBO Foundry community, where many non-technical curators
+autonomously manage their ontologies in GitHub.</p>
+<p>We aim to make this whole process easier for curators, data modelers,
+and inexperienced developers. See the <a class="reference internal" href="getting-help.html"><span class="doc std std-doc">getting help</span></a>
+section for info on how to get assistance.</p>
 </section>
 <section id="how-do-i-cite-linkml">
 <h2>How do I cite LinkML?<a class="headerlink" href="#how-do-i-cite-linkml" title="Permalink to this headline"></a></h2>

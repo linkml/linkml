@@ -47,9 +47,9 @@
 <li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Inheritance</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#linking-classes-and-slots-with-is-a">Linking classes and slots with is_a</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#abstract-classes-and-slots">abstract classes and slots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mixin-classes-and-slots">mixin classes and slots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linking-classes-and-slots-with-is-a">Linking classes and slots with <code class="docutils literal notranslate"><span class="pre">is_a</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#abstract-classes-and-slots">Abstract classes and slots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mixin-classes-and-slots">Mixin classes and slots</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
@@ -65,7 +65,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -103,91 +102,93 @@
   <section class="tex2jax_ignore mathjax_ignore" id="inheritance">
 <h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h1>
 <section id="linking-classes-and-slots-with-is-a">
-<h2>Linking classes and slots with is_a<a class="headerlink" href="#linking-classes-and-slots-with-is-a" title="Permalink to this headline"></a></h2>
+<h2>Linking classes and slots with <code class="docutils literal notranslate"><span class="pre">is_a</span></code><a class="headerlink" href="#linking-classes-and-slots-with-is-a" title="Permalink to this headline"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/is_a">is_a</a> metamodel slot can be used to define a backbone hierarchy for your class. All inheritable metamodel slots are propagated down the is_a hierarchy.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">NamedThing</span><span class="p">:</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">NamedThing</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image</span><span class="w"></span>
 
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
-    <span class="nt">mixins</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mixins</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HasAliases</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary_email</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">birth_date</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">current_address</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_employment_history</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_medical_history</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Here Person will inherit the four slots from NamedThing.</p>
 <p><strong>Note</strong>: Slots can also be organized in hierarchies using <code class="docutils literal notranslate"><span class="pre">is_a</span></code>.</p>
 </section>
 <section id="abstract-classes-and-slots">
-<h2>abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this headline"></a></h2>
+<h2>Abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this headline"></a></h2>
 <p>A model class (or slot) may be tagged with its <a class="reference external" href="https://w3id.org/linkml/abstract">abstract</a> slot set to the boolean value <code class="docutils literal notranslate"><span class="pre">true</span></code>, to define whether it is abstract. This has comparable meaning to that in the computing science Object Oriented Paradigm: another class (or slot) can use the abstract class (or slot) as part of its inheritance hierarchy, but the abstract class itself <em>cannot</em> be directly instantiated.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">NamedThing</span><span class="p">:</span>
-    <span class="nt">abstract</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">NamedThing</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">abstract</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image</span><span class="w"></span>
 </pre></div>
 </div>
-<p>This forces data providers to always provide a more specific class than the generic “NamedThing”</p>
+<p>This forces data providers to always provide a more specific class than the generic “<code class="docutils literal notranslate"><span class="pre">NamedThing</span></code>”.</p>
 <p>Some generators may also choose to utilize abstract tags, e.g to mask generation of abstract classes.</p>
 <p><strong>Note</strong>: Slots can also be declared abstract.</p>
+<p>See also the <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_type">wikipedia page on Abstract Types</a></p>
 </section>
 <section id="mixin-classes-and-slots">
-<h2>mixin classes and slots<a class="headerlink" href="#mixin-classes-and-slots" title="Permalink to this headline"></a></h2>
+<h2>Mixin classes and slots<a class="headerlink" href="#mixin-classes-and-slots" title="Permalink to this headline"></a></h2>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/mixin">mixin</a> boolean slot to declare a class as a mixin</p></li>
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/mixins">mixins</a> multiavlued slot which specifies a range of mixin parents.</p></li>
 </ul>
-<p>Mixin parents operate similarly to is_a parents, but they do not have the constraint if forming a tree.</p>
+<p>Mixin parents operate similarly to <code class="docutils literal notranslate"><span class="pre">is_a</span></code> parents, but they do not have the constraint of forming a tree.</p>
 <p>Mixins can be extremely helpful in a number of ways: 1) to generalize a set
 of attributes that can apply to classes in different parts of the class hierarchy, 2) reduce duplication of
 shared attributes between classes that do not inherit from one another and 3) to prevent the sometimes confusing nature
 of multiple inheritance noted in the <a class="reference external" href="https://tinyurl.com/4zdw9tsb">diamond problem</a>.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">NamedThing</span><span class="p">:</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">id</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">name</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">description</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">image</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">NamedThing</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">description</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">image</span><span class="w"></span>
 
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
-    <span class="nt">mixins</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mixins</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HasAliases</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary_email</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">birth_date</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">current_address</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_employment_history</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_medical_history</span><span class="w"></span>
 
-  <span class="nt">HasAliases</span><span class="p">:</span>
-    <span class="nt">mixin</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aliases</span>
+<span class="w">  </span><span class="nt">HasAliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mixin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aliases</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">is_a</span></code> has the characteristics of homeomorphicity: <code class="docutils literal notranslate"><span class="pre">is_a</span></code> <strong>SHOULD</strong> only connect either (1) two mixins (2) two non-mixin elements</p>
+<p>See also the <a class="reference external" href="https://en.wikipedia.org/wiki/Mixin">Wikipedia page on mixins</a></p>
 </section>
 </section>
 

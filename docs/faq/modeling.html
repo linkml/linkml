@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="FAQ: Getting Help" href="getting-help.html" />
+    <link rel="next" title="FAQ: Tools" href="tools.html" />
     <link rel="prev" title="FAQ: Why LinkML" href="why-linkml.html" /> 
 </head>
 
@@ -48,7 +48,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
@@ -64,6 +63,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
 </ul>
@@ -170,12 +170,12 @@ oneOf and future versions of JSON-Schema translation may compile down to oneOf</
 schemas. However, when translating to other formalisms such as
 JSON-Schema, RDF, Python then those naming conventions are applied.</p>
 <p>For example, if you define a class:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
 
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">my class</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">my slot</span><span class="p">:</span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">my class</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">my slot</span><span class="p">:</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Then this will translate as follows:</p>
@@ -196,23 +196,23 @@ JSON-Schema, RDF, Python then those naming conventions are applied.</p>
 <p>Note in the RDF/OWL representation, seperate <code class="docutils literal notranslate"><span class="pre">rdfs:label</span></code> triples will be generated retaining the original human-friendly name.</p>
 <p>This has the advantage of keeping human-friendly nomenclature in the appropriate places without specifying redundant computer names and human names</p>
 <p>However, the autotmatic translation can be confusing, so some schemas opt to follow standard naming conventions in the schema:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
 
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">MyClass</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">my_slot</span><span class="p">:</span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">MyClass</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">my_slot</span><span class="p">:</span><span class="w"></span>
 </pre></div>
 </div>
 <p>you have the option of specifying human-friendly <em>titles</em> for each element:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_schema</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
 
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">MyClass</span><span class="p">:</span>
-    <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my class</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">my_slot</span><span class="p">:</span>
-        <span class="nt">title</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my slot</span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">MyClass</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my class</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">my_slot</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my slot</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Note that one current limitation of the LinkML generator framework is
@@ -233,7 +233,7 @@ Python keyword, and the generated python code will raise errors. For now the rec
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="why-linkml.html" class="btn btn-neutral float-left" title="FAQ: Why LinkML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="getting-help.html" class="btn btn-neutral float-right" title="FAQ: Getting Help" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tools.html" class="btn btn-neutral float-right" title="FAQ: Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

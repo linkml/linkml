@@ -113,39 +113,39 @@
 <section id="example-schema">
 <h2>Example schema<a class="headerlink" href="#example-schema" title="Permalink to this headline"></a></h2>
 <p>personinfo.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span>
-  <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
-<span class="nt">imports</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
-<span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-  
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>     <span class="c1">## unique key for a person</span>
-      <span class="nt">full_name</span><span class="p">:</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>       <span class="c1">## must be supplied</span>
-        <span class="nt">description</span><span class="p">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">name of the person</span>
-      <span class="nt">aliases</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>    <span class="c1">## range is a list</span>
-        <span class="nt">description</span><span class="p">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">other names for the person</span>
-      <span class="nt">phone</span><span class="p">:</span>
-        <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span>   <span class="c1">## regular expression</span>
-      <span class="nt">age</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>       <span class="c1">## an int between 0 and 200</span>
-        <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-        <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200</span>
-  <span class="nt">Container</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">persons</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">     </span><span class="c1">## unique key for a person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">       </span><span class="c1">## must be supplied</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">    </span><span class="c1">## range is a list</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w">   </span><span class="c1">## regular expression</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w">       </span><span class="c1">## an int between 0 and 200</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
 </pre></div>
 </div>
 <p>We use yaml comment syntax (i.e the part after <code class="docutils literal notranslate"><span class="pre">#</span></code>) for comments - these are ignored by the parser.</p>
@@ -157,13 +157,13 @@
 <h2>Example data<a class="headerlink" href="#example-data" title="Permalink to this headline"></a></h2>
 <p>Let’s deliberately introduce some bad data to make sure our validator is working:</p>
 <p>bad-data.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9000</span>
-    <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">33</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Running the following command:</p>
@@ -176,14 +176,14 @@
 </pre></div>
 </div>
 <p>better-data-v1.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9000</span>
-    <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">33</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
 </pre></div>
 </div>
 <!-- FAIL -->
@@ -196,14 +196,14 @@
 </div>
 <p>Let’s fix that:</p>
 <p>better-data-v2.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">9000</span>
-    <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">33</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
 </pre></div>
 </div>
 <!-- FAIL -->
@@ -217,6 +217,7 @@
     <span class="s1">&#39;1-800-kryptonite&#39;</span>
 </pre></div>
 </div>
+<p>This reflexts that the phone number doesn’t conform to the regular expression syntax we stated.</p>
 </section>
 <section id="exercises">
 <h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
@@ -236,12 +237,14 @@ to be complete.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml &gt; personinfo.schema.json
 </pre></div>
 </div>
+<p>You can then use the <code class="docutils literal notranslate"><span class="pre">jsonschema</span></code> command that comes with the python library (any jsonschema validator will do here)</p>
 <!-- FAIL -->
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jsonschema -i bad-data.yaml personinfo.schema.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jsonschema -i bad-data.json personinfo.schema.json
 </pre></div>
 </div>
 <p>In general this should give you similar results, with some caveats:</p>
 <ul class="simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">bad-data.yaml</span></code> can be converted to <code class="docutils literal notranslate"><span class="pre">bad-data.json</span></code> using https://www.json2yaml.com/.</p></li>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">linkml-validator</span></code> will first perform an internal conversion prior to using the jsonschema validator, and some errors may be caught at that stage</p></li>
 <li><p>the conversion process may mask some errors - e.g. if a slot has range integer and is supplied as a string, implicit conversion is used</p></li>
 </ul>

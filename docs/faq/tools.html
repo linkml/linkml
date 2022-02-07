@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ: Tools &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FAQ: Getting Help" href="getting-help.html" />
+    <link rel="prev" title="FAQ: Modeling" href="modeling.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why-linkml.html">FAQ: Why LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FAQ: Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-tools-do-i-need-for-linkml">What tools do I need for LinkML?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-install-the-linkml-tools">How do I install the LinkML tools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-tools-are-available-for-authoring-schemas">What tools are available for authoring schemas?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#is-there-a-tool-to-manage-schemas-as-spreadsheets">Is there a tool to manage schemas as spreadsheets?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-browse-a-schema">How do I browse a schema?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-can-i-check-my-schema-is-valid">How can I check my schema is valid?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl">Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/…?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-there-tools-to-infer-a-schema-from-data">Are there tools to infer a schema from data?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-programmatically-create-schemas">How do I programmatically create schemas?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-can-i-check-my-data-is-valid">How can I check my data is valid?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-there-tools-for-editing-my-data">Are there tools for editing my data?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#are-there-guides-for-developing-linkml-compliant-tools">Are there guides for developing LinkML compliant tools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">FAQ</a> &raquo;</li>
+      <li>FAQ: Tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/faq/tools.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="faq-tools">
+<h1>FAQ: Tools<a class="headerlink" href="#faq-tools" title="Permalink to this headline"></a></h1>
+<section id="what-tools-do-i-need-for-linkml">
+<h2>What tools do I need for LinkML?<a class="headerlink" href="#what-tools-do-i-need-for-linkml" title="Permalink to this headline"></a></h2>
+<p>Formally, LinkML is a specification for modeling data, and is independent of any set of tools.</p>
+<p>However, for practical purposes, you will find the core python toolchain useful, whether you use this as a python library, or a command line tool.</p>
+<p>This includes functionality like:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators">generators</a> to convert schemas to other modeling languages</p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml/data">data converters and validators</a> for working with data that conforms to LinkML (including RDF, JSON, and TSV)</p></li>
+</ul>
+<p>The GitHub repo is <a class="reference external" href="https://github.com/linkml/linkml">https://github.com/linkml/linkml</a></p>
+<p>For installation, see <a class="reference external" href="https://linkml.io/linkml/intro/install.html">installation</a></p>
+<p>There are other tools in the LinkML ecosystem that you may find useful:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/schemasheets">linkml/schemasheets</a>, for managing your schema as a spreadsheet</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml/linkml-model-enrichment</a>, for bootstrapping and enhancing schemas</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml/linkml-owl</a>, for generating OWL ontologies using schemas as templates</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/sparqlful">linkml/sparqlfun</a>, for templated SPARQL queries</p></li>
+</ul>
+</section>
+<section id="how-do-i-install-the-linkml-tools">
+<h2>How do I install the LinkML tools?<a class="headerlink" href="#how-do-i-install-the-linkml-tools" title="Permalink to this headline"></a></h2>
+<p>See the <a class="reference external" href="https://linkml.io/linkml/intro/install.">installation guide</a></p>
+</section>
+<section id="what-tools-are-available-for-authoring-schemas">
+<h2>What tools are available for authoring schemas?<a class="headerlink" href="#what-tools-are-available-for-authoring-schemas" title="Permalink to this headline"></a></h2>
+<p>Currently the main way to author a schema is to edit schema YAML files
+in a text editor or IDE (Integrapted Development Environment).</p>
+<p>We recommend using an IDE that has support for YAML format</p>
+</section>
+<section id="is-there-a-tool-to-manage-schemas-as-spreadsheets">
+<h2>Is there a tool to manage schemas as spreadsheets?<a class="headerlink" href="#is-there-a-tool-to-manage-schemas-as-spreadsheets" title="Permalink to this headline"></a></h2>
+<p>Yes! See:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/schemasheets">linkml/schemasheets</a></p></li>
+</ul>
+</section>
+<section id="how-do-i-browse-a-schema">
+<h2>How do I browse a schema?<a class="headerlink" href="#how-do-i-browse-a-schema" title="Permalink to this headline"></a></h2>
+<p>For small schemas with limited inheritance, it should be possible to mentally picture the structure just by examining the source YAML. For larger schemas, with deep inheritance, it can help to have some kind of hierarchical browsing tool.</p>
+<p>There are a few strategies:</p>
+<ul class="simple">
+<li><p>Use <a class="reference external" href="https://linkml.io/linkml/generators/markdown">gen-markdown</a> to make markdown that can be viewed using mkdocs</p></li>
+<li><p>Use <a class="reference external" href="https://linkml.io/linkml/generators/owl">gen-owl</a> to make an OWL ontology, which can be browsed:</p>
+<ul>
+<li><p>Using an ontology editing tool like Protege</p></li>
+<li><p>By publishing the ontology with an ontology repository and using a web ontology browser</p></li>
+<li><p>By running the Ontology Lookup Service docker image and browsing using a web browser</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="how-can-i-check-my-schema-is-valid">
+<h2>How can I check my schema is valid?<a class="headerlink" href="#how-can-i-check-my-schema-is-valid" title="Permalink to this headline"></a></h2>
+<p>You can use any of the generator tools distributed as part of linkml to check for errors in your schema</p>
+</section>
+<section id="are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl">
+<h2>Are there tools to create a schema from JSON-Schema/SHACL/SQL DDL/…?<a class="headerlink" href="#are-there-tools-to-create-a-schema-from-json-schema-shacl-sql-ddl" title="Permalink to this headline"></a></h2>
+<p>Currently the core linkml framework can
+<a class="reference external" href="https://linkml.io/linkml/generators/">generate</a> schemas in other
+frameworks from a linkml schema. The generators are part of the core framework.</p>
+<p>We have <em>experimental</em> importers as part of the
+<a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a>
+project, which can generate a schema from:</p>
+<ul class="simple">
+<li><p>An OWL ontology</p></li>
+<li><p>JSON-Schema</p></li>
+</ul>
+<p>Others may be added in future</p>
+<p>However, there importers are not part of the core, may be incomplete,
+and may not be as well supported, and not as well documented. You may
+still find them useful to kick-start a schema, but you should not rely
+on them in a production environment.</p>
+</section>
+<section id="are-there-tools-to-infer-a-schema-from-data">
+<h2>Are there tools to infer a schema from data?<a class="headerlink" href="#are-there-tools-to-infer-a-schema-from-data" title="Permalink to this headline"></a></h2>
+<p>The <a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a> framework can seed a schema from:</p>
+<ul class="simple">
+<li><p>CSV/TSV files</p></li>
+<li><p>JSON data</p></li>
+<li><p>RDF triples</p></li>
+</ul>
+<p>Note that a number of heuristic measures are applied, and the results
+are not guaranteed to be correct. You may still find them useful to
+bootstrap a new schema.</p>
+<p>This framework also has tools to:</p>
+<ul class="simple">
+<li><p>Automatically annotate mappings in a schema using bioportal annotator service</p></li>
+<li><p>Automatically assign meaning fields in enums using bioportal and OLS annotators</p></li>
+</ul>
+<p>Again, this is a text-mining based approach, and will yield both false positives and negatives.</p>
+</section>
+<section id="how-do-i-programmatically-create-schemas">
+<h2>How do I programmatically create schemas?<a class="headerlink" href="#how-do-i-programmatically-create-schemas" title="Permalink to this headline"></a></h2>
+<p>As LinkML schemas are YAML files, you can use library that writes YAML.</p>
+<p>For example, in Python you can write code like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">my_schema_url</span><span class="p">,</span>
+  <span class="n">classes</span><span class="p">:</span> <span class="p">[</span>
+   <span class="p">{</span>
+    <span class="s2">&quot;Person&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;any person, living or dead&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="o">...</span>
+       <span class="p">}</span>
+    <span class="p">}</span>
+   <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">schema</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can also write similar code in most languages.</p>
+<p>While this should work fine, the approach has some disadvantages. In particular you get no IDE support and there is no guard against making mistakes in key names or structure until you come to run the code.</p>
+<p>A better approach for Python developers is to use the Python object model that is generated from the metamodel.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">SchemaDefinition</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span> <span class="n">my_schema_id</span><span class="p">,</span>
+                     <span class="n">classes</span><span class="o">=</span> <span class="p">[</span> <span class="o">...</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>You can also use the SchemaView classes, see the developers guide section on <a class="reference external" href="https://linkml.io/linkml/developers/manipulating-schemas.html">manipulating schemas</a></p>
+</section>
+<section id="how-can-i-check-my-data-is-valid">
+<h2>How can I check my data is valid?<a class="headerlink" href="#how-can-i-check-my-data-is-valid" title="Permalink to this headline"></a></h2>
+<p>If you have data in RDF, JSON, or TSV then you can check for validiting using <code class="docutils literal notranslate"><span class="pre">linkml-validate</span></code></p>
+<p>See <a class="reference external" href="https://linkml.io/linkml/data/validating-data">validating data</a> for more details</p>
+</section>
+<section id="are-there-tools-for-editing-my-data">
+<h2>Are there tools for editing my data?<a class="headerlink" href="#are-there-tools-for-editing-my-data" title="Permalink to this headline"></a></h2>
+<p>the same LinkML data can be rendered as JSON or RDF, and for schemas
+that have a relatively flat structure, TSVs can be used. Any editing
+tool that can be used for those formats can be used for LinkML. For
+example, you can turn your schema into OWL and then use Protege to
+edit instance data. Or you can simply edit your data in a TSV.</p>
+<p>For “flat” schemas such as those for collecting sample or specimen
+metadata, the
+<a class="reference external" href="https://github.com/cidgoh/DataHarmonizer">DataHarmonizer</a> accepts
+LinkML as a schema language.</p>
+</section>
+<section id="are-there-guides-for-developing-linkml-compliant-tools">
+<h2>Are there guides for developing LinkML compliant tools?<a class="headerlink" href="#are-there-guides-for-developing-linkml-compliant-tools" title="Permalink to this headline"></a></h2>
+<p>See the <a class="reference external" href="https://linkml.io/linkml/developers/tool-developer-guide">tool developer guide</a></p>
+</section>
+<section id="can-i-use-my-schema-to-do-reasoning-over-my-data">
+<h2>Can I use my schema to do reasoning over my data?<a class="headerlink" href="#can-i-use-my-schema-to-do-reasoning-over-my-data" title="Permalink to this headline"></a></h2>
+<p>There are a number of strategies for performing deductive inference:</p>
+<ul class="simple">
+<li><p>Convert your <a class="reference external" href="https://linkml.io/linkml/generators/owl">schema to OWL</a> and your <a class="reference external" href="https://linkml.io/linkml/data/rdf">data to RDF</a> and use an OWL reasoner</p></li>
+<li><p>Use the (experimental) <a class="reference external" href="https://github.com/linkml/linkml-datalog">linkml-datalog</a> framework</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modeling.html" class="btn btn-neutral float-left" title="FAQ: Modeling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting-help.html" class="btn btn-neutral float-right" title="FAQ: Getting Help" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

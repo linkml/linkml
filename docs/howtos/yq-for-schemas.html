@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Using yq for querying and manipulating schemas &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Using yq for querying and manipulating schemas</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/howtos/yq-for-schemas.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="using-yq-for-querying-and-manipulating-schemas">
+<h1>Using yq for querying and manipulating schemas<a class="headerlink" href="#using-yq-for-querying-and-manipulating-schemas" title="Permalink to this headline"></a></h1>
+<p><strong>STATUS: DRAFT</strong></p>
+<p><a class="reference external" href="https://mikefarah.gitbook.io/yq/">yq</a> is a command-line YAML processor, similar to jq.</p>
+<p>As all LinkML schemas have a canonical form as YAML, you can use yq to process these.</p>
+<p><strong>Note:</strong> yq operates at the level of schema yaml document structure, not the <em>meaning</em> of a schema. It has no knowledge of:</p>
+<ul class="simple">
+<li><p>imports</p></li>
+<li><p>inheritance and inference of slots over class hierarchies</p></li>
+<li><p>inlining as dicts</p></li>
+</ul>
+<p>If you want to do semantics-aware schema processing then we recommend you use SchemaView.</p>
+<p>However, for certain kinds of quick and dirty low-level operations, yq
+provides a fast, flexible, and easy way to query schema yaml files.</p>
+<p>You could also choose to use jq, but this requires a (trivial)
+intermediate step of converting yaml to json (and back to yaml, if you
+are performing write operations), so we recommend yq over jq since it
+works on YAML as a native form</p>
+<p>This guide is mostly in the form of cookbook examples. If you wish to
+perform operations that don’t fit a template here, then you will need
+to consult the (excellent) yq docs, and also have some awareness of
+how LinkML schemas are rendered as YAML.</p>
+<section id="top-level-lookups">
+<h2>top level lookups<a class="headerlink" href="#top-level-lookups" title="Permalink to this headline"></a></h2>
+<p>Fetch the schema identifier:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.id&#39;</span> personinfo.yaml
+https://w3id.org/linkml/examples/personinfo
+</pre></div>
+</div>
+</section>
+<section id="all-class-names">
+<h2>all class names<a class="headerlink" href="#all-class-names" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes | keys&#39;</span> personinfo.yaml
+- NamedThing
+- Person
+- HasAliases
+- Organization
+- Place
+- Address
+- Event
+- Concept
+- DiagnosisConcept
+- ProcedureConcept
+- Relationship
+- FamilialRelationship
+- EmploymentEvent
+- MedicalEvent
+- WithLocation
+<span class="c1"># TODO: annotate that this is a container/root class</span>
+- Container
+</pre></div>
+</div>
+</section>
+<section id="classes-with-their-is-a-parents">
+<h2>classes with their is-a parents<a class="headerlink" href="#classes-with-their-is-a-parents" title="Permalink to this headline"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.classes | to_entries | {.[].key: .[].value.is_a}&#39;</span> personinfo.yaml
+</pre></div>
+</div>
+<p>TODO</p>
+</section>
+<section id="setting-top-level-slots">
+<h2>setting top level slots<a class="headerlink" href="#setting-top-level-slots" title="Permalink to this headline"></a></h2>
+<p>Set the schema name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ yq e &#39;.name = &quot;NEW NAME&quot;&#39; personinfo.yaml
+id: https://w3id.org/linkml/examples/personinfo
+name: NEW NAME
+description: |-
+  Information about people, based on [schema.org](http://schema.org)
+...
+</pre></div>
+</div>
+</section>
+<section id="lookup-a-class-by-name">
+<h2>lookup a class by name<a class="headerlink" href="#lookup-a-class-by-name" title="Permalink to this headline"></a></h2>
+<p>Lookup the class Person:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes.Person&#39;</span> personinfo.yaml
+is_a: NamedThing
+description: &gt;-
+  A person <span class="o">(</span>alive, dead, undead, or fictional<span class="o">)</span>.
+class_uri: schema:Person
+mixins:
+  - HasAliases
+slots:
+  - primary_email
+  - birth_date
+  - age_in_years
+  - gender
+  - current_address
+  - has_employment_history
+  - has_familial_relationships
+  - has_medical_history
+slot_usage:
+  primary_email:
+    pattern: <span class="s2">&quot;^\\S+@[\\S+\\.]+\\S+&quot;</span>
+</pre></div>
+</div>
+<p>Looking up a particular slot:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes.Person.is_a&#39;</span> personinfo.yaml <span class="p">|</span> less  
+NamedThing
+</pre></div>
+</div>
+</section>
+<section id="setting-the-is-a-value-of-a-class">
+<h2>Setting the is_a value of a class:<a class="headerlink" href="#setting-the-is-a-value-of-a-class" title="Permalink to this headline"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yq</span> <span class="n">e</span> <span class="s1">&#39;.classes.Person.is_a=&quot;Agent&quot;&#39;</span> <span class="n">personinfo</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>Note that in LinkML schemas, classes, slots, etc are <code class="docutils literal notranslate"><span class="pre">inlined_as_dict</span></code>, meaning you can’t access these by array indices</p>
+</section>
+<section id="prefixes">
+<h2>prefixes<a class="headerlink" href="#prefixes" title="Permalink to this headline"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>✗ yq e &#39;.prefixes&#39; personinfo.yaml
+personinfo: https://w3id.org/linkml/examples/personinfo/
+linkml: https://w3id.org/linkml/
+schema: http://schema.org/
+rdfs: http://www.w3.org/2000/01/rdf-schema#
+prov: http://www.w3.org/ns/prov#
+GSSO: http://purl.obolibrary.org/obo/GSSO_
+famrel: https://example.org/FamilialRelations#
+# DATA PREFIXES
+P: http://example.org/P/
+ROR: http://example.org/ror/
+CODE: http://example.org/code/
+GEO: http://example.org/geoloc/
+</pre></div>
+</div>
+<p>Gotchas:</p>
+<ul class="simple">
+<li><p>this will not include <em>imported</em> prefixes. Use SchemaView to get these.</p></li>
+</ul>
+<p>just the keys:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.prefixes | keys&#39;</span> personinfo.yaml <span class="p">|</span> less
+- personinfo
+- linkml
+- schema
+- rdfs
+- prov
+- GSSO
+- famrel
+<span class="c1"># DATA PREFIXES</span>
+- P
+- ROR
+- CODE
+- GEO
+</pre></div>
+</div>
+<p>just the values:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yq e <span class="s1">&#39;.prefixes | to_entries | .[].value&#39;</span> personinfo.yaml
+https://w3id.org/linkml/examples/personinfo/
+https://w3id.org/linkml/
+http://schema.org/
+http://www.w3.org/2000/01/rdf-schema#
+http://www.w3.org/ns/prov#
+http://purl.obolibrary.org/obo/GSSO_
+https://example.org/FamilialRelations#
+http://example.org/P/
+http://example.org/ror/
+http://example.org/code/
+http://example.org/geoloc/
+</pre></div>
+</div>
+<p>Gotchas:</p>
+<ul class="simple">
+<li><p>the key value form above is a common shorthand, but prefixes can also be stored in expanded form</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

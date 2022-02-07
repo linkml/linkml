@@ -103,7 +103,7 @@
 <h1>Part 4: Working with RDF<a class="headerlink" href="#part-4-working-with-rdf" title="Permalink to this headline"></a></h1>
 <p>Previously we saw how to do basic validation of data using JSON-Schema.</p>
 <p>This section demonstrates how to work with LinkML in conjunction with
-Linked Data/ RDF. If this is not of interest you can skip to the next
+<a class="reference external" href="https://www.w3.org/standards/semanticweb/data">Linked Data/ RDF</a>. If this is not of interest you can skip to the next
 section. However, even if this is the case you may wish to revisit
 this section. LinkML is intended to make it easy to get the benefits
 of Linked Data, while staying simple and working within a stack many
@@ -115,44 +115,44 @@ serve as hooks to interoperate data!</p>
 <h2>Example schema<a class="headerlink" href="#example-schema" title="Permalink to this headline"></a></h2>
 <p>Let’s start with the schema we developed in the previous section, with some minor modifications:</p>
 <p>personinfo.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span>
-  <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
-  <span class="nt">personinfo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
-  <span class="nt">ORCID</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span>
-<span class="nt">default_curi_maps</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">semweb_context</span>
-<span class="nt">imports</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
-<span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-  
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">full_name</span><span class="p">:</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">description</span><span class="p">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">name of the person</span>
-      <span class="nt">aliases</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">description</span><span class="p">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">other names for the person</span>
-      <span class="nt">phone</span><span class="p">:</span>
-        <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span>
-      <span class="nt">age</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-        <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-        <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200</span>
-  <span class="nt">Container</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">persons</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ORCID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span><span class="w"></span>
+<span class="nt">default_curi_maps</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">semweb_context</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
 </pre></div>
 </div>
 <p>We extended the previous schema in a few ways:</p>
@@ -162,14 +162,14 @@ serve as hooks to interoperate data!</p>
 </ul>
 <p>We will use this schema with a collection of data records</p>
 <p>data.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">33</span>
-    <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">34</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">34</span><span class="w"></span>
 </pre></div>
 </div>
 <p>We can use the linkml conversion library to translate this to RDF (Turtle syntax default)</p>
@@ -194,7 +194,9 @@ serve as hooks to interoperate data!</p>
         <span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="p">.</span>
 </pre></div>
 </div>
-<p>This is a start, but it is not ideal - there are existing vocabularies such as <a class="reference external" href="http://schema.org">schema.org</a> we could be reusing.</p>
+<p>Note that each person is now represented by an ORCID URI. This is a
+start, but it is not ideal - there are existing vocabularies such as
+<a class="reference external" href="http://schema.org">schema.org</a> we could be reusing here.</p>
 </section>
 <section id="adding-uris-to-our-schema">
 <h2>Adding URIs to our schema<a class="headerlink" href="#adding-uris-to-our-schema" title="Permalink to this headline"></a></h2>
@@ -205,50 +207,50 @@ serve as hooks to interoperate data!</p>
 </ul>
 <p>In both cases, we provide the value as a CURIE, and include a <em>prefixes</em> map that maps CURIEs to URIs.</p>
 <p>personinfo-semantic.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span>                                  <span class="c1">## Note are adding 3 new ones here</span>
-  <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
-  <span class="nt">schema</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
-  <span class="nt">personinfo</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
-  <span class="nt">ORCID</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span>
-<span class="nt">imports</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
-<span class="nt">default_curi_maps</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">semweb_context</span>
-<span class="nt">default_prefix</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-  
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>              <span class="c1">## reuse schema.org vocabulary</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-        <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">full_name</span><span class="p">:</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">description</span><span class="p">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">name of the person</span>
-        <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:name</span>             <span class="c1">## reuse schema.org vocabulary</span>
-      <span class="nt">aliases</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">description</span><span class="p">:</span>
-          <span class="l l-Scalar l-Scalar-Plain">other names for the person</span>
-      <span class="nt">phone</span><span class="p">:</span>
-        <span class="nt">pattern</span><span class="p">:</span> <span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span>
-        <span class="nt">slot_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:telephone</span>       <span class="c1">## reuse schema.org vocabulary</span>
-      <span class="nt">age</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-        <span class="nt">minimum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-        <span class="nt">maximum_value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">200</span>
-    <span class="nt">id_prefixes</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ORCID</span>
-  <span class="nt">Container</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">persons</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w">                                  </span><span class="c1">## Note are adding 3 new ones here</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ORCID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_curi_maps</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">semweb_context</span><span class="w"></span>
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w">              </span><span class="c1">## reuse schema.org vocabulary</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w">             </span><span class="c1">## reuse schema.org vocabulary</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span><span class="w">       </span><span class="c1">## reuse schema.org vocabulary</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id_prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Now let’s try converting the same YAML/JSON using the enhanced schema</p>
@@ -286,31 +288,31 @@ serve as hooks to interoperate data!</p>
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;ORCID&quot;</span><span class="p">:</span> <span class="s2">&quot;https://orcid.org/&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;linkml&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;personinfo&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://schema.org/&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;@vocab&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;persons&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;xsd:integer&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;full_name&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:name&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;phone&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:telephone&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;Person&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:Person&quot;</span>
-      <span class="p">}</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;ORCID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://orcid.org/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;linkml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;personinfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://schema.org/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@vocab&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;persons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xsd:integer&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:name&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:telephone&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Person&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:Person&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>NOTE: currently you need to declare your own type object and map this to <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> for typing information to be shown</p>
@@ -425,7 +427,7 @@ serve as hooks to interoperate data!</p>
 <section id="more-info">
 <h2>More Info<a class="headerlink" href="#more-info" title="Permalink to this headline"></a></h2>
 <ul class="simple">
-<li><p><span class="xref myst">Working with RDF Data</span></p></li>
+<li><p><a class="reference internal" href="../data/rdf.html"><span class="doc std std-doc">Working with RDF Data</span></a></p></li>
 <li><p>FAQ:</p>
 <ul>
 <li><p><a class="reference external" href="../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl">LinkML vs shape languages</a></p></li>
@@ -435,6 +437,15 @@ serve as hooks to interoperate data!</p>
 <ul>
 <li><p><a class="reference internal" href="../generators/jsonld-context.html"><span class="doc std std-doc">JSON-LD Context</span></a></p></li>
 <li><p><a class="reference internal" href="../generators/shex.html"><span class="doc std std-doc">ShEx</span></a></p></li>
+<li><p><a class="reference internal" href="../generators/shacl.html"><span class="doc std std-doc">SHACL</span></a></p></li>
+</ul>
+</li>
+<li><p>RDF libraries and tools</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/RDFLib/rdflib">rdflib</a> (Python)</p></li>
+<li><p><a class="reference external" href="https://jena.apache.org/">Apache Jena</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hsolbrig/PyShEx">pyshex</a></p></li>
+<li><p><a class="reference external" href="https://github.com/RDFLib/pySHACL">pyshacl</a></p></li>
 </ul>
 </li>
 </ul>

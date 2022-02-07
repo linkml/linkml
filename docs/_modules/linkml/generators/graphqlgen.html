@@ -39,10 +39,13 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
@@ -94,6 +97,12 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_header</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GraphqlGenerator.generate_header"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.generate_header">[docs]</a>    <span class="k">def</span> <span class="nf">generate_header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# metamodel_version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GraphqlGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.graphqlgen.GraphqlGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">etype</span> <span class="o">=</span> <span class="s1">&#39;interface&#39;</span> <span class="k">if</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span> <span class="k">else</span> <span class="s1">&#39;type&#39;</span>

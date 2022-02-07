@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Using JSON-LD &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Using JSON-LD</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/howtos/using-jsonld.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="using-json-ld">
+<h1>Using JSON-LD<a class="headerlink" href="#using-json-ld" title="Permalink to this headline"></a></h1>
+<p>See also: https://linkml.io/linkml/intro/tutorial04.html</p>
+<p>This how-to guide walks through some of the basics of working with JSON-LD and LinkML</p>
+<section id="about-json-ld">
+<h2>About JSON-LD<a class="headerlink" href="#about-json-ld" title="Permalink to this headline"></a></h2>
+<p>JSON-LD is a way of working with JSON documents that are also RDF
+documents. JSON-LD can provide a powerful bridge between
+“developer-friendly” JSON serializations and Linked Data
+frameworks.</p>
+<p>Well-constructed JSON-LD can be easy to work with in “traditional”
+software and data science environments, while retaining benefits of
+RDF and a direct conversion to RDF. However, there are also pitfalls
+to be aware of.</p>
+<p>Two key concepts to be aware of that make JSON-LD work for you:</p>
+<ul class="simple">
+<li><p>Contexts</p></li>
+<li><p>Framing</p></li>
+</ul>
+<p>A full description of these is outside the scope of this guide, but we
+will provide some practical examples</p>
+</section>
+<section id="json-ld-example">
+<h2>JSON-LD Example<a class="headerlink" href="#json-ld-example" title="Permalink to this headline"></a></h2>
+<p>Consider a simple data graph containing two person objects, grouped into a ‘container’ object:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">schema:</span><span class="w"> </span><span class="nv">&lt;http://schema.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">personinfo:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nv">&lt;https://orcid.org/1234&gt;</span> <span class="kt">a</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">schema</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
+    <span class="nn">schema</span><span class="p">:</span><span class="nt">telephone</span> <span class="s">&quot;555-555-5555&quot;</span> <span class="p">;</span>
+    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">age</span> <span class="mi">33</span> <span class="p">.</span>
+
+<span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="kt">a</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">schema</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Lois Lane&quot;</span> <span class="p">;</span>
+    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">age</span> <span class="mi">34</span> <span class="p">.</span>
+
+<span class="p">[]</span> <span class="kt">a</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">Container</span> <span class="p">;</span>
+    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">persons</span> <span class="nv">&lt;https://orcid.org/1234&gt;</span><span class="p">,</span>
+        <span class="nv">&lt;https://orcid.org/4567&gt;</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>We can use a standard JSON-LD compliant tool (for example, Apache
+Jena) to convert this to JSON-LD, which may look something like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;@graph&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;_:b0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;personinfo:Container&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;persons&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;https://orcid.org/4567&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;https://orcid.org/1234&quot;</span><span class="w"> </span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://orcid.org/1234&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:Person&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;telephone&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;555-555-5555&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;personinfo:age&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">33</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://orcid.org/4567&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;@type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:Person&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lois Lane&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;personinfo:age&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">34</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;age&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/age&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#integer&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;telephone&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://schema.org/telephone&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://schema.org/name&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;persons&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/persons&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@type&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;schema&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://schema.org/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;xsd&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/2001/XMLSchema#&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;personinfo&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Hurray! We have a JSON form of our RDF graph. Developers can work with this format using familiar JSON parsers, not requiring any special RDF libraries. It can be stored in a Mongo Database, it can be queried using jq, ….</p>
+<p>Hold your horses! Before handing this JSON to our fellow developers, let’s take a closer look.</p>
+<p>First you will see fields such as:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;id</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;type</span></code></p></li>
+</ul>
+<p>This violates common idioms with JSON documents, where fields are usually ‘key-friendly’. As well as being unusual-looking, this structure could actually hinder development and even break some tooling.</p>
+<p>Thankfully, we don’t have to give such ugly JSON to our fellow developers. In fact there are multiple ways to represent the same RDF as a JSON-LD document. We can make our JSON much more idiomatic through the use of JSON-LD <em>contexts</em>.</p>
+<section id="context">
+<h3>Context<a class="headerlink" href="#context" title="Permalink to this headline"></a></h3>
+<p>Let’s provide an initial context for our JSON-LD</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;ORCID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://orcid.org/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;linkml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;personinfo&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://schema.org/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;@vocab&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;persons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xsd:integer&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:name&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@type&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:telephone&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Person&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:Person&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Don’t worry about authoring these contexts for now (in fact, as we will see later, these can be autogenerated from LinkML schemas).</p>
+<p>Using the <a class="reference external" href="https://json-ld.org/playground/">JSON-LD playground</a> we can make JSON that is approaching something more idiomatic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;ORCID&quot;</span><span class="p">:</span> <span class="s2">&quot;https://orcid.org/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;linkml&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;personinfo&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://schema.org/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;@vocab&quot;</span><span class="p">:</span> <span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;persons&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;xsd:integer&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:name&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;@type&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;@id&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;phone&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:telephone&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;Person&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="s2">&quot;schema:Person&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;@graph&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;_:b0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Container&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;persons&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;ORCID:4567&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ORCID:1234&quot;</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;phone&quot;</span><span class="p">:</span> <span class="s2">&quot;555-555-5555&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;personinfo:age&quot;</span><span class="p">:</span> <span class="mi">33</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:4567&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Lois Lane&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;personinfo:age&quot;</span><span class="p">:</span> <span class="mi">34</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Ignore the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> blob at the top - that can easily be maksed or imported over the web. We now have a list of Person objects</p>
+</section>
+<section id="considerations">
+<h3>Considerations<a class="headerlink" href="#considerations" title="Permalink to this headline"></a></h3>
+<p>Being able to customize the structure of JSON is flexible and powerful. However, this power should be wielded carefully.</p>
+<p>Let’s consider the organization <code class="docutils literal notranslate"><span class="pre">SemanticsRUs</span></code>. This organization has
+an internal information ecosystem constructed on Linked Data
+standards. Data is stored in triplestores, and software that
+manipulates data uses libraries such as rdflib or Jena. This
+organization can happily consume any RDF serialization format
+(RDF/XML, turtle, n-triples, …). It can also handle JSON-LD
+documents, <em>and they don’t care whether the JSON-LD is expanded or
+compacted</em>. These all get converted to the same internal RDF graph
+representation. This organization may use a shape language like SHACL
+or OWL to enforce conformance of RDF graphs to a particular structure,
+but they don’t care about the serialization (except perhaps for performance reasons).</p>
+<p>In fact SemanticsRUs don’t even need JSON-LD at all, but they may find
+it useful for exchanging data with the broader information ecosystem
+including mere mortal developers who will only consume JSON.</p>
+<p>Now consider another organization <code class="docutils literal notranslate"><span class="pre">JsonFTW</span></code>, who have a more
+traditional information system. They might rely heavily on exchange of
+YAML/JSON documents, perhaps storing these in a Mongo database. They
+may also have some kind of enterprise data model or data models, with
+mappings from JSON to those models. Or potentially SQL databases or
+other noSQL databases. It’s likely this organization makes heavy use
+of JSON-Schema to ensure documents are structured in expected ways,
+allowing reliable and predictable software to be built.</p>
+<p>Both organizations have valid ways of dealing with data, with
+respective strengths and limitations, and presumably they have
+optimized their approaches to the niche they occupy.</p>
+<p>Now let’s imagine a developer, MonicaTripleton leaves SemanticsRUs and
+joins JsonFTW. She manages to persuade her new developer colleagues to
+adopt some linked data practices, starting with use of JSON-LD. This
+all goes well, with the JSON-LD adopting appropriate contexts and
+framing such that existing JSON-Schemas continue to function, and the
+developers also start gaining some of the benefits of RDF.</p>
+<p>How imagine Monica leaves, and JohnnyEvangelist takes her
+place. Johnny is a born again Linked Data fanatic. He doesn’t adopt
+the practices put in place by Monica, and instead starts exchanging
+JSON-LD documents that are expanded or otherwise don’t conform to
+internal framing/contexts. Things start breaking, but Johnny</p>
+</section>
+</section>
+<section id="linkml-and-json-ld">
+<h2>LinkML and JSON-LD<a class="headerlink" href="#linkml-and-json-ld" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tips">
+<h2>Tips<a class="headerlink" href="#tips" title="Permalink to this headline"></a></h2>
+<section id="target-the-compacted-structure-not-the-expanded-structure">
+<h3>Target the compacted structure, not the expanded structure<a class="headerlink" href="#target-the-compacted-structure-not-the-expanded-structure" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

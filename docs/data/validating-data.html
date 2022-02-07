@@ -49,6 +49,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Data Validation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#validation-of-json-documents">Validation of JSON documents</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#validation-of-rdf-triplestores-using-generated-sparql">Validation of RDF triplestores using generated SPARQL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validation-via-shape-languages">Validation via shape languages</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#future-plans">Future plans</a></li>
 </ul>
 </li>
@@ -60,7 +61,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -99,7 +99,7 @@
 <h1>Data Validation<a class="headerlink" href="#data-validation" title="Permalink to this headline"></a></h1>
 <p>LinkML is designed to allow for a variety of strategies for data
 validation. The overall philosophy is to provide maximum expressivity
-in the language to allow model designers to state all consraints in a
+in the language to allow model designers to state all constraints in a
 declarative fashion, and then to leverage existing frameworks and to
 allow the user to balance concerns such as expressivity vs efficiency.</p>
 <p>Currently there are 4 supported strategies:</p>
@@ -156,6 +156,16 @@ Options:
   --help                          Show this message and exit.
 </pre></div>
 </div>
+</section>
+<section id="validation-via-shape-languages">
+<h2>Validation via shape languages<a class="headerlink" href="#validation-via-shape-languages" title="Permalink to this headline"></a></h2>
+<p>Currently the linkml framework does not provide builtin support for validating using a shape language, but the following strategy can be used:</p>
+<ol class="arabic simple">
+<li><p>Convert data to RDF using <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code></p></li>
+<li><p>Convert schema to a shape language using <code class="docutils literal notranslate"><span class="pre">gen-shex</span></code> or <code class="docutils literal notranslate"><span class="pre">gen-shacl</span></code></p></li>
+<li><p>Use a ShEx or SHACL validator</p></li>
+</ol>
+<p>See next section for more details.</p>
 </section>
 <section id="future-plans">
 <h2>Future plans<a class="headerlink" href="#future-plans" title="Permalink to this headline"></a></h2>
