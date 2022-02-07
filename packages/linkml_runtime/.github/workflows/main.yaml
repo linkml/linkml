@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8, 3.9, "3.10"]
 
     steps:
 
       #----------------------------------------------
-      #       check-out repo and set-up python     
+      #       check-out repo and set-up python
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v2
@@ -26,15 +26,15 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       #----------------------------------------------
-      #          install & configure poetry         
+      #          install & configure poetry
       #----------------------------------------------
       - name: Install Poetry
-        uses: snok/install-poetry@v1.1.1
+        uses: snok/install-poetry@v1.3
         with:
           virtualenvs-create: true
-          virtualenvs-in-project: true      
+          virtualenvs-in-project: true
 
       #----------------------------------------------
       #       load cached venv if cache exists      
@@ -52,13 +52,13 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-        
+
       #----------------------------------------------
       #    install your root project, if required 
       #----------------------------------------------      
       - name: Install library
         run: poetry install --no-interaction
-            
+
       #----------------------------------------------
       #              run test suite   
       #----------------------------------------------
@@ -73,7 +73,7 @@ jobs:
           poetry run coverage run -m unittest discover
           poetry run coverage xml
           poetry run coverage report -m
-    
+
       #----------------------------------------------
       #           upload coverage results
       #----------------------------------------------
