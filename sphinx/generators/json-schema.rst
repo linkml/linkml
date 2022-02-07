@@ -119,9 +119,13 @@ JSON-Schema support schema composition through:
 
 See `Schema Composition <https://json-schema.org/understanding-json-schema/reference/combining.html>`_
 
-Currently there are no directly equivalent constructs in LinkML,
-although future versions of LinkML will support an expressive
-constraint mechanism.
+LinkML 1.2 supports analogous constructs:
+
+* `any_of <https://w3id.org/linkml/any_of>`_
+* `all_of <https://w3id.org/linkml/all_of>`_
+* `exactly_one_of <https://w3id.org/linkml/exactly_one_of>`_
+* `none_of <https://w3id.org/linkml/none_of>`_
+
 
 Note that many uses of the above constructs may be better handled by
 using inheritance (see below) in LinkML. Future versions of LinkML may
@@ -361,7 +365,7 @@ Enums
 
 Enumerations are treated as simple strings. If the LinkML schema has
 additional metadata about the enumeration values, this is lost in
-translations.
+translation.
 
 Example:
 

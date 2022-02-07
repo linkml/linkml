@@ -53,9 +53,9 @@ Docs
 Command Line
 ^^^^^^^^^^^^
 
-.. currentmodule:: linkml.generators.jsonld-contextgen
+.. currentmodule:: linkml.generators.jsonldcontextgen
 
-.. click:: linkml.generators.jsonld-contextgen:cli
+.. click:: linkml.generators.jsonldcontextgen:cli
     :prog: gen-jsonld-context
     :nested: short
 
@@ -63,5 +63,5 @@ Code
 ^^^^
 
                    
-.. autoclass:: Jsonld-ContextGenerator
+.. autoclass:: ContextGenerator
     :members: serialize
