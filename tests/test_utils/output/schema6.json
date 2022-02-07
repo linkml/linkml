@@ -1,0 +1,36 @@
+{
+   "name": "schema6",
+   "title": "Load Raw Schema Test",
+   "id": "http://example.org/schema6.fuzz",
+   "default_prefix": "http://example.org/schema6.fuzz/",
+   "types": [
+      {
+         "name": "foo",
+         "definition_uri": "http://example.org/schema6.fuzz/Foo",
+         "from_schema": "http://example.org/schema6.fuzz",
+         "base": "str",
+         "uri": "http://example.org/types/String"
+      }
+   ],
+   "slots": [
+      {
+         "name": "s1",
+         "definition_uri": "http://example.org/schema6.fuzz/s1",
+         "from_schema": "http://example.org/schema6.fuzz",
+         "domain": "c1",
+         "range": "foo"
+      }
+   ],
+   "classes": [
+      {
+         "name": "c1",
+         "definition_uri": "http://example.org/schema6.fuzz/C1",
+         "from_schema": "http://example.org/schema6.fuzz"
+      }
+   ],
+   "metamodel_version": "0.5.0",
+   "source_file": "schema6.yaml",
+   "source_file_date": "2018-12-31 17:23",
+   "source_file_size": 259,
+   "generation_date": "2018-12-31 17:23"
+}
