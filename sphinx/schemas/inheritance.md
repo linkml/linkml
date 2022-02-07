@@ -56,6 +56,7 @@ Some generators may also choose to utilize abstract tags, e.g to mask generation
 
 **Note**: Slots can also be declared abstract.
 
+See also the [wikipedia page on Abstract Types](https://en.wikipedia.org/wiki/Abstract_type)
 
 ## Mixin classes and slots
 
@@ -100,3 +101,5 @@ classes:
 ```
 
 Note that `is_a` has the characteristics of homeomorphicity: `is_a` **SHOULD** only connect either (1) two mixins (2) two non-mixin elements
+
+See also the [Wikipedia page on mixins](https://en.wikipedia.org/wiki/Mixin)

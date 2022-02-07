@@ -26,6 +26,9 @@ An example of a generic-schema driven editing application is json-editor
 `<https://github.com/json-editor/json-editor>`_, which provides a way
 to create instance data for an arbitrary JSON-Schema.
 
+[react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/)
+is based on the same idea.
+
 Another example is `DataHarmonizer
 <https://github.com/cidgoh/DataHarmonizer>`_ which provides a
 spreadsheet-like data entry interface for any "flat" LinkML schema.

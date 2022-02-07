@@ -64,3 +64,11 @@ To run all tests:
 * Open to Run/Debug
 * `+` to add test
 * Choose “Python tests > unittests”
+
+### Release to PyPI
+
+A Github action is set up to automatically release the package to PyPI. When it is ready for a new release, create a [Github release](https://github.com/linkml/releases). The version should be in the vX.X.X format following [the semantic versioning specification](https://semver.org/).
+
+After the release is created, the GitHub action will be triggered to publish to PyPI. The release version will be used to create the PyPI package.
+
+If the PyPI release failed, make fixes, [delete](https://docs.github.com/en/enterprise/2.16/user/github/administering-a-repository/editing-and-deleting-releases#deleting-a-release) the GitHub release, and recreate a release with the same version again.

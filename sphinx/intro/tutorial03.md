@@ -137,6 +137,9 @@ Will result in:
 On instance['persons'][0]['phone']:
     '1-800-kryptonite'
 ```
+
+This reflexts that the phone number doesn't conform to the regular expression syntax we stated.
+
 ## Exercises
 
  1. See if you can iterate on the example file to get something that works.
@@ -155,6 +158,8 @@ If you prefer you can use your own JSON Schema validator. First compile to jsons
 ```bash
 gen-json-schema personinfo.yaml > personinfo.schema.json
 ```
+
+You can then use the `jsonschema` command that comes with the python library (any jsonschema validator will do here)
 
 <!-- FAIL -->
 ```bash

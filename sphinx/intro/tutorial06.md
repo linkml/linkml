@@ -261,4 +261,4 @@ Next we will explore more aspects of the modeling language
 * Metamodel Specification
     * [Enum Definition](https://w3id.org/linkml/EnumDefinition) class
 * FAQ:
-    - [Enums vs strings](../modeling.html#why-would-i-want-to-use-enums-over-strings)
+    - [Enums vs strings](../faq/modeling.html#why-would-i-want-to-use-enums-over-strings)

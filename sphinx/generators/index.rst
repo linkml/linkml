@@ -3,7 +3,12 @@
 Generators
 ==========
 
-A LinkML *generator* is code that transforms a linkml schema into a datamodel expressed using another framework, or into some other artefact, such as documentation
+A LinkML *generator* is code that transforms a linkml schema into a
+datamodel expressed using another framework, or into some other
+artefact, such as JSON-Schema, or markdown documentation.
+
+Generators allow you to tap into the rich tooling offered in other
+technical stacks, and give you flexibility. 
 
 .. toctree::
    :maxdepth: 2

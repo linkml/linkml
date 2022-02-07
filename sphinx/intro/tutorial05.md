@@ -63,9 +63,19 @@ We can use a script that is distributed with LinkML to generate a python datacla
 gen-python personinfo.yaml > personinfo.py
 ```
 
+This creates a python datamodel:
+
 ```python
-TODO
+@dataclass
+class Person(NamedThing):
+    """
+    A person (alive, dead, undead, or fictional).
+    """
+    id: Union[str, PersonId] = None
+    full_name: Optional[str] = None
+    ...
 ```
+
 
 Note you don't need to directly view the python - but your favorite IDE should be able to autocomplete and type check as expected
 
@@ -93,8 +103,11 @@ Outputs:
 Person(id='ORCID:9876', full_name='Lex Luthor', aliases=[], phone=None, age=None)
 ```
 
+This is not very impressive in itself, but as your models get larger it can be very handy to have a python data model
+
 ## LinkML runtime
 
+The LinkML runtime is a separate python library that provides methods needed by your generated datamodel classes, and utilities for converting your python objects into YAML, JSON, RDF, and TSV:
 
 test_runtime.py:
 
@@ -131,7 +144,7 @@ Outputs:
     - This repo has the minimal runtime required for a generated dataclasses model to work
 * Generators:
     - [Python Generator](../generators/python)
-    
+* Python [dataclasses](https://docs.python.org/3/library/dataclasses.html)
 
 ## Next
 

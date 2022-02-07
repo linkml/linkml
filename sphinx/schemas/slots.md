@@ -13,6 +13,7 @@ for example, if we have an object instantiating a Person class:
  "name": "....",
  "email": "....",
  ...
+}
 ```
 
 then `id`, `email`, `name` should all be valid slots, as in the following schema:
@@ -41,9 +42,9 @@ Each slot must have a [range](https://w3id.org/linkml/range) - if this is not de
 
 The range must be one of:
 
- * A [ClassDefinition](https://w3id.org/linkml/ClassDefinition)
- * A [SlotDefinition](https://w3id.org/linkml/SlotDefinition)
- * An [EnumDefinition](https://w3id.org/linkml/EnumDefinition)
+ * A [ClassDefinition](https://w3id.org/linkml/ClassDefinition), when the value of the slot is a complex object
+ * A [TypeDefinition](https://w3id.org/linkml/TypeDefinition), when the value of the slot is an atomic object
+ * An [EnumDefinition](https://w3id.org/linkml/EnumDefinition), when the value of the slot is a token that represents a vocabulary element
 
 Examples:
 
@@ -64,7 +65,7 @@ slots:
 
 ## slot_usage
 
-The [slot_usage](https://w3id.org/linkml/slot_usage) slot can be used to specify how a particular slot ought to be used in a class.
+The [slot_usage](https://w3id.org/linkml/slot_usage) slot can be used to refine the meaning of a slot in the context of a particular class.
 
 For example, imagine a schema with a generic "Relationship" class:
 
@@ -147,3 +148,13 @@ The `inverse` slot can be used to specify the inverse predicate of a given predi
     is_a: famlially_related_to
     inverse: child_of
 ```
+
+## logical characteristics
+
+Additional logical characteristics can be specified for a slot; these are all boolean:
+
+* [transitive](https://w3id.org/linkml/transitive)
+* [symmetric](https://w3id.org/linkml/symmetric)
+* [antisymmetric](https://w3id.org/linkml/symmetric)
+* [reflexive](https://w3id.org/linkml/reflexive)
+* [locally_reflexive](https://w3id.org/linkml/locally_reflexive)

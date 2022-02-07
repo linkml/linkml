@@ -129,5 +129,5 @@ your schema. To do this, make a GitHub Pull Request (PR) on the main
 [linkml-registry](https://linkml.io/linkml-registry/home/) metadata
 file, which is here:
 
-https://github.com/linkml/linkml-registry/blob/main/models.yaml
+[https://github.com/linkml/linkml-registry/blob/main/models.yaml](https://github.com/linkml/linkml-registry/blob/main/models.yaml)
 
