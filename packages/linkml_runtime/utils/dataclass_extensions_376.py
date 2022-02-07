@@ -250,6 +250,9 @@ elif sys.version_info.minor == 8 and sys.version_info.micro > 0:
 elif sys.version_info.minor == 9:
     # Taken from 3.9.10
     # Dataclass takes 5 arguments
+    from dataclasses import MISSING, _HAS_DEFAULT_FACTORY, _field_init, _FIELD_INITVAR, _POST_INIT_NAME, _init_param, \
+        _create_fn
+
     def dataclasses_init_fn_with_kwargs(fields, frozen, has_post_init, self_name, globals):
         # fields contains both real fields and InitVar pseudo-fields.
 
