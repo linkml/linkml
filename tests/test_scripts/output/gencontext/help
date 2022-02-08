@@ -5,27 +5,21 @@ Usage: gen-jsonld-context [OPTIONS] YAMLFILE
 Options:
   --base TEXT                     Base URI for model
   --prefixes / --no-prefixes      Emit context for prefixes
-                                  (default=--prefixes)  [default: True]
-
+                                  (default=--prefixes)  [default: prefixes]
   --model / --no-model            Emit context for model elements
-                                  (default=--model)  [default: True]
-
+                                  (default=--model)  [default: model]
   --flatprefixes / --no-flatprefixes
                                   Emit non-parsable prefixes as an object
-                                  [default: False]
-
+                                  [default: no-flatprefixes]
   -f, --format [context|json]     Output format (default=context)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
-
   --useuris / --metauris          Include metadata in output
                                   (default=--useuris)
-
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
                                   Logging level (default=WARNING)
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)
-
   --help                          Show this message and exit.
