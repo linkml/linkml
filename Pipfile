@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-click = "~=7.0"
+click = ">=7.0"
 python-dateutil = "*"
 graphviz = ">=0.10.1"
 jsonasobj2 = "~=1.0, >=1.0.3"
