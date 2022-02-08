@@ -291,9 +291,9 @@ large "terminological" ontology.
 
 It *is* possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
-[ChemSchema](https://chemkg.github.io/chemrof/ontology.html) for
+[ChemSchema](https://chemkg.github.io/chemrof/ontology) for
 an example, and see also the
-[linkml-owl](https://github.com/chemkg/chemrof) framework.
+[linkml-owl](https://github.com/linkml/linkml-owl) framework.
 
 See also:
 

@@ -52,8 +52,8 @@ Another challenge is working with schemas themselves. The native
 syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of "business logic" associated with a
-model. For example, the rules that govern `inheritance and refinement
-of slots <../schemas/inheritance>`_.
+model. For example, the rules that govern 
+:doc:`inheritance and refinement of slots <schemas/inheritance>`.
 
 For Python applications, the SchemaView library provides this business
 logic, but currently this logic must be re-implemented for different
@@ -123,7 +123,7 @@ includes only leaf elements, with inferred slots materialized as
 attributes. The resulting schema will be less rich, but may be
 sufficient for certain kinds of applications.
 
-See the `YAML Generator <../generators/yaml>`_ for one such tool
+See the YAML Generator for one such tool.
 
 Other Languages
 ---------------
@@ -131,8 +131,8 @@ Other Languages
 LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.
 
-For example, in Python, if you want a list of slots for that class you can use `class_slots
-<manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots>`_. But
+For example, in Python, if you want a list of slots for that class you can use :ref:`class_slots
+<linkml_runtime.utils.schemaview.SchemaView.class_slots>`. But
 what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?
 

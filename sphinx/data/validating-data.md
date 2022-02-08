@@ -13,7 +13,7 @@ Currently there are 4 supported strategies:
  * validation of triples in a triplestore or RDF file via generation of SPARQL constraints
  * validation of RDF via generation of ShEx
 
-However, others will be supported in future
+However, others will be supported in future.
 
 ## Validation of JSON documents
 

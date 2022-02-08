@@ -366,7 +366,7 @@ schema:Person a sh:NodeShape ;
 
 * [Working with RDF Data](../data/rdf)
 * FAQ:
-    - [LinkML vs shape languages](../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl)
+    - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:
    - [JSON-LD Context](../generators/jsonld-context)
    - [ShEx](../generators/shex)

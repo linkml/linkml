@@ -191,6 +191,6 @@ The next section deals with working with RDF data.
     * [minimum_value](https://w3id.org/linkml/minimum_value) slot    
     * [maximum_value](https://w3id.org/linkml/maximum_value) slot    
 * FAQ:
-    - [LinkML vs shape languages](../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl)
+    - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:
     - [JSON Schema Generator](../generators/json-schema)

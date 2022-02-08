@@ -20,16 +20,16 @@ There are other tools in the LinkML ecosystem that you may find useful:
 * [linkml/schemasheets](https://github.com/linkml/schemasheets), for managing your schema as a spreadsheet
 * [linkml/linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment), for bootstrapping and enhancing schemas
 * [linkml/linkml-owl](https://github.com/linkml/linkml-owl), for generating OWL ontologies using schemas as templates
-* [linkml/sparqlfun](https://github.com/linkml/sparqlful), for templated SPARQL queries
+* [linkml/sparqlfun](https://github.com/linkml/sparqlfun), for templated SPARQL queries
 
 ## How do I install the LinkML tools?
 
-See the [installation guide](https://linkml.io/linkml/intro/install.)
+See the [installation guide](intro/install).
 
 ## What tools are available for authoring schemas?
 
 Currently the main way to author a schema is to edit schema YAML files
-in a text editor or IDE (Integrapted Development Environment).
+in a text editor or IDE (Integrated Development Environment).
 
 We recommend using an IDE that has support for YAML format
 

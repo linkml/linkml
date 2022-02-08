@@ -1,7 +1,7 @@
 Python
 ======
 
-.. seealso:: `using python <../data/python>`_
+.. seealso:: `Using Python <./../data/python>`
 
 
 Overview
@@ -35,8 +35,8 @@ Dataclasses
 
 We use the standard `Python dataclasses framework <https://docs.python.org/3/library/dataclasses.html>`_
 
-Note that there is an alternative pydanticgen generator for using
-Pydantic, see `pydanticgen <pydanticgen>`_
+Note that there is an alternative generator for using
+Pydantic, see :doc:`Pydantic <generators/pydantic>`
 
 Inheritance
 ^^^^^^^^^^^
@@ -72,7 +72,7 @@ Non-inlined references
 ^^^^^^^^^^^^^^^^^^^^^^
 
 In LinkML schemas, references to other objects can be declared as
-`inlined <../schemas/inlining>`_. If a reference is *not* inlined,
+:doc:`inlined <schemas/inlining>`. If a reference is *not* inlined,
 and the referenced object has an identifier, then the value of the
 reference will be that identifier.
 
@@ -1752,4 +1752,4 @@ At the *moment*, you have the following elements:
 
 Note, however, that the slots area is still being enhanced, so keep an
 eye on entries like `Issue
-#272 <https://github.com/linkml/issues/272>`__
+#272 <https://github.com/linkml/linkml/issues/272>`__

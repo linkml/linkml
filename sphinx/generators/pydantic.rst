@@ -28,7 +28,9 @@ Code
 
 Additional Notes
 ----------------
-LinkML contains two Python generators. The Pydantic dataclass generator is specifically useful for FastAPI, but is newer and less full featured than the standard `Python generator <python.html>`_.
+LinkML contains two Python generators. The Pydantic dataclass generator is specifically
+useful for FastAPI, but is newer and less full featured than the standard 
+:doc:`Python generator <generators/python>`.
 
 
 Biolink Example
