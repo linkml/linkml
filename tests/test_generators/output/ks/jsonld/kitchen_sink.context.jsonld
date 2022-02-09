@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from kitchen_sink.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-02-08T04:12:28\n    Schema: kitchen_sink\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/tests/kitchen_sink\n    description: Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists to test all features of linkml.\n\nThis particular text field exists to demonstrate markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links, e.g to [Person](Person.md)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from kitchen_sink.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-02-09T19:45:11\n    Schema: kitchen_sink\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/tests/kitchen_sink\n    description: Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists to test all features of linkml.\n\nThis particular text field exists to demonstrate markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links, e.g to [Person](Person.md)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "A": "http://example.org/activities/",
       "BFO": {

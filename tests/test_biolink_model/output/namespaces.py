@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by namespacegen.py version: 0.9.0
-# Generation date: 2021-07-29 02:17
+# Generation date: 2022-02-09T19:43:19
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -254,7 +254,7 @@ class BiolinkNameSpace:
         CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
         CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#'),
         CurieNamespace('schema', 'http://schema.org/'),
-        CurieNamespace('skos', 'https://www.w3.org/TR/skos-reference/#'),
+        CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#'),
         CurieNamespace('wgs', 'http://www.w3.org/2003/01/geo/wgs84_pos'),
         CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#'),
     ]
