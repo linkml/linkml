@@ -54,7 +54,7 @@ class {{ e.name }}(str, Enum):
 {% for c in schema.classes.values() %}
 @dataclass(config=PydanticConfig)
 class {{ c.name }}( 
-                   {%- if c.is_a %}{{c.is_a}}{% else %}BaseModel{% endif -%}
+                   {%- if c.is_a %}{{c.is_a}}{% endif -%}
                    {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
                   ):
     {% if c.description -%}
