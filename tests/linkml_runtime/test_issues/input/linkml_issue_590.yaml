@@ -1,0 +1,12 @@
+id: https://w3id.org/
+name: linkml_issue_590
+
+classes:
+  foo:
+    attributes:
+      a:
+        multivalued: true
+
+slots:
+  a:
+    multivalued: false
