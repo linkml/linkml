@@ -13,7 +13,7 @@ To run:
 
    gen-sparql -d sparql personinfo.yaml 
 
-.. seealso:: `Data Validation <../data/validating-data>`_ for  other
+.. seealso:: `Data Validation :doc:<./../data/validating-data>`_ for  other
              validation strategies
 
 .. seealso:: `linkml-sparql

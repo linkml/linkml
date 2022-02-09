@@ -50,10 +50,10 @@ LinkML offers many features of use to data modelers, while retaining a simple co
 - Powerful [Semantic enumerations](../schema/enums) that can optionally be backed by ontologies
 - Create [data models](../schema/enums) that are independent of a database technology
 - Develop machine-actionable reporting standards and data dictionaries 
-- Include rich annotations, [metadata](../schemas/models.html#model-metadata-and-directives), and [mappings](../schemas/uris-and-mappings) as part of a model
+- Include rich annotations, {rst}`metadata <schemas/models:model metadata and directives>`, and [mappings](../schemas/uris-and-mappings) as part of a model
 - "Linked Data" ready
    - All schemas have a corresponding JSON-LD context
-   - [Compatability with RDF tooling](../data/rdf), without committing to an RDF stack
+   - [Compatibility with RDF tooling](../data/rdf), without committing to an RDF stack
    - Compilation to [SHACL](../generators/shacl) and [ShEx](../generators/shex)
 
 ## A bridge between frameworks

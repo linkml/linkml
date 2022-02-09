@@ -83,7 +83,7 @@ gen-yuml personinfo.yaml
 
 ![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++-%20persons%200..*%3E[Person%7Cid:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F],[Container])
 
-See [FAQ: attributes vs slots](faq/modeling.html#when-should-i-use-attributes-vs-slots)
+See {ref}`FAQ: attributes vs slots <faq/modeling:when should i use attributes vs slots?>`
 
 
 ## Inheritance
