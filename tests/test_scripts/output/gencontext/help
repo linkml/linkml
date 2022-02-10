@@ -9,8 +9,9 @@ Options:
   --model / --no-model            Emit context for model elements
                                   (default=--model)  [default: model]
   --flatprefixes / --no-flatprefixes
-                                  Emit non-parsable prefixes as an object
-                                  [default: no-flatprefixes]
+                                  Emit non-JSON-LD compliant prefixes as an
+                                  object (deprecated: use gen-prefix-map
+                                  instead).  [default: no-flatprefixes]
   -f, --format [context|json]     Output format (default=context)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
