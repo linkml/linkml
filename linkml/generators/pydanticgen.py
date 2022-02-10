@@ -21,10 +21,9 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
-from pydantic.typing import ForwardRef
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
@@ -51,12 +50,15 @@ class {{ e.name }}(str, Enum):
     {% endfor %}
 {% endfor %}
 
-{% for c in schema.classes.values() %}
+{%- for c in schema.classes.values() %}
+{%- if c.class_uri == "linkml:Any" %}
+{{ c.name }} = Any    
+{% else %}
 @dataclass(config=PydanticConfig)
-class {{ c.name }}( 
-                   {%- if c.is_a %}{{c.is_a}}{% endif -%}
+class {{ c.name }} 
+                   {%- if c.is_a %}({{c.is_a}}){% endif -%}
                    {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
-                  ):
+                  :
     {% if c.description -%}
     \"\"\"
     {{ c.description }}
@@ -72,11 +74,13 @@ class {{ c.name }}(
     {% else -%}
     None
     {% endfor %}
+{% endif %}
+
 {% endfor %}
 
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-{% for c in schema.classes.values() -%}
+{% for c in schema.classes.values() if c.class_uri != 'linkml:Any'-%}
 {{ c.name }}.__pydantic_model__.update_forward_refs()
 {% endfor %}
 """
