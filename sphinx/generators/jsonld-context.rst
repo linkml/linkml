@@ -29,22 +29,44 @@ declarations and
 Any JSON that conforms to the derived JSON Schema (see above) can be
 converted to RDF using this context.
 
-You can also combine a JSON instance file with a JSON-LD context using
-simple code or a tool like
-`jq <https://stackoverflow.com/questions/19529688/how-to-merge-2-json-objects-from-2-files-using-jq>`__:
+Treatment of OBO prefixes
+-------------------------
+
+All OBO ontologies use prefixes that end in underscores (for example
+``http://purl.obolibrary.org/obo/PATO_``). Note that the JSON-LD 1.1
+spec doesn't allow trailing underscores on simple "flat" prefix maps,
+i.e this is not correct:
+
+.. code:: json
+
+   "@context": {
+       "PATO": "http://purl.obolibrary.org/obo/PATO_",
+        ...
+        },
+
+It must be represented as:
+        
+.. code:: json
+
+   "@context": {
+       "PATO": {
+            "@id": "http://purl.obolibrary.org/obo/PATO_",
+             "@prefix": true
+        },...          
+
+However, the former can still be convenient, so this can be done with
+a flag:
 
 .. code:: bash
 
-   jq -s '.[0] * .[1]' examples/organization-data.json examples/organization.context.jsonld > examples/organization-data.jsonld
+   gen-jsonld-context --flatprefixes personinfo.yaml > personinfo.context.jsonld
 
-The above generated `JSON-LD <examples/organization-data.jsonld>`__ file
-can be converted to other RDF serialization formats such as
-`N-Triples <examples/organization-data.nt>`__. For example we can use
-`Apache Jena <https://jena.apache.org/documentation/io/>`__ as follows:
+However, this is not recommended and newer applications should switch
+to gen-prefix-map:
 
 .. code:: bash
 
-   riot examples/organization-data.jsonld > examples/organization-data.nt
+   gen-prefix-map --flatprefixes personinfo.yaml > personinfo.prefixmap.json
 
 
 Docs
