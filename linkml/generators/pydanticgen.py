@@ -51,9 +51,6 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 
 {%- for c in schema.classes.values() %}
-{%- if c.class_uri == "linkml:Any" %}
-{{ c.name }} = Any    
-{% else %}
 @dataclass(config=PydanticConfig)
 class {{ c.name }} 
                    {%- if c.is_a %}({{c.is_a}}){% endif -%}
@@ -74,13 +71,12 @@ class {{ c.name }}
     {% else -%}
     None
     {% endfor %}
-{% endif %}
 
 {% endfor %}
 
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-{% for c in schema.classes.values() if c.class_uri != 'linkml:Any'-%}
+{% for c in schema.classes.values() -%} 
 {{ c.name }}.__pydantic_model__.update_forward_refs()
 {% endfor %}
 """
@@ -187,6 +183,10 @@ class PydanticGenerator(OOCodeGenerator):
 
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
 
+        # Don't want to generate classes when class_uri is linkml:Any, will
+        # just swap in typing.Any instead down below
+        sorted_classes = [c for c in sorted_classes if c.class_uri != "linkml:Any"]
+
         for class_original in sorted_classes:
             class_def: ClassDefinition
             class_def = deepcopy(class_original)
@@ -212,7 +212,9 @@ class PydanticGenerator(OOCodeGenerator):
                 if s.range in sv.all_classes():
                     range_cls = sv.get_class(s.range)
                     #pyrange = f'"{camelcase(s.range)}"'
-                    if s.inlined or sv.get_identifier_slot(range_cls.name) is None:
+                    if range_cls.class_uri == "linkml:Any":
+                        pyrange = 'Any'
+                    elif s.inlined or sv.get_identifier_slot(range_cls.name) is None:
                         pyrange = f'{camelcase(s.range)}'
                         if sv.get_identifier_slot(range_cls.name) is not None and not s.inlined_as_list:
                             #collection_type = sv.get_identifier_slot(range_cls.name).range
