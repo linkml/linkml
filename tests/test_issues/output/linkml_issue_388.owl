@@ -12,10 +12,10 @@
     IAO:0000700 this:C1,
         this:C2,
         this:C3 ;
-    linkml:generation_date "2022-02-10T21:30:33" ;
+    linkml:generation_date "2022-02-11T03:43:28" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "linkml_issue_388.yaml" ;
-    linkml:source_file_date "2022-02-10T21:24:00" ;
+    linkml:source_file_date "2022-02-11T03:37:16" ;
     linkml:source_file_size 648 .
 
 this:C2 a owl:Class ;
