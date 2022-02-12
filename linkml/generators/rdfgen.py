@@ -43,7 +43,7 @@ class RDFGenerator(Generator):
         graph = Graph()
         graph.parse(data=jsonld_str, format="json-ld", base=str(self.namespaces._base), prefix=True)
         if output:
-            with open(output, 'w') as outf:
+            with open(output, 'w', encoding='UTF-8') as outf:
                 outf.write(self._data(graph))
         else:
             print(self._data(graph))

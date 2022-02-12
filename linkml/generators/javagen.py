@@ -88,7 +88,7 @@ class JavaGenerator(OOCodeGenerator):
             os.makedirs(directory, exist_ok=True)
             filename = f'{oodoc.name}.java'
             path = os.path.join(directory, filename)
-            with open(path, 'w') as stream:
+            with open(path, 'w', encoding='UTF-8') as stream:
                 stream.write(code)
 
 

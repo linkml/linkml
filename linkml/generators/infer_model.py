@@ -235,7 +235,7 @@ def enrich(yamlfile, results, **args):
     cache = {}
     infer_enum_meanings(yamlobj, cache=cache)
     if results is not None:
-        with open(results, "w") as io:
+        with open(results, "w", encoding='UTF-8') as io:
             #io.write(str(cache))
             io.write(yaml.dump(cache))
     print(yaml.dump(yamlobj, default_flow_style=False, sort_keys=False))

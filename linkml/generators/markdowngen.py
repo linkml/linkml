@@ -65,7 +65,7 @@ class MarkdownGenerator(Generator):
         if not self.no_types_dir:
             os.makedirs(os.path.join(directory, 'types'), exist_ok=True)
 
-        with open(self.exist_warning(directory, index_file), 'w') as ixfile:
+        with open(self.exist_warning(directory, index_file), 'w', encoding='UTF-8') as ixfile:
             with redirect_stdout(ixfile):
                 self.frontmatter(f"{self.schema.name}")
                 self.para(
@@ -119,7 +119,7 @@ class MarkdownGenerator(Generator):
         if self.gen_classes and cls.name not in self.gen_classes:
             return False
 
-        with open(self.exist_warning(self.dir_path(cls)), 'w') as clsfile:
+        with open(self.exist_warning(self.dir_path(cls)), 'w', encoding='UTF-8') as clsfile:
             with redirect_stdout(clsfile):
                 class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
                 class_uri = self.namespaces.uri_for(class_curi)
@@ -209,7 +209,7 @@ class MarkdownGenerator(Generator):
         return False
 
     def visit_type(self, typ: TypeDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(typ)), 'w') as typefile:
+        with open(self.exist_warning(self.dir_path(typ)), 'w', encoding='UTF-8') as typefile:
             with redirect_stdout(typefile):
                 type_uri = typ.definition_uri
                 type_curie = self.namespaces.curie_for(type_uri)
@@ -225,7 +225,7 @@ class MarkdownGenerator(Generator):
                 self.element_properties(typ)
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(slot)), 'w') as slotfile:
+        with open(self.exist_warning(self.dir_path(slot)), 'w', encoding='UTF-8') as slotfile:
             with redirect_stdout(slotfile):
                 import logging
                 slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
@@ -256,7 +256,7 @@ class MarkdownGenerator(Generator):
                 self.element_properties(slot)
 
     def visit_enum(self, enum: EnumDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(enum)), 'w') as enumfile:
+        with open(self.exist_warning(self.dir_path(enum)), 'w', encoding='UTF-8') as enumfile:
             with redirect_stdout(enumfile):
                 enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
                 enum_uri = self.namespaces.uri_for(enum_curie)
@@ -264,7 +264,7 @@ class MarkdownGenerator(Generator):
                 self.element_properties(enum)
 
     def visit_subset(self, subset: SubsetDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(subset)), 'w') as subsetfile:
+        with open(self.exist_warning(self.dir_path(subset)), 'w', encoding='UTF-8') as subsetfile:
             with redirect_stdout(subsetfile):
                 curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
                 uri = self.namespaces.uri_for(curie)
