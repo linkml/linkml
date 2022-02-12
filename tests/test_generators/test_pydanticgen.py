@@ -40,7 +40,6 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             p2 = Person(**dataset_dict['persons'][0])
             ds1 = Dataset(**dataset_dict)
             print(ds1)
-            print(Person.schema_json(indent=2))
             assert len(ds1.persons) == 2
         test_dynamic()
 
