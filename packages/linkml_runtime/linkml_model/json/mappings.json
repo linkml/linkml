@@ -204,6 +204,12 @@
     {
       "name": "mappings",
       "definition_uri": "https://w3id.org/linkml/mappings",
+      "aliases": [
+        "xrefs",
+        "identifiers",
+        "alternate identifiers",
+        "alternate ids"
+      ],
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#mappingRelation"
       ],
@@ -311,9 +317,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "mappings.yaml",
-  "source_file_date": "2021-12-28T23:36:45",
-  "source_file_size": 2656,
-  "generation_date": "2021-12-28T23:38:38",
+  "source_file_date": "2022-02-12T01:49:22",
+  "source_file_size": 2755,
+  "generation_date": "2022-02-12T01:51:07",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/types.context.jsonld",

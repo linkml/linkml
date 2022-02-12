@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 type AltDescription
   {
     source: String!
@@ -91,6 +93,7 @@ type AnonymousSlotExpression implements SlotExpression
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
+    structuredPattern: PatternExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -108,6 +111,7 @@ type AnonymousSlotExpression implements SlotExpression
 type AnonymousTypeExpression implements TypeExpression
   {
     pattern: String
+    structuredPattern: PatternExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -133,7 +137,7 @@ type ClassDefinition implements ClassExpression
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -173,6 +177,8 @@ type ClassDefinition implements ClassExpression
     classificationRules: [AnonymousClassExpression]
     slotNamesUnique: Boolean
     representsRelationship: Boolean
+    disjointWith: [ClassDefinition]
+    childrenAreMutuallyDisjoint: Boolean
     isA: ClassDefinition
     mixins: [ClassDefinition]
     applyTo: [ClassDefinition]
@@ -203,7 +209,7 @@ type ClassRule implements Extensible, Annotatable, CommonMetadata
     elseconditions: AnonymousClassExpression
     bidirectional: Boolean
     openWorld: Boolean
-    precedence: Integer
+    rank: Integer
     deactivated: Boolean
     extensions: [Extension]
     annotations: [Annotation]
@@ -257,7 +263,7 @@ interface Definition
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -303,7 +309,7 @@ type Element implements Extensible, Annotatable, CommonMetadata
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -337,7 +343,7 @@ type EnumDefinition
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -419,6 +425,30 @@ type PathExpression implements Expression, Extensible, Annotatable, CommonMetada
     deprecatedElementHasPossibleReplacement: Uriorcurie
   }
 
+type PatternExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    syntax: String
+    interpolated: Boolean
+    partialMatch: Boolean
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    source: Uriorcurie
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+  }
+
 type PermissibleValue implements Extensible, Annotatable, CommonMetadata
   {
     text: String!
@@ -463,7 +493,7 @@ type SchemaDefinition
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -501,7 +531,14 @@ type SchemaDefinition
     sourceFileSize: Integer
     generationDate: Datetime
     slotNamesUnique: Boolean
+    settings: [Setting]
     name: Ncname!
+  }
+
+type Setting
+  {
+    settingKey: Ncname!
+    settingValue: String!
   }
 
 type SlotDefinition implements SlotExpression
@@ -518,7 +555,7 @@ type SlotDefinition implements SlotExpression
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -578,6 +615,8 @@ type SlotDefinition implements SlotExpression
     slotGroup: SlotDefinition
     isGroupingSlot: Boolean
     pathRule: PathExpression
+    disjointWith: [SlotDefinition]
+    childrenAreMutuallyDisjoint: Boolean
     isA: SlotDefinition
     mixins: [SlotDefinition]
     applyTo: [SlotDefinition]
@@ -588,6 +627,7 @@ type SlotDefinition implements SlotExpression
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
+    structuredPattern: PatternExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -611,6 +651,7 @@ interface SlotExpression
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
+    structuredPattern: PatternExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -639,7 +680,7 @@ type SubsetDefinition
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -673,7 +714,7 @@ type TypeDefinition implements TypeExpression
     relatedMappings: [Uriorcurie]
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
-    precedence: Integer
+    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -696,6 +737,7 @@ type TypeDefinition implements TypeExpression
     uri: Uriorcurie
     repr: String
     pattern: String
+    structuredPattern: PatternExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -710,6 +752,7 @@ type TypeDefinition implements TypeExpression
 interface TypeExpression
   {
     pattern: String
+    structuredPattern: PatternExpression
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -723,6 +766,7 @@ interface TypeExpression
 
 type UniqueKey implements Extensible, Annotatable, CommonMetadata
   {
+    uniqueKeyName: String!
     uniqueKeySlots: [SlotDefinition]!
     extensions: [Extension]
     annotations: [Annotation]

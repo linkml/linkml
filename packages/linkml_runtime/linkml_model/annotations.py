@@ -1,5 +1,5 @@
 # Auto generated from annotations.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-28T23:40:25
+# Generation date: 2022-02-12T01:52:52
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations
@@ -26,6 +26,7 @@ from .types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
+version = "2.0.0"
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

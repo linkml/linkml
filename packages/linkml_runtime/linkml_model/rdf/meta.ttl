@@ -116,6 +116,21 @@ linkml:class_definition_apply_to a linkml:SlotDefinition ;
     linkml:slot_uri linkml:apply_to ;
     linkml:usage_slot_name "apply_to" .
 
+linkml:class_definition_disjoint_with a linkml:SlotDefinition ;
+    skos:definition "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances" ;
+    skos:inScheme linkml:meta ;
+    skos:prefLabel "disjoint_with" ;
+    linkml:definition_uri linkml:disjoint_with ;
+    linkml:domain linkml:ClassDefinition ;
+    linkml:domain_of linkml:ClassDefinition ;
+    linkml:is_a linkml:disjoint_with ;
+    linkml:is_usage_slot true ;
+    linkml:multivalued true ;
+    linkml:owner linkml:ClassDefinition ;
+    linkml:range linkml:ClassDefinition ;
+    linkml:slot_uri linkml:disjoint_with ;
+    linkml:usage_slot_name "disjoint_with" .
+
 linkml:class_definition_is_a a linkml:SlotDefinition ;
     skos:definition "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded" ;
     skos:inScheme linkml:meta ;
@@ -316,6 +331,8 @@ linkml:relational_role_enum skos:definition "enumeration of roles a slot on a re
 linkml:schema_definition_name a linkml:SlotDefinition ;
     OIO:inSubset linkml:owl ;
     rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element_name> ;
+    skos:altLabel "short name",
+        "unique name" ;
     skos:definition "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class." ;
     skos:exactMatch schema1:name ;
     skos:inScheme linkml:meta ;
@@ -347,6 +364,21 @@ linkml:slot_definition_apply_to a linkml:SlotDefinition ;
     linkml:range linkml:SlotDefinition ;
     linkml:slot_uri linkml:apply_to ;
     linkml:usage_slot_name "apply_to" .
+
+linkml:slot_definition_disjoint_with a linkml:SlotDefinition ;
+    skos:definition "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances" ;
+    skos:inScheme linkml:meta ;
+    skos:prefLabel "disjoint_with" ;
+    linkml:definition_uri linkml:disjoint_with ;
+    linkml:domain linkml:SlotDefinition ;
+    linkml:domain_of linkml:SlotDefinition ;
+    linkml:is_a linkml:disjoint_with ;
+    linkml:is_usage_slot true ;
+    linkml:multivalued true ;
+    linkml:owner linkml:SlotDefinition ;
+    linkml:range linkml:SlotDefinition ;
+    linkml:slot_uri linkml:disjoint_with ;
+    linkml:usage_slot_name "disjoint_with" .
 
 linkml:slot_definition_is_a a linkml:SlotDefinition ;
     skos:definition "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded" ;
@@ -595,6 +627,7 @@ linkml:ClassLevelRule a linkml:ClassDefinition ;
     linkml:slot_usage [ ] .
 
 linkml:asymmetric a linkml:SlotDefinition ;
+    skos:closeMatch owl:AsymmetricProperty ;
     skos:definition "If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i" ;
     skos:inScheme linkml:meta ;
     skos:note "asymmetry is the combination of antisymmetry and irreflexivity" ;
@@ -716,6 +749,7 @@ linkml:class_expression_none_of a linkml:SlotDefinition ;
     linkml:usage_slot_name "none_of" .
 
 linkml:class_uri a linkml:SlotDefinition ;
+    skos:altLabel "public ID" ;
     skos:definition "URI of the class in an RDF environment" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:class_uri ;
@@ -980,7 +1014,7 @@ linkml:identifier a linkml:SlotDefinition ;
 linkml:ifabsent a linkml:SlotDefinition ;
     skos:closeMatch sh1:defaultValue ;
     skos:definition """function that provides a default value for the slot.  Possible values for this slot are defined in
-biolink.utils.ifabsent_functions.default_library:
+linkml.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * int(value) -- integer value
@@ -1009,6 +1043,17 @@ linkml:imports a linkml:SlotDefinition ;
     linkml:owner linkml:SchemaDefinition ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri linkml:imports .
+
+linkml:inapplicable a linkml:SlotDefinition ;
+    skos:definition "true means that the slot must not be present" ;
+    skos:inScheme linkml:meta ;
+    skos:note "By default all slots are applicable. The main use case for this slot is as an override in a subclass" ;
+    linkml:definition_uri linkml:inapplicable ;
+    linkml:domain linkml:SlotDefinition ;
+    linkml:inherited true ;
+    linkml:owner linkml:inapplicable ;
+    linkml:range linkml:boolean ;
+    linkml:slot_uri linkml:inapplicable .
 
 linkml:inherited a linkml:SlotDefinition ;
     skos:definition "true means that the *value* of a slot is inherited by subclasses" ;
@@ -1050,7 +1095,18 @@ representation and output.""" ;
     linkml:range linkml:boolean ;
     linkml:slot_uri linkml:inlined_as_list .
 
+linkml:interpolated a linkml:SlotDefinition ;
+    skos:definition "if true then the pattern is first string interpolated" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:interpolated ;
+    linkml:domain linkml:PatternExpression ;
+    linkml:domain_of linkml:PatternExpression ;
+    linkml:owner linkml:PatternExpression ;
+    linkml:range linkml:boolean ;
+    linkml:slot_uri linkml:interpolated .
+
 linkml:irreflexive a linkml:SlotDefinition ;
+    skos:closeMatch owl:IrreflexiveProperty ;
     skos:definition "If s is irreflexive, then there exists no i such i.s=i" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:irreflexive ;
@@ -1123,6 +1179,7 @@ linkml:locally_reflexive a linkml:SlotDefinition ;
     linkml:slot_uri linkml:locally_reflexive .
 
 linkml:meaning a linkml:SlotDefinition ;
+    skos:altLabel "PV meaning" ;
     skos:definition "the value meaning (in the 11179 sense) of a permissible value" ;
     skos:editorialNote "we may want to change the range of this (and other) elements in the model to an entitydescription type construct" ;
     skos:inScheme linkml:meta ;
@@ -1165,6 +1222,18 @@ linkml:open_world a linkml:SlotDefinition ;
     linkml:range linkml:boolean ;
     linkml:slot_uri linkml:open_world .
 
+linkml:owned_by a linkml:SlotDefinition ;
+    skos:altLabel "owner",
+        "steward" ;
+    skos:closeMatch rdfs:isDefinedBy ;
+    skos:definition "agent that owns or is the steward of the element" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:owned_by ;
+    linkml:domain linkml:Element ;
+    linkml:owner linkml:owned_by ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri linkml:owned_by .
+
 linkml:owner a linkml:SlotDefinition ;
     skos:definition "the \"owner\" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot" ;
     skos:inScheme linkml:meta ;
@@ -1176,6 +1245,16 @@ linkml:owner a linkml:SlotDefinition ;
     linkml:range linkml:Definition ;
     linkml:readonly "filled in by loader -- either class domain or slot domain" ;
     linkml:slot_uri linkml:owner .
+
+linkml:partial_match a linkml:SlotDefinition ;
+    skos:definition "if true then the pattern must match the whole string, as if enclosed in ^...$" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:partial_match ;
+    linkml:domain linkml:PatternExpression ;
+    linkml:domain_of linkml:PatternExpression ;
+    linkml:owner linkml:PatternExpression ;
+    linkml:range linkml:boolean ;
+    linkml:slot_uri linkml:partial_match .
 
 linkml:path_rule a linkml:SlotDefinition ;
     skos:definition "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts" ;
@@ -1273,6 +1352,7 @@ linkml:readonly a linkml:SlotDefinition ;
     linkml:slot_uri linkml:readonly .
 
 linkml:reflexive a linkml:SlotDefinition ;
+    skos:closeMatch owl:ReflexiveProperty ;
     skos:definition "If s is reflexive, then i.s=i for all instances i" ;
     skos:inScheme linkml:meta ;
     skos:note "it is rare for a property to be reflexive, this characteristic is added for completeness, consider instead locally_reflexive" ;
@@ -1373,6 +1453,42 @@ linkml:rules a linkml:SlotDefinition ;
     linkml:range linkml:ClassRule ;
     linkml:slot_uri sh1:rule .
 
+linkml:setting_key a linkml:SlotDefinition ;
+    skos:definition "the variable name for a setting" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:setting_key ;
+    linkml:domain linkml:Setting ;
+    linkml:domain_of linkml:Setting ;
+    linkml:key true ;
+    linkml:owner linkml:Setting ;
+    linkml:range linkml:ncname ;
+    linkml:required true ;
+    linkml:slot_uri linkml:setting_key .
+
+linkml:setting_value a linkml:SlotDefinition ;
+    skos:definition "The value assigned for a setting" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:setting_value ;
+    linkml:domain linkml:Setting ;
+    linkml:domain_of linkml:Setting ;
+    linkml:owner linkml:Setting ;
+    linkml:range linkml:string ;
+    linkml:required true ;
+    linkml:slot_uri linkml:setting_value .
+
+linkml:settings a linkml:SlotDefinition ;
+    skos:definition "A collection of global variable settings" ;
+    skos:inScheme linkml:meta ;
+    skos:note "global variables are used in string interpolation" ;
+    linkml:definition_uri linkml:settings ;
+    linkml:domain linkml:SchemaDefinition ;
+    linkml:domain_of linkml:SchemaDefinition ;
+    linkml:inlined true ;
+    linkml:multivalued true ;
+    linkml:owner linkml:SchemaDefinition ;
+    linkml:range linkml:Setting ;
+    linkml:slot_uri linkml:settings .
+
 linkml:slot_expression_all_of a linkml:SlotDefinition ;
     bibo:status linkml:testing ;
     skos:definition "holds if all of the expressions hold" ;
@@ -1446,6 +1562,7 @@ linkml:slot_expression_none_of a linkml:SlotDefinition ;
     linkml:usage_slot_name "none_of" .
 
 linkml:slot_uri a linkml:SlotDefinition ;
+    skos:altLabel "public ID" ;
     skos:definition "predicate of this slot for semantic web application" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:slot_uri ;
@@ -1518,6 +1635,7 @@ linkml:subsets a linkml:SlotDefinition ;
     linkml:slot_uri linkml:subsets .
 
 linkml:symmetric a linkml:SlotDefinition ;
+    skos:closeMatch owl:SymmetricProperty ;
     skos:definition "If s is symmetric, and i.s=v, then v.s=i" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:symmetric ;
@@ -1528,7 +1646,19 @@ linkml:symmetric a linkml:SlotDefinition ;
     linkml:range linkml:boolean ;
     linkml:slot_uri linkml:symmetric .
 
+linkml:syntax a linkml:SlotDefinition ;
+    skos:definition "the string value of the slot must conform to this regular expression expressed in the string. May be interpolated." ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:syntax ;
+    linkml:domain linkml:PatternExpression ;
+    linkml:domain_of linkml:PatternExpression ;
+    linkml:inherited true ;
+    linkml:owner linkml:PatternExpression ;
+    linkml:range linkml:string ;
+    linkml:slot_uri linkml:syntax .
+
 linkml:text a linkml:SlotDefinition ;
+    skos:altLabel "value" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:text ;
     linkml:domain linkml:PermissibleValue ;
@@ -1540,6 +1670,7 @@ linkml:text a linkml:SlotDefinition ;
     linkml:slot_uri linkml:text .
 
 linkml:transitive a linkml:SlotDefinition ;
+    skos:closeMatch owl:TransitiveProperty ;
     skos:definition "If s is transitive, and i.s=z, and s.s=j, then i.s=j" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:transitive ;
@@ -1666,6 +1797,18 @@ linkml:union_of a linkml:SlotDefinition ;
     linkml:owner linkml:ClassDefinition ;
     linkml:range linkml:ClassDefinition ;
     linkml:slot_uri linkml:union_of .
+
+linkml:unique_key_name a linkml:SlotDefinition ;
+    skos:definition "name of the unique key" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:unique_key_name ;
+    linkml:domain linkml:UniqueKey ;
+    linkml:domain_of linkml:UniqueKey ;
+    linkml:key true ;
+    linkml:owner linkml:UniqueKey ;
+    linkml:range linkml:string ;
+    linkml:required true ;
+    linkml:slot_uri linkml:unique_key_name .
 
 linkml:unique_key_slots a linkml:SlotDefinition ;
     skos:definition "list of slot names that form a key" ;
@@ -1853,7 +1996,7 @@ linkml:SubsetDefinition a linkml:ClassDefinition ;
         linkml:name,
         linkml:narrow_mappings,
         linkml:notes,
-        linkml:precedence,
+        linkml:rank,
         linkml:related_mappings,
         linkml:see_also,
         linkml:source,
@@ -1892,6 +2035,17 @@ all_members:
     linkml:owner linkml:SlotExpression ;
     linkml:range linkml:SlotDefinition ;
     linkml:slot_uri linkml:all_members .
+
+linkml:children_are_mutually_disjoint a linkml:SlotDefinition ;
+    skos:definition "If true then all direct is_a children are mutually disjoint and share no instances in common" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:children_are_mutually_disjoint ;
+    linkml:domain linkml:Definition ;
+    linkml:domain_of linkml:ClassDefinition,
+        linkml:SlotDefinition ;
+    linkml:owner linkml:children_are_mutually_disjoint ;
+    linkml:range linkml:boolean ;
+    linkml:slot_uri linkml:children_are_mutually_disjoint .
 
 linkml:created_by a linkml:SlotDefinition ;
     skos:definition "agent that created the element" ;
@@ -2010,15 +2164,6 @@ linkml:modified_by a linkml:SlotDefinition ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri oslc:modifiedBy .
 
-linkml:ncname a linkml:TypeDefinition ;
-    skos:definition "Prefix part of CURIE" ;
-    skos:inScheme linkml:types ;
-    linkml:base "NCName" ;
-    linkml:definition_uri linkml:Ncname ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri xsd:string .
-
 linkml:slot_conditions a linkml:SlotDefinition ;
     bibo:status linkml:testing ;
     skos:definition "the redefinition of a slot in the context of the containing class definition." ;
@@ -2043,6 +2188,7 @@ linkml:slot_names_unique a linkml:SlotDefinition ;
     linkml:slot_uri linkml:slot_names_unique .
 
 linkml:status a linkml:SlotDefinition ;
+    skos:altLabel "workflow status" ;
     skos:definition "status of the element" ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation bibo:status ;
@@ -2092,38 +2238,11 @@ linkml:AnonymousTypeExpression a linkml:ClassDefinition ;
         linkml:maximum_value,
         linkml:minimum_value,
         linkml:pattern,
+        linkml:structured_pattern,
         linkml:type_expression_all_of,
         linkml:type_expression_any_of,
         linkml:type_expression_exactly_one_of,
         linkml:type_expression_none_of .
-
-linkml:UniqueKey a linkml:ClassDefinition ;
-    skos:definition "a collection of slots whose values uniquely identify an instance of a class" ;
-    skos:inScheme linkml:meta ;
-    linkml:class_uri linkml:UniqueKey ;
-    linkml:definition_uri linkml:UniqueKey ;
-    linkml:mixins linkml:Annotatable,
-        linkml:CommonMetadata,
-        linkml:Extensible ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:alt_descriptions,
-        linkml:annotations,
-        linkml:comments,
-        linkml:deprecated,
-        linkml:deprecated_element_has_exact_replacement,
-        linkml:deprecated_element_has_possible_replacement,
-        linkml:description,
-        linkml:examples,
-        linkml:extensions,
-        linkml:from_schema,
-        linkml:imported_from,
-        linkml:in_subset,
-        linkml:notes,
-        linkml:see_also,
-        linkml:source,
-        linkml:title,
-        linkml:todos,
-        linkml:unique_key_slots .
 
 linkml:boolean_slot a linkml:SlotDefinition ;
     bibo:status linkml:testing ;
@@ -2145,7 +2264,17 @@ linkml:list_value_specification_constant a linkml:SlotDefinition ;
     linkml:range linkml:string ;
     linkml:slot_uri linkml:list_value_specification_constant .
 
+linkml:ncname a linkml:TypeDefinition ;
+    skos:definition "Prefix part of CURIE" ;
+    skos:inScheme linkml:types ;
+    linkml:base "NCName" ;
+    linkml:definition_uri linkml:Ncname ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:string .
+
 linkml:range a linkml:SlotDefinition ;
+    skos:altLabel "value domain" ;
     skos:definition """defines the type of the object of the slot.  Given the following slot definition
   S1:
     domain: C1
@@ -2248,6 +2377,7 @@ linkml:AnonymousSlotExpression a linkml:ClassDefinition ;
         linkml:slot_expression_exactly_one_of,
         linkml:slot_expression_none_of,
         linkml:source,
+        linkml:structured_pattern,
         linkml:title,
         linkml:todos .
 
@@ -2335,7 +2465,49 @@ linkml:Prefix a linkml:ClassDefinition ;
     linkml:slots linkml:prefix_prefix,
         linkml:prefix_reference .
 
+linkml:Setting a linkml:ClassDefinition ;
+    skos:definition "assignment of a key to a value" ;
+    skos:inScheme linkml:meta ;
+    linkml:class_uri linkml:Setting ;
+    linkml:definition_uri linkml:Setting ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:setting_key,
+        linkml:setting_value .
+
+linkml:UniqueKey a linkml:ClassDefinition ;
+    skos:definition "a collection of slots whose values uniquely identify an instance of a class" ;
+    skos:inScheme linkml:meta ;
+    linkml:class_uri linkml:UniqueKey ;
+    linkml:definition_uri linkml:UniqueKey ;
+    linkml:mixins linkml:Annotatable,
+        linkml:CommonMetadata,
+        linkml:Extensible ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:alt_descriptions,
+        linkml:annotations,
+        linkml:comments,
+        linkml:deprecated,
+        linkml:deprecated_element_has_exact_replacement,
+        linkml:deprecated_element_has_possible_replacement,
+        linkml:description,
+        linkml:examples,
+        linkml:extensions,
+        linkml:from_schema,
+        linkml:imported_from,
+        linkml:in_subset,
+        linkml:notes,
+        linkml:see_also,
+        linkml:source,
+        linkml:title,
+        linkml:todos,
+        linkml:unique_key_name,
+        linkml:unique_key_slots .
+
 linkml:aliases a linkml:SlotDefinition ;
+    skos:altLabel "alternate names",
+        "alternative labels",
+        "designations",
+        "synonyms" ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation skos:altLabel ;
     linkml:definition_uri linkml:aliases ;
@@ -2394,6 +2566,18 @@ linkml:conforms_to a linkml:SlotDefinition ;
     linkml:range linkml:string ;
     linkml:slot_uri dcterms:conformsTo .
 
+linkml:disjoint_with a linkml:SlotDefinition ;
+    skos:definition "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:disjoint_with ;
+    linkml:domain linkml:Definition ;
+    linkml:domain_of linkml:ClassDefinition,
+        linkml:SlotDefinition ;
+    linkml:multivalued true ;
+    linkml:owner linkml:disjoint_with ;
+    linkml:range linkml:Definition ;
+    linkml:slot_uri linkml:disjoint_with .
+
 linkml:exact_mappings a linkml:SlotDefinition ;
     skos:definition "A list of terms from different schemas or terminology systems that have identical meaning." ;
     skos:inScheme linkml:mappings ;
@@ -2408,6 +2592,7 @@ linkml:exact_mappings a linkml:SlotDefinition ;
     linkml:slot_uri skos:exactMatch .
 
 linkml:maximum_value a linkml:SlotDefinition ;
+    skos:altLabel "high value" ;
     skos:definition "for slots with ranges of type number, the value must be equal to or lowe than this" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:maximum_value ;
@@ -2420,6 +2605,7 @@ linkml:maximum_value a linkml:SlotDefinition ;
     linkml:slot_uri linkml:maximum_value .
 
 linkml:minimum_value a linkml:SlotDefinition ;
+    skos:altLabel "low value" ;
     skos:definition "for slots with ranges of type number, the value must be equal to or higher than this" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:minimum_value ;
@@ -2445,7 +2631,7 @@ linkml:narrow_mappings a linkml:SlotDefinition ;
     linkml:slot_uri skos:narrowMatch .
 
 linkml:pattern a linkml:SlotDefinition ;
-    skos:definition "the string value of the slot must conform to this regular expression" ;
+    skos:definition "the string value of the slot must conform to this regular expression expressed in the string" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:pattern ;
     linkml:domain linkml:Definition ;
@@ -2478,6 +2664,19 @@ linkml:relational_logical_characteristic a linkml:SlotDefinition ;
     linkml:owner linkml:relational_logical_characteristic ;
     linkml:range linkml:boolean ;
     linkml:slot_uri linkml:relational_logical_characteristic .
+
+linkml:structured_pattern a linkml:SlotDefinition ;
+    skos:definition "the string value of the slot must conform to the regular expression in the pattern expression" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:structured_pattern ;
+    linkml:domain linkml:Definition ;
+    linkml:domain_of linkml:SlotExpression,
+        linkml:TypeExpression ;
+    linkml:inherited true ;
+    linkml:inlined true ;
+    linkml:owner linkml:structured_pattern ;
+    linkml:range linkml:PatternExpression ;
+    linkml:slot_uri linkml:structured_pattern .
 
 linkml:Example a linkml:ClassDefinition ;
     skos:definition "usage example and description" ;
@@ -2530,6 +2729,8 @@ linkml:local_names a linkml:SlotDefinition ;
 linkml:name a linkml:SlotDefinition ;
     OIO:inSubset linkml:owl ;
     rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element_name> ;
+    skos:altLabel "short name",
+        "unique name" ;
     skos:definition "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class." ;
     skos:exactMatch schema1:name ;
     skos:inScheme linkml:meta ;
@@ -2543,36 +2744,20 @@ linkml:name a linkml:SlotDefinition ;
     linkml:required true ;
     linkml:slot_uri rdfs:label .
 
-linkml:precedence a linkml:SlotDefinition ;
-    skos:definition "the relative order in which the element occurs" ;
+linkml:rank a linkml:SlotDefinition ;
+    skos:altLabel "display order",
+        "order",
+        "precedence" ;
+    skos:definition "the relative order in which the element occurs, lower values are given precedence" ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation sh1:order ;
-    linkml:definition_uri linkml:precedence ;
+    skos:note "the rank of an element does not affect the semantics" ;
+    linkml:definition_uri linkml:rank ;
     linkml:domain_of linkml:ClassRule,
         linkml:Element ;
     linkml:owner linkml:ClassRule ;
     linkml:range linkml:integer ;
     linkml:slot_uri sh1:order .
-
-linkml:Annotatable a linkml:ClassDefinition ;
-    skos:definition "mixin for classes that support annotations" ;
-    skos:inScheme linkml:annotations ;
-    linkml:class_uri linkml:Annotatable ;
-    linkml:definition_uri linkml:Annotatable ;
-    linkml:imported_from "linkml:annotations" ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:annotations .
-
-linkml:Extensible a linkml:ClassDefinition ;
-    skos:definition "mixin for classes that support extension" ;
-    skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extensible ;
-    linkml:definition_uri linkml:Extensible ;
-    linkml:imported_from "linkml:extensions" ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:extensions .
 
 linkml:Extension a linkml:ClassDefinition ;
     skos:definition "a tag/value pair used to add non-model information to an entry" ;
@@ -2585,6 +2770,16 @@ linkml:Extension a linkml:ClassDefinition ;
         linkml:extension_value,
         linkml:extensions .
 
+linkml:Annotatable a linkml:ClassDefinition ;
+    skos:definition "mixin for classes that support annotations" ;
+    skos:inScheme linkml:annotations ;
+    linkml:class_uri linkml:Annotatable ;
+    linkml:definition_uri linkml:Annotatable ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:annotations .
+
 linkml:Expression a linkml:ClassDefinition ;
     bibo:status linkml:testing ;
     skos:definition "general mixin for any class that can represent some form of expression" ;
@@ -2594,6 +2789,46 @@ linkml:Expression a linkml:ClassDefinition ;
     linkml:definition_uri linkml:Expression ;
     linkml:mixin true ;
     linkml:slot_usage [ ] .
+
+linkml:Extensible a linkml:ClassDefinition ;
+    skos:definition "mixin for classes that support extension" ;
+    skos:inScheme linkml:extensions ;
+    linkml:class_uri linkml:Extensible ;
+    linkml:definition_uri linkml:Extensible ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extensions .
+
+linkml:PatternExpression a linkml:ClassDefinition ;
+    skos:definition "a regular expression pattern used to evaluate conformance of a string" ;
+    skos:inScheme linkml:meta ;
+    linkml:class_uri linkml:PatternExpression ;
+    linkml:definition_uri linkml:PatternExpression ;
+    linkml:mixins linkml:Annotatable,
+        linkml:CommonMetadata,
+        linkml:Extensible ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:alt_descriptions,
+        linkml:annotations,
+        linkml:comments,
+        linkml:deprecated,
+        linkml:deprecated_element_has_exact_replacement,
+        linkml:deprecated_element_has_possible_replacement,
+        linkml:description,
+        linkml:examples,
+        linkml:extensions,
+        linkml:from_schema,
+        linkml:imported_from,
+        linkml:in_subset,
+        linkml:interpolated,
+        linkml:notes,
+        linkml:partial_match,
+        linkml:see_also,
+        linkml:source,
+        linkml:syntax,
+        linkml:title,
+        linkml:todos .
 
 linkml:mixins a linkml:SlotDefinition ;
     rdfs:seeAlso <https://en.wikipedia.org/wiki/Mixin> ;
@@ -2758,8 +2993,8 @@ linkml:ClassRule a linkml:ClassDefinition ;
         linkml:notes,
         linkml:open_world,
         linkml:postconditions,
-        linkml:precedence,
         linkml:preconditions,
+        linkml:rank,
         linkml:see_also,
         linkml:source,
         linkml:title,
@@ -2801,8 +3036,8 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
         linkml:narrow_mappings,
         linkml:notes,
         linkml:permissible_values,
-        linkml:precedence,
         linkml:pv_formula,
+        linkml:rank,
         linkml:related_mappings,
         linkml:see_also,
         linkml:source,
@@ -2810,6 +3045,7 @@ linkml:EnumDefinition a linkml:ClassDefinition ;
         linkml:todos .
 
 linkml:PermissibleValue a linkml:ClassDefinition ;
+    skos:altLabel "PV" ;
     skos:definition "a permissible value, accompanied by intended text and an optional mapping to a concept URI" ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:PermissibleValue ;
@@ -2839,6 +3075,18 @@ linkml:PermissibleValue a linkml:ClassDefinition ;
         linkml:text,
         linkml:title,
         linkml:todos .
+
+linkml:types a linkml:SlotDefinition ;
+    skos:definition "data types used in the model" ;
+    skos:inScheme linkml:meta ;
+    linkml:definition_uri linkml:types ;
+    linkml:domain linkml:SchemaDefinition ;
+    linkml:domain_of linkml:SchemaDefinition ;
+    linkml:inlined true ;
+    linkml:multivalued true ;
+    linkml:owner linkml:SchemaDefinition ;
+    linkml:range linkml:TypeDefinition ;
+    linkml:slot_uri linkml:types .
 
 linkml:comments a linkml:SlotDefinition ;
     OIO:inSubset linkml:owl ;
@@ -2928,6 +3176,7 @@ linkml:see_also a linkml:SlotDefinition ;
 
 linkml:title a linkml:SlotDefinition ;
     OIO:inSubset linkml:owl ;
+    skos:altLabel "long name" ;
     skos:definition "the official title of the element" ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation dcterms:title ;
@@ -2938,19 +3187,8 @@ linkml:title a linkml:SlotDefinition ;
     linkml:range linkml:string ;
     linkml:slot_uri dcterms:title .
 
-linkml:types a linkml:SlotDefinition ;
-    skos:definition "data types used in the model" ;
-    skos:inScheme linkml:meta ;
-    linkml:definition_uri linkml:types ;
-    linkml:domain linkml:SchemaDefinition ;
-    linkml:domain_of linkml:SchemaDefinition ;
-    linkml:inlined true ;
-    linkml:multivalued true ;
-    linkml:owner linkml:SchemaDefinition ;
-    linkml:range linkml:TypeDefinition ;
-    linkml:slot_uri linkml:types .
-
 linkml:alt_descriptions a linkml:SlotDefinition ;
+    skos:altLabel "alternate definitions" ;
     skos:inScheme linkml:meta ;
     linkml:definition_uri linkml:alt_descriptions ;
     linkml:domain linkml:Element ;
@@ -2996,6 +3234,8 @@ linkml:imported_from a linkml:SlotDefinition ;
     linkml:slot_uri linkml:imported_from .
 
 linkml:source a linkml:SlotDefinition ;
+    skos:altLabel "derived from",
+        "origin" ;
     skos:closeMatch schema1:isBasedOn,
         prov:wasDerivedFrom ;
     skos:definition "A related resource from which the element is derived." ;
@@ -3022,6 +3262,7 @@ linkml:todos a linkml:SlotDefinition ;
 
 linkml:description a linkml:SlotDefinition ;
     OIO:inSubset linkml:owl ;
+    skos:altLabel "definition" ;
     skos:definition "a description of the element's purpose and use" ;
     skos:inScheme linkml:meta ;
     skos:mappingRelation skos:definition ;
@@ -3032,6 +3273,22 @@ linkml:description a linkml:SlotDefinition ;
     linkml:owner linkml:description ;
     linkml:range linkml:string ;
     linkml:slot_uri skos:definition .
+
+linkml:mappings a linkml:SlotDefinition ;
+    skos:altLabel "alternate identifiers",
+        "alternate ids",
+        "identifiers",
+        "xrefs" ;
+    skos:definition "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective." ;
+    skos:inScheme linkml:mappings ;
+    skos:mappingRelation skos:mappingRelation ;
+    linkml:definition_uri linkml:mappings ;
+    linkml:domain_of linkml:Element ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:multivalued true ;
+    linkml:owner linkml:Element ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri skos:mappingRelation .
 
 linkml:annotations a linkml:SlotDefinition ;
     skos:definition "a collection of tag/text tuples with the semantics of OWL Annotation" ;
@@ -3048,18 +3305,6 @@ linkml:annotations a linkml:SlotDefinition ;
     linkml:range linkml:Annotation ;
     linkml:slot_uri linkml:annotations .
 
-linkml:mappings a linkml:SlotDefinition ;
-    skos:definition "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective." ;
-    skos:inScheme linkml:mappings ;
-    skos:mappingRelation skos:mappingRelation ;
-    linkml:definition_uri linkml:mappings ;
-    linkml:domain_of linkml:Element ;
-    linkml:imported_from "linkml:mappings" ;
-    linkml:multivalued true ;
-    linkml:owner linkml:Element ;
-    linkml:range linkml:uriorcurie ;
-    linkml:slot_uri skos:mappingRelation .
-
 linkml:uriorcurie a linkml:TypeDefinition ;
     skos:definition "a URI or a CURIE" ;
     skos:inScheme linkml:types ;
@@ -3068,6 +3313,20 @@ linkml:uriorcurie a linkml:TypeDefinition ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
     linkml:uri xsd:anyURI .
+
+linkml:ClassExpression a linkml:ClassDefinition ;
+    bibo:status linkml:testing ;
+    skos:definition "A boolean expression that can be used to dynamically determine membership of a class" ;
+    skos:inScheme linkml:meta ;
+    linkml:class_uri linkml:ClassExpression ;
+    linkml:definition_uri linkml:ClassExpression ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:class_expression_all_of,
+        linkml:class_expression_any_of,
+        linkml:class_expression_exactly_one_of,
+        linkml:class_expression_none_of,
+        linkml:slot_conditions .
 
 linkml:CommonMetadata a linkml:ClassDefinition ;
     skos:definition "Generic metadata shared across definitions" ;
@@ -3092,20 +3351,6 @@ linkml:CommonMetadata a linkml:ClassDefinition ;
         linkml:title,
         linkml:todos .
 
-linkml:ClassExpression a linkml:ClassDefinition ;
-    bibo:status linkml:testing ;
-    skos:definition "A boolean expression that can be used to dynamically determine membership of a class" ;
-    skos:inScheme linkml:meta ;
-    linkml:class_uri linkml:ClassExpression ;
-    linkml:definition_uri linkml:ClassExpression ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:class_expression_all_of,
-        linkml:class_expression_any_of,
-        linkml:class_expression_exactly_one_of,
-        linkml:class_expression_none_of,
-        linkml:slot_conditions .
-
 linkml:TypeExpression a linkml:ClassDefinition ;
     skos:inScheme linkml:meta ;
     linkml:class_uri linkml:TypeExpression ;
@@ -3119,6 +3364,7 @@ linkml:TypeExpression a linkml:ClassDefinition ;
         linkml:maximum_value,
         linkml:minimum_value,
         linkml:pattern,
+        linkml:structured_pattern,
         linkml:type_expression_all_of,
         linkml:type_expression_any_of,
         linkml:type_expression_exactly_one_of,
@@ -3137,15 +3383,6 @@ linkml:extensions a linkml:SlotDefinition ;
     linkml:owner linkml:Extensible ;
     linkml:range linkml:Extension ;
     linkml:slot_uri linkml:extensions .
-
-linkml:boolean a linkml:TypeDefinition ;
-    skos:definition "A binary (true or false) value" ;
-    skos:inScheme linkml:types ;
-    linkml:base "Bool" ;
-    linkml:definition_uri linkml:Boolean ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "bool" ;
-    linkml:uri xsd:boolean .
 
 linkml:TypeDefinition a linkml:ClassDefinition ;
     skos:definition "A data type definition." ;
@@ -3186,11 +3423,12 @@ linkml:TypeDefinition a linkml:ClassDefinition ;
         linkml:narrow_mappings,
         linkml:notes,
         linkml:pattern,
-        linkml:precedence,
+        linkml:rank,
         linkml:related_mappings,
         linkml:repr,
         linkml:see_also,
         linkml:source,
+        linkml:structured_pattern,
         linkml:title,
         linkml:todos,
         linkml:type_expression_all_of,
@@ -3199,6 +3437,15 @@ linkml:TypeDefinition a linkml:ClassDefinition ;
         linkml:type_expression_none_of,
         linkml:type_uri,
         linkml:typeof .
+
+linkml:boolean a linkml:TypeDefinition ;
+    skos:definition "A binary (true or false) value" ;
+    skos:inScheme linkml:types ;
+    linkml:base "Bool" ;
+    linkml:definition_uri linkml:Boolean ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "bool" ;
+    linkml:uri xsd:boolean .
 
 linkml:PathExpression a linkml:ClassDefinition ;
     bibo:status linkml:testing ;
@@ -3279,7 +3526,7 @@ linkml:Definition a linkml:ClassDefinition ;
         linkml:name,
         linkml:narrow_mappings,
         linkml:notes,
-        linkml:precedence,
+        linkml:rank,
         linkml:related_mappings,
         linkml:see_also,
         linkml:source,
@@ -3324,7 +3571,8 @@ linkml:SlotExpression a linkml:ClassDefinition ;
         linkml:slot_expression_all_of,
         linkml:slot_expression_any_of,
         linkml:slot_expression_exactly_one_of,
-        linkml:slot_expression_none_of .
+        linkml:slot_expression_none_of,
+        linkml:structured_pattern .
 
 linkml:Element a linkml:ClassDefinition ;
     rdfs:seeAlso <https://en.wikipedia.org/wiki/Data_element> ;
@@ -3361,7 +3609,7 @@ linkml:Element a linkml:ClassDefinition ;
         linkml:name,
         linkml:narrow_mappings,
         linkml:notes,
-        linkml:precedence,
+        linkml:rank,
         linkml:related_mappings,
         linkml:see_also,
         linkml:source,
@@ -3411,11 +3659,12 @@ linkml:SchemaDefinition a linkml:ClassDefinition ;
         linkml:metamodel_version,
         linkml:narrow_mappings,
         linkml:notes,
-        linkml:precedence,
         linkml:prefixes,
+        linkml:rank,
         linkml:related_mappings,
         linkml:schema_definition_name,
         linkml:see_also,
+        linkml:settings,
         linkml:slot_definitions,
         linkml:slot_names_unique,
         linkml:source,
@@ -3449,7 +3698,9 @@ linkml:ClassDefinition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:attributes,
         linkml:broad_mappings,
+        linkml:children_are_mutually_disjoint,
         linkml:class_definition_apply_to,
+        linkml:class_definition_disjoint_with,
         linkml:class_definition_is_a,
         linkml:class_definition_mixins,
         linkml:class_definition_rules,
@@ -3485,7 +3736,7 @@ linkml:ClassDefinition a linkml:ClassDefinition ;
         linkml:name,
         linkml:narrow_mappings,
         linkml:notes,
-        linkml:precedence,
+        linkml:rank,
         linkml:related_mappings,
         linkml:represents_relationship,
         linkml:see_also,
@@ -3530,9 +3781,11 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:Extension,
         linkml:LocalName,
         linkml:PathExpression,
+        linkml:PatternExpression,
         linkml:PermissibleValue,
         linkml:Prefix,
         linkml:SchemaDefinition,
+        linkml:Setting,
         linkml:SlotDefinition,
         linkml:SlotExpression,
         linkml:SubsetDefinition,
@@ -3555,35 +3808,35 @@ linkml:meta a linkml:SchemaDefinition ;
     linkml:enums linkml:presence_enum,
         linkml:pv_formula_options,
         linkml:relational_role_enum ;
-    linkml:generation_date "2021-12-28T23:39:35"^^xsd:dateTime ;
+    linkml:generation_date "2022-02-12T01:51:58"^^xsd:dateTime ;
     linkml:id linkml:meta ;
     linkml:imports linkml:annotations,
         linkml:extensions,
         linkml:mappings,
         linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "bibo" ;
-            linkml:prefix_reference bibo: ],
-        [ linkml:prefix_prefix "qb" ;
-            linkml:prefix_reference qb: ],
+    linkml:prefixes [ linkml:prefix_prefix "schema" ;
+            linkml:prefix_reference schema1: ],
         [ linkml:prefix_prefix "oslc" ;
             linkml:prefix_reference oslc: ],
-        [ linkml:prefix_prefix "prov" ;
-            linkml:prefix_reference prov: ],
-        [ linkml:prefix_prefix "swrl" ;
-            linkml:prefix_reference swrl: ],
+        [ linkml:prefix_prefix "bibo" ;
+            linkml:prefix_reference bibo: ],
         [ linkml:prefix_prefix "skos" ;
             linkml:prefix_reference skos: ],
-        [ linkml:prefix_prefix "schema" ;
-            linkml:prefix_reference schema1: ],
-        [ linkml:prefix_prefix "pav" ;
-            linkml:prefix_reference pav: ],
+        [ linkml:prefix_prefix "OIO" ;
+            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "swrl" ;
+            linkml:prefix_reference swrl: ],
         [ linkml:prefix_prefix "sh" ;
             linkml:prefix_reference sh1: ],
         [ linkml:prefix_prefix "linkml" ;
             linkml:prefix_reference linkml: ],
-        [ linkml:prefix_prefix "OIO" ;
-            linkml:prefix_reference OIO: ],
+        [ linkml:prefix_prefix "pav" ;
+            linkml:prefix_reference pav: ],
+        [ linkml:prefix_prefix "prov" ;
+            linkml:prefix_reference prov: ],
+        [ linkml:prefix_prefix "qb" ;
+            linkml:prefix_reference qb: ],
         [ linkml:prefix_prefix "owl" ;
             linkml:prefix_reference owl: ] ;
     linkml:slots linkml:abstract,
@@ -3603,7 +3856,9 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:bidirectional,
         linkml:boolean_slot,
         linkml:broad_mappings,
+        linkml:children_are_mutually_disjoint,
         linkml:class_definition_apply_to,
+        linkml:class_definition_disjoint_with,
         linkml:class_definition_is_a,
         linkml:class_definition_mixins,
         linkml:class_definition_rules,
@@ -3633,6 +3888,7 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:deprecated_element_has_possible_replacement,
         linkml:description,
         linkml:designates_type,
+        linkml:disjoint_with,
         linkml:domain,
         linkml:domain_of,
         linkml:elseconditions,
@@ -3660,9 +3916,11 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:imported_from,
         linkml:imports,
         linkml:in_subset,
+        linkml:inapplicable,
         linkml:inherited,
         linkml:inlined,
         linkml:inlined_as_list,
+        linkml:interpolated,
         linkml:inverse,
         linkml:irreflexive,
         linkml:is_a,
@@ -3693,7 +3951,9 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:none_of,
         linkml:notes,
         linkml:open_world,
+        linkml:owned_by,
         linkml:owner,
+        linkml:partial_match,
         linkml:path_expression_all_of,
         linkml:path_expression_any_of,
         linkml:path_expression_exactly_one_of,
@@ -3705,7 +3965,6 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:permissible_value_mixins,
         linkml:permissible_values,
         linkml:postconditions,
-        linkml:precedence,
         linkml:preconditions,
         linkml:prefix_prefix,
         linkml:prefix_reference,
@@ -3713,6 +3972,7 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:pv_formula,
         linkml:range,
         linkml:range_expression,
+        linkml:rank,
         linkml:readonly,
         linkml:recommended,
         linkml:reflexive,
@@ -3728,9 +3988,13 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:rules,
         linkml:schema_definition_name,
         linkml:see_also,
+        linkml:setting_key,
+        linkml:setting_value,
+        linkml:settings,
         linkml:singular_name,
         linkml:slot_conditions,
         linkml:slot_definition_apply_to,
+        linkml:slot_definition_disjoint_with,
         linkml:slot_definition_is_a,
         linkml:slot_definition_mixins,
         linkml:slot_definitions,
@@ -3749,10 +4013,12 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:source_file_size,
         linkml:status,
         linkml:string_serialization,
+        linkml:structured_pattern,
         linkml:subclass_of,
         linkml:subproperty_of,
         linkml:subsets,
         linkml:symmetric,
+        linkml:syntax,
         linkml:text,
         linkml:title,
         linkml:todos,
@@ -3768,6 +4034,7 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:typeof,
         linkml:types,
         linkml:union_of,
+        linkml:unique_key_name,
         linkml:unique_key_slots,
         linkml:unique_keys,
         linkml:usage_slot_name,
@@ -3778,8 +4045,8 @@ linkml:meta a linkml:SchemaDefinition ;
         linkml:values_from,
         linkml:version ;
     linkml:source_file "meta.yaml" ;
-    linkml:source_file_date "2021-12-28T23:36:45"^^xsd:dateTime ;
-    linkml:source_file_size 51901 ;
+    linkml:source_file_date "2022-02-12T01:49:22"^^xsd:dateTime ;
+    linkml:source_file_size 55929 ;
     linkml:subsets linkml:owl ;
     linkml:types linkml:boolean,
         linkml:date,
@@ -3819,6 +4086,7 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:annotations,
         linkml:asymmetric,
         linkml:broad_mappings,
+        linkml:children_are_mutually_disjoint,
         linkml:close_mappings,
         linkml:comments,
         linkml:conforms_to,
@@ -3872,9 +4140,9 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:owner,
         linkml:path_rule,
         linkml:pattern,
-        linkml:precedence,
         linkml:range,
         linkml:range_expression,
+        linkml:rank,
         linkml:readonly,
         linkml:recommended,
         linkml:reflexive,
@@ -3886,6 +4154,7 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:see_also,
         linkml:singular_name,
         linkml:slot_definition_apply_to,
+        linkml:slot_definition_disjoint_with,
         linkml:slot_definition_is_a,
         linkml:slot_definition_mixins,
         linkml:slot_expression_all_of,
@@ -3897,6 +4166,7 @@ linkml:SlotDefinition a linkml:ClassDefinition ;
         linkml:source,
         linkml:status,
         linkml:string_serialization,
+        linkml:structured_pattern,
         linkml:subproperty_of,
         linkml:symmetric,
         linkml:title,

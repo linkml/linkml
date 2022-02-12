@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-12-28T23:39:06\n    Schema: meta\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-02-12T01:51:31\n    Schema: meta\n    metamodel version: 1.7.0\n    model version: 2.0.0\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "IAO": {
          "@id": "http://purl.obolibrary.org/obo/IAO_",
@@ -65,6 +65,9 @@
          "@type": "@id",
          "@id": "skos:broadMatch"
       },
+      "children_are_mutually_disjoint": {
+         "@type": "xsd:boolean"
+      },
       "class_uri": {
          "@type": "@id"
       },
@@ -119,6 +122,9 @@
       },
       "designates_type": {
          "@type": "xsd:boolean"
+      },
+      "disjoint_with": {
+         "@type": "@id"
       },
       "domain": {
          "@type": "@id"
@@ -180,6 +186,9 @@
          "@type": "@id",
          "@id": "OIO:inSubset"
       },
+      "inapplicable": {
+         "@type": "xsd:boolean"
+      },
       "inherited": {
          "@type": "xsd:boolean"
       },
@@ -187,6 +196,9 @@
          "@type": "xsd:boolean"
       },
       "inlined_as_list": {
+         "@type": "xsd:boolean"
+      },
+      "interpolated": {
          "@type": "xsd:boolean"
       },
       "inverse": {
@@ -273,8 +285,14 @@
       "open_world": {
          "@type": "xsd:boolean"
       },
+      "owned_by": {
+         "@type": "@id"
+      },
       "owner": {
          "@type": "@id"
+      },
+      "partial_match": {
+         "@type": "xsd:boolean"
       },
       "path_rule": {
          "@type": "@id"
@@ -284,10 +302,6 @@
       },
       "postconditions": {
          "@type": "@id"
-      },
-      "precedence": {
-         "@type": "xsd:integer",
-         "@id": "sh:order"
       },
       "preconditions": {
          "@type": "@id",
@@ -312,6 +326,10 @@
       },
       "range_expression": {
          "@type": "@id"
+      },
+      "rank": {
+         "@type": "xsd:integer",
+         "@id": "sh:order"
       },
       "recommended": {
          "@type": "xsd:boolean"
@@ -354,6 +372,9 @@
          "@type": "@id",
          "@id": "rdfs:seeAlso"
       },
+      "settings": {
+         "@type": "@id"
+      },
       "singular_name": {
          "@id": "skos:altLabel"
       },
@@ -389,6 +410,9 @@
       "status": {
          "@type": "@id",
          "@id": "bibo:status"
+      },
+      "structured_pattern": {
+         "@type": "@id"
       },
       "subclass_of": {
          "@type": "@id",

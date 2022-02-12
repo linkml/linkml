@@ -46,7 +46,6 @@ subsets:
   owl:
     description: Set of slots that appear in the OWL representation of a model
 
-
 #==================================
 # Slots                           #
 #==================================
@@ -56,6 +55,9 @@ slots:
   # Common metadata shared by all elements
   # -----------------------------------
   name:
+    aliases:
+      - short name
+      - unique name
     domain: element
     identifier: true
     description: >-
@@ -70,6 +72,8 @@ slots:
       - https://en.wikipedia.org/wiki/Data_element_name
 
   title:
+    aliases:
+      - long name
     domain: element
     description: the official title of the element
     slot_uri: dcterms:title
@@ -104,6 +108,8 @@ slots:
       - https://github.com/linkml/linkml-model/issues/28
 
   description:
+    aliases:
+      - definition
     domain: element
     description: a description of the element's purpose and use
     slot_uri: skos:definition
@@ -111,6 +117,11 @@ slots:
       - owl
 
   aliases:
+    aliases:
+      - synonyms
+      - alternate names
+      - alternative labels
+      - designations
     domain: element
     range: string
     multivalued: true
@@ -177,6 +188,16 @@ slots:
     in_subset:
       - owl
 
+  owned_by:
+    aliases:
+      - steward
+      - owner
+    domain: element
+    range: uriorcurie
+    description: agent that owns or is the steward of the element
+    close_mappings:
+      - rdfs:isDefinedBy
+
   created_by:
     domain: element
     range: uriorcurie
@@ -202,6 +223,8 @@ slots:
     slot_uri: oslc:modifiedBy
 
   status:
+    aliases:
+      - workflow status
     domain: element
     range: uriorcurie
     description: status of the element
@@ -210,6 +233,9 @@ slots:
       - value: "bibo:draft"
       
   source:
+    aliases:
+      - origin
+      - derived from
     domain: element
     range: uriorcurie
     description: A related resource from which the element is derived.
@@ -328,11 +354,15 @@ slots:
   # Slots for permissible_value
   # -----------------------------------
   text:
+    aliases:
+      - value
     domain: permissible_value
     range: string
     identifier: true
 
   meaning:
+    aliases:
+      - PV meaning
     domain: permissible_value
     range: uriorcurie
     description: >-
@@ -583,8 +613,14 @@ slots:
   open_world:
     description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
     range: boolean
-  precedence:
-    description: the relative order in which the element occurs
+  rank:
+    aliases:
+      - order
+      - precedence
+      - display order
+    description: the relative order in which the element occurs, lower values are given precedence
+    comments:
+      - the rank of an element does not affect the semantics
     slot_uri: sh:order
     range: integer
   deactivated:
@@ -628,6 +664,8 @@ slots:
         form <class_name>__<slot_name> (lower case, double underscores).  Attributes can be specialized via slot_usage.
 
   class_uri:
+    aliases:
+      - public ID
     domain: class_definition
     range: uriorcurie
     description: URI of the class in an RDF environment
@@ -710,6 +748,8 @@ slots:
       implicitly asserts that X is an instance of C1
 
   range:
+    aliases:
+      - value domain
     domain: slot_definition
     range: element
     ifabsent: default_range
@@ -728,6 +768,8 @@ slots:
       implicitly asserts Y is an instance of C2
 
   slot_uri:
+    aliases:
+      - public ID
     domain: slot_definition
     range: uriorcurie
     ifabsent: slot_curie
@@ -760,7 +802,7 @@ slots:
     inherited: true
     description:  |-
       function that provides a default value for the slot.  Possible values for this slot are defined in
-      biolink.utils.ifabsent_functions.default_library:
+      linkml.utils.ifabsent_functions.default_library:
         * [Tt]rue -- boolean True
         * [Ff]alse -- boolean False
         * int(value) -- integer value
@@ -901,6 +943,14 @@ slots:
     see_also:
       - https://github.com/linkml/linkml/issues/177
 
+  inapplicable:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that the slot must not be present
+    comments:
+      - By default all slots are applicable. The main use case for this slot is as an override in a subclass
+
   inlined:
     domain: slot_definition
     range: boolean
@@ -1012,6 +1062,17 @@ slots:
     description: Ontology property which this slot is a subproperty of
     slot_uri: rdfs:subPropertyOf
 
+  disjoint_with:
+    domain: definition
+    range: definition
+    multivalued: true
+    description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
+
+  children_are_mutually_disjoint:
+    domain: definition
+    range: boolean
+    description: If true then all direct is_a children are mutually disjoint and share no instances in common
+
   relational_logical_characteristic:
     abstract: true
     domain: slot_definition
@@ -1021,22 +1082,30 @@ slots:
   symmetric:
     is_a: relational_logical_characteristic
     description: If s is symmetric, and i.s=v, then v.s=i
+    close_mappings:
+      - owl:SymmetricProperty
     
   asymmetric:
     is_a: relational_logical_characteristic
     description: If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i
     comments:
       - asymmetry is the combination of antisymmetry and irreflexivity
+    close_mappings:
+      - owl:AsymmetricProperty
 
   reflexive:
     is_a: relational_logical_characteristic
     description: If s is reflexive, then i.s=i for all instances i
     comments:
       - it is rare for a property to be reflexive, this characteristic is added for completeness, consider instead locally_reflexive
+    close_mappings:
+      - owl:ReflexiveProperty
 
   irreflexive:
     is_a: relational_logical_characteristic
     description: If s is irreflexive, then there exists no i such i.s=i
+    close_mappings:
+      - owl:IrreflexiveProperty
 
   locally_reflexive:
     is_a: relational_logical_characteristic
@@ -1045,6 +1114,8 @@ slots:
   transitive:
     is_a: relational_logical_characteristic
     description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
+    close_mappings:
+      - owl:TransitiveProperty
 
   transitive_form_of:
     range: slot_definition
@@ -1074,21 +1145,47 @@ slots:
     inherited: true
 
   minimum_value:
+    aliases:
+      - low value
     domain: slot_definition
     range: integer
     description: for slots with ranges of type number, the value must be equal to or higher than this
     inherited: true
 
   maximum_value:
+    aliases:
+      - high value
     domain: slot_definition
     range: integer
     description: for slots with ranges of type number, the value must be equal to or lowe than this
     inherited: true
 
+  interpolated:
+    domain: pattern_expression
+    range: boolean
+    description: if true then the pattern is first string interpolated
+
+  partial_match:
+    domain: pattern_expression
+    range: boolean
+    description: if true then the pattern must match the whole string, as if enclosed in ^...$
+
   pattern:
     domain: definition
     range: string
-    description: the string value of the slot must conform to this regular expression
+    description: the string value of the slot must conform to this regular expression expressed in the string
+    inherited: true
+
+  syntax:
+    domain: pattern_expression
+    range: string
+    description: the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.
+    inherited: true
+
+  structured_pattern:
+    domain: definition
+    range: pattern_expression
+    description: the string value of the slot must conform to the regular expression in the pattern expression
     inherited: true
 
   string_serialization:
@@ -1155,24 +1252,26 @@ slots:
   # Slots for alt descripion
   # -----------------------------------
   alt_description_text:
-      domain: alt_description
-      range: string
-      required: true
-      description: text of an attributed description
-      alias: description
+    domain: alt_description
+    range: string
+    required: true
+    description: text of an attributed description
+    alias: description
 
   alt_description_source:
-      domain: alt_description
-      range: string
-      key: true
-      alias: source
-      description: the source of an attributed description
+    domain: alt_description
+    range: string
+    key: true
+    alias: source
+    description: the source of an attributed description
 
   alt_descriptions:
-      domain: element
-      range: alt_description
-      multivalued: true
-      inlined: true
+    aliases:
+      - alternate definitions
+    domain: element
+    range: alt_description
+    multivalued: true
+    inlined: true
 
   # -----------------------------------
   # Slots for example
@@ -1218,6 +1317,30 @@ slots:
     inlined: true
     description: prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes
 
+  # -----------------------------------
+  # Slots for settings
+  # -----------------------------------
+  setting_key:
+    domain: setting
+    range: ncname
+    key: true
+    description: the variable name for a setting
+
+  setting_value:
+    domain: setting
+    range: string
+    required: true
+    description: The value assigned for a setting
+
+  settings:
+    domain: schema_definition
+    range: setting
+    multivalued: true
+    inlined: true
+    description: A collection of global variable settings
+    comments:
+      - global variables are used in string interpolation
+    
 
   # -----------------------------------
   # Slots for local_name
@@ -1249,7 +1372,7 @@ slots:
     range_expression:
       slot_conditions:
         - is_grouping_slot:
-            equals_expression: true
+            equals_expression: True
 
   is_grouping_slot:
     domain: slot_definition
@@ -1310,6 +1433,7 @@ slots:
 # Classes                         #
 #==================================
 classes:
+
   common_metadata:
     description: Generic metadata shared across definitions
     mixin: true
@@ -1350,7 +1474,7 @@ classes:
       - related mappings
       - narrow mappings
       - broad mappings
-      - precedence
+      - rank
     see_also:
       - https://en.wikipedia.org/wiki/Data_element
 
@@ -1381,6 +1505,7 @@ classes:
       - source_file_size
       - generation_date
       - slot_names_unique
+      - settings
     see_also:
       - https://en.wikipedia.org/wiki/Data_dictionary
     slot_usage:
@@ -1395,6 +1520,7 @@ classes:
     mixin: true
     slots:
       - pattern
+      - structured_pattern      
       - equals_string
       - equals_string_in
       - equals_number
@@ -1523,6 +1649,7 @@ classes:
       - minimum_value
       - maximum_value
       - pattern
+      - structured_pattern      
       - equals_string
       - equals_string_in
       - equals_number
@@ -1600,13 +1727,16 @@ classes:
       - slot_group
       - is_grouping_slot
       - path_rule
-
+      - disjoint_with
+      - children_are_mutually_disjoint
     slot_usage:
       is_a:
         range: slot_definition
       mixins:
         range: slot_definition
       apply_to:
+        range: slot_definition
+      disjoint_with:
         range: slot_definition
 
   class_expression:
@@ -1662,6 +1792,8 @@ classes:
       - classification_rules
       - slot_names_unique
       - represents_relationship
+      - disjoint_with
+      - children_are_mutually_disjoint
     slot_usage:
       is_a:
         range: class_definition
@@ -1671,6 +1803,8 @@ classes:
         range: class_definition
       rules:
         range: class_rule
+      disjoint_with:
+        range: class_definition
     close_mappings:
       - owl:Class
 
@@ -1694,12 +1828,29 @@ classes:
       - elseconditions
       - bidirectional
       - open_world
-      - precedence
+      - rank
       - deactivated
     close_mappings:
       - sh:TripleRule
       - swrl:Imp
     status: testing
+
+  pattern_expression:
+    description: a regular expression pattern used to evaluate conformance of a string
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - syntax
+      - interpolated
+      - partial_match
+      
+  setting:
+    description: assignment of a key to a value
+    slots:
+      - setting_key
+      - setting_value
 
   prefix:
     description: prefix URI tuple
@@ -1726,6 +1877,8 @@ classes:
       - alt_description_text
 
   permissible_value:
+    aliases:
+      - PV
     description: a permissible value, accompanied by intended text and an optional mapping to a concept URI
     mixins:
       - extensible
@@ -1750,8 +1903,6 @@ classes:
     slots:
       - unique_key_name
       - unique_key_slots
-
-
 
 #==================================
 # Enumerations                    #

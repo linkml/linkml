@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -127,6 +129,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -148,6 +151,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     (  $<AnonymousTypeExpression_tes> (  &<TypeExpression_tes> ;
           rdf:type [ <TypeExpression> ] ? ;
           <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -180,6 +184,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <classification_rules> @<AnonymousClassExpression> * ;
           <slot_names_unique> @<Boolean> ? ;
           <represents_relationship> @<Boolean> ? ;
+          <disjoint_with> @<ClassDefinition> * ;
+          <children_are_mutually_disjoint> @<Boolean> ? ;
           <mixins> @<ClassDefinition> * ;
           <apply_to> @<ClassDefinition> * ;
           <any_of> @<AnonymousClassExpression> * ;
@@ -433,6 +439,38 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     )
 }
 
+<PatternExpression> CLOSED {
+    (  $<PatternExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <syntax> @<String> ? ;
+          <interpolated> @<Boolean> ? ;
+          <partial_match> @<Boolean> ? ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <PatternExpression> ] ?
+    )
+}
+
 <PermissibleValue> CLOSED {
     (  $<PermissibleValue_tes> (  &<Extensible_tes> ;
           rdf:type [ <Extensible> ] ? ;
@@ -494,9 +532,18 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <source_file_date> @<Datetime> ? ;
           <source_file_size> @<Integer> ? ;
           <generation_date> @<Datetime> ? ;
-          <slot_names_unique> @<Boolean> ?
+          <slot_names_unique> @<Boolean> ? ;
+          <settings> @<Setting> *
        ) ;
        rdf:type [ <SchemaDefinition> ]
+    )
+}
+
+<Setting> CLOSED {
+    (  $<Setting_tes> (  <setting_key> @<Ncname> ;
+          <setting_value> @<String>
+       ) ;
+       rdf:type [ <Setting> ]
     )
 }
 
@@ -538,6 +585,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           sh1:group @<SlotDefinition> ? ;
           <is_grouping_slot> @<Boolean> ? ;
           <path_rule> @<PathExpression> ? ;
+          <disjoint_with> @<SlotDefinition> * ;
+          <children_are_mutually_disjoint> @<Boolean> ? ;
           <mixins> @<SlotDefinition> * ;
           <apply_to> @<SlotDefinition> * ;
           <range> @<Element> ? ;
@@ -547,6 +596,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -574,6 +624,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -609,6 +660,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <uri> @<Uriorcurie> ? ;
           <repr> @<String> ? ;
           <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -627,6 +679,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     (  $<TypeExpression_tes> (  &<Expression_tes> ;
           rdf:type [ <Expression> ] ? ;
           <pattern> @<String> ? ;
+          <structured_pattern> @<PatternExpression> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -648,6 +701,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Annotatable> ] ? ;
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
+          <unique_key_name> @<String> ;
           <unique_key_slots> @<SlotDefinition> + ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
@@ -667,7 +721,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
        ) ;
-       rdf:type [ <UniqueKey> ] ?
+       rdf:type [ <UniqueKey> ]
     )
 }
 
