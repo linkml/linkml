@@ -177,7 +177,7 @@ class SSSOMGenerator(Generator):
             k: v.prefix_reference for k, v in schema.prefixes.items()
         }
 
-        with open(self.output_file, "w") as sssom_tsv:
+        with open(self.output_file, "w", encoding='UTF-8') as sssom_tsv:
             for k, v in metadata.items():
                 if k != "curie_map":
                     sssom_tsv.write("#" + k + ": " + v + "\n")

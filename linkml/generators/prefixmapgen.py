@@ -75,12 +75,12 @@ class PrefixGenerator(Generator):
                 for prefix in sorted(self.emit_prefixes):
                     mapping[prefix] = self.namespaces[prefix]
 
-                with open(output, 'w') as outf:
+                with open(output, 'w', encoding='UTF-8') as outf:
                     writer = csv.writer(outf, delimiter='\t')
                     for key, value in mapping.items():
                         writer.writerow([key, value])
             else:
-                with open(output, 'w') as outf:
+                with open(output, 'w', encoding='UTF-8') as outf:
                     outf.write(as_json(context))
         else:
             if self.format == "tsv":

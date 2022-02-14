@@ -78,7 +78,7 @@ class GolrSchemaGenerator(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         fn = os.path.join(self.dirname, underscore(cls.name + '-config.yaml'))
         if len(self.class_obj.fields) > 1:
-            with open(fn, 'w') as f:
+            with open(fn, 'w', encoding='UTF-8') as f:
                 f.write(''.join(self.generate_header()))
                 f.write(as_yaml(self.class_obj))
 

@@ -165,7 +165,7 @@ class SparqlGenerator(Generator):
             Path(directory).mkdir(parents=True, exist_ok=True)
             for qn, q in self.queries.items():
                 qpath = os.path.join(directory, f'{qn}.rq')
-                with open(qpath, 'w') as stream:
+                with open(qpath, 'w', encoding='UTF-8') as stream:
                     stream.write(q)
         return self.sparql
 

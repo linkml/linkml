@@ -131,7 +131,7 @@ class ShExGenerator(Generator):
             self.namespaces.load_graph(g)
             shex = str(ShExC(self.shex, base=sfx(self.namespaces._base), namespaces=g))
         if output:
-            with open(output, 'w') as outf:
+            with open(output, 'w', encoding='UTF-8') as outf:
                 outf.write(shex)
         else:
             print(shex)

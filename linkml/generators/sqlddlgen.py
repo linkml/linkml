@@ -473,7 +473,7 @@ def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
     if sqla_file is not None:
         if python_import is None:
             python_import = gen.schema.name
-        with open(sqla_file, "w") as stream:
+        with open(sqla_file, "w", encoding='UTF-8') as stream:
             with redirect_stdout(stream):
                 gen.write_sqla_python_imperative(python_import)
 

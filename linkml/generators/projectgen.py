@@ -115,7 +115,7 @@ class ProjectGenerator:
                 if parts[-1] != '':
                     # markdowngen does not write to a file
                     logging.info(f'  WRITING TO: {gen_path_full}')
-                    with open(gen_path_full, 'w') as stream:
+                    with open(gen_path_full, 'w', encoding='UTF-8') as stream:
                         stream.write(gen_dump)
 
 @click.command()

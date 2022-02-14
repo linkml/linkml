@@ -114,7 +114,7 @@ class ContextGenerator(Generator):
                 context_content[k] = v
         context['@context'] = context_content
         if output:
-            with open(output, 'w') as outf:
+            with open(output, 'w', encoding='UTF-8') as outf:
                 outf.write(as_json(context))
         else:
             print(as_json(context))

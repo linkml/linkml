@@ -55,7 +55,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
         logging.info(f'# Block: {block.category} {block.title}')
         if block.is_file_block():
             path = PurePath(directory, block.title)
-            with open(path, 'w') as stream:
+            with open(path, 'w', encoding='UTF-8') as stream:
                 stream.write(block.content)
         elif block.is_bash():
             if 'no_execute' in block.annotations:
@@ -76,7 +76,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
             r = subprocess.run(cmd, cwd=directory, capture_output=True)
             block.output = r.stdout.decode("utf-8")
             if outpath:
-                with open(outpath, 'w') as stream:
+                with open(outpath, 'w', encoding='UTF-8') as stream:
                     logging.info(f'WRITING {len(block.output)} TO = {outpath}')
                     stream.write(block.output)
             block.error = r.stderr.decode("utf-8")
