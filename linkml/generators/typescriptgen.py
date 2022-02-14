@@ -17,6 +17,14 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml.utils.generator import shared_arguments, Generator
 
+type_map = {
+    "str": "string",
+    "int": "number",
+    "Bool": "boolean",
+    "float": "number",
+    "XSDDate": "date"
+}
+
 default_template = """
 {% for c in view.all_classes().values() -%}
 {%- set cref = gen.classref(c) -%}
@@ -135,6 +143,12 @@ class TypescriptGenerator(Generator):
                 else:
                     return f'{rc_ref}'
         else:
+            if r in sv.all_types():
+                t = sv.get_type(r)
+                if t.base and t.base in type_map:
+                    return type_map[t.base]
+                else:
+                    logging.warning(f'Unknown type.base: {t.name}')
             return 'string'
 
     def parents(self, cls: ClassDefinition) -> List[ClassDefinitionName]:
