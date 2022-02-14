@@ -218,12 +218,13 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all slots in schema view
         """
-        d = copy(self._get_dict(SLOTS, imports))
+        slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
             for c in self.all_classes().values():
                 for aname, a in c.attributes.items():
-                    d[aname] = a
-        return d
+                    if aname not in slots:
+                        slots[aname] = a
+        return slots
 
 
     @deprecated("Use `all_enums` instead")
