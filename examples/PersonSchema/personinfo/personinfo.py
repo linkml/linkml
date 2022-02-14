@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-13 12:01
+# Generation date: 2022-02-11T17:52:25
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -26,12 +26,17 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, Str
 from linkml_runtime.utils.metamodelcore import Bool, XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+CODE = CurieNamespace('CODE', 'http://example.org/code/')
+GEO = CurieNamespace('GEO', 'http://example.org/geoloc/')
 GSSO = CurieNamespace('GSSO', 'http://purl.obolibrary.org/obo/GSSO_')
+P = CurieNamespace('P', 'http://example.org/P/')
+ROR = CurieNamespace('ROR', 'http://example.org/ror/')
 FAMREL = CurieNamespace('famrel', 'https://example.org/FamilialRelations#')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
@@ -158,7 +163,9 @@ class Person(NamedThing):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
+        if not isinstance(self.has_familial_relationships, list):
+            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
@@ -663,7 +670,7 @@ slots.hasAliases__aliases = Slot(uri=PERSONINFO.aliases, name="hasAliases__alias
 slots.related_to = Slot(uri=PERSONINFO.related_to, name="related to", curie=PERSONINFO.curie('related_to'),
                    model_uri=PERSONINFO.related_to, domain=None, range=Union[str, PersonId])
 
-slots.Person_primary_email = Slot(uri=PERSONINFO.primary_email, name="Person_primary_email", curie=PERSONINFO.curie('primary_email'),
+slots.Person_primary_email = Slot(uri=SCHEMA.email, name="Person_primary_email", curie=SCHEMA.curie('email'),
                    model_uri=PERSONINFO.Person_primary_email, domain=Person, range=Optional[str],
                    pattern=re.compile(r'^\S+@[\S+\.]+\S+'))
 
