@@ -93,7 +93,7 @@ export interface Person  extends HasAliases  {
     /**
      * number of years since birth
      */
-    age_in_years?: string,
+    age_in_years?: number,
     
     
     /**
@@ -282,19 +282,19 @@ export interface Event  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
      * None
      */
-    is_current?: string,
+    is_current?: boolean,
     
     
     /**
@@ -315,13 +315,13 @@ export interface Relationship  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
@@ -348,13 +348,13 @@ export interface FamilialRelationship  extends Relationship  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
@@ -387,19 +387,19 @@ export interface BirthEvent  extends Event  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
      * None
      */
-    is_current?: string,
+    is_current?: boolean,
     
     
     /**
@@ -432,19 +432,19 @@ export interface EmploymentEvent  extends Event  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
      * None
      */
-    is_current?: string,
+    is_current?: boolean,
     
     
     /**
@@ -483,19 +483,19 @@ export interface MedicalEvent  extends Event  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
      * None
      */
-    is_current?: string,
+    is_current?: boolean,
     
     
     /**
@@ -543,19 +543,19 @@ export interface MarriageEvent  extends Event, WithLocation  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
      * None
      */
-    is_current?: string,
+    is_current?: boolean,
     
     
     /**
@@ -729,13 +729,13 @@ export interface Activity  {
     /**
      * None
      */
-    started_at_time?: string,
+    started_at_time?: date,
     
     
     /**
      * None
      */
-    ended_at_time?: string,
+    ended_at_time?: date,
     
     
     /**
