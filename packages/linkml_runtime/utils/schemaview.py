@@ -879,8 +879,15 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: dynamic slot constructed by inference
         """
-        slot = self.get_slot(slot_name, imports, attributes=True)
+        slot = self.get_slot(slot_name, imports, attributes=False)
         cls = self.get_class(class_name, imports)
+        # attributes take priority over schema-level slot definitions, IF
+        # the attributes is declared for the class or an ancestor
+        for an in self.class_ancestors(class_name):
+            a = self.get_class(an, imports)
+            if slot_name in a.attributes:
+                slot = a.attributes[slot_name]
+                break
         islot = None
         if slot is not None:
             # case 1: there is an explicit declaration of the slot
@@ -897,14 +904,6 @@ class SchemaView(object):
             #    if getattr(slot, metaslot_name, None):
             #        setattr(islot, metaslot_name, deepcopy(getattr(slot, metaslot_name)))
         else:
-            # case 2: no independent slot definition, declared as an attribute
-            # (can be attribute of the class, or an ancestor)
-            for an in self.class_ancestors(class_name):
-                a = self.get_class(an, imports)
-                if slot_name in a.attributes:
-                    islot = copy(a.attributes[slot_name])
-                    break
-        if islot is None:
             raise Exception(f'No such slot: {slot_name} and no attribute by that name in ancestors of {class_name}')
 
         COMBINE = {
