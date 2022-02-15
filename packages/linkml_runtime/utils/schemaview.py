@@ -865,7 +865,7 @@ class SchemaView(object):
         return slots_nr
 
     @lru_cache()
-    def induced_slot(self, slot_name: SLOT_NAME, class_name: CLASS_NAME = None, imports=True) -> SlotDefinition:
+    def induced_slot(self, slot_name: SLOT_NAME, class_name: CLASS_NAME = None, imports=True, mangle_name=False) -> SlotDefinition:
         """
         Given a slot, in the context of a particular class, yield a dynamic SlotDefinition that
         has all properties materialized.
@@ -941,6 +941,11 @@ class SchemaView(object):
                 setattr(islot, metaslot_name, v)
         if slot.inlined_as_list:
             slot.inlined = True
+        mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
+        if mangle_name:
+            islot.name = mangled_name
+        if not islot.alias:
+            islot.alias = underscore(slot_name)
         return deepcopy(islot)
 
     @lru_cache()
