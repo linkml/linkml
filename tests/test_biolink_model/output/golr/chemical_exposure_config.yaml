@@ -1,4 +1,4 @@
-id: chemical_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: chemical_exposure
 schema_generating: true
 description: A chemical exposure is an intake of a particular chemical substance,
   other than a drug.

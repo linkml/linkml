@@ -1,5 +1,5 @@
 # Auto generated from biolink-model.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-08 17:02
+# Generation date: 2022-02-09T19:43:46
 # Schema: Biolink-Model
 #
 # id: https://w3id.org/biolink/biolink-model
@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Double, Float, Inte
 from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE, XSDDate, XSDTime
 
 metamodel_version = "1.7.0"
+version = "1.8.2"
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -257,7 +258,7 @@ QUD = CurieNamespace('qud', 'http://qudt.org/1.1/schema/qudt#')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-SKOS = CurieNamespace('skos', 'https://www.w3.org/TR/skos-reference/#')
+SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
 WGS = CurieNamespace('wgs', 'http://www.w3.org/2003/01/geo/wgs84_pos')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = BIOLINK

@@ -6,27 +6,21 @@ Options:
   -i, --inline                    Generate references to types rather than
                                   inlining them. Note that declaring a slot as
                                   inlined: true will always inline the class
-
   -t, --top-class TEXT            Top level class; slots of this class will
                                   become top level properties in the json-
                                   schema
-
   --not-closed / --closed         Set additionalProperties=False if closed
                                   otherwise true if not closed at the global
-                                  level  [default: True]
-
+                                  level  [default: not-closed]
   -f, --format [json]             Output format (default=json)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
-
   --useuris / --metauris          Include metadata in output
                                   (default=--useuris)
-
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
                                   Logging level (default=WARNING)
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)
-
   --help                          Show this message and exit.

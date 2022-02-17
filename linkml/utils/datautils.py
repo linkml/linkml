@@ -25,13 +25,14 @@ dumpers_loaders = {
     'json': (JSONDumper, JSONLoader),
     'rdf': (RDFLibDumper, RDFLibLoader),
     'ttl': (RDFLibDumper, RDFLibLoader),
-    'json-ld': (RDFDumper, RDFLoader),
+    'json-ld': (RDFLibDumper, RDFLibLoader),
     'csv': (CSVDumper, CSVLoader),
     'tsv': (CSVDumper, CSVLoader),
 }
 
 aliases = {
     'ttl': 'rdf',
+    'jsonld': 'json-ld',
 }
 
 def _get_format(path: str, specified_format: str =None, default=None):
@@ -54,6 +55,10 @@ def _get_format(path: str, specified_format: str =None, default=None):
 
 def _is_xsv(fmt: str) -> bool:
     return fmt == 'csv' or fmt == 'tsv'
+
+def _is_rdf_format(fmt: str) -> bool:
+    return fmt == 'rdf' or fmt == 'ttl' or fmt == 'json-ld'
+
 
 def get_loader(fmt: str) -> Loader:
     return dumpers_loaders[fmt][1]()
@@ -84,6 +89,13 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
                 for a in sv.class_ancestors(r):
                     refs[a] += 1
     candidates = [cn for cn in sv.all_class().keys() if cn not in refs]
+
+    # throw Exception if unambiguous root cannot be inferred
+    if len(candidates) > 1:
+        raise RuntimeError(f"Multiple potential target classes found: {candidates}. "
+                           "Please specify a target using --target_class or by adding "
+                           "tree_root: true to the relevant class in the schema.")
+
     if len(candidates) == 1:
         return candidates[0]
     else:

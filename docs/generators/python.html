@@ -210,9 +210,134 @@ Python base type.</p>
 <h2>Code Docs<a class="headerlink" href="#code-docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-python">
+<h4>gen-python<a class="headerlink" href="#gen-python" title="Permalink to this headline"></a></h4>
+<p>Generate python classes to represent a LinkML model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-python <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-head">
+<span id="cmdoption-gen-python-no-head"></span><span class="sig-name descname"><span class="pre">--head</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-head</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-head" title="Permalink to this definition"></a></dt>
+<dd><p>Emit metadata heading</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-genmeta">
+<span id="cmdoption-gen-python-no-genmeta"></span><span class="sig-name descname"><span class="pre">--genmeta</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-genmeta</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-genmeta" title="Permalink to this definition"></a></dt>
+<dd><p>Generating metamodel. Only use this for generating meta.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-classvars">
+<span id="cmdoption-gen-python-no-classvars"></span><span class="sig-name descname"><span class="pre">--classvars</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-classvars</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-classvars" title="Permalink to this definition"></a></dt>
+<dd><p>Generate CLASSVAR info</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-slots">
+<span id="cmdoption-gen-python-no-slots"></span><span class="sig-name descname"><span class="pre">--slots</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-slots</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-slots" title="Permalink to this definition"></a></dt>
+<dd><p>Generate Slot information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-f">
+<span id="cmdoption-gen-python-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-python-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=py)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>py</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-metadata">
+<span id="cmdoption-gen-python-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-useuris">
+<span id="cmdoption-gen-python-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-im">
+<span id="cmdoption-gen-python-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-python-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-log_level">
+<span id="cmdoption-gen-python-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-python-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-mergeimports">
+<span id="cmdoption-gen-python-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-python-arg-YAMLFILE">
+<span id="cmdoption-gen-python-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-python-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pythongen.</span></span><span class="sig-name descname"><span class="pre">PythonGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'py'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pythongen.html#PythonGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Generates Python dataclasses from a LinkML model</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 <section id="additional-notes">
@@ -221,59 +346,91 @@ Python base type.</p>
 <section id="code-generation-for-linkml-slots">
 <h2>Code generation for LinkML slots<a class="headerlink" href="#code-generation-for-linkml-slots" title="Permalink to this headline"></a></h2>
 <p>The generation of slot entries in class definitions is split into two
-parts: 1) The declaration of the slot type 2) The <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code>
-processing transforms several allowable input forms into single,
-consistent internal representation.</p>
-<p>The elements that control the python for slot generation include *
-Whether <code class="docutils literal notranslate"><span class="pre">range</span></code> references an instance of a LinkML <code class="docutils literal notranslate"><span class="pre">type</span></code> or a
-LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> * If the slot range is a <code class="docutils literal notranslate"><span class="pre">class</span></code>: * Whether the
-class has a key (<code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">&lt;type&gt;</span></code>), an identifier
-(<code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">&lt;type&gt;</span></code>), or neither * <em>If</em> the class has a <code class="docutils literal notranslate"><span class="pre">key</span></code> or
-<code class="docutils literal notranslate"><span class="pre">identifier</span></code>, whether the instances are inlined as a dictionary
-(<code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code>), inlined as a list (<code class="docutils literal notranslate"><span class="pre">inlined_as_list:</span> <span class="pre">true</span></code>) or
-are referenced elsewhere in the model (Default). * Whether the slot is
-or concrete (<code class="docutils literal notranslate"><span class="pre">abstract:</span> <span class="pre">false</span></code>) or abstract (<code class="docutils literal notranslate"><span class="pre">abstract:</span> <span class="pre">true</span></code> or
-<code class="docutils literal notranslate"><span class="pre">mixin:</span> <span class="pre">true</span></code>) (Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>) * Whether a slot is required
-(<code class="docutils literal notranslate"><span class="pre">required:</span> <span class="pre">true</span></code>) or optional (<code class="docutils literal notranslate"><span class="pre">required:</span> <span class="pre">false</span></code>) (Default:
-<code class="docutils literal notranslate"><span class="pre">false</span></code>) * Whether a slot is single-valued (<code class="docutils literal notranslate"><span class="pre">multivalued:</span> <span class="pre">false</span></code>)
-or multi-valued (<code class="docutils literal notranslate"><span class="pre">multivalued:</span> <span class="pre">true</span></code>) (Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>) * The
-<code class="docutils literal notranslate"><span class="pre">ifabsent</span></code> attribute (not covered in this document) * The <code class="docutils literal notranslate"><span class="pre">default</span></code>
-value (not covered in this document)</p>
-<p>These various situations are described more detail below: ### 1) Slot
-range is a LinkML <code class="docutils literal notranslate"><span class="pre">type</span></code> definition LinkML type definitions can take
-one of three forms: 1) Builtin python type
-<code class="docutils literal notranslate"><span class="pre">yaml</span>&#160;&#160;&#160;&#160; <span class="pre">types:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;type&gt;:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">base:</span> <span class="pre">&lt;builtin</span> <span class="pre">python</span> <span class="pre">type&gt;</span> <span class="pre">(e.g.</span> <span class="pre">'str',</span> <span class="pre">'int',</span> <span class="pre">'float',</span> <span class="pre">etc)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span></code>
-2) Defined type
-<code class="docutils literal notranslate"><span class="pre">yaml</span>&#160;&#160;&#160;&#160; <span class="pre">types:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;type&gt;:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">base:</span> <span class="pre">&lt;type</span> <span class="pre">defined</span> <span class="pre">in</span> <span class="pre">linkml/linkml_runtime/utils/metamodelcore.py&gt;</span> <span class="pre">(e.g.</span> <span class="pre">URIorCURIE,</span> <span class="pre">Date,</span> <span class="pre">NCName,</span> <span class="pre">etc)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span></code></p>
-<ol class="arabic simple" start="3">
-<li><p>Inherited type
-<code class="docutils literal notranslate"><span class="pre">yaml</span>&#160; <span class="pre">types:</span>&#160;&#160;&#160;&#160; <span class="pre">&lt;type&gt;:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">typeof:</span> <span class="pre">&lt;parent</span> <span class="pre">type&gt;</span></code> Each of
-these are outlined below #### 1) Python generation for basic python
-Type. For this example, we show basic permutations on the python
-<code class="docutils literal notranslate"><span class="pre">int</span></code> type as a base YAML:</p></li>
+parts:</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>The declaration of the slot type</p></li>
 </ol>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
-  <span class="nt">integer</span><span class="p">:</span>
-    <span class="nt">uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xsd:integer</span>
-    <span class="nt">base</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">int</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">An integer</span>
+</li>
+<li><p>2) The <code class="docutils literal notranslate"><span class="pre">__post_init__</span></code> processing transforms several allowable
+input forms into single, consistent internal representation.</p></li>
+</ul>
+<p>The elements that control the python for slot generation include</p>
+<ul>
+<li><p>Whether <code class="docutils literal notranslate"><span class="pre">range</span></code> references an instance of a LinkML <code class="docutils literal notranslate"><span class="pre">type</span></code> or a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code></p></li>
+<li><p>If the slot range is a <code class="docutils literal notranslate"><span class="pre">class</span></code>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Whether the class has a key (<code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">&lt;type&gt;</span></code>), an identifier
+(<code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">&lt;type&gt;</span></code>), or neither</p></li>
+<li><dl class="simple">
+<dt>If the class has a <code class="docutils literal notranslate"><span class="pre">key</span></code> or <code class="docutils literal notranslate"><span class="pre">identifier</span></code>, whether the</dt><dd><p>instances are inlined as a dictionary (<code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code>),
+inlined as a list (<code class="docutils literal notranslate"><span class="pre">inlined_as_list:</span> <span class="pre">true</span></code>) or are referenced
+elsewhere in the model (Default).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Whether the slot is concrete (<code class="docutils literal notranslate"><span class="pre">abstract:</span> <span class="pre">false</span></code>) or abstract
+(<code class="docutils literal notranslate"><span class="pre">abstract:</span> <span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">mixin:</span> <span class="pre">true</span></code>) (Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>)</p></li>
+<li><p>Whether a slot is required (<code class="docutils literal notranslate"><span class="pre">required:</span> <span class="pre">true</span></code>) or optional
+(<code class="docutils literal notranslate"><span class="pre">required:</span> <span class="pre">false</span></code>) (Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>)</p></li>
+<li><p>Whether a slot is single-valued (<code class="docutils literal notranslate"><span class="pre">multivalued:</span> <span class="pre">false</span></code>) or
+multi-valued (<code class="docutils literal notranslate"><span class="pre">multivalued:</span> <span class="pre">true</span></code>) (Default: <code class="docutils literal notranslate"><span class="pre">false</span></code>)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ifabsent</span></code> attribute (not covered in this document)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">default</span></code> value (not covered in this document)</p></li>
+</ul>
+<p>These various situations are described more detail below:</p>
+<p>LinkML type definitions can take one of three forms:</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>Builtin python type</p></li>
+</ol>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">yaml</span>&#160;&#160;&#160;&#160; <span class="pre">types:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;type&gt;:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">base:</span> <span class="pre">&lt;builtin</span> <span class="pre">python</span> <span class="pre">type&gt;</span>
+<span class="pre">(e.g.</span> <span class="pre">'str',</span> <span class="pre">'int',</span> <span class="pre">'float',</span> <span class="pre">etc)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span></code></p>
+<ul class="simple">
+<li><ol class="arabic simple" start="2">
+<li><p>Defined type</p></li>
+</ol>
+</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">yaml</span>&#160;&#160;&#160;&#160; <span class="pre">types:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&lt;type&gt;:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">base:</span> <span class="pre">&lt;type</span> <span class="pre">defined</span> <span class="pre">in</span> <span class="pre">linkml/linkml_runtime/utils/metamodelcore.py&gt;</span> <span class="pre">(e.g.</span> <span class="pre">URIorCURIE,</span> <span class="pre">Date,</span> <span class="pre">NCName,</span> <span class="pre">etc)</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span></code></p>
+<ol class="arabic" start="3">
+<li><p>Inherited type</p>
+<p><code class="docutils literal notranslate"><span class="pre">yaml</span>&#160; <span class="pre">types:</span>&#160;&#160;&#160;&#160; <span class="pre">&lt;type&gt;:</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">typeof:</span> <span class="pre">&lt;parent</span> <span class="pre">type&gt;</span></code> Each of
+these are outlined below</p>
+</li>
+</ol>
+<blockquote>
+<div><p>For this example, we show basic permutations on the python</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">int</span></code> type as a base YAML:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">integer</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:integer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">An integer</span><span class="w"></span>
 
-<span class="nt">classes</span><span class="p">:</span>
-    <span class="nt">Integers</span><span class="p">:</span>
-      <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">various permutations of the integer type</span>
-      <span class="nt">attributes</span><span class="p">:</span>
-        <span class="nt">opt_integer</span><span class="p">:</span>
-          <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-        <span class="nt">mand_integer</span><span class="p">:</span>
-          <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-          <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">opt_multi_integer</span><span class="p">:</span>
-          <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-          <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">mand_multi_integer</span><span class="p">:</span>
-          <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-          <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-          <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">Integers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">various permutations of the integer type</span><span class="w"></span>
+<span class="w">      </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">opt_integer</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">        </span><span class="nt">mand_integer</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">          </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">opt_multi_integer</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">          </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">mand_multi_integer</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">          </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">          </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Generated Python:</p>
@@ -410,29 +567,29 @@ list:
 </li>
 </ol>
 <p>YAML:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
-  <span class="nt">date</span><span class="p">:</span>
-    <span class="nt">uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">xsd:date</span>
-    <span class="nt">base</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">XSDDate</span>
-    <span class="nt">repr</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">str</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a date (year, month and day) in an idealized calendar</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">date</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:date</span><span class="w"></span>
+<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">XSDDate</span><span class="w"></span>
+<span class="w">    </span><span class="nt">repr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a date (year, month and day) in an idealized calendar</span><span class="w"></span>
 
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Dates</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">various permutations of the date type</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">opt_date</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-      <span class="nt">mand_date</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">opt_multi_date</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">mand_multi_date</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Dates</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">various permutations of the date type</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">opt_date</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mand_date</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">opt_multi_date</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mand_multi_date</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>python:</p>
@@ -498,15 +655,15 @@ class representing the element and the <code class="docutils literal notranslate
 <p>The following YAML shows three inherited types - one that inherits from
 a builtin type, a second from a metamodelcore type and a third from a
 the inherited type.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span>
-  <span class="nt">InheritedType</span><span class="p">:</span>
-    <span class="nt">typeof</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">InheritedType</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
 
-  <span class="nt">InheritedType2</span><span class="p">:</span>
-    <span class="nt">typeof</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">uriorcurie</span>
+<span class="w">  </span><span class="nt">InheritedType2</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
 
-  <span class="nt">InheritedType3</span><span class="p">:</span>
-    <span class="nt">typeof</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">InheritedType2</span>
+<span class="w">  </span><span class="nt">InheritedType3</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">InheritedType2</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Python:</p>
@@ -604,35 +761,35 @@ attribute * The slot <code class="docutils literal notranslate"><span class="pre
 <p>Classes without keys or identifiers cannot only be realized inline. The
 following code shows examples of various permutations of this type of
 class:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">OptionalOneElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a optional class that contains one non-key/non-identifier element</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OneElementClass</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">OptionalOneElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a optional class that contains one non-key/non-identifier element</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OneElementClass</span><span class="w"></span>
 
-  <span class="nt">RequiredOneElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a required class that contains one non-key/non-identifier element</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OptionalOneElementRange</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OneElementClass</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">RequiredOneElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a required class that contains one non-key/non-identifier element</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OptionalOneElementRange</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OneElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-  <span class="nt">OptionalOneElementRangeList</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a optional list of a class that contain one non-key/non-identifier element</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">OneElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">OptionalOneElementRangeList</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a optional list of a class that contain one non-key/non-identifier element</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OneElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-  <span class="nt">RequiredThreeElementRangeList</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a required list of a class that contain one non-key/non-identifier element</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">RequiredThreeElementRangeList</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a required list of a class that contain one non-key/non-identifier element</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>An optional, single element class generates the following code:</p>
@@ -750,27 +907,27 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
 <section id="key-or-identified-class-references">
 <h3>Key or identified class <em>references</em><a class="headerlink" href="#key-or-identified-class-references" title="Permalink to this headline"></a></h3>
 <p>Using the following classes as building blocks</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KeyedThreeElementClass</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A keyed class with an additional integer and date</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">name</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">value</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-    <span class="nt">modifier</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KeyedThreeElementClass</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A keyed class with an additional integer and date</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">modifier</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
 
-<span class="nt">IdentifiedThreeElementClass</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A identified class with an additional integer and date</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">name</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">identifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">value</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-    <span class="nt">modifier</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
+<span class="nt">IdentifiedThreeElementClass</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A identified class with an additional integer and date</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">      </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">modifier</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Python:</p>
@@ -832,33 +989,33 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
 </pre></div>
 </div>
 <p>We can now begin with the following LinkML class definitions:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalKeyedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a optional class that contains one key and two regular elements</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalKeyedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a optional class that contains one key and two regular elements</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
 
-<span class="nt">OptionalKeyedThreeElementRangeList</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a optional list of a class that contains one key and two regular elements</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-      <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">OptionalKeyedThreeElementRangeList</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a optional list of a class that contains one key and two regular elements</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">RequiredIdentifiedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a required class that contains one identifier and two regular elements</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredIdentifiedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a required class that contains one identifier and two regular elements</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">RequiredIdentifiedThreeElementRangeList</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Range is a optional list of a class that contains one identifier and two regular elements</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-      <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredIdentifiedThreeElementRangeList</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Range is a optional list of a class that contains one identifier and two regular elements</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Python equivalents</p>
@@ -1105,61 +1262,61 @@ ine
 </table>
 <p>The YAML examples below the above options for both optional and required
 slots.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.1(o) -- single values optional slot - range has no keys or identifiers</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.1(o) -- single values optional slot - range has no keys or identifiers</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span><span class="w"></span>
 
-<span class="nt">RequiredThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.1(r) -- single values optional slot - range has no keys or identifiers</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.1(r) -- single values optional slot - range has no keys or identifiers</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">OptionalIdentifiedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.2(o) -- single values optional slot - range has an identifier</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
+<span class="nt">OptionalIdentifiedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.2(o) -- single values optional slot - range has an identifier</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
 
-<span class="nt">RequiredKeyedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.2(r) -- single values optional slot - range has a key</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredKeyedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.2(r) -- single values optional slot - range has a key</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">OptionalInlinedKeyedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.3(o) -- single values optional slot - range has an identifier</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-      <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">OptionalInlinedKeyedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.3(o) -- single values optional slot - range has an identifier</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">RequiredInlinedIdentifiedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.3(r) -- single values optional slot - range has a key</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredInlinedIdentifiedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.3(r) -- single values optional slot - range has a key</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">OptionalInlinedAsListKeyedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.4(o) -- single values optional slot - range has an identifier</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-      <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">OptionalInlinedAsListKeyedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.4(o) -- single values optional slot - range has an identifier</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class="nt">RequiredInlinedAsListIdentifiedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 1.4(r) -- single values optional slot - range has a key</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredInlinedAsListIdentifiedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 1.4(r) -- single values optional slot - range has a key</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The emitted python is as described for types with the exception of case
@@ -1430,35 +1587,35 @@ r</p></td>
 </table>
 <p>The first two cases (2.1) and (2.2) do not differ significantly from
 what was described earlier</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalMultivaluedThreeElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 2.1(o) -- multivalued optional slot - range has no key or identifier</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalMultivaluedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 2.1(o) -- multivalued optional slot - range has no key or identifier</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-<span class=" -Error">  </span><span class="nt">RequiredMultivaluedThreeElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 2.1(r) -- multivalued optional slot - range has no key or identifier</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w w-Error">  </span><span class="nt">RequiredMultivaluedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 2.1(r) -- multivalued optional slot - range has no key or identifier</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-  <span class="nt">OptionalMultivaluedKeyedThreeElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 2.2(o) -- multivalued optional slot - range has a key</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">OptionalMultivaluedKeyedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 2.2(o) -- multivalued optional slot - range has a key</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
-  <span class="nt">RequiredMultivaluedIdentifiedThreeElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Case 2.2(r) -- multivalued optional slot - range has an identifier</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">RequiredMultivaluedIdentifiedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Case 2.2(r) -- multivalued optional slot - range has an identifier</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
@@ -1537,23 +1694,23 @@ what was described earlier</p>
 </pre></div>
 </div>
 <p>Case 2.3 (Inlined as list) shows a new pattern:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalMultivaluedInlinedListIdentifiedThreeElementRange</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2.3(o) Range is an optional identified three element class that is represented as an inlined list</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-      <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalMultivaluedInlinedListIdentifiedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.3(o) Range is an optional identified three element class that is represented as an inlined list</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
 
-<span class="nt">RequiredMultivaluedInlinedListKeyedThreeElementRangeList</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2.3(r) Range is a required keyed three element class that is represented as an inlined list</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">v1</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-      <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-      <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">RequiredMultivaluedInlinedListKeyedThreeElementRangeList</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.3(r) Range is a required keyed three element class that is represented as an inlined list</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The Python that is generated from the above entries will require some
@@ -1597,28 +1754,28 @@ that is a dictionary whose <em>keys</em> are valid
 and the <code class="docutils literal notranslate"><span class="pre">dict</span></code> component of the value indicate that, raw strings can
 be substituted for class names and plain dictionaries for class values.</p>
 <p>Noting the definition for <code class="docutils literal notranslate"><span class="pre">KeyedThreeElementClass</span></code> is:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KeyedThreeElementClass</span><span class="p">:</span>
-  <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A keyed class with an additional integer and date</span>
-  <span class="nt">attributes</span><span class="p">:</span>
-    <span class="nt">name</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-      <span class="nt">key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">value</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">integer</span>
-    <span class="nt">modifier</span><span class="p">:</span>
-      <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">date</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KeyedThreeElementClass</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A keyed class with an additional integer and date</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">modifier</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">date</span><span class="w"></span>
 </pre></div>
 </div>
 <p>One can represent instances of
 <code class="docutils literal notranslate"><span class="pre">OptionalMultivaluedInlinedListIdentifiedThreeElementRange</span></code> in YAML
 as:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">element1</span><span class="p">:</span>
-  <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">17</span>
-  <span class="nt">modifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2012-03-11</span>
-<span class="nt">element2</span><span class="p">:</span>
-<span class="nt">element3</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">element3</span>
-  <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">42</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">element1</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">17</span><span class="w"></span>
+<span class="w">  </span><span class="nt">modifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2012-03-11</span><span class="w"></span>
+<span class="nt">element2</span><span class="p">:</span><span class="w"></span>
+<span class="nt">element3</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">element3</span><span class="w"></span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span><span class="w"></span>
 </pre></div>
 </div>
 <p>or in python as:</p>
@@ -1634,9 +1791,9 @@ as:</p>
 <p>Note that the following is not valid because, while the <code class="docutils literal notranslate"><span class="pre">name</span></code>
 attribute (the key) is not required, as it has already been established
 by the key, if present it <em>must</em> match the key itself</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">element3</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
-  <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">42</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">element3</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"></span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span><span class="w"></span>
 </pre></div>
 </div>
 <p>One of the reasons for the explicit key types
@@ -1660,12 +1817,12 @@ expects a <code class="docutils literal notranslate"><span class="pre">KeyedThre
 input to the constructor can also be a <em>list</em> of dictionaries that
 conform to the <code class="docutils literal notranslate"><span class="pre">IdentifiedThreeElementClass</span></code> model. Referencing the
 examples that we used above, we could also use:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">element1</span>
-  <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">17</span>
-  <span class="nt">modifier</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2012-03-11</span>
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">element2</span>
-<span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">element3</span>
-  <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">42</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">element1</span><span class="w"></span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">17</span><span class="w"></span>
+<span class="w">  </span><span class="nt">modifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2012-03-11</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">element2</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">element3</span><span class="w"></span>
+<span class="w">  </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span><span class="w"></span>
 </pre></div>
 </div>
 <p>And the Python equivalent would be:</p>
@@ -1709,23 +1866,23 @@ function defined in <code class="docutils literal notranslate"><span class="pre"
 <p>The final case, Case 2.4 (Inlined as dictionary) is essentially the
 same, with the exception that the target type is a dictionary rather
 than a list.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalMultivaluedInlinedIdentifiedThreeElementRangeList</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2.4(o) Range is an optional identified three element class that is represented as an inlined dictionary</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OptionalMultivaluedInlinedIdentifiedThreeElementRangeList</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.4(o) Range is an optional identified three element class that is represented as an inlined dictionary</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IdentifiedThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 
 
-<span class=" -Error">  </span><span class="nt">RequiredMultivaluedInlinedKeyedThreeElementRange</span><span class="p">:</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2.4(r) Range is a required keyed three element class that is represented as an inlined dictionary</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">v1</span><span class="p">:</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">inlined</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">required</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w w-Error">  </span><span class="nt">RequiredMultivaluedInlinedKeyedThreeElementRange</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.4(r) Range is a required keyed three element class that is represented as an inlined dictionary</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">v1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">KeyedThreeElementClass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>

@@ -8,20 +8,16 @@ Options:
                                   https://w3id.org/linkml/meta.context.jsonld)
                                   [default:
                                   https://w3id.org/linkml/meta.context.jsonld]
-
-  -f, --format [ttl|json-ld|n3|nquads|nt|nt11|ntriples|trig|trix|ttl|turtle|xml]
+  -f, --format [ttl|hext|json-ld|n3|nquads|nt|nt11|ntriples|trig|trix|ttl|turtle|xml]
                                   Output format (default=ttl)
   --metadata / --no-metadata      Include metadata in output
                                   (default=--metadata)
-
   --useuris / --metauris          Include metadata in output
                                   (default=--useuris)
-
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
                                   Logging level (default=WARNING)
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)
-
   --help                          Show this message and exit.

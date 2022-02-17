@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-21T18:02:17
+# Generation date: 2022-02-14T20:42:29
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -28,6 +28,7 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Integer, String
 from linkml_runtime.utils.metamodelcore import Bool, XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -182,7 +183,9 @@ class Person(YAMLRoot):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
+        if not isinstance(self.has_familial_relationships, list):
+            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
@@ -365,6 +368,7 @@ class Event(YAMLRoot):
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
     is_current: Optional[Union[bool, Bool]] = None
+    metadata: Optional[Union[dict, "AnyObject"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
@@ -669,6 +673,8 @@ class SubclassTest(ClassWithSpaces):
         super().__post_init__(**kwargs)
 
 
+AnyObject = Any
+
 @dataclass
 class Activity(YAMLRoot):
     """
@@ -767,19 +773,36 @@ class DiagnosisType(EnumDefinitionImpl):
     )
 
 class EmploymentEventType(EnumDefinitionImpl):
-
+    """
+    codes for different kinds of employment/HR related events
+    """
     HIRE = PermissibleValue(text="HIRE",
+                               description="event for a new employee",
                                meaning=BIZCODES["001"])
     FIRE = PermissibleValue(text="FIRE",
                                meaning=BIZCODES["002"])
     PROMOTION = PermissibleValue(text="PROMOTION",
+                                         description="promotion event",
                                          meaning=BIZCODES["003"])
     TRANSFER = PermissibleValue(text="TRANSFER",
+                                       description="transfer internally",
                                        meaning=BIZCODES["004"])
 
     _defn = EnumDefinition(
         name="EmploymentEventType",
+        description="codes for different kinds of employment/HR related events",
     )
+
+class OtherCodes(EnumDefinitionImpl):
+
+    _defn = EnumDefinition(
+        name="OtherCodes",
+    )
+
+    @classmethod
+    def _addvals(cls):
+        setattr(cls, "a b",
+                PermissibleValue(text="a b") )
 
 # Slots
 class slots:
@@ -838,6 +861,9 @@ slots.has_birth_event = Slot(uri=KS.has_birth_event, name="has birth event", cur
 
 slots.in_code_system = Slot(uri=KS.in_code_system, name="in code system", curie=KS.curie('in_code_system'),
                    model_uri=KS.in_code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
+
+slots.metadata = Slot(uri=KS.metadata, name="metadata", curie=KS.curie('metadata'),
+                   model_uri=KS.metadata, domain=None, range=Optional[Union[dict, AnyObject]])
 
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=KS.id, domain=None, range=URIRef)

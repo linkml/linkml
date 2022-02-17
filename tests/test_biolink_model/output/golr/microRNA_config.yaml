@@ -1,4 +1,4 @@
-id: microRNA
+# metamodel_version: 1.7.0# version: 1.8.2id: microRNA
 schema_generating: true
 display_name: microRNA
 document_category: microRNA

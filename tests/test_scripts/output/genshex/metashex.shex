@@ -1,14 +1,16 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 BASE <https://w3id.org/linkml/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX oslc: <http://open-services.net/ns/core#>
 PREFIX bibo: <http://purl.org/ontology/bibo/>
-PREFIX sh: <https://w3id.org/shacl/>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX sh1: <https://w3id.org/shacl/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
 
@@ -61,7 +63,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Annotatable> ] ? ;
           <annotations> @<Annotation> *
        ) ;
-       rdf:type [ <Annotation> ] ?
+       rdf:type [ <Annotation> ]
     )
 }
 
@@ -173,7 +175,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <defining_slots> @<SlotDefinition> * ;
           <tree_root> @<Boolean> ? ;
           <unique_keys> @<UniqueKey> * ;
-          sh:rule @<ClassRule> * ;
+          sh1:rule @<ClassRule> * ;
           <classification_rules> @<AnonymousClassExpression> * ;
           <mixins> @<ClassDefinition> * ;
           <apply_to> @<ClassDefinition> * ;
@@ -215,13 +217,13 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Annotatable> ] ? ;
           &<CommonMetadata_tes> ;
           rdf:type [ <CommonMetadata> ] ? ;
-          sh:condition @<AnonymousClassExpression> ? ;
+          sh1:condition @<AnonymousClassExpression> ? ;
           <postconditions> @<AnonymousClassExpression> ? ;
           <elseconditions> @<AnonymousClassExpression> ? ;
           <bidirectional> @<Boolean> ? ;
           <open_world> @<Boolean> ? ;
-          sh:order @<Integer> ? ;
-          sh:deactivated @<Boolean> ? ;
+          sh1:order @<Integer> ? ;
+          sh1:deactivated @<Boolean> ? ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           skos:definition @<String> ? ;
@@ -372,7 +374,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
              <value> @<String> ;
              <extensions> @<Extension> *
           ) ;
-          rdf:type [ <Extension> ] ?
+          rdf:type [ <Extension> ]
        )
     } OR @<Annotation>
 )

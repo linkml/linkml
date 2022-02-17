@@ -1,4 +1,4 @@
-id: siRNA
+# metamodel_version: 1.7.0# version: 1.8.2id: siRNA
 schema_generating: true
 description: A small RNA molecule that is the product of a longer exogenous or endogenous
   dsRNA, which is either a bimolecular duplex or very long hairpin, processed (via

@@ -1,4 +1,4 @@
-id: environmental_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: environmental_exposure
 schema_generating: true
 description: A environmental exposure is a factor relating to abiotic processes in
   the environment including sunlight (UV-B), atmospheric (heat, cold, general pollution)

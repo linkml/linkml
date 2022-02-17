@@ -49,7 +49,16 @@ Person:
 
 ## deprecation
 
-...
+Any schema element can be deprecated, with a reason provided; optionally, a replacement can be provided
+
+```yaml
+classes:
+  Agent:
+    deprecated: the concept of Agent was too abstract, use Person instead
+    deprecated_element_has_exact_replacement: Person
+```
+
+
 
 ## others slots
 

@@ -60,7 +60,9 @@ classes:
       - has_medical_history
     slot_usage:
       primary_email:
-        pattern: "^\\S+@[\\S+\\.]+\\S+"  
+        pattern: "^\\S+@[\\S+\\.]+\\S+"
+    in_subset:
+      - basic_subset
   
   HasAliases:
     description: >-
@@ -263,3 +265,7 @@ enums:
       cisgender woman:
         meaning: GSSO:000385
   DiagnosisType:
+
+subsets:
+  basic_subset:
+    description: A subset of the schema that handles basic information

@@ -214,6 +214,9 @@ classes:
         maximum_value: 999
 ```
 
+See also:
+
+- {ref}`FAQ: attributes vs slots <faq/modeling:when should i use attributes vs slots?>`
 
 ## Types
 

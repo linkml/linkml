@@ -1,4 +1,4 @@
-id: clinical_course
+# metamodel_version: 1.7.0# version: 1.8.2id: clinical_course
 schema_generating: true
 description: The course a disease typically takes from its onset, progression in time,
   and eventual resolution or death of the affected individual

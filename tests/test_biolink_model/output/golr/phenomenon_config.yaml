@@ -1,4 +1,4 @@
-id: phenomenon
+# metamodel_version: 1.7.0# version: 1.8.2id: phenomenon
 schema_generating: true
 description: a fact or situation that is observed to exist or happen, especially one
   whose cause or explanation is in question

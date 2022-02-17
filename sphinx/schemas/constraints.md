@@ -4,15 +4,22 @@ In addition to the basic [cardinality](slots) constraints for slots, additional 
 
 ## Unique Key
 
-A [unique_key](https://w3id.org/linkml/unique_key) is a set of slots that are unique for members of any given class.
+A class can declare [unique_keys](https://w3id.org/linkml/unique_keys), a set of slots that are unique for members of that class.
 
 [identifier](https://w3id.org/linkml/identifier)s are special cases of unique keys.
 
 ## Patterns
 
-The value of a slot can be constrained to conform to a particular string pattern using
+The value of a slot can be constrained to conform to a particular string pattern using the [pattern](https://w3id.org/linkml/pattern) metaslot
 
-[pattern](https://w3id.org/linkml/pattern)
+Example:
+
+```yaml
+  slots:
+     phone:
+       pattern: "^[\\d\\(\\)\\-]+$"   ## regular expression
+
+```
 
 ## String serialization
 

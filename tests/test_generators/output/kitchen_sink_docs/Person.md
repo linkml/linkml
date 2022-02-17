@@ -61,4 +61,5 @@ URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | subset A |
+| **Exact Mappings:** | | schema:Person |
 

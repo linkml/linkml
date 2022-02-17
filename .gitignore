@@ -2,6 +2,12 @@ metamodel/metamodel.py-PREV
 temp/
 output/
 
+# sphinx
+docs/_sources
+docs/_modules
+docs/_images
+sphinx/_build/
+sphinx/source/
 
 # Jekyll
 Gemfile.lock

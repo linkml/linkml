@@ -22,11 +22,16 @@ type Agent
     wasInformedBy: Activity
   }
 
+type AnyObject
+  {
+  }
+
 type BirthEvent
   {
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     inLocation: Place
   }
 
@@ -76,6 +81,7 @@ type EmploymentEvent
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     employedAt: Company
     type: EmploymentEventType
   }
@@ -85,6 +91,7 @@ type Event
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
   }
 
 type FakeClass
@@ -115,6 +122,7 @@ type MarriageEvent implements WithLocation
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     marriedTo: Person
     inLocation: Place
   }
@@ -124,6 +132,7 @@ type MedicalEvent
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     inLocation: Place
     diagnosis: DiagnosisConcept
     procedure: ProcedureConcept

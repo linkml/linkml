@@ -200,7 +200,7 @@
                         "https://w3id.org/linkml/Annotation"
                      ]
                   },
-                  "min": 0
+                  "min": 1
                }
             ]
          }
@@ -2012,7 +2012,7 @@
                               "https://w3id.org/linkml/Extension"
                            ]
                         },
-                        "min": 0
+                        "min": 1
                      }
                   ]
                }

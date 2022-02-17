@@ -57,7 +57,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -108,24 +107,24 @@ and <strong>Slots</strong>. They are authored in YAML and allow both rich
 expressivity while keeping things simple in a way that allows
 non-technical domain modelers to contribute.</p>
 <p>Example schema fragment, for modeling people:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">is_a</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NamedThing</span>
-    <span class="nt">description</span><span class="p">:</span> <span class="p p-Indicator">&gt;-</span>
-      <span class="no">A person (alive, dead, undead, or fictional).</span>
-    <span class="nt">class_uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
-    <span class="nt">mixins</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">HasAliases</span>
-    <span class="nt">slots</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">primary_email</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">birth_date</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">age_in_years</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">gender</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">current_address</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_employment_history</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span>
-      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">has_medical_history</span>
-<span class="nn">...</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">A person (alive, dead, undead, or fictional).</span><span class="w"></span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mixins</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HasAliases</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary_email</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">birth_date</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">current_address</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_employment_history</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_medical_history</span><span class="w"></span>
+<span class="nn">...</span><span class="w"></span>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a> for the complete example</p>
@@ -136,12 +135,14 @@ non-technical domain modelers to contribute.</p>
 <ul class="simple">
 <li><p>Classes can be arranged in <a class="reference internal" href="../schemas/inheritance.html"><span class="doc std std-doc">inheritance hierarchies</span></a></p></li>
 <li><p>Powerful <span class="xref myst">Semantic enumerations</span> that can optionally be backed by ontologies</p></li>
-<li><p>Create data models that are independent of a database technology</p></li>
-<li><p>Ability to provide rich annotations, metadata, and mappings as part of a model</p></li>
+<li><p>Create <span class="xref myst">data models</span> that are independent of a database technology</p></li>
+<li><p>Develop machine-actionable reporting standards and data dictionaries</p></li>
+<li><p>Include rich annotations, <a class="reference external" href="../schemas/models.html#model-metadata-and-directives">metadata</a>, and <a class="reference internal" href="../schemas/uris-and-mappings.html"><span class="doc std std-doc">mappings</span></a> as part of a model</p></li>
 <li><p>“Linked Data” ready</p>
 <ul>
 <li><p>All schemas have a corresponding JSON-LD context</p></li>
-<li><p>Compatability with RDF tooling, without committing to an RDF stack</p></li>
+<li><p><a class="reference internal" href="../data/rdf.html"><span class="doc std std-doc">Compatability with RDF tooling</span></a>, without committing to an RDF stack</p></li>
+<li><p>Compilation to <a class="reference internal" href="../generators/shacl.html"><span class="doc std std-doc">SHACL</span></a> and <a class="reference internal" href="../generators/shex.html"><span class="doc std std-doc">ShEx</span></a></p></li>
 </ul>
 </li>
 </ul>
@@ -149,12 +150,12 @@ non-technical domain modelers to contribute.</p>
 <section id="a-bridge-between-frameworks">
 <h2>A bridge between frameworks<a class="headerlink" href="#a-bridge-between-frameworks" title="Permalink to this headline"></a></h2>
 <p>Many frameworks lock you in to a particular view of the world or
-technology. This can lead to silos, and the need to create mappings
+technology. This can lead to <em>silos</em>, and the need to create mappings
 and transformations between different representations of the same
 data; for example, if your JSON documents need to work in concert with
 your relational database or graph store.</p>
-<p>LinkML has many different generators <span class="xref myst">existing
-frameworks</span> that allow the translation of a LinkML
+<p>LinkML has many different generators <a class="reference internal" href="../generators/index.html"><span class="doc std std-doc">existing
+frameworks</span></a> that allow the translation of a LinkML
 schema to other frameworks:</p>
 <ul class="simple">
 <li><p>Convert to JSON-LD contexts, and instantly port your data to RDF</p></li>
@@ -169,6 +170,12 @@ schema to other frameworks:</p>
 hosted searchable website in minutes, with pages for each of your
 schema elements. Using lightweight namespace registries such as
 w3id.org you can easily have resolvable URIs for all your concepts.</p>
+<p>Showcase:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink</a></p></li>
+<li><p><a class="reference external" href="https://cancerdhc.github.io/ccdhmodel">CCDH Model</a></p></li>
+<li><p><a class="reference external" href="https://microbiomedata.github.io/nmdc-schema/">NMDC</a></p></li>
+</ul>
 </section>
 <section id="a-rapidly-growing-toolchain">
 <h2>A rapidly growing toolchain<a class="headerlink" href="#a-rapidly-growing-toolchain" title="Permalink to this headline"></a></h2>

@@ -1,4 +1,4 @@
-id: processed_material
+# metamodel_version: 1.7.0# version: 1.8.2id: processed_material
 schema_generating: true
 description: A chemical substance (often a mixture) processed for consumption for
   nutritional, medical or technical use.

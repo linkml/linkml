@@ -1,4 +1,4 @@
-id: hospitalization_outcome
+# metamodel_version: 1.7.0# version: 1.8.2id: hospitalization_outcome
 schema_generating: true
 description: An outcome resulting from an exposure event which is the increased manifestation
   of acute (e.g. emergency room visit) or chronic (inpatient) hospitalization.

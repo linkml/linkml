@@ -1,4 +1,4 @@
-id: behavioral_feature
+# metamodel_version: 1.7.0# version: 1.8.2id: behavioral_feature
 schema_generating: true
 description: A phenotypic feature which is behavioral in nature.
 display_name: behavioral feature

@@ -1,4 +1,4 @@
-id: protein_isoform
+# metamodel_version: 1.7.0# version: 1.8.2id: protein_isoform
 schema_generating: true
 description: Represents a protein that is a specific isoform of the canonical or reference
   protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/

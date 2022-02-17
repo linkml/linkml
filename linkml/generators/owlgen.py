@@ -14,7 +14,7 @@ from rdflib.plugin import plugins as rdflib_plugins, Parser as rdflib_Parser
 
 from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE, METAMODEL_YAML_URI, META_BASE_URI
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
-    TypeDefinitionName, SlotDefinition, TypeDefinition, Element, EnumDefinitionName, Definition
+    TypeDefinitionName, SlotDefinition, TypeDefinition, Element, EnumDefinition, EnumDefinitionName, Definition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
@@ -88,7 +88,7 @@ class OwlSchemaGenerator(Generator):
     def end_schema(self, output: Optional[str] = None, **_) -> None:
         data = self.graph.serialize(format='turtle' if self.format in ['owl', 'ttl'] else self.format).decode()
         if output:
-            with open(output, 'w') as outf:
+            with open(output, 'w', encoding='UTF-8') as outf:
                 outf.write(data)
         else:
             print(data)
@@ -149,6 +149,16 @@ class OwlSchemaGenerator(Generator):
                     self.graph.add((uri, SKOS.relatedMatch, m_uri))
                 else:
                     logging.warning(f'No URI for {m}')
+        for k, v in e.annotations.items():
+            if ':' in k:
+                k_curie = k
+                try:
+                    k_uri = self.metamodel.namespaces.uri_for(k_curie)
+                    self.graph.add((uri,
+                                    k_uri,
+                                    Literal(v.value)))
+                except ValueError as e:
+                    logging.error('Ignoring namesoace error: {e}')
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         """
@@ -162,8 +172,8 @@ class OwlSchemaGenerator(Generator):
         """
         # To understand how the RDF-level operations here related to the OWL
         # representation, consult https://www.w3.org/TR/owl2-mapping-to-rdf/
-        self.add_mappings(cls)
         cls_uri = self._class_uri(cls.name)
+        self.add_mappings(cls)
         self.add_metadata(cls, cls_uri)
         # add declaration
         self.graph.add((cls_uri, RDF.type, OWL.Class))
@@ -315,6 +325,7 @@ class OwlSchemaGenerator(Generator):
             return
 
         self.add_mappings(slot)
+        self.add_metadata(slot, slot_uri)
         self._add_element_properties(slot_uri, slot)
 
 
@@ -358,6 +369,37 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((restr, OWL.onDataRange, self.namespaces.uri_for(typ.uri)))
             self.graph.add((type_uri, RDFS.subClassOf, restr))
 
+    def visit_enum(self, e: EnumDefinition) -> None:
+        g = self.graph
+        enum_uri = self._enum_uri(e.name)
+        g.add((enum_uri, RDF.type, OWL.Class))
+        if self.metaclasses:
+            g.add((enum_uri, RDF.type,
+                  self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][camelcase('enum definition')]))
+        self._add_element_properties(enum_uri, e)
+        pv_uris = []
+        for pv in e.permissible_values.values():
+            if pv.meaning:
+                pv_uri = self.namespaces.uri_for(pv.meaning)
+            else:
+                pv_uri = enum_uri + '#' + pv.text.replace(' ', '+')
+                #pv_uri = self.namespaces.uri_for(downcase(pv.text))
+                #pv_uri = None
+            pv_uris.append(pv_uri)
+            if pv_uri:
+                g.add((pv_uri, RDF.type, OWL.Class))
+                g.add((pv_uri, RDFS.label, Literal(pv.text)))
+                g.add((enum_uri, self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]['permissible_values'], pv_uri))
+                self._add_element_properties(pv_uri, pv)
+                if self.metaclasses:
+                    g.add((pv_uri, RDF.type, enum_uri))
+        if all([pv is not None for pv in pv_uris]):
+            union_bnode = BNode()
+            Collection(self.graph, union_bnode, pv_uris)
+            self.graph.add((enum_uri, OWL.unionOf, union_bnode))
+
+
+
     def _add_element_properties(self, uri: URIRef, el: Element) -> None:
         for k, v in el.__dict__.items():
             if k in self.metamodel.schema.slots:
@@ -373,6 +415,7 @@ class OwlSchemaGenerator(Generator):
                         self.graph.add((uri,
                                         prop_uri,
                                         Literal(e)))
+
 
 
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
@@ -399,9 +442,9 @@ class OwlSchemaGenerator(Generator):
         return URIRef(c.definition_uri)
 
     def _enum_uri(self, en: EnumDefinitionName) -> URIRef:
-        # TODO: enums
         e = self.schema.enums[en]
-        return URIRef(f"http://UNKNOWN.org/{en}")
+        # TODO: allow control over URIs
+        return URIRef(e.definition_uri)
 
     def _prop_uri(self, pn: SlotDefinitionName) -> URIRef:
         p = self.schema.slots.get(pn, None)

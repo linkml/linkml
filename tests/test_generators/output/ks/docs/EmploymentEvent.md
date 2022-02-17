@@ -7,7 +7,7 @@
 URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Event],[Company]<employed%20at%200..1-%20[EmploymentEvent&#124;type:EmploymentEventType%20%3F;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[Person]++-%20has%20employment%20history%200..*>[EmploymentEvent],[Event]^-[EmploymentEvent],[Person],[Company])](https://yuml.me/diagram/nofunky;dir:TB/class/[Event],[Company]<employed%20at%200..1-%20[EmploymentEvent&#124;type:EmploymentEventType%20%3F;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[Person]++-%20has%20employment%20history%200..*>[EmploymentEvent],[Event]^-[EmploymentEvent],[Person],[Company])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Event],[Company]<employed%20at%200..1-%20[EmploymentEvent&#124;type:EmploymentEventType%20%3F;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[Person]++-%20has%20employment%20history%200..*>[EmploymentEvent],[Event]^-[EmploymentEvent],[Person],[Company],[AnyObject])](https://yuml.me/diagram/nofunky;dir:TB/class/[Event],[Company]<employed%20at%200..1-%20[EmploymentEvent&#124;type:EmploymentEventType%20%3F;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[Person]++-%20has%20employment%20history%200..*>[EmploymentEvent],[Event]^-[EmploymentEvent],[Person],[Company],[AnyObject])
 
 ## Parents
 
@@ -36,3 +36,6 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
      * Range: [Date](types/Date.md)
  * [is current](is_current.md)  <sub>0..1</sub>
      * Range: [Boolean](types/Boolean.md)
+ * [metadata](metadata.md)  <sub>0..1</sub>
+     * Description: Example of a slot that has an unconstrained range
+     * Range: [AnyObject](AnyObject.md)

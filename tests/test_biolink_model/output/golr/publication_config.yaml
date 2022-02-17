@@ -1,4 +1,4 @@
-id: publication
+# metamodel_version: 1.7.0# version: 1.8.2id: publication
 schema_generating: true
 description: Any published piece of information. Can refer to a whole publication,
   its encompassing publication (i.e. journal or book) or to a part of a publication,

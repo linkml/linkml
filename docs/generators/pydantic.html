@@ -119,9 +119,95 @@ with optional support for user-supplied jinja2 templates to generate alternate c
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-pydantic">
+<h4>gen-pydantic<a class="headerlink" href="#gen-pydantic" title="Permalink to this headline"></a></h4>
+<p>Generate pydantic classes to represent a LinkML model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-pydantic <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-template_file">
+<span id="cmdoption-gen-pydantic-template-file"></span><span class="sig-name descname"><span class="pre">--template_file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pydantic-template_file" title="Permalink to this definition"></a></dt>
+<dd><p>Optional jinja2 template to use for class generation</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-f">
+<span id="cmdoption-gen-pydantic-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pydantic-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=pydantic)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>pydantic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-metadata">
+<span id="cmdoption-gen-pydantic-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-pydantic-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-useuris">
+<span id="cmdoption-gen-pydantic-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-pydantic-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-im">
+<span id="cmdoption-gen-pydantic-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pydantic-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-log_level">
+<span id="cmdoption-gen-pydantic-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pydantic-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-mergeimports">
+<span id="cmdoption-gen-pydantic-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-pydantic-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pydantic-arg-YAMLFILE">
+<span id="cmdoption-gen-pydantic-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-pydantic-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pydanticgen.</span></span><span class="sig-name descname"><span class="pre">PydanticGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pydantic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen.html#PydanticGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen.html#PydanticGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 <section id="additional-notes">

@@ -1,5 +1,5 @@
 # Auto generated from annotations.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:22
+# Generation date: 2022-01-27T02:52:21
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations
@@ -21,11 +21,12 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from .extensions import Extension
+from .extensions import Extension, ExtensionTag
 from .types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
+version = "2.0.0"
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -38,7 +39,8 @@ DEFAULT_ = LINKML
 # Types
 
 # Class references
-
+class AnnotationTag(ExtensionTag):
+    pass
 
 
 @dataclass
@@ -53,10 +55,10 @@ class Annotatable(YAMLRoot):
     class_name: ClassVar[str] = "annotatable"
     class_model_uri: ClassVar[URIRef] = LINKML.Annotatable
 
-    annotations: Optional[Union[Union[dict, "Annotation"], List[Union[dict, "Annotation"]]]] = empty_list()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], List[Union[dict, "Annotation"]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -73,12 +75,17 @@ class Annotation(Extension):
     class_name: ClassVar[str] = "annotation"
     class_model_uri: ClassVar[URIRef] = LINKML.Annotation
 
-    tag: Union[str, URIorCURIE] = None
+    tag: Union[str, AnnotationTag] = None
     value: str = None
-    annotations: Optional[Union[Union[dict, "Annotation"], List[Union[dict, "Annotation"]]]] = empty_list()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], List[Union[dict, "Annotation"]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
+        if self._is_empty(self.tag):
+            self.MissingRequiredField("tag")
+        if not isinstance(self.tag, AnnotationTag):
+            self.tag = AnnotationTag(self.tag)
+
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
 
@@ -91,4 +98,4 @@ class slots:
     pass
 
 slots.annotations = Slot(uri=LINKML.annotations, name="annotations", curie=LINKML.curie('annotations'),
-                   model_uri=LINKML.annotations, domain=None, range=Optional[Union[Union[dict, "Annotation"], List[Union[dict, "Annotation"]]]])
+                   model_uri=LINKML.annotations, domain=None, range=Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], List[Union[dict, "Annotation"]]]])

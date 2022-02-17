@@ -1,4 +1,4 @@
-id: chemical_substance
+# metamodel_version: 1.7.0# version: 1.8.2id: chemical_substance
 schema_generating: true
 description: May be a chemical entity or a formulation with a chemical entity as active
   ingredient, or a complex material with multiple chemical entities as part

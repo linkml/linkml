@@ -3,7 +3,8 @@
 Working with Data
 =================
 
-Introduction to the key parts of LinkML that you need to know:
+This section describes what you need to know for working with data
+that conforms to a LinkML schema.
 
 .. toctree::
    :maxdepth: 2

@@ -1166,7 +1166,7 @@
         "alias"
       ],
       "narrow_mappings": [
-        "https://www.w3.org/TR/skos-reference/#altLabel",
+        "http://www.w3.org/2004/02/skos/core#altLabel",
         "https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#Alias",
         "https://www.alliancegenome.org/synonyms",
         "https://github.com/geneontology/go-annotation/blob/master/specs/gpad-gpi-2-0.md#DB_Object_Synonyms",
@@ -1268,7 +1268,7 @@
       ],
       "exact_mappings": [
         "http://purl.obolibrary.org/obo/IAO_0000115",
-        "https://www.w3.org/TR/skos-reference/#definitions"
+        "http://www.w3.org/2004/02/skos/core#definitions"
       ],
       "narrow_mappings": [
         "https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#Description"
@@ -2174,7 +2174,7 @@
       "name": "related_to",
       "definition_uri": "https://w3id.org/biolink/vocab/related_to",
       "exact_mappings": [
-        "https://www.w3.org/TR/skos-reference/#relatedMatch",
+        "http://www.w3.org/2004/02/skos/core#relatedMatch",
         "https://skr3.nlm.nih.gov/SemMedDBASSOCIATED_WITH",
         "https://skr3.nlm.nih.gov/SemMedDBassociated_with",
         "http://identifiers.org/umls/related_to"
@@ -2406,7 +2406,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/same_as",
       "exact_mappings": [
         "http://www.w3.org/2002/07/owl#sameAs",
-        "https://www.w3.org/TR/skos-reference/#exactMatch",
+        "http://www.w3.org/2004/02/skos/core#exactMatch",
         "https://www.wikidata.org/wiki/Property:P2888",
         "https://www.ebi.ac.uk/chembl/mechanism/inspect/equivalent_to",
         "http://purl.obolibrary.org/obo/MONDO_equivalentTo"
@@ -2436,7 +2436,7 @@
       "name": "close_match",
       "definition_uri": "https://w3id.org/biolink/vocab/close_match",
       "exact_mappings": [
-        "https://www.w3.org/TR/skos-reference/#closeMatch",
+        "http://www.w3.org/2004/02/skos/core#closeMatch",
         "https://skr3.nlm.nih.gov/SemMedDBSAME_AS",
         "https://skr3.nlm.nih.gov/SemMedDBsame_as"
       ],
@@ -2468,7 +2468,7 @@
       "name": "exact_match",
       "definition_uri": "https://w3id.org/biolink/vocab/exact_match",
       "exact_mappings": [
-        "https://www.w3.org/TR/skos-reference/#exactMatch",
+        "http://www.w3.org/2004/02/skos/core#exactMatch",
         "https://www.wikidata.org/wiki/Q39893449",
         "https://www.wikidata.org/wiki/P2888"
       ],
@@ -2491,7 +2491,7 @@
       "name": "broad_match",
       "definition_uri": "https://w3id.org/biolink/vocab/broad_match",
       "exact_mappings": [
-        "https://www.w3.org/TR/skos-reference/#broadMatch",
+        "http://www.w3.org/2004/02/skos/core#broadMatch",
         "https://www.wikidata.org/wiki/Q39894595"
       ],
       "description": "a list of terms from different schemas or terminology systems that have a broader, more general meaning. Broader terms are typically shown as parents in a hierarchy or tree.",
@@ -2513,7 +2513,7 @@
       "name": "narrow_match",
       "definition_uri": "https://w3id.org/biolink/vocab/narrow_match",
       "exact_mappings": [
-        "https://www.w3.org/TR/skos-reference/#narrowMatch",
+        "http://www.w3.org/2004/02/skos/core#narrowMatch",
         "https://www.wikidata.org/wiki/Q39893967"
       ],
       "description": "a list of terms from different schemas or terminology systems that have a narrower, more specific meaning. Narrower terms are typically shown as children in a hierarchy or tree.",
@@ -11019,7 +11019,7 @@
       ],
       "exact_mappings": [
         "http://purl.obolibrary.org/obo/IAO_0000115",
-        "https://www.w3.org/TR/skos-reference/#definitions"
+        "http://www.w3.org/2004/02/skos/core#definitions"
       ],
       "narrow_mappings": [
         "https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#Description"
@@ -21930,9 +21930,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "biolink-model.yaml",
-  "source_file_date": "2021-10-27T23:28:23",
+  "source_file_date": "2022-02-09T19:39:33",
   "source_file_size": 267853,
-  "generation_date": "2021-10-27T23:31:48",
+  "generation_date": "2022-02-09T19:43:10",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",
@@ -22423,7 +22423,7 @@
       "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "schema": "http://schema.org/",
-      "skos": "https://www.w3.org/TR/skos-reference/#",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
       "wgs": {
         "@id": "http://www.w3.org/2003/01/geo/wgs84_pos",
         "@prefix": true

@@ -1,4 +1,4 @@
-id: haplotype
+# metamodel_version: 1.7.0# version: 1.8.2id: haplotype
 schema_generating: true
 description: A set of zero or more Alleles on a single instance of a Sequence[VMC]
 display_name: haplotype

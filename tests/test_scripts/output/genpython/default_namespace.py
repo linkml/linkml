@@ -1,5 +1,5 @@
 # Auto generated from default_namespace.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-21T18:04:09
+# Generation date: 2022-02-14T20:44:36
 # Schema: namespace
 #
 # id: http://example.org/tests/namespace
@@ -25,6 +25,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.linkml_model.types import String
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

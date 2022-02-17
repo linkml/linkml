@@ -1,4 +1,4 @@
-id: cohort
+# metamodel_version: 1.7.0# version: 1.8.2id: cohort
 schema_generating: true
 description: A group of people banded together or treated as a group who share common
   characteristics. A cohort 'study' is a particular form of longitudinal study that

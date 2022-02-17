@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from uriandcurie.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-03-24 16:49\n    Schema: uriandcurie\n    \n    id: http://example.org/test/uriandcurie\n    description: \n    license: \n    ",
+   "_comments": "Auto generated from uriandcurie.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-01-27T02:56:41\n    Schema: uriandcurie\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: http://example.org/test/uriandcurie\n    description: \n    license: \n    ",
    "@context": {
       "m": {
          "@id": "http://example.org/test/uriandcurie",

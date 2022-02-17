@@ -89,6 +89,8 @@ classes:
         pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
     id_prefixes:
       - P
+    exact_mappings:
+      - schema:Person
 
   Organization:
     mixins:
@@ -121,6 +123,8 @@ classes:
 
   DiagnosisConcept:
     is_a: Concept
+    close_mappings:
+      - biolink:Disease
 
   ProcedureConcept:
     is_a: Concept
@@ -130,6 +134,7 @@ classes:
       - started at time
       - ended at time
       - is current
+      - metadata
 
   Relationship:
     slots:
@@ -232,6 +237,11 @@ classes:
       slot with space 2:
         range: class with spaces
 
+
+  AnyObject:
+    class_uri: linkml:Any
+    description: Example of unconstrained class
+
 slots:
   employed at:
     range: Company
@@ -267,6 +277,8 @@ slots:
     range: Person
   in location:
     range: Place
+    annotations:
+      "biolink:opposite": location_of
   diagnosis:
     range: DiagnosisConcept
     inlined: true
@@ -292,6 +304,9 @@ slots:
     range: BirthEvent
   in code system:
     range: CodeSystem
+  metadata:
+    range: AnyObject
+    description: Example of a slot that has an unconstrained range
 
 enums:
   FamilialRelationshipType:
@@ -303,12 +318,24 @@ enums:
     permissible_values:
       TODO:
   EmploymentEventType:
+    description: codes for different kinds of employment/HR related events
+    aliases:
+      - HR code
     permissible_values:
       HIRE:
         meaning: bizcodes:001
+        description: event for a new employee
       FIRE:
         meaning: bizcodes:002
+        annotations:
+          "biolink:opposite": HIRE
       PROMOTION:
         meaning: bizcodes:003
+        description: promotion event
       TRANSFER:
         meaning: bizcodes:004
+        description: transfer internally
+  other codes:
+    permissible_values:
+      a b:
+      #1+2:

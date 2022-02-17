@@ -1,4 +1,4 @@
-id: permissible_value
+# metamodel_version: 1.7.0# version: 2.0.0id: permissible_value
 schema_generating: true
 description: a permissible value, accompanied by intended text and an optional mapping
   to a concept URI

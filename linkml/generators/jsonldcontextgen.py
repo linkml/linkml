@@ -81,6 +81,8 @@ class ContextGenerator(Generator):
                 comments += f'''
     Generation date: {self.schema.generation_date}
     Schema: {self.schema.name}
+    metamodel version: {self.schema.metamodel_version}
+    model version: {self.schema.version if self.schema.version else None}
     '''
             comments += f'''
     id: {self.schema.id}
@@ -112,7 +114,7 @@ class ContextGenerator(Generator):
                 context_content[k] = v
         context['@context'] = context_content
         if output:
-            with open(output, 'w') as outf:
+            with open(output, 'w', encoding='UTF-8') as outf:
                 outf.write(as_json(context))
         else:
             print(as_json(context))
@@ -170,7 +172,8 @@ class ContextGenerator(Generator):
 @click.option("--base", help="Base URI for model")
 @click.option("--prefixes/--no-prefixes",  default=True, show_default=True, help="Emit context for prefixes (default=--prefixes)")
 @click.option("--model/--no-model",  default=True, show_default=True, help="Emit context for model elements (default=--model)")
-@click.option("--flatprefixes/--no-flatprefixes", default=False, show_default=True, help="Emit non-parsable prefixes as an object")
+@click.option("--flatprefixes/--no-flatprefixes", default=False, show_default=True, help="Emit non-JSON-LD compliant prefixes as an object (deprecated: use gen-prefix-map instead).")
+
 def cli(yamlfile, **args):
     """ Generate jsonld @context definition from LinkML model """
     print(ContextGenerator(yamlfile, **args).serialize(**args))

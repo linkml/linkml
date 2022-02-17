@@ -1,4 +1,4 @@
-id: book_chapter
+# metamodel_version: 1.7.0# version: 1.8.2id: book_chapter
 schema_generating: true
 display_name: book chapter
 document_category: book chapter

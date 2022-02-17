@@ -1,4 +1,4 @@
-id: prefix
+# metamodel_version: 1.7.0# version: 2.0.0id: prefix
 schema_generating: true
 description: prefix URI tuple
 display_name: prefix

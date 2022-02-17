@@ -1,4 +1,4 @@
-id: geographic_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: geographic_exposure
 schema_generating: true
 description: A geographic exposure is a factor relating to geographic proximity to
   some impactful entity.

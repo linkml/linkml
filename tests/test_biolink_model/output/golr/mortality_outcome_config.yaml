@@ -1,4 +1,4 @@
-id: mortality_outcome
+# metamodel_version: 1.7.0# version: 1.8.2id: mortality_outcome
 schema_generating: true
 description: An outcome of death from resulting from an exposure event.
 display_name: mortality outcome

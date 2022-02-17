@@ -25,6 +25,70 @@ classes:
        range: MetaObject
 ```
 
+## Unions as ranges
+
+[any_of](https://w3id.org/linkml/any_of) can be used to express that a range must satisfy any of a set of ranges.
+
+One way this can be used is to compose enums together, for example if we have a `vital_status` enum that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:
+
+
+```yaml
+slots:
+  vital_status:
+    required: true
+    any_of:
+      - range: MissingValueEnum
+      - range: VitalStatusEnum
+enums:
+  MissingValueEnum:
+    permissible_values:
+      INAPPLICABLE:
+      NOT_COLLECTED:
+      RESTRICTED:
+      OTHER:
+  VitalStatusEnum:
+    permissible_values:
+      LIVING:
+      DEAD:
+      UNDEAD:
+```
+
+Note that these constructs may ignored by some generators in the linkml 1.1 series.
+
+In the 1.2 series:
+
+- generated python should use a Union
+- jsonschema should use [conditionals](https://json-schema.org/understanding-json-schema/reference/conditionals.html)
+- OWL should use UnionOf
+
+## Rules
+
+Any class can have a [rules](https://w3id.org/linkml/rules) block, consisting of (optional) [preconditions](https://w3id.org/linkml/preconditions) and [postconditions](https://w3id.org/linkml/postconditions). This can express basic if-then logic:
+
+```
+classes:
+  Address:
+    slots:
+      - street_address
+      - country
+    rules:
+      - preconditions:
+          slot_conditions:
+            country:
+              any_of:
+                - equals_string: USA
+                - equals_string: USA_territory
+        postconditions:
+          slot_conditions:
+            postal_code:
+              pattern: "[0-9]{5}(-[0-9]{4})?"
+            telephone:
+              pattern: "^\\+1 "
+        description: USA and territories must have a specific regex patern for postal codes and phone numbers
+```
+
+See above for implementation status
+
 ## Defining slots
 
 A subset of slots for a class can be declared as [defining
@@ -62,5 +126,4 @@ ProteinProteinInteraction = Interaction and subject some Protein and object some
 And using an OWL reasoner will give the intended inferences.
 
 This feature is experimental, and may be replaced by a more general rules mechanism in future.
-
 

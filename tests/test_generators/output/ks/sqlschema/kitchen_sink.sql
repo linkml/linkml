@@ -45,7 +45,8 @@ CREATE TABLE "Event" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current)
+	metadata TEXT, 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, metadata)
 );
 
 CREATE TABLE "FakeClass" (
@@ -99,8 +100,9 @@ CREATE TABLE "BirthEvent" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
+	metadata TEXT, 
 	in_location TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location), 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, metadata, in_location), 
 	FOREIGN KEY(in_location) REFERENCES "Place" (id)
 );
 
@@ -143,9 +145,10 @@ CREATE TABLE "MarriageEvent" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
+	metadata TEXT, 
 	married_to TEXT, 
 	in_location TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, married_to, in_location), 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, metadata, married_to, in_location), 
 	FOREIGN KEY(married_to) REFERENCES "Person" (id), 
 	FOREIGN KEY(in_location) REFERENCES "Place" (id)
 );
@@ -183,10 +186,11 @@ CREATE TABLE "EmploymentEvent" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
+	metadata TEXT, 
 	employed_at TEXT, 
 	type VARCHAR(9), 
 	"Person_id" TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, employed_at, type, "Person_id"), 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, metadata, employed_at, type, "Person_id"), 
 	FOREIGN KEY(employed_at) REFERENCES "Company" (id), 
 	FOREIGN KEY("Person_id") REFERENCES "Person" (id)
 );
@@ -195,11 +199,12 @@ CREATE TABLE "MedicalEvent" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
+	metadata TEXT, 
 	in_location TEXT, 
 	diagnosis TEXT, 
 	procedure TEXT, 
 	"Person_id" TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, is_current, in_location, diagnosis, procedure, "Person_id"), 
+	PRIMARY KEY (started_at_time, ended_at_time, is_current, metadata, in_location, diagnosis, procedure, "Person_id"), 
 	FOREIGN KEY(in_location) REFERENCES "Place" (id), 
 	FOREIGN KEY(diagnosis) REFERENCES "DiagnosisConcept" (id), 
 	FOREIGN KEY(procedure) REFERENCES "ProcedureConcept" (id), 

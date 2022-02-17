@@ -66,6 +66,8 @@ Direct:
 name: Person
 id_prefixes:
 - P
+exact_mappings:
+- schema:Person
 description: A person, living or dead
 in_subset:
 - subset A
@@ -94,6 +96,8 @@ Induced:
 name: Person
 id_prefixes:
 - P
+exact_mappings:
+- schema:Person
 description: A person, living or dead
 in_subset:
 - subset A

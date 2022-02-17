@@ -1,4 +1,4 @@
-id: environmental_feature
+# metamodel_version: 1.7.0# version: 1.8.2id: environmental_feature
 schema_generating: true
 display_name: environmental feature
 document_category: environmental feature

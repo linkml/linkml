@@ -1,4 +1,4 @@
-id: organism_taxon_to_organism_taxon_specialization
+# metamodel_version: 1.7.0# version: 1.8.2id: organism_taxon_to_organism_taxon_specialization
 schema_generating: true
 description: 'A child-parent relationship between two taxa. For example: Homo sapiens
   subclass_of Homo'

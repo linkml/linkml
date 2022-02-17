@@ -115,6 +115,112 @@
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-sqlddl">
+<h4>gen-sqlddl<a class="headerlink" href="#gen-sqlddl" title="Permalink to this headline"></a></h4>
+<p>Generate SQL DDL representation</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-sqlddl <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-dialect">
+<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-dialect" title="Permalink to this definition"></a></dt>
+<dd><p>SQL-Alchemy dialect, e.g. sqlite, mysql+odbc</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>sqlite</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-sqla-file">
+<span class="sig-name descname"><span class="pre">--sqla-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sqla_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-sqla-file" title="Permalink to this definition"></a></dt>
+<dd><p>Path to sqlalchemy generated python</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-python-import">
+<span class="sig-name descname"><span class="pre">--python-import</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;python_import&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-python-import" title="Permalink to this definition"></a></dt>
+<dd><p>Python import header for generated sql-alchemy code</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-direct-mapping">
+<span id="cmdoption-gen-sqlddl-no-direct-mapping"></span><span class="sig-name descname"><span class="pre">--direct-mapping</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-direct-mapping</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-direct-mapping" title="Permalink to this definition"></a></dt>
+<dd><p>Map classes directly to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-use-foreign-keys">
+<span id="cmdoption-gen-sqlddl-no-use-foreign-keys"></span><span class="sig-name descname"><span class="pre">--use-foreign-keys</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-foreign-keys</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-use-foreign-keys" title="Permalink to this definition"></a></dt>
+<dd><p>Emit FK declarations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-f">
+<span id="cmdoption-gen-sqlddl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=proto)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>proto</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-metadata">
+<span id="cmdoption-gen-sqlddl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-useuris">
+<span id="cmdoption-gen-sqlddl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-im">
+<span id="cmdoption-gen-sqlddl-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-log_level">
+<span id="cmdoption-gen-sqlddl-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-mergeimports">
+<span id="cmdoption-gen-sqlddl-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-arg-YAMLFILE">
+<span id="cmdoption-gen-sqlddl-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>

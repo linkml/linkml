@@ -61,11 +61,9 @@ The [json-flattener/](https://github.com/cmungall/json-flattener/) library is us
  - multivalued slots are serialized using a `|` separator
  - nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be `persons_name`
 
-## Working with Relational Databases
-
 ## Inference of schemas from tabular data
 
-Use `tsvs2linkml` in the enrichment toolkit
+Use `tsvs2linkml` in the [enrichment toolkit](https://github.com/linkml/linkml-model-enrichment)
 
 
 

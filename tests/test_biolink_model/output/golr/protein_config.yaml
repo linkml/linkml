@@ -1,4 +1,4 @@
-id: protein
+# metamodel_version: 1.7.0# version: 1.8.2id: protein
 schema_generating: true
 description: A gene product that is composed of a chain of amino acid sequences and
   is produced by ribosome-mediated translation of mRNA

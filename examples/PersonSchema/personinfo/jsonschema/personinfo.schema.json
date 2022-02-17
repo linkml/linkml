@@ -1,8 +1,5 @@
 {
-   "$id": "https://w3id.org/linkml/examples/personinfo",
-   "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "definitions": {
+   "$defs": {
       "Address": {
          "additionalProperties": false,
          "description": "",
@@ -50,13 +47,13 @@
          "properties": {
             "organizations": {
                "items": {
-                  "$ref": "#/definitions/Organization"
+                  "$ref": "#/$defs/Organization"
                },
                "type": "array"
             },
             "persons": {
                "items": {
-                  "$ref": "#/definitions/Person"
+                  "$ref": "#/$defs/Person"
                },
                "type": "array"
             }
@@ -159,7 +156,7 @@
                "type": "string"
             },
             "type": {
-               "$ref": "#/definitions/FamilialRelationshipType"
+               "$ref": "#/$defs/FamilialRelationshipType"
             }
          },
          "required": [
@@ -197,7 +194,7 @@
          "description": "",
          "properties": {
             "diagnosis": {
-               "$ref": "#/definitions/DiagnosisConcept"
+               "$ref": "#/$defs/DiagnosisConcept"
             },
             "duration": {
                "type": "number"
@@ -213,7 +210,7 @@
                "type": "boolean"
             },
             "procedure": {
-               "$ref": "#/definitions/ProcedureConcept"
+               "$ref": "#/$defs/ProcedureConcept"
             },
             "started_at_time": {
                "format": "date",
@@ -290,6 +287,8 @@
          "description": "A person (alive, dead, undead, or fictional).",
          "properties": {
             "age_in_years": {
+               "maximum": 999,
+               "minimum": 0,
                "type": "integer"
             },
             "aliases": {
@@ -302,30 +301,30 @@
                "type": "string"
             },
             "current_address": {
-               "$ref": "#/definitions/Address",
+               "$ref": "#/$defs/Address",
                "description": "The address at which a person currently lives"
             },
             "description": {
                "type": "string"
             },
             "gender": {
-               "$ref": "#/definitions/GenderType"
+               "$ref": "#/$defs/GenderType"
             },
             "has_employment_history": {
                "items": {
-                  "$ref": "#/definitions/EmploymentEvent"
+                  "$ref": "#/$defs/EmploymentEvent"
                },
                "type": "array"
             },
             "has_familial_relationships": {
                "items": {
-                  "$ref": "#/definitions/FamilialRelationship"
+                  "$ref": "#/$defs/FamilialRelationship"
                },
                "type": "array"
             },
             "has_medical_history": {
                "items": {
-                  "$ref": "#/definitions/MedicalEvent"
+                  "$ref": "#/$defs/MedicalEvent"
                },
                "type": "array"
             },
@@ -419,7 +418,26 @@
          "type": "object"
       }
    },
-   "properties": {},
+   "$id": "https://w3id.org/linkml/examples/personinfo",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "metamodel_version": "1.7.0",
+   "properties": {
+      "organizations": {
+         "items": {
+            "$ref": "#/$defs/Organization"
+         },
+         "type": "array"
+      },
+      "persons": {
+         "items": {
+            "$ref": "#/$defs/Person"
+         },
+         "type": "array"
+      }
+   },
+   "required": [],
    "title": "personinfo",
-   "type": "object"
+   "type": "object",
+   "version": null
 }

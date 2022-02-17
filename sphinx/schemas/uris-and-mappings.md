@@ -1,6 +1,6 @@
 # URIs and Mappings
 
-One feature that sets LinkML apart from frameworks such as JSON-Schema and UML is that fact that each element of your schema has a globally unique IRI/URI. This is somewhat hidden behind the scenes, so you can ignore this feature if you like, but it is also very easy to use this, which can provide benefits in terms of reusing and linking schemas, and working with the linked data stack.
+One feature that sets LinkML apart from frameworks such as JSON-Schema and UML is that fact that each element of your schema has a globally unique [IRI/URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier). This is somewhat hidden behind the scenes, so you can ignore this feature if you like, but it is also very easy to use this, which can provide benefits in terms of reusing and linking schemas, and working with the linked data stack.
 
 ## background: URIs, IRIs, and CURIEs
 

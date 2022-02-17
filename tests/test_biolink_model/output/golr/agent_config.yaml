@@ -1,4 +1,4 @@
-id: agent
+# metamodel_version: 1.7.0# version: 1.8.2id: agent
 schema_generating: true
 description: person, group, organization or project that provides a piece of information
   (i.e. a knowledge association)

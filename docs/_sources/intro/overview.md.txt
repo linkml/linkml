@@ -48,22 +48,24 @@ LinkML offers many features of use to data modelers, while retaining a simple co
 
 - Classes can be arranged in [inheritance hierarchies](../schemas/inheritance)
 - Powerful [Semantic enumerations](../schema/enums) that can optionally be backed by ontologies
-- Create data models that are independent of a database technology
-- Ability to provide rich annotations, metadata, and mappings as part of a model
+- Create [data models](../schema/enums) that are independent of a database technology
+- Develop machine-actionable reporting standards and data dictionaries 
+- Include rich annotations, [metadata](../schemas/models.html#model-metadata-and-directives), and [mappings](../schemas/uris-and-mappings) as part of a model
 - "Linked Data" ready
    - All schemas have a corresponding JSON-LD context
-   - Compatability with RDF tooling, without committing to an RDF stack
+   - [Compatability with RDF tooling](../data/rdf), without committing to an RDF stack
+   - Compilation to [SHACL](../generators/shacl) and [ShEx](../generators/shex)
 
 ## A bridge between frameworks
 
 Many frameworks lock you in to a particular view of the world or
-technology. This can lead to silos, and the need to create mappings
+technology. This can lead to *silos*, and the need to create mappings
 and transformations between different representations of the same
 data; for example, if your JSON documents need to work in concert with
 your relational database or graph store.
 
 LinkML has many different generators [existing
-frameworks](../generators) that allow the translation of a LinkML
+frameworks](../generators/index) that allow the translation of a LinkML
 schema to other frameworks:
 
 - Convert to JSON-LD contexts, and instantly port your data to RDF
@@ -77,6 +79,12 @@ Using the LinkML toolchain you can go from a schema to statically
 hosted searchable website in minutes, with pages for each of your
 schema elements. Using lightweight namespace registries such as
 w3id.org you can easily have resolvable URIs for all your concepts.
+
+Showcase:
+
+* [Biolink](https://biolink.github.io/biolink-model/)
+* [CCDH Model](https://cancerdhc.github.io/ccdhmodel)
+* [NMDC](https://microbiomedata.github.io/nmdc-schema/)
 
 ## A rapidly growing toolchain
 

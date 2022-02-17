@@ -1,4 +1,4 @@
-id: food_component
+# metamodel_version: 1.7.0# version: 1.8.2id: food_component
 schema_generating: true
 display_name: food component
 document_category: food component

@@ -1,4 +1,4 @@
-id: individual_organism
+# metamodel_version: 1.7.0# version: 1.8.2id: individual_organism
 schema_generating: true
 description: 'An instance of an organism. For example, Richard Nixon, Charles Darwin,
   my pet cat. Example ID: ORCID:0000-0002-5355-2576'

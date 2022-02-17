@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experimental features &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with Data" href="../data/index.html" />
+    <link rel="prev" title="Imports" href="imports.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">LinkML Schemas</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Experimental features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#linkml-any-type">LinkML Any type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-slots">Defining slots</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">LinkML Schemas</a> &raquo;</li>
+      <li>Experimental features</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/experimental.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="experimental-features">
+<h1>Experimental features<a class="headerlink" href="#experimental-features" title="Permalink to this headline"></a></h1>
+<p>The following language features are experimental, behavior is not guaranteed to stay consistent</p>
+<section id="linkml-any-type">
+<h2>LinkML Any type<a class="headerlink" href="#linkml-any-type" title="Permalink to this headline"></a></h2>
+<p>LinkML is currently best suited to ‘strict’ schemas, and doesn’t have full support for being able to model arbitrary dictionaries/objects. Each slot must have a defined range, the range must be exactly one of a Class, Type, or Enum. It is currently impossible to define unions of these core ranges.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> type is an experimental feature for allowing arbitrary objects</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">MetaObject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:Any</span><span class="w"></span>
+
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">   </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MetaObject</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="defining-slots">
+<h2>Defining slots<a class="headerlink" href="#defining-slots" title="Permalink to this headline"></a></h2>
+<p>A subset of slots for a class can be declared as <a class="reference external" href="https://w3id.org/linkml/">defining
+slots</a>, indicating that membership of the
+class can be inferred based on ranges of those slots</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">Interaction</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">ProteinProteinInteraction</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Interaction</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span><span class="w"></span>
+<span class="w">      </span><span class="nt">object</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Protein</span><span class="w"></span>
+<span class="w">    </span><span class="nt">defining_slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This indicates that if we have an interaction object <code class="docutils literal notranslate"><span class="pre">I</span></code>, and the subject and object slot values for <code class="docutils literal notranslate"><span class="pre">I</span></code> are both of type Protein, then <code class="docutils literal notranslate"><span class="pre">I</span></code> can be inferred to be of type ProteinProteinInteraction</p>
+<p>When translating to OWL, this will make an equilance axiom:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ProteinProteinInteraction</span> <span class="o">=</span> <span class="n">Interaction</span> <span class="ow">and</span> <span class="n">subject</span> <span class="n">some</span> <span class="n">Protein</span> <span class="ow">and</span> <span class="nb">object</span> <span class="n">some</span> <span class="n">Protein</span>
+</pre></div>
+</div>
+<p>And using an OWL reasoner will give the intended inferences.</p>
+<p>This feature is experimental, and may be replaced by a more general rules mechanism in future.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="imports.html" class="btn btn-neutral float-left" title="Imports" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../data/index.html" class="btn btn-neutral float-right" title="Working with Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

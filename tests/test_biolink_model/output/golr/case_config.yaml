@@ -1,4 +1,4 @@
-id: case
+# metamodel_version: 1.7.0# version: 1.8.2id: case
 schema_generating: true
 description: An individual (human) organism that has a patient role in some clinical
   context.

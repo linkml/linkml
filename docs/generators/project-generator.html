@@ -122,9 +122,101 @@ python, etc</p>
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-project">
+<h4>gen-project<a class="headerlink" href="#gen-project" title="Permalink to this headline"></a></h4>
+<p>Generate an entire project LinkML schema</p>
+<p>Generate all downstream artefacts using default configuration:</p>
+<blockquote>
+<div><p>gen-project -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Exclusion lists: all except ShEx:</p>
+<blockquote>
+<div><p>gen-project –exclude shex -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Inclusion lists: only jsonschema and python:</p>
+<blockquote>
+<div><p>gen-project -I python -I jsonschema -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Configuration, on command line:</p>
+<blockquote>
+<div><p>gen-project -A ‘jsonschema: {top_class: Container}’ -d . personinfo.yaml</p>
+</div></blockquote>
+<p>Configuration, via yaml file:</p>
+<blockquote>
+<div><p>gen-project –config config.yaml personinfo.yaml</p>
+</div></blockquote>
+<p>config.yaml:</p>
+<blockquote>
+<div><p>directory: .
+generator_args:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>json_schema:</dt><dd><p>top_class: Container</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-project <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-d">
+<span id="cmdoption-gen-project-dir"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dir&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-d" title="Permalink to this definition"></a></dt>
+<dd><p>directory in which to place generated files. E.g. linkml_model, biolink_model</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-A">
+<span id="cmdoption-gen-project-a"></span><span id="cmdoption-gen-project-generator-arguments"></span><span class="sig-name descname"><span class="pre">-A</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--generator-arguments</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;generator_arguments&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-A" title="Permalink to this definition"></a></dt>
+<dd><p>yaml configuration for generators</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-C">
+<span id="cmdoption-gen-project-c"></span><span id="cmdoption-gen-project-config-file"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;config_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-C" title="Permalink to this definition"></a></dt>
+<dd><p>path to yaml configuration</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-X">
+<span id="cmdoption-gen-project-x"></span><span id="cmdoption-gen-project-exclude"></span><span class="sig-name descname"><span class="pre">-X</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-X" title="Permalink to this definition"></a></dt>
+<dd><p>list of artefacts to be excluded</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-I">
+<span id="cmdoption-gen-project-i"></span><span id="cmdoption-gen-project-include"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-project-I" title="Permalink to this definition"></a></dt>
+<dd><p>list of artefacts to be included. If not set, defaults to all</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-mergeimports">
+<span id="cmdoption-gen-project-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-project-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-project-arg-YAMLFILE">
+<span id="cmdoption-gen-project-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-project-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.projectgen.ProjectGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.projectgen.</span></span><span class="sig-name descname"><span class="pre">ProjectGenerator</span></span><a class="reference internal" href="../_modules/linkml/generators/projectgen.html#ProjectGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.projectgen.ProjectGenerator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 </section>

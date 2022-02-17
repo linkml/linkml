@@ -1,4 +1,4 @@
-id: behavioral_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: behavioral_exposure
 schema_generating: true
 description: A behavioral exposure is a factor relating to behavior impacting an individual.
 display_name: behavioral exposure

@@ -1,4 +1,4 @@
-id: pairwise_molecular_interaction
+# metamodel_version: 1.7.0# version: 1.8.2id: pairwise_molecular_interaction
 schema_generating: true
 description: An interaction at the molecular level between two physical entities
 display_name: pairwise molecular interaction

@@ -1,4 +1,4 @@
-id: food_additive
+# metamodel_version: 1.7.0# version: 1.8.2id: food_additive
 schema_generating: true
 display_name: food additive
 document_category: food additive

@@ -1,4 +1,4 @@
-id: gene_to_expression_site_association
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_to_expression_site_association
 schema_generating: true
 description: An association between a gene and an expression site, possibly qualified
   by stage/timing info.

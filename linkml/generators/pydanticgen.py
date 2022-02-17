@@ -1,16 +1,14 @@
 import os
-import logging
-from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 from copy import deepcopy
+from typing import Union, TextIO, Dict, List
 
 import click
 from jinja2 import Template
-
-from linkml_runtime.utils.schemaview import SchemaView
-
-#from linkml.generators import pydantic_GEN_VERSION
-from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation
+# from linkml.generators import pydantic_GEN_VERSION
+from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation, \
+    EnumDefinitionName, EnumDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
@@ -23,46 +21,63 @@ default_template = """
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from pydantic import BaseModel, Field
+from pydantic.dataclasses import dataclass
 
-{% for e in schema.enums.values() %}
+metamodel_version = "{{metamodel_version}}"
+version = "{{version if version else None}}"
+
+# Pydantic config and validators
+class PydanticConfig:
+    \"\"\" Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ \"\"\"
+
+    validate_assignment = True
+    validate_all = True
+    underscore_attrs_are_private = True
+    extra = 'forbid'
+    arbitrary_types_allowed = True  # TODO re-evaluate this
+
+{% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
     {% if e.description -%}
     \"\"\"
     {{ e.description }}
     \"\"\"
     {%- endif %}
-    {% for pv in e.permissible_values.values() -%}
-    {{underscore(pv.text)}} = "{{pv.text}}"
+    {% for label, value in e['values'].items() -%}
+    {{label}} = "{{value}}"
     {% endfor %}
 {% endfor %}
 
-{% for c in schema.classes.values() %}
-class {{ c.name }}( 
-                   {%- if c.is_a %}{{c.is_a}}{% else %}BaseModel{% endif -%}
+{%- for c in schema.classes.values() %}
+@dataclass(config=PydanticConfig)
+class {{ c.name }} 
+                   {%- if c.is_a %}({{c.is_a}}){% endif -%}
                    {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
-                  ):
+                  :
     {% if c.description -%}
     \"\"\"
     {{ c.description }}
     \"\"\"
     {%- endif %}
-    {% for attr in c.attributes.values() -%}
+    {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(None
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
-    {%- if attr.description %}, description="{{attr.description}}"{% endif -%}
+    {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
     {%- if attr.maximum_value != None %}, le={{attr.maximum_value}}{% endif -%}
     )
-    {% endfor %}
-    {% if not c.attributes %}
+    {% else -%}
     None
-    {% endif %}
+    {% endfor %}
+
 {% endfor %}
 
-{% for c in schema.classes.values() %}
-{{ c.name }}.update_forward_refs()
+# Update forward refs
+# see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+{% for c in schema.classes.values() -%} 
+{{ c.name }}.__pydantic_model__.update_forward_refs()
 {% endfor %}
 """
 
@@ -79,6 +94,7 @@ def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
     if pyrange is None:
         raise Exception(f'No python type for range: {s.range} // {t}')
     return pyrange
+
 
 class PydanticGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
@@ -98,6 +114,57 @@ class PydanticGenerator(OOCodeGenerator):
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
 
+    def generate_enums(self, all_enums: Dict[EnumDefinitionName, EnumDefinition]) -> Dict[str, dict]:
+        # TODO: make an explicit class to represent how an enum is passed to the template
+        enums = {}
+        for enum_name, enum_orignal in all_enums.items():
+            enum = {}
+            enum['name'] = camelcase(enum_name)
+
+            enum['values'] = {}
+            for pv in enum_orignal.permissible_values.values():
+                label = self.generate_enum_label(pv.text)
+                enum['values'][label] = pv.text
+
+            enums[enum_name] = enum
+
+        return enums
+
+    def sort_classes(self, clist: List[ClassDefinition]) -> List[ClassDefinition]:
+        """
+        sort classes such that if C is a child of P then C appears after P in the list
+
+        Overridden method include mixin classes
+
+        TODO: This should move to SchemaView
+        """
+        clist = list(clist)
+        slist = []  # sorted
+        while len(clist) > 0:
+            can_add = False
+            for i in range(len(clist)):
+                candidate = clist[i]
+                can_add = False
+                if candidate.is_a:
+                    candidates = [candidate.is_a] + candidate.mixins
+                else:
+                    candidates = candidate.mixins
+                if not candidates:
+                    can_add = True
+                else:
+                    if set(candidates) <= set([p.name for p in slist]):
+                        can_add = True
+                if can_add:
+                    slist = slist + [candidate]
+                    del clist[i]
+                    break
+            if not can_add:
+                raise ValueError(
+                    f'could not find suitable element in {clist} that does not ref {slist}'
+                )
+        return slist
+
+
     def serialize(self) -> str:
         sv = self.schemaview
 
@@ -111,34 +178,43 @@ class PydanticGenerator(OOCodeGenerator):
         sv = self.schemaview
         schema = sv.schema
         #print(f'# SV c={sv.all_classes().keys()}')
-        pyschema = SchemaDefinition(id=schema.id, name=schema.name, description=schema.description)
-        for en, e in sv.all_enums().items():
-            e2: ClassDefinition
-            e2 = deepcopy(e)
-            e2.name = camelcase(e.name)
-            pyschema.enums[e2.name] = e2
+        pyschema = SchemaDefinition(id=schema.id, name=schema.name, description=schema.description.replace("\"", "\\\""))
+        enums = self.generate_enums(sv.all_enums())
 
-        for cn, c in sv.all_classes().items():
-            c2: ClassDefinition
-            c2 = deepcopy(c)
-            c2.name = camelcase(c.name)
-            if c2.is_a:
-                c2.is_a = camelcase(c2.is_a)
-            c2.mixins = [camelcase(p) for p in c2.mixins]
-            pyschema.classes[c2.name] = c2
-            for a in list(c2.attributes.keys()):
-                del c2.attributes[a]
-            for sn in sv.class_slots(cn):
+        sorted_classes = self.sort_classes(list(sv.all_classes().values()))
+
+        # Don't want to generate classes when class_uri is linkml:Any, will
+        # just swap in typing.Any instead down below
+        sorted_classes = [c for c in sorted_classes if c.class_uri != "linkml:Any"]
+
+        for class_original in sorted_classes:
+            class_def: ClassDefinition
+            class_def = deepcopy(class_original)
+            class_name = class_original.name
+            class_def.name = camelcase(class_original.name)
+            if class_def.is_a:
+                class_def.is_a = camelcase(class_def.is_a)
+            class_def.mixins = [camelcase(p) for p in class_def.mixins]
+            if class_def.description:
+                class_def.description = class_def.description.replace("\"", "\\\"")
+            pyschema.classes[class_def.name] = class_def
+            for attribute in list(class_def.attributes.keys()):
+                del class_def.attributes[attribute]
+            for sn in sv.class_slots(class_name):
                 # TODO: fix runtime, copy should not be necessary
-                s = deepcopy(sv.induced_slot(sn, cn))
-                logging.error(f'Induced slot {cn}.{sn} == {s.name} {s.range}')
+                s = deepcopy(sv.induced_slot(sn, class_name))
+                # logging.error(f'Induced slot {class_name}.{sn} == {s.name} {s.range}')
                 s.name = underscore(s.name)
-                c2.attributes[s.name] = s
+                if s.description:
+                    s.description = s.description.replace("\"", "\\\"")
+                class_def.attributes[s.name] = s
                 collection_key = None
                 if s.range in sv.all_classes():
                     range_cls = sv.get_class(s.range)
                     #pyrange = f'"{camelcase(s.range)}"'
-                    if s.inlined or sv.get_identifier_slot(range_cls.name) is None:
+                    if range_cls.class_uri == "linkml:Any":
+                        pyrange = 'Any'
+                    elif s.inlined or sv.get_identifier_slot(range_cls.name) is None:
                         pyrange = f'{camelcase(s.range)}'
                         if sv.get_identifier_slot(range_cls.name) is not None and not s.inlined_as_list:
                             #collection_type = sv.get_identifier_slot(range_cls.name).range
@@ -166,7 +242,7 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
         return code
 
 

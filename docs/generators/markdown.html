@@ -49,6 +49,7 @@
 <li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Markdown</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-with-mkdocs">Use with mkdocs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
@@ -122,7 +123,30 @@ GitHub in minutes thanks to the markdown generator</p>
 <li><p><a class="reference external" href="https://cancerdhc.github.io/ccdhmodel/">CRDC-H Schema</a></p></li>
 </ul>
 <p>To run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema -d docs personinfo.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema --index-file docs/schema.md -d docs personinfo.yaml
+</pre></div>
+</div>
+<p>This will generate one markdown file per element, plus an index
+document.</p>
+</section>
+<section id="use-with-mkdocs">
+<h2>Use with mkdocs<a class="headerlink" href="#use-with-mkdocs" title="Permalink to this headline"></a></h2>
+<p>The markdown files can be ported across many frameworks. Currently,
+most projects that use linkml use <a class="reference external" href="https://www.mkdocs.org/">mkdocs</a>
+for site generation.</p>
+<p>Using mkdocs you can set up a static site hosted on github in
+minutes. To get started:</p>
+<ol class="arabic simple">
+<li><p>Install mkdocs</p></li>
+<li><p>Create a mkdocs.yml file</p></li>
+<li><p>Run gen-markdown</p></li>
+</ol>
+<p>After doing this, you can test the site locally:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdocs serve
+</pre></div>
+</div>
+<p>Once you are finished you can make it live:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdocs gh-deploy
 </pre></div>
 </div>
 </section>
@@ -130,9 +154,147 @@ GitHub in minutes thanks to the markdown generator</p>
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<section id="gen-markdown">
+<h4>gen-markdown<a class="headerlink" href="#gen-markdown" title="Permalink to this headline"></a></h4>
+<p>Generate markdown documentation of a LinkML model</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-markdown <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-d">
+<span id="cmdoption-gen-markdown-dir"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dir&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-d" title="Permalink to this definition"></a></dt>
+<dd><p><strong>Required</strong> Output directory</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-c">
+<span id="cmdoption-gen-markdown-classes"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--classes</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;classes&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-c" title="Permalink to this definition"></a></dt>
+<dd><p>Class(es) to emit</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-M">
+<span id="cmdoption-gen-markdown-m"></span><span id="cmdoption-gen-markdown-map-fields"></span><span class="sig-name descname"><span class="pre">-M</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--map-fields</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;map_fields&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-M" title="Permalink to this definition"></a></dt>
+<dd><p>Map metamodel fields, e.g. slot=field</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-i">
+<span id="cmdoption-gen-markdown-img"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--img</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-i" title="Permalink to this definition"></a></dt>
+<dd><p>Download YUML images to ‘image’ directory</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-I">
+<span id="cmdoption-gen-markdown-index-file"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-I" title="Permalink to this definition"></a></dt>
+<dd><p>Name of markdown file that holds index</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-noimages">
+<span class="sig-name descname"><span class="pre">--noimages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-noimages" title="Permalink to this definition"></a></dt>
+<dd><p>Do not (re-)generate images</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-noyuml">
+<span class="sig-name descname"><span class="pre">--noyuml</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-noyuml" title="Permalink to this definition"></a></dt>
+<dd><p>Do not add yUML figures to pages</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-notypesdir">
+<span class="sig-name descname"><span class="pre">--notypesdir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-notypesdir" title="Permalink to this definition"></a></dt>
+<dd><p>Do not create a separate types directory</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-warnonexist">
+<span class="sig-name descname"><span class="pre">--warnonexist</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-warnonexist" title="Permalink to this definition"></a></dt>
+<dd><p>Warn if output file already exists</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-f">
+<span id="cmdoption-gen-markdown-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-f" title="Permalink to this definition"></a></dt>
+<dd><p>Output format (default=md)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>md</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-metadata">
+<span id="cmdoption-gen-markdown-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–metadata)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-useuris">
+<span id="cmdoption-gen-markdown-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-useuris" title="Permalink to this definition"></a></dt>
+<dd><p>Include metadata in output (default=–useuris)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-im">
+<span id="cmdoption-gen-markdown-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-im" title="Permalink to this definition"></a></dt>
+<dd><p>Import mapping file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-log_level">
+<span id="cmdoption-gen-markdown-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-markdown-log_level" title="Permalink to this definition"></a></dt>
+<dd><p>Logging level (default=WARNING)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-mergeimports">
+<span id="cmdoption-gen-markdown-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-mergeimports" title="Permalink to this definition"></a></dt>
+<dd><p>Merge imports into source file (default=mergeimports)</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-markdown-arg-YAMLFILE">
+<span id="cmdoption-gen-markdown-arg-yamlfile"></span><span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-markdown-arg-YAMLFILE" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.markdowngen.</span></span><span class="sig-name descname"><span class="pre">MarkdownGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noyuml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_on_exist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/markdowngen.html#MarkdownGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Generates markdown documentation for a LinkML schema</p>
+<p>Each schema element (class, slot, type, enum) is translated into its own markdown file;
+additionally, an index.md is generated that links everything together.</p>
+<p>The markdown is suitable for deployment as a MkDocs or Sphinx site</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Generate output in the required format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – Generater specific parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated output</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>

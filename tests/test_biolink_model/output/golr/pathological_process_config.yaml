@@ -1,4 +1,4 @@
-id: pathological_process
+# metamodel_version: 1.7.0# version: 1.8.2id: pathological_process
 schema_generating: true
 description: A biologic function or a process having an abnormal or deleterious effect
   at the subcellular, cellular, multicellular, or organismal level.

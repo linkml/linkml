@@ -1,4 +1,4 @@
-id: genotype
+# metamodel_version: 1.7.0# version: 1.8.2id: genotype
 schema_generating: true
 description: An information content entity that describes a genome by specifying the
   total variation in genomic sequence and/or gene expression, relative to some established

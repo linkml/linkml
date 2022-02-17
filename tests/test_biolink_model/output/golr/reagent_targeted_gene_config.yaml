@@ -1,4 +1,4 @@
-id: reagent_targeted_gene
+# metamodel_version: 1.7.0# version: 1.8.2id: reagent_targeted_gene
 schema_generating: true
 description: A gene altered in its expression level in the context of some experiment
   as a result of being targeted by gene-knockdown reagent(s) such as a morpholino

@@ -2193,6 +2193,11 @@ slots:
   mappings:
     name: mappings
     definition_uri: https://w3id.org/linkml/mappings
+    aliases:
+    - xrefs
+    - identifiers
+    - alternate identifiers
+    - alternate ids
     mappings:
     - skos:mappingRelation
     description: A list of terms from different schemas or terminology systems that
@@ -2343,6 +2348,7 @@ slots:
     imported_from: linkml:extensions
     domain: extension
     slot_uri: linkml:tag
+    key: true
     alias: tag
     owner: extension
     domain_of:
@@ -3780,7 +3786,7 @@ classes:
     class_uri: linkml:Annotation
 metamodel_version: 1.7.0
 source_file: meta.yaml
-source_file_date: '2021-10-27T23:30:13'
+source_file_date: '2022-01-25T03:25:26'
 source_file_size: 45186
-generation_date: '2021-10-27T23:36:46'
+generation_date: '2022-01-25T03:29:53'
 

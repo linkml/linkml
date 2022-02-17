@@ -1,4 +1,4 @@
-id: slot_definition
+# metamodel_version: 1.7.0# version: 2.0.0id: slot_definition
 schema_generating: true
 description: the definition of a property or a slot
 display_name: slot_definition

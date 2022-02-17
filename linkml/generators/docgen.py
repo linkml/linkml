@@ -147,7 +147,7 @@ class DocGenerator(Generator):
         path = Path(directory)
         path.mkdir(parents=True, exist_ok=True)
         file_name = f'{name}.{self._file_suffix()}'
-        with open(path / file_name, 'w') as stream:
+        with open(path / file_name, 'w', encoding='UTF-8') as stream:
             stream.write(out_str)
 
     def _file_suffix(self):

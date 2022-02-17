@@ -1,4 +1,4 @@
-id: anatomical_entity_to_anatomical_entity_part_of_association
+# metamodel_version: 1.7.0# version: 1.8.2id: anatomical_entity_to_anatomical_entity_part_of_association
 schema_generating: true
 description: A relationship between two anatomical entities where the relationship
   is mereological, i.e the two entities are related by parthood. This includes relationships

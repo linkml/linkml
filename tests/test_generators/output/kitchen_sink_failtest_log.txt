@@ -238,12 +238,29 @@ Failed validating 'additionalProperties' in schema:
                          'required': ['id'],
                          'title': 'Agent',
                          'type': 'object'},
+               'AnyObject': {'additionalProperties': True,
+                             'description': 'Example of unconstrained '
+                                            'class',
+                             'properties': {},
+                             'required': [],
+                             'title': 'AnyObject',
+                             'type': 'object'},
                'BirthEvent': {'additionalProperties': False,
                               'description': '',
                               'properties': {'ended_at_time': {'format': 'date',
                                                                'type': 'string'},
                                              'in_location': {'type': 'string'},
                                              'is_current': {'type': 'boolean'},
+                                             'metadata': {'$ref': '#/$defs/AnyObject',
+                                                          'description': 'Example '
+                                                                         'of '
+                                                                         'a '
+                                                                         'slot '
+                                                                         'that '
+                                                                         'has '
+                                                                         'an '
+                                                                         'unconstrained '
+                                                                         'range'},
                                              'started_at_time': {'format': 'date',
                                                                  'type': 'string'}},
                               'required': [],
@@ -317,13 +334,26 @@ Failed validating 'additionalProperties' in schema:
                                                   'ended_at_time': {'format': 'date',
                                                                     'type': 'string'},
                                                   'is_current': {'type': 'boolean'},
+                                                  'metadata': {'$ref': '#/$defs/AnyObject',
+                                                               'description': 'Example '
+                                                                              'of '
+                                                                              'a '
+                                                                              'slot '
+                                                                              'that '
+                                                                              'has '
+                                                                              'an '
+                                                                              'unconstrained '
+                                                                              'range'},
                                                   'started_at_time': {'format': 'date',
                                                                       'type': 'string'},
                                                   'type': {'$ref': '#/$defs/EmploymentEventType'}},
                                    'required': [],
                                    'title': 'EmploymentEvent',
                                    'type': 'object'},
-               'EmploymentEventType': {'description': '',
+               'EmploymentEventType': {'description': 'codes for different '
+                                                      'kinds of '
+                                                      'employment/HR '
+                                                      'related events',
                                        'enum': ['HIRE',
                                                 'FIRE',
                                                 'PROMOTION',
@@ -335,6 +365,15 @@ Failed validating 'additionalProperties' in schema:
                          'properties': {'ended_at_time': {'format': 'date',
                                                           'type': 'string'},
                                         'is_current': {'type': 'boolean'},
+                                        'metadata': {'$ref': '#/$defs/AnyObject',
+                                                     'description': 'Example '
+                                                                    'of a '
+                                                                    'slot '
+                                                                    'that '
+                                                                    'has '
+                                                                    'an '
+                                                                    'unconstrained '
+                                                                    'range'},
                                         'started_at_time': {'format': 'date',
                                                             'type': 'string'}},
                          'required': [],
@@ -370,6 +409,16 @@ Failed validating 'additionalProperties' in schema:
                                                 'in_location': {'type': 'string'},
                                                 'is_current': {'type': 'boolean'},
                                                 'married_to': {'type': 'string'},
+                                                'metadata': {'$ref': '#/$defs/AnyObject',
+                                                             'description': 'Example '
+                                                                            'of '
+                                                                            'a '
+                                                                            'slot '
+                                                                            'that '
+                                                                            'has '
+                                                                            'an '
+                                                                            'unconstrained '
+                                                                            'range'},
                                                 'started_at_time': {'format': 'date',
                                                                     'type': 'string'}},
                                  'required': [],
@@ -382,6 +431,16 @@ Failed validating 'additionalProperties' in schema:
                                                                  'type': 'string'},
                                                'in_location': {'type': 'string'},
                                                'is_current': {'type': 'boolean'},
+                                               'metadata': {'$ref': '#/$defs/AnyObject',
+                                                            'description': 'Example '
+                                                                           'of '
+                                                                           'a '
+                                                                           'slot '
+                                                                           'that '
+                                                                           'has '
+                                                                           'an '
+                                                                           'unconstrained '
+                                                                           'range'},
                                                'procedure': {'$ref': '#/$defs/ProcedureConcept'},
                                                'started_at_time': {'format': 'date',
                                                                    'type': 'string'}},
@@ -397,6 +456,10 @@ Failed validating 'additionalProperties' in schema:
                                 'required': ['id'],
                                 'title': 'Organization',
                                 'type': 'object'},
+               'OtherCodes': {'description': '',
+                              'enum': ['a b'],
+                              'title': 'OtherCodes',
+                              'type': 'string'},
                'Person': {'additionalProperties': False,
                           'description': 'A person, living or dead',
                           'properties': {'addresses': {'items': {'$ref': '#/$defs/Address'},
@@ -462,6 +525,7 @@ Failed validating 'additionalProperties' in schema:
      '$id': 'https://w3id.org/linkml/tests/kitchen_sink',
      '$schema': 'http://json-schema.org/draft-07/schema#',
      'additionalProperties': False,
+     'metamodel_version': '1.7.0',
      'properties': {'activities': {'items': {'$ref': '#/$defs/Activity'},
                                    'type': 'array'},
                     'code_systems': {'additionalProperties': {'$ref': '#/$defs/CodeSystem__identifier_optional'}},
@@ -471,7 +535,8 @@ Failed validating 'additionalProperties' in schema:
                                 'type': 'array'}},
      'required': [],
      'title': 'kitchen_sink',
-     'type': 'object'}
+     'type': 'object',
+     'version': None}
 
 On instance:
     {'made_up_property': 'abc',

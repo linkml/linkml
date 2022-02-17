@@ -1,4 +1,4 @@
-id: macronutrient
+# metamodel_version: 1.7.0# version: 1.8.2id: macronutrient
 schema_generating: true
 display_name: macronutrient
 document_category: macronutrient

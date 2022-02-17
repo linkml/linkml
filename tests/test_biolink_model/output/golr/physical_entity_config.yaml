@@ -1,4 +1,4 @@
-id: physical_entity
+# metamodel_version: 1.7.0# version: 1.8.2id: physical_entity
 schema_generating: true
 description: An entity that has material reality (a.k.a. physical essence).
 display_name: physical entity

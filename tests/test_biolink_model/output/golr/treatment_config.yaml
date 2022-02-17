@@ -1,4 +1,4 @@
-id: treatment
+# metamodel_version: 1.7.0# version: 1.8.2id: treatment
 schema_generating: true
 description: A treatment is targeted at a disease or phenotype and may involve multiple
   drug 'exposures', medical devices and/or procedures

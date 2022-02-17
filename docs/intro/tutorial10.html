@@ -46,7 +46,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">LinkML Material</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -95,157 +94,157 @@
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Address&quot;</span> <span class="p">(</span>
-        <span class="n">street</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">city</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">postal_code</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">street</span><span class="p">,</span> <span class="n">city</span><span class="p">,</span> <span class="n">postal_code</span><span class="p">)</span>
-<span class="p">);</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Address&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">street</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">city</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">postal_code</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">street</span><span class="p">,</span><span class="w"> </span><span class="n">city</span><span class="p">,</span><span class="w"> </span><span class="n">postal_code</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Concept&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">description</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">image</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Concept&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">image</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Container&quot;</span> <span class="p">(</span>
-        <span class="n">persons</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">organizations</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">organizations</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Container&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">persons</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">organizations</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">persons</span><span class="p">,</span><span class="w"> </span><span class="n">organizations</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;DiagnosisConcept&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">description</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">image</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;DiagnosisConcept&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">image</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Event&quot;</span> <span class="p">(</span>
-        <span class="n">started_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">ended_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">duration</span> <span class="nb">FLOAT</span><span class="p">,</span> 
-        <span class="n">is_current</span> <span class="nb">BOOLEAN</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span> <span class="n">ended_at_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_current</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Event&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">started_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">ended_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">duration</span><span class="w"> </span><span class="nb">FLOAT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">is_current</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">ended_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span><span class="w"> </span><span class="n">is_current</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;NamedThing&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">description</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">image</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;NamedThing&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">image</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Person&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">description</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">image</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">primary_email</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">birth_date</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">age_in_years</span> <span class="nb">INTEGER</span><span class="p">,</span> 
-        <span class="n">gender</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">17</span><span class="p">),</span> 
-        <span class="n">current_address</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">image</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">primary_email</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">birth_date</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">age_in_years</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">gender</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">17</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="n">current_address</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Place&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Place&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;ProcedureConcept&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">description</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">image</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;ProcedureConcept&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">image</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Relationship&quot;</span> <span class="p">(</span>
-        <span class="n">started_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">ended_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">related_to</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">type</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span> <span class="n">ended_at_time</span><span class="p">,</span> <span class="n">related_to</span><span class="p">,</span> <span class="k">type</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Relationship&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">started_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">ended_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">related_to</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">type</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">ended_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">related_to</span><span class="p">,</span><span class="w"> </span><span class="k">type</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;FamilialRelationship&quot;</span> <span class="p">(</span>
-        <span class="n">started_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">ended_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">related_to</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="k">type</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="ss">&quot;Person_id&quot;</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span> <span class="n">ended_at_time</span><span class="p">,</span> <span class="n">related_to</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="ss">&quot;Person_id&quot;</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">related_to</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Person&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Person&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;FamilialRelationship&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">started_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">ended_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">related_to</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">type</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="ss">&quot;Person_id&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">ended_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">related_to</span><span class="p">,</span><span class="w"> </span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Person_id&quot;</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">related_to</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;MedicalEvent&quot;</span> <span class="p">(</span>
-        <span class="n">started_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">ended_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">duration</span> <span class="nb">FLOAT</span><span class="p">,</span> 
-        <span class="n">is_current</span> <span class="nb">BOOLEAN</span><span class="p">,</span> 
-        <span class="n">in_location</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">diagnosis</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">procedure</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="ss">&quot;Person_id&quot;</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span> <span class="n">ended_at_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_current</span><span class="p">,</span> <span class="n">in_location</span><span class="p">,</span> <span class="n">diagnosis</span><span class="p">,</span> <span class="k">procedure</span><span class="p">,</span> <span class="ss">&quot;Person_id&quot;</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">in_location</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Place&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">diagnosis</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;DiagnosisConcept&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="k">procedure</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;ProcedureConcept&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Person&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;MedicalEvent&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">started_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">ended_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">duration</span><span class="w"> </span><span class="nb">FLOAT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">is_current</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">in_location</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">diagnosis</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">procedure</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="ss">&quot;Person_id&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">ended_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span><span class="w"> </span><span class="n">is_current</span><span class="p">,</span><span class="w"> </span><span class="n">in_location</span><span class="p">,</span><span class="w"> </span><span class="n">diagnosis</span><span class="p">,</span><span class="w"> </span><span class="k">procedure</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Person_id&quot;</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">in_location</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Place&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">diagnosis</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;DiagnosisConcept&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="k">procedure</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;ProcedureConcept&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Organization&quot;</span> <span class="p">(</span>
-        <span class="n">id</span> <span class="nb">TEXT</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> 
-        <span class="n">name</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">description</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">image</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">mission_statement</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">founding_date</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">founding_location</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">founding_location</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Place&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Organization&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">image</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">mission_statement</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">founding_date</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">founding_location</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">founding_location</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Place&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Person_aliases&quot;</span> <span class="p">(</span>
-        <span class="n">backref_id</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">aliases</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">backref_id</span><span class="p">,</span> <span class="n">aliases</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">backref_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Person&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Person_aliases&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">backref_id</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">aliases</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">backref_id</span><span class="p">,</span><span class="w"> </span><span class="n">aliases</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">backref_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Place_aliases&quot;</span> <span class="p">(</span>
-        <span class="n">backref_id</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">aliases</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">backref_id</span><span class="p">,</span> <span class="n">aliases</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">backref_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Place&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Place_aliases&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">backref_id</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">aliases</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">backref_id</span><span class="p">,</span><span class="w"> </span><span class="n">aliases</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">backref_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Place&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;EmploymentEvent&quot;</span> <span class="p">(</span>
-        <span class="n">started_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">ended_at_time</span> <span class="nb">DATE</span><span class="p">,</span> 
-        <span class="n">duration</span> <span class="nb">FLOAT</span><span class="p">,</span> 
-        <span class="n">is_current</span> <span class="nb">BOOLEAN</span><span class="p">,</span> 
-        <span class="n">employed_at</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="ss">&quot;Person_id&quot;</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span> <span class="n">ended_at_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">is_current</span><span class="p">,</span> <span class="n">employed_at</span><span class="p">,</span> <span class="ss">&quot;Person_id&quot;</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">employed_at</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Organization&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Person&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;EmploymentEvent&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">started_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">ended_at_time</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">duration</span><span class="w"> </span><span class="nb">FLOAT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">is_current</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">employed_at</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="ss">&quot;Person_id&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">started_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">ended_at_time</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span><span class="w"> </span><span class="n">is_current</span><span class="p">,</span><span class="w"> </span><span class="n">employed_at</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;Person_id&quot;</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">employed_at</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Organization&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;Organization_aliases&quot;</span> <span class="p">(</span>
-        <span class="n">backref_id</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="n">aliases</span> <span class="nb">TEXT</span><span class="p">,</span> 
-        <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">backref_id</span><span class="p">,</span> <span class="n">aliases</span><span class="p">),</span> 
-        <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">backref_id</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">&quot;Organization&quot;</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Organization_aliases&quot;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">backref_id</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="n">aliases</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">backref_id</span><span class="p">,</span><span class="w"> </span><span class="n">aliases</span><span class="p">),</span><span class="w"> </span>
+<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">backref_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Organization&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 </section>

@@ -67,7 +67,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../links.html">Links</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
 </ul>
@@ -112,14 +111,14 @@ single person instance.</p>
 <h2>Example data file<a class="headerlink" href="#example-data-file" title="Permalink to this headline"></a></h2>
 <p>Let’s start with a simple data file that contains more than one instance of person. We choose to structure this as a YAML/JSON dictionary, with an “index slot” called <code class="docutils literal notranslate"><span class="pre">persons</span></code>:</p>
 <p>data.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">32</span>
-    <span class="nt">phone</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
-  <span class="p p-Indicator">-</span> <span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span>
-    <span class="nt">full_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
-    <span class="nt">age</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">33</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
 </pre></div>
 </div>
 <p>(later on we will see how to express this same thing as a TSV)</p>
@@ -128,28 +127,28 @@ single person instance.</p>
 <h2>Nesting lists of objects<a class="headerlink" href="#nesting-lists-of-objects" title="Permalink to this headline"></a></h2>
 <p>We can describe this data using the following schema.</p>
 <p>personinfo.yaml:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">personinfo</span>
-<span class="nt">prefixes</span><span class="p">:</span>
-  <span class="nt">linkml</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
-<span class="nt">imports</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
-<span class="nt">default_range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">string</span>
-  
-<span class="nt">classes</span><span class="p">:</span>
-  <span class="nt">Person</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">id</span><span class="p">:</span>
-      <span class="nt">full_name</span><span class="p">:</span>
-      <span class="nt">aliases</span><span class="p">:</span>
-      <span class="nt">phone</span><span class="p">:</span>
-      <span class="nt">age</span><span class="p">:</span>
-  <span class="nt">Container</span><span class="p">:</span>
-    <span class="nt">attributes</span><span class="p">:</span>
-      <span class="nt">persons</span><span class="p">:</span>
-        <span class="nt">multivalued</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">inlined_as_list</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-        <span class="nt">range</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Person</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
 </pre></div>
 </div>
 <p>We introduce a class called <code class="docutils literal notranslate"><span class="pre">Container</span></code>. This doesn’t necessarily

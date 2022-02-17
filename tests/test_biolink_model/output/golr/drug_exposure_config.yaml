@@ -1,4 +1,4 @@
-id: drug_exposure
+# metamodel_version: 1.7.0# version: 1.8.2id: drug_exposure
 schema_generating: true
 description: A drug exposure is an intake of a particular drug.
 display_name: drug exposure

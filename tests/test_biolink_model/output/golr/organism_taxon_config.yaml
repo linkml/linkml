@@ -1,4 +1,4 @@
-id: organism_taxon
+# metamodel_version: 1.7.0# version: 1.8.2id: organism_taxon
 schema_generating: true
 description: 'A classification of a set of organisms. Example instances: NCBITaxon:9606
   (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or

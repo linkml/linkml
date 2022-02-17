@@ -1,5 +1,5 @@
 # Auto generated from resourcedescription.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2022-01-27T02:55:12
 # Schema: resourcedescription
 #
 # id: https://hotecosystem.org/tccm/resourcedescription
@@ -25,12 +25,13 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.annotations import Annotation
-from linkml_runtime.linkml_model.extensions import Extension
+from linkml_runtime.linkml_model.annotations import Annotation, AnnotationTag
+from linkml_runtime.linkml_model.extensions import Extension, ExtensionTag
 from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -485,8 +486,8 @@ class ResourceDescription(YAMLRoot):
     additionalDocumentation: Optional[Union[Union[str, PersistentURI], List[Union[str, PersistentURI]]]] = empty_list()
     rights: Optional[str] = None
     alternateID: Optional[str] = None
-    extensions: Optional[Union[Union[dict, Extension], List[Union[dict, Extension]]]] = empty_list()
-    annotations: Optional[Union[Union[dict, Annotation], List[Union[dict, Annotation]]]] = empty_list()
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.about):
@@ -519,9 +520,9 @@ class ResourceDescription(YAMLRoot):
         if self.alternateID is not None and not isinstance(self.alternateID, str):
             self.alternateID = str(self.alternateID)
 
-        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=False)
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
-        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=False)
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
 

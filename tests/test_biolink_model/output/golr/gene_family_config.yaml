@@ -1,4 +1,4 @@
-id: gene_family
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_family
 schema_generating: true
 description: any grouping of multiple genes or gene products related by common descent
 display_name: gene family

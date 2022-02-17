@@ -1,4 +1,4 @@
-id: pathway
+# metamodel_version: 1.7.0# version: 1.8.2id: pathway
 schema_generating: true
 display_name: pathway
 document_category: pathway

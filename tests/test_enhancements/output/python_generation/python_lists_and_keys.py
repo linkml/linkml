@@ -1,5 +1,5 @@
 # Auto generated from python_lists_and_keys.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-10-08 17:03
+# Generation date: 2022-01-27T02:54:11
 # Schema: lists_and_keys
 #
 # id: http://examples.org/linkml/test/lists_and_keys
@@ -25,6 +25,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from . python_complex_ranges import IdentifiedOneElementClass, IdentifiedOneElementClassName, IdentifiedThreeElementClass, IdentifiedThreeElementClassName, KeyedOneElementClass, KeyedOneElementClassName, KeyedThreeElementClass, KeyedThreeElementClassName, KeyedTwoElementClass, KeyedTwoElementClassName, OneElementClass, ThreeElementClass, TwoElementClass
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

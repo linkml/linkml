@@ -1,4 +1,4 @@
-id: organism_attribute
+# metamodel_version: 1.7.0# version: 1.8.2id: organism_attribute
 schema_generating: true
 description: describes a characteristic of an organismal entity.
 display_name: organism attribute

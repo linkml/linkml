@@ -309,23 +309,46 @@
     {
       "name": "EmploymentEventType",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType",
+      "aliases": [
+        "HR code"
+      ],
+      "description": "codes for different kinds of employment/HR related events",
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "permissible_values": [
         {
           "text": "HIRE",
+          "description": "event for a new employee",
           "meaning": "bizcodes:001"
         },
         {
           "text": "FIRE",
-          "meaning": "bizcodes:002"
+          "meaning": "bizcodes:002",
+          "annotations": [
+            {
+              "tag": "biolink:opposite",
+              "value": "HIRE"
+            }
+          ]
         },
         {
           "text": "PROMOTION",
+          "description": "promotion event",
           "meaning": "bizcodes:003"
         },
         {
           "text": "TRANSFER",
+          "description": "transfer internally",
           "meaning": "bizcodes:004"
+        }
+      ]
+    },
+    {
+      "name": "other codes",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/OtherCodes",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "permissible_values": [
+        {
+          "text": "a b"
         }
       ]
     }
@@ -441,6 +464,13 @@
     {
       "name": "in_location",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+      "annotations": [
+        {
+          "tag": "biolink:opposite",
+          "value": "location_of",
+          "@type": "Annotation"
+        }
+      ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
       "owner": "WithLocation",
@@ -583,6 +613,20 @@
         "Concept"
       ],
       "range": "CodeSystem",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "metadata",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
+      "description": "Example of a slot that has an unconstrained range",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
+      "inlined": true,
+      "owner": "Event",
+      "domain_of": [
+        "Event"
+      ],
+      "range": "AnyObject",
       "@type": "SlotDefinition"
     },
     {
@@ -1001,6 +1045,9 @@
         "P"
       ],
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+      "exact_mappings": [
+        "schema:Person"
+      ],
       "description": "A person, living or dead",
       "in_subset": [
         "subset_A"
@@ -1090,6 +1137,9 @@
     {
       "name": "DiagnosisConcept",
       "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+      "close_mappings": [
+        "biolink:Disease"
+      ],
       "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
       "is_a": "Concept",
       "slots": [
@@ -1122,7 +1172,8 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "is_current"
+        "is_current",
+        "metadata"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/tests/kitchen_sink/Event",
@@ -1166,6 +1217,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "in_location"
       ],
       "slot_usage": {},
@@ -1181,6 +1233,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "employed_at",
         "EmploymentEvent_type"
       ],
@@ -1197,6 +1250,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "in_location",
         "diagnosis",
         "procedure"
@@ -1229,6 +1283,7 @@
         "started_at_time",
         "ended_at_time",
         "is_current",
+        "metadata",
         "married_to",
         "in_location"
       ],
@@ -1375,6 +1430,18 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "AnyObject",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+      "mappings": [
+        "linkml:Any"
+      ],
+      "description": "Example of unconstrained class",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/Any",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "Activity",
       "definition_uri": "https://w3id.org/linkml/tests/core/Activity",
       "mappings": [
@@ -1415,9 +1482,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "kitchen_sink.yaml",
-  "source_file_date": "2021-12-21T17:55:46",
-  "source_file_size": 5858,
-  "generation_date": "2021-12-21T18:02:10",
+  "source_file_date": "2022-02-14T20:35:40",
+  "source_file_size": 6551,
+  "generation_date": "2022-02-14T20:42:23",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/kitchen_sink.context.jsonld",

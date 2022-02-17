@@ -1,0 +1,85 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:                                 
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - testme
+default_range: string
+  
+classes:
+  NamedThing:
+    slots: 
+     - id
+     - full_name
+  Person:
+    is_a: NamedThing
+    attributes:
+      has_familial_relationships:
+        multivalued: true
+        range: FamilialRelationship
+        inlined_as_list: true
+      has_organizational_relationships:
+        multivalued: true
+        range: OrganizationalRelationship
+        inlined_as_list: true
+    
+  Organization:
+    is_a: NamedThing
+
+  Relationship:
+    abstract: true
+    attributes:
+      duration:
+        range: integer
+      related_to:
+        range: NamedThing
+      relationship_type:
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      related_to:
+        range: Person
+        required: true
+      relationship_type:
+        range: FamilialRelationshipType
+      
+
+  OrganizationalRelationship:
+    is_a: Relationship
+    slot_usage:
+      related_to:
+        range: Organization
+        required: true
+      relationship_type:
+        range: OrganizationalRelationshipType
+
+  Container:
+    attributes:
+      persons:
+        multivalued: true
+        inlined_as_list: true
+        range: Person
+      organizations:
+        multivalued: true
+        inlined_as_list: true
+        range: Organization
+
+slots:
+  id:
+    identifier: true
+  full_name:
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  OrganizationalRelationshipType:
+    permissible_values:
+      EMPLOYED_BY:
+      FOUNDED_BY:
+      LEADER_OF:
+      MEMBER_OF:

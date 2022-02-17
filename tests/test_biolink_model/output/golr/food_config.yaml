@@ -1,4 +1,4 @@
-id: food
+# metamodel_version: 1.7.0# version: 1.8.2id: food
 schema_generating: true
 description: A substance consumed by a living organism as a source of nutrition
 display_name: food

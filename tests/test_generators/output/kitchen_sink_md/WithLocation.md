@@ -52,6 +52,10 @@ mixin: true
 attributes:
   in location:
     name: in location
+    annotations:
+      biolink:opposite:
+        tag: biolink:opposite
+        value: location_of
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     owner: WithLocation
     range: Place

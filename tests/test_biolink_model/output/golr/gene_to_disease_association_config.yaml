@@ -1,4 +1,4 @@
-id: gene_to_disease_association
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_to_disease_association
 schema_generating: true
 display_name: gene to disease association
 document_category: gene to disease association

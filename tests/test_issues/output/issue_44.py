@@ -1,5 +1,5 @@
 # Auto generated from issue_44.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-12-21T18:02:58
+# Generation date: 2022-02-14T20:43:24
 # Schema: test44
 #
 # id: https://example.com/test44
@@ -25,6 +25,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import Bool, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

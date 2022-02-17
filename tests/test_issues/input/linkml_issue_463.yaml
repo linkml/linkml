@@ -1,0 +1,37 @@
+id: https://w3id.org/linkml/examples/test
+name: test
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+imports:
+  - linkml:types
+  
+classes:
+  Contained:
+    slots:
+      - type
+      - label
+
+  Container:
+    slots:
+      - contains
+
+  TypeObj:
+    slots:
+      - label
+      - system
+
+slots:
+  type:
+    required: true
+    range: TypeObj
+  label:
+  system:
+  contains:
+    multivalued: true
+    range: Contained
+    inlined: true
+    inlined_as_list: true
+    
+

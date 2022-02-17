@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 id	mappings	description
 alt_description		an attributed description
 annotatable		mixin for classes that support annotations

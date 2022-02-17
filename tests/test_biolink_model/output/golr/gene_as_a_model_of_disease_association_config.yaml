@@ -1,4 +1,4 @@
-id: gene_as_a_model_of_disease_association
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_as_a_model_of_disease_association
 schema_generating: true
 display_name: gene as a model of disease association
 document_category: gene as a model of disease association

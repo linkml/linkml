@@ -186,7 +186,7 @@ This will produce an RDF/turtle file as follows
 ```turtle
 @prefix ns1: <https://w3id.org/linkml/examples/personinfo/> .
 
-[] a ns1:dict ;
+[] a ns1:Person ;
     ns1:age "32" ;
     ns1:full_name "Clark Kent" ;
     ns1:id "ORCID:1234" ;
@@ -194,6 +194,10 @@ This will produce an RDF/turtle file as follows
 ```    
 
 If you are not familiar with RDF that's OK! RDF is just one of the possible ways of working with LinkML.
+
+If you are familiar with RDF, the first thing you will likely notice
+is that we are not reusing standard URIs for our properties and
+classes. Don't worry! We will get to this later.
 
 ## Exercises
 

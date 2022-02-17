@@ -1,4 +1,4 @@
-id: population_to_population_association
+# metamodel_version: 1.7.0# version: 1.8.2id: population_to_population_association
 schema_generating: true
 description: An association between a two populations
 display_name: population to population association

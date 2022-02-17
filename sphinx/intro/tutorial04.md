@@ -3,7 +3,7 @@
 Previously we saw how to do basic validation of data using JSON-Schema.
 
 This section demonstrates how to work with LinkML in conjunction with
-Linked Data/ RDF. If this is not of interest you can skip to the next
+[Linked Data/ RDF](https://www.w3.org/standards/semanticweb/data). If this is not of interest you can skip to the next
 section. However, even if this is the case you may wish to revisit
 this section. LinkML is intended to make it easy to get the benefits
 of Linked Data, while staying simple and working within a stack many
@@ -106,7 +106,9 @@ Outputs:
         <https://orcid.org/4567> .
 ```
 
-This is a start, but it is not ideal - there are existing vocabularies such as [schema.org](http://schema.org) we could be reusing.
+Note that each person is now represented by an ORCID URI. This is a
+start, but it is not ideal - there are existing vocabularies such as
+[schema.org](http://schema.org) we could be reusing here.
 
 ## Adding URIs to our schema
 
@@ -362,9 +364,15 @@ schema:Person a sh:NodeShape ;
 
 ## More Info
 
-* [Working with RDF Data](../data/rdf.html)
+* [Working with RDF Data](../data/rdf)
 * FAQ:
-    - [LinkML vs shape languages](../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl)
+    - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:
    - [JSON-LD Context](../generators/jsonld-context)
    - [ShEx](../generators/shex)
+   - [SHACL](../generators/shacl)
+* RDF libraries and tools
+   - [rdflib](https://github.com/RDFLib/rdflib) (Python)
+   - [Apache Jena](https://jena.apache.org/)
+   - [pyshex](https://github.com/hsolbrig/PyShEx)
+   - [pyshacl](https://github.com/RDFLib/pySHACL)

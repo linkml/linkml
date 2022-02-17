@@ -1,5 +1,10 @@
 
-# meta schema
+# meta
+
+
+**metamodel version:** 1.7.0
+
+**version:** 2.0.0
 
 
 A metamodel for defining linked open data schemas

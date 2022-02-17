@@ -1,4 +1,4 @@
-id: association
+# metamodel_version: 1.7.0# version: 1.8.2id: association
 schema_generating: true
 description: A typed association between two entities, supported by evidence
 display_name: association

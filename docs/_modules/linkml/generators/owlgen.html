@@ -95,7 +95,7 @@
 
 <span class="kn">from</span> <span class="nn">linkml</span> <span class="kn">import</span> <span class="n">LOCAL_METAMODEL_YAML_FILE</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE</span><span class="p">,</span> <span class="n">METAMODEL_YAML_URI</span><span class="p">,</span> <span class="n">META_BASE_URI</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> \
-    <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">Element</span><span class="p">,</span> <span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">Definition</span>
+    <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">Element</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">Definition</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
@@ -229,7 +229,17 @@
                 <span class="k">if</span> <span class="n">m_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span> <span class="n">SKOS</span><span class="o">.</span><span class="n">relatedMatch</span><span class="p">,</span> <span class="n">m_uri</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No URI for </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No URI for </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">k_curie</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">k_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">k_curie</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span>
+                                    <span class="n">k_uri</span><span class="p">,</span>
+                                    <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)))</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Ignoring namesoace error: </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="OwlSchemaGenerator.visit_class"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -243,8 +253,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># To understand how the RDF-level operations here related to the OWL</span>
         <span class="c1"># representation, consult https://www.w3.org/TR/owl2-mapping-to-rdf/</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_mappings</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">cls_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_mappings</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cls_uri</span><span class="p">)</span>
         <span class="c1"># add declaration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
@@ -396,6 +406,7 @@
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_mappings</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_element_properties</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
 
 
@@ -439,6 +450,37 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">restr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onDataRange</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">uri</span><span class="p">)))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">type_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">restr</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="OwlSchemaGenerator.visit_enum"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.visit_enum">[docs]</a>    <span class="k">def</span> <span class="nf">visit_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+        <span class="n">enum_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaclasses</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="n">camelcase</span><span class="p">(</span><span class="s1">&#39;enum definition&#39;</span><span class="p">)]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_element_properties</span><span class="p">(</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">pv_uris</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">:</span>
+                <span class="n">pv_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">meaning</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pv_uri</span> <span class="o">=</span> <span class="n">enum_uri</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">)</span>
+                <span class="c1">#pv_uri = self.namespaces.uri_for(downcase(pv.text))</span>
+                <span class="c1">#pv_uri = None</span>
+            <span class="n">pv_uris</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv_uri</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pv_uri</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Class</span><span class="p">))</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">)))</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">METAMODEL_NAMESPACE_NAME</span><span class="p">][</span><span class="s1">&#39;permissible_values&#39;</span><span class="p">],</span> <span class="n">pv_uri</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_element_properties</span><span class="p">(</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">pv</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaclasses</span><span class="p">:</span>
+                    <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_uri</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">pv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pv_uris</span><span class="p">]):</span>
+            <span class="n">union_bnode</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+            <span class="n">Collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">union_bnode</span><span class="p">,</span> <span class="n">pv_uris</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">enum_uri</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">unionOf</span><span class="p">,</span> <span class="n">union_bnode</span><span class="p">))</span></div>
+
+
+
     <span class="k">def</span> <span class="nf">_add_element_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">el</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
@@ -454,6 +496,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span>
                                         <span class="n">prop_uri</span><span class="p">,</span>
                                         <span class="n">Literal</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
 
 
     <span class="k">def</span> <span class="nf">_range_is_datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -480,9 +523,9 @@
         <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">definition_uri</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_enum_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">en</span><span class="p">:</span> <span class="n">EnumDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
-        <span class="c1"># TODO: enums</span>
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">en</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://UNKNOWN.org/</span><span class="si">{</span><span class="n">en</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># TODO: allow control over URIs</span>
+        <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">definition_uri</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_prop_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pn</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">URIRef</span><span class="p">:</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -533,15 +576,19 @@
               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file name&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--type-objects/--no-type-objects&quot;</span><span class="p">,</span>
               <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, will model linkml types as objects, not literals&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--metaclasses/--no-metaclasses&quot;</span><span class="p">,</span>
               <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--add-ols-annotations/--no-add-ols-annotations&quot;</span><span class="p">,</span>
               <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, auto-include annotations from https://www.ebi.ac.uk/ols/docs/installation-guide&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--ontology-iri-suffix&quot;</span><span class="p">,</span>
               <span class="n">default</span><span class="o">=</span><span class="s1">&#39;.owl.ttl&#39;</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
               <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Suffix to append to schema id to generate OWL Ontology IRI&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Generate an OWL representation of a LinkML model</span>

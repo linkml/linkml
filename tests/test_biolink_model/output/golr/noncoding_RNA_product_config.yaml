@@ -1,4 +1,4 @@
-id: noncoding_RNA_product
+# metamodel_version: 1.7.0# version: 1.8.2id: noncoding_RNA_product
 schema_generating: true
 display_name: noncoding RNA product
 document_category: noncoding RNA product

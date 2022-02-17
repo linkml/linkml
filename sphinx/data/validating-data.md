@@ -2,7 +2,7 @@
 
 LinkML is designed to allow for a variety of strategies for data
 validation. The overall philosophy is to provide maximum expressivity
-in the language to allow model designers to state all consraints in a
+in the language to allow model designers to state all constraints in a
 declarative fashion, and then to leverage existing frameworks and to
 allow the user to balance concerns such as expressivity vs efficiency.
 
@@ -13,7 +13,7 @@ Currently there are 4 supported strategies:
  * validation of triples in a triplestore or RDF file via generation of SPARQL constraints
  * validation of RDF via generation of ShEx
 
-However, others will be supported in future
+However, others will be supported in future.
 
 ## Validation of JSON documents
 
@@ -63,6 +63,16 @@ Options:
   -s, --schema TEXT               Path to schema specified as LinkML yaml
   --help                          Show this message and exit.
 ```  
+
+## Validation via shape languages
+
+Currently the linkml framework does not provide builtin support for validating using a shape language, but the following strategy can be used:
+
+1. Convert data to RDF using `linkml-convert`
+2. Convert schema to a shape language using `gen-shex` or `gen-shacl`
+3. Use a ShEx or SHACL validator
+
+See next section for more details.
 
 ## Future plans
 

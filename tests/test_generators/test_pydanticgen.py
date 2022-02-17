@@ -1,16 +1,16 @@
-import os
 import unittest
-from contextlib import redirect_stdout
+
 import yaml
+from linkml_runtime import SchemaView
 
 from linkml.generators.pydanticgen import PydanticGenerator
-from linkml_runtime.utils.compile_python import compile_python
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
 DATA = env.input_path('kitchen_sink_inst_01.yaml')
 PYDANTIC_OUT = env.expected_path('kitchen_sink_pydantic.py')
 PACKAGE = 'kitchen_sink'
+
 
 class PydanticGeneratorTestCase(unittest.TestCase):
 
@@ -40,11 +40,34 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             p2 = Person(**dataset_dict['persons'][0])
             ds1 = Dataset(**dataset_dict)
             print(ds1)
-            print(Person.schema_json(indent=2))
             assert len(ds1.persons) == 2
         test_dynamic()
 
+    def test_pydantic_enums(self):
 
+        unit_test_schema = """
+id: unit_test
+name: unit_test
+
+enums:
+  TestEnum:
+    permissible_values:
+      123:
+      +:
+      This & that, plus maybe a 🎩:
+      Ohio:
+"""
+
+        sv = SchemaView(unit_test_schema)
+        gen = PydanticGenerator(schema=unit_test_schema)
+        enums = gen.generate_enums(sv.all_enums())
+        assert enums
+        enum = enums['TestEnum']
+        assert enum
+        assert enum['values']['number_123'] == '123'
+        assert enum['values']['PLUS_SIGN'] == '+'
+        assert enum['values']['This_AMPERSAND_that_plus_maybe_a_TOP_HAT'] == 'This & that, plus maybe a 🎩'
+        assert enum['values']['Ohio'] == 'Ohio'
 
 if __name__ == '__main__':
     unittest.main()

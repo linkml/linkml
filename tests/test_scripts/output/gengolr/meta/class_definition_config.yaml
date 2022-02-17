@@ -1,4 +1,4 @@
-id: class_definition
+# metamodel_version: 1.7.0# version: 2.0.0id: class_definition
 schema_generating: true
 description: the definition of a class or interface
 display_name: class_definition

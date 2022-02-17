@@ -66,7 +66,7 @@ bad-data.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:1234
     age: 33
@@ -91,7 +91,7 @@ better-data-v1.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:1234
     full_name: Lois Lane
@@ -117,7 +117,7 @@ better-data-v2.yaml:
 persons:
   - id: ORCID:1234
     full_name: Clark Kent
-    age: 9000
+    age: 90
     phone: 1-800-kryptonite
   - id: ORCID:4567
     full_name: Lois Lane
@@ -137,6 +137,9 @@ Will result in:
 On instance['persons'][0]['phone']:
     '1-800-kryptonite'
 ```
+
+This reflexts that the phone number doesn't conform to the regular expression syntax we stated.
+
 ## Exercises
 
  1. See if you can iterate on the example file to get something that works.
@@ -156,13 +159,15 @@ If you prefer you can use your own JSON Schema validator. First compile to jsons
 gen-json-schema personinfo.yaml > personinfo.schema.json
 ```
 
+You can then use the `jsonschema` command that comes with the python library (any jsonschema validator will do here)
+
 <!-- FAIL -->
 ```bash
-jsonschema -i bad-data.yaml personinfo.schema.json
+jsonschema -i bad-data.json personinfo.schema.json
 ```
 
 In general this should give you similar results, with some caveats:
-
+ - the `bad-data.yaml` can be converted to `bad-data.json` using https://www.json2yaml.com/.
  - the `linkml-validator` will first perform an internal conversion prior to using the jsonschema validator, and some errors may be caught at that stage
  - the conversion process may mask some errors - e.g. if a slot has range integer and is supplied as a string, implicit conversion is used
 
@@ -186,6 +191,6 @@ The next section deals with working with RDF data.
     * [minimum_value](https://w3id.org/linkml/minimum_value) slot    
     * [maximum_value](https://w3id.org/linkml/maximum_value) slot    
 * FAQ:
-    - [LinkML vs shape languages](../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl)
+    - {ref}`LinkML vs shape languages <faq/why-linkml:why should i use linkml over shex/shacl?>`
 * Generators:
     - [JSON Schema Generator](../generators/json-schema)

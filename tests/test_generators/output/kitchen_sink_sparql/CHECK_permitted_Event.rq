@@ -27,6 +27,7 @@ SELECT ?g ?s ?p WHERE {
    prov:startedAtTime,
    prov:endedAtTime,
    ks:is_current,
+   ks:metadata,
    rdf:type ))
  }
  
@@ -41,11 +42,4 @@ SELECT ?g ?s ?p WHERE {
 
 
 
-
-## -- End of checks for Event
-
-
-## --
-## Checks for Relationship
-## --
 

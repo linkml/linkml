@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-click = "~=7.0"
+click = ">=7.0"
 python-dateutil = "*"
 graphviz = ">=0.10.1"
 jsonasobj2 = "~=1.0, >=1.0.3"
@@ -26,8 +26,8 @@ parse = "*"
 pyldmod = ">=2.0.5"
 rdflib-pyldmod-compat = ">=0.1.2c"
 hbreader = "*"
-linkml-runtime = ">=1.1.9"
-linkml-runtime-api = "*"
+linkml-runtime = ">=1.1.15"
+linkml-dataops = "*"
 sqlalchemy = "*"
 openpyxl = "*"
 sphinx = "*"
@@ -45,4 +45,4 @@ ipykernel = "*"
 chardet = "*"
 
 [pipenv]
-allow_prereleases = true
+allow_prereleases = false

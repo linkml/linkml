@@ -25,7 +25,7 @@ class PythonGenerator(Generator):
     """
     Generates Python dataclasses from a LinkML model
 
-    
+
     """
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
@@ -121,6 +121,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 {self.gen_imports()}
 
 metamodel_version = "{self.schema.metamodel_version}"
+version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -632,13 +633,14 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
-            # If we don't have an identifier, we will switch to the first required field in the target class
-            if not identifier:
+            # If we don't have an identifier and we are expecting to be inlined first class elements
+            # (inlined_as_list is not True), we will use the first required field as the key.
+            #  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to
+            #  True
+            if not identifier and not slot.inlined_as_list:
                 for range_slot_name in slot_range_cls.slots:
                     range_slot = self.schema.slots[range_slot_name]
                     if range_slot.required:
-                        inlined_as_list = True
-                        keyed = False
                         identifier = range_slot.name
                         break
                 keyed = False

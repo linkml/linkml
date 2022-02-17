@@ -2623,6 +2623,12 @@
     {
       "name": "mappings",
       "definition_uri": "https://w3id.org/linkml/mappings",
+      "aliases": [
+        "xrefs",
+        "identifiers",
+        "alternate identifiers",
+        "alternate ids"
+      ],
       "mappings": [
         "http://www.w3.org/2004/02/skos/core#mappingRelation"
       ],
@@ -2793,6 +2799,7 @@
       "imported_from": "linkml:extensions",
       "domain": "Extension",
       "slot_uri": "https://w3id.org/linkml/tag",
+      "key": true,
       "alias": "tag",
       "owner": "Extension",
       "domain_of": [
@@ -4356,9 +4363,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "2021-10-27T23:30:13",
+  "source_file_date": "2022-01-25T03:25:26",
   "source_file_size": 45186,
-  "generation_date": "2021-10-27T23:30:53",
+  "generation_date": "2022-01-25T03:26:08",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

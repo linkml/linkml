@@ -242,7 +242,7 @@ class TestEnvironment:
         if comparator is None:
             comparator = self.string_comparator
         if os.path.exists(expected_file_path):
-            with open(expected_file_path) as expf:
+            with open(expected_file_path, encoding="UTF-8") as expf:
                 expected_text = filtr(expf.read())
             msg = comparator(expected_text, filtr(actual_text))
         else:

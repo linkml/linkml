@@ -1,4 +1,4 @@
-id: gene_to_gene_coexpression_association
+# metamodel_version: 1.7.0# version: 1.8.2id: gene_to_gene_coexpression_association
 schema_generating: true
 description: Indicates that two genes are co-expressed, generally under the same conditions.
 display_name: gene to gene coexpression association

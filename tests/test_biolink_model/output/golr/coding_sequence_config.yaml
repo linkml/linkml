@@ -1,4 +1,4 @@
-id: coding_sequence
+# metamodel_version: 1.7.0# version: 1.8.2id: coding_sequence
 schema_generating: true
 display_name: coding sequence
 document_category: coding sequence

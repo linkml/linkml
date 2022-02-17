@@ -1,4 +1,4 @@
-id: genotype_to_gene_association
+# metamodel_version: 1.7.0# version: 1.8.2id: genotype_to_gene_association
 schema_generating: true
 description: Any association between a genotype and a gene. The genotype have have
   multiple variants in that gene or a single one. There is no assumption of cardinality

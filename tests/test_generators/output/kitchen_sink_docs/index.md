@@ -1,5 +1,10 @@
 
-# kitchen_sink schema
+# kitchen_sink
+
+
+**metamodel version:** 1.7.0
+
+**version:** None
 
 
 Kitchen Sink Schema
@@ -20,6 +25,7 @@ And links, e.g to [Person](Person.md)
 ### Records
 
  * [Address](Address.md)
+ * [AnyObject](AnyObject.md) - Example of unconstrained class
  * [CodeSystem](CodeSystem.md)
  * [Concept](Concept.md)
      * [DiagnosisConcept](DiagnosisConcept.md)
@@ -78,6 +84,7 @@ And links, e.g to [Person](Person.md)
  * [in location](in_location.md)
  * [is current](is_current.md)
  * [married to](married_to.md)
+ * [metadata](metadata.md) - Example of a slot that has an unconstrained range
  * [name](name.md)
      * [Person➞name](Person_name.md)
  * [procedure](procedure.md)
@@ -97,8 +104,9 @@ And links, e.g to [Person](Person.md)
 ### Enums
 
  * [DiagnosisType](DiagnosisType.md)
- * [EmploymentEventType](EmploymentEventType.md)
+ * [EmploymentEventType](EmploymentEventType.md) - codes for different kinds of employment/HR related events
  * [FamilialRelationshipType](FamilialRelationshipType.md)
+ * [other codes](other codes.md)
 
 ### Subsets
 

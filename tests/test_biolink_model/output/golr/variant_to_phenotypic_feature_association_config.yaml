@@ -1,4 +1,4 @@
-id: variant_to_phenotypic_feature_association
+# metamodel_version: 1.7.0# version: 1.8.2id: variant_to_phenotypic_feature_association
 schema_generating: true
 display_name: variant to phenotypic feature association
 document_category: variant to phenotypic feature association

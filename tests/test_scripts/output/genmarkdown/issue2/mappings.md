@@ -37,5 +37,9 @@ None &#8594;  <sub>0..\*</sub> uriorcurie
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | xrefs |
+|  | | identifiers |
+|  | | alternate identifiers |
+|  | | alternate ids |
 | **Mappings:** | | skos:mappingRelation |
 

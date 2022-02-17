@@ -28,7 +28,7 @@ validator (bundled with linkml):
 
    jsonschema -i data/example_personinfo_data.yaml personinfo.schema.json
    
-.. seealso:: `Data Validation <../data/validating-data>`_ for  other
+.. seealso:: :doc:`Data Validation <./../data/validating-data>` for  other
              validation strategies
              
 .. note ::
@@ -119,9 +119,13 @@ JSON-Schema support schema composition through:
 
 See `Schema Composition <https://json-schema.org/understanding-json-schema/reference/combining.html>`_
 
-Currently there are no directly equivalent constructs in LinkML,
-although future versions of LinkML will support an expressive
-constraint mechanism.
+LinkML 1.2 supports analogous constructs:
+
+* `any_of <https://w3id.org/linkml/any_of>`_
+* `all_of <https://w3id.org/linkml/all_of>`_
+* `exactly_one_of <https://w3id.org/linkml/exactly_one_of>`_
+* `none_of <https://w3id.org/linkml/none_of>`_
+
 
 Note that many uses of the above constructs may be better handled by
 using inheritance (see below) in LinkML. Future versions of LinkML may
@@ -209,7 +213,7 @@ Thus the JSON-Schema loses some information that is useful for
 validation, and for understanding of the schema. 
 
 LinkML also supports the ability to inline multivalued slots as
-dictionaries, where the key is the object identifier. See `Inlining <../schemas/inlining>`_
+dictionaries, where the key is the object identifier. See :doc:`Inlining <schemas/inlining>`
 
 This example schema supports inlining a list of people as a dictionary:
 
@@ -361,7 +365,7 @@ Enums
 
 Enumerations are treated as simple strings. If the LinkML schema has
 additional metadata about the enumeration values, this is lost in
-translations.
+translation.
 
 Example:
 

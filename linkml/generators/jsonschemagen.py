@@ -65,6 +65,8 @@ class JsonSchemaGenerator(Generator):
         self.inline = inline
         self.schemaobj = JsonObj(title=self.schema.name,
                                  type="object",
+                                 metamodel_version=self.schema.metamodel_version,
+                                 version=self.schema.version if self.schema.version else None,
                                  properties={},
                                  additionalProperties=not_closed)
         for p, c in self.entryProperties.items():
@@ -88,11 +90,14 @@ class JsonSchemaGenerator(Generator):
     def visit_class(self, cls: ClassDefinition) -> bool:
         if cls.mixin or cls.abstract:
             return False
+        additional_properties = False
+        if self.is_class_unconstrained(cls):
+            additional_properties = True
         self.clsobj = JsonObj(title=camelcase(cls.name),
                               type='object',
                               properties=JsonObj(),
                               required=[],
-                              additionalProperties=False,
+                              additionalProperties=additional_properties,
                               description=be(cls.description))
         return True
 
@@ -144,7 +149,8 @@ class JsonSchemaGenerator(Generator):
             id_slot = None
             for sn in range_cls.slots:
                 s = self.schema.slots[sn]
-                if s.identifier or s.key:
+                # TODO: extension_tag should be declared as a key in extensions.yaml in metamodel
+                if s.identifier or s.key or (s.alias == 'tag' and (range_cls == 'extension' or range_cls == 'annotation')):
                     id_slot = s
                     break
             # If inline we have to include redefined slots
@@ -195,7 +201,7 @@ class JsonSchemaGenerator(Generator):
             self.schemaobj.properties[underscore(aliased_slot_name)] = prop
 
             if slot.required:
-                self.schemaobj.required.append(aliased_slot_name)
+                self.schemaobj.required.append(underscore(aliased_slot_name))
 
 
 @shared_arguments(JsonSchemaGenerator)

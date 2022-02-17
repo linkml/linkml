@@ -1,4 +1,4 @@
-id: severity_value
+# metamodel_version: 1.7.0# version: 1.8.2id: severity_value
 schema_generating: true
 description: describes the severity of a phenotypic feature or disease
 display_name: severity value

@@ -1,4 +1,4 @@
-id: transcript
+# metamodel_version: 1.7.0# version: 1.8.2id: transcript
 schema_generating: true
 description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
 display_name: transcript

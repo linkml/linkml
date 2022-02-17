@@ -1,4 +1,4 @@
-id: sequence_feature_relationship
+# metamodel_version: 1.7.0# version: 1.8.2id: sequence_feature_relationship
 schema_generating: true
 description: For example, a particular exon is part of a particular transcript or
   gene

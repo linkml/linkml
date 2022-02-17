@@ -1,7 +1,7 @@
 Python
 ======
 
-.. seealso:: `using python <../data/python>`_
+.. seealso:: `Using Python <./../data/python>`
 
 
 Overview
@@ -35,8 +35,8 @@ Dataclasses
 
 We use the standard `Python dataclasses framework <https://docs.python.org/3/library/dataclasses.html>`_
 
-Note that there is an alternative pydanticgen generator for using
-Pydantic, see `pydanticgen <pydanticgen>`_
+Note that there is an alternative generator for using
+Pydantic, see :doc:`Pydantic <generators/pydantic>`
 
 Inheritance
 ^^^^^^^^^^^
@@ -72,7 +72,7 @@ Non-inlined references
 ^^^^^^^^^^^^^^^^^^^^^^
 
 In LinkML schemas, references to other objects can be declared as
-`inlined <../schemas/inlining>`_. If a reference is *not* inlined,
+:doc:`inlined <schemas/inlining>`. If a reference is *not* inlined,
 and the referenced object has an identifier, then the value of the
 reference will be that identifier.
 
@@ -103,6 +103,7 @@ built in Python objects such integers.
 For user-defined types, a class is created which inherits from that
 Python base type.
 
+
     
 Code Docs
 ---------
@@ -130,38 +131,60 @@ Code generation for LinkML slots
 --------------------------------
 
 The generation of slot entries in class definitions is split into two
-parts: 1) The declaration of the slot type 2) The ``__post_init__``
-processing transforms several allowable input forms into single,
-consistent internal representation.
+parts:
 
-The elements that control the python for slot generation include \*
-Whether ``range`` references an instance of a LinkML ``type`` or a
-LinkML ``class`` \* If the slot range is a ``class``: \* Whether the
-class has a key (``key: <type>``), an identifier
-(``identifier: <type>``), or neither \* *If* the class has a ``key`` or
-``identifier``, whether the instances are inlined as a dictionary
-(``inlined: true``), inlined as a list (``inlined_as_list: true``) or
-are referenced elsewhere in the model (Default). \* Whether the slot is
-or concrete (``abstract: false``) or abstract (``abstract: true`` or
-``mixin: true``) (Default: ``false``) \* Whether a slot is required
-(``required: true``) or optional (``required: false``) (Default:
-``false``) \* Whether a slot is single-valued (``multivalued: false``)
-or multi-valued (``multivalued: true``) (Default: ``false``) \* The
-``ifabsent`` attribute (not covered in this document) \* The ``default``
-value (not covered in this document)
+* 1) The declaration of the slot type
+* 2) The ``__post_init__`` processing transforms several allowable
+  input forms into single, consistent internal representation.
 
-These various situations are described more detail below: ### 1) Slot
-range is a LinkML ``type`` definition LinkML type definitions can take
-one of three forms: 1) Builtin python type
-``yaml     types:        <type>:           base: <builtin python type> (e.g. 'str', 'int', 'float', etc)           ...``
-2) Defined type
+The elements that control the python for slot generation include
+
+* Whether ``range`` references an instance of a LinkML ``type`` or a LinkML ``class``
+* If the slot range is a ``class``:
+  
+    - Whether the class has a key (``key: <type>``), an identifier
+      (``identifier: <type>``), or neither
+    - If the class has a ``key`` or ``identifier``, whether the
+       instances are inlined as a dictionary (``inlined: true``),
+       inlined as a list (``inlined_as_list: true``) or are referenced
+       elsewhere in the model (Default).
+       
+* Whether the slot is concrete (``abstract: false``) or abstract
+  (``abstract: true`` or ``mixin: true``) (Default: ``false``)
+* Whether a slot is required (``required: true``) or optional
+  (``required: false``) (Default: ``false``)
+* Whether a slot is single-valued (``multivalued: false``) or
+  multi-valued (``multivalued: true``) (Default: ``false``)
+* The ``ifabsent`` attribute (not covered in this document)
+* The ``default`` value (not covered in this document)
+
+  
+These various situations are described more detail below:
+
+1) Slot range is a LinkML ``type`` definition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   
+LinkML type definitions can take one of three forms:
+
+- 1) Builtin python type
+
+``yaml     types:        <type>:           base: <builtin python type>
+(e.g. 'str', 'int', 'float', etc)           ...``
+
+- 2) Defined type
+  
 ``yaml     types:        <type>:           base: <type defined in linkml/linkml_runtime/utils/metamodelcore.py> (e.g. URIorCURIE, Date, NCName, etc)           ...``
 
 3) Inherited type
+   
    ``yaml  types:     <type>:        typeof: <parent type>`` Each of
-   these are outlined below #### 1) Python generation for basic python
-   Type. For this example, we show basic permutations on the python
-   ``int`` type as a base YAML:
+   these are outlined below
+
+1) Python generation for basic python Type.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ For this example, we show basic permutations on the python
+``int`` type as a base YAML:
 
 .. code:: yaml
 
@@ -1729,4 +1752,4 @@ At the *moment*, you have the following elements:
 
 Note, however, that the slots area is still being enhanced, so keep an
 eye on entries like `Issue
-#272 <https://github.com/linkml/issues/272>`__
+#272 <https://github.com/linkml/linkml/issues/272>`__
