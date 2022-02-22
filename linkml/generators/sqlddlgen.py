@@ -5,6 +5,7 @@ import click
 import logging
 from contextlib import redirect_stdout
 
+from deprecated.classic import deprecated
 from sqlalchemy import *
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
 from linkml_runtime.utils.formatutils import underscore, camelcase
@@ -119,8 +120,7 @@ class SQLSchema(DDLEntity):
             c.table = t
 
 
-# TODO: allow configuration between camelcase and snake case for table names
-
+@deprecated("Use SQLTableGenerator instead")
 class SQLDDLGenerator(Generator):
     """
     A `Generator` for creating SQL DDL
@@ -177,7 +177,7 @@ class SQLDDLGenerator(Generator):
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
-    valid_formats = ['proto']
+    valid_formats = ['sql']
     visit_all_class_slots: bool = True
     use_inherits: bool = False  ## postgresql supports inheritance
     dialect: str

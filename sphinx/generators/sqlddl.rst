@@ -1,9 +1,20 @@
 SQL DDL
 =======
 
+Example Output
+--------------
+
+`personinfo.sql <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/sqlschema/personinfo.sql>`_
+
+(sqlite syntax)
+
 Overview
 --------
 
+
+
+
+        
 Docs
 ----
 
@@ -20,5 +31,5 @@ Code
 ^^^^
 
                    
-.. autoclass:: SqlddlGenerator
+.. autoclass:: SQLTableGenerator
     :members: serialize

@@ -1,14 +1,27 @@
 # Part 10: Working with SQL databases
 
-## Example Schema
+LinkML allows you to work with SQL/Relational databases in a number of different ways.
+
+* SQL Schemas (DDL) can be generated directly from LinkML schemas
+* Optional Object Relational Mapping (ORM) layers can be generated
+    - Currently only Python / SQL Alchemy ORM layesr are supported
+* SQL Backends can be used directly to store and retrieve data
+    - No coding required
+    - Currently only SQLite is supported
+
+## Converting LinkML Schemas to DDL
+
+### Example Schema
+
+We will use the example from the previous tutorial:
 
 ```bash
 cp ../tutorial09/personinfo.yaml .
 ```
 
-## Generating SQL CREATE TABLE statements
+### Generating SQL CREATE TABLE statements
 
-now generate:
+Use the `gen-sqlddl` command to make a SQL schema:
 
 ```bash
 gen-sqlddl personinfo.yaml
@@ -170,10 +183,57 @@ CREATE TABLE "Organization_aliases" (
 );
 ```
 
-## SQL Alchemy (advanced)
+## Using a SQL database as a backend for data
+
+You can store any data that has a LinkML schema in a database using the `linkml-sqldb` command, and the `dump` subcommand:
 
 ```bash
-gen-sqlddl --sqla-file personinfo_sqla_bindings.py personinfo.yaml
+linkml-sqldb dump -s personinfo.yaml --db persons.db data.yaml
 ```
 
+This will create a SQLite database `persons.db` (you don't have to worry about creating the schema, this is handled automatically)
+
+```bash
+sqlite3 tests/test_data/output/personinfo.db "SELECT * FROM Person AS p JOIN MedicalEvent AS m ON (p.id=m.Person_id)"
+||||X:P1|person1|||1||1|X:Loc1|||||X:P1|ONT:D001|ONT:T001
+||||X:P2|person2|||1||2||||||X:P2|ONT:D002|ONT:T002
+```
+
+Data can be retrieved from the database using the `load` subcommand:
+
+```bash
+linkml-sqldb dump -s personinfo.yaml --db persons.db data.yaml -o data_out.yaml
+```
+
+Currently the `sqldb` command doesn't allow complex querying. For that you need to either write SQL as above, or use code as in an ORM layer.
+
+## Object Relational Mapping (ORMs)
+
+Object Relational Mapping (ORM) layers provide a bridge between an
+Object-Oriented (OO) representation of database and a Relational
+Database. Examples of ORMs are:
+
+* Hibernate (Java)
+* SQL Alchemy (Python)
+* ActiveRecord (Ruby)
+
+The LinkML metamodel has aspects of OO modeling, so ORMs can be useful
+here. Note that ORMs can be divisive among developers, with some
+believe ORMs to be add unnecessary complexity, and others finding them
+indispensible. Use of ORMs is completely optional with LinkML, but if
+you are using a RDBMS you may find them useful.
+
+Currently the only ORM directly supported in SQL Alchemy
+
+### SQL Alchemy (advanced)
+
+[SQL Alchemy](https://docs.sqlalchemy.org/) is a SQL framework for python. It has a core layer, and an ORM later.
+
+You can generate SQL Alchemy classes using:
+
+```bash
+gen-sqla -s personinfo.yaml
+```
+
+See the SQLDDL generator docs for more details.
 

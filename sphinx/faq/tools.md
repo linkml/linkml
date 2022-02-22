@@ -153,9 +153,41 @@ metadata, the
 [DataHarmonizer](https://github.com/cidgoh/DataHarmonizer) accepts
 LinkML as a schema language.
 
+If you are comfortable using an IDE like PyCharm, and with editing you data as JSON, then you can use your LinkML schema to provide dynamic schema validation and autocompletion while editing, see [these slides](https://docs.google.com/presentation/d/10fVBY5m89wKd8qyIvDwNHvCRnJnQx1YCXmyiVIbyNYI/edit#slide=id.p) for a guide
+
 ## Are there guides for developing LinkML compliant tools?
 
 See the [tool developer guide](https://linkml.io/linkml/developers/tool-developer-guide)
+
+## Can I generate a website from a LinkML schema
+
+Yes!
+
+See the [markdown generator](https://linkml.io/linkml/generators/markdown) for details.
+
+If you run:
+
+```
+gen-markdown -d docs personinfo.yaml
+```
+
+It will place all the markdown documents you need to run a [mkdocs](https://www.mkdocs.org/) site
+
+## Can I customize the Markdown generation for my schema site?
+
+For some purposes, the generic schema documentation provided by `gen-markdown` may look too... generic.
+
+You can customize markdown generation using your own templates. This requires a basic understanding of Jinja2 templates.
+
+The protocol is:
+
+1. copy the jinja templates from [docgen](https://github.com/linkml/linkml/tree/main/linkml/generators/docgen) to your own repo in a folder `templates`
+2. customize these templates
+3. run `gen-docs --template-directory templates -d docs my_schema.yaml`
+4. run `mkdocs serve` to test locally
+5. iterate until they look how you want, then deploy (e.g. `mkdocs gh-deploy`)
+
+An example repo that uses highly customized templates: [GSC MIxS](https://genomicsstandardsconsortium.github.io/mixs)
 
 ## Can I use my schema to do reasoning over my data?
 

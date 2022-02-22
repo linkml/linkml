@@ -27,6 +27,8 @@ make deploy
 
 This will copy to [docs/](https://github.com/linkml/linkml/tree/main/docs) where they can be committed
 
+**NOTE**: remember to `git add` any new HTML files or assets
+
 Currently we do not do these steps by github actions. It is recommended you commit changes to docs in a separate PR
 
 ## IMPORTANT

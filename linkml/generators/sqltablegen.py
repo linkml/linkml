@@ -1,22 +1,18 @@
 import logging
 import os
-from copy import copy
-from dataclasses import dataclass, field
-from enum import unique
+import click
 from typing import List, Dict, Union, TextIO
 
 from sqlalchemy import MetaData, Table, ForeignKey, Column, create_mock_engine
 from sqlalchemy.types import Enum, Text, Integer, Float, Boolean, Date, Time, DateTime
 
-from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, Annotation, \
-    ClassDefinitionName, Prefix
+from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer
-from linkml.utils.generator import Generator
+from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
-from tests.test_generators.test_sqlddlgen import SCHEMA
 
 
 class SqlNamingPolicy(Enum):
@@ -63,7 +59,7 @@ RANGEMAP = {
 
 class SQLTableGenerator(Generator):
     """
-    A `Generator` for creating SQL DDL
+    A :ref:`Generator` for creating SQL DDL
 
     The basic algorithm for mapping a linkml schema S is as follows:
 
@@ -224,3 +220,21 @@ class SQLTableGenerator(Generator):
         if pk is None:
             raise Exception(f'No PK for {cn}')
         return f'{cn}.{pk.name}'
+
+
+@shared_arguments(SQLTableGenerator)
+@click.command()
+## @click.option("--dialect", default='sqlite', show_default=True, help="SQL-Alchemy dialect, e.g. sqlite, mysql+odbc")
+@click.option("--sqla-file",  help="Path to sqlalchemy generated python")
+@click.option("--python-import",  help="Python import header for generated sql-alchemy code")
+## @click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="Map classes directly to")
+## @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
+def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
+    """ Generate SQL DDL representation """
+    gen = SQLTableGenerator(yamlfile, **args)
+    print(gen.generate_ddl())
+    if sqla_file is not None:
+        raise NotImplementedError('SQLAGen not implemented')
+
+if __name__ == '__main__':
+    cli()

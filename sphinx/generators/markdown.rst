@@ -21,7 +21,7 @@ To run:
 
 .. code:: bash
 
-   gen-json-schema --index-file docs/schema.md -d docs personinfo.yaml 
+   gen-markdown --index-file docs/schema.md -d docs personinfo.yaml 
 
 This will generate one markdown file per element, plus an index
 document.
@@ -52,6 +52,25 @@ Once you are finished you can make it live:
 
    mkdocs gh-deploy
 
+UML Class Diagrams
+------------------
+
+The markdown generator makes use of the yUML generator to place a UML
+diagram of the class locality at the head of each document.
+   
+
+Alternatives
+------------
+
+A separate command is provided that uses a Jinja2 template based
+approach:
+
+.. code:: bash
+
+   gen-docs -d docs personinfo.yaml 
+
+This is not yet as stable and feature complete as gen-markdown. One
+advantage is that it allows you to customize the templates used.
 
 Docs
 ----

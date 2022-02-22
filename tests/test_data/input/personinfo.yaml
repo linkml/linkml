@@ -15,6 +15,9 @@ prefixes:
   prov: http://www.w3.org/ns/prov#
   GSSO: http://purl.obolibrary.org/obo/GSSO_
   famrel: https://example.org/FamilialRelations#
+  X: http://example.org/data/
+  ONT: http://example.org/ont/
+  skos: http://www.w3.org/2004/02/skos/core#
 default_prefix: personinfo
 default_range: string
 
@@ -173,6 +176,7 @@ classes:
       - name
       - persons
       - organizations
+      - places
 
 slots:
   id:
@@ -255,6 +259,11 @@ slots:
     multivalued: true
   organizations:
     range: Organization
+    inlined_as_list: true
+    inlined: true
+    multivalued: true
+  places:
+    range: Place
     inlined_as_list: true
     inlined: true
     multivalued: true
