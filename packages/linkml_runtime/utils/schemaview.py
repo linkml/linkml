@@ -401,7 +401,7 @@ class SchemaView(object):
                     slot = copy(c.attributes[slot_name])
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
-        if strict and slot in None:
+        if strict and slot is None:
             raise Exception(f'No such slot as "{slot_name}"')
         return slot
 
