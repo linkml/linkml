@@ -144,7 +144,7 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
             cur.executescript(ddl)
             NAME = 'fred'
             cur.execute("INSERT INTO Person (id, name, age_in_years) VALUES (?,?,?)", ('P1', NAME, 33))
-            # cur.execute("INSERT INTO Person_alias (Person_id, alias) VALUES (?,?)", ('P1', 'wibble'))
+            cur.execute("INSERT INTO Person_alias (Person_id, alias) VALUES (?,?)", ('P1', 'wibble'))
             cur.execute("INSERT INTO FamilialRelationship (Person_id, type, related_to) VALUES (?,?,?)", ('P1', 'P2', 'BROTHER_OF'))
             cur.execute("select * from Person where name=:name", {"name": NAME})
             rows = cur.fetchall()
