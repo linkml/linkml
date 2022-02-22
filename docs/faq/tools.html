@@ -66,6 +66,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-can-i-check-my-data-is-valid">How can I check my data is valid?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#are-there-tools-for-editing-my-data">Are there tools for editing my data?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#are-there-guides-for-developing-linkml-compliant-tools">Are there guides for developing LinkML compliant tools?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-generate-a-website-from-a-linkml-schema">Can I generate a website from a LinkML schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-customize-the-markdown-generation-for-my-schema-site">Can I customize the Markdown generation for my schema site?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
 </ul>
 </li>
@@ -123,17 +125,17 @@
 <li><p><a class="reference external" href="https://github.com/linkml/schemasheets">linkml/schemasheets</a>, for managing your schema as a spreadsheet</p></li>
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml/linkml-model-enrichment</a>, for bootstrapping and enhancing schemas</p></li>
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml/linkml-owl</a>, for generating OWL ontologies using schemas as templates</p></li>
-<li><p><a class="reference external" href="https://github.com/linkml/sparqlful">linkml/sparqlfun</a>, for templated SPARQL queries</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/sparqlfun">linkml/sparqlfun</a>, for templated SPARQL queries</p></li>
 </ul>
 </section>
 <section id="how-do-i-install-the-linkml-tools">
 <h2>How do I install the LinkML tools?<a class="headerlink" href="#how-do-i-install-the-linkml-tools" title="Permalink to this headline"></a></h2>
-<p>See the <a class="reference external" href="https://linkml.io/linkml/intro/install.">installation guide</a></p>
+<p>See the <span class="xref myst">installation guide</span>.</p>
 </section>
 <section id="what-tools-are-available-for-authoring-schemas">
 <h2>What tools are available for authoring schemas?<a class="headerlink" href="#what-tools-are-available-for-authoring-schemas" title="Permalink to this headline"></a></h2>
 <p>Currently the main way to author a schema is to edit schema YAML files
-in a text editor or IDE (Integrapted Development Environment).</p>
+in a text editor or IDE (Integrated Development Environment).</p>
 <p>We recommend using an IDE that has support for YAML format</p>
 </section>
 <section id="is-there-a-tool-to-manage-schemas-as-spreadsheets">
@@ -247,10 +249,35 @@ edit instance data. Or you can simply edit your data in a TSV.</p>
 metadata, the
 <a class="reference external" href="https://github.com/cidgoh/DataHarmonizer">DataHarmonizer</a> accepts
 LinkML as a schema language.</p>
+<p>If you are comfortable using an IDE like PyCharm, and with editing you data as JSON, then you can use your LinkML schema to provide dynamic schema validation and autocompletion while editing, see <a class="reference external" href="https://docs.google.com/presentation/d/10fVBY5m89wKd8qyIvDwNHvCRnJnQx1YCXmyiVIbyNYI/edit#slide=id.p">these slides</a> for a guide</p>
 </section>
 <section id="are-there-guides-for-developing-linkml-compliant-tools">
 <h2>Are there guides for developing LinkML compliant tools?<a class="headerlink" href="#are-there-guides-for-developing-linkml-compliant-tools" title="Permalink to this headline"></a></h2>
 <p>See the <a class="reference external" href="https://linkml.io/linkml/developers/tool-developer-guide">tool developer guide</a></p>
+</section>
+<section id="can-i-generate-a-website-from-a-linkml-schema">
+<h2>Can I generate a website from a LinkML schema<a class="headerlink" href="#can-i-generate-a-website-from-a-linkml-schema" title="Permalink to this headline"></a></h2>
+<p>Yes!</p>
+<p>See the <a class="reference external" href="https://linkml.io/linkml/generators/markdown">markdown generator</a> for details.</p>
+<p>If you run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">markdown</span> <span class="o">-</span><span class="n">d</span> <span class="n">docs</span> <span class="n">personinfo</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>It will place all the markdown documents you need to run a <a class="reference external" href="https://www.mkdocs.org/">mkdocs</a> site</p>
+</section>
+<section id="can-i-customize-the-markdown-generation-for-my-schema-site">
+<h2>Can I customize the Markdown generation for my schema site?<a class="headerlink" href="#can-i-customize-the-markdown-generation-for-my-schema-site" title="Permalink to this headline"></a></h2>
+<p>For some purposes, the generic schema documentation provided by <code class="docutils literal notranslate"><span class="pre">gen-markdown</span></code> may look too… generic.</p>
+<p>You can customize markdown generation using your own templates. This requires a basic understanding of Jinja2 templates.</p>
+<p>The protocol is:</p>
+<ol class="arabic simple">
+<li><p>copy the jinja templates from <a class="reference external" href="https://github.com/linkml/linkml/tree/main/linkml/generators/docgen">docgen</a> to your own repo in a folder <code class="docutils literal notranslate"><span class="pre">templates</span></code></p></li>
+<li><p>customize these templates</p></li>
+<li><p>run <code class="docutils literal notranslate"><span class="pre">gen-docs</span> <span class="pre">--template-directory</span> <span class="pre">templates</span> <span class="pre">-d</span> <span class="pre">docs</span> <span class="pre">my_schema.yaml</span></code></p></li>
+<li><p>run <code class="docutils literal notranslate"><span class="pre">mkdocs</span> <span class="pre">serve</span></code> to test locally</p></li>
+<li><p>iterate until they look how you want, then deploy (e.g. <code class="docutils literal notranslate"><span class="pre">mkdocs</span> <span class="pre">gh-deploy</span></code>)</p></li>
+</ol>
+<p>An example repo that uses highly customized templates: <a class="reference external" href="https://genomicsstandardsconsortium.github.io/mixs">GSC MIxS</a></p>
 </section>
 <section id="can-i-use-my-schema-to-do-reasoning-over-my-data">
 <h2>Can I use my schema to do reasoning over my data?<a class="headerlink" href="#can-i-use-my-schema-to-do-reasoning-over-my-data" title="Permalink to this headline"></a></h2>

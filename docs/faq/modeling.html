@@ -121,7 +121,7 @@ hierarchies should be stratified.</p>
 </section>
 <section id="didn-t-you-know-composition-is-favored-over-inheritance-these-days">
 <h2>Didn’t you know composition is favored over inheritance these days?<a class="headerlink" href="#didn-t-you-know-composition-is-favored-over-inheritance-these-days" title="Permalink to this headline"></a></h2>
-<p>Wikipedia <a class="reference external" href="https://en.wikipedia.org/wiki/Composition_over_inheritance">composition over inheritance</a></p>
+<p>For background, see the Wikipedia article on <a class="reference external" href="https://en.wikipedia.org/wiki/Composition_over_inheritance">composition over inheritance</a></p>
 <p>We have certainly seen cases where inheritance is abused in programming languages, especially when it comes to behavioral classes.</p>
 <p>However, in our experience inheritance is still very useful when used for data classes. We trust the users of LinkML to create schemas to design schemas carefully.</p>
 </section>
@@ -147,6 +147,20 @@ may want to specify the range as your own type <code class="docutils literal not
 maps to string behind the scenes. But this provides additional cues,
 e.g. that the value of this field is intended to be human-readable
 text.</p>
+<p>An example of a type section might be:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">CountType</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:int</span><span class="w"></span>
+<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A count is an integer that is used to measure counts</span><span class="w"></span>
+<span class="w">  </span><span class="nt">SymbolType</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">xsd:string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">base</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^\\w+$&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A symbol is a string used as a shorthand identifier that is restriced to a subset of characters</span><span class="w"></span>
+</pre></div>
+</div>
 <p>Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr</p>
 </section>
 <section id="why-would-i-want-to-use-enums-over-strings">
@@ -159,10 +173,15 @@ text.</p>
 <section id="how-do-i-do-the-equivalent-of-json-schema-composition">
 <h2>How do I do the equivalent of JSON-Schema composition?<a class="headerlink" href="#how-do-i-do-the-equivalent-of-json-schema-composition" title="Permalink to this headline"></a></h2>
 <p>See: <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/combining.html">Schema Composition</a> in JSON-Schema docs</p>
-<p>Currently there is no <em>direct</em> analog of JSON-Schema anyOf/allOf/oneOf schema composition structures.</p>
-<p>In some cases, the equivalent of this can be achieved through <em>inheritance</em> in LinkML.</p>
-<p>LinkML also has the <code class="docutils literal notranslate"><span class="pre">union_of</span></code> slot to allow an <em>exhaustive</em> set of subclasses to be specified. This acts in a similar way to
-oneOf and future versions of JSON-Schema translation may compile down to oneOf</p>
+<p>LinkML provides the following analogous concepts:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/exactly_one_of">exactly_one_of</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/all_of">all_of</a></p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/none_of">none_of</a></p></li>
+</ul>
+<p>In some cases, the use of schema composition can be avoided by using simple inheritance patterns.</p>
+<p>Note that these constructs may not be supported by all generators. See <a class="reference external" href="https://linkml.io/linkml/schemas/experimental">experimental features</a> for current documentation.</p>
 </section>
 <section id="why-are-my-class-names-translated-to-camelcase">
 <h2>Why are my class names translated to CamelCase?<a class="headerlink" href="#why-are-my-class-names-translated-to-camelcase" title="Permalink to this headline"></a></h2>

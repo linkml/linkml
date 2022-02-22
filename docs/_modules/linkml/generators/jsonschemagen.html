@@ -114,7 +114,11 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates JSONSchema documents from a LinkML SchemaDefinition</span>
 
-
+<span class="sd">    - Each linkml class generates a schema</span>
+<span class="sd">    - inheritance hierarchies are rolled-down from ancestors</span>
+<span class="sd">    - Composition not yet implemented</span>
+<span class="sd">    - Enumerations treated as strings</span>
+<span class="sd">    - Foreign key references are treated as semantics-free strings</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.2&quot;</span>

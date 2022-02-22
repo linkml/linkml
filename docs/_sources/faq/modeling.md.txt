@@ -20,7 +20,7 @@ See these wikipedia pages for more information.
 
 ## Didn't you know composition is favored over inheritance these days?
 
-Wikipedia [composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance)
+For background, see the Wikipedia article on [composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance)
 
 We have certainly seen cases where inheritance is abused in programming languages, especially when it comes to behavioral classes.
 
@@ -55,6 +55,22 @@ maps to string behind the scenes. But this provides additional cues,
 e.g. that the value of this field is intended to be human-readable
 text.
 
+An example of a type section might be:
+
+```yaml
+types:
+  CountType:
+    uri: xsd:int
+    base: int
+    minimum_value: 0
+    description: A count is an integer that is used to measure counts
+  SymbolType:
+    uri: xsd:string
+    base: str
+    pattern: "^\\w+$"
+    description: A symbol is a string used as a shorthand identifier that is restriced to a subset of characters
+```
+
 Some applications may choose to interpret this in particular ways. E.g. you may want to define all narrative text fields as being amenable to spellchecking, or machine learning natual language processing, or special kinds of indexing in ElasticSearch/Solr
 
 ## Why would I want to use enums over strings?
@@ -71,12 +87,16 @@ More on enums:
 
 See: [Schema Composition](https://json-schema.org/understanding-json-schema/reference/combining.html) in JSON-Schema docs
 
-Currently there is no *direct* analog of JSON-Schema anyOf/allOf/oneOf schema composition structures.
+LinkML provides the following analogous concepts:
 
-In some cases, the equivalent of this can be achieved through *inheritance* in LinkML. 
+* [any_of](https://w3id.org/linkml/any_of)
+* [exactly_one_of](https://w3id.org/linkml/exactly_one_of)
+* [all_of](https://w3id.org/linkml/all_of)
+* [none_of](https://w3id.org/linkml/none_of)
 
-LinkML also has the `union_of` slot to allow an *exhaustive* set of subclasses to be specified. This acts in a similar way to
-oneOf and future versions of JSON-Schema translation may compile down to oneOf
+In some cases, the use of schema composition can be avoided by using simple inheritance patterns.
+
+Note that these constructs may not be supported by all generators. See [experimental features](https://linkml.io/linkml/schemas/experimental) for current documentation.
 
 ## Why are my class names translated to CamelCase?
 

@@ -55,6 +55,8 @@
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Experimental features</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#linkml-any-type">LinkML Any type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unions-as-ranges">Unions as ranges</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rules">Rules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#defining-slots">Defining slots</a></li>
 </ul>
 </li>
@@ -120,6 +122,64 @@
 <span class="w">       </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MetaObject</span><span class="w"></span>
 </pre></div>
 </div>
+</section>
+<section id="unions-as-ranges">
+<h2>Unions as ranges<a class="headerlink" href="#unions-as-ranges" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a> can be used to express that a range must satisfy any of a set of ranges.</p>
+<p>One way this can be used is to compose enums together, for example if we have a <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> enum that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">vital_status</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">any_of</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MissingValueEnum</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VitalStatusEnum</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">MissingValueEnum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">INAPPLICABLE</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">NOT_COLLECTED</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">RESTRICTED</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">OTHER</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">VitalStatusEnum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">LIVING</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">DEAD</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">UNDEAD</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Note that these constructs may ignored by some generators in the linkml 1.1 series.</p>
+<p>In the 1.2 series:</p>
+<ul class="simple">
+<li><p>generated python should use a Union</p></li>
+<li><p>jsonschema should use <a class="reference external" href="https://json-schema.org/understanding-json-schema/reference/conditionals.html">conditionals</a></p></li>
+<li><p>OWL should use UnionOf</p></li>
+</ul>
+</section>
+<section id="rules">
+<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this headline"></a></h2>
+<p>Any class can have a <a class="reference external" href="https://w3id.org/linkml/rules">rules</a> block, consisting of (optional) <a class="reference external" href="https://w3id.org/linkml/preconditions">preconditions</a> and <a class="reference external" href="https://w3id.org/linkml/postconditions">postconditions</a>. This can express basic if-then logic:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">classes</span><span class="p">:</span>
+  <span class="n">Address</span><span class="p">:</span>
+    <span class="n">slots</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">street_address</span>
+      <span class="o">-</span> <span class="n">country</span>
+    <span class="n">rules</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">preconditions</span><span class="p">:</span>
+          <span class="n">slot_conditions</span><span class="p">:</span>
+            <span class="n">country</span><span class="p">:</span>
+              <span class="n">any_of</span><span class="p">:</span>
+                <span class="o">-</span> <span class="n">equals_string</span><span class="p">:</span> <span class="n">USA</span>
+                <span class="o">-</span> <span class="n">equals_string</span><span class="p">:</span> <span class="n">USA_territory</span>
+        <span class="n">postconditions</span><span class="p">:</span>
+          <span class="n">slot_conditions</span><span class="p">:</span>
+            <span class="n">postal_code</span><span class="p">:</span>
+              <span class="n">pattern</span><span class="p">:</span> <span class="s2">&quot;[0-9]</span><span class="si">{5}</span><span class="s2">(-[0-9]</span><span class="si">{4}</span><span class="s2">)?&quot;</span>
+            <span class="n">telephone</span><span class="p">:</span>
+              <span class="n">pattern</span><span class="p">:</span> <span class="s2">&quot;^</span><span class="se">\\</span><span class="s2">+1 &quot;</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">USA</span> <span class="ow">and</span> <span class="n">territories</span> <span class="n">must</span> <span class="n">have</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">regex</span> <span class="n">patern</span> <span class="k">for</span> <span class="n">postal</span> <span class="n">codes</span> <span class="ow">and</span> <span class="n">phone</span> <span class="n">numbers</span>
+</pre></div>
+</div>
+<p>See above for implementation status</p>
 </section>
 <section id="defining-slots">
 <h2>Defining slots<a class="headerlink" href="#defining-slots" title="Permalink to this headline"></a></h2>

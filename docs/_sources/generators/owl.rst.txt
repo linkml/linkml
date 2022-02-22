@@ -1,5 +1,10 @@
-Owl
-======
+OWL
+===
+
+Example Output
+--------------
+
+`personinfo.owl.ttl <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/owl/personinfo.owl.ttl>`_
 
 Overview
 --------

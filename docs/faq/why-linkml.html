@@ -61,6 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-owl">Why should I use LinkML over OWL?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-custom-spreadsheets">Why should I use LinkML over Custom spreadsheets?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-csv-on-the-web">Why should I use LinkML over CSV-on-the-web?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-iso-11179">Why should I use LinkML over ISO-11179?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
@@ -366,9 +367,9 @@ heuristic procedure, and will not give you sensible results from a
 large “terminological” ontology.</p>
 <p>It <em>is</em> possible to use LinkML to help you structure an OWL ontology
 by using LinkML as a metaclass authoring system. See
-<a class="reference external" href="https://chemkg.github.io/chemrof/ontology.html">ChemSchema</a> for
+<a class="reference external" href="https://chemkg.github.io/chemrof/ontology">ChemSchema</a> for
 an example, and see also the
-<a class="reference external" href="https://github.com/chemkg/chemrof">linkml-owl</a> framework.</p>
+<a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> framework.</p>
 <p>See also:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://linkml.io/linkml/generators/owl.html">OWL generator</a></p></li>
@@ -393,7 +394,58 @@ which can be offputting to non-technical metadata curators. A new framework allo
 </section>
 <section id="why-should-i-use-linkml-over-csv-on-the-web">
 <h2>Why should I use LinkML over CSV-on-the-web?<a class="headerlink" href="#why-should-i-use-linkml-over-csv-on-the-web" title="Permalink to this headline"></a></h2>
-<p>TODO</p>
+<p>The W3C <a class="reference external" href="https://www.w3.org/TR/tabular-data-primer/">CSV on the Web</a>
+(CSVW) Working Group have developed standard ways to express metadata about
+CSVs and other kinds of tabular data.</p>
+<p>An example use of CSVW is to semantically describe the columns in a
+CSV/TSV, for example a CSV about country locations and nomenculature. The following in Example 10 from the CSVW primer:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/csvw&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;countries.csv&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;tableSchema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;columns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;country&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The ISO two-letter code for a country, in lowercase.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;country group&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A lowercase two-letter code for a group of countries.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name (en)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The official name of the country in English.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name (fr)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The official name of the country in French.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name (de)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The official name of the country in German.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The latitude of an indicative point in the country.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;longitude&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The longitude of an indicative point in the country.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}]</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>CSVW provides a number of advantages for making data FAIR over the use
+of CSVs alone, or CSVs in combination with non-machine readable documentation files.</p>
+<p>Most of the things that can be said using CSVW can also be said with
+LinkML, and LinkML is not restricted solely to CSVs - e.g. you can
+semantically describe JSON files with LinkML too.</p>
+<p>We are currently planning on writing a generator for CSVW JSON-LD.</p>
+</section>
+<section id="why-should-i-use-linkml-over-iso-11179">
+<h2>Why should I use LinkML over ISO-11179?<a class="headerlink" href="#why-should-i-use-linkml-over-iso-11179" title="Permalink to this headline"></a></h2>
+<p>ISO-11179 is an ISO standard for Metadata and Metadata Registries. It
+provides a rich standardized way of exchanging data dictionaries. For
+example, an ISO-11179 registry can be used to register all of the
+columns in a data file or tags in an XML file, and to map semantics
+onto these, making integration across datasets more automatable.</p>
+<p>Currently ISO-11179 and LinkML serve different purposes, but there are
+overlaps in goals, and we are currently working on documentation
+clarifying the connection.</p>
 </section>
 </section>
 

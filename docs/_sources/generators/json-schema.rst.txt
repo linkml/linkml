@@ -28,7 +28,7 @@ validator (bundled with linkml):
 
    jsonschema -i data/example_personinfo_data.yaml personinfo.schema.json
    
-.. seealso:: `Data Validation <../data/validating-data>`_ for  other
+.. seealso:: :doc:`Data Validation <./../data/validating-data>` for  other
              validation strategies
              
 .. note ::
@@ -213,7 +213,7 @@ Thus the JSON-Schema loses some information that is useful for
 validation, and for understanding of the schema. 
 
 LinkML also supports the ability to inline multivalued slots as
-dictionaries, where the key is the object identifier. See `Inlining <../schemas/inlining>`_
+dictionaries, where the key is the object identifier. See :doc:`Inlining <schemas/inlining>`
 
 This example schema supports inlining a list of people as a dictionary:
 

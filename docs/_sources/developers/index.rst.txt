@@ -12,6 +12,8 @@ Developers guide
    organization
    notebooks
    manipulating-schemas
+   loaders-and-dumpers
+   using-sql-dbs
    tool-developer-guide
    contributing-code
 

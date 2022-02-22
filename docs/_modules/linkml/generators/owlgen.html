@@ -169,7 +169,7 @@
 <div class="viewcode-block" id="OwlSchemaGenerator.end_schema"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.owlgen.OwlSchemaGenerator.end_schema">[docs]</a>    <span class="k">def</span> <span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;owl&#39;</span><span class="p">,</span> <span class="s1">&#39;ttl&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
                 <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
@@ -595,7 +595,13 @@
 
 <span class="sd">    Examples:</span>
 
-<span class="sd">        gen-owl --no-metaclasses --no-type-objects</span>
+<span class="sd">        Generate OWL using default parameters:</span>
+
+<span class="sd">            gen-owl --no-metaclasses --no-type-objects my_schema.yaml</span>
+
+<span class="sd">        Generate OWL utilizing datatype properties for type slots and excluding metaclasses:</span>
+
+<span class="sd">            gen-owl --no-metaclasses --no-type-objects my_schema.yaml</span>
 
 <span class="sd">    For more info, see: https://linkml.io/linkml/generators/owl</span>
 <span class="sd">    &quot;&quot;&quot;</span>

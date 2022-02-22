@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Pydantic" href="pydantic.html" />
-    <link rel="prev" title="Markdown" href="markdown.html" /> 
+    <link rel="prev" title="Project Generator" href="project-generator.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,44 +46,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Python</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dataclasses">Dataclasses</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#inheritance">Inheritance</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#object-creation">Object Creation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#non-inlined-references">Non-inlined references</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#schema-frameworks">Schema Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#linked-data-standards">Linked Data Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#documentation-generation">Documentation Generation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#language-specific">Language Specific</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Python</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-output">Example Output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-docs">Code Docs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#code-generation-for-linkml-slots">Code generation for LinkML slots</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#code-docs">Code Docs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="java.html">Java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="typescript.html">Typescript</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#code-generation-for-linkml-slots">Code generation for LinkML slots</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#python-generation-for-an-inherited-type">3) Python generation for an inherited Type</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#non-keyed-non-identified-classes">1) Non-keyed, non-identified classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#key-or-identified-class-references">Key or identified class <em>references</em></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#input-in-the-form-of-a-dictionary">Input in the form of a dictionary</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#input-in-the-form-of-a-list">Input in the form of a list</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shacl.html">Shacl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="owl.html">Owl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#others">Others</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -126,8 +107,12 @@
 <h1>Python<a class="headerlink" href="#python" title="Permalink to this headline"></a></h1>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="../data/python">using python</a></p>
+<p><a class="reference internal" href="../data/python.html"><span class="doc">Using Python</span></a></p>
 </div>
+<section id="example-output">
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo/personinfo.py">personinfo.py</a></p>
+</section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p>The Python generator will generate a Python object model from a LinkML schema</p>
@@ -148,8 +133,8 @@ JSON, YAML, RDF, and TSV, as well as to load them</p>
 <section id="dataclasses">
 <h3>Dataclasses<a class="headerlink" href="#dataclasses" title="Permalink to this headline"></a></h3>
 <p>We use the standard <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">Python dataclasses framework</a></p>
-<p>Note that there is an alternative pydanticgen generator for using
-Pydantic, see <a class="reference external" href="pydanticgen">pydanticgen</a></p>
+<p>Note that there is an alternative generator for using
+Pydantic, see <a class="reference internal" href="pydantic.html"><span class="doc">Pydantic Generator</span></a></p>
 </section>
 <section id="inheritance">
 <h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h3>
@@ -180,7 +165,7 @@ adding inlined objects any of the following can be used:</p>
 <section id="non-inlined-references">
 <h3>Non-inlined references<a class="headerlink" href="#non-inlined-references" title="Permalink to this headline"></a></h3>
 <p>In LinkML schemas, references to other objects can be declared as
-<a class="reference external" href="../schemas/inlining">inlined</a>. If a reference is <em>not</em> inlined,
+<span class="xref std std-doc">inlined</span>. If a reference is <em>not</em> inlined,
 and the referenced object has an identifier, then the value of the
 reference will be that identifier.</p>
 <p>In the generated python, class are created for these foreign keys</p>
@@ -1970,7 +1955,7 @@ assigned via <code class="docutils literal notranslate"><span class="pre">slot_u
 <li><p>range - the range <em>signature</em></p></li>
 </ul>
 <p>Note, however, that the slots area is still being enhanced, so keep an
-eye on entries like <a class="reference external" href="https://github.com/linkml/issues/272">Issue
+eye on entries like <a class="reference external" href="https://github.com/linkml/linkml/issues/272">Issue
 #272</a></p>
 </section>
 </section>
@@ -1981,7 +1966,7 @@ eye on entries like <a class="reference external" href="https://github.com/linkm
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="markdown.html" class="btn btn-neutral float-left" title="Markdown" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="project-generator.html" class="btn btn-neutral float-left" title="Project Generator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="pydantic.html" class="btn btn-neutral float-right" title="Pydantic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

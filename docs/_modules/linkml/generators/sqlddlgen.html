@@ -86,6 +86,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
 
+<span class="kn">from</span> <span class="nn">deprecated.classic</span> <span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinitionName</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">camelcase</span>
@@ -200,9 +201,8 @@
             <span class="n">c</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">t</span></div></div>
 
 
-<span class="c1"># TODO: allow configuration between camelcase and snake case for table names</span>
-
-<div class="viewcode-block" id="SQLDDLGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator">[docs]</a><span class="k">class</span> <span class="nc">SQLDDLGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<div class="viewcode-block" id="SQLDDLGenerator"><a class="viewcode-back" href="../../../source/linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use SQLTableGenerator instead&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SQLDDLGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A `Generator` for creating SQL DDL</span>
 
@@ -258,7 +258,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
-    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;proto&#39;</span><span class="p">]</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sql&#39;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">use_inherits</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">## postgresql supports inheritance</span>
     <span class="n">dialect</span><span class="p">:</span> <span class="nb">str</span>
@@ -554,7 +554,7 @@
     <span class="k">if</span> <span class="n">sqla_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">python_import</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">python_import</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sqla_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sqla_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
                 <span class="n">gen</span><span class="o">.</span><span class="n">write_sqla_python_imperative</span><span class="p">(</span><span class="n">python_import</span><span class="p">)</span>
 

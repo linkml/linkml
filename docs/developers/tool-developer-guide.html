@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Contributing Code" href="contributing-code.html" />
-    <link rel="prev" title="Manipulating Schemas" href="manipulating-schemas.html" /> 
+    <link rel="prev" title="SQL Alchemy Mappings" href="sqlalchemy.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,6 +57,7 @@
 <li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy Mappings</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tool Implementor Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#general-considerations">General Considerations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#schema-conformance-levels">Schema Conformance Levels</a></li>
@@ -149,8 +150,8 @@ profile.</p>
 syntax for LinkML is YAML, and YAML parsers are provided with all
 major languages. However, you will likely need to do more than parse
 the model. There is a lot of “business logic” associated with a
-model. For example, the rules that govern <a class="reference external" href="../schemas/inheritance">inheritance and refinement
-of slots</a>.</p>
+model. For example, the rules that govern
+<span class="xref std std-doc">inheritance and refinement of slots</span>.</p>
 <p>For Python applications, the SchemaView library provides this business
 logic, but currently this logic must be re-implemented for different
 languages. This may be a concern if you are building web applications
@@ -220,13 +221,13 @@ inheritance and <cite>slot_usage</cite> can be “rolled down” to a schema tha
 includes only leaf elements, with inferred slots materialized as
 attributes. The resulting schema will be less rich, but may be
 sufficient for certain kinds of applications.</p>
-<p>See the <a class="reference external" href="../generators/yaml">YAML Generator</a> for one such tool</p>
+<p>See the YAML Generator for one such tool.</p>
 </section>
 <section id="other-languages">
 <h2>Other Languages<a class="headerlink" href="#other-languages" title="Permalink to this headline"></a></h2>
 <p>LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.</p>
-<p>For example, in Python, if you want a list of slots for that class you can use <a class="reference external" href="manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.class_slots">class_slots</a>. But
+<p>For example, in Python, if you want a list of slots for that class you can use <span class="xref std std-ref">class_slots</span>. But
 what if you are building a generic JavaScript data entry widget that
 will work for any LinkML class?</p>
 <p>There are a few broad approaches here:</p>
@@ -514,7 +515,7 @@ SHACL and DASH</a>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="manipulating-schemas.html" class="btn btn-neutral float-left" title="Manipulating Schemas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sqlalchemy.html" class="btn btn-neutral float-left" title="SQL Alchemy Mappings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="contributing-code.html" class="btn btn-neutral float-right" title="Contributing Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

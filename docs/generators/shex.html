@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Shacl" href="shacl.html" />
+    <link rel="next" title="SHACL" href="shacl.html" />
     <link rel="prev" title="SPARQL" href="sparql.html" /> 
 </head>
 
@@ -46,28 +46,24 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
-<li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ShEx</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#schema-frameworks">Schema Frameworks</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#linked-data-standards">Linked Data Standards</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparql.html">SPARQL</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ShEx</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-output">Example Output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#docs">Docs</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="shacl.html">SHACL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="owl.html">OWL</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="shacl.html">Shacl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="owl.html">Owl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#documentation-generation">Documentation Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#language-specific">Language Specific</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#others">Others</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -108,14 +104,55 @@
              
   <section id="shex">
 <h1>ShEx<a class="headerlink" href="#shex" title="Permalink to this headline"></a></h1>
+<section id="example-output">
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/shex/personinfo.shex">personinfo.shex</a></p>
+</section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p><a class="reference external" href="http://shex.io/shex-semantics/index.html">ShEx</a>, short for Shape
-Expressions Language is a modeling language for RDF files.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/ShExPrimerModel.ipynb">ShEx Primer notebook</a></p>
+Expressions Language is a modeling language for RDF files. This
+generator can be used to create ShEx shapefiles, which can then be
+used to validate RDF data.</p>
+<p>ShEx provides similar functionality to SHACL, which has its own validator</p>
+<p>To run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-shex personinfo.yaml &gt; personinfo.shex
+</pre></div>
 </div>
+<section id="translation">
+<h3>Translation<a class="headerlink" href="#translation" title="Permalink to this headline"></a></h3>
+<p>An example of translating the personinfo schema is shown below.</p>
+<div class="highlight-shex notranslate"><div class="highlight"><pre><span></span><span class="nl">&lt;NamedThing&gt;</span>  <span class="p">(</span>
+    <span class="k">CLOSED</span> <span class="p">{</span>
+       <span class="p">(</span>  <span class="o">$</span><span class="nl">&lt;NamedThing_tes&gt;</span> <span class="p">(</span>  <span class="nn">schema</span><span class="p">:</span><span class="nt">name</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">String</span> <span class="o">?</span> <span class="p">;</span>
+             <span class="nn">schema</span><span class="p">:</span><span class="nt">description</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">String</span> <span class="o">?</span> <span class="p">;</span>
+             <span class="nn">schema</span><span class="p">:</span><span class="nt">image</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">String</span> <span class="o">?</span>
+          <span class="p">)</span> <span class="p">;</span>
+          <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">[</span> <span class="nl">&lt;NamedThing&gt;</span> <span class="p">]</span>
+       <span class="p">)</span>
+    <span class="p">}</span> <span class="ow">OR</span> <span class="o">@</span><span class="nl">&lt;Concept&gt;</span> <span class="ow">OR</span> <span class="o">@</span><span class="nl">&lt;Organization&gt;</span> <span class="ow">OR</span> <span class="o">@</span><span class="nl">&lt;Person&gt;</span>
+<span class="p">)</span>
+<span class="nl">&lt;Person&gt;</span> <span class="k">CLOSED</span> <span class="p">{</span>
+    <span class="p">(</span>  <span class="o">$</span><span class="nl">&lt;Person_tes&gt;</span> <span class="p">(</span>  <span class="o">&amp;</span><span class="nl">&lt;NamedThing_tes&gt;</span> <span class="p">;</span>
+          <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">[</span> <span class="nl">&lt;NamedThing&gt;</span> <span class="p">]</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="o">&amp;</span><span class="nl">&lt;HasAliases_tes&gt;</span> <span class="p">;</span>
+          <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">[</span> <span class="nl">&lt;HasAliases&gt;</span> <span class="p">]</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="nl">&lt;primary_email&gt;</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">String</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="nn">schema</span><span class="p">:</span><span class="nt">birthDate</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">String</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="nl">&lt;age_in_years&gt;</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">Integer</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="nn">schema</span><span class="p">:</span><span class="nt">gender</span> <span class="o">@</span><span class="nl">&lt;GenderType&gt;</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="nl">&lt;current_address&gt;</span> <span class="o">@</span><span class="nl">&lt;Address&gt;</span> <span class="o">?</span> <span class="p">;</span>
+          <span class="nl">&lt;has_employment_history&gt;</span> <span class="o">@</span><span class="nl">&lt;EmploymentEvent&gt;</span> <span class="o">*</span> <span class="p">;</span>
+          <span class="nl">&lt;has_familial_relationships&gt;</span> <span class="o">@</span><span class="nl">&lt;FamilialRelationship&gt;</span> <span class="o">*</span> <span class="p">;</span>
+          <span class="nl">&lt;has_medical_history&gt;</span> <span class="o">@</span><span class="nl">&lt;MedicalEvent&gt;</span> <span class="o">*</span> <span class="p">;</span>
+          <span class="nl">&lt;aliases&gt;</span> <span class="o">@</span><span class="nn">linkml</span><span class="p">:</span><span class="nt">String</span> <span class="o">*</span>
+       <span class="p">)</span> <span class="p">;</span>
+       <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">[</span> <span class="nn">schema</span><span class="p">:</span><span class="nt">Person</span> <span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
@@ -200,7 +237,7 @@ Expressions Language is a modeling language for RDF files.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="sparql.html" class="btn btn-neutral float-left" title="SPARQL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="shacl.html" class="btn btn-neutral float-right" title="Shacl" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="shacl.html" class="btn btn-neutral float-right" title="SHACL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -216,7 +216,7 @@ classes:
 
 See also:
 
-- [FAQ: attributes vs slots](../faq/modeling.html#when-should-i-use-attributes-vs-slots)
+- {ref}`FAQ: attributes vs slots <faq/modeling:when should i use attributes vs slots?>`
 
 ## Types
 

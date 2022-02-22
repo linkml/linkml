@@ -23,7 +23,7 @@ The NMDC schema represents environmental omics samples, associated
 biogeochemical and environmental metadata, and the outputs of various
 kinds of omics processes and computational workflows on these samples.
 
-See [National Microbiome Data Collaborative](https://github.com/microbiomedata/nmdc-metadata)
+See [National Microbiome Data Collaborative](https://github.com/microbiomedata/nmdc-schema)
 
 ### Cancer Research Data Commons - Harmonized Model
 
