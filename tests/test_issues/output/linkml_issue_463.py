@@ -1,5 +1,5 @@
 # Auto generated from linkml_issue_463.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-22T17:14:57
+# Generation date: 2022-02-22T18:31:43
 # Schema: test
 #
 # id: https://w3id.org/linkml/examples/test
