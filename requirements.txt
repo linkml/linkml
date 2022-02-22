@@ -19,7 +19,7 @@ jinja2
 jsonasobj2~=1.0, >=1.0.3
 jsonschema>=3.0.1
 linkml-dataops
-linkml-runtime>=1.1.15
+linkml-runtime>=1.1.23
 myst-parser
 openpyxl
 pandas
@@ -41,5 +41,5 @@ requests>=2.22
 sphinx
 sphinx-click
 sphinx-rtd-theme
-sqlalchemy
+sqlalchemy>=1.4.31
 watchdog>=0.9.0
