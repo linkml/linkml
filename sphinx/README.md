@@ -25,11 +25,13 @@ After you are satisfied they look good run:
 make deploy
 ```
 
+(this is a simple copy and doesn't need to be done in pipenv)
+
 This will copy to [docs/](https://github.com/linkml/linkml/tree/main/docs) where they can be committed
 
 **NOTE**: remember to `git add` any new HTML files or assets
 
-Currently we do not do these steps by github actions. It is recommended you commit changes to docs in a separate PR
+Currently we do not do these steps by github actions. It is recommended you commit changes to docs in a separate PR. The PRs can be more easily evaluated if they are only the source change, and conflicts are easier to resolve.
 
 ## IMPORTANT
 
