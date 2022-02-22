@@ -13,8 +13,9 @@ class Loader(ABC):
     def json_clean(inp: Any) -> Any:
         """
         Remove empty values and JSON-LD relics from an input file
-        @param inp: JSON-LD representation
-        @return: JSON representation
+
+        :param inp: JSON-LD representation
+        :return: JSON representation
         """
         def _is_empty(o) -> bool:
             return o is None or o == [] or o == {}
@@ -66,22 +67,23 @@ class Loader(ABC):
              metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
         """
         Load source as an instance of target_class
-        @param source: source file/text/url to load
-        @param target_class: destination class
-        @param base_dir: scoping directory for source if it is a file or url
-        @param metadata: metadata about the source
-        @param _: extensions
-        @return: instance of target_class
+
+        :param source: source file/text/url to load
+        :param target_class: destination class
+        :param base_dir: scoping directory for source if it is a file or url
+        :param metadata: metadata about the source
+        :param _: extensions
+        :return: instance of target_class
         """
         raise NotImplementedError()
 
     def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
         """
         Load source as a string
-        @param source: source
-        @param target_class: destination class
-        @param metadata: metadata about the source
-        @param _: extensions
-        @return: instance of taarget_class
+        :param source: source
+        :param target_class: destination class
+        :param metadata: metadata about the source
+        :param _: extensions
+        :return: instance of taarget_class
         """
         return self.load(source, target_class, metadata=metadata)
