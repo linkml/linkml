@@ -91,10 +91,12 @@ Outputs:
    "$id": "https://w3id.org/linkml/examples/personinfo",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {},
    "required": [],
    "title": "personinfo",
-   "type": "object"
+   "type": "object",
+   "version": null
 }
 ```
 

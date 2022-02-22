@@ -514,7 +514,13 @@ def cli(yamlfile, **kwargs):
 
     Examples:
 
-        gen-owl --no-metaclasses --no-type-objects
+        Generate OWL using default parameters:
+
+            gen-owl --no-metaclasses --no-type-objects my_schema.yaml
+
+        Generate OWL utilizing datatype properties for type slots and excluding metaclasses:
+
+            gen-owl --no-metaclasses --no-type-objects my_schema.yaml
 
     For more info, see: https://linkml.io/linkml/generators/owl
     """

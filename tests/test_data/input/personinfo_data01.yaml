@@ -1,0 +1,45 @@
+organizations:
+  - id: X:ORG1
+    name: organtization 1
+    aliases:
+      - o1a1
+      - o1a2
+places:
+  - id: X:Loc1
+    name: location 1
+persons:
+  - id: X:P1
+    name: person1
+    aliases:
+      - p1a1
+      - p1a2
+    has_familial_relationships:
+      - related_to: X:P2
+        type: SIBLING_OF
+    has_employment_history:
+      - employed_at: X:ORG1
+    has_medical_history:
+      - in_location: X:Loc1
+        diagnosis:
+          id: ONT:D001
+          name: cough
+        procedure:
+          id: ONT:T001
+          name: prescribe cough medicine
+  - id: X:P2
+    name: person2
+    aliases:
+      - p2a1
+      - p2a2
+      - p2a3
+    has_familial_relationships:
+      - related_to: X:P1
+        type: SIBLING_OF
+    has_medical_history:
+      - diagnosis:
+          id: ONT:D002
+          name: rash
+        procedure:
+          id: ONT:T002
+          name: ointment
+

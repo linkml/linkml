@@ -2,13 +2,17 @@ sqlalchemy_declarative_template_str = """
 from sqlalchemy import Column, Index, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import *
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 
 Base = declarative_base()
 metadata = Base.metadata
 
 {% for c in classes %}
-class {{c.alias}}(Base):
+class {{c.alias}}({% if c.is_a %}{{ c.is_a }}{% else %}Base{% endif %}):
+    \"\"\"
+    {% if c.description %}{{c.description}}{% else %}{{c.alias}}{% endif %}
+    \"\"\"
     __tablename__ = '{{c.name}}'
     
     {% for s in c.attributes.values() -%}
@@ -23,10 +27,16 @@ class {{c.alias}}(Base):
     {% endfor %}
     
     {%- for mapping in backrefs[c.name] %}
-    {%- if mapping.uses_join_table -%}
-    # TODO
-    {%- else -%}
-    {{mapping.source_slot}} = relationship( "{{ mapping.target_class }}", backref='{{c.alias}}')
+    {% if mapping.mapping_type == "ManyToMany" %}
+    # ManyToMany
+    {{mapping.source_slot}} = relationship( "{{ mapping.target_class }}", secondary="{{ mapping.join_class }}")
+    {% elif mapping.mapping_type == "MultivaluedScalar" %}
+    {{mapping.source_slot}}_rel = relationship( "{{ mapping.join_class }}" )
+    {{mapping.source_slot}} = association_proxy("{{mapping.source_slot}}_rel", "{{mapping.target_slot}}",
+                                  creator=lambda x_: {{ mapping.join_class }}({{mapping.target_slot}}=x_))
+    {% else %}
+    # One-To-Many: {{mapping}}
+    {{mapping.source_slot}} = relationship( "{{ mapping.target_class }}", foreign_keys="[{{ mapping.target_class }}.{{mapping.target_slot}}]")
     {% endif -%}
     {%- endfor %}
     
@@ -35,6 +45,15 @@ class {{c.alias}}(Base):
         {%- for s in c.attributes.values() -%}
         {{s.alias}}={self.{{s.alias}}}, 
         {%- endfor %})"
+        
+    
+        
+    {% if c.is_a or c.mixins %}
+    # Using concrete inheritance: see https://docs.sqlalchemy.org/en/14/orm/inheritance.html
+    __mapper_args__ = {
+        'concrete': True
+    }
+    {% endif %}
 
 {% endfor %}
 """

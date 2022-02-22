@@ -9,6 +9,7 @@ We welcome any and all kinds of contribution, including:
  * testing
  * documentation improvements
  * stlyistic improvements on the linkml site
+ * general suggestions on how we can do better
 
 You are free to make PRs on any LinkML repo, including:
 
@@ -16,7 +17,11 @@ You are free to make PRs on any LinkML repo, including:
  * [linkml-runtime](https://github.com/linkml/linkml-runtime)
  * [linkml-model](https://github.com/linkml/linkml-model)
 
-For issues, we prefer you to use the main linkml repo
+Be sure to read the CONTRIBUTING.md for the repo you wish to contribute to
+
+For filing new issues, we prefer you to use the [main linkml repo](https://github.com/linkml/linkml/issues).
+
+You may wish to browse the list of [good first issues](https://github.com/linkml/linkml/labels/good%20first%20issue)
 
 ## How do I stay involved?
 

@@ -1,13 +1,10 @@
 import logging
 import os
-#import sys
 from collections import defaultdict
-from copy import copy
-from dataclasses import dataclass, field
-from enum import unique
 from types import ModuleType
 from typing import List, Dict, Union, TextIO
 
+import click
 from jinja2 import Template
 from linkml_runtime.utils.compile_python import compile_python, file_text
 from sqlalchemy import *
@@ -17,11 +14,13 @@ from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotD
 from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.sqlalchemy import sqlalchemy_imperative_template_str, sqlalchemy_declarative_template_str
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer
-from linkml.utils.generator import Generator
+from linkml.utils.generator import Generator, shared_arguments
+
 
 class TemplateEnum(Enum):
     DECLARATIVE = "declarative"
@@ -83,9 +82,23 @@ class SQLAlchemyGenerator(Generator):
 
     def compile_sqla(self,
                      compile_python_dataclasses=False,
+                     pydantic=False,
                      model_path=None,
                      template: TemplateEnum = TemplateEnum.IMPERATIVE,
                      **kwargs) -> ModuleType:
+        """
+        Generates and compiles SQL Alchemy bindings
+
+        - If template is DECLARATIVE, then a single python module with classes is generated
+        - If template is IMPERATIVE, only mappings are generated
+             - if compile_python_dataclasses is True then a standard datamodel is generated
+
+        :param compile_python_dataclasses: (default False)
+        :param model_path:
+        :param template:
+        :param kwargs:
+        :return:
+        """
 
         if model_path is None:
             model_path = self.schema.name
@@ -95,7 +108,10 @@ class SQLAlchemyGenerator(Generator):
             return compile_python(sqla_code, package_path=model_path)
         elif compile_python_dataclasses:
             # concatenate the python dataclasses with the sqla code
-            pygen = PythonGenerator(self.original_schema)
+            if pydantic:
+                pygen = PydanticGenerator(self.original_schema)
+            else:
+                pygen = PythonGenerator(self.original_schema)
             dc_code = pygen.serialize()
             sqla_code = self.generate_sqla(model_path=None, no_model_import=True, **kwargs)
             return compile_python(f'{dc_code}\n{sqla_code}', package_path=model_path)
@@ -108,3 +124,21 @@ class SQLAlchemyGenerator(Generator):
             c.alias = underscore(c.name)
             for a in c.attributes.values():
                 a.alias = underscore(a.name)
+
+@shared_arguments(SQLAlchemyGenerator)
+@click.option("--declarative/--no-declarative",
+              default=False,
+              show_default=True,
+              help="SQLA declarative vs imperative")
+@click.command()
+def cli(yamlfile, declarative, **args):
+    """ Generate SQL DDL representation """
+    gen = SQLAlchemyGenerator(yamlfile, **args)
+    if declarative:
+        t = TemplateEnum.DECLARATIVE
+    else:
+        t = TemplateEnum.IMPERATIVE
+    print(gen.generate_sqla(template=t))
+
+if __name__ == '__main__':
+    cli()

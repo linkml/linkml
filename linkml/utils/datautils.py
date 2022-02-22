@@ -1,8 +1,7 @@
 import os
-from typing import Optional
+from typing import Optional, Union
 from collections import defaultdict
 
-from linkml_runtime.utils.compile_python import compile_python
 
 from linkml_runtime.dumpers.yaml_dumper import YAMLDumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
@@ -16,7 +15,8 @@ from linkml_runtime.loaders.rdflib_loader import RDFLibLoader
 from linkml_runtime.loaders.csv_loader import CSVLoader
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName, SchemaDefinition
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
@@ -77,7 +77,7 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
     If a class is explicitly designated with tree_root, use this.
     Otherwise use the class that is not referenced as a range in any other class.
     """
-    for c in sv.all_class().values():
+    for c in sv.all_classes().values():
         if c.tree_root:
             return c.name
     refs = defaultdict(int)
@@ -111,7 +111,4 @@ def infer_index_slot(sv: SchemaView, root_class: ClassDefinitionName) -> Optiona
         return index_slots[0]
     else:
         return None
-
-
-
 

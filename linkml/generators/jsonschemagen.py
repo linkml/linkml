@@ -33,7 +33,11 @@ class JsonSchemaGenerator(Generator):
     """
     Generates JSONSchema documents from a LinkML SchemaDefinition
 
-
+    - Each linkml class generates a schema
+    - inheritance hierarchies are rolled-down from ancestors
+    - Composition not yet implemented
+    - Enumerations treated as strings
+    - Foreign key references are treated as semantics-free strings
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.2"

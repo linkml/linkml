@@ -321,5 +321,61 @@ This framework allows schemas to be maintained using Excel, google sheets, or TS
 
 ## Why should I use LinkML over CSV-on-the-web?
 
-TODO
+The W3C [CSV on the Web](https://www.w3.org/TR/tabular-data-primer/)
+(CSVW) Working Group have developed standard ways to express metadata about
+CSVs and other kinds of tabular data.
 
+An example use of CSVW is to semantically describe the columns in a
+CSV/TSV, for example a CSV about country locations and nomenculature. The following in Example 10 from the CSVW primer:
+
+```json
+{
+  "@context": "http://www.w3.org/ns/csvw",
+  "url": "countries.csv"
+  "tableSchema": {
+    "columns": [{
+      "titles": "country",
+      "dc:description": "The ISO two-letter code for a country, in lowercase."
+    },{
+      "titles": "country group",
+      "dc:description": "A lowercase two-letter code for a group of countries."
+    },{
+      "titles": "name (en)",
+      "dc:description": "The official name of the country in English."
+    },{
+      "titles": "name (fr)",
+      "dc:description": "The official name of the country in French."
+    },{
+      "titles": "name (de)",
+      "dc:description": "The official name of the country in German."
+    },{
+      "titles": "latitude",
+      "dc:description": "The latitude of an indicative point in the country."
+    },{
+      "titles": "longitude",
+      "dc:description": "The longitude of an indicative point in the country."
+    }]
+  }
+}
+```
+
+CSVW provides a number of advantages for making data FAIR over the use
+of CSVs alone, or CSVs in combination with non-machine readable documentation files.
+
+Most of the things that can be said using CSVW can also be said with
+LinkML, and LinkML is not restricted solely to CSVs - e.g. you can
+semantically describe JSON files with LinkML too.
+
+We are currently planning on writing a generator for CSVW JSON-LD.
+
+## Why should I use LinkML over ISO-11179?
+
+ISO-11179 is an ISO standard for Metadata and Metadata Registries. It
+provides a rich standardized way of exchanging data dictionaries. For
+example, an ISO-11179 registry can be used to register all of the
+columns in a data file or tags in an XML file, and to map semantics
+onto these, making integration across datasets more automatable.
+
+Currently ISO-11179 and LinkML serve different purposes, but there are
+overlaps in goals, and we are currently working on documentation
+clarifying the connection.

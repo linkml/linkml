@@ -1,4 +1,4 @@
-Shacl
+SHACL
 ======
 
 .. warning:: Beta implementation, some features may change

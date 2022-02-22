@@ -15,6 +15,7 @@ Tutorial
    tutorial06
    tutorial07
    tutorial08
+   tutorial09
 
 
 The tutorial is evolving, some things that will be covered in future

@@ -42,7 +42,9 @@ Given a definition of a Person class:
 parent classes)
 
 The generate python looks like this:
-          
+
+.. code-block:: python
+
              
     class Person(NamedThing):
         """

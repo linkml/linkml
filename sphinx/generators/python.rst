@@ -1,8 +1,12 @@
 Python
 ======
 
-.. seealso:: `Using Python <./../data/python>`
+.. seealso:: :doc:`Using Python </data/python>`
 
+Example Output
+--------------
+
+`personinfo.py <https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo/personinfo.py>`_
 
 Overview
 --------
@@ -36,7 +40,7 @@ Dataclasses
 We use the standard `Python dataclasses framework <https://docs.python.org/3/library/dataclasses.html>`_
 
 Note that there is an alternative generator for using
-Pydantic, see :doc:`Pydantic <generators/pydantic>`
+Pydantic, see :doc:`Pydantic Generator </generators/pydantic>`
 
 Inheritance
 ^^^^^^^^^^^

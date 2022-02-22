@@ -192,10 +192,16 @@ def cli(inputs, directory):
         print(f'## {len(blocks)} Blocks')
         localdir = Path(input).stem
         subdir = PurePath(directory, localdir)
-        errs += execute_blocks(str(subdir), blocks)
+        input_errs = execute_blocks(str(subdir), blocks)
+        if len(input_errs) > 0:
+            logging.error(f'TUTORIAL {input} FAILURES: {len(input_errs)}')
+        errs += input_errs
     logging.info(f'Errors = {len(errs)}')
     if len(errs) > 0:
-        raise Exception(f'ERRORS')
+        logging.error(f'Encountered {len(errs)} Errors')
+        for err in errs:
+            logging.error(f'Error: {err}')
+        sys.exit(1)
 
 
 
