@@ -71,10 +71,12 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: Place
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: Place
     required: false
   aliases:
@@ -82,6 +84,7 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: skos:altLabel
     multivalued: true
+    alias: aliases
     owner: Place
 
 ```

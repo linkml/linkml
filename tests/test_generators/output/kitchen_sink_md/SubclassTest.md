@@ -62,11 +62,13 @@ attributes:
   slot with space 2:
     name: slot with space 2
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: slot_with_space_2
     owner: subclass test
     range: class with spaces
   slot with space 1:
     name: slot with space 1
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: slot_with_space_1
     owner: subclass test
 
 ```

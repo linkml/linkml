@@ -62,10 +62,12 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: CodeSystem
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: CodeSystem
     required: false
 

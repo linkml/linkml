@@ -78,23 +78,27 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: activity
   started at time:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: activity
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: activity
     range: date
   was informed by:
     name: was informed by
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:wasInformedBy
+    alias: was_informed_by
     owner: activity
     range: activity
   was associated with:
@@ -102,6 +106,7 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:wasAssociatedWith
     inlined: false
+    alias: was_associated_with
     owner: activity
     range: agent
   used:
@@ -109,10 +114,12 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/core
     domain: activity
     slot_uri: prov:used
+    alias: used
     owner: activity
   description:
     name: description
     from_schema: https://w3id.org/linkml/tests/core
+    alias: description
     owner: activity
 
 ```

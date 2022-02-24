@@ -72,16 +72,19 @@ attributes:
     name: ceo
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: schema:ceo
+    alias: ceo
     owner: Company
     range: Person
   id:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: Company
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: Company
     required: false
   aliases:
@@ -89,6 +92,7 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: skos:altLabel
     multivalued: true
+    alias: aliases
     owner: Company
 
 ```

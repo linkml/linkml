@@ -83,23 +83,27 @@ attributes:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: FamilialRelationship
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: FamilialRelationship
     range: date
   related to:
     name: related to
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: related_to
     owner: FamilialRelationship
     range: Person
     required: true
   type:
     name: type
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: type
     owner: FamilialRelationship
     range: FamilialRelationshipType
     required: true

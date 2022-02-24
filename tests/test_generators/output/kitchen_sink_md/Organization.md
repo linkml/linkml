@@ -76,10 +76,12 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: Organization
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: Organization
     required: false
   aliases:
@@ -87,6 +89,7 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: skos:altLabel
     multivalued: true
+    alias: aliases
     owner: Organization
 
 ```

@@ -63,6 +63,7 @@ attributes:
   slot with space 1:
     name: slot with space 1
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: slot_with_space_1
     owner: class with spaces
 
 ```

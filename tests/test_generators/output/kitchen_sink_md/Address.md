@@ -58,10 +58,12 @@ attributes:
   street:
     name: street
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: street
     owner: Address
   city:
     name: city
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: city
     owner: Address
 
 ```

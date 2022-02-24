@@ -53,6 +53,7 @@ attributes:
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: Friend
     required: false
 

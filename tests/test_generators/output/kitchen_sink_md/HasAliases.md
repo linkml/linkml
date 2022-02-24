@@ -59,6 +59,7 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: skos:altLabel
     multivalued: true
+    alias: aliases
     owner: HasAliases
 
 ```

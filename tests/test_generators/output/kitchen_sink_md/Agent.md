@@ -65,17 +65,20 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: agent
   acted on behalf of:
     name: acted on behalf of
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:actedOnBehalfOf
+    alias: acted_on_behalf_of
     owner: agent
     range: agent
   was informed by:
     name: was informed by
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:wasInformedBy
+    alias: was_informed_by
     owner: agent
     range: activity
 class_uri: prov:Agent

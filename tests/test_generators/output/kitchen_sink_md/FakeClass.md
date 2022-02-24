@@ -55,6 +55,7 @@ attributes:
   test_attribute:
     name: test_attribute
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: test_attribute
     owner: FakeClass
 
 ```
