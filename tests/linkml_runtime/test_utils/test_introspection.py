@@ -8,7 +8,7 @@ from linkml_runtime.utils.introspection import package_schemaview, object_class_
 
 class IntrospectionTestCase(unittest.TestCase):
 
-    def test_introspection(self):
+    def test_introspection_on_metamodel(self):
         view = package_schemaview('linkml_runtime.linkml_model.meta')
         for cn in ['class_definition', 'type_definition', 'slot_definition']:
             assert cn in view.all_classes()

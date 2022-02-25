@@ -27,6 +27,10 @@ imports:
 #==================================
 slots:
   id:
+  name:
+    description: name
+  synonyms:
+    multivalued: true
   full_name:
     string_serialization: "{first_name} {last_name}"
   first_name:
@@ -61,6 +65,12 @@ slots:
 #==================================
 
 classes:
+  Term:
+    slots:
+      - id
+      - name
+      - synonyms
+
   Person:
     slots:
       - id
