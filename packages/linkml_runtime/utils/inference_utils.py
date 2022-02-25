@@ -1,7 +1,7 @@
 import logging
 from dataclasses import field, dataclass
 from enum import Enum
-from typing import Union, Optional, Any, Dict
+from typing import Union, Optional, Any, Dict, Callable
 from jsonasobj2 import JsonObj, items
 
 from linkml_runtime import SchemaView
@@ -11,19 +11,33 @@ from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.walker_utils import traverse_object_tree
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+RESOLVE_FUNC = Callable[[str, Any], Any]
 
-def obj_as_dict_nonrecursive(obj: YAMLRoot) -> Dict[str, Any]:
-    return {k: v for k, v in items(obj)}
+def obj_as_dict_nonrecursive(obj: YAMLRoot, resolve_function: RESOLVE_FUNC = None) -> Dict[str, Any]:
+    """
+    Translates an object into a dict, for the purposes of input into formatted strings
 
+    :param obj:
+    :param resolve_function:
+    :return:
+    """
+    if resolve_function:
+        return {k: resolve_function(v, k) for k, v in items(obj)}
+    else:
+        return {k: v for k, v in items(obj)}
 
 @dataclass
 class Config:
     """
     Controls which inferences are performed
+
+    - slot.string_serialization
+    - slot.equals_expression
     """
     use_string_serialization: bool = field(default_factory=lambda: True)
     use_rules: bool = field(default_factory=lambda: False)
     use_expressions: bool = field(default_factory=lambda: False)
+    resolve_function: RESOLVE_FUNC = None
 
 
 class Policy(Enum):
@@ -40,10 +54,15 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     """
     Infer the value of a slot for a given object
 
-    :param obj: (not mutated)
-    :param slot_name:
+    Utilizes:
+
+    - string_serialization
+    - equals_expression
+
+    :param obj: object with slot whose value is be generated (not mutated)
+    :param slot_name: slot whose value is to be filled
     :param schemaview:
-    :param config:
+    :param config: determines which rules to apply
     :return: inferred value, or None if not inference performed
     """
     cls_name = type(obj).class_name
@@ -52,11 +71,11 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     if config.use_string_serialization:
         if slot.string_serialization:
             if isinstance(obj, JsonObj):
-                return slot.string_serialization.format(**obj_as_dict_nonrecursive(obj))
+                return slot.string_serialization.format(**obj_as_dict_nonrecursive(obj, config.resolve_function))
     if config.use_expressions:
         if slot.equals_expression:
             if isinstance(obj, JsonObj):
-                return eval_expr(slot.equals_expression, **obj_as_dict_nonrecursive(obj))
+                return eval_expr(slot.equals_expression, **obj_as_dict_nonrecursive(obj, config.resolve_function))
     if config.use_rules:
         raise NotImplementedError(f'Rules not implemented for {config}')
     return None
