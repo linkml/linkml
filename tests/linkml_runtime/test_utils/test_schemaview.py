@@ -5,6 +5,7 @@ from copy import copy
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
+from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
 from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
@@ -318,6 +319,41 @@ class SchemaViewTestCase(unittest.TestCase):
         slot4 = view.induced_slot('s4', 'C')
         assert slot4.multivalued
         self.assertEqual('W', slot4.range)
+        # test dangling
+        view.add_slot(SlotDefinition('s5', is_a='does-not-exist'))
+        with self.assertRaises(ValueError):
+            view.slot_ancestors('s5')
+
+
+
+    def test_metamodel_in_schemaview(self):
+        view = package_schemaview('linkml_runtime.linkml_model.meta')
+        for cn in ['class_definition', 'type_definition', 'slot_definition']:
+            assert cn in view.all_classes()
+            assert cn in view.all_classes(imports=False)
+            assert view.get_identifier_slot(cn).name == 'name'
+        for cn in ['annotation', 'extension']:
+            assert cn in view.all_classes()
+            assert cn not in view.all_classes(imports=False)
+        for sn in ['id', 'name', 'description']:
+            assert sn in view.all_slots()
+        for tn in ['uriorcurie', 'string', 'float']:
+            assert tn in view.all_types()
+        for tn in ['uriorcurie', 'string', 'float']:
+            assert tn not in view.all_types(imports=False)
+        for cn, c in view.all_classes().items():
+            uri = view.get_uri(cn, expand=True)
+            print(f'{cn}: {c.class_uri} // {uri}')
+            self.assertIsNotNone(uri)
+            self.assertIn('https://w3id.org/linkml/', uri)
+            induced_slots = view.class_induced_slots(cn)
+            for s in induced_slots:
+                exp_slot_uri = view.get_uri(s, expand=True)
+                print(f'  {cn}: {s.name} {s.alias} {s.slot_uri} // {exp_slot_uri}')
+                self.assertIsNotNone(exp_slot_uri)
+
+
+
 
 
 if __name__ == '__main__':
