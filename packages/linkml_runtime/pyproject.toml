@@ -47,12 +47,8 @@ json-flattener = ">=0.1.9"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.4"
 jsonschema = ">=3.2.0"
 prefixcommons = "*"
-pyldmod = "*"
 pyyaml = "==5.*,>=5.1.0"
-rdflib = ">=5.0.0"
-rdflib-shim = ">=1.0.3"
-rdflib-jsonld = "==0.6.1"
-rdflib-pyldmod-compat = "*"
+rdflib = ">=6.0.0"
 requests = "*"
 
 [tool.poetry.dev-dependencies]

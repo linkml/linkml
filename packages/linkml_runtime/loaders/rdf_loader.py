@@ -5,9 +5,7 @@ from hbreader import FileInfo
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pyld import jsonld
 from rdflib import Graph
-from rdflib_pyld_compat import pyld_jsonld_from_rdflib_graph
 
 from linkml_runtime.loaders.requests_ssl_patch import no_ssl_verification
 
@@ -52,14 +50,18 @@ class RDFLoader(Loader):
                 if fmt != 'json-ld':
                     g = Graph()
                     g.parse(data=data, format=fmt)
-                    data = pyld_jsonld_from_rdflib_graph(g)
+                    jsonld_str = g.serialize(format='json-ld', indent=4)
+                    data = json.loads(jsonld_str)
+                    #data = pyld_jsonld_from_rdflib_graph(g)
 
             if not isinstance(data, dict):
                 # TODO: Add a context processor to the source w/ CONTEXTS_PARAM_TYPE
                 # TODO: figure out what to do base options below
                 # TODO: determine whether jsonld.frame can handle something other than string input
+                # TODO: see https://github.com/RDFLib/rdflib/issues/1727
                 # frame = {'@context': contexts, '@type': f'{target_class.__name__}'}
-                data_as_dict = jsonld.frame(data, contexts)
+                #data_as_dict = jsonld.frame(data, contexts)
+                data_as_dict = data
             else:
                 data_as_dict = data
             typ = data_as_dict.pop('@type', None)
@@ -79,6 +81,8 @@ class RDFLoader(Loader):
         # If the input is a graph, convert it to JSON-LD
         if isinstance(source, Graph):
             source = pyld_jsonld_from_rdflib_graph(source)
+            jsonld_str = source.serialize(format='json-ld', indent=4)
+            source = json.loads(jsonld_str)
             fmt = 'json-ld'
 
         # While we may want to allow full SSL verification at some point, the general philosophy is that content forgery
