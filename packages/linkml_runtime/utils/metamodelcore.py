@@ -6,6 +6,7 @@ from decimal import Decimal
 from typing import Union, Optional, Tuple
 from urllib.parse import urlparse
 
+from ShExJSG.ShExJ import IRIREF, PN_PREFIX
 from rdflib import Literal, BNode, URIRef
 from rdflib.namespace import is_ncname
 from rdflib.term import Identifier as rdflib_Identifier
@@ -136,12 +137,9 @@ class URI(URIorCURIE):
             raise ValueError(f"{v}: is not a valid URI")
         super().__init__(v)
 
-    # this is more inclusive than the W3C specification
-    uri_re = re.compile("^[A-Za-z]\\S*$")
-
     @classmethod
     def is_valid(cls, v: str) -> bool:
-        return v is not None and not URIorCURIE.is_curie(v) and cls.uri_re.match(v)
+        return v is not None and not URIorCURIE.is_curie(v) and isinstance(v, IRIREF)
 
 
 class Curie(URIorCURIE):
@@ -174,8 +172,7 @@ class Curie(URIorCURIE):
     @classmethod
     def is_valid(cls, v: str) -> bool:
         pnln = cls.ns_ln(v)
-        #return pnln is not None and (not pnln[0] or isinstance(pnln[0], PN_PREFIX))
-        return pnln is not None
+        return pnln is not None and (not pnln[0] or isinstance(pnln[0], PN_PREFIX))
 
     # This code was extracted from the termorcurie package of the rdfa
     def as_uri(self, nsm: Namespaces) -> Optional[URIRef]:

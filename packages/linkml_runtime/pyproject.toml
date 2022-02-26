@@ -54,6 +54,7 @@ rdflib-shim = ">=1.0.3"
 rdflib-jsonld = "==0.6.1"
 rdflib-pyldmod-compat = "*"
 requests = "*"
+shexjsg = "==0.*,>=0.7.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
