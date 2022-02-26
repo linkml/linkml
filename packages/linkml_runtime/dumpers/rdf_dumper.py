@@ -88,4 +88,4 @@ class RDFDumper(Dumper):
         :return: rdflib Graph containing element
         """
         return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).\
-            serialize(format=fmt).decode()
+            serialize(format=fmt)
