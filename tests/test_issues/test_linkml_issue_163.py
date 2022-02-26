@@ -40,7 +40,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         g = Graph()
         g.parse(outpath, format=RDF_FORMAT)
 
-    @unittest.skip()
+    @unittest.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
     def test_namespace(self):
         name = 'linkml_issue_163'
         inpath = env.input_path(f'{name}.yaml')
