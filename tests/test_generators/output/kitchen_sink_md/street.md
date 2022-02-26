@@ -1,8 +1,6 @@
-# street
+# Slot: street
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/street
+URI: [https://w3id.org/linkml/tests/kitchen_sink/street](https://w3id.org/linkml/tests/kitchen_sink/street)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/street
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

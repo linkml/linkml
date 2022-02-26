@@ -1,8 +1,6 @@
-# employed_at
+# Slot: employed_at
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/employed_at
+URI: [https://w3id.org/linkml/tests/kitchen_sink/employed_at](https://w3id.org/linkml/tests/kitchen_sink/employed_at)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/employed_at
 
  * Range: Company
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

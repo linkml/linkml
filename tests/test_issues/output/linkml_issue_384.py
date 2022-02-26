@@ -1,5 +1,5 @@
 # Auto generated from linkml_issue_384.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-24T23:01:12
+# Generation date: 2022-02-26T01:58:56
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo

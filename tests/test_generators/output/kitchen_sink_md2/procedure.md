@@ -1,8 +1,6 @@
-# procedure
+# Slot: procedure
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/procedure
+URI: [https://w3id.org/linkml/tests/kitchen_sink/procedure](https://w3id.org/linkml/tests/kitchen_sink/procedure)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/procedure
 
  * Range: ProcedureConcept
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

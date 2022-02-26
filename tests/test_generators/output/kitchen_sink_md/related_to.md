@@ -1,8 +1,6 @@
-# related_to
+# Slot: related_to
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/related_to
+URI: [https://w3id.org/linkml/tests/kitchen_sink/related_to](https://w3id.org/linkml/tests/kitchen_sink/related_to)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/related_to
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

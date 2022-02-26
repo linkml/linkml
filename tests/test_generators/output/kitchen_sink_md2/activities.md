@@ -1,8 +1,6 @@
-# activities
+# Slot: activities
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/activities
+URI: [https://w3id.org/linkml/tests/kitchen_sink/activities](https://w3id.org/linkml/tests/kitchen_sink/activities)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/activities
 
  * Range: activity
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

@@ -1,8 +1,6 @@
-# has_medical_history
+# Slot: has_medical_history
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/has_medical_history
+URI: [https://w3id.org/linkml/tests/kitchen_sink/has_medical_history](https://w3id.org/linkml/tests/kitchen_sink/has_medical_history)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/has_medical_history
 
  * Range: MedicalEvent
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

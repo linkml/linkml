@@ -1,8 +1,6 @@
-# has_employment_history
+# Slot: has_employment_history
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/has_employment_history
+URI: [https://w3id.org/linkml/tests/kitchen_sink/has_employment_history](https://w3id.org/linkml/tests/kitchen_sink/has_employment_history)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/has_employment_history
 
  * Range: EmploymentEvent
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

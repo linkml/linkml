@@ -1,6 +1,7 @@
-# Place
+# Class: Place
 
-None
+
+
 
 URI: [ks:Place](https://w3id.org/linkml/tests/kitchen_sink/Place)
 
@@ -42,12 +43,16 @@ URI: [ks:Place](https://w3id.org/linkml/tests/kitchen_sink/Place)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Place
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -58,9 +63,11 @@ slots:
 - name
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Place
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -88,3 +95,4 @@ attributes:
     owner: Place
 
 ```
+</details>

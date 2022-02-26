@@ -1,8 +1,6 @@
-# description
+# Slot: description
 
-None
-
-URI: https://w3id.org/linkml/tests/core/description
+URI: [https://w3id.org/linkml/tests/core/description](https://w3id.org/linkml/tests/core/description)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/core/description
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

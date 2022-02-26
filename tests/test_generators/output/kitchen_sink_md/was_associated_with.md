@@ -1,8 +1,6 @@
-# was_associated_with
+# Slot: was_associated_with
 
-None
-
-URI: http://www.w3.org/ns/prov#wasAssociatedWith
+URI: [http://www.w3.org/ns/prov#wasAssociatedWith](http://www.w3.org/ns/prov#wasAssociatedWith)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#wasAssociatedWith
 
  * Range: agent
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

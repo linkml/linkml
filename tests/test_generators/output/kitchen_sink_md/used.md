@@ -1,8 +1,6 @@
-# used
+# Slot: used
 
-None
-
-URI: http://www.w3.org/ns/prov#used
+URI: [http://www.w3.org/ns/prov#used](http://www.w3.org/ns/prov#used)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#used
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

@@ -1,6 +1,9 @@
-# Activity
+# Class: Activity
+_a provence-generating activity_
 
-a provence-generating activity
+
+
+
 
 URI: [core:Activity](https://w3id.org/linkml/tests/core/Activity)
 
@@ -42,12 +45,16 @@ URI: [core:Activity](https://w3id.org/linkml/tests/core/Activity)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: activity
 mappings:
@@ -64,9 +71,11 @@ slots:
 - description
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: activity
 mappings:
@@ -123,3 +132,4 @@ attributes:
     owner: activity
 
 ```
+</details>

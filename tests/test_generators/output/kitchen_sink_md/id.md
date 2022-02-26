@@ -1,8 +1,6 @@
-# id
+# Slot: id
 
-None
-
-URI: https://w3id.org/linkml/tests/core/id
+URI: [https://w3id.org/linkml/tests/core/id](https://w3id.org/linkml/tests/core/id)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/core/id
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

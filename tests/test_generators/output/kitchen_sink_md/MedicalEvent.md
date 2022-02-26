@@ -1,6 +1,7 @@
-# MedicalEvent
+# Class: MedicalEvent
 
-None
+
+
 
 URI: [ks:MedicalEvent](https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent)
 
@@ -44,12 +45,16 @@ URI: [ks:MedicalEvent](https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: MedicalEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -60,9 +65,11 @@ slots:
 - procedure
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: MedicalEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -121,3 +128,4 @@ attributes:
     range: AnyObject
 
 ```
+</details>

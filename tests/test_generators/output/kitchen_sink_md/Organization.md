@@ -1,6 +1,7 @@
-# Organization
+# Class: Organization
 
-None
+
+
 
 URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)
 
@@ -43,12 +44,16 @@ Instances of this class *should* have identifiers with one of the following pref
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Organization
 id_prefixes:
@@ -61,9 +66,11 @@ slots:
 - name
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Organization
 id_prefixes:
@@ -93,3 +100,4 @@ attributes:
     owner: Organization
 
 ```
+</details>

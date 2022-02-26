@@ -1,6 +1,7 @@
-# MarriageEvent
+# Class: MarriageEvent
 
-None
+
+
 
 URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent)
 
@@ -38,12 +39,16 @@ URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: MarriageEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -54,9 +59,11 @@ slots:
 - married to
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: MarriageEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -109,3 +116,4 @@ attributes:
     range: AnyObject
 
 ```
+</details>

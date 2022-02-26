@@ -1,6 +1,7 @@
-# EmploymentEvent
+# Class: EmploymentEvent
 
-None
+
+
 
 URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent)
 
@@ -43,12 +44,16 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: EmploymentEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -63,9 +68,11 @@ slot_usage:
     required: false
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: EmploymentEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -120,3 +127,4 @@ attributes:
     range: AnyObject
 
 ```
+</details>

@@ -1,6 +1,7 @@
-# BirthEvent
+# Class: BirthEvent
 
-None
+
+
 
 URI: [ks:BirthEvent](https://w3id.org/linkml/tests/kitchen_sink/BirthEvent)
 
@@ -42,12 +43,16 @@ URI: [ks:BirthEvent](https://w3id.org/linkml/tests/kitchen_sink/BirthEvent)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: BirthEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -56,9 +61,11 @@ slots:
 - in location
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: BirthEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -103,3 +110,4 @@ attributes:
     range: AnyObject
 
 ```
+</details>

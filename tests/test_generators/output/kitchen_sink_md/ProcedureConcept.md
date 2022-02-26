@@ -1,6 +1,7 @@
-# ProcedureConcept
+# Class: ProcedureConcept
 
-None
+
+
 
 URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept)
 
@@ -40,21 +41,27 @@ URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureC
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: ProcedureConcept
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
 is_a: Concept
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: ProcedureConcept
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -80,3 +87,4 @@ attributes:
     range: CodeSystem
 
 ```
+</details>

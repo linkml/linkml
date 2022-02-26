@@ -1,6 +1,7 @@
-# Event
+# Class: Event
 
-None
+
+
 
 URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
@@ -39,12 +40,16 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Event
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -55,9 +60,11 @@ slots:
 - metadata
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Event
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -91,3 +98,4 @@ attributes:
     range: AnyObject
 
 ```
+</details>

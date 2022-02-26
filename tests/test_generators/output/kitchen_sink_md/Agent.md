@@ -1,6 +1,9 @@
-# Agent
+# Class: Agent
+_a provence-generating agent_
 
-a provence-generating agent
+
+
+
 
 URI: [prov:Agent](http://www.w3.org/ns/prov#Agent)
 
@@ -36,12 +39,16 @@ URI: [prov:Agent](http://www.w3.org/ns/prov#Agent)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: agent
 description: a provence-generating agent
@@ -53,9 +60,11 @@ slots:
 class_uri: prov:Agent
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: agent
 description: a provence-generating agent
@@ -84,3 +93,4 @@ attributes:
 class_uri: prov:Agent
 
 ```
+</details>

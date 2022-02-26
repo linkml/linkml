@@ -1,6 +1,7 @@
-# FamilialRelationship
+# Class: FamilialRelationship
 
-None
+
+
 
 URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship)
 
@@ -41,12 +42,16 @@ URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/Famili
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: FamilialRelationship
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -62,9 +67,11 @@ slot_usage:
     required: true
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: FamilialRelationship
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -109,3 +116,4 @@ attributes:
     required: true
 
 ```
+</details>
