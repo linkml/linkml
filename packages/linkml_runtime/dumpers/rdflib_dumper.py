@@ -143,5 +143,5 @@ class RDFLibDumper(Dumper):
         :return: serialization of rdflib Graph containing element
         """
         return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).\
-            serialize(format=fmt).decode()
+            serialize(format=fmt)
 
