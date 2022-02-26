@@ -1,8 +1,6 @@
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import RDF, RDFS, SKOS, XSD, OWL
-import rdflib_shim
-shim = rdflib_shim.RDFLIB_SHIM
 
 # use importlib.metadata to read the version provided
 # by the package during installation. Do not hardcode
