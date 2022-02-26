@@ -40,6 +40,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         g = Graph()
         g.parse(outpath, format=RDF_FORMAT)
 
+    @unittest.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
     def test_namespace(self):
         name = 'linkml_issue_163'
         inpath = env.input_path(f'{name}.yaml')
@@ -77,7 +78,7 @@ class IssueRDFNamespaceTestCase(TestEnvironmentTestCase):
         with open(env.expected_path(f'{name}-via-jsonld.ttl'), 'w') as outf:
             outf.write(graph.serialize(format='turtle').decode())
 
-
+    @unittest.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
     def test_issue_mappings_namespace(self):
         """ Make sure that types are generated as part of the output """
         g = self._test_rdf('linkml_issue_163')
