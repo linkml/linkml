@@ -1807,6 +1807,119 @@
          "title": "Extension",
          "type": "object"
       },
+      "ImportExpression": {
+         "additionalProperties": false,
+         "description": "an expression describing an import",
+         "properties": {
+            "alt_descriptions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/AltDescription__identifier_optional"
+               }
+            },
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "comments": {
+               "description": "notes and comments about an element intended for external consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "deprecated": {
+               "description": "Description of why and when this element will no longer be used",
+               "type": "string"
+            },
+            "deprecated_element_has_exact_replacement": {
+               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+               "type": "string"
+            },
+            "deprecated_element_has_possible_replacement": {
+               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+               "type": "string"
+            },
+            "description": {
+               "description": "a description of the element's purpose and use",
+               "type": "string"
+            },
+            "examples": {
+               "description": "example usages of an element",
+               "items": {
+                  "$ref": "#/$defs/Example"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "from_schema": {
+               "description": "id of the schema that defined the element",
+               "type": "string"
+            },
+            "import_as": {
+               "type": "string"
+            },
+            "import_from": {
+               "type": "string"
+            },
+            "import_map": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Setting__identifier_optional"
+               }
+            },
+            "imported_from": {
+               "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_subset": {
+               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "notes": {
+               "description": "editorial notes about an element intended for internal consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "see_also": {
+               "description": "a reference",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
+            "todos": {
+               "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            }
+         },
+         "required": [
+            "import_from"
+         ],
+         "title": "ImportExpression",
+         "type": "object"
+      },
       "LocalName": {
          "additionalProperties": false,
          "description": "an attributed label",
@@ -2173,7 +2286,7 @@
                "type": "string"
             },
             "meaning": {
-               "description": "the value meaning (in the 11179 sense) of a permissible value",
+               "description": "the value meaning of a permissible value",
                "type": "string"
             },
             "mixins": {
@@ -2293,7 +2406,7 @@
                "type": "string"
             },
             "meaning": {
-               "description": "the value meaning (in the 11179 sense) of a permissible value",
+               "description": "the value meaning of a permissible value",
                "type": "string"
             },
             "mixins": {
@@ -3004,6 +3117,14 @@
                "format": "date-time",
                "type": "string"
             },
+            "list_elements_ordered": {
+               "description": "If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed",
+               "type": "boolean"
+            },
+            "list_elements_unique": {
+               "description": "If True, then there must be no duplicates in the elements of a multivalued slot",
+               "type": "boolean"
+            },
             "local_names": {
                "additionalProperties": {
                   "$ref": "#/$defs/LocalName__identifier_optional"
@@ -3145,6 +3266,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "shared": {
+               "description": "If True, then the relationship between the slot domain and range is many to one or many to many",
+               "type": "boolean"
             },
             "singular_name": {
                "description": "a name that is used in the singular form",
@@ -3484,6 +3609,14 @@
                "format": "date-time",
                "type": "string"
             },
+            "list_elements_ordered": {
+               "description": "If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed",
+               "type": "boolean"
+            },
+            "list_elements_unique": {
+               "description": "If True, then there must be no duplicates in the elements of a multivalued slot",
+               "type": "boolean"
+            },
             "local_names": {
                "additionalProperties": {
                   "$ref": "#/$defs/LocalName__identifier_optional"
@@ -3625,6 +3758,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "shared": {
+               "description": "If True, then the relationship between the slot domain and range is many to one or many to many",
+               "type": "boolean"
             },
             "singular_name": {
                "description": "a name that is used in the singular form",
@@ -4786,7 +4923,6 @@
    "$id": "https://w3id.org/linkml/meta",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
-   "metamodel_version": "1.7.0",
    "properties": {
       "aliases": {
          "items": {
@@ -5070,7 +5206,6 @@
       "name"
    ],
    "title": "meta",
-   "type": "object",
-   "version": "2.0.0"
+   "type": "object"
 }
 

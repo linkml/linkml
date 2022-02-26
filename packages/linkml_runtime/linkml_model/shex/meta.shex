@@ -1,5 +1,3 @@
-# metamodel_version: 1.7.0
-# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -392,6 +390,38 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     } OR @<Annotation>
 )
 
+<ImportExpression> CLOSED {
+    (  $<ImportExpression_tes> (  &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          <import_from> @<Uriorcurie> ;
+          <import_as> @<Ncname> ? ;
+          <import_map> @<Setting> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ <ImportExpression> ] ?
+    )
+}
+
 <LocalName> CLOSED {
     (  $<LocalName_tes> (  <local_name_source> @<Ncname> ;
           skos:altLabel @<String>
@@ -561,6 +591,9 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <ifabsent> @<String> ? ;
           <inlined> @<Boolean> ? ;
           <inlined_as_list> @<Boolean> ? ;
+          <list_elements_unique> @<Boolean> ? ;
+          <list_elements_ordered> @<Boolean> ? ;
+          <shared> @<Boolean> ? ;
           <key> @<Boolean> ? ;
           <identifier> @<Boolean> ? ;
           <designates_type> @<Boolean> ? ;

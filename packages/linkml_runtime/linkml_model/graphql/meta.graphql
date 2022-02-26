@@ -1,5 +1,3 @@
-# metamodel_version: 1.7.0
-# version: 2.0.0
 type AltDescription
   {
     source: String!
@@ -390,6 +388,30 @@ type Extension
     extensions: [Extension]
   }
 
+type ImportExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    importFrom: Uriorcurie!
+    importAs: Ncname
+    importMap: [Setting]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: Uri
+    importedFrom: String
+    source: Uriorcurie
+    seeAlso: [Uriorcurie]
+    deprecatedElementHasExactReplacement: Uriorcurie
+    deprecatedElementHasPossibleReplacement: Uriorcurie
+  }
+
 type LocalName
   {
     localNameSource: Ncname!
@@ -591,6 +613,9 @@ type SlotDefinition implements SlotExpression
     ifabsent: String
     inlined: Boolean
     inlinedAsList: Boolean
+    listElementsUnique: Boolean
+    listElementsOrdered: Boolean
+    shared: Boolean
     key: Boolean
     identifier: Boolean
     designatesType: Boolean
