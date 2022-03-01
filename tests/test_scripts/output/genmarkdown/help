@@ -12,14 +12,15 @@ Options:
   --noyuml                        Do not add yUML figures to pages
   --notypesdir                    Do not create a separate types directory
   --warnonexist                   Warn if output file already exists
-  -f, --format [md]               Output format (default=md)
-  --metadata / --no-metadata      Include metadata in output
-                                  (default=--metadata)
-  --useuris / --metauris          Include metadata in output
-                                  (default=--useuris)
+  -f, --format [md]               Output format  [default: md]
+  --metadata / --no-metadata      Include metadata in output  [default:
+                                  metadata]
+  --useuris / --metauris          Include metadata in output  [default:
+                                  useuris]
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
-                                  Logging level (default=WARNING)
+                                  Logging level  [default: WARNING]
+  -v, --verbose                   verbosity
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)

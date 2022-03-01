@@ -12,14 +12,15 @@ Options:
   --not-closed / --closed         Set additionalProperties=False if closed
                                   otherwise true if not closed at the global
                                   level  [default: not-closed]
-  -f, --format [json]             Output format (default=json)
-  --metadata / --no-metadata      Include metadata in output
-                                  (default=--metadata)
-  --useuris / --metauris          Include metadata in output
-                                  (default=--useuris)
+  -f, --format [json]             Output format  [default: json]
+  --metadata / --no-metadata      Include metadata in output  [default:
+                                  metadata]
+  --useuris / --metauris          Include metadata in output  [default:
+                                  useuris]
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
-                                  Logging level (default=WARNING)
+                                  Logging level  [default: WARNING]
+  -v, --verbose                   verbosity
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)

@@ -1,7 +1,5 @@
 name: personinfo_relational
 id: https://w3id.org/linkml/examples/personinfo_relational
-imports:
-- linkml:types
 prefixes:
   personinfo:
     prefix_prefix: personinfo
@@ -24,6 +22,12 @@ prefixes:
   famrel:
     prefix_prefix: famrel
     prefix_reference: https://example.org/FamilialRelations#
+  xsd:
+    prefix_prefix: xsd
+    prefix_reference: http://www.w3.org/2001/XMLSchema#
+  shex:
+    prefix_prefix: shex
+    prefix_reference: http://www.w3.org/ns/shex#
   rr:
     prefix_prefix: rr
     prefix_reference: http://www.w3.org/ns/r2rml#
@@ -34,6 +38,94 @@ subsets:
     name: basic_subset
     description: A subset of the schema that handles basic information
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
+types:
+  string:
+    name: string
+    description: A character string
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    description: An integer
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    description: A binary (true or false) value
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    description: A real number that conforms to the xsd:float specification
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    description: A real number that conforms to the xsd:double specification
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    base: XSDTime
+    uri: xsd:dateTime
+    repr: str
+  date:
+    name: date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    description: The combination of a date and time
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    description: a URI or a CURIE
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  uri:
+    name: uri
+    description: a complete URI
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    description: Prefix part of CURIE
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    comments:
+    - Used for inheritence and type checking
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
 enums:
   FamilialRelationshipType:
     name: FamilialRelationshipType
@@ -285,6 +377,49 @@ classes:
         owner: Person
         range: Address
     class_uri: schema:Person
+  HasAliases:
+    name: HasAliases
+    description: A mixin applied to any class that can have aliases/alternateNames
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    mixin: true
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        identifier: true
+        range: integer
+    class_uri: personinfo:HasAliases
+  HasNewsEvents:
+    name: HasNewsEvents
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    mixin: true
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        identifier: true
+        range: integer
+    class_uri: personinfo:HasNewsEvents
   Organization:
     name: Organization
     description: An organization such as a company or university
@@ -444,12 +579,23 @@ classes:
     name: Event
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     attributes:
-      started_at_time:
-        name: started_at_time
+      id:
+        name: id
         annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
           primary_key:
             tag: primary_key
             value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        identifier: true
+        range: integer
+      started_at_time:
+        name: started_at_time
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         slot_uri: prov:startedAtTime
         alias: started_at_time
@@ -457,10 +603,6 @@ classes:
         range: date
       ended_at_time:
         name: ended_at_time
-        annotations:
-          primary_key:
-            tag: primary_key
-            value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         slot_uri: prov:endedAtTime
         alias: ended_at_time
@@ -468,20 +610,12 @@ classes:
         range: date
       duration:
         name: duration
-        annotations:
-          primary_key:
-            tag: primary_key
-            value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         alias: duration
         owner: Event
         range: float
       is_current:
         name: is_current
-        annotations:
-          primary_key:
-            tag: primary_key
-            value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         alias: is_current
         owner: Event
@@ -608,12 +742,23 @@ classes:
     name: Relationship
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     attributes:
-      started_at_time:
-        name: started_at_time
+      id:
+        name: id
         annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
           primary_key:
             tag: primary_key
             value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        identifier: true
+        range: integer
+      started_at_time:
+        name: started_at_time
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         slot_uri: prov:startedAtTime
         alias: started_at_time
@@ -621,10 +766,6 @@ classes:
         range: date
       ended_at_time:
         name: ended_at_time
-        annotations:
-          primary_key:
-            tag: primary_key
-            value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         slot_uri: prov:endedAtTime
         alias: ended_at_time
@@ -632,20 +773,12 @@ classes:
         range: date
       related_to:
         name: related_to
-        annotations:
-          primary_key:
-            tag: primary_key
-            value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         alias: related_to
         owner: Relationship
         range: string
       type:
         name: type
-        annotations:
-          primary_key:
-            tag: primary_key
-            value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
         alias: type
         owner: Relationship
@@ -950,6 +1083,37 @@ classes:
         owner: NewsEvent
         range: boolean
     class_uri: personinfo:NewsEvent
+  WithLocation:
+    name: WithLocation
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    mixin: true
+    attributes:
+      id:
+        name: id
+        annotations:
+          dcterms:conformsTo:
+            tag: dcterms:conformsTo
+            value: rr:BlankNode
+          autoincrement:
+            tag: autoincrement
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        identifier: true
+        range: integer
+      in_location:
+        name: in_location
+        annotations:
+          foreign_key:
+            tag: foreign_key
+            value: Place.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        alias: in_location
+        owner: WithLocation
+        range: Place
+    class_uri: personinfo:WithLocation
   Container:
     name: Container
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
@@ -1076,6 +1240,106 @@ classes:
         multivalued: false
         alias: has_news_event_id
         owner: Person
+        range: NewsEvent
+    class_uri: rdf:Statement
+  HasAliases_alias:
+    name: HasAliases_alias
+    annotations:
+      linkml:derived_from:
+        tag: linkml:derived_from
+        value: HasAliases
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: linkml:JoinTable
+    comments:
+    - Linking class generated from HasAliases.aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    attributes:
+      HasAliases_id:
+        name: HasAliases_id
+        annotations:
+          backref:
+            tag: backref
+            value: 'true'
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: HasAliases.id
+        description: Autocreated FK slot
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        slot_uri: rdf:subject
+        range: HasAliases
+      alias:
+        name: alias
+        exact_mappings:
+        - schema:alternateName
+        annotations:
+          primary_key:
+            tag: primary_key
+            value: 'true'
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        singular_name: alias
+        slot_uri: rdf:object
+        multivalued: false
+        alias: aliases
+        owner: HasAliases
+        range: string
+    class_uri: rdf:Statement
+  HasNewsEvents_has_news_event:
+    name: HasNewsEvents_has_news_event
+    annotations:
+      linkml:derived_from:
+        tag: linkml:derived_from
+        value: HasNewsEvents
+      dcterms:conformsTo:
+        tag: dcterms:conformsTo
+        value: linkml:JoinTable
+    comments:
+    - Linking class generated from HasNewsEvents.has_news_events
+    from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    attributes:
+      HasNewsEvents_id:
+        name: HasNewsEvents_id
+        annotations:
+          backref:
+            tag: backref
+            value: 'true'
+          rdfs:subPropertyOf:
+            tag: rdfs:subPropertyOf
+            value: rdf:subject
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: HasNewsEvents.id
+        description: Autocreated FK slot
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        slot_uri: rdf:subject
+        range: HasNewsEvents
+      has_news_event_id:
+        name: has_news_event_id
+        annotations:
+          forwardref:
+            tag: forwardref
+            value: 'true'
+          primary_key:
+            tag: primary_key
+            value: 'true'
+          foreign_key:
+            tag: foreign_key
+            value: NewsEvent.id
+        from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        singular_name: has_news_event
+        slot_uri: rdf:object
+        multivalued: false
+        alias: has_news_event_id
+        owner: HasNewsEvents
         range: NewsEvent
     class_uri: rdf:Statement
   Organization_alias:
@@ -1226,3 +1490,4 @@ classes:
         owner: Place
         range: string
     class_uri: rdf:Statement
+source_file: /home/runner/work/linkml/linkml/tests/test_generators/input/personinfo.yaml

@@ -25,10 +25,12 @@ class FamilialRelationshipType(str, Enum):
     PARENT_OF = "PARENT_OF"
     CHILD_OF = "CHILD_OF"
     
+    
 
 class DiagnosisType(str, Enum):
     
     TODO = "TODO"
+    
     
 
 class EmploymentEventType(str, Enum):
@@ -38,10 +40,12 @@ class EmploymentEventType(str, Enum):
     PROMOTION = "PROMOTION"
     TRANSFER = "TRANSFER"
     
+    
 
 class OtherCodes(str, Enum):
     
     a_b = "a b"
+    
     
 
 @dataclass(config=PydanticConfig)

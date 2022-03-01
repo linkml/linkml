@@ -418,9 +418,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "core.yaml",
-  "source_file_date": "2022-02-26T03:38:43",
+  "source_file_date": "2022-03-01T23:04:09",
   "source_file_size": 1902,
-  "generation_date": "2022-02-26T03:44:23",
+  "generation_date": "2022-03-01T23:09:06",
   "@type": "SchemaDefinition",
   "@context": [
     "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",

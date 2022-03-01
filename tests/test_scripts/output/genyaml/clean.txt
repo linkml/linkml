@@ -1,55 +1,197 @@
+name: cleanyaml
+id: http://example.org/tests/cleanyaml
+imports:
+- linkml:types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+default_prefix: http://example.org/tests/cleanyaml/
+default_range: string
+types:
+  time type:
+    name: time type
+    definition_uri: http://example.org/tests/cleanyaml/TimeType
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    from_schema: http://example.org/tests/cleanyaml
+    typeof: time
+    base: XSDTime
+    uri: xsd:dateTime
+    repr: str
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDTime
+    uri: xsd:dateTime
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    description: a complete URI
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    comments:
+    - Used for inheritence and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+slots:
+  k:
+    name: k
+    definition_uri: http://example.org/tests/cleanyaml/k
+    from_schema: http://example.org/tests/cleanyaml
+    domain: geographic location
+    slot_uri: http://example.org/tests/cleanyaml/k
+    identifier: true
+    owner: geographic location
+    domain_of:
+    - geographic location
+    range: string
+    required: true
+  timepoint:
+    name: timepoint
+    definition_uri: http://example.org/tests/cleanyaml/timepoint
+    from_schema: http://example.org/tests/cleanyaml
+    domain: geographic location at time
+    slot_uri: http://example.org/tests/cleanyaml/timepoint
+    owner: geographic location at time
+    domain_of:
+    - geographic location at time
+    range: time type
+classes:
+  geographic location:
+    name: geographic location
+    definition_uri: http://example.org/tests/cleanyaml/GeographicLocation
+    from_schema: http://example.org/tests/cleanyaml
+    slots:
+    - k
+    class_uri: http://example.org/tests/cleanyaml/GeographicLocation
+  geographic location at time:
+    name: geographic location at time
+    definition_uri: http://example.org/tests/cleanyaml/GeographicLocationAtTime
+    from_schema: http://example.org/tests/cleanyaml
+    is_a: geographic location
+    slots:
+    - k
+    - timepoint
+    class_uri: http://example.org/tests/cleanyaml/GeographicLocationAtTime
+metamodel_version: 1.7.0
+source_file: yaml_validate_clean.yaml
+source_file_date: '2022-03-01T23:04:10'
+source_file_size: 577
+generation_date: '2022-03-01T23:11:29'
 
-Classes: 2
-	Referenced by: 1 classes, 2 slots, 0 types, 0 enums 
-	Root: 1
-	Leaf: 1
-	Standalone: 2
-	Declared mixin: 0
-	Undeclared mixin: 0
-	Abstract: 0
-
-Slots: 2
-	Referenced by: 2 classes, 0 slots, 0 types, 0 enums 
-	Root: 2
-	Leaf: 2
-	Standalone: 3
-	Declared mixin: 0
-	Undeclared mixin: 0
-	Abstract: 0
-	Ranges:
-		Type:
-			string: 1
-			time type: 1
-		Class:
-
-Types: 15
-	Referenced by: 0 classes, 2 slots, 1 types, 0 enums 
-	Bases:
-		Bool:
-			boolean
-		Decimal:
-			decimal
-		ElementIdentifier:
-			objectidentifier
-		NCName:
-			ncname
-		NodeIdentifier:
-			nodeidentifier
-		URI:
-			uri
-		URIorCURIE:
-			uriorcurie
-		XSDDate:
-			date
-		XSDDateTime:
-			datetime
-		XSDTime:
-			time:
-				time type
-		float:
-			double
-			float
-		int:
-			integer
-		str:
-			string
