@@ -169,6 +169,10 @@ classes:
     slots:
       - in_location
 
+  # deliberately switch style from CamelCase/snake_case
+  biological specimen:
+    is_a: NamedThing
+
   # TODO: annotate that this is a container/root class
   Container:
     tree_root: true
