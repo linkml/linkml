@@ -31,7 +31,18 @@ from linkml.generators.sqltablegen import SQLTableGenerator
 @dataclass
 class SQLStore:
     """
-    A wrapper for a SQLLite database
+    A wrapper for a SQLLite database.
+
+    This provides two core operations for storing and retrieving data
+
+    - :meth:`dump`
+    - :meth:`load`
+
+    The wrapper transparently will take care of:
+
+    - mapping your LinkML schema into SQL Tables
+    - creating a SQL Alchemy ORM layer
+    - mapping your data/objects in any LinkML compliant data format (json. yaml, rdf) into ORM objects
     """
     schema: Union[str, SchemaDefinition] = None
     schemaview: SchemaView = None
@@ -41,12 +52,13 @@ class SQLStore:
     native_module: ModuleType = None
     include_schema_in_database: bool = None
 
-    def db_exists(self, create=True, force=False):
+    def db_exists(self, create=True, force=False) -> str:
         """
+        check if database exists, optionally create if not present
 
-        :param create:
-        :param force:
-        :return:
+        :param create: create if does not exist
+        :param force: recreate database, destroying any content if previously present
+        :return: path
         """
         if not self.database_path:
             raise ValueError(f'database_path not set')
@@ -65,19 +77,42 @@ class SQLStore:
                 cur.executescript(ddl)
         if not os.path.exists(self.database_path):
             raise ValueError(f'No database: {self.database_path}')
+        return self.database_path
 
-
-    def compile(self):
+    def compile(self) -> ModuleType:
         """
         Compile SQLAlchemy object model
+
+        Uses Declarative by default.
+
+        Note that the SQLA model is different from the native dataclass model
+
+        :return: compiled module
         """
         gen = SQLAlchemyGenerator(self.schema)
         self.module = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
         if self.schemaview is None:
             self.schemaview = SchemaView(self.schema)
+        return self.module
+
+    def compile_native(self)-> ModuleType:
+        """
+        Compile native python object model
+
+        :return: compiled module
+        """
+        gen = PythonGenerator(self.schema)
+        self.native_module = gen.compile_module()
+        return self.native_module
 
     def load(self, target_class: Union[str, Type[YAMLRoot]] = None) -> YAMLRoot:
-        return self.load_all()[0]
+        """
+        Loads a LinkML object from the wrapped SQLite database
+
+        :param target_class:
+        :return:
+        """
+        return self.load_all(target_class=target_class)[0]
 
     def load_all(self, target_class: Union[str, Type[YAMLRoot]] = None) -> List[YAMLRoot]:
         if target_class == None:
@@ -104,7 +139,7 @@ class SQLStore:
         session = session_class()
         nu_obj = self.to_sqla(element)
         if not append:
-            session.query(type(nu_obj)).filter(User.id==7).delete()
+            session.query(type(nu_obj)).delete()
         session.add(nu_obj)
         session.commit()
 
@@ -155,6 +190,7 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.module):
                 # TODO: make more efficient
                 if n == typ.__name__:
+                    print(f'Creating {nu_typ} from: {inst_args}')
                     nu_obj = nu_typ(**inst_args)
                     return nu_obj
             raise ValueError(f'Cannot find {typ.__name__} in {self.module}')
@@ -165,8 +201,8 @@ class SQLStore:
         """
         Translate from SQLAlchemy declarative module to native LinkML
 
-        :param obj:
-        :return:
+        :param obj: sqla object
+        :return: native dataclass object
         """
         if self.schemaview is None:
             self.schemaview = SchemaView(self.schema)

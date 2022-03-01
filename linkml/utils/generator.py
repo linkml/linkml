@@ -63,9 +63,10 @@ class Generator(metaclass=abc.ABCMeta):
         if logger:
             self.logger = logger
         else:
-            logging.basicConfig()
-            self.logger = logging.getLogger(self.__class__.__name__)
-            self.logger.setLevel(log_level)
+            self.logger = logging.getLogger()
+        #    logging.basicConfig()
+        #    self.logger = logging.getLogger(self.__class__.__name__)
+        #    self.logger.setLevel(log_level)
 
         if format is None:
             format = self.valid_formats[0]
@@ -658,24 +659,48 @@ def shared_arguments(g: Type[Generator]) -> Callable[[Command], Command]:
         assert isinstance(log_level_int, int)
         return log_level_int
 
+    def verbosity_callback(ctx, param, verbose):
+        if verbose >= 2:
+            logging.basicConfig(level=logging.DEBUG)
+        elif verbose == 1:
+            logging.basicConfig(level=logging.INFO)
+        else:
+            logging.basicConfig(level=logging.WARNING)
+
+    def log_level_callback(ctx, param, value):
+        logging.basicConfig(level=_log_level_string_to_int(value))
+
     def decorator(f: Command) -> Command:
         f.params.append(
             Argument(("yamlfile", ), type=click.Path(exists=True, dir_okay=False)))
         f.params.append(
             Option(("--format", "-f"), type=click.Choice(g.valid_formats),
-                   help=f"Output format (default={g.valid_formats[0]})",
-                   default=g.valid_formats[0]))
+                   default=g.valid_formats[0],
+                   show_default=True,
+                   help=f"Output format"
+                   ))
         f.params.append(
-            Option(("--metadata/--no-metadata", ), default=True, help="Include metadata in output (default=--metadata)"))
+            Option(("--metadata/--no-metadata", ), default=True,
+                   show_default=True,
+                   help="Include metadata in output"))
         f.params.append(
-            Option(("--useuris/--metauris", ), default=True, help="Include metadata in output (default=--useuris)"))
+            Option(("--useuris/--metauris", ), default=True,
+                   show_default=True,
+                   help="Include metadata in output"))
         f.params.append(
             Option(("--importmap", "-im"), type=click.File(), help="Import mapping file")
         )
         f.params.append(
             Option(("--log_level", ), type=click.Choice(_LOG_LEVEL_STRINGS),
-                   help=f"Logging level (default={DEFAULT_LOG_LEVEL})",
-                   default=DEFAULT_LOG_LEVEL)
+                   help=f"Logging level",
+                   default=DEFAULT_LOG_LEVEL,
+                   show_default=True,
+                   callback=log_level_callback)
+        )
+        f.params.append(
+            Option(("--verbose", "-v"), count=True,
+                   help=f"verbosity",
+                   callback=verbosity_callback)
         )
         f.params.append(
             Option(("--mergeimports/--no-mergeimports", ), default=True,

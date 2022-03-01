@@ -2,6 +2,8 @@ import unittest
 
 import yaml
 from linkml_runtime import SchemaView
+from linkml_runtime.utils.compile_python import compile_python
+from pydantic import ValidationError
 
 from linkml.generators.pydanticgen import PydanticGenerator
 from tests.test_generators.environment import env
@@ -42,6 +44,18 @@ class PydanticGeneratorTestCase(unittest.TestCase):
             print(ds1)
             assert len(ds1.persons) == 2
         test_dynamic()
+
+    def test_compile_pydantic(self):
+        """ Generate and compile pydantic classes  """
+        gen = PydanticGenerator(SCHEMA, package=PACKAGE)
+        code = gen.serialize()
+        mod = compile_python(code, PACKAGE)
+        p = mod.Person(id='P:1')
+        assert p.id == 'P:1'
+        with self.assertRaises(TypeError):
+            mod.Person(no_such_field='x')
+        with self.assertRaises(ValidationError):
+            mod.Person(age_in_years='x')
 
     def test_pydantic_enums(self):
 

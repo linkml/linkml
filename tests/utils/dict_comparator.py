@@ -1,9 +1,12 @@
 import os
 from types import ModuleType
-from typing import Optional, Tuple, Dict, Any
+from typing import Optional, Tuple, Dict, Any, Union
 
 import jsonpatch
 import yaml
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.utils.yamlutils import YAMLRoot
+
 
 def compare_dicts(expected: Dict[str, Any], actual: Dict[str, Any]) -> Optional[str]:
     """
@@ -17,9 +20,20 @@ def compare_dicts(expected: Dict[str, Any], actual: Dict[str, Any]) -> Optional[
     return " ".join([str(p) for p in patches])
 
 
-def compare_yaml(expected: str, actual: str) -> Optional[str]:
-    with open(expected) as expected_stream:
-        expected_obj = yaml.load(expected_stream)
-    with open(actual) as actual_stream:
-        actual_obj = yaml.load(actual_stream)
+def compare_yaml(expected: Union[str, Dict], actual: Union[str, Dict]) -> Optional[str]:
+    if isinstance(expected, str):
+        with open(expected) as expected_stream:
+            expected_obj = yaml.load(expected_stream)
+    else:
+        expected_obj = expected
+    if isinstance(actual, str):
+        with open(actual) as actual_stream:
+            actual_obj = yaml.load(actual_stream)
+    else:
+        actual_obj = actual
+    return compare_dicts(expected_obj, actual_obj)
+
+def compare_objs(expected: YAMLRoot, actual: YAMLRoot) -> Optional[str]:
+    expected_obj = yaml.load(yaml_dumper.dumps(expected))
+    actual_obj = yaml.load(yaml_dumper.dumps(actual))
     return compare_dicts(expected_obj, actual_obj)
