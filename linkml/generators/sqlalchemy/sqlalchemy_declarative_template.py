@@ -9,7 +9,7 @@ Base = declarative_base()
 metadata = Base.metadata
 
 {% for c in classes %}
-class {{c.alias}}({% if c.is_a %}{{ c.is_a }}{% else %}Base{% endif %}):
+class {{classname(c.name)}}({% if c.is_a %}{{ classname(c.is_a) }}{% else %}Base{% endif %}):
     \"\"\"
     {% if c.description %}{{c.description}}{% else %}{{c.alias}}{% endif %}
     \"\"\"
@@ -22,21 +22,21 @@ class {{c.alias}}({% if c.is_a %}{{ c.is_a }}{% else %}Base{% endif %}):
            {%- if 'autoincrement' in s.annotations -%}, autoincrement=True {% endif -%}
            )
     {% if 'foreign_key' in s.annotations and 'original_slot' in s.annotations -%}
-    {{s.annotations['original_slot'].value}} = relationship("{{s.range}}", uselist=False)
+    {{s.annotations['original_slot'].value}} = relationship("{{classname(s.range)}}", uselist=False)
     {% endif -%}
     {% endfor %}
     
     {%- for mapping in backrefs[c.name] %}
     {% if mapping.mapping_type == "ManyToMany" %}
     # ManyToMany
-    {{mapping.source_slot}} = relationship( "{{ mapping.target_class }}", secondary="{{ mapping.join_class }}")
+    {{mapping.source_slot}} = relationship( "{{ classname(mapping.target_class) }}", secondary="{{ mapping.join_class }}")
     {% elif mapping.mapping_type == "MultivaluedScalar" %}
-    {{mapping.source_slot}}_rel = relationship( "{{ mapping.join_class }}" )
+    {{mapping.source_slot}}_rel = relationship( "{{ classname(mapping.join_class) }}" )
     {{mapping.source_slot}} = association_proxy("{{mapping.source_slot}}_rel", "{{mapping.target_slot}}",
-                                  creator=lambda x_: {{ mapping.join_class }}({{mapping.target_slot}}=x_))
+                                  creator=lambda x_: {{ classname(mapping.join_class) }}({{mapping.target_slot}}=x_))
     {% else %}
     # One-To-Many: {{mapping}}
-    {{mapping.source_slot}} = relationship( "{{ mapping.target_class }}", foreign_keys="[{{ mapping.target_class }}.{{mapping.target_slot}}]")
+    {{mapping.source_slot}} = relationship( "{{ classname(mapping.target_class) }}", foreign_keys="[{{ mapping.target_class }}.{{mapping.target_slot}}]")
     {% endif -%}
     {%- endfor %}
     

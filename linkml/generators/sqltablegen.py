@@ -3,6 +3,7 @@ import os
 import click
 from typing import List, Dict, Union, TextIO
 
+from linkml_runtime.dumpers import yaml_dumper
 from sqlalchemy import MetaData, Table, ForeignKey, Column, create_mock_engine
 from sqlalchemy.types import Enum, Text, Integer, Float, Boolean, Date, Time, DateTime
 
@@ -10,6 +11,7 @@ from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotD
 from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
+from linkml.generators.yamlgen import YAMLGenerator
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
@@ -217,20 +219,40 @@ class SQLTableGenerator(Generator):
 
     def get_foreign_key(self, cn: str, sv: SchemaView) -> str:
         pk = sv.get_identifier_slot(cn)
+        # TODO: move this to SV
+        if pk is None:
+            for sn in sv.class_slots(cn):
+                s = sv.induced_slot(sn, cn)
+                if s.key:
+                    pk = s
+                    break
         if pk is None:
             raise Exception(f'No PK for {cn}')
-        return f'{cn}.{pk.name}'
+        if pk.alias:
+            pk_name = pk.alias
+        else:
+            pk_name = pk.name
+        return f'{cn}.{pk_name}'
 
 
 @shared_arguments(SQLTableGenerator)
 @click.command()
 ## @click.option("--dialect", default='sqlite', show_default=True, help="SQL-Alchemy dialect, e.g. sqlite, mysql+odbc")
-@click.option("--sqla-file",  help="Path to sqlalchemy generated python")
+@click.option("--sqla-file",
+              help="Path to sqlalchemy generated python")
+@click.option("--relmodel-output",
+              help="Path to intermediate LinkML YAML of transformed relational model")
 @click.option("--python-import",  help="Python import header for generated sql-alchemy code")
 ## @click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="Map classes directly to")
 ## @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
-def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
+def cli(yamlfile, relmodel_output, sqla_file:str = None, python_import: str = None, **args):
     """ Generate SQL DDL representation """
+    if relmodel_output:
+        sv = SchemaView(yamlfile)
+        rtr = RelationalModelTransformer(sv)
+        rtr_result = rtr.transform('foo')
+        relmodel_schema = rtr_result.schema
+        yaml_dumper.dump(relmodel_schema, to_file=relmodel_output)
     gen = SQLTableGenerator(yamlfile, **args)
     print(gen.generate_ddl())
     if sqla_file is not None:
