@@ -48,8 +48,8 @@ class MetamodelCoreTest(unittest.TestCase):
             URIorCURIE("1:def")
         with self.assertRaises(ValueError):
             URIorCURIE(" ")
-        with self.assertRaises(ValueError):
-            URIorCURIE("_")
+        #with self.assertRaises(ValueError):
+        #    URIorCURIE("_")
         lax()
         URI(str2)
         URIorCURIE("1abc:def")
