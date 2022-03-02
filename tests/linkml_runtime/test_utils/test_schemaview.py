@@ -343,13 +343,14 @@ class SchemaViewTestCase(unittest.TestCase):
             assert tn not in view.all_types(imports=False)
         for cn, c in view.all_classes().items():
             uri = view.get_uri(cn, expand=True)
-            print(f'{cn}: {c.class_uri} // {uri}')
+            #print(f'{cn}: {c.class_uri} // {uri}')
             self.assertIsNotNone(uri)
-            self.assertIn('https://w3id.org/linkml/', uri)
+            if cn != 'structured_alias':
+                self.assertIn('https://w3id.org/linkml/', uri)
             induced_slots = view.class_induced_slots(cn)
             for s in induced_slots:
                 exp_slot_uri = view.get_uri(s, expand=True)
-                print(f'  {cn}: {s.name} {s.alias} {s.slot_uri} // {exp_slot_uri}')
+                #print(f'  {cn}: {s.name} {s.alias} {s.slot_uri} // {exp_slot_uri}')
                 self.assertIsNotNone(exp_slot_uri)
 
 
