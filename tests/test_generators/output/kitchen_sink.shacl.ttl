@@ -12,45 +12,45 @@ ks:Concept a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
-            sh:order 1 ;
-            sh:path <https://w3id.org/linkml/tests/core/name> ],
+            sh:order 0 ;
+            sh:path <https://w3id.org/linkml/tests/core/id> ],
         [ sh:class ks:CodeSystem ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 2 ;
             sh:path ks:in_code_system ],
         [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path <https://w3id.org/linkml/tests/core/id> ] ;
+            sh:order 1 ;
+            sh:path <https://w3id.org/linkml/tests/core/name> ] ;
     sh:targetClass ks:Concept .
 
 ks:Dataset a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class <https://w3id.org/linkml/tests/core/Activity> ;
+    sh:property [ sh:class ks:Person ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path ks:persons ],
+        [ sh:class ks:Company ;
+            sh:nodeKind sh:IRI ;
+            sh:order 1 ;
+            sh:path ks:companies ],
+        [ sh:class <https://w3id.org/linkml/tests/core/Activity> ;
             sh:nodeKind sh:IRI ;
             sh:order 2 ;
             sh:path ks:activities ],
         [ sh:class ks:CodeSystem ;
             sh:nodeKind sh:IRI ;
             sh:order 3 ;
-            sh:path ks:code_systems ],
-        [ sh:class ks:Company ;
-            sh:nodeKind sh:IRI ;
-            sh:order 1 ;
-            sh:path ks:companies ],
-        [ sh:class ks:Person ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path ks:persons ] ;
+            sh:path ks:code_systems ] ;
     sh:targetClass ks:Dataset .
 
 ks:Event a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
-            sh:order 2 ;
-            sh:path ks:is_current ],
+            sh:order 0 ;
+            sh:path prov:startedAtTime ],
         [ sh:class linkml:Any ;
             sh:description "Example of a slot that has an unconstrained range" ;
             sh:maxCount 1 ;
@@ -58,11 +58,11 @@ ks:Event a sh:NodeShape ;
             sh:order 3 ;
             sh:path ks:metadata ],
         [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path prov:startedAtTime ],
-        [ sh:maxCount 1 ;
             sh:order 1 ;
-            sh:path prov:endedAtTime ] ;
+            sh:path prov:endedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path ks:is_current ] ;
     sh:targetClass ks:Event .
 
 ks:FakeClass a sh:NodeShape ;
@@ -92,60 +92,60 @@ ks:MarriageEvent a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
             sh:order 4 ;
             sh:path ks:is_current ],
         [ sh:maxCount 1 ;
             sh:order 3 ;
             sh:path prov:endedAtTime ],
-        [ sh:class ks:Place ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 1 ;
-            sh:path ks:in_location ],
-        [ sh:maxCount 1 ;
-            sh:order 2 ;
-            sh:path prov:startedAtTime ],
-        [ sh:class ks:Person ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path ks:married_to ],
         [ sh:class linkml:Any ;
             sh:description "Example of a slot that has an unconstrained range" ;
             sh:maxCount 1 ;
             sh:nodeKind sh:BlankNode ;
             sh:order 5 ;
-            sh:path ks:metadata ] ;
+            sh:path ks:metadata ],
+        [ sh:class ks:Place ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 1 ;
+            sh:path ks:in_location ],
+        [ sh:class ks:Person ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path ks:married_to ] ;
     sh:targetClass ks:MarriageEvent .
 
 ks:Organization a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:maxCount 1 ;
+    sh:property [ sh:order 2 ;
+            sh:path skos:altLabel ],
+        [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
         [ sh:maxCount 1 ;
             sh:order 1 ;
-            sh:path <https://w3id.org/linkml/tests/core/name> ],
-        [ sh:order 2 ;
-            sh:path skos:altLabel ] ;
+            sh:path <https://w3id.org/linkml/tests/core/name> ] ;
     sh:targetClass ks:Organization .
 
 ks:Relationship a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path prov:startedAtTime ],
-        [ sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path ks:type ],
-        [ sh:maxCount 1 ;
             sh:order 1 ;
             sh:path prov:endedAtTime ],
         [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
             sh:order 2 ;
-            sh:path ks:related_to ] ;
+            sh:path ks:related_to ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path ks:type ] ;
     sh:targetClass ks:Relationship .
 
 ks:SubclassTest a sh:NodeShape ;
@@ -186,6 +186,9 @@ ks:BirthEvent a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
             sh:order 2 ;
             sh:path prov:endedAtTime ],
         [ sh:class linkml:Any ;
@@ -195,16 +198,13 @@ ks:BirthEvent a sh:NodeShape ;
             sh:order 4 ;
             sh:path ks:metadata ],
         [ sh:maxCount 1 ;
-            sh:order 1 ;
-            sh:path prov:startedAtTime ],
+            sh:order 3 ;
+            sh:path ks:is_current ],
         [ sh:class ks:Place ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 0 ;
-            sh:path ks:in_location ],
-        [ sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path ks:is_current ] ;
+            sh:path ks:in_location ] ;
     sh:targetClass ks:BirthEvent .
 
 ks:ClassWithSpaces a sh:NodeShape ;
@@ -219,11 +219,11 @@ ks:DiagnosisConcept a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path <https://w3id.org/linkml/tests/core/id> ],
-        [ sh:maxCount 1 ;
             sh:order 1 ;
             sh:path <https://w3id.org/linkml/tests/core/name> ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path <https://w3id.org/linkml/tests/core/id> ],
         [ sh:class ks:CodeSystem ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
@@ -234,30 +234,30 @@ ks:DiagnosisConcept a sh:NodeShape ;
 ks:EmploymentEvent a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:in ( bizcodes:001 bizcodes:002 bizcodes:003 bizcodes:004 ) ;
-            sh:maxCount 1 ;
-            sh:order 1 ;
-            sh:path ks:type ],
-        [ sh:maxCount 1 ;
+    sh:property [ sh:maxCount 1 ;
             sh:order 4 ;
             sh:path ks:is_current ],
-        [ sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path prov:endedAtTime ],
         [ sh:class ks:Company ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 0 ;
             sh:path ks:employed_at ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path prov:startedAtTime ],
         [ sh:class linkml:Any ;
             sh:description "Example of a slot that has an unconstrained range" ;
             sh:maxCount 1 ;
             sh:nodeKind sh:BlankNode ;
             sh:order 5 ;
             sh:path ks:metadata ],
+        [ sh:in ( bizcodes:001 bizcodes:002 bizcodes:003 bizcodes:004 ) ;
+            sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path ks:type ],
         [ sh:maxCount 1 ;
-            sh:order 2 ;
-            sh:path prov:startedAtTime ] ;
+            sh:order 3 ;
+            sh:path prov:endedAtTime ] ;
     sh:targetClass ks:EmploymentEvent .
 
 ks:FamilialRelationship a sh:NodeShape ;
@@ -270,16 +270,16 @@ ks:FamilialRelationship a sh:NodeShape ;
             sh:order 2 ;
             sh:path ks:related_to ],
         [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:endedAtTime ],
+        [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path prov:startedAtTime ],
         [ sh:in ( "SIBLING_OF" "PARENT_OF" "CHILD_OF" ) ;
             sh:maxCount 1 ;
             sh:minCount 1 ;
             sh:order 3 ;
-            sh:path ks:type ],
-        [ sh:maxCount 1 ;
-            sh:order 1 ;
-            sh:path prov:endedAtTime ] ;
+            sh:path ks:type ] ;
     sh:targetClass ks:FamilialRelationship .
 
 ks:MedicalEvent a sh:NodeShape ;
@@ -288,25 +288,14 @@ ks:MedicalEvent a sh:NodeShape ;
     sh:property [ sh:maxCount 1 ;
             sh:order 5 ;
             sh:path ks:is_current ],
+        [ sh:maxCount 1 ;
+            sh:order 4 ;
+            sh:path prov:endedAtTime ],
         [ sh:class ks:ProcedureConcept ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 2 ;
             sh:path ks:procedure ],
-        [ sh:maxCount 1 ;
-            sh:order 4 ;
-            sh:path prov:endedAtTime ],
-        [ sh:class ks:DiagnosisConcept ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 1 ;
-            sh:path ks:diagnosis ],
-        [ sh:class linkml:Any ;
-            sh:description "Example of a slot that has an unconstrained range" ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:BlankNode ;
-            sh:order 6 ;
-            sh:path ks:metadata ],
         [ sh:class ks:Place ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
@@ -314,23 +303,34 @@ ks:MedicalEvent a sh:NodeShape ;
             sh:path ks:in_location ],
         [ sh:maxCount 1 ;
             sh:order 3 ;
-            sh:path prov:startedAtTime ] ;
+            sh:path prov:startedAtTime ],
+        [ sh:class linkml:Any ;
+            sh:description "Example of a slot that has an unconstrained range" ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 6 ;
+            sh:path ks:metadata ],
+        [ sh:class ks:DiagnosisConcept ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 1 ;
+            sh:path ks:diagnosis ] ;
     sh:targetClass ks:MedicalEvent .
 
 ks:ProcedureConcept a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:maxCount 1 ;
+    sh:property [ sh:class ks:CodeSystem ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 2 ;
+            sh:path ks:in_code_system ],
+        [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
         [ sh:maxCount 1 ;
             sh:order 1 ;
-            sh:path <https://w3id.org/linkml/tests/core/name> ],
-        [ sh:class ks:CodeSystem ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path ks:in_code_system ] ;
+            sh:path <https://w3id.org/linkml/tests/core/name> ] ;
     sh:targetClass ks:ProcedureConcept .
 
 prov:Agent a sh:NodeShape ;
@@ -340,34 +340,34 @@ prov:Agent a sh:NodeShape ;
     sh:property [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
-        [ sh:class <https://w3id.org/linkml/tests/core/Activity> ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path prov:wasInformedBy ],
         [ sh:class prov:Agent ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 1 ;
-            sh:path prov:actedOnBehalfOf ] ;
+            sh:path prov:actedOnBehalfOf ],
+        [ sh:class <https://w3id.org/linkml/tests/core/Activity> ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 2 ;
+            sh:path prov:wasInformedBy ] ;
     sh:targetClass prov:Agent .
 
 ks:Company a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:order 3 ;
-            sh:path skos:altLabel ],
-        [ sh:maxCount 1 ;
+    sh:property [ sh:maxCount 1 ;
             sh:order 1 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
-        [ sh:maxCount 1 ;
-            sh:order 2 ;
-            sh:path <https://w3id.org/linkml/tests/core/name> ],
         [ sh:class ks:Person ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 0 ;
-            sh:path schema1:ceo ] ;
+            sh:path schema1:ceo ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path <https://w3id.org/linkml/tests/core/name> ],
+        [ sh:order 3 ;
+            sh:path skos:altLabel ] ;
     sh:targetClass ks:Company .
 
 <https://w3id.org/linkml/tests/core/Activity> a sh:NodeShape ;
@@ -375,27 +375,27 @@ ks:Company a sh:NodeShape ;
     sh:description "a provence-generating activity" ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
-            sh:order 1 ;
-            sh:path prov:startedAtTime ],
-        [ sh:maxCount 1 ;
-            sh:order 2 ;
-            sh:path prov:endedAtTime ],
-        [ sh:maxCount 1 ;
             sh:order 5 ;
             sh:path prov:used ],
         [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
-        [ sh:class prov:Agent ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 4 ;
-            sh:path prov:wasAssociatedWith ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path prov:endedAtTime ],
         [ sh:class <https://w3id.org/linkml/tests/core/Activity> ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
             sh:order 3 ;
             sh:path prov:wasInformedBy ],
+        [ sh:class prov:Agent ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 4 ;
+            sh:path prov:wasAssociatedWith ],
         [ sh:maxCount 1 ;
             sh:order 6 ;
             sh:path <https://w3id.org/linkml/tests/core/description> ] ;
@@ -419,25 +419,6 @@ ks:Person a sh:NodeShape ;
     sh:property [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
-        [ sh:class ks:FamilialRelationship ;
-            sh:nodeKind sh:BlankNode ;
-            sh:order 3 ;
-            sh:path ks:has_familial_relationships ],
-        [ sh:class ks:Address ;
-            sh:nodeKind sh:BlankNode ;
-            sh:order 6 ;
-            sh:path ks:addresses ],
-        [ sh:class ks:EmploymentEvent ;
-            sh:nodeKind sh:BlankNode ;
-            sh:order 2 ;
-            sh:path ks:has_employment_history ],
-        [ sh:class ks:BirthEvent ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:BlankNode ;
-            sh:order 7 ;
-            sh:path ks:has_birth_event ],
-        [ sh:order 8 ;
-            sh:path skos:altLabel ],
         [ sh:maxCount 1 ;
             sh:order 1 ;
             sh:path <https://w3id.org/linkml/tests/core/name> ;
@@ -448,23 +429,42 @@ ks:Person a sh:NodeShape ;
             sh:minInclusive 0 ;
             sh:order 5 ;
             sh:path ks:age_in_years ],
+        [ sh:class ks:EmploymentEvent ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 2 ;
+            sh:path ks:has_employment_history ],
+        [ sh:class ks:FamilialRelationship ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 3 ;
+            sh:path ks:has_familial_relationships ],
         [ sh:class ks:MedicalEvent ;
             sh:nodeKind sh:BlankNode ;
             sh:order 4 ;
-            sh:path ks:has_medical_history ] ;
+            sh:path ks:has_medical_history ],
+        [ sh:class ks:Address ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 6 ;
+            sh:path ks:addresses ],
+        [ sh:class ks:BirthEvent ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 7 ;
+            sh:path ks:has_birth_event ],
+        [ sh:order 8 ;
+            sh:path skos:altLabel ] ;
     sh:targetClass ks:Person .
 
 ks:Place a sh:NodeShape ;
     sh:closed true ;
     sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:maxCount 1 ;
+    sh:property [ sh:order 2 ;
+            sh:path skos:altLabel ],
+        [ sh:maxCount 1 ;
             sh:order 0 ;
             sh:path <https://w3id.org/linkml/tests/core/id> ],
         [ sh:maxCount 1 ;
             sh:order 1 ;
-            sh:path <https://w3id.org/linkml/tests/core/name> ],
-        [ sh:order 2 ;
-            sh:path skos:altLabel ] ;
+            sh:path <https://w3id.org/linkml/tests/core/name> ] ;
     sh:targetClass ks:Place .
 
 linkml:Any a sh:NodeShape ;
