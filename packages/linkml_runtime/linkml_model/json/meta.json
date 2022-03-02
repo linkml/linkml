@@ -3565,6 +3565,48 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "import_from",
+      "definition_uri": "https://w3id.org/linkml/import_from",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "ImportExpression",
+      "slot_uri": "https://w3id.org/linkml/import_from",
+      "owner": "ImportExpression",
+      "domain_of": [
+        "ImportExpression"
+      ],
+      "range": "uriorcurie",
+      "required": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "import_as",
+      "definition_uri": "https://w3id.org/linkml/import_as",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "ImportExpression",
+      "slot_uri": "https://w3id.org/linkml/import_as",
+      "owner": "ImportExpression",
+      "domain_of": [
+        "ImportExpression"
+      ],
+      "range": "ncname",
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "import_map",
+      "definition_uri": "https://w3id.org/linkml/import_map",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "ImportExpression",
+      "slot_uri": "https://w3id.org/linkml/import_map",
+      "multivalued": true,
+      "inlined": true,
+      "owner": "ImportExpression",
+      "domain_of": [
+        "ImportExpression"
+      ],
+      "range": "Setting",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "local_name_source",
       "definition_uri": "https://w3id.org/linkml/local_name_source",
       "description": "the ncname of the source of the name",
@@ -3993,45 +4035,6 @@
         "Annotation"
       ],
       "range": "Annotation",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "importExpression__import_from",
-      "from_schema": "https://w3id.org/linkml/meta",
-      "slot_uri": "https://w3id.org/linkml/import_from",
-      "alias": "import_from",
-      "owner": "ImportExpression",
-      "domain_of": [
-        "ImportExpression"
-      ],
-      "range": "uriorcurie",
-      "required": true,
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "importExpression__import_as",
-      "from_schema": "https://w3id.org/linkml/meta",
-      "slot_uri": "https://w3id.org/linkml/import_as",
-      "alias": "import_as",
-      "owner": "ImportExpression",
-      "domain_of": [
-        "ImportExpression"
-      ],
-      "range": "ncname",
-      "@type": "SlotDefinition"
-    },
-    {
-      "name": "importExpression__import_map",
-      "from_schema": "https://w3id.org/linkml/meta",
-      "slot_uri": "https://w3id.org/linkml/import_map",
-      "multivalued": true,
-      "inlined": true,
-      "alias": "import_map",
-      "owner": "ImportExpression",
-      "domain_of": [
-        "ImportExpression"
-      ],
-      "range": "Setting",
       "@type": "SlotDefinition"
     },
     {
@@ -5822,9 +5825,9 @@
       ],
       "status": "testing",
       "slots": [
-        "importExpression__import_from",
-        "importExpression__import_as",
-        "importExpression__import_map",
+        "import_from",
+        "import_as",
+        "import_map",
         "extensions",
         "annotations",
         "description",
@@ -5845,26 +5848,6 @@
         "deprecated_element_has_possible_replacement"
       ],
       "slot_usage": {},
-      "attributes": [
-        {
-          "name": "import_from",
-          "range": "uriorcurie",
-          "required": true,
-          "@type": "SlotDefinition"
-        },
-        {
-          "name": "import_as",
-          "range": "ncname",
-          "@type": "SlotDefinition"
-        },
-        {
-          "name": "import_map",
-          "multivalued": true,
-          "inlined": true,
-          "range": "Setting",
-          "@type": "SlotDefinition"
-        }
-      ],
       "class_uri": "https://w3id.org/linkml/ImportExpression",
       "@type": "ClassDefinition"
     },
@@ -6092,9 +6075,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "meta.yaml",
-  "source_file_date": "2022-03-02T04:18:00",
-  "source_file_size": 64964,
-  "generation_date": "2022-03-02T04:20:05",
+  "source_file_date": "2022-03-02T06:01:45",
+  "source_file_size": 65186,
+  "generation_date": "2022-03-02T06:04:11",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/types.context.jsonld",

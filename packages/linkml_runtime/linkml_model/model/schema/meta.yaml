@@ -1653,7 +1653,23 @@ slots:
     description: A collection of global variable settings
     comments:
       - global variables are used in string interpolation
-    
+
+  # -----------------------------------
+  # Slots for import expressions
+  # -----------------------------------
+      
+  import_from:
+    domain: import_expression
+    required: true
+    range: uriorcurie
+  import_as:
+    domain: import_expression
+    range: ncname
+  import_map:
+    domain: import_expression
+    multivalued: true
+    inlined: true
+    range: setting
 
   # -----------------------------------
   # Slots for local_name
@@ -2229,16 +2245,10 @@ classes:
       - extensible
       - annotatable
       - common_metadata
-    attributes:
-      import_from:
-        required: true
-        range: uriorcurie
-      import_as:
-        range: ncname
-      import_map:
-        multivalued: true
-        inlined: true
-        range: setting
+    slots:
+      - import_from
+      - import_as
+      - import_map
       
   setting:
     description: assignment of a key to a value

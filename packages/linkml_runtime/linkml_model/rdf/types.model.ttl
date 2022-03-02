@@ -6,7 +6,7 @@
     linkml:default_prefix "linkml" ;
     linkml:default_range "string" ;
     linkml:description "Shared type definitions for the core LinkML mode and metamodel" ;
-    linkml:generation_date "2022-03-02T04:21:02" ;
+    linkml:generation_date "2022-03-02T06:05:30" ;
     linkml:id "https://w3id.org/linkml/types" ;
     linkml:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     linkml:metamodel_version "1.7.0" ;
@@ -18,56 +18,10 @@
         [ linkml:prefix_prefix "xsd" ;
             linkml:prefix_reference "http://www.w3.org/2001/XMLSchema#" ] ;
     linkml:source_file "types.yaml" ;
-    linkml:source_file_date "2022-03-02T04:18:00" ;
+    linkml:source_file_date "2022-03-02T06:01:45" ;
     linkml:source_file_size 2676 ;
     linkml:title "Core LinkML metamodel types" ;
     linkml:types [ a linkml:TypeDefinition ;
-            linkml:base "URIorCURIE" ;
-            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
-            linkml:description "a URI or a CURIE" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "uriorcurie" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "float" ;
-            linkml:definition_uri "https://w3id.org/linkml/Float" ;
-            linkml:description "A real number that conforms to the xsd:float specification" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "float" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "XSDTime" ;
-            linkml:definition_uri "https://w3id.org/linkml/Time" ;
-            linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "time" ;
-            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "float" ;
-            linkml:definition_uri "https://w3id.org/linkml/Double" ;
-            linkml:description "A real number that conforms to the xsd:double specification" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "double" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#double" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "URI" ;
-            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
-            linkml:description "a complete URI" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "uri" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "str" ;
-            linkml:definition_uri "https://w3id.org/linkml/String" ;
-            linkml:description "A character string" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "string" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
-        [ a linkml:TypeDefinition ;
             linkml:base "Decimal" ;
             linkml:definition_uri "https://w3id.org/linkml/Decimal" ;
             linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
@@ -84,21 +38,13 @@
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#date" ],
         [ a linkml:TypeDefinition ;
-            linkml:base "Bool" ;
-            linkml:definition_uri "https://w3id.org/linkml/Boolean" ;
-            linkml:description "A binary (true or false) value" ;
+            linkml:base "URI" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
+            linkml:description "a complete URI" ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "boolean" ;
-            linkml:repr "bool" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "NodeIdentifier" ;
-            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
-            linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "nodeidentifier" ;
+            linkml:name "uri" ;
             linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
         [ a linkml:TypeDefinition ;
             linkml:base "XSDDateTime" ;
             linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
@@ -107,6 +53,27 @@
             linkml:name "datetime" ;
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "int" ;
+            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
+            linkml:description "An integer" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "integer" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Double" ;
+            linkml:description "A real number that conforms to the xsd:double specification" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "double" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#double" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Float" ;
+            linkml:description "A real number that conforms to the xsd:float specification" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "float" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
         [ a linkml:TypeDefinition ;
             linkml:base "ElementIdentifier" ;
             linkml:comments "Used for inheritence and type checking" ;
@@ -117,12 +84,21 @@
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/ns/shex#iri" ],
         [ a linkml:TypeDefinition ;
-            linkml:base "int" ;
-            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
-            linkml:description "An integer" ;
+            linkml:base "URIorCURIE" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
+            linkml:description "a URI or a CURIE" ;
             linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:name "integer" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+            linkml:name "uriorcurie" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "Bool" ;
+            linkml:definition_uri "https://w3id.org/linkml/Boolean" ;
+            linkml:description "A binary (true or false) value" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "boolean" ;
+            linkml:repr "bool" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ],
         [ a linkml:TypeDefinition ;
             linkml:base "NCName" ;
             linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
@@ -130,6 +106,30 @@
             linkml:from_schema "https://w3id.org/linkml/types" ;
             linkml:name "ncname" ;
             linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "XSDTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Time" ;
+            linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "time" ;
+            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "NodeIdentifier" ;
+            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
+            linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "nodeidentifier" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/String" ;
+            linkml:description "A character string" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:name "string" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#string" ] ;
     linkml:version "2.0.0" .
 
