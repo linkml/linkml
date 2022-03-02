@@ -46,6 +46,10 @@ class MetamodelCoreTest(unittest.TestCase):
             URIorCURIE("1abc:def")
         with self.assertRaises(ValueError):
             URIorCURIE("1:def")
+        with self.assertRaises(ValueError):
+            URIorCURIE(" ")
+        #with self.assertRaises(ValueError):
+        #    URIorCURIE("_")
         lax()
         URI(str2)
         URIorCURIE("1abc:def")
@@ -78,6 +82,16 @@ class MetamodelCoreTest(unittest.TestCase):
         self.assertEqual("http://foo.org/bargles", URI("http://foo.org/bargles"))
         with self.assertRaises(ValueError):
             URI("rdf:type")
+        with self.assertRaises(ValueError):
+            URI(":")
+        # imports range is uriorcurie, so we allow file paths
+        #URI("1")
+        URI("foo.bar")
+        URI("../a/b")
+        #with self.assertRaises(ValueError):
+        #    URI("x1")
+        with self.assertRaises(ValueError):
+            URI("")
         lax()
         x = URI("rdf:type")
         self.assertFalse(URI.is_valid(x))

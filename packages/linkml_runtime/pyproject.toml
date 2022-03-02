@@ -50,7 +50,6 @@ prefixcommons = "*"
 pyyaml = "==5.*,>=5.1.0"
 rdflib = ">=6.0.0"
 requests = "*"
-shexjsg = "==0.*,>=0.7.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
