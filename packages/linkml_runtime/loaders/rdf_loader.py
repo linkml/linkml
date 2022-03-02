@@ -1,4 +1,4 @@
-from typing import Union, TextIO, Optional, Type
+from typing import Union, TextIO, Optional, Type, List
 
 from hbreader import FileInfo
 
@@ -16,6 +16,11 @@ RDF_MIME_TYPES = "application/x-turtle;q=0.9, application/rdf+n3;q=0.8, applicat
 
 
 class RDFLoader(Loader):
+
+    def load_any(self, *args, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
+        return self.load(*args, **kwargs)
+
+
     def load(self, source: Union[str, TextIO, Graph], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
              contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = 'turtle',
              metadata: Optional[FileInfo] = None) -> YAMLRoot:

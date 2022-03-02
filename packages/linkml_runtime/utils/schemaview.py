@@ -6,8 +6,6 @@ from copy import copy, deepcopy
 from collections import defaultdict
 from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
-from linkml_runtime.utils.context_utils import parse_import_map
-from linkml_runtime.linkml_model.meta import *
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
@@ -218,12 +216,13 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all slots in schema view
         """
-        d = copy(self._get_dict(SLOTS, imports))
+        slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
             for c in self.all_classes().values():
                 for aname, a in c.attributes.items():
-                    d[aname] = a
-        return d
+                    if aname not in slots:
+                        slots[aname] = a
+        return slots
 
 
     @deprecated("Use `all_enums` instead")
@@ -354,7 +353,7 @@ class SchemaView(object):
         """
         ix = self.element_by_schema_map()
         if element_name not in ix:
-            raise Exception(f'Element {element_name} not in any schema')
+            raise ValueError(f'Element {element_name} not in any schema')
         return ix[element_name]
 
     @lru_cache()
@@ -379,7 +378,7 @@ class SchemaView(object):
         """
         c = self.all_classes(imports).get(class_name, None)
         if strict and c is None:
-            raise Exception(f'No such class as "{class_name}"')
+            raise ValueError(f'No such class as "{class_name}"')
         else:
             return c
 
@@ -400,8 +399,8 @@ class SchemaView(object):
                     slot = copy(c.attributes[slot_name])
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
-        if strict and slot in None:
-            raise Exception(f'No such slot as "{slot_name}"')
+        if strict and slot is None:
+            raise ValueError(f'No such slot as "{slot_name}"')
         return slot
 
     @lru_cache()
@@ -413,7 +412,7 @@ class SchemaView(object):
         """
         s = self.all_subsets(imports).get(subset_name, None)
         if strict and s is None:
-            raise Exception(f'No such subset as "{subset_name}"')
+            raise ValueError(f'No such subset as "{subset_name}"')
         else:
             return s
 
@@ -426,7 +425,7 @@ class SchemaView(object):
         """
         e = self.all_enums(imports).get(enum_name, None)
         if strict and e is None:
-            raise Exception(f'No such subset as "{enum_name}"')
+            raise ValueError(f'No such subset as "{enum_name}"')
         else:
             return e
 
@@ -439,7 +438,7 @@ class SchemaView(object):
         """
         t = self.all_types(imports).get(type_name, None)
         if strict and t is None:
-            raise Exception(f'No such subset as "{type_name}"')
+            raise ValueError(f'No such subset as "{type_name}"')
         else:
             return t
 
@@ -471,7 +470,7 @@ class SchemaView(object):
         :param mixins: include mixins (default is True)
         :return: all direct parent slot names (is_a and mixins)
         """
-        s = self.get_slot(slot_name, imports)
+        s = self.get_slot(slot_name, imports, strict=True)
         return self._parents(s, imports, mixins, is_a)
 
     @lru_cache()
@@ -650,12 +649,12 @@ class SchemaView(object):
             uri = e.uri
             e_name = underscore(e.name)
         else:
-            raise Exception(f'Must be class or slot or type: {e}')
+            raise ValueError(f'Must be class or slot or type: {e}')
         if uri is None or native:
             if e.from_schema is not None:
                 schema = next(sc for sc in self.schema_map.values() if sc.id == e.from_schema)
                 if schema == None:
-                    raise Exception(f'Cannot find {e.from_schema} in schema_map')
+                    raise ValueError(f'Cannot find {e.from_schema} in schema_map')
             else:
                 logging.warning(f'from_schema not populated for element {e.name}')
                 schema = self.schema_map[self.in_schema(e.name)]
@@ -865,7 +864,7 @@ class SchemaView(object):
         return slots_nr
 
     @lru_cache()
-    def induced_slot(self, slot_name: SLOT_NAME, class_name: CLASS_NAME = None, imports=True) -> SlotDefinition:
+    def induced_slot(self, slot_name: SLOT_NAME, class_name: CLASS_NAME = None, imports=True, mangle_name=False) -> SlotDefinition:
         """
         Given a slot, in the context of a particular class, yield a dynamic SlotDefinition that
         has all properties materialized.
@@ -878,8 +877,15 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: dynamic slot constructed by inference
         """
-        slot = self.get_slot(slot_name, imports, attributes=True)
+        slot = self.get_slot(slot_name, imports, attributes=False)
         cls = self.get_class(class_name, imports)
+        # attributes take priority over schema-level slot definitions, IF
+        # the attributes is declared for the class or an ancestor
+        for an in self.class_ancestors(class_name):
+            a = self.get_class(an, imports)
+            if slot_name in a.attributes:
+                slot = a.attributes[slot_name]
+                break
         islot = None
         if slot is not None:
             # case 1: there is an explicit declaration of the slot
@@ -896,15 +902,7 @@ class SchemaView(object):
             #    if getattr(slot, metaslot_name, None):
             #        setattr(islot, metaslot_name, deepcopy(getattr(slot, metaslot_name)))
         else:
-            # case 2: no independent slot definition, declared as an attribute
-            # (can be attribute of the class, or an ancestor)
-            for an in self.class_ancestors(class_name):
-                a = self.get_class(an, imports)
-                if slot_name in a.attributes:
-                    islot = copy(a.attributes[slot_name])
-                    break
-        if islot is None:
-            raise Exception(f'No such slot: {slot_name} and no attribute by that name in ancestors of {class_name}')
+            raise ValueError(f'No such slot: {slot_name} and no attribute by that name in ancestors of {class_name}')
 
         COMBINE = {
             'maximum_value': lambda x, y: min(x, y),
@@ -941,6 +939,11 @@ class SchemaView(object):
                 setattr(islot, metaslot_name, v)
         if slot.inlined_as_list:
             slot.inlined = True
+        mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
+        if mangle_name:
+            islot.name = mangled_name
+        if not islot.alias:
+            islot.alias = underscore(slot_name)
         return deepcopy(islot)
 
     @lru_cache()
@@ -980,15 +983,35 @@ class SchemaView(object):
         return c
 
     @lru_cache()
-    def get_identifier_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
+    def get_identifier_slot(self, cn: CLASS_NAME, use_key=False, imports=True) -> Optional[SlotDefinition]:
         """
+        Find the slot that is the identifier for the given class
+
         :param cn: class name
         :param imports:
-        :return: name of slot that acts as identifier for the given class
+        :return: name of slot that acts as identifier
         """
         for sn in self.class_slots(cn, imports=imports):
             s = self.induced_slot(sn, cn, imports=imports)
             if s.identifier:
+                return s
+        if use_key:
+            return self.get_key_slot(cn, imports=imports)
+        else:
+            return None
+
+    @lru_cache()
+    def get_key_slot(self, cn: CLASS_NAME, imports=True) -> Optional[SlotDefinition]:
+        """
+        Find the slot that is the key for the given class
+
+        :param cn: class name
+        :param imports:
+        :return: name of slot that acts as key
+        """
+        for sn in self.class_slots(cn, imports=imports):
+            s = self.induced_slot(sn, cn, imports=imports)
+            if s.key:
                 return s
         return None
 

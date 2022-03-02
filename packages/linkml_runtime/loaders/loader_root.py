@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import TextIO, Union, Optional, Callable, Dict, Type, Any
+from typing import TextIO, Union, Optional, Callable, Dict, Type, Any, List
 
 from hbreader import FileInfo, hbread
-from jsonasobj2 import as_dict
+from jsonasobj2 import as_dict, JsonObj
 
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -13,8 +13,9 @@ class Loader(ABC):
     def json_clean(inp: Any) -> Any:
         """
         Remove empty values and JSON-LD relics from an input file
-        @param inp: JSON-LD representation
-        @return: JSON representation
+
+        :param inp: JSON-LD representation
+        :return: JSON representation
         """
         def _is_empty(o) -> bool:
             return o is None or o == [] or o == {}
@@ -34,10 +35,10 @@ class Loader(ABC):
 
     def load_source(self,
                     source: Union[str, dict, TextIO],
-                    loader: Callable[[Union[str, Dict], FileInfo], Optional[Dict]],
+                    loader: Callable[[Union[str, Dict], FileInfo], Optional[Union[Dict, List]]],
                     target_class: Type[YAMLRoot],
                     accept_header: Optional[str] = "text/plain, application/yaml;q=0.9",
-                    metadata: Optional[FileInfo] = None) -> Optional[YAMLRoot]:
+                    metadata: Optional[FileInfo] = None) -> Optional[Union[YAMLRoot, List[YAMLRoot]]]:
         """ Base loader - convert a file, url, string, open file handle or dictionary into an instance
         of target_class
 
@@ -58,14 +59,41 @@ class Loader(ABC):
         else:
             data = source
         data_as_dict = loader(data, metadata)
-        return target_class(data_as_dict) if isinstance(data_as_dict, list) else \
-               target_class(**as_dict(data_as_dict)) if data_as_dict is not None else None
+        if data_as_dict:
+            if isinstance(data_as_dict, list):
+                return [target_class(**as_dict(x)) for x in data_as_dict]
+            elif isinstance(data_as_dict, dict):
+                return target_class(**data_as_dict)
+            elif isinstance(data_as_dict, JsonObj):
+                return [target_class(**as_dict(x)) for x in data_as_dict]
+            else:
+                raise ValueError(f'Unexpected type {data_as_dict}')
+        else:
+            return None
 
-    @abstractmethod
-    def load(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
-             metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
+    def load(self, *args, **kwargs) -> YAMLRoot:
         """
         Load source as an instance of target_class
+
+        :param source: source file/text/url to load
+        :param target_class: destination class
+        :param base_dir: scoping directory for source if it is a file or url
+        :param metadata: metadata about the source
+        :param _: extensions
+        :return: instance of target_class
+        """
+        results = self.load_any(*args, **kwargs)
+        if isinstance(results, YAMLRoot):
+            return results
+        else:
+            raise ValueError(f'Result is not an instance of YAMLRoot: {type(results)}')
+
+    @abstractmethod
+    def load_any(self, source: Union[str, dict, TextIO], target_class: Type[YAMLRoot], *, base_dir: Optional[str] = None,
+             metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
+        """
+        Load source as an instance of target_class, or list of instances of target_class
+
         @param source: source file/text/url to load
         @param target_class: destination class
         @param base_dir: scoping directory for source if it is a file or url
@@ -75,13 +103,24 @@ class Loader(ABC):
         """
         raise NotImplementedError()
 
-    def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
+    def loads_any(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> Union[YAMLRoot, List[YAMLRoot]]:
         """
-        Load source as a string
+        Load source as a string as an instance of target_class, or list of instances of target_class
         @param source: source
         @param target_class: destination class
         @param metadata: metadata about the source
         @param _: extensions
         @return: instance of taarget_class
+        """
+        return self.load_any(source, target_class, metadata=metadata)
+
+    def loads(self, source: str, target_class: Type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_) -> YAMLRoot:
+        """
+        Load source as a string
+        :param source: source
+        :param target_class: destination class
+        :param metadata: metadata about the source
+        :param _: extensions
+        :return: instance of taarget_class
         """
         return self.load(source, target_class, metadata=metadata)

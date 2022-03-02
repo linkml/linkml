@@ -1,6 +1,6 @@
 from json_flattener import unflatten_from_csv, KeyConfig, GlobalConfig, Serializer
 import json
-from typing import Type
+from typing import Type, Union, List
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml_runtime.loaders.loader_root import Loader
@@ -11,6 +11,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.csvutils import get_configmap
 
 class CSVLoader(Loader):
+
+    def load_any(self, *args, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
+        return self.load(*args, **kwargs)
+
 
     def loads(self, input,
               target_class: Type[YAMLRoot],

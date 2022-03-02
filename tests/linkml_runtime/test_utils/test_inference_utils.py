@@ -116,6 +116,14 @@ class InferenceUtilsTestCase(unittest.TestCase):
         infer_all_slot_values(p, schemaview=sv, config=config)
         self.assertEqual(p.summary, 'xy NO AGE SPECIFIED')
 
+    def test_custom_function(self):
+        sv = SchemaView(SCHEMA)
+        p = Person(first_name='abc', last_name='def', age_in_years=Decimal(AGE_IN_YEARS))
+        config = Config(resolve_function=lambda x, _: f'"{x.upper()}"' if isinstance(x, str) else x)
+        infer_all_slot_values(p, schemaview=sv, config=config)
+        self.assertEqual(p.full_name, '"ABC" "DEF"')
+        self.assertEqual(p.age_in_years, Decimal(AGE_IN_YEARS))
+
     def test_protect_against_evil(self):
         """
         Ensure that certain patterns cannot be evaluated

@@ -245,4 +245,7 @@ class RDFLibLoader(Loader):
     def loads(self, source: str, **kwargs) -> YAMLRoot:
         return self.load(source, **kwargs)
 
+    def load_any(self, source: str, **kwargs) -> Union[YAMLRoot, List[YAMLRoot]]:
+        return self.load(source, **kwargs)
+
 
