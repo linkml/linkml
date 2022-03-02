@@ -137,7 +137,8 @@ class URI(URIorCURIE):
         super().__init__(v)
 
     # this is more inclusive than the W3C specification
-    uri_re = re.compile("^[A-Za-z]\\S*$")
+    #uri_re = re.compile("^[A-Za-z]\\S*$")
+    uri_re = re.compile("^\\S+$")
 
     @classmethod
     def is_valid(cls, v: str) -> bool:

@@ -84,8 +84,10 @@ class MetamodelCoreTest(unittest.TestCase):
             URI("rdf:type")
         with self.assertRaises(ValueError):
             URI(":")
-        with self.assertRaises(ValueError):
-            URI("1")
+        # imports range is uriorcurie, so we allow file paths
+        #URI("1")
+        URI("foo.bar")
+        URI("../a/b")
         #with self.assertRaises(ValueError):
         #    URI("x1")
         with self.assertRaises(ValueError):
