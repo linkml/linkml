@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -5,8 +7,10 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX skosxl: <http://www.w3.org/2008/05/skos-xl#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX oslc: <http://open-services.net/ns/core#>
+PREFIX schema1: <http://schema.org/>
 PREFIX bibo: <http://purl.org/ontology/bibo/>
 PREFIX sh1: <https://w3id.org/shacl/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
@@ -107,6 +111,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -245,6 +250,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -266,6 +272,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -311,6 +318,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <id_prefixes> @<Ncname> * ;
           <definition_uri> @<Uriorcurie> ? ;
           skos:altLabel @<String> * ;
+          skosxl:altLabel @<StructuredAlias> * ;
           <local_names> @<LocalName> * ;
           dcterms:conformsTo @<String> ? ;
           skos:mappingRelation @<Uriorcurie> * ;
@@ -334,6 +342,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -414,6 +423,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -461,6 +471,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -493,6 +504,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -524,6 +536,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
@@ -563,7 +576,9 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <source_file_size> @<Integer> ? ;
           <generation_date> @<Datetime> ? ;
           <slot_names_unique> @<Boolean> ? ;
-          <settings> @<Setting> *
+          <settings> @<Setting> * ;
+          dcterms:subject @<Uriorcurie> * ;
+          schema1:keywords @<String> *
        ) ;
        rdf:type [ <SchemaDefinition> ]
     )
@@ -675,6 +690,41 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     )
 }
 
+<StructuredAlias> CLOSED {
+    (  $<StructuredAlias_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          &<Extensible_tes> ;
+          rdf:type [ <Extensible> ] ? ;
+          &<Annotatable_tes> ;
+          rdf:type [ <Annotatable> ] ? ;
+          &<CommonMetadata_tes> ;
+          rdf:type [ <CommonMetadata> ] ? ;
+          skosxl:literalForm @<String> ;
+          rdf:predicate @<AliasPredicateEnum> ? ;
+          dcterms:subject @<Uriorcurie> * ;
+          <extensions> @<Extension> * ;
+          <annotations> @<Annotation> * ;
+          skos:definition @<String> ? ;
+          <alt_descriptions> @<AltDescription> * ;
+          dcterms:title @<String> ? ;
+          <deprecated> @<String> ? ;
+          <todos> @<String> * ;
+          skos:editorialNote @<String> * ;
+          skos:note @<String> * ;
+          <examples> @<Example> * ;
+          oboInOwl:inSubset @<SubsetDefinition> * ;
+          skos:inScheme @<Uri> ? ;
+          <imported_from> @<String> ? ;
+          dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
+          rdfs:seeAlso @<Uriorcurie> * ;
+          <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+       ) ;
+       rdf:type [ skosxl:Label ] ?
+    )
+}
+
 <SubsetDefinition> CLOSED {
     (  $<SubsetDefinition_tes> (  &<Element_tes> ;
           rdf:type [ <Element> ] ?
@@ -750,6 +800,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
+          schema1:inLanguage @<String> ? ;
           rdfs:seeAlso @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
           <deprecated_element_has_possible_replacement> @<Uriorcurie> ?

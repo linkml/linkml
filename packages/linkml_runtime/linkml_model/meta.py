@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-25T18:21:34
+# Generation date: 2022-03-02T04:21:55
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -36,6 +36,7 @@ from .types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
+version = "2.0.0"
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -55,7 +56,9 @@ RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SH = CurieNamespace('sh', 'https://w3id.org/shacl/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+SKOSXL = CurieNamespace('skosxl', 'http://www.w3.org/2008/05/skos-xl#')
 SWRL = CurieNamespace('swrl', 'http://www.w3.org/2003/11/swrl#')
+VANN = CurieNamespace('vann', 'https://vocab.org/vann/')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LINKML
 
@@ -143,6 +146,7 @@ class CommonMetadata(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -188,6 +192,9 @@ class CommonMetadata(YAMLRoot):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -217,6 +224,7 @@ class Element(YAMLRoot):
     id_prefixes: Optional[Union[Union[str, NCName], List[Union[str, NCName]]]] = empty_list()
     definition_uri: Optional[Union[str, URIorCURIE]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, "StructuredAlias"], List[Union[dict, "StructuredAlias"]]]] = empty_list()
     local_names: Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]] = empty_dict()
     conforms_to: Optional[str] = None
     mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
@@ -240,6 +248,7 @@ class Element(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -260,6 +269,8 @@ class Element(YAMLRoot):
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
 
         self._normalize_inlined_as_dict(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", keyed=True)
 
@@ -337,6 +348,9 @@ class Element(YAMLRoot):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -384,6 +398,8 @@ class SchemaDefinition(Element):
     generation_date: Optional[Union[str, XSDDateTime]] = None
     slot_names_unique: Optional[Union[bool, Bool]] = None
     settings: Optional[Union[Dict[Union[str, SettingSettingKey], Union[dict, "Setting"]], List[Union[dict, "Setting"]]]] = empty_dict()
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    keywords: Optional[Union[str, List[str]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.default_prefix is None:
@@ -453,6 +469,14 @@ class SchemaDefinition(Element):
             self.slot_names_unique = Bool(self.slot_names_unique)
 
         self._normalize_inlined_as_dict(slot_name="settings", slot_type=Setting, key_name="setting_key", keyed=True)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        if not isinstance(self.keywords, list):
+            self.keywords = [self.keywords] if self.keywords is not None else []
+        self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
 
         super().__post_init__(**kwargs)
 
@@ -742,6 +766,114 @@ class EnumDefinition(Element):
         super().__post_init__(**kwargs)
 
 
+@dataclass
+class StructuredAlias(YAMLRoot):
+    """
+    object that contains meta data about a synonym or alias including where it came from (source) and its scope
+    (narrow, broad, etc.)
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = SKOSXL.Label
+    class_class_curie: ClassVar[str] = "skosxl:Label"
+    class_name: ClassVar[str] = "structured_alias"
+    class_model_uri: ClassVar[URIRef] = LINKML.StructuredAlias
+
+    literal_form: str = None
+    predicate: Optional[Union[str, "AliasPredicateEnum"]] = None
+    categories: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.literal_form):
+            self.MissingRequiredField("literal_form")
+        if not isinstance(self.literal_form, str):
+            self.literal_form = str(self.literal_form)
+
+        if self.predicate is not None and not isinstance(self.predicate, AliasPredicateEnum):
+            self.predicate = AliasPredicateEnum(self.predicate)
+
+        if not isinstance(self.categories, list):
+            self.categories = [self.categories] if self.categories is not None else []
+        self.categories = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.categories]
+
+        self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
+
+        self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+
+        self._normalize_inlined_as_dict(slot_name="alt_descriptions", slot_type=AltDescription, key_name="source", keyed=True)
+
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+
+        if self.deprecated is not None and not isinstance(self.deprecated, str):
+            self.deprecated = str(self.deprecated)
+
+        if not isinstance(self.todos, list):
+            self.todos = [self.todos] if self.todos is not None else []
+        self.todos = [v if isinstance(v, str) else str(v) for v in self.todos]
+
+        if not isinstance(self.notes, list):
+            self.notes = [self.notes] if self.notes is not None else []
+        self.notes = [v if isinstance(v, str) else str(v) for v in self.notes]
+
+        if not isinstance(self.comments, list):
+            self.comments = [self.comments] if self.comments is not None else []
+        self.comments = [v if isinstance(v, str) else str(v) for v in self.comments]
+
+        if not isinstance(self.examples, list):
+            self.examples = [self.examples] if self.examples is not None else []
+        self.examples = [v if isinstance(v, Example) else Example(**as_dict(v)) for v in self.examples]
+
+        if not isinstance(self.in_subset, list):
+            self.in_subset = [self.in_subset] if self.in_subset is not None else []
+        self.in_subset = [v if isinstance(v, SubsetDefinitionName) else SubsetDefinitionName(v) for v in self.in_subset]
+
+        if self.from_schema is not None and not isinstance(self.from_schema, URI):
+            self.from_schema = URI(self.from_schema)
+
+        if self.imported_from is not None and not isinstance(self.imported_from, str):
+            self.imported_from = str(self.imported_from)
+
+        if self.source is not None and not isinstance(self.source, URIorCURIE):
+            self.source = URIorCURIE(self.source)
+
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
+        if not isinstance(self.see_also, list):
+            self.see_also = [self.see_also] if self.see_also is not None else []
+        self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
+
+        if self.deprecated_element_has_exact_replacement is not None and not isinstance(self.deprecated_element_has_exact_replacement, URIorCURIE):
+            self.deprecated_element_has_exact_replacement = URIorCURIE(self.deprecated_element_has_exact_replacement)
+
+        if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
+            self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        super().__post_init__(**kwargs)
+
+
 class Expression(YAMLRoot):
     """
     general mixin for any class that can represent some form of expression
@@ -840,6 +972,7 @@ class AnonymousExpression(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -889,6 +1022,9 @@ class AnonymousExpression(YAMLRoot):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -936,6 +1072,7 @@ class PathExpression(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -1012,6 +1149,9 @@ class PathExpression(YAMLRoot):
 
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
+
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
 
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
@@ -1749,6 +1889,7 @@ class ClassRule(ClassLevelRule):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -1819,6 +1960,9 @@ class ClassRule(ClassLevelRule):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -1861,6 +2005,7 @@ class PatternExpression(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -1919,6 +2064,9 @@ class PatternExpression(YAMLRoot):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -1961,6 +2109,7 @@ class ImportExpression(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -2019,6 +2168,9 @@ class ImportExpression(YAMLRoot):
 
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
+
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
 
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
@@ -2204,6 +2356,7 @@ class PermissibleValue(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -2268,6 +2421,9 @@ class PermissibleValue(YAMLRoot):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
+
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
         self.see_also = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.see_also]
@@ -2309,6 +2465,7 @@ class UniqueKey(YAMLRoot):
     from_schema: Optional[Union[str, URI]] = None
     imported_from: Optional[str] = None
     source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
@@ -2368,6 +2525,9 @@ class UniqueKey(YAMLRoot):
 
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
+
+        if self.in_language is not None and not isinstance(self.in_language, str):
+            self.in_language = str(self.in_language)
 
         if not isinstance(self.see_also, list):
             self.see_also = [self.see_also] if self.see_also is not None else []
@@ -2435,6 +2595,21 @@ class RelationalRoleEnum(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="RelationalRoleEnum",
         description="enumeration of roles a slot on a relationship class can play",
+    )
+
+class AliasPredicateEnum(EnumDefinitionImpl):
+
+    EXACT_SYNONYM = PermissibleValue(text="EXACT_SYNONYM",
+                                                 meaning=SKOS.exactMatch)
+    RELATED_SYNONYM = PermissibleValue(text="RELATED_SYNONYM",
+                                                     meaning=SKOS.relatedMatch)
+    BROAD_SYNONYM = PermissibleValue(text="BROAD_SYNONYM",
+                                                 meaning=SKOS.broaderMatch)
+    NARROW_SYNONYM = PermissibleValue(text="NARROW_SYNONYM",
+                                                   meaning=SKOS.narrowerMatch)
+
+    _defn = EnumDefinition(
+        name="AliasPredicateEnum",
     )
 
 # Slots
