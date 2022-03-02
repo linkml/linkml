@@ -1,6 +1,7 @@
-# FakeClass
+# Class: FakeClass
 
-None
+
+
 
 URI: [ks:FakeClass](https://w3id.org/linkml/tests/kitchen_sink/FakeClass)
 
@@ -28,12 +29,16 @@ URI: [ks:FakeClass](https://w3id.org/linkml/tests/kitchen_sink/FakeClass)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: FakeClass
 deprecated: this is not a real class, we are using it to test deprecation
@@ -44,9 +49,11 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: FakeClass
 deprecated: this is not a real class, we are using it to test deprecation
@@ -55,6 +62,8 @@ attributes:
   test_attribute:
     name: test_attribute
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: test_attribute
     owner: FakeClass
 
 ```
+</details>

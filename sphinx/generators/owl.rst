@@ -4,7 +4,8 @@ OWL
 Example Output
 --------------
 
-`personinfo.owl.ttl <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/owl/personinfo.owl.ttl>`_
+`personinfo.owl.ttl
+  <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/owl/personinfo.owl.ttl>`_
 
 Overview
 --------
@@ -50,10 +51,17 @@ Mapping
 * Each LinkML element is rendered as an instance of the relevant metamodel class      
 
     - This means *punning* is used
-    - Set ``metaclass=False`` if you do not want this behavior
+    - Set ``--no-metaclasses`` if you do not want this behavior
 
-.. note:: The current default settings for ``metaclasses`` and ``type_objects`` may change in the future
+.. note:: The current default settings for ``metaclasses`` and ``type-objects`` may change in the future
 
+Other examples
+^^^^^^^^^^^^^^
+
+- `Biolink <https://bioportal.bioontology.org/ontologies/BIOLINK>`_ :
+  translation of Biolink schema to OWL
+
+          
 Docs
 ----
 

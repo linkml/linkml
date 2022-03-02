@@ -1,6 +1,7 @@
-# MedicalEvent
+# Class: MedicalEvent
 
-None
+
+
 
 URI: [ks:MedicalEvent](https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent)
 
@@ -44,12 +45,16 @@ URI: [ks:MedicalEvent](https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: MedicalEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -60,9 +65,11 @@ slots:
 - procedure
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: MedicalEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -75,42 +82,50 @@ attributes:
         tag: biolink:opposite
         value: location_of
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: in_location
     owner: MedicalEvent
     range: Place
   diagnosis:
     name: diagnosis
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     inlined: true
+    alias: diagnosis
     owner: MedicalEvent
     range: DiagnosisConcept
   procedure:
     name: procedure
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     inlined: true
+    alias: procedure
     owner: MedicalEvent
     range: ProcedureConcept
   started at time:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: MedicalEvent
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: MedicalEvent
     range: date
   is current:
     name: is current
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: is_current
     owner: MedicalEvent
     range: boolean
   metadata:
     name: metadata
     description: Example of a slot that has an unconstrained range
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: metadata
     owner: MedicalEvent
     range: AnyObject
 
 ```
+</details>

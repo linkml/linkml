@@ -1,8 +1,6 @@
-# ended_at_time
+# Slot: ended_at_time
 
-None
-
-URI: http://www.w3.org/ns/prov#endedAtTime
+URI: [http://www.w3.org/ns/prov#endedAtTime](http://www.w3.org/ns/prov#endedAtTime)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#endedAtTime
 
  * Range: date
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

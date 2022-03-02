@@ -602,9 +602,33 @@
    },
    "$id": "https://w3id.org/linkml/tests/kitchen_sink",
    "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
+   "additionalProperties": false,
    "metamodel_version": "1.7.0",
-   "properties": {},
+   "properties": {
+      "activities": {
+         "items": {
+            "$ref": "#/$defs/Activity"
+         },
+         "type": "array"
+      },
+      "code_systems": {
+         "additionalProperties": {
+            "$ref": "#/$defs/CodeSystem__identifier_optional"
+         }
+      },
+      "companies": {
+         "items": {
+            "$ref": "#/$defs/Company"
+         },
+         "type": "array"
+      },
+      "persons": {
+         "items": {
+            "$ref": "#/$defs/Person"
+         },
+         "type": "array"
+      }
+   },
    "required": [],
    "title": "kitchen_sink",
    "type": "object",

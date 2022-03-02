@@ -12,14 +12,15 @@ Options:
                                   Emit non-JSON-LD compliant prefixes as an
                                   object (deprecated: use gen-prefix-map
                                   instead).  [default: no-flatprefixes]
-  -f, --format [context|json]     Output format (default=context)
-  --metadata / --no-metadata      Include metadata in output
-                                  (default=--metadata)
-  --useuris / --metauris          Include metadata in output
-                                  (default=--useuris)
+  -f, --format [context|json]     Output format  [default: context]
+  --metadata / --no-metadata      Include metadata in output  [default:
+                                  metadata]
+  --useuris / --metauris          Include metadata in output  [default:
+                                  useuris]
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
-                                  Logging level (default=WARNING)
+                                  Logging level  [default: WARNING]
+  -v, --verbose                   verbosity
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)

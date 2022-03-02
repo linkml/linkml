@@ -1,6 +1,7 @@
-# CodeSystem
+# Class: CodeSystem
 
-None
+
+
 
 URI: [ks:CodeSystem](https://w3id.org/linkml/tests/kitchen_sink/CodeSystem)
 
@@ -37,12 +38,16 @@ URI: [ks:CodeSystem](https://w3id.org/linkml/tests/kitchen_sink/CodeSystem)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: CodeSystem
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -51,9 +56,11 @@ slots:
 - name
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: CodeSystem
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -62,11 +69,14 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: CodeSystem
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: CodeSystem
     required: false
 
 ```
+</details>

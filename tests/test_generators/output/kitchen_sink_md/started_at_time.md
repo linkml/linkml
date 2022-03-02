@@ -1,8 +1,6 @@
-# started_at_time
+# Slot: started_at_time
 
-None
-
-URI: http://www.w3.org/ns/prov#startedAtTime
+URI: [http://www.w3.org/ns/prov#startedAtTime](http://www.w3.org/ns/prov#startedAtTime)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#startedAtTime
 
  * Range: date
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

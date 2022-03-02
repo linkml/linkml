@@ -1,6 +1,7 @@
-# ClassWithSpaces
+# Class: ClassWithSpaces
 
-None
+
+
 
 URI: [ks:ClassWithSpaces](https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces)
 
@@ -38,12 +39,16 @@ URI: [ks:ClassWithSpaces](https://w3id.org/linkml/tests/kitchen_sink/ClassWithSp
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: class with spaces
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -53,9 +58,11 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: class with spaces
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -63,6 +70,8 @@ attributes:
   slot with space 1:
     name: slot with space 1
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: slot_with_space_1
     owner: class with spaces
 
 ```
+</details>

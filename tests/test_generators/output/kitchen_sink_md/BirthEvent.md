@@ -1,6 +1,7 @@
-# BirthEvent
+# Class: BirthEvent
 
-None
+
+
 
 URI: [ks:BirthEvent](https://w3id.org/linkml/tests/kitchen_sink/BirthEvent)
 
@@ -42,12 +43,16 @@ URI: [ks:BirthEvent](https://w3id.org/linkml/tests/kitchen_sink/BirthEvent)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: BirthEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -56,9 +61,11 @@ slots:
 - in location
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: BirthEvent
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -71,30 +78,36 @@ attributes:
         tag: biolink:opposite
         value: location_of
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: in_location
     owner: BirthEvent
     range: Place
   started at time:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: BirthEvent
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: BirthEvent
     range: date
   is current:
     name: is current
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: is_current
     owner: BirthEvent
     range: boolean
   metadata:
     name: metadata
     description: Example of a slot that has an unconstrained range
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: metadata
     owner: BirthEvent
     range: AnyObject
 
 ```
+</details>

@@ -1,8 +1,6 @@
-# married_to
+# Slot: married_to
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/married_to
+URI: [https://w3id.org/linkml/tests/kitchen_sink/married_to](https://w3id.org/linkml/tests/kitchen_sink/married_to)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/married_to
 
  * Range: Person
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

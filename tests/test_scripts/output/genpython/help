@@ -8,14 +8,15 @@ Options:
                                   generating meta.py  [default: no-genmeta]
   --classvars / --no-classvars    Generate CLASSVAR info  [default: classvars]
   --slots / --no-slots            Generate Slot information  [default: slots]
-  -f, --format [py]               Output format (default=py)
-  --metadata / --no-metadata      Include metadata in output
-                                  (default=--metadata)
-  --useuris / --metauris          Include metadata in output
-                                  (default=--useuris)
+  -f, --format [py]               Output format  [default: py]
+  --metadata / --no-metadata      Include metadata in output  [default:
+                                  metadata]
+  --useuris / --metauris          Include metadata in output  [default:
+                                  useuris]
   -im, --importmap FILENAME       Import mapping file
   --log_level [CRITICAL|ERROR|WARNING|INFO|DEBUG]
-                                  Logging level (default=WARNING)
+                                  Logging level  [default: WARNING]
+  -v, --verbose                   verbosity
   --mergeimports / --no-mergeimports
                                   Merge imports into source file
                                   (default=mergeimports)

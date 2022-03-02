@@ -1,8 +1,6 @@
-# activity_set
+# Slot: activity_set
 
-None
-
-URI: https://w3id.org/linkml/tests/core/activity_set
+URI: [https://w3id.org/linkml/tests/core/activity_set](https://w3id.org/linkml/tests/core/activity_set)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/core/activity_set
 
  * Range: activity
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

@@ -1,6 +1,7 @@
-# Event
+# Class: Event
 
-None
+
+
 
 URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
@@ -39,12 +40,16 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Event
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -55,9 +60,11 @@ slots:
 - metadata
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Event
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -66,24 +73,29 @@ attributes:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:startedAtTime
+    alias: started_at_time
     owner: Event
     range: date
   ended at time:
     name: ended at time
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:endedAtTime
+    alias: ended_at_time
     owner: Event
     range: date
   is current:
     name: is current
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: is_current
     owner: Event
     range: boolean
   metadata:
     name: metadata
     description: Example of a slot that has an unconstrained range
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: metadata
     owner: Event
     range: AnyObject
 
 ```
+</details>

@@ -1,8 +1,6 @@
-# agent_set
+# Slot: agent_set
 
-None
-
-URI: https://w3id.org/linkml/tests/core/agent_set
+URI: [https://w3id.org/linkml/tests/core/agent_set](https://w3id.org/linkml/tests/core/agent_set)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/core/agent_set
 
  * Range: agent
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

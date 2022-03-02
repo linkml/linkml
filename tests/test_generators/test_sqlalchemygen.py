@@ -5,11 +5,14 @@ import unittest
 import tempfile
 from pathlib import Path
 
+from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.utils.introspection import package_schemaview
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
+from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path('personinfo.yaml')
@@ -20,6 +23,7 @@ OUT_DDL = env.expected_path('personinfo.ddl.sql')
 SQLDDLLOG = env.expected_path('personinfo.sql.log')
 DB = env.expected_path('personinfo.db')
 DB_DECLARATIVE = env.expected_path('personinfo-decl.db')
+META_OUT_SQLA = env.expected_path('meta_sqla.py')
 
 
 class SQLAlchemyGeneratorTestCase(unittest.TestCase):
@@ -115,6 +119,43 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
                                                     "MedicalEvent"]),
                         f"Expected classes from personinfo schema not written to {temp_py_filepath}")
 
+    def test_sqla_declarative_on_metamodel(self):
+        """
+        test on metamodel
+        """
+        sv = package_schemaview("linkml_runtime.linkml_model.meta")
+        gen = SQLAlchemyGenerator(sv.schema)
+        print(f'SQLAGEN: ****')
+        code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
+        assert "class ClassDefinition(" in code
+        assert "class Annotation(" in code
+        with open(META_OUT_SQLA, "w") as stream:
+            stream.write(code)
+        mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
+        # TODO: investigate unusual SQL-Alchemy error messages
+        #c = mod.ClassDefinition(name="c1")
+        #s = mod.SchemaDefinition(id='S1', name='S1')
+
+    def test_mixin(self):
+        b = SchemaBuilder()
+        b.add_slot(SlotDefinition("ref_to_c1", range="my_class1", multivalued=True))
+        b.add_class("my_mixin", slots=['my_mixin_slot'], mixin=True)
+        b.add_class("my_abstract", slots=['my_abstract_slot'], abstract=True)
+        b.add_class("my_class1", is_a="my_abstract", mixins=["my_mixin"])
+        b.add_class("my_class2", slots=["ref_to_c1"])
+        gen = SQLAlchemyGenerator(b.schema)
+        code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE)
+        print(code)
+        #assert "class ClassDefinition(" in code
+        #assert "class Annotation(" in code
+        #with open(META_OUT_SQLA, "w") as stream:
+        #    stream.write(code)
+        mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE)
+        i1 = mod.MyClass1(my_mixin_slot="v1", my_abstract_slot="v2")
+        mod.MyClass2(ref_to_c1=i1)
+
+
+
     def test_sqla_compile_imperative(self):
         """
         tests compilation of generated imperative mappings
@@ -132,7 +173,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         # test one or more attributes without values supplied during initialization
         self.assertTrue(hasattr(p1, "description"), f"'description' attribute not found in {p1}")
 
-    def test_sqla_imperative_exec(self):
+    def test_sqla_imperative_dataclasses_exec(self):
         """
         combined test:
 
@@ -165,8 +206,10 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         assert p1.name == 'a b'
         assert p1.age_in_years == 22
         session.commit()
-        e1 = mod.MedicalEvent(duration=100.0)
-        p2 = mod.Person(id='P2', name='p2 name', aliases=['foo'], has_medical_history=[e1])
+        dc = mod.DiagnosisConcept(id='C001', name='cough')
+        e1 = mod.MedicalEvent(duration=100.0, diagnosis = dc)
+        address = mod.Address(street='1 a street', city='big city', postal_code='ZZ1 ZZ2')
+        p2 = mod.Person(id='P2', name='p2 name', aliases=['foo'], has_medical_history=[e1], current_address=address)
         session.add(p2)
         session.commit()
         q = session.query(mod.Person).where(mod.Person.id == p2.id)
@@ -174,6 +217,66 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         #for person in persons:
         #    print(f'Person={person}')
         assert len(persons) == 1
+        p2_recap = persons[0]
+        p2mh = p2_recap.has_medical_history
+        assert p2mh[0].duration == e1.duration
+        assert len(p2_recap.aliases) == 1
+        assert p2_recap.aliases[0] == 'foo'
+        assert p2_recap.current_address.city == 'big city'
+
+    def test_sqla_imperative_pydantic_exec(self):
+        """
+        https://github.com/tiangolo/fastapi/issues/214
+        https://fastapi.tiangolo.com/tutorial/sql-databases/
+
+        combined test:
+
+        - generate DDL from schema
+        - load DDL into a fresh sqlite database
+        - generate standard python object model and db mappings (i.e. IMPERATIVE mode)
+        - test insertion into database using SQLA
+        - test querying results
+        """
+        Path(DB).unlink(missing_ok=True)
+        engine = create_engine(f'sqlite:///{DB}')
+        con = sqlite3.connect(DB)
+        cur = con.cursor()
+        ddl = SQLTableGenerator(SCHEMA).generate_ddl()
+        cur.executescript(ddl)
+        SessionClass = sessionmaker(bind=engine)
+        session = SessionClass()
+        gen = SQLAlchemyGenerator(SCHEMA)
+        mod = gen.compile_sqla(template=TemplateEnum.IMPERATIVE,
+                               compile_python_dataclasses=True,
+                               pydantic=True)
+        #p1 = mod.NamedThing()
+        p1 = mod.Person(id='P1', name='a b', age_in_years=22)
+        session.add(p1)
+        #SessionClass = sessionmaker(bind=engine)
+        #session = SessionClass()
+        q = session.query(mod.Person).where(mod.Person.name == p1.name)
+        #q = session.query(mod.Person)
+        persons = q.all()
+        for person in persons:
+            print(f'Person={person}')
+        self.assertEqual(1, len(persons))
+        assert p1 in persons
+        p1 = persons[0]
+        assert p1.name == 'a b'
+        assert p1.age_in_years == 22
+        session.commit()
+        e1 = mod.MedicalEvent(duration=100.0)
+        p2 = mod.Person(id='P2', name='p2 name', aliases=['foo'], has_medical_history=[e1])
+        session.add(p2)
+        session.commit()
+        q = session.query(mod.Person).where(mod.Person.id == p2.id)
+        persons = q.all()
+        assert len(persons) == 1
+        #for person in persons:
+        #    print(f'Person={person.has_medical_history}')
+        p2_recap = persons[0]
+        p2mh = p2_recap.has_medical_history
+        assert p2mh[0].duration == e1.duration
 
     def test_sqla_declarative_exec(self):
         """

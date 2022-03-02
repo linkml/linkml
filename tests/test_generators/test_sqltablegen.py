@@ -6,29 +6,45 @@ from typing import List
 import unittest
 import tempfile
 
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import SlotDefinition
+from linkml_runtime.utils.introspection import package_schemaview
 from sqlalchemy.sql.sqltypes import Text, Enum
-from linkml.utils.schemaloader import SchemaLoader
+
+from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.yamlgen import YAMLGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator, SqlNamingPolicy
-from linkml.transformers.relmodel_transformer import RelationalModelTransformer
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path('personinfo.yaml')
 OUT_PATH = env.expected_path('personinfo.relational.yaml')
 RSCHEMA_EXPANDED = env.expected_path('personinfo.relational.expanded.yaml')
 OUT_DDL = env.expected_path('personinfo.ddl.sql')
+META_OUT_DDL = env.expected_path('meta.ddl.sql')
 SQLDDLLOG = env.expected_path('personinfo.sql.log')
 DB = env.expected_path('personinfo.db')
+DUMMY_CLASS = "dummy class"
+
 
 
 class SQLTableGeneratorTestCase(unittest.TestCase):
     """
     Tests the (new) SQLTableGenerator
     """
+
+    def test_inject_primary_key(self):
+        """
+        test a minimal schema with no primary names declared
+        """
+        b = SchemaBuilder()
+        slots = ["full name", "description"]
+        b.add_class(DUMMY_CLASS, slots)
+        gen = SQLTableGenerator(b.schema)
+        ddl = gen.generate_ddl()
+        #print(ddl)
+        assert "PRIMARY KEY (id)" in ddl
+        assert "full_name TEXT" in ddl
+        assert 'CREATE TABLE "dummy class"' in ddl
 
     def test_generate_ddl(self):
         """Generate contents of DDL file as a string."""
@@ -121,8 +137,19 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         
         self.assertEqual(fk_value, "Person.id")
 
+    def test_sqlddl_on_metamodel(self):
+        sv = package_schemaview("linkml_runtime.linkml_model.meta")
+        gen = SQLTableGenerator(sv.schema)
+        ddl = gen.generate_ddl()
+        with open(META_OUT_DDL, 'w') as stream:
+            stream.write(ddl)
+        assert 'CREATE TABLE class_definition (' in ddl
+        assert 'CREATE TABLE annotation (' in ddl
 
     def test_sqlddl_basic(self):
+        """
+        End to end example
+        """
         #sv = SchemaView(SCHEMA)
         #sqltr = RelationalModelTransformer(sv)
         gen = SQLTableGenerator(SCHEMA)

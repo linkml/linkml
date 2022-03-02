@@ -1,8 +1,8 @@
-# age_in_years
+# Slot: age_in_years
+_number of years since birth_
 
-number of years since birth
 
-URI: https://w3id.org/linkml/tests/kitchen_sink/age_in_years
+URI: [https://w3id.org/linkml/tests/kitchen_sink/age_in_years](https://w3id.org/linkml/tests/kitchen_sink/age_in_years)
 
 
 
@@ -13,6 +13,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/age_in_years
 
  * Range: integer
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

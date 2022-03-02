@@ -1,8 +1,6 @@
-# aliases
+# Slot: aliases
 
-None
-
-URI: http://www.w3.org/2004/02/skos/core#altLabel
+URI: [http://www.w3.org/2004/02/skos/core#altLabel](http://www.w3.org/2004/02/skos/core#altLabel)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/2004/02/skos/core#altLabel
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

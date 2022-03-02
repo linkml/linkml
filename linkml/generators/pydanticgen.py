@@ -35,7 +35,7 @@ class PydanticConfig:
     validate_assignment = True
     validate_all = True
     underscore_attrs_are_private = True
-    extra = 'forbid'
+    extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}
     arbitrary_types_allowed = True  # TODO re-evaluate this
 
 {% for e in enums.values() %}
@@ -48,6 +48,9 @@ class {{ e.name }}(str, Enum):
     {% for label, value in e['values'].items() -%}
     {{label}} = "{{value}}"
     {% endfor %}
+    {% if not e['values'] -%}
+    dummy = "dummy"
+    {% endif %}
 {% endfor %}
 
 {%- for c in schema.classes.values() %}
@@ -104,12 +107,14 @@ class PydanticGenerator(OOCodeGenerator):
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
                  template_file: str = None,
+                 allow_extra = False,
                  format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         self.template_file = template_file
+        self.allow_extra = allow_extra
 
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
@@ -242,7 +247,7 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
         return code
 
 

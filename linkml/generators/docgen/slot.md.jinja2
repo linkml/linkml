@@ -1,8 +1,14 @@
-# {{ gen.name(element) }}
+# Slot: {{ gen.name(element) }}
 
-{{ element.description }}
+{%- if header -%}
+{{header}}
+{%- endif -%}
 
-URI: {{ gen.uri(element) }}
+{% if element.description %}
+_{{ element.description }}_
+{% endif %}
+
+URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 
 
 {% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}
@@ -17,6 +23,14 @@ URI: {{ gen.uri(element) }}
 ## Properties
 
  * Range: {{element.range}}
+
+{% if schemaview.usage_index().get(element.name) %}
+| used by | used in | type | used |
+| ---  | --- | --- | --- |
+{% for usage in schemaview.usage_index().get(element.name) -%}
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+{% endfor %}
+{% endif %}
 
 {% include "common_metadata.md.jinja2" %}
 

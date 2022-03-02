@@ -1,6 +1,7 @@
-# Concept
+# Class: Concept
 
-None
+
+
 
 URI: [ks:Concept](https://w3id.org/linkml/tests/kitchen_sink/Concept)
 
@@ -44,12 +45,16 @@ Instances of this class *should* have identifiers with one of the following pref
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Concept
 id_prefixes:
@@ -61,9 +66,11 @@ slots:
 - in code system
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Concept
 id_prefixes:
@@ -74,16 +81,20 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: Concept
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: Concept
     required: false
   in code system:
     name: in code system
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: in_code_system
     owner: Concept
     range: CodeSystem
 
 ```
+</details>

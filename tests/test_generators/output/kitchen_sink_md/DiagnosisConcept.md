@@ -1,6 +1,7 @@
-# DiagnosisConcept
+# Class: DiagnosisConcept
 
-None
+
+
 
 URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept)
 
@@ -40,12 +41,16 @@ URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisC
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: DiagnosisConcept
 close_mappings:
@@ -54,9 +59,11 @@ from_schema: https://w3id.org/linkml/tests/kitchen_sink
 is_a: Concept
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: DiagnosisConcept
 close_mappings:
@@ -68,16 +75,20 @@ attributes:
     name: id
     from_schema: https://w3id.org/linkml/tests/core
     identifier: true
+    alias: id
     owner: DiagnosisConcept
   name:
     name: name
     from_schema: https://w3id.org/linkml/tests/core
+    alias: name
     owner: DiagnosisConcept
     required: false
   in code system:
     name: in code system
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    alias: in_code_system
     owner: DiagnosisConcept
     range: CodeSystem
 
 ```
+</details>

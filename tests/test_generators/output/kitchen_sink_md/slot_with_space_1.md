@@ -1,8 +1,6 @@
-# slot_with_space_1
+# Slot: slot_with_space_1
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1
+URI: [https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1](https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

@@ -6,10 +6,10 @@ from typing import List, Dict, Union, TextIO
 
 import click
 from jinja2 import Template
-from linkml_runtime.utils.compile_python import compile_python, file_text
+from linkml_runtime.utils.compile_python import compile_python
 from sqlalchemy import *
 
-from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, Annotation, \
+from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, Annotation, \
     ClassDefinitionName, Prefix
 from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml_runtime.utils.schemaview import SchemaView
@@ -37,8 +37,9 @@ class SQLAlchemyGenerator(Generator):
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], dialect='sqlite',
                  **kwargs) -> None:
         self.original_schema = schema
-        super().__init__(schema, **kwargs)
+        #super().__init__(schema, **kwargs)
         self.schemaview = SchemaView(schema)
+        self.schema = self.schemaview.schema
 
     def generate_sqla(self,
                       model_path: str = None,
@@ -65,19 +66,26 @@ class SQLAlchemyGenerator(Generator):
         else:
             raise Exception(f'Unknown template type: {template}')
         template_obj = Template(template_str)
-        self.add_safe_aliases(tr_schema)
         if model_path is None:
             model_path = self.schema.name
         logging.info(f'Package for dataclasses ==  {model_path}')
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
+        for c in tr_schema.classes.values():
+            if len(c.attributes) == 0:
+                raise ValueError(f'Class must have attrs: {c.name}')
+        self.add_safe_aliases(tr_schema)
+        tr_sv = SchemaView(tr_schema)
+        rel_schema_classes_ordered = [tr_sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(tr_sv)]
+        rel_schema_classes_ordered = [c for c in rel_schema_classes_ordered if not self.skip(c)]
         code = template_obj.render(model_path=model_path,
                                    mappings=tr_result.mappings,
                                    backrefs=backrefs,
+                                   classname=camelcase,
                                    no_model_import=no_model_import,
                                    is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == 'linkml:derived_from'),
-                                   classes=tr_schema.classes.values())
+                                   classes=rel_schema_classes_ordered)
         return code
 
     def compile_sqla(self,
@@ -109,7 +117,7 @@ class SQLAlchemyGenerator(Generator):
         elif compile_python_dataclasses:
             # concatenate the python dataclasses with the sqla code
             if pydantic:
-                pygen = PydanticGenerator(self.original_schema)
+                pygen = PydanticGenerator(self.original_schema, allow_extra=True)
             else:
                 pygen = PythonGenerator(self.original_schema)
             dc_code = pygen.serialize()
@@ -121,24 +129,57 @@ class SQLAlchemyGenerator(Generator):
 
     def add_safe_aliases(self, schema: SchemaDefinition) -> None:
         for c in schema.classes.values():
-            c.alias = underscore(c.name)
+            #c.alias = underscore(c.name)
             for a in c.attributes.values():
                 a.alias = underscore(a.name)
 
+    def skip(self, cls: ClassDefinition) -> bool:
+        is_skip = len(cls.attributes) == 0
+        if is_skip:
+            logging.error(f'SKIPPING: {cls.name}')
+
+
+    # TODO: move this
+    def order_classes_by_hierarchy(self, sv: SchemaView) -> List[ClassDefinitionName]:
+        olist = sv.class_roots()
+        unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
+        while len(unprocessed) > 0:
+            ext_list = [cn for cn in unprocessed if not any(p for p in sv.class_parents(cn) if p not in olist)]
+            if len(ext_list) == 0:
+                raise ValueError(f'Cycle in hierarchy, cannot process: {unprocessed}')
+            olist += ext_list
+            unprocessed = [cn for cn in unprocessed if cn not in olist]
+        return olist
+
+
 @shared_arguments(SQLAlchemyGenerator)
 @click.option("--declarative/--no-declarative",
+              default=True,
+              show_default=True,
+              help="Generate SQL Alchemy declarative vs imperative")
+@click.option("--generate-classes/--no-generate-classes",
               default=False,
               show_default=True,
-              help="SQLA declarative vs imperative")
+              help="If True, generate Python datamodel (imperative mode only)")
+@click.option("--pydantic/--no-pydantic",
+              default=False,
+              show_default=True,
+              help="If True, generate Pydantic classes (imperative mode only)")
 @click.command()
-def cli(yamlfile, declarative, **args):
+def cli(yamlfile, declarative, generate_classes, pydantic, **args):
     """ Generate SQL DDL representation """
+    if pydantic:
+        pygen = PydanticGenerator(yamlfile)
+        print(pygen.serialize())
     gen = SQLAlchemyGenerator(yamlfile, **args)
     if declarative:
         t = TemplateEnum.DECLARATIVE
     else:
         t = TemplateEnum.IMPERATIVE
     print(gen.generate_sqla(template=t))
+    if generate_classes:
+        raise NotImplementedError(f'generate classes not implemented')
+
 
 if __name__ == '__main__':
     cli()

@@ -1,8 +1,6 @@
-# addresses
+# Slot: addresses
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/addresses
+URI: [https://w3id.org/linkml/tests/kitchen_sink/addresses](https://w3id.org/linkml/tests/kitchen_sink/addresses)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/addresses
 
  * Range: Address
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

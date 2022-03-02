@@ -1,6 +1,9 @@
-# HasAliases
+# Class: HasAliases
 
-None
+
+
+* __NOTE__: this is a mixin class intended to be used in combination with other classes, and not used directly
+
 
 URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
 
@@ -28,12 +31,16 @@ URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: HasAliases
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -46,9 +53,11 @@ attributes:
     multivalued: true
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: HasAliases
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -59,6 +68,8 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     slot_uri: skos:altLabel
     multivalued: true
+    alias: aliases
     owner: HasAliases
 
 ```
+</details>

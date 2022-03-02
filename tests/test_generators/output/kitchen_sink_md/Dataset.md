@@ -1,6 +1,7 @@
-# Dataset
+# Class: Dataset
 
-None
+
+
 
 URI: [ks:Dataset](https://w3id.org/linkml/tests/kitchen_sink/Dataset)
 
@@ -31,12 +32,16 @@ URI: [ks:Dataset](https://w3id.org/linkml/tests/kitchen_sink/Dataset)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: Dataset
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -71,9 +76,11 @@ attributes:
 tree_root: true
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: Dataset
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
@@ -84,6 +91,7 @@ attributes:
     multivalued: true
     inlined: true
     inlined_as_list: true
+    alias: persons
     owner: Dataset
     range: Person
   companies:
@@ -92,6 +100,7 @@ attributes:
     multivalued: true
     inlined: true
     inlined_as_list: true
+    alias: companies
     owner: Dataset
     range: Company
   activities:
@@ -100,6 +109,7 @@ attributes:
     multivalued: true
     inlined: true
     inlined_as_list: true
+    alias: activities
     owner: Dataset
     range: activity
   code systems:
@@ -107,8 +117,10 @@ attributes:
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
     inlined: true
+    alias: code_systems
     owner: Dataset
     range: CodeSystem
 tree_root: true
 
 ```
+</details>

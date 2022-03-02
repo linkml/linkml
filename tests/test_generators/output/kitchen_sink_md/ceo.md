@@ -1,8 +1,6 @@
-# ceo
+# Slot: ceo
 
-None
-
-URI: http://schema.org/ceo
+URI: [http://schema.org/ceo](http://schema.org/ceo)
 
 
 
@@ -13,6 +11,11 @@ URI: http://schema.org/ceo
 
  * Range: Person
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

@@ -1,8 +1,6 @@
-# was_generated_by
+# Slot: was_generated_by
 
-None
-
-URI: http://www.w3.org/ns/prov#wasGeneratedBy
+URI: [http://www.w3.org/ns/prov#wasGeneratedBy](http://www.w3.org/ns/prov#wasGeneratedBy)
 
 
 
@@ -13,6 +11,11 @@ URI: http://www.w3.org/ns/prov#wasGeneratedBy
 
  * Range: activity
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

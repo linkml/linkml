@@ -1,8 +1,6 @@
-# test_attribute
+# Slot: test_attribute
 
-None
-
-URI: https://w3id.org/linkml/tests/kitchen_sink/test_attribute
+URI: [https://w3id.org/linkml/tests/kitchen_sink/test_attribute](https://w3id.org/linkml/tests/kitchen_sink/test_attribute)
 
 
 
@@ -13,6 +11,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/test_attribute
 
  * Range: None
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

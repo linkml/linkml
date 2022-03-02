@@ -6,6 +6,14 @@ CREATE TABLE "NamedThing" (
 	image TEXT, 
 	PRIMARY KEY (id)
 );
+CREATE TABLE "HasAliases" (
+	id INTEGER, 
+	PRIMARY KEY (id)
+);
+CREATE TABLE "HasNewsEvents" (
+	id INTEGER, 
+	PRIMARY KEY (id)
+);
 CREATE TABLE "Place" (
 	id TEXT, 
 	name TEXT, 
@@ -19,11 +27,12 @@ CREATE TABLE "Address" (
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Event" (
+	id INTEGER, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	duration FLOAT, 
 	is_current BOOLEAN, 
-	PRIMARY KEY (started_at_time, ended_at_time, duration, is_current)
+	PRIMARY KEY (id)
 );
 CREATE TABLE "Concept" (
 	id TEXT, 
@@ -47,11 +56,12 @@ CREATE TABLE "ProcedureConcept" (
 	PRIMARY KEY (id)
 );
 CREATE TABLE "Relationship" (
+	id INTEGER, 
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	related_to TEXT, 
 	type TEXT, 
-	PRIMARY KEY (started_at_time, ended_at_time, related_to, type)
+	PRIMARY KEY (id)
 );
 CREATE TABLE "NewsEvent" (
 	id INTEGER, 
@@ -96,6 +106,25 @@ CREATE TABLE "Organization" (
 	FOREIGN KEY(founding_location) REFERENCES "Place" (id), 
 	FOREIGN KEY("Container_id") REFERENCES "Container" (id), 
 	FOREIGN KEY(current_address_id) REFERENCES "Address" (id)
+);
+CREATE TABLE "WithLocation" (
+	id INTEGER, 
+	in_location TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(in_location) REFERENCES "Place" (id)
+);
+CREATE TABLE "HasAliases_alias" (
+	"HasAliases_id" TEXT, 
+	alias TEXT, 
+	PRIMARY KEY ("HasAliases_id", alias), 
+	FOREIGN KEY("HasAliases_id") REFERENCES "HasAliases" (id)
+);
+CREATE TABLE "HasNewsEvents_has_news_event" (
+	"HasNewsEvents_id" TEXT, 
+	has_news_event_id TEXT, 
+	PRIMARY KEY ("HasNewsEvents_id", has_news_event_id), 
+	FOREIGN KEY("HasNewsEvents_id") REFERENCES "HasNewsEvents" (id), 
+	FOREIGN KEY(has_news_event_id) REFERENCES "NewsEvent" (id)
 );
 CREATE TABLE "Place_alias" (
 	"Place_id" TEXT, 

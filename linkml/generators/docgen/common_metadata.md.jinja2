@@ -9,3 +9,14 @@ Instances of this class *should* have identifiers with one of the following pref
 {% endfor %}
 
 {% endif %}
+
+
+{% if element.annotations %}
+### Annotations
+
+| property | value |
+| --- | --- |
+{% for a in element.annotations -%}
+| {{a}} | {{ element.annotations[a].value }} |
+{% endfor %}
+{% endif %}

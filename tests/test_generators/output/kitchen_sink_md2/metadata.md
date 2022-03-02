@@ -1,8 +1,8 @@
-# metadata
+# Slot: metadata
+_Example of a slot that has an unconstrained range_
 
-Example of a slot that has an unconstrained range
 
-URI: https://w3id.org/linkml/tests/kitchen_sink/metadata
+URI: [https://w3id.org/linkml/tests/kitchen_sink/metadata](https://w3id.org/linkml/tests/kitchen_sink/metadata)
 
 
 
@@ -13,6 +13,11 @@ URI: https://w3id.org/linkml/tests/kitchen_sink/metadata
 
  * Range: AnyObject
 
+
+
 ## Identifier and Mapping Information
+
+
+
 
 

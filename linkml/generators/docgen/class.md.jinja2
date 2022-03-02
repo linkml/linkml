@@ -1,6 +1,21 @@
-# {{ gen.name(element) }}
+# Class: {{ gen.name(element) }}
 
-{{ element.description }}
+{%- if header -%}
+{{header}}
+{%- endif -%}
+
+
+
+{% if element.description %}
+_{{ element.description }}_
+{% endif %}
+
+{% if element.abstract %}
+* __NOTE__: this is an abstract class and should not be instantiated directly
+{% endif %}
+{% if element.mixin %}
+* __NOTE__: this is a mixin class intended to be used in combination with other classes, and not used directly
+{% endif %}
 
 URI: {{ gen.uri_link(element) }}
 
@@ -40,22 +55,28 @@ URI: {{ gen.uri_link(element) }}
 
 ## Rules
 
-TODO
-
 {% endif %}
 
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 {{gen.yaml(element)}}
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 {{gen.yaml(element, inferred=True)}}
 ```
+</details>
+
+{%- if footer -%}
+{{footer}}
+{%- endif -%}

@@ -1,6 +1,9 @@
-# AnyObject
+# Class: AnyObject
+_Example of unconstrained class_
 
-Example of unconstrained class
+
+
+
 
 URI: [linkml:Any](https://w3id.org/linkml/Any)
 
@@ -36,12 +39,16 @@ URI: [linkml:Any](https://w3id.org/linkml/Any)
 
 
 
+
+
+
 ## LinkML Specification
 
 <!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
 
-Direct:
+### Direct
 
+<details>
 ```yaml
 name: AnyObject
 description: Example of unconstrained class
@@ -49,9 +56,11 @@ from_schema: https://w3id.org/linkml/tests/kitchen_sink
 class_uri: linkml:Any
 
 ```
+</details>
 
-Induced:
+### Induced
 
+<details>
 ```yaml
 name: AnyObject
 description: Example of unconstrained class
@@ -59,3 +68,4 @@ from_schema: https://w3id.org/linkml/tests/kitchen_sink
 class_uri: linkml:Any
 
 ```
+</details>
