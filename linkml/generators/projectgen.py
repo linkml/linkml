@@ -2,15 +2,13 @@ import logging
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Union, Dict, List, Any
+from typing import Union, Dict, List, Any, Type, Tuple
 from functools import lru_cache
 from dataclasses import dataclass, field
 
 import click
 import yaml
 
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 from linkml.utils.generator import Generator, shared_arguments
 
 from linkml.generators.graphqlgen import GraphqlGenerator
@@ -22,13 +20,15 @@ from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.protogen import ProtoGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
-from linkml.generators.excelgen import ExcelGenerator
-from linkml.generators.javagen import JavaGenerator
 
+PATH_FSTRING = str
+GENERATOR_NAME = str
+ARG_DICT = Dict[str, Any]
+CONFIG_TUPLE = Tuple[Type[Generator], PATH_FSTRING, ARG_DICT]
+GEN_MAP: Dict[GENERATOR_NAME, CONFIG_TUPLE]
 GEN_MAP = {
     'graphql': (GraphqlGenerator, 'graphql/{name}.graphql', {}),
     'jsonldcontext': (ContextGenerator, 'jsonld/{name}.context.jsonld', {}),
@@ -52,14 +52,14 @@ GEN_MAP = {
 
 @lru_cache()
 def get_local_imports(schema_path: str, dir: str):
-    print(f'GETTING IMPORTS = {schema_path}')
+    logging.info(f'GETTING IMPORTS = {schema_path}')
     all_imports = [schema_path]
     with open(schema_path) as stream:
         with open(schema_path) as stream:
             schema = yaml.safe_load(stream)
             for imp in schema.get('imports', []):
                 imp_path = os.path.join(dir, imp) + '.yaml'
-                print(f' IMP={imp} //  path={imp_path}')
+                logging.info(f' IMP={imp} //  path={imp_path}')
                 if os.path.isfile(imp_path):
                     all_imports += get_local_imports(imp_path, dir)
     return all_imports
@@ -70,12 +70,15 @@ class ProjectConfiguration:
     Global project configuration, and per-generator configurations
     """
     directory: str = 'tmp'
-    generator_args: Dict[str, Dict[str,Any]] = field(default_factory=lambda: defaultdict(dict))
+    generator_args: Dict[GENERATOR_NAME, ARG_DICT] = field(default_factory=lambda: defaultdict(dict))
     includes: List[str] = None
     excludes: List[str] = None
     mergeimports: bool = None
 
 class ProjectGenerator:
+    """
+    Generates complete project folders
+    """
 
     def generate(self, schema_path: str, config: ProjectConfiguration = ProjectConfiguration()):
         if config.directory is None:
@@ -109,8 +112,11 @@ class ProjectGenerator:
                 gen = gen_cls(local_path, **all_gen_args)
                 serialize_args = {'mergeimports': config.mergeimports}
                 for k, v in all_gen_args.items():
-                    serialize_args[k] = v.format(name=name, parent=parent_dir)
-                logging.info(f' ARGS: {serialize_args}')
+                    # all ARG_DICT values are interpolatable
+                    if isinstance(v, str):
+                        v = v.format(name=name, parent=parent_dir)
+                    serialize_args[k] = v
+                logging.info(f' {gen_name} ARGS: {serialize_args}')
                 gen_dump = gen.serialize(**serialize_args)
                 if parts[-1] != '':
                     # markdowngen does not write to a file
