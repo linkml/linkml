@@ -85,12 +85,18 @@ class LoadersDumpersTestCase(unittest.TestCase):
             self.assertEqual(p1.gender.code.text, 'cisgender man')
             self.assertEqual(p2.gender.code.text, 'transgender man')
 
-    def test_yaml_encoding(self):
-        """This will reveal if file is ascii or utf-8 encoded"""
-        # pyyaml reads non-ascii strings just fine no matter if the file
-        # is ascii and utf-8 encoded. So we use Python's open function
+    def test_encoding(self):
+        """
+        This will reveal if generated yaml or json files are utf-8 encoded
+        """
+        # pyyaml or json reads non-ascii strings just fine no matter if the
+        # file is ascii and utf-8 encoded. So we use Python's open function
         # to detect undesired ascii encoding. (linkml issue #634)
         with open(OUT_YAML, encoding='UTF-8') as f:
+            [p2_name_line] = [l for l in f.readlines() if 'joe schm' in l]
+        self.assertIn('joe schmö', p2_name_line)
+
+        with open(OUT_JSON, encoding='UTF-8') as f:
             [p2_name_line] = [l for l in f.readlines() if 'joe schm' in l]
         self.assertIn('joe schmö', p2_name_line)
 
