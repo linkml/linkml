@@ -13,7 +13,7 @@ class Dumper(ABC):
         :param to_file: file to dump to
         :@param _: method specific arguments
         """
-        with open(to_file, 'w', encoding="UTF8") as output_file:
+        with open(to_file, 'w') as output_file:
             output_file.write(self.dumps(element, **_))
 
     @abstractmethod
