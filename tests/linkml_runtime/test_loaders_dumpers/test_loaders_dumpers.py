@@ -89,8 +89,8 @@ class LoadersDumpersTestCase(unittest.TestCase):
         """
         This will reveal if generated yaml or json files are utf-8 encoded
         """
-        # pyyaml or json reads non-ascii strings just fine no matter if the
-        # file is ascii and utf-8 encoded. So we use Python's open function
+        # pyyaml or json read non-ascii strings just fine no matter if the
+        # file is ascii or utf-8 encoded. So we use Python's open function
         # to detect undesired ascii encoding. (linkml issue #634)
         with open(OUT_YAML, encoding='UTF-8') as f:
             [p2_name_line] = [l for l in f.readlines() if 'joe schm' in l]
