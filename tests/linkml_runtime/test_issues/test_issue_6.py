@@ -1,6 +1,4 @@
 import unittest
-from contextlib import redirect_stderr
-from io import StringIO
 
 import hbreader
 import yaml
