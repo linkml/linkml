@@ -43,7 +43,7 @@ WD = Namespace('http://www.wikidata.org/entity/')
 
 class LoadersDumpersTestCase(unittest.TestCase):
 
-    def test_all(self):
+    def setUp(self):
         view = SchemaView(SCHEMA)
         container: Container
         container = yaml_loader.load(DATA, target_class=Container)
@@ -67,7 +67,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
         Tests the load_any loader method, which can be used to load directly to a list
         """
         view = SchemaView(SCHEMA)
-        with open(DATA) as stream:
+        with open(DATA, encoding='UTF-8') as stream:
             data = yaml.safe_load(stream)
         #persons = yaml_loader.load_source(data, target_class=Person)
         #container = Container(persons=persons)
@@ -80,10 +80,19 @@ class LoadersDumpersTestCase(unittest.TestCase):
             [p1] = [p for p in persons if p.id == 'P:001']
             [p2] = [p for p in persons if p.id == 'P:002']
             self.assertEqual(p1.name, 'fred bloggs')
-            self.assertEqual(p2.name, 'joe schmoe')
+            self.assertEqual(p2.name, 'joe schmö')
             self.assertEqual(p1.age_in_years, 33)
             self.assertEqual(p1.gender.code.text, 'cisgender man')
             self.assertEqual(p2.gender.code.text, 'transgender man')
+
+    def test_yaml_encoding(self):
+        """This will reveal if file is ascii or utf-8 encoded"""
+        # pyyaml reads non-ascii strings just fine no matter if the file
+        # is ascii and utf-8 encoded. So we use Python's open function
+        # to detect undesired ascii encoding. (linkml issue #634)
+        with open(OUT_YAML, encoding='UTF-8') as f:
+            [p2_name_line] = [l for l in f.readlines() if 'joe schm' in l]
+        self.assertIn('joe schmö', p2_name_line)
 
 
     def _check_objs(self, view: SchemaView, container: Container):
@@ -98,7 +107,7 @@ class LoadersDumpersTestCase(unittest.TestCase):
         o1cats = [c.code.text for c in o1.categories]
         o2cats = [c.code.text for c in o2.categories]
         self.assertEqual(p1.name, 'fred bloggs')
-        self.assertEqual(p2.name, 'joe schmoe')
+        self.assertEqual(p2.name, 'joe schmö')
         self.assertEqual(p1.age_in_years, 33)
         self.assertEqual(p1.gender.code.text, 'cisgender man')
         self.assertEqual(p2.gender.code.text, 'transgender man')
