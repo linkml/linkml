@@ -707,7 +707,7 @@ class SchemaView(object):
 
         """
         applicable_elements = []
-        elements = self.all_element()
+        elements = self.all_elements()
         for category, category_element in elements.items():
             if hasattr(category_element, 'id_prefixes') and prefix in category_element.id_prefixes:
                 applicable_elements.append(category_element.name)

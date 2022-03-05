@@ -164,7 +164,7 @@ class MetamodelCoreTest(unittest.TestCase):
     def test_datetime(self):
         v = datetime.datetime(2019, 7, 6, 17, 22, 39, 7300)
         self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(v))
-        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(Literal(v, datatype=XSD.datetime)))
+        self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(Literal(v, datatype=XSD.dateTime)))
         self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(Literal(v).value))
         self.assertEqual('2019-07-06T17:22:39.007300', v.isoformat())
         self.assertEqual('2019-07-06T17:22:39.007300', XSDDateTime(XSDDateTime(v)))
