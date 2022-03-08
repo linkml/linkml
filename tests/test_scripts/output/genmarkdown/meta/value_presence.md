@@ -13,7 +13,7 @@ URI: [linkml:value_presence](https://w3id.org/linkml/value_presence)
 
 ## Parents
 
- *  is_a: [value_specification_constant](value_specification_constant.md)
+ *  is_a: [list_value_specification_constant](list_value_specification_constant.md)
 
 ## Children
 

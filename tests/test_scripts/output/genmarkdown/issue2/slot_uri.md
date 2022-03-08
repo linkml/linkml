@@ -20,3 +20,11 @@ slot_definition &#8594;  <sub>0..1</sub> uriorcurie
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | public ID |
+| **In Subsets:** | | basic |
+

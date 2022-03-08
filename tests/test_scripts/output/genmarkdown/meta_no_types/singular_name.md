@@ -26,4 +26,5 @@ URI: [linkml:singular_name](https://w3id.org/linkml/singular_name)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | skos:altLabel |
+| **In Subsets:** | | basic |
 

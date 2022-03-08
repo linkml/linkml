@@ -26,6 +26,7 @@ URI: [linkml:version](https://w3id.org/linkml/version)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | pav:version |
-|  | | schema:schemaVersion |
 | **In Subsets:** | | owl |
+|  | | basic |
+| **Exact Mappings:** | | schema:schemaVersion |
 

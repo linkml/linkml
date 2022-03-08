@@ -29,5 +29,6 @@ URI: [linkml:recommended](https://w3id.org/linkml/recommended)
 | --- | --- | --- |
 | **Comments:** | | This is to be used where not all data is expected to conform to having a required field |
 |  | | If a slot is recommended, and it is not populated, applications must not treat this as an error. Applications may use this to inform the user of missing data |
+| **In Subsets:** | | basic |
 | **See also:** | | [https://github.com/linkml/linkml/issues/177](https://github.com/linkml/linkml/issues/177) |
 

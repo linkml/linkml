@@ -20,3 +20,10 @@ URI: [linkml:permissible_values](https://w3id.org/linkml/permissible_values)
 ## Used by
 
  * [EnumDefinition](EnumDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

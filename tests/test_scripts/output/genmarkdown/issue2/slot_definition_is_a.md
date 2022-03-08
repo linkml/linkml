@@ -21,3 +21,11 @@ slot_definition &#8594;  <sub>0..1</sub> slot_definition
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

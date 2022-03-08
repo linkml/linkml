@@ -20,3 +20,10 @@ prefix &#8594;  <sub>1..1</sub> uri
 ## Used by
 
  * prefix
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

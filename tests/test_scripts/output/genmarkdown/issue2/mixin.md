@@ -28,5 +28,7 @@ definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | trait |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
 | **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
 

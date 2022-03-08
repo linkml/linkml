@@ -6,6 +6,8 @@ CREATE TABLE common_metadata (
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	PRIMARY KEY (id)
@@ -14,11 +16,14 @@ CREATE TABLE element (
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	PRIMARY KEY (name)
@@ -34,32 +39,22 @@ CREATE TABLE schema_definition (
 	source_file_date DATETIME, 
 	source_file_size INTEGER, 
 	generation_date DATETIME, 
+	slot_names_unique BOOLEAN, 
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY(default_range) REFERENCES type_definition (name)
-);
-CREATE TABLE type_expression (
-	id INTEGER, 
-	pattern TEXT, 
-	equals_string TEXT, 
-	equals_number INTEGER, 
-	PRIMARY KEY (id)
-);
-CREATE TABLE anonymous_type_expression (
-	id INTEGER, 
-	pattern TEXT, 
-	equals_string TEXT, 
-	equals_number INTEGER, 
-	PRIMARY KEY (id)
 );
 CREATE TABLE type_definition (
 	typeof TEXT, 
@@ -69,20 +64,27 @@ CREATE TABLE type_definition (
 	pattern TEXT, 
 	equals_string TEXT, 
 	equals_number INTEGER, 
+	minimum_value INTEGER, 
+	maximum_value INTEGER, 
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	schema_definition_name TEXT, 
+	structured_pattern_id TEXT, 
 	PRIMARY KEY (name), 
 	FOREIGN KEY(typeof) REFERENCES type_definition (name), 
-	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id)
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(structured_pattern_id) REFERENCES pattern_expression (id)
 );
 CREATE TABLE definition (
 	is_a TEXT, 
@@ -97,11 +99,14 @@ CREATE TABLE definition (
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	PRIMARY KEY (name), 
@@ -118,9 +123,133 @@ CREATE TABLE anonymous_expression (
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	PRIMARY KEY (id)
+);
+CREATE TABLE path_expression (
+	id INTEGER, 
+	reversed BOOLEAN, 
+	traverse TEXT, 
+	description TEXT, 
+	title TEXT, 
+	deprecated TEXT, 
+	from_schema TEXT, 
+	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
+	deprecated_element_has_exact_replacement TEXT, 
+	deprecated_element_has_possible_replacement TEXT, 
+	followed_by_id TEXT, 
+	range_expression_id TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(traverse) REFERENCES slot_definition (name), 
+	FOREIGN KEY(followed_by_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(range_expression_id) REFERENCES anonymous_class_expression (id)
+);
+CREATE TABLE slot_definition (
+	singular_name TEXT, 
+	domain TEXT, 
+	slot_uri TEXT, 
+	multivalued BOOLEAN, 
+	inherited BOOLEAN, 
+	readonly TEXT, 
+	ifabsent TEXT, 
+	inlined BOOLEAN, 
+	inlined_as_list BOOLEAN, 
+	list_elements_unique BOOLEAN, 
+	list_elements_ordered BOOLEAN, 
+	shared BOOLEAN, 
+	"key" BOOLEAN, 
+	identifier BOOLEAN, 
+	designates_type BOOLEAN, 
+	alias TEXT, 
+	owner TEXT, 
+	subproperty_of TEXT, 
+	symmetric BOOLEAN, 
+	reflexive BOOLEAN, 
+	locally_reflexive BOOLEAN, 
+	irreflexive BOOLEAN, 
+	asymmetric BOOLEAN, 
+	transitive BOOLEAN, 
+	inverse TEXT, 
+	is_class_field BOOLEAN, 
+	transitive_form_of TEXT, 
+	reflexive_transitive_form_of TEXT, 
+	role TEXT, 
+	is_usage_slot BOOLEAN, 
+	usage_slot_name TEXT, 
+	relational_role VARCHAR(10), 
+	slot_group TEXT, 
+	is_grouping_slot BOOLEAN, 
+	children_are_mutually_disjoint BOOLEAN, 
+	range TEXT, 
+	required BOOLEAN, 
+	recommended BOOLEAN, 
+	minimum_value INTEGER, 
+	maximum_value INTEGER, 
+	pattern TEXT, 
+	equals_string TEXT, 
+	equals_number INTEGER, 
+	equals_expression TEXT, 
+	minimum_cardinality INTEGER, 
+	maximum_cardinality INTEGER, 
+	is_a TEXT, 
+	abstract BOOLEAN, 
+	mixin BOOLEAN, 
+	created_by TEXT, 
+	created_on DATETIME, 
+	last_updated_on DATETIME, 
+	modified_by TEXT, 
+	status TEXT, 
+	string_serialization TEXT, 
+	name TEXT, 
+	definition_uri TEXT, 
+	conforms_to TEXT, 
+	rank INTEGER, 
+	description TEXT, 
+	title TEXT, 
+	deprecated TEXT, 
+	from_schema TEXT, 
+	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
+	deprecated_element_has_exact_replacement TEXT, 
+	deprecated_element_has_possible_replacement TEXT, 
+	schema_definition_name TEXT, 
+	slot_expression_id TEXT, 
+	anonymous_slot_expression_id TEXT, 
+	slot_definition_name TEXT, 
+	class_expression_id TEXT, 
+	anonymous_class_expression_id TEXT, 
+	class_definition_name TEXT, 
+	path_rule_id TEXT, 
+	range_expression_id TEXT, 
+	structured_pattern_id TEXT, 
+	has_member_id TEXT, 
+	PRIMARY KEY (name), 
+	FOREIGN KEY(domain) REFERENCES class_definition (name), 
+	FOREIGN KEY(owner) REFERENCES definition (name), 
+	FOREIGN KEY(subproperty_of) REFERENCES slot_definition (name), 
+	FOREIGN KEY(inverse) REFERENCES slot_definition (name), 
+	FOREIGN KEY(transitive_form_of) REFERENCES slot_definition (name), 
+	FOREIGN KEY(reflexive_transitive_form_of) REFERENCES slot_definition (name), 
+	FOREIGN KEY(slot_group) REFERENCES slot_definition (name), 
+	FOREIGN KEY(range) REFERENCES element (name), 
+	FOREIGN KEY(is_a) REFERENCES slot_definition (name), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(slot_expression_id) REFERENCES slot_expression (id), 
+	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(class_expression_id) REFERENCES class_expression (id), 
+	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(path_rule_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(range_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(structured_pattern_id) REFERENCES pattern_expression (id), 
+	FOREIGN KEY(has_member_id) REFERENCES anonymous_slot_expression (id)
 );
 CREATE TABLE class_expression (
 	id INTEGER, 
@@ -128,6 +257,37 @@ CREATE TABLE class_expression (
 );
 CREATE TABLE class_level_rule (
 	id INTEGER, 
+	PRIMARY KEY (id)
+);
+CREATE TABLE pattern_expression (
+	id INTEGER, 
+	syntax TEXT, 
+	interpolated BOOLEAN, 
+	partial_match BOOLEAN, 
+	description TEXT, 
+	title TEXT, 
+	deprecated TEXT, 
+	from_schema TEXT, 
+	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
+	deprecated_element_has_exact_replacement TEXT, 
+	deprecated_element_has_possible_replacement TEXT, 
+	PRIMARY KEY (id)
+);
+CREATE TABLE import_expression (
+	id INTEGER, 
+	import_from TEXT NOT NULL, 
+	import_as TEXT, 
+	description TEXT, 
+	title TEXT, 
+	deprecated TEXT, 
+	from_schema TEXT, 
+	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
+	deprecated_element_has_exact_replacement TEXT, 
+	deprecated_element_has_possible_replacement TEXT, 
 	PRIMARY KEY (id)
 );
 CREATE TABLE annotatable (
@@ -138,15 +298,40 @@ CREATE TABLE extensible (
 	id INTEGER, 
 	PRIMARY KEY (id)
 );
+CREATE TABLE type_expression (
+	id INTEGER, 
+	pattern TEXT, 
+	equals_string TEXT, 
+	equals_number INTEGER, 
+	minimum_value INTEGER, 
+	maximum_value INTEGER, 
+	structured_pattern_id TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(structured_pattern_id) REFERENCES pattern_expression (id)
+);
+CREATE TABLE anonymous_type_expression (
+	id INTEGER, 
+	pattern TEXT, 
+	equals_string TEXT, 
+	equals_number INTEGER, 
+	minimum_value INTEGER, 
+	maximum_value INTEGER, 
+	structured_pattern_id TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(structured_pattern_id) REFERENCES pattern_expression (id)
+);
 CREATE TABLE subset_definition (
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	schema_definition_name TEXT, 
@@ -161,11 +346,14 @@ CREATE TABLE enum_definition (
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	schema_definition_name TEXT, 
@@ -176,6 +364,9 @@ CREATE TABLE class_definition (
 	class_uri TEXT, 
 	subclass_of TEXT, 
 	tree_root BOOLEAN, 
+	slot_names_unique BOOLEAN, 
+	represents_relationship BOOLEAN, 
+	children_are_mutually_disjoint BOOLEAN, 
 	is_a TEXT, 
 	abstract BOOLEAN, 
 	mixin BOOLEAN, 
@@ -188,17 +379,29 @@ CREATE TABLE class_definition (
 	name TEXT, 
 	definition_uri TEXT, 
 	conforms_to TEXT, 
+	rank INTEGER, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	schema_definition_name TEXT, 
 	PRIMARY KEY (name), 
 	FOREIGN KEY(is_a) REFERENCES class_definition (name), 
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id)
+);
+CREATE TABLE setting (
+	setting_key TEXT, 
+	setting_value TEXT NOT NULL, 
+	schema_definition_name TEXT, 
+	import_expression_id TEXT, 
+	PRIMARY KEY (setting_key, setting_value, schema_definition_name, import_expression_id), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
 );
 CREATE TABLE prefix (
 	prefix_prefix TEXT, 
@@ -321,6 +524,18 @@ CREATE TABLE schema_definition_default_curi_maps (
 	PRIMARY KEY (schema_definition_name, default_curi_maps), 
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id)
 );
+CREATE TABLE schema_definition_category (
+	schema_definition_name TEXT, 
+	category TEXT, 
+	PRIMARY KEY (schema_definition_name, category), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id)
+);
+CREATE TABLE schema_definition_keyword (
+	schema_definition_name TEXT, 
+	keyword TEXT, 
+	PRIMARY KEY (schema_definition_name, keyword), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id)
+);
 CREATE TABLE schema_definition_id_prefixes (
 	schema_definition_name TEXT, 
 	id_prefixes TEXT, 
@@ -393,107 +608,11 @@ CREATE TABLE schema_definition_see_also (
 	PRIMARY KEY (schema_definition_name, see_also), 
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id)
 );
-CREATE TABLE type_expression_equals_string_in (
-	type_expression_id TEXT, 
-	equals_string_in TEXT, 
-	PRIMARY KEY (type_expression_id, equals_string_in), 
-	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id)
-);
-CREATE TABLE type_expression_none_of (
-	type_expression_id TEXT, 
-	none_of_id TEXT, 
-	PRIMARY KEY (type_expression_id, none_of_id), 
-	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
-	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE type_expression_exactly_one_of (
-	type_expression_id TEXT, 
-	exactly_one_of_id TEXT, 
-	PRIMARY KEY (type_expression_id, exactly_one_of_id), 
-	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
-	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE type_expression_any_of (
-	type_expression_id TEXT, 
-	any_of_id TEXT, 
-	PRIMARY KEY (type_expression_id, any_of_id), 
-	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
-	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE type_expression_all_of (
-	type_expression_id TEXT, 
-	all_of_id TEXT, 
-	PRIMARY KEY (type_expression_id, all_of_id), 
-	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
-	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE anonymous_type_expression_equals_string_in (
-	anonymous_type_expression_id TEXT, 
-	equals_string_in TEXT, 
-	PRIMARY KEY (anonymous_type_expression_id, equals_string_in), 
-	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE anonymous_type_expression_none_of (
-	anonymous_type_expression_id TEXT, 
-	none_of_id TEXT, 
-	PRIMARY KEY (anonymous_type_expression_id, none_of_id), 
-	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
-	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE anonymous_type_expression_exactly_one_of (
-	anonymous_type_expression_id TEXT, 
-	exactly_one_of_id TEXT, 
-	PRIMARY KEY (anonymous_type_expression_id, exactly_one_of_id), 
-	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
-	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE anonymous_type_expression_any_of (
-	anonymous_type_expression_id TEXT, 
-	any_of_id TEXT, 
-	PRIMARY KEY (anonymous_type_expression_id, any_of_id), 
-	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
-	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE anonymous_type_expression_all_of (
-	anonymous_type_expression_id TEXT, 
-	all_of_id TEXT, 
-	PRIMARY KEY (anonymous_type_expression_id, all_of_id), 
-	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
-	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
-);
 CREATE TABLE type_definition_equals_string_in (
 	type_definition_name TEXT, 
 	equals_string_in TEXT, 
 	PRIMARY KEY (type_definition_name, equals_string_in), 
 	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name)
-);
-CREATE TABLE type_definition_none_of (
-	type_definition_name TEXT, 
-	none_of_id TEXT, 
-	PRIMARY KEY (type_definition_name, none_of_id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE type_definition_exactly_one_of (
-	type_definition_name TEXT, 
-	exactly_one_of_id TEXT, 
-	PRIMARY KEY (type_definition_name, exactly_one_of_id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE type_definition_any_of (
-	type_definition_name TEXT, 
-	any_of_id TEXT, 
-	PRIMARY KEY (type_definition_name, any_of_id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
-);
-CREATE TABLE type_definition_all_of (
-	type_definition_name TEXT, 
-	all_of_id TEXT, 
-	PRIMARY KEY (type_definition_name, all_of_id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
 );
 CREATE TABLE type_definition_id_prefixes (
 	type_definition_name TEXT, 
@@ -683,6 +802,242 @@ CREATE TABLE anonymous_expression_see_also (
 	PRIMARY KEY (anonymous_expression_id, see_also), 
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id)
 );
+CREATE TABLE path_expression_none_of (
+	path_expression_id TEXT, 
+	none_of_id TEXT, 
+	PRIMARY KEY (path_expression_id, none_of_id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(none_of_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_any_of (
+	path_expression_id TEXT, 
+	any_of_id TEXT, 
+	PRIMARY KEY (path_expression_id, any_of_id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(any_of_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_all_of (
+	path_expression_id TEXT, 
+	all_of_id TEXT, 
+	PRIMARY KEY (path_expression_id, all_of_id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(all_of_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_exactly_one_of (
+	path_expression_id TEXT, 
+	exactly_one_of_id TEXT, 
+	PRIMARY KEY (path_expression_id, exactly_one_of_id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(exactly_one_of_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_todos (
+	path_expression_id TEXT, 
+	todos TEXT, 
+	PRIMARY KEY (path_expression_id, todos), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_notes (
+	path_expression_id TEXT, 
+	notes TEXT, 
+	PRIMARY KEY (path_expression_id, notes), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_comments (
+	path_expression_id TEXT, 
+	comments TEXT, 
+	PRIMARY KEY (path_expression_id, comments), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
+);
+CREATE TABLE path_expression_see_also (
+	path_expression_id TEXT, 
+	see_also TEXT, 
+	PRIMARY KEY (path_expression_id, see_also), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id)
+);
+CREATE TABLE slot_definition_disjoint_with (
+	slot_definition_name TEXT, 
+	disjoint_with TEXT, 
+	PRIMARY KEY (slot_definition_name, disjoint_with), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(disjoint_with) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_equals_string_in (
+	slot_definition_name TEXT, 
+	equals_string_in TEXT, 
+	PRIMARY KEY (slot_definition_name, equals_string_in), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_mixins (
+	slot_definition_name TEXT, 
+	mixins TEXT, 
+	PRIMARY KEY (slot_definition_name, mixins), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(mixins) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_apply_to (
+	slot_definition_name TEXT, 
+	apply_to TEXT, 
+	PRIMARY KEY (slot_definition_name, apply_to), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(apply_to) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_values_from (
+	slot_definition_name TEXT, 
+	values_from TEXT, 
+	PRIMARY KEY (slot_definition_name, values_from), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_id_prefixes (
+	slot_definition_name TEXT, 
+	id_prefixes TEXT, 
+	PRIMARY KEY (slot_definition_name, id_prefixes), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_aliases (
+	slot_definition_name TEXT, 
+	aliases TEXT, 
+	PRIMARY KEY (slot_definition_name, aliases), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_mappings (
+	slot_definition_name TEXT, 
+	mappings TEXT, 
+	PRIMARY KEY (slot_definition_name, mappings), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_exact_mappings (
+	slot_definition_name TEXT, 
+	exact_mappings TEXT, 
+	PRIMARY KEY (slot_definition_name, exact_mappings), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_close_mappings (
+	slot_definition_name TEXT, 
+	close_mappings TEXT, 
+	PRIMARY KEY (slot_definition_name, close_mappings), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_related_mappings (
+	slot_definition_name TEXT, 
+	related_mappings TEXT, 
+	PRIMARY KEY (slot_definition_name, related_mappings), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_narrow_mappings (
+	slot_definition_name TEXT, 
+	narrow_mappings TEXT, 
+	PRIMARY KEY (slot_definition_name, narrow_mappings), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_broad_mappings (
+	slot_definition_name TEXT, 
+	broad_mappings TEXT, 
+	PRIMARY KEY (slot_definition_name, broad_mappings), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_todos (
+	slot_definition_name TEXT, 
+	todos TEXT, 
+	PRIMARY KEY (slot_definition_name, todos), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_notes (
+	slot_definition_name TEXT, 
+	notes TEXT, 
+	PRIMARY KEY (slot_definition_name, notes), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_comments (
+	slot_definition_name TEXT, 
+	comments TEXT, 
+	PRIMARY KEY (slot_definition_name, comments), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE slot_definition_see_also (
+	slot_definition_name TEXT, 
+	see_also TEXT, 
+	PRIMARY KEY (slot_definition_name, see_also), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
+);
+CREATE TABLE pattern_expression_todos (
+	pattern_expression_id TEXT, 
+	todos TEXT, 
+	PRIMARY KEY (pattern_expression_id, todos), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
+);
+CREATE TABLE pattern_expression_notes (
+	pattern_expression_id TEXT, 
+	notes TEXT, 
+	PRIMARY KEY (pattern_expression_id, notes), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
+);
+CREATE TABLE pattern_expression_comments (
+	pattern_expression_id TEXT, 
+	comments TEXT, 
+	PRIMARY KEY (pattern_expression_id, comments), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
+);
+CREATE TABLE pattern_expression_see_also (
+	pattern_expression_id TEXT, 
+	see_also TEXT, 
+	PRIMARY KEY (pattern_expression_id, see_also), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id)
+);
+CREATE TABLE import_expression_todos (
+	import_expression_id TEXT, 
+	todos TEXT, 
+	PRIMARY KEY (import_expression_id, todos), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
+);
+CREATE TABLE import_expression_notes (
+	import_expression_id TEXT, 
+	notes TEXT, 
+	PRIMARY KEY (import_expression_id, notes), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
+);
+CREATE TABLE import_expression_comments (
+	import_expression_id TEXT, 
+	comments TEXT, 
+	PRIMARY KEY (import_expression_id, comments), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
+);
+CREATE TABLE import_expression_see_also (
+	import_expression_id TEXT, 
+	see_also TEXT, 
+	PRIMARY KEY (import_expression_id, see_also), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id)
+);
+CREATE TABLE structured_alias (
+	id INTEGER, 
+	literal_form TEXT NOT NULL, 
+	predicate VARCHAR(15), 
+	description TEXT, 
+	title TEXT, 
+	deprecated TEXT, 
+	from_schema TEXT, 
+	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
+	deprecated_element_has_exact_replacement TEXT, 
+	deprecated_element_has_possible_replacement TEXT, 
+	element_name TEXT, 
+	schema_definition_name TEXT, 
+	type_definition_name TEXT, 
+	subset_definition_name TEXT, 
+	definition_name TEXT, 
+	enum_definition_name TEXT, 
+	slot_definition_name TEXT, 
+	class_definition_name TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(element_name) REFERENCES element (name), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
+	FOREIGN KEY(definition_name) REFERENCES definition (name), 
+	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
+);
 CREATE TABLE anonymous_class_expression (
 	id INTEGER, 
 	is_a TEXT, 
@@ -691,11 +1046,34 @@ CREATE TABLE anonymous_class_expression (
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	class_definition_name TEXT, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY(is_a) REFERENCES definition (name), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
+);
+CREATE TABLE local_name (
+	local_name_source TEXT, 
+	local_name_value TEXT NOT NULL, 
+	element_name TEXT, 
+	schema_definition_name TEXT, 
+	type_definition_name TEXT, 
+	subset_definition_name TEXT, 
+	definition_name TEXT, 
+	enum_definition_name TEXT, 
+	slot_definition_name TEXT, 
+	class_definition_name TEXT, 
+	PRIMARY KEY (local_name_source, local_name_value, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, slot_definition_name, class_definition_name), 
+	FOREIGN KEY(element_name) REFERENCES element (name), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
+	FOREIGN KEY(definition_name) REFERENCES definition (name), 
+	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
 CREATE TABLE permissible_value (
@@ -706,6 +1084,8 @@ CREATE TABLE permissible_value (
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	enum_definition_name TEXT, 
@@ -713,16 +1093,18 @@ CREATE TABLE permissible_value (
 	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name)
 );
 CREATE TABLE unique_key (
-	id INTEGER, 
+	unique_key_name TEXT NOT NULL, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	class_definition_name TEXT, 
-	PRIMARY KEY (id), 
+	PRIMARY KEY (unique_key_name, description, title, deprecated, from_schema, imported_from, source, in_language, deprecated_element_has_exact_replacement, deprecated_element_has_possible_replacement, class_definition_name), 
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
 CREATE TABLE common_metadata_in_subset (
@@ -745,6 +1127,102 @@ CREATE TABLE schema_definition_in_subset (
 	PRIMARY KEY (schema_definition_name, in_subset), 
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
 	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
+);
+CREATE TABLE type_expression_equals_string_in (
+	type_expression_id TEXT, 
+	equals_string_in TEXT, 
+	PRIMARY KEY (type_expression_id, equals_string_in), 
+	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id)
+);
+CREATE TABLE type_expression_none_of (
+	type_expression_id TEXT, 
+	none_of_id TEXT, 
+	PRIMARY KEY (type_expression_id, none_of_id), 
+	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
+	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_expression_exactly_one_of (
+	type_expression_id TEXT, 
+	exactly_one_of_id TEXT, 
+	PRIMARY KEY (type_expression_id, exactly_one_of_id), 
+	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
+	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_expression_any_of (
+	type_expression_id TEXT, 
+	any_of_id TEXT, 
+	PRIMARY KEY (type_expression_id, any_of_id), 
+	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
+	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_expression_all_of (
+	type_expression_id TEXT, 
+	all_of_id TEXT, 
+	PRIMARY KEY (type_expression_id, all_of_id), 
+	FOREIGN KEY(type_expression_id) REFERENCES type_expression (id), 
+	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE anonymous_type_expression_equals_string_in (
+	anonymous_type_expression_id TEXT, 
+	equals_string_in TEXT, 
+	PRIMARY KEY (anonymous_type_expression_id, equals_string_in), 
+	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE anonymous_type_expression_none_of (
+	anonymous_type_expression_id TEXT, 
+	none_of_id TEXT, 
+	PRIMARY KEY (anonymous_type_expression_id, none_of_id), 
+	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
+	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE anonymous_type_expression_exactly_one_of (
+	anonymous_type_expression_id TEXT, 
+	exactly_one_of_id TEXT, 
+	PRIMARY KEY (anonymous_type_expression_id, exactly_one_of_id), 
+	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
+	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE anonymous_type_expression_any_of (
+	anonymous_type_expression_id TEXT, 
+	any_of_id TEXT, 
+	PRIMARY KEY (anonymous_type_expression_id, any_of_id), 
+	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
+	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE anonymous_type_expression_all_of (
+	anonymous_type_expression_id TEXT, 
+	all_of_id TEXT, 
+	PRIMARY KEY (anonymous_type_expression_id, all_of_id), 
+	FOREIGN KEY(anonymous_type_expression_id) REFERENCES anonymous_type_expression (id), 
+	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_definition_none_of (
+	type_definition_name TEXT, 
+	none_of_id TEXT, 
+	PRIMARY KEY (type_definition_name, none_of_id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(none_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_definition_exactly_one_of (
+	type_definition_name TEXT, 
+	exactly_one_of_id TEXT, 
+	PRIMARY KEY (type_definition_name, exactly_one_of_id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_definition_any_of (
+	type_definition_name TEXT, 
+	any_of_id TEXT, 
+	PRIMARY KEY (type_definition_name, any_of_id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(any_of_id) REFERENCES anonymous_type_expression (id)
+);
+CREATE TABLE type_definition_all_of (
+	type_definition_name TEXT, 
+	all_of_id TEXT, 
+	PRIMARY KEY (type_definition_name, all_of_id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(all_of_id) REFERENCES anonymous_type_expression (id)
 );
 CREATE TABLE type_definition_in_subset (
 	type_definition_name TEXT, 
@@ -925,12 +1403,54 @@ CREATE TABLE anonymous_expression_in_subset (
 	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
 	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
 );
+CREATE TABLE path_expression_in_subset (
+	path_expression_id TEXT, 
+	in_subset TEXT, 
+	PRIMARY KEY (path_expression_id, in_subset), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
+);
+CREATE TABLE slot_definition_domain_of (
+	slot_definition_name TEXT, 
+	domain_of TEXT, 
+	PRIMARY KEY (slot_definition_name, domain_of), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(domain_of) REFERENCES class_definition (name)
+);
+CREATE TABLE slot_definition_in_subset (
+	slot_definition_name TEXT, 
+	in_subset TEXT, 
+	PRIMARY KEY (slot_definition_name, in_subset), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
+);
+CREATE TABLE class_definition_slots (
+	class_definition_name TEXT, 
+	slots TEXT, 
+	PRIMARY KEY (class_definition_name, slots), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(slots) REFERENCES slot_definition (name)
+);
 CREATE TABLE class_definition_union_of (
 	class_definition_name TEXT, 
 	union_of TEXT, 
 	PRIMARY KEY (class_definition_name, union_of), 
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
 	FOREIGN KEY(union_of) REFERENCES class_definition (name)
+);
+CREATE TABLE class_definition_defining_slots (
+	class_definition_name TEXT, 
+	defining_slots TEXT, 
+	PRIMARY KEY (class_definition_name, defining_slots), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(defining_slots) REFERENCES slot_definition (name)
+);
+CREATE TABLE class_definition_disjoint_with (
+	class_definition_name TEXT, 
+	disjoint_with TEXT, 
+	PRIMARY KEY (class_definition_name, disjoint_with), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(disjoint_with) REFERENCES class_definition (name)
 );
 CREATE TABLE class_definition_mixins (
 	class_definition_name TEXT, 
@@ -1031,6 +1551,20 @@ CREATE TABLE class_definition_see_also (
 	PRIMARY KEY (class_definition_name, see_also), 
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
 );
+CREATE TABLE pattern_expression_in_subset (
+	pattern_expression_id TEXT, 
+	in_subset TEXT, 
+	PRIMARY KEY (pattern_expression_id, in_subset), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id), 
+	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
+);
+CREATE TABLE import_expression_in_subset (
+	import_expression_id TEXT, 
+	in_subset TEXT, 
+	PRIMARY KEY (import_expression_id, in_subset), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id), 
+	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
+);
 CREATE TABLE anonymous_slot_expression (
 	id INTEGER, 
 	range TEXT, 
@@ -1049,26 +1583,32 @@ CREATE TABLE anonymous_slot_expression (
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	range_expression_id TEXT, 
+	structured_pattern_id TEXT, 
 	has_member_id TEXT, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY(range) REFERENCES element (name), 
 	FOREIGN KEY(range_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(structured_pattern_id) REFERENCES pattern_expression (id), 
 	FOREIGN KEY(has_member_id) REFERENCES anonymous_slot_expression (id)
 );
 CREATE TABLE class_rule (
 	id INTEGER, 
 	bidirectional BOOLEAN, 
 	open_world BOOLEAN, 
-	precedence INTEGER, 
+	rank INTEGER, 
 	deactivated BOOLEAN, 
 	description TEXT, 
 	title TEXT, 
 	deprecated TEXT, 
 	from_schema TEXT, 
 	imported_from TEXT, 
+	source TEXT, 
+	in_language TEXT, 
 	deprecated_element_has_exact_replacement TEXT, 
 	deprecated_element_has_possible_replacement TEXT, 
 	class_definition_name TEXT, 
@@ -1080,6 +1620,43 @@ CREATE TABLE class_rule (
 	FOREIGN KEY(preconditions_id) REFERENCES anonymous_class_expression (id), 
 	FOREIGN KEY(postconditions_id) REFERENCES anonymous_class_expression (id), 
 	FOREIGN KEY(elseconditions_id) REFERENCES anonymous_class_expression (id)
+);
+CREATE TABLE structured_alias_category (
+	structured_alias_id TEXT, 
+	category TEXT, 
+	PRIMARY KEY (structured_alias_id, category), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
+);
+CREATE TABLE structured_alias_todos (
+	structured_alias_id TEXT, 
+	todos TEXT, 
+	PRIMARY KEY (structured_alias_id, todos), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
+);
+CREATE TABLE structured_alias_notes (
+	structured_alias_id TEXT, 
+	notes TEXT, 
+	PRIMARY KEY (structured_alias_id, notes), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
+);
+CREATE TABLE structured_alias_comments (
+	structured_alias_id TEXT, 
+	comments TEXT, 
+	PRIMARY KEY (structured_alias_id, comments), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
+);
+CREATE TABLE structured_alias_in_subset (
+	structured_alias_id TEXT, 
+	in_subset TEXT, 
+	PRIMARY KEY (structured_alias_id, in_subset), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id), 
+	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
+);
+CREATE TABLE structured_alias_see_also (
+	structured_alias_id TEXT, 
+	see_also TEXT, 
+	PRIMARY KEY (structured_alias_id, see_also), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id)
 );
 CREATE TABLE class_expression_any_of (
 	class_expression_id TEXT, 
@@ -1227,36 +1804,43 @@ CREATE TABLE permissible_value_see_also (
 	PRIMARY KEY (permissible_value_text, see_also), 
 	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text)
 );
+CREATE TABLE unique_key_unique_key_slots (
+	unique_key_unique_key_name TEXT, 
+	unique_key_slots TEXT NOT NULL, 
+	PRIMARY KEY (unique_key_unique_key_name, unique_key_slots), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name), 
+	FOREIGN KEY(unique_key_slots) REFERENCES slot_definition (name)
+);
 CREATE TABLE unique_key_todos (
-	unique_key_id TEXT, 
+	unique_key_unique_key_name TEXT, 
 	todos TEXT, 
-	PRIMARY KEY (unique_key_id, todos), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id)
+	PRIMARY KEY (unique_key_unique_key_name, todos), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
 CREATE TABLE unique_key_notes (
-	unique_key_id TEXT, 
+	unique_key_unique_key_name TEXT, 
 	notes TEXT, 
-	PRIMARY KEY (unique_key_id, notes), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id)
+	PRIMARY KEY (unique_key_unique_key_name, notes), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
 CREATE TABLE unique_key_comments (
-	unique_key_id TEXT, 
+	unique_key_unique_key_name TEXT, 
 	comments TEXT, 
-	PRIMARY KEY (unique_key_id, comments), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id)
+	PRIMARY KEY (unique_key_unique_key_name, comments), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
 CREATE TABLE unique_key_in_subset (
-	unique_key_id TEXT, 
+	unique_key_unique_key_name TEXT, 
 	in_subset TEXT, 
-	PRIMARY KEY (unique_key_id, in_subset), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id), 
+	PRIMARY KEY (unique_key_unique_key_name, in_subset), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name), 
 	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
 );
 CREATE TABLE unique_key_see_also (
-	unique_key_id TEXT, 
+	unique_key_unique_key_name TEXT, 
 	see_also TEXT, 
-	PRIMARY KEY (unique_key_id, see_also), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id)
+	PRIMARY KEY (unique_key_unique_key_name, see_also), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
 );
 CREATE TABLE slot_expression (
 	id INTEGER, 
@@ -1272,11 +1856,145 @@ CREATE TABLE slot_expression (
 	minimum_cardinality INTEGER, 
 	maximum_cardinality INTEGER, 
 	range_expression_id TEXT, 
+	structured_pattern_id TEXT, 
 	has_member_id TEXT, 
 	PRIMARY KEY (id), 
 	FOREIGN KEY(range) REFERENCES element (name), 
 	FOREIGN KEY(range_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(structured_pattern_id) REFERENCES pattern_expression (id), 
 	FOREIGN KEY(has_member_id) REFERENCES anonymous_slot_expression (id)
+);
+CREATE TABLE example (
+	id INTEGER, 
+	value TEXT, 
+	description TEXT, 
+	common_metadata_id TEXT, 
+	element_name TEXT, 
+	schema_definition_name TEXT, 
+	type_definition_name TEXT, 
+	subset_definition_name TEXT, 
+	definition_name TEXT, 
+	enum_definition_name TEXT, 
+	structured_alias_id TEXT, 
+	anonymous_expression_id TEXT, 
+	path_expression_id TEXT, 
+	anonymous_slot_expression_id TEXT, 
+	slot_definition_name TEXT, 
+	anonymous_class_expression_id TEXT, 
+	class_definition_name TEXT, 
+	class_rule_id TEXT, 
+	pattern_expression_id TEXT, 
+	import_expression_id TEXT, 
+	permissible_value_text TEXT, 
+	unique_key_unique_key_name TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id), 
+	FOREIGN KEY(element_name) REFERENCES element (name), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
+	FOREIGN KEY(definition_name) REFERENCES definition (name), 
+	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id), 
+	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id), 
+	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
+);
+CREATE TABLE alt_description (
+	source TEXT, 
+	description TEXT NOT NULL, 
+	common_metadata_id TEXT, 
+	element_name TEXT, 
+	schema_definition_name TEXT, 
+	type_definition_name TEXT, 
+	subset_definition_name TEXT, 
+	definition_name TEXT, 
+	enum_definition_name TEXT, 
+	structured_alias_id TEXT, 
+	anonymous_expression_id TEXT, 
+	path_expression_id TEXT, 
+	anonymous_slot_expression_id TEXT, 
+	slot_definition_name TEXT, 
+	anonymous_class_expression_id TEXT, 
+	class_definition_name TEXT, 
+	class_rule_id TEXT, 
+	pattern_expression_id TEXT, 
+	import_expression_id TEXT, 
+	permissible_value_text TEXT, 
+	unique_key_unique_key_name TEXT, 
+	PRIMARY KEY (source, description, common_metadata_id, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, structured_alias_id, anonymous_expression_id, path_expression_id, anonymous_slot_expression_id, slot_definition_name, anonymous_class_expression_id, class_definition_name, class_rule_id, pattern_expression_id, import_expression_id, permissible_value_text, unique_key_unique_key_name), 
+	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id), 
+	FOREIGN KEY(element_name) REFERENCES element (name), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
+	FOREIGN KEY(definition_name) REFERENCES definition (name), 
+	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id), 
+	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id), 
+	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name)
+);
+CREATE TABLE annotation (
+	tag TEXT NOT NULL, 
+	value TEXT NOT NULL, 
+	element_name TEXT, 
+	schema_definition_name TEXT, 
+	type_definition_name TEXT, 
+	subset_definition_name TEXT, 
+	definition_name TEXT, 
+	enum_definition_name TEXT, 
+	structured_alias_id TEXT, 
+	anonymous_expression_id TEXT, 
+	path_expression_id TEXT, 
+	anonymous_slot_expression_id TEXT, 
+	slot_definition_name TEXT, 
+	anonymous_class_expression_id TEXT, 
+	class_definition_name TEXT, 
+	class_rule_id TEXT, 
+	pattern_expression_id TEXT, 
+	import_expression_id TEXT, 
+	permissible_value_text TEXT, 
+	unique_key_unique_key_name TEXT, 
+	annotatable_id TEXT, 
+	annotation_tag TEXT, 
+	PRIMARY KEY (tag, value, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, structured_alias_id, anonymous_expression_id, path_expression_id, anonymous_slot_expression_id, slot_definition_name, anonymous_class_expression_id, class_definition_name, class_rule_id, pattern_expression_id, import_expression_id, permissible_value_text, unique_key_unique_key_name, annotatable_id, annotation_tag), 
+	FOREIGN KEY(element_name) REFERENCES element (name), 
+	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
+	FOREIGN KEY(definition_name) REFERENCES definition (name), 
+	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id), 
+	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
+	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
+	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
+	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id), 
+	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name), 
+	FOREIGN KEY(annotatable_id) REFERENCES annotatable (id), 
+	FOREIGN KEY(annotation_tag) REFERENCES annotation (tag)
 );
 CREATE TABLE anonymous_slot_expression_equals_string_in (
 	anonymous_slot_expression_id TEXT, 
@@ -1343,6 +2061,34 @@ CREATE TABLE anonymous_slot_expression_see_also (
 	PRIMARY KEY (anonymous_slot_expression_id, see_also), 
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id)
 );
+CREATE TABLE slot_definition_none_of (
+	slot_definition_name TEXT, 
+	none_of_id TEXT, 
+	PRIMARY KEY (slot_definition_name, none_of_id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(none_of_id) REFERENCES anonymous_slot_expression (id)
+);
+CREATE TABLE slot_definition_exactly_one_of (
+	slot_definition_name TEXT, 
+	exactly_one_of_id TEXT, 
+	PRIMARY KEY (slot_definition_name, exactly_one_of_id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_slot_expression (id)
+);
+CREATE TABLE slot_definition_any_of (
+	slot_definition_name TEXT, 
+	any_of_id TEXT, 
+	PRIMARY KEY (slot_definition_name, any_of_id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(any_of_id) REFERENCES anonymous_slot_expression (id)
+);
+CREATE TABLE slot_definition_all_of (
+	slot_definition_name TEXT, 
+	all_of_id TEXT, 
+	PRIMARY KEY (slot_definition_name, all_of_id), 
+	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
+	FOREIGN KEY(all_of_id) REFERENCES anonymous_slot_expression (id)
+);
 CREATE TABLE class_rule_todos (
 	class_rule_id TEXT, 
 	todos TEXT, 
@@ -1374,83 +2120,52 @@ CREATE TABLE class_rule_see_also (
 	PRIMARY KEY (class_rule_id, see_also), 
 	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id)
 );
-CREATE TABLE slot_definition (
-	singular_name TEXT, 
-	domain TEXT, 
-	slot_uri TEXT, 
-	multivalued BOOLEAN, 
-	inherited BOOLEAN, 
-	readonly TEXT, 
-	ifabsent TEXT, 
-	inlined BOOLEAN, 
-	inlined_as_list BOOLEAN, 
-	"key" BOOLEAN, 
-	identifier BOOLEAN, 
-	designates_type BOOLEAN, 
-	alias TEXT, 
-	owner TEXT, 
-	subproperty_of TEXT, 
-	symmetric BOOLEAN, 
-	inverse TEXT, 
-	is_class_field BOOLEAN, 
-	role TEXT, 
-	is_usage_slot BOOLEAN, 
-	usage_slot_name TEXT, 
-	range TEXT, 
-	required BOOLEAN, 
-	recommended BOOLEAN, 
-	minimum_value INTEGER, 
-	maximum_value INTEGER, 
-	pattern TEXT, 
-	equals_string TEXT, 
-	equals_number INTEGER, 
-	equals_expression TEXT, 
-	minimum_cardinality INTEGER, 
-	maximum_cardinality INTEGER, 
-	is_a TEXT, 
-	abstract BOOLEAN, 
-	mixin BOOLEAN, 
-	created_by TEXT, 
-	created_on DATETIME, 
-	last_updated_on DATETIME, 
-	modified_by TEXT, 
-	status TEXT, 
-	string_serialization TEXT, 
-	name TEXT, 
-	definition_uri TEXT, 
-	conforms_to TEXT, 
-	description TEXT, 
-	title TEXT, 
-	deprecated TEXT, 
-	from_schema TEXT, 
-	imported_from TEXT, 
-	deprecated_element_has_exact_replacement TEXT, 
-	deprecated_element_has_possible_replacement TEXT, 
+CREATE TABLE extension (
+	tag TEXT NOT NULL, 
+	value TEXT NOT NULL, 
+	element_name TEXT, 
 	schema_definition_name TEXT, 
-	slot_expression_id TEXT, 
+	type_definition_name TEXT, 
+	subset_definition_name TEXT, 
+	definition_name TEXT, 
+	enum_definition_name TEXT, 
+	structured_alias_id TEXT, 
+	anonymous_expression_id TEXT, 
+	path_expression_id TEXT, 
 	anonymous_slot_expression_id TEXT, 
 	slot_definition_name TEXT, 
-	class_expression_id TEXT, 
 	anonymous_class_expression_id TEXT, 
 	class_definition_name TEXT, 
-	range_expression_id TEXT, 
-	has_member_id TEXT, 
-	PRIMARY KEY (name), 
-	FOREIGN KEY(domain) REFERENCES class_definition (name), 
-	FOREIGN KEY(owner) REFERENCES definition (name), 
-	FOREIGN KEY(subproperty_of) REFERENCES slot_definition (name), 
-	FOREIGN KEY(inverse) REFERENCES slot_definition (name), 
-	FOREIGN KEY(range) REFERENCES element (name), 
-	FOREIGN KEY(is_a) REFERENCES slot_definition (name), 
+	class_rule_id TEXT, 
+	pattern_expression_id TEXT, 
+	import_expression_id TEXT, 
+	permissible_value_text TEXT, 
+	unique_key_unique_key_name TEXT, 
+	annotation_tag TEXT, 
+	extension_tag TEXT, 
+	extensible_id TEXT, 
+	PRIMARY KEY (tag, value, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, structured_alias_id, anonymous_expression_id, path_expression_id, anonymous_slot_expression_id, slot_definition_name, anonymous_class_expression_id, class_definition_name, class_rule_id, pattern_expression_id, import_expression_id, permissible_value_text, unique_key_unique_key_name, annotation_tag, extension_tag, extensible_id), 
+	FOREIGN KEY(element_name) REFERENCES element (name), 
 	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
-	FOREIGN KEY(slot_expression_id) REFERENCES slot_expression (id), 
+	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
+	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
+	FOREIGN KEY(definition_name) REFERENCES definition (name), 
+	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
+	FOREIGN KEY(structured_alias_id) REFERENCES structured_alias (id), 
+	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
+	FOREIGN KEY(path_expression_id) REFERENCES path_expression (id), 
 	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
 	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(class_expression_id) REFERENCES class_expression (id), 
 	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
 	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(range_expression_id) REFERENCES anonymous_class_expression (id), 
-	FOREIGN KEY(has_member_id) REFERENCES anonymous_slot_expression (id)
+	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
+	FOREIGN KEY(pattern_expression_id) REFERENCES pattern_expression (id), 
+	FOREIGN KEY(import_expression_id) REFERENCES import_expression (id), 
+	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
+	FOREIGN KEY(unique_key_unique_key_name) REFERENCES unique_key (unique_key_name), 
+	FOREIGN KEY(annotation_tag) REFERENCES annotation (tag), 
+	FOREIGN KEY(extension_tag) REFERENCES extension (tag), 
+	FOREIGN KEY(extensible_id) REFERENCES extensible (id)
 );
 CREATE TABLE slot_expression_equals_string_in (
 	slot_expression_id TEXT, 
@@ -1485,333 +2200,4 @@ CREATE TABLE slot_expression_all_of (
 	PRIMARY KEY (slot_expression_id, all_of_id), 
 	FOREIGN KEY(slot_expression_id) REFERENCES slot_expression (id), 
 	FOREIGN KEY(all_of_id) REFERENCES anonymous_slot_expression (id)
-);
-CREATE TABLE local_name (
-	local_name_source TEXT, 
-	local_name_value TEXT NOT NULL, 
-	element_name TEXT, 
-	schema_definition_name TEXT, 
-	type_definition_name TEXT, 
-	subset_definition_name TEXT, 
-	definition_name TEXT, 
-	enum_definition_name TEXT, 
-	slot_definition_name TEXT, 
-	class_definition_name TEXT, 
-	PRIMARY KEY (local_name_source, local_name_value, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, slot_definition_name, class_definition_name), 
-	FOREIGN KEY(element_name) REFERENCES element (name), 
-	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
-	FOREIGN KEY(definition_name) REFERENCES definition (name), 
-	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name)
-);
-CREATE TABLE example (
-	id INTEGER, 
-	value TEXT, 
-	description TEXT, 
-	common_metadata_id TEXT, 
-	element_name TEXT, 
-	schema_definition_name TEXT, 
-	type_definition_name TEXT, 
-	subset_definition_name TEXT, 
-	definition_name TEXT, 
-	enum_definition_name TEXT, 
-	anonymous_expression_id TEXT, 
-	anonymous_slot_expression_id TEXT, 
-	slot_definition_name TEXT, 
-	anonymous_class_expression_id TEXT, 
-	class_definition_name TEXT, 
-	class_rule_id TEXT, 
-	permissible_value_text TEXT, 
-	unique_key_id TEXT, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id), 
-	FOREIGN KEY(element_name) REFERENCES element (name), 
-	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
-	FOREIGN KEY(definition_name) REFERENCES definition (name), 
-	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
-	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
-	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
-	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id)
-);
-CREATE TABLE alt_description (
-	source TEXT, 
-	description TEXT NOT NULL, 
-	common_metadata_id TEXT, 
-	element_name TEXT, 
-	schema_definition_name TEXT, 
-	type_definition_name TEXT, 
-	subset_definition_name TEXT, 
-	definition_name TEXT, 
-	enum_definition_name TEXT, 
-	anonymous_expression_id TEXT, 
-	anonymous_slot_expression_id TEXT, 
-	slot_definition_name TEXT, 
-	anonymous_class_expression_id TEXT, 
-	class_definition_name TEXT, 
-	class_rule_id TEXT, 
-	permissible_value_text TEXT, 
-	unique_key_id TEXT, 
-	PRIMARY KEY (source, description, common_metadata_id, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, anonymous_expression_id, anonymous_slot_expression_id, slot_definition_name, anonymous_class_expression_id, class_definition_name, class_rule_id, permissible_value_text, unique_key_id), 
-	FOREIGN KEY(common_metadata_id) REFERENCES common_metadata (id), 
-	FOREIGN KEY(element_name) REFERENCES element (name), 
-	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
-	FOREIGN KEY(definition_name) REFERENCES definition (name), 
-	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
-	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
-	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
-	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id)
-);
-CREATE TABLE annotation (
-	tag TEXT NOT NULL, 
-	value TEXT NOT NULL, 
-	element_name TEXT, 
-	schema_definition_name TEXT, 
-	type_definition_name TEXT, 
-	subset_definition_name TEXT, 
-	definition_name TEXT, 
-	enum_definition_name TEXT, 
-	anonymous_expression_id TEXT, 
-	anonymous_slot_expression_id TEXT, 
-	slot_definition_name TEXT, 
-	anonymous_class_expression_id TEXT, 
-	class_definition_name TEXT, 
-	class_rule_id TEXT, 
-	permissible_value_text TEXT, 
-	unique_key_id TEXT, 
-	annotatable_id TEXT, 
-	annotation_tag TEXT, 
-	PRIMARY KEY (tag, value, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, anonymous_expression_id, anonymous_slot_expression_id, slot_definition_name, anonymous_class_expression_id, class_definition_name, class_rule_id, permissible_value_text, unique_key_id, annotatable_id, annotation_tag), 
-	FOREIGN KEY(element_name) REFERENCES element (name), 
-	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
-	FOREIGN KEY(definition_name) REFERENCES definition (name), 
-	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
-	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
-	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
-	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id), 
-	FOREIGN KEY(annotatable_id) REFERENCES annotatable (id), 
-	FOREIGN KEY(annotation_tag) REFERENCES annotation (tag)
-);
-CREATE TABLE slot_definition_domain_of (
-	slot_definition_name TEXT, 
-	domain_of TEXT, 
-	PRIMARY KEY (slot_definition_name, domain_of), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(domain_of) REFERENCES class_definition (name)
-);
-CREATE TABLE slot_definition_equals_string_in (
-	slot_definition_name TEXT, 
-	equals_string_in TEXT, 
-	PRIMARY KEY (slot_definition_name, equals_string_in), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_none_of (
-	slot_definition_name TEXT, 
-	none_of_id TEXT, 
-	PRIMARY KEY (slot_definition_name, none_of_id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(none_of_id) REFERENCES anonymous_slot_expression (id)
-);
-CREATE TABLE slot_definition_exactly_one_of (
-	slot_definition_name TEXT, 
-	exactly_one_of_id TEXT, 
-	PRIMARY KEY (slot_definition_name, exactly_one_of_id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(exactly_one_of_id) REFERENCES anonymous_slot_expression (id)
-);
-CREATE TABLE slot_definition_any_of (
-	slot_definition_name TEXT, 
-	any_of_id TEXT, 
-	PRIMARY KEY (slot_definition_name, any_of_id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(any_of_id) REFERENCES anonymous_slot_expression (id)
-);
-CREATE TABLE slot_definition_all_of (
-	slot_definition_name TEXT, 
-	all_of_id TEXT, 
-	PRIMARY KEY (slot_definition_name, all_of_id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(all_of_id) REFERENCES anonymous_slot_expression (id)
-);
-CREATE TABLE slot_definition_mixins (
-	slot_definition_name TEXT, 
-	mixins TEXT, 
-	PRIMARY KEY (slot_definition_name, mixins), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(mixins) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_apply_to (
-	slot_definition_name TEXT, 
-	apply_to TEXT, 
-	PRIMARY KEY (slot_definition_name, apply_to), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(apply_to) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_values_from (
-	slot_definition_name TEXT, 
-	values_from TEXT, 
-	PRIMARY KEY (slot_definition_name, values_from), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_id_prefixes (
-	slot_definition_name TEXT, 
-	id_prefixes TEXT, 
-	PRIMARY KEY (slot_definition_name, id_prefixes), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_aliases (
-	slot_definition_name TEXT, 
-	aliases TEXT, 
-	PRIMARY KEY (slot_definition_name, aliases), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_mappings (
-	slot_definition_name TEXT, 
-	mappings TEXT, 
-	PRIMARY KEY (slot_definition_name, mappings), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_exact_mappings (
-	slot_definition_name TEXT, 
-	exact_mappings TEXT, 
-	PRIMARY KEY (slot_definition_name, exact_mappings), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_close_mappings (
-	slot_definition_name TEXT, 
-	close_mappings TEXT, 
-	PRIMARY KEY (slot_definition_name, close_mappings), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_related_mappings (
-	slot_definition_name TEXT, 
-	related_mappings TEXT, 
-	PRIMARY KEY (slot_definition_name, related_mappings), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_narrow_mappings (
-	slot_definition_name TEXT, 
-	narrow_mappings TEXT, 
-	PRIMARY KEY (slot_definition_name, narrow_mappings), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_broad_mappings (
-	slot_definition_name TEXT, 
-	broad_mappings TEXT, 
-	PRIMARY KEY (slot_definition_name, broad_mappings), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_todos (
-	slot_definition_name TEXT, 
-	todos TEXT, 
-	PRIMARY KEY (slot_definition_name, todos), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_notes (
-	slot_definition_name TEXT, 
-	notes TEXT, 
-	PRIMARY KEY (slot_definition_name, notes), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_comments (
-	slot_definition_name TEXT, 
-	comments TEXT, 
-	PRIMARY KEY (slot_definition_name, comments), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE slot_definition_in_subset (
-	slot_definition_name TEXT, 
-	in_subset TEXT, 
-	PRIMARY KEY (slot_definition_name, in_subset), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(in_subset) REFERENCES subset_definition (name)
-);
-CREATE TABLE slot_definition_see_also (
-	slot_definition_name TEXT, 
-	see_also TEXT, 
-	PRIMARY KEY (slot_definition_name, see_also), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name)
-);
-CREATE TABLE class_definition_slots (
-	class_definition_name TEXT, 
-	slots TEXT, 
-	PRIMARY KEY (class_definition_name, slots), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(slots) REFERENCES slot_definition (name)
-);
-CREATE TABLE class_definition_defining_slots (
-	class_definition_name TEXT, 
-	defining_slots TEXT, 
-	PRIMARY KEY (class_definition_name, defining_slots), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(defining_slots) REFERENCES slot_definition (name)
-);
-CREATE TABLE unique_key_unique_key_slots (
-	unique_key_id TEXT, 
-	unique_key_slots TEXT NOT NULL, 
-	PRIMARY KEY (unique_key_id, unique_key_slots), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id), 
-	FOREIGN KEY(unique_key_slots) REFERENCES slot_definition (name)
-);
-CREATE TABLE extension (
-	tag TEXT NOT NULL, 
-	value TEXT NOT NULL, 
-	element_name TEXT, 
-	schema_definition_name TEXT, 
-	type_definition_name TEXT, 
-	subset_definition_name TEXT, 
-	definition_name TEXT, 
-	enum_definition_name TEXT, 
-	anonymous_expression_id TEXT, 
-	anonymous_slot_expression_id TEXT, 
-	slot_definition_name TEXT, 
-	anonymous_class_expression_id TEXT, 
-	class_definition_name TEXT, 
-	class_rule_id TEXT, 
-	permissible_value_text TEXT, 
-	unique_key_id TEXT, 
-	annotation_tag TEXT, 
-	extension_tag TEXT, 
-	extensible_id TEXT, 
-	PRIMARY KEY (tag, value, element_name, schema_definition_name, type_definition_name, subset_definition_name, definition_name, enum_definition_name, anonymous_expression_id, anonymous_slot_expression_id, slot_definition_name, anonymous_class_expression_id, class_definition_name, class_rule_id, permissible_value_text, unique_key_id, annotation_tag, extension_tag, extensible_id), 
-	FOREIGN KEY(element_name) REFERENCES element (name), 
-	FOREIGN KEY(schema_definition_name) REFERENCES schema_definition (id), 
-	FOREIGN KEY(type_definition_name) REFERENCES type_definition (name), 
-	FOREIGN KEY(subset_definition_name) REFERENCES subset_definition (name), 
-	FOREIGN KEY(definition_name) REFERENCES definition (name), 
-	FOREIGN KEY(enum_definition_name) REFERENCES enum_definition (name), 
-	FOREIGN KEY(anonymous_expression_id) REFERENCES anonymous_expression (id), 
-	FOREIGN KEY(anonymous_slot_expression_id) REFERENCES anonymous_slot_expression (id), 
-	FOREIGN KEY(slot_definition_name) REFERENCES slot_definition (name), 
-	FOREIGN KEY(anonymous_class_expression_id) REFERENCES anonymous_class_expression (id), 
-	FOREIGN KEY(class_definition_name) REFERENCES class_definition (name), 
-	FOREIGN KEY(class_rule_id) REFERENCES class_rule (id), 
-	FOREIGN KEY(permissible_value_text) REFERENCES permissible_value (text), 
-	FOREIGN KEY(unique_key_id) REFERENCES unique_key (id), 
-	FOREIGN KEY(annotation_tag) REFERENCES annotation (tag), 
-	FOREIGN KEY(extension_tag) REFERENCES extension (tag), 
-	FOREIGN KEY(extensible_id) REFERENCES extensible (id)
 );

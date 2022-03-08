@@ -7,7 +7,7 @@ A data type definition.
 URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeExpression],[TypeDefinition]<typeof%200..1-%20[TypeDefinition&#124;base:string%20%3F;uri:uriorcurie%20%3F;repr:string%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SchemaDefinition]-%20default_range%200..1>[TypeDefinition],[SchemaDefinition]++-%20types%200..*>[TypeDefinition],[TypeDefinition]uses%20-.->[TypeExpression],[Element]^-[TypeDefinition],[SubsetDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Element],[AnonymousTypeExpression],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeExpression],[TypeDefinition]<typeof%200..1-%20[TypeDefinition&#124;base:string%20%3F;uri:uriorcurie%20%3F;repr:string%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SchemaDefinition]-%20default_range%200..1>[TypeDefinition],[SchemaDefinition]++-%20types%200..*>[TypeDefinition],[TypeDefinition]uses%20-.->[TypeExpression],[Element]^-[TypeDefinition],[SubsetDefinition],[SchemaDefinition],[LocalName],[Extension],[Example],[Element],[AnonymousTypeExpression],[Annotation],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeExpression],[TypeDefinition]<typeof%200..1-%20[TypeDefinition&#124;base:string%20%3F;uri:uriorcurie%20%3F;repr:string%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;rank(i):integer%20%3F;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;source(i):uriorcurie%20%3F;in_language(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SchemaDefinition]-%20default_range%200..1>[TypeDefinition],[SchemaDefinition]++-%20types%200..*>[TypeDefinition],[TypeDefinition]uses%20-.->[TypeExpression],[Element]^-[TypeDefinition],[SubsetDefinition],[StructuredAlias],[SchemaDefinition],[PatternExpression],[LocalName],[Extension],[Example],[Element],[AnonymousTypeExpression],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[TypeExpression],[TypeDefinition]<typeof%200..1-%20[TypeDefinition&#124;base:string%20%3F;uri:uriorcurie%20%3F;repr:string%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;name(i):string;id_prefixes(i):ncname%20*;definition_uri(i):uriorcurie%20%3F;aliases(i):string%20*;conforms_to(i):string%20%3F;mappings(i):uriorcurie%20*;exact_mappings(i):uriorcurie%20*;close_mappings(i):uriorcurie%20*;related_mappings(i):uriorcurie%20*;narrow_mappings(i):uriorcurie%20*;broad_mappings(i):uriorcurie%20*;rank(i):integer%20%3F;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;source(i):uriorcurie%20%3F;in_language(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SchemaDefinition]-%20default_range%200..1>[TypeDefinition],[SchemaDefinition]++-%20types%200..*>[TypeDefinition],[TypeDefinition]uses%20-.->[TypeExpression],[Element]^-[TypeDefinition],[SubsetDefinition],[StructuredAlias],[SchemaDefinition],[PatternExpression],[LocalName],[Extension],[Example],[Element],[AnonymousTypeExpression],[Annotation],[AltDescription])
 
 ## Parents
 
@@ -31,35 +31,45 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [typeof](typeof.md)  <sub>0..1</sub>
      * Description: Names a parent type
      * Range: [TypeDefinition](TypeDefinition.md)
+     * in subsets: (basic)
  * [base](base.md)  <sub>0..1</sub>
      * Description: python base type that implements this type definition
      * Range: [String](String.md)
+     * in subsets: (basic)
  * [type_definition➞uri](type_uri.md)  <sub>0..1</sub>
      * Description: The uri that defines the possible values for the type definition
      * Range: [Uriorcurie](Uriorcurie.md)
+     * in subsets: (basic)
  * [repr](repr.md)  <sub>0..1</sub>
      * Description: the name of the python object that implements this type definition
      * Range: [String](String.md)
+     * in subsets: (basic)
 
 ### Inherited from element:
 
  * [name](name.md)  <sub>1..1</sub>
      * Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
      * Range: [String](String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,minimal,basic,relational_model,object_oriented)
  * [id_prefixes](id_prefixes.md)  <sub>0..\*</sub>
      * Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
      * Range: [Ncname](Ncname.md)
+     * in subsets: (basic)
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](Uriorcurie.md)
  * [aliases](aliases.md)  <sub>0..\*</sub>
      * Range: [String](String.md)
+     * in subsets: (basic)
+ * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
+     * Description: A list of structured_alias objects.
+     * Range: [StructuredAlias](StructuredAlias.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
  * [conforms_to](conforms_to.md)  <sub>0..1</sub>
      * Description: An established standard to which the element conforms.
      * Range: [String](String.md)
+     * in subsets: (owl,basic)
  * [mappings](mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
      * Range: [Uriorcurie](Uriorcurie.md)
@@ -78,12 +88,23 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
      * Description: A list of terms from different schemas or terminology systems that have broader meaning.
      * Range: [Uriorcurie](Uriorcurie.md)
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from type_expression:
 
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](String.md)
+     * in subsets: (basic)
+
+### Mixed in from type_expression:
+
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
 
 ### Mixed in from type_expression:
 
@@ -102,6 +123,20 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [equals_number](equals_number.md)  <sub>0..1</sub>
      * Description: the slot must have range of a number and the value of the slot must equal the specified value
      * Range: [Integer](Integer.md)
+
+### Mixed in from type_expression:
+
+ * [minimum_value](minimum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or higher than this
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)
+
+### Mixed in from type_expression:
+
+ * [maximum_value](maximum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from type_expression:
 
@@ -126,3 +161,10 @@ URI: [linkml:TypeDefinition](https://w3id.org/linkml/TypeDefinition)
  * [type_expression➞all_of](type_expression_all_of.md)  <sub>0..\*</sub>
      * Description: holds if all of the expressions hold
      * Range: [AnonymousTypeExpression](AnonymousTypeExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

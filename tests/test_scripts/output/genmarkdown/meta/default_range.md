@@ -20,3 +20,11 @@ URI: [linkml:default_range](https://w3id.org/linkml/default_range)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | minimal |
+|  | | basic |
+

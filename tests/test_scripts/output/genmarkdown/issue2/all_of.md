@@ -18,6 +18,7 @@ None &#8594;  <sub>0..\*</sub> expression
 ## Children
 
  *  class_expression_all_of
+ *  path_expression_all_of
  *  slot_expression_all_of
  *  type_expression_all_of
 

@@ -12,7 +12,7 @@ fields:
   description: a description of the element's purpose and use
   display_name: description
 - id: meaning
-  description: the value meaning (in the 11179 sense) of a permissible value
+  description: the value meaning of a permissible value
   display_name: meaning
 - id: is_a
   description: specifies single-inheritance between classes or slots. While multiple
@@ -74,6 +74,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also

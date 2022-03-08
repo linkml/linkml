@@ -453,6 +453,20 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
@@ -569,6 +583,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/pattern",
                         "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/structured_pattern",
+                        "valueExpr": "https://w3id.org/linkml/PatternExpression",
                         "min": 0,
                         "max": 1
                      },
@@ -704,6 +725,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/structured_pattern",
+                        "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_string",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -719,6 +747,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_number",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/minimum_value",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/maximum_value",
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
@@ -878,6 +920,34 @@
                         "valueExpr": "https://w3id.org/linkml/AnonymousClassExpression",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/slot_names_unique",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/represents_relationship",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/disjoint_with",
+                        "valueExpr": "https://w3id.org/linkml/ClassDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/children_are_mutually_disjoint",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
                      },
                      {
                         "type": "TripleConstraint",
@@ -1241,6 +1311,20 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
@@ -1360,6 +1444,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
@@ -1606,6 +1704,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/local_names",
                         "valueExpr": "https://w3id.org/linkml/LocalName",
                         "min": 0,
@@ -1659,6 +1764,13 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
                      },
                      {
                         "type": "TripleConstraint",
@@ -1747,6 +1859,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
@@ -2024,6 +2150,216 @@
       },
       {
          "type": "Shape",
+         "id": "https://w3id.org/linkml/ImportExpression",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/ImportExpression_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/Extensible_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Extensible"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/Annotatable_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Annotatable"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/CommonMetadata_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/CommonMetadata"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/import_from",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 1,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/import_as",
+                        "valueExpr": "https://w3id.org/linkml/Ncname",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/import_map",
+                        "valueExpr": "https://w3id.org/linkml/Setting",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/extensions",
+                        "valueExpr": "https://w3id.org/linkml/Extension",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/annotations",
+                        "valueExpr": "https://w3id.org/linkml/Annotation",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#definition",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/alt_descriptions",
+                        "valueExpr": "https://w3id.org/linkml/AltDescription",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/todos",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#editorialNote",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#note",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/examples",
+                        "valueExpr": "https://w3id.org/linkml/Example",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.geneontology.org/formats/oboInOwl#inSubset",
+                        "valueExpr": "https://w3id.org/linkml/SubsetDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#inScheme",
+                        "valueExpr": "https://w3id.org/linkml/Uri",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/ImportExpression"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
          "id": "https://w3id.org/linkml/LocalName",
          "closed": true,
          "expression": {
@@ -2059,6 +2395,473 @@
                      ]
                   },
                   "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/PathExpression",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/PathExpression_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/Expression_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Expression"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/Extensible_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Extensible"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/Annotatable_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Annotatable"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/CommonMetadata_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/CommonMetadata"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/followed_by",
+                        "valueExpr": "https://w3id.org/linkml/PathExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/none_of",
+                        "valueExpr": "https://w3id.org/linkml/PathExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/any_of",
+                        "valueExpr": "https://w3id.org/linkml/PathExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/all_of",
+                        "valueExpr": "https://w3id.org/linkml/PathExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/exactly_one_of",
+                        "valueExpr": "https://w3id.org/linkml/PathExpression",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/reversed",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/traverse",
+                        "valueExpr": "https://w3id.org/linkml/SlotDefinition",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/range_expression",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousClassExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/extensions",
+                        "valueExpr": "https://w3id.org/linkml/Extension",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/annotations",
+                        "valueExpr": "https://w3id.org/linkml/Annotation",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#definition",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/alt_descriptions",
+                        "valueExpr": "https://w3id.org/linkml/AltDescription",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/todos",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#editorialNote",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#note",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/examples",
+                        "valueExpr": "https://w3id.org/linkml/Example",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.geneontology.org/formats/oboInOwl#inSubset",
+                        "valueExpr": "https://w3id.org/linkml/SubsetDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#inScheme",
+                        "valueExpr": "https://w3id.org/linkml/Uri",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/PathExpression"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/PatternExpression",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/PatternExpression_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/Extensible_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Extensible"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/Annotatable_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Annotatable"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/CommonMetadata_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/CommonMetadata"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/syntax",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/interpolated",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/partial_match",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/extensions",
+                        "valueExpr": "https://w3id.org/linkml/Extension",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/annotations",
+                        "valueExpr": "https://w3id.org/linkml/Annotation",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#definition",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/alt_descriptions",
+                        "valueExpr": "https://w3id.org/linkml/AltDescription",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/todos",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#editorialNote",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#note",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/examples",
+                        "valueExpr": "https://w3id.org/linkml/Example",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.geneontology.org/formats/oboInOwl#inSubset",
+                        "valueExpr": "https://w3id.org/linkml/SubsetDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#inScheme",
+                        "valueExpr": "https://w3id.org/linkml/Uri",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/PatternExpression"
+                     ]
+                  },
+                  "min": 0
                }
             ]
          }
@@ -2211,6 +3014,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
@@ -2448,6 +3265,34 @@
                         "valueExpr": "https://w3id.org/linkml/Datetime",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/slot_names_unique",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/settings",
+                        "valueExpr": "https://w3id.org/linkml/Setting",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/keywords",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -2458,6 +3303,47 @@
                      "type": "NodeConstraint",
                      "values": [
                         "https://w3id.org/linkml/SchemaDefinition"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/Setting",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/Setting_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/setting_key",
+                        "valueExpr": "https://w3id.org/linkml/Ncname",
+                        "min": 1,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/setting_value",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 1,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/Setting"
                      ]
                   },
                   "min": 1
@@ -2565,6 +3451,27 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/list_elements_unique",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/list_elements_ordered",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/shared",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/key",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
@@ -2621,6 +3528,41 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/reflexive",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/locally_reflexive",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/irreflexive",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/asymmetric",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/transitive",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/2002/07/owl#inverseOf",
                         "valueExpr": "https://w3id.org/linkml/SlotDefinition",
                         "min": 0,
@@ -2630,6 +3572,20 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/is_class_field",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/transitive_form_of",
+                        "valueExpr": "https://w3id.org/linkml/SlotDefinition",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/reflexive_transitive_form_of",
+                        "valueExpr": "https://w3id.org/linkml/SlotDefinition",
                         "min": 0,
                         "max": 1
                      },
@@ -2651,6 +3607,48 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/usage_slot_name",
                         "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/relational_role",
+                        "valueExpr": "https://w3id.org/linkml/RelationalRoleEnum",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/group",
+                        "valueExpr": "https://w3id.org/linkml/SlotDefinition",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/is_grouping_slot",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/path_rule",
+                        "valueExpr": "https://w3id.org/linkml/PathExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/disjoint_with",
+                        "valueExpr": "https://w3id.org/linkml/SlotDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/children_are_mutually_disjoint",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
                         "max": 1
                      },
@@ -2714,6 +3712,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/pattern",
                         "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/structured_pattern",
+                        "valueExpr": "https://w3id.org/linkml/PatternExpression",
                         "min": 0,
                         "max": 1
                      },
@@ -2891,6 +3896,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/structured_pattern",
+                        "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_string",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -2982,6 +3994,228 @@
                      "type": "NodeConstraint",
                      "values": [
                         "https://w3id.org/linkml/SlotExpression"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/StructuredAlias",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/StructuredAlias_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/Expression_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Expression"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/Extensible_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Extensible"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/Annotatable_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Annotatable"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/CommonMetadata_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/CommonMetadata"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#literalForm",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 1,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
+                        "valueExpr": "https://w3id.org/linkml/AliasPredicateEnum",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/subject",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/extensions",
+                        "valueExpr": "https://w3id.org/linkml/Extension",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/annotations",
+                        "valueExpr": "https://w3id.org/linkml/Annotation",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#definition",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/alt_descriptions",
+                        "valueExpr": "https://w3id.org/linkml/AltDescription",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/title",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/todos",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#editorialNote",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#note",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/examples",
+                        "valueExpr": "https://w3id.org/linkml/Example",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.geneontology.org/formats/oboInOwl#inSubset",
+                        "valueExpr": "https://w3id.org/linkml/SubsetDefinition",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#inScheme",
+                        "valueExpr": "https://w3id.org/linkml/Uri",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/imported_from",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_exact_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "http://www.w3.org/2008/05/skos-xl#Label"
                      ]
                   },
                   "min": 0
@@ -3100,6 +4334,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/structured_pattern",
+                        "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_string",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -3115,6 +4356,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_number",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/minimum_value",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/maximum_value",
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
@@ -3195,6 +4450,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/structured_pattern",
+                        "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_string",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -3210,6 +4472,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_number",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/minimum_value",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/maximum_value",
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
@@ -3304,6 +4580,13 @@
                            ]
                         },
                         "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/unique_key_name",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 1,
+                        "max": 1
                      },
                      {
                         "type": "TripleConstraint",
@@ -3405,6 +4688,20 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "http://purl.org/dc/terms/source",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/inLanguage",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/2000/01/rdf-schema#seeAlso",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
@@ -3435,7 +4732,7 @@
                         "https://w3id.org/linkml/UniqueKey"
                      ]
                   },
-                  "min": 0
+                  "min": 1
                }
             ]
          }

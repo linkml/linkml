@@ -32,5 +32,11 @@ URI: [linkml:aliases](https://w3id.org/linkml/aliases)
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | synonyms |
+|  | | alternate names |
+|  | | alternative labels |
+|  | | designations |
 | **Mappings:** | | skos:altLabel |
+| **In Subsets:** | | basic |
+| **Exact Mappings:** | | schema:alternateName |
 

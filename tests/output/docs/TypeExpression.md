@@ -11,7 +11,7 @@ URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
 
 ## Parents
 
- *  is_a: [Expression](Expression.md) - todo
+ *  is_a: [Expression](Expression.md) - general mixin for any class that can represent some form of expression
 
 ## Mixin for
 
@@ -27,8 +27,12 @@ URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
 ### Own
 
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](types/String.md)
+     * in subsets: (basic)
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
  * [equals_string](equals_string.md)  <sub>0..1</sub>
      * Description: the slot must have range string and the value of the slot must equal the specified value
      * Range: [String](types/String.md)
@@ -38,6 +42,14 @@ URI: [linkml:TypeExpression](https://w3id.org/linkml/TypeExpression)
  * [equals_number](equals_number.md)  <sub>0..1</sub>
      * Description: the slot must have range of a number and the value of the slot must equal the specified value
      * Range: [Integer](types/Integer.md)
+ * [minimum_value](minimum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or higher than this
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
+ * [maximum_value](maximum_value.md)  <sub>0..1</sub>
+     * Description: for slots with ranges of type number, the value must be equal to or lowe than this
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
  * [type_expression➞none_of](type_expression_none_of.md)  <sub>0..\*</sub>
      * Description: holds if none of the expressions hold
      * Range: [AnonymousTypeExpression](AnonymousTypeExpression.md)

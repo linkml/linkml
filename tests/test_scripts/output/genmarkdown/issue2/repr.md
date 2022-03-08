@@ -20,3 +20,10 @@ type_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 ## Used by
 
  * type_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

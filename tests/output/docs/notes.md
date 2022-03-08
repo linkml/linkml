@@ -28,9 +28,13 @@ URI: [linkml:notes](https://w3id.org/linkml/notes)
  * [Definition](Definition.md)
  * [Element](Element.md)
  * [EnumDefinition](EnumDefinition.md)
+ * [ImportExpression](ImportExpression.md)
+ * [PathExpression](PathExpression.md)
+ * [PatternExpression](PatternExpression.md)
  * [PermissibleValue](PermissibleValue.md)
  * [SchemaDefinition](SchemaDefinition.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [StructuredAlias](StructuredAlias.md)
  * [SubsetDefinition](SubsetDefinition.md)
  * [TypeDefinition](TypeDefinition.md)
  * [UniqueKey](UniqueKey.md)
@@ -41,4 +45,5 @@ URI: [linkml:notes](https://w3id.org/linkml/notes)
 | --- | --- | --- |
 | **Mappings:** | | skos:editorialNote |
 | **In Subsets:** | | owl |
+|  | | basic |
 

@@ -28,9 +28,13 @@ URI: [linkml:description](https://w3id.org/linkml/description)
  * definition
  * [Element](Element.md)
  * enum_definition
+ * import_expression
+ * path_expression
+ * pattern_expression
  * permissible_value
  * schema_definition
  * slot_definition
+ * structured_alias
  * subset_definition
  * type_definition
  * unique_key
@@ -39,6 +43,9 @@ URI: [linkml:description](https://w3id.org/linkml/description)
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | definition |
 | **Mappings:** | | skos:definition |
-| **In Subsets:** | | owl |
+| **In Subsets:** | | basic |
+| **Exact Mappings:** | | dcterms:description |
+|  | | schema:description |
 

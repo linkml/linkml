@@ -20,3 +20,10 @@ URI: [linkml:value_description](https://w3id.org/linkml/value_description)
 ## Used by
 
  * [Example](Example.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

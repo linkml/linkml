@@ -21,3 +21,11 @@ URI: [linkml:permissible_value_is_a](https://w3id.org/linkml/permissible_value_i
 ## Used by
 
  * [PermissibleValue](PermissibleValue.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

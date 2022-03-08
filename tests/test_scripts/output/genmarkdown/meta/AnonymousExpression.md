@@ -7,11 +7,11 @@
 URI: [linkml:AnonymousExpression](https://w3id.org/linkml/AnonymousExpression)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Expression],[Example],[CommonMetadata],[AnonymousSlotExpression],[AnonymousExpression&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F]uses%20-.->[Expression],[AnonymousExpression]uses%20-.->[Extensible],[AnonymousExpression]uses%20-.->[Annotatable],[AnonymousExpression]uses%20-.->[CommonMetadata],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression]^-[AnonymousClassExpression],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Expression],[Example],[CommonMetadata],[AnonymousSlotExpression],[AnonymousExpression&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F]uses%20-.->[Expression],[AnonymousExpression]uses%20-.->[Extensible],[AnonymousExpression]uses%20-.->[Annotatable],[AnonymousExpression]uses%20-.->[CommonMetadata],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression]^-[AnonymousClassExpression],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Expression],[Example],[CommonMetadata],[AnonymousSlotExpression],[AnonymousExpression&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F]uses%20-.->[Expression],[AnonymousExpression]uses%20-.->[Extensible],[AnonymousExpression]uses%20-.->[Annotatable],[AnonymousExpression]uses%20-.->[CommonMetadata],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression]^-[AnonymousClassExpression],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Expression],[Example],[CommonMetadata],[AnonymousSlotExpression],[AnonymousExpression&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F]uses%20-.->[Expression],[AnonymousExpression]uses%20-.->[Extensible],[AnonymousExpression]uses%20-.->[Annotatable],[AnonymousExpression]uses%20-.->[CommonMetadata],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression]^-[AnonymousClassExpression],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
- *  mixin: [Expression](Expression.md) - todo
+ *  mixin: [Expression](Expression.md) - general mixin for any class that can represent some form of expression
  *  mixin: [Extensible](Extensible.md) - mixin for classes that support extension
  *  mixin: [Annotatable](Annotatable.md) - mixin for classes that support annotations
  *  mixin: [CommonMetadata](CommonMetadata.md) - Generic metadata shared across definitions
@@ -44,58 +44,62 @@ URI: [linkml:AnonymousExpression](https://w3id.org/linkml/AnonymousExpression)
  * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [title](title.md)  <sub>0..1</sub>
      * Description: the official title of the element
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [todos](todos.md)  <sub>0..\*</sub>
      * Description: Outstanding issue that needs resolution
      * Range: [String](types/String.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [notes](notes.md)  <sub>0..\*</sub>
      * Description: editorial notes about an element intended for internal consumption
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [comments](comments.md)  <sub>0..\*</sub>
      * Description: notes and comments about an element intended for external consumption
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [examples](examples.md)  <sub>0..\*</sub>
      * Description: example usages of an element
      * Range: [Example](Example.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
@@ -111,10 +115,22 @@ URI: [linkml:AnonymousExpression](https://w3id.org/linkml/AnonymousExpression)
 
 ### Mixed in from common_metadata:
 
+ * [source](source.md)  <sub>0..1</sub>
+     * Description: A related resource from which the element is derived.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [in_language](in_language.md)  <sub>0..1</sub>
+     * Range: [String](types/String.md)
+
+### Mixed in from common_metadata:
+
  * [see_also](see_also.md)  <sub>0..\*</sub>
      * Description: a reference
      * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 

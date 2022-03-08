@@ -20,3 +20,10 @@ URI: [linkml:alt_description_text](https://w3id.org/linkml/alt_description_text)
 ## Used by
 
  * [AltDescription](AltDescription.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

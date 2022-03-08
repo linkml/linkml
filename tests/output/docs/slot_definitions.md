@@ -20,3 +20,10 @@ URI: [linkml:slot_definitions](https://w3id.org/linkml/slot_definitions)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

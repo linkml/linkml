@@ -27,4 +27,5 @@ URI: [linkml:license](https://w3id.org/linkml/license)
 | --- | --- | --- |
 | **Mappings:** | | dcterms:license |
 | **In Subsets:** | | owl |
+|  | | basic |
 

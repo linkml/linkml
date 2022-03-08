@@ -20,3 +20,11 @@ URI: [linkml:default_prefix](https://w3id.org/linkml/default_prefix)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | minimal |
+|  | | basic |
+

@@ -26,4 +26,5 @@ URI: [linkml:inlined](https://w3id.org/linkml/inlined)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | classes without keys or identifiers are necessarily inlined as lists |
+| **In Subsets:** | | basic |
 

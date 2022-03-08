@@ -16,12 +16,6 @@ None &#8594;  <sub>0..1</sub> [String](String.md)
 
 ## Children
 
- *  [equals_expression](equals_expression.md)
- *  [equals_number](equals_number.md)
- *  [equals_string](equals_string.md)
- *  [maximum_cardinality](maximum_cardinality.md)
- *  [minimum_cardinality](minimum_cardinality.md)
- *  [value_presence](value_presence.md)
 
 ## Used by
 

@@ -25,9 +25,10 @@ fields:
   description: if true, the the postconditions may be omitted in instance data, but
     it is valid for an inference engine to add these
   display_name: open_world
-- id: precedence
-  description: the relative order in which the rule is applied
-  display_name: precedence
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
 - id: deactivated
   description: a deactivated rule is not executed by the rules engine
   display_name: deactivated
@@ -80,6 +81,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also

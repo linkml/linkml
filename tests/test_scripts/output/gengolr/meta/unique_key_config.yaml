@@ -6,6 +6,9 @@ display_name: unique_key
 document_category: unique_key
 weight: 20
 fields:
+- id: unique_key_name
+  description: name of the unique key
+  display_name: unique_key_name
 - id: unique_key_slots
   description: list of slot names that form a key
   display_name: unique_key_slots
@@ -59,6 +62,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also

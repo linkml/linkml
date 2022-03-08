@@ -2,7 +2,7 @@
 # Slot: meaning
 
 
-the value meaning (in the 11179 sense) of a permissible value
+the value meaning of a permissible value
 
 URI: [linkml:meaning](https://w3id.org/linkml/meaning)
 
@@ -20,3 +20,12 @@ URI: [linkml:meaning](https://w3id.org/linkml/meaning)
 ## Used by
 
  * [PermissibleValue](PermissibleValue.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | PV meaning |
+| **In Subsets:** | | basic |
+| **See also:** | | [https://en.wikipedia.org/wiki/ISO/IEC_11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) |
+

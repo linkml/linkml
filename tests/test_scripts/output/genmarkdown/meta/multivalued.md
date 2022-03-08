@@ -20,3 +20,12 @@ URI: [linkml:multivalued](https://w3id.org/linkml/multivalued)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | minimal |
+|  | | basic |
+|  | | object_oriented |
+

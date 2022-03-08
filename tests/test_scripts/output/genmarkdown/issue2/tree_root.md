@@ -20,3 +20,10 @@ class_definition &#8594;  <sub>0..1</sub> boolean
 ## Used by
 
  * class_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

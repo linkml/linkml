@@ -20,3 +20,11 @@ schema_definition &#8594;  <sub>1..1</sub> uri
 ## Used by
 
  * schema_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | minimal |
+|  | | basic |
+

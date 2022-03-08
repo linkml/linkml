@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-01-27T02:55:29\n    Schema: meta\n    metamodel version: 1.7.0\n    model version: 2.0.0\n    \n    id: https://w3id.org/linkml/meta\n    description: A metamodel for defining linked open data schemas\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from meta.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-03-08T17:01:29\n    Schema: meta\n    metamodel version: 1.7.0\n    model version: 2.0.0\n    \n    id: https://w3id.org/linkml/meta\n    description: The metamodel for schemas defined using the Linked Data Modeling Language framework.\n\nFor more information on LinkML, see [linkml.io](https://linkml.io)\n\nCore metaclasses:\n\n* [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)\n* [ClassDefinition](https://w3id.org/linkml/ClassDefinition)\n* [SlotDefinition](https://w3id.org/linkml/SlotDefinition)\n\nEvery LinkML model instantiates SchemaDefinition, all classes in\nthe model instantiate ClassDefinition, and so on\n\nNote that the LinkML metamodel instantiates itself.\n\nFor a non-normative introduction to LinkML schemas, see the tutorial\nand schema guide on [linkml.io/linkml].\n\nFor canonical reference documentation on any metamodel construct,\nrefer to the official URI for each construct, e.g.\n[https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "IAO": {
          "@id": "http://purl.obolibrary.org/obo/IAO_",
@@ -12,16 +12,28 @@
       "oslc": "http://open-services.net/ns/core#",
       "owl": "http://www.w3.org/2002/07/owl#",
       "pav": "http://purl.org/pav/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "qb": "http://purl.org/linked-data/cube#",
       "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "schema": "http://schema.org/",
       "sh": "https://w3id.org/shacl/",
       "skos": "http://www.w3.org/2004/02/skos/core#",
+      "skosxl": "http://www.w3.org/2008/05/skos-xl#",
       "swrl": "http://www.w3.org/2003/11/swrl#",
+      "vann": "https://vocab.org/vann/",
       "xsd": "http://www.w3.org/2001/XMLSchema#",
       "@vocab": "https://w3id.org/linkml/",
       "abstract": {
          "@type": "xsd:boolean"
+      },
+      "predicate": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         }
       },
       "all_members": {
          "@type": "@id"
@@ -41,6 +53,9 @@
       "apply_to": {
          "@type": "@id"
       },
+      "asymmetric": {
+         "@type": "xsd:boolean"
+      },
       "attributes": {
          "@type": "@id"
       },
@@ -52,6 +67,12 @@
       },
       "broad_mappings": {
          "@type": "@id"
+      },
+      "categories": {
+         "@type": "@id"
+      },
+      "children_are_mutually_disjoint": {
+         "@type": "xsd:boolean"
       },
       "class_uri": {
          "@type": "@id"
@@ -95,6 +116,9 @@
       "designates_type": {
          "@type": "xsd:boolean"
       },
+      "disjoint_with": {
+         "@type": "@id"
+      },
       "domain": {
          "@type": "@id"
       },
@@ -128,6 +152,9 @@
       "extensions": {
          "@type": "@id"
       },
+      "followed_by": {
+         "@type": "@id"
+      },
       "from_schema": {
          "@type": "@id"
       },
@@ -143,11 +170,20 @@
       "identifier": {
          "@type": "xsd:boolean"
       },
+      "import_from": {
+         "@type": "@id"
+      },
+      "import_map": {
+         "@type": "@id"
+      },
       "imports": {
          "@type": "@id"
       },
       "in_subset": {
          "@type": "@id"
+      },
+      "inapplicable": {
+         "@type": "xsd:boolean"
       },
       "inherited": {
          "@type": "xsd:boolean"
@@ -158,13 +194,22 @@
       "inlined_as_list": {
          "@type": "xsd:boolean"
       },
+      "interpolated": {
+         "@type": "xsd:boolean"
+      },
       "inverse": {
          "@type": "@id"
+      },
+      "irreflexive": {
+         "@type": "xsd:boolean"
       },
       "is_a": {
          "@type": "@id"
       },
       "is_class_field": {
+         "@type": "xsd:boolean"
+      },
+      "is_grouping_slot": {
          "@type": "xsd:boolean"
       },
       "is_usage_slot": {
@@ -176,8 +221,17 @@
       "last_updated_on": {
          "@type": "xsd:dateTime"
       },
+      "list_elements_ordered": {
+         "@type": "xsd:boolean"
+      },
+      "list_elements_unique": {
+         "@type": "xsd:boolean"
+      },
       "local_names": {
          "@type": "@id"
+      },
+      "locally_reflexive": {
+         "@type": "xsd:boolean"
       },
       "mappings": {
          "@type": "@id"
@@ -219,7 +273,16 @@
       "open_world": {
          "@type": "xsd:boolean"
       },
+      "owned_by": {
+         "@type": "@id"
+      },
       "owner": {
+         "@type": "@id"
+      },
+      "partial_match": {
+         "@type": "xsd:boolean"
+      },
+      "path_rule": {
          "@type": "@id"
       },
       "permissible_values": {
@@ -227,9 +290,6 @@
       },
       "postconditions": {
          "@type": "@id"
-      },
-      "precedence": {
-         "@type": "xsd:integer"
       },
       "preconditions": {
          "@type": "@id"
@@ -254,13 +314,39 @@
       "range_expression": {
          "@type": "@id"
       },
+      "rank": {
+         "@type": "xsd:integer"
+      },
       "recommended": {
          "@type": "xsd:boolean"
+      },
+      "reflexive": {
+         "@type": "xsd:boolean"
+      },
+      "reflexive_transitive_form_of": {
+         "@type": "@id"
       },
       "related_mappings": {
          "@type": "@id"
       },
+      "relational_logical_characteristic": {
+         "@type": "xsd:boolean"
+      },
+      "relational_role": {
+         "@context": {
+            "@vocab": "@null",
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         }
+      },
+      "represents_relationship": {
+         "@type": "xsd:boolean"
+      },
       "required": {
+         "@type": "xsd:boolean"
+      },
+      "reversed": {
          "@type": "xsd:boolean"
       },
       "rules": {
@@ -269,16 +355,31 @@
       "see_also": {
          "@type": "@id"
       },
+      "settings": {
+         "@type": "@id"
+      },
+      "shared": {
+         "@type": "xsd:boolean"
+      },
       "slot_conditions": {
          "@type": "@id"
       },
       "slots": {
          "@type": "@id"
       },
+      "slot_group": {
+         "@type": "@id"
+      },
+      "slot_names_unique": {
+         "@type": "xsd:boolean"
+      },
       "slot_uri": {
          "@type": "@id"
       },
       "slot_usage": {
+         "@type": "@id"
+      },
+      "source": {
          "@type": "@id"
       },
       "source_file_date": {
@@ -288,6 +389,15 @@
          "@type": "xsd:integer"
       },
       "status": {
+         "@type": "@id"
+      },
+      "structured_aliases": {
+         "@type": "@id"
+      },
+      "structured_imports": {
+         "@type": "@id"
+      },
+      "structured_pattern": {
          "@type": "@id"
       },
       "subclass_of": {
@@ -303,6 +413,15 @@
          "@type": "xsd:boolean"
       },
       "text": "@id",
+      "transitive": {
+         "@type": "xsd:boolean"
+      },
+      "transitive_form_of": {
+         "@type": "@id"
+      },
+      "traverse": {
+         "@type": "@id"
+      },
       "tree_root": {
          "@type": "xsd:boolean"
       },

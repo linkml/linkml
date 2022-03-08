@@ -13,7 +13,7 @@ None &#8594;  <sub>0..1</sub> [Integer](Integer.md)
 
 ## Parents
 
- *  is_a: [value_specification_constant](value_specification_constant.md)
+ *  is_a: [list_value_specification_constant](list_value_specification_constant.md)
 
 ## Children
 

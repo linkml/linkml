@@ -53,6 +53,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also
@@ -91,7 +96,12 @@ fields:
   display_name: maximum_value
 - id: pattern
   description: the string value of the slot must conform to this regular expression
+    expressed in the string
   display_name: pattern
+- id: structured_pattern
+  description: the string value of the slot must conform to the regular expression
+    in the pattern expression
+  display_name: structured_pattern
 - id: equals_string
   description: the slot must have range string and the value of the slot must equal
     the specified value

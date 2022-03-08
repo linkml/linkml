@@ -33,4 +33,6 @@ URI: [linkml:conforms_to](https://w3id.org/linkml/conforms_to)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | dcterms:conformsTo |
+| **In Subsets:** | | owl |
+|  | | basic |
 

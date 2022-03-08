@@ -28,9 +28,13 @@ URI: [linkml:comments](https://w3id.org/linkml/comments)
  * definition
  * [Element](Element.md)
  * enum_definition
+ * import_expression
+ * path_expression
+ * pattern_expression
  * permissible_value
  * schema_definition
  * slot_definition
+ * structured_alias
  * subset_definition
  * type_definition
  * unique_key
@@ -41,4 +45,6 @@ URI: [linkml:comments](https://w3id.org/linkml/comments)
 | --- | --- | --- |
 | **Mappings:** | | skos:note |
 | **In Subsets:** | | owl |
+|  | | basic |
+| **Exact Mappings:** | | rdfs:comment |
 

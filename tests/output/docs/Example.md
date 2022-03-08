@@ -21,6 +21,15 @@ URI: [linkml:Example](https://w3id.org/linkml/Example)
  * [value](value.md)  <sub>0..1</sub>
      * Description: example value
      * Range: [String](types/String.md)
+     * in subsets: (basic)
  * [example➞description](value_description.md)  <sub>0..1</sub>
      * Description: description of what the value is doing
      * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

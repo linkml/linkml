@@ -21,3 +21,11 @@ permissible_value &#8594;  <sub>0..1</sub> permissible_value
 ## Used by
 
  * permissible_value
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

@@ -7,7 +7,7 @@ A rule that applies to instances of a class
 URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;precedence:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;precedence:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;rank:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Extension],[Extensible],[Example],[CommonMetadata],[AnonymousClassExpression]<elseconditions%200..1-++[ClassRule&#124;bidirectional:boolean%20%3F;open_world:boolean%20%3F;rank:integer%20%3F;deactivated:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[AnonymousClassExpression]<postconditions%200..1-++[ClassRule],[AnonymousClassExpression]<preconditions%200..1-++[ClassRule],[ClassDefinition]++-%20rules%200..*>[ClassRule],[ClassDefinition]++-%20rules(i)%200..*>[ClassRule],[ClassRule]uses%20-.->[Extensible],[ClassRule]uses%20-.->[Annotatable],[ClassRule]uses%20-.->[CommonMetadata],[ClassLevelRule]^-[ClassRule],[ClassLevelRule],[ClassDefinition],[AnonymousClassExpression],[Annotation],[Annotatable],[AltDescription])
 
 ## Parents
 
@@ -44,9 +44,10 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
  * [open_world](open_world.md)  <sub>0..1</sub>
      * Description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
      * Range: [Boolean](Boolean.md)
- * [precedence](precedence.md)  <sub>0..1</sub>
-     * Description: the relative order in which the rule is applied
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
      * Range: [Integer](Integer.md)
+     * in subsets: (basic)
  * [deactivated](deactivated.md)  <sub>0..1</sub>
      * Description: a deactivated rule is not executed by the rules engine
      * Range: [Boolean](Boolean.md)
@@ -68,58 +69,62 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
  * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](String.md)
-     * in subsets: (owl)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [title](title.md)  <sub>0..1</sub>
      * Description: the official title of the element
      * Range: [String](String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](String.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [todos](todos.md)  <sub>0..\*</sub>
      * Description: Outstanding issue that needs resolution
      * Range: [String](String.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [notes](notes.md)  <sub>0..\*</sub>
      * Description: editorial notes about an element intended for internal consumption
      * Range: [String](String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [comments](comments.md)  <sub>0..\*</sub>
      * Description: notes and comments about an element intended for external consumption
      * Range: [String](String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [examples](examples.md)  <sub>0..\*</sub>
      * Description: example usages of an element
      * Range: [Example](Example.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
@@ -135,10 +140,22 @@ URI: [linkml:ClassRule](https://w3id.org/linkml/ClassRule)
 
 ### Mixed in from common_metadata:
 
+ * [source](source.md)  <sub>0..1</sub>
+     * Description: A related resource from which the element is derived.
+     * Range: [Uriorcurie](Uriorcurie.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [in_language](in_language.md)  <sub>0..1</sub>
+     * Range: [String](String.md)
+
+### Mixed in from common_metadata:
+
  * [see_also](see_also.md)  <sub>0..\*</sub>
      * Description: a reference
      * Range: [Uriorcurie](Uriorcurie.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 

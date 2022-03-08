@@ -2,7 +2,7 @@
 # Slot: symmetric
 
 
-True means that any instance of  d s r implies that there is also an instance of r s d
+If s is symmetric, and i.s=v, then v.s=i
 
 URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 
@@ -13,6 +13,7 @@ URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 
 ## Parents
 
+ *  is_a: [relational_logical_characteristic](relational_logical_characteristic.md)
 
 ## Children
 
@@ -20,3 +21,10 @@ URI: [linkml:symmetric](https://w3id.org/linkml/symmetric)
 ## Used by
 
  * [SlotDefinition](SlotDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Close Mappings:** | | owl:SymmetricProperty |
+

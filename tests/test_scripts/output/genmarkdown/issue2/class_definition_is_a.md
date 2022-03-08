@@ -21,3 +21,11 @@ class_definition &#8594;  <sub>0..1</sub> class_definition
 ## Used by
 
  * class_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

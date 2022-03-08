@@ -26,4 +26,5 @@ URI: [linkml:code_set_tag](https://w3id.org/linkml/code_set_tag)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | enum_definition cannot have both a code_set_tag and a code_set_version |
+| **In Subsets:** | | basic |
 

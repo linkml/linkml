@@ -16,6 +16,10 @@ fields:
 - id: aliases
   display_name: aliases
   cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
 - id: local_names
   display_name: local_names
   cardinality: multi
@@ -54,6 +58,10 @@ fields:
     have broader meaning.
   display_name: broad mappings
   cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions
@@ -103,6 +111,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also
@@ -186,6 +199,22 @@ fields:
 - id: generation_date
   description: date and time that the schema was loaded/generated
   display_name: generation_date
+- id: slot_names_unique
+  description: if true then induced/mangled slot names are not created for class_usage
+    and attributes
+  display_name: slot_names_unique
+- id: settings
+  description: A collection of global variable settings
+  display_name: settings
+  cardinality: multi
+- id: categories
+  description: controlled terms used to categorize an element
+  display_name: categories
+  cardinality: multi
+- id: keywords
+  description: Keywords or tags used to describe the element
+  display_name: keywords
+  cardinality: multi
 - id: name
   description: the unique name of the element within the context of the schema.  Name
     is combined with the default prefix to form the globally unique subject of the

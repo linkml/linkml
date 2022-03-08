@@ -20,3 +20,10 @@ URI: [linkml:repr](https://w3id.org/linkml/repr)
 ## Used by
 
  * [TypeDefinition](TypeDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

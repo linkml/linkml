@@ -21,6 +21,8 @@ class CommonMetadata(Base):
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     
@@ -58,7 +60,7 @@ class CommonMetadata(Base):
     
     
     def __repr__(self):
-        return f"common_metadata(id={self.id},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        return f"common_metadata(id={self.id},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
         
     
         
@@ -74,11 +76,14 @@ class Element(Base):
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     
@@ -91,6 +96,10 @@ class Element(Base):
     aliases_rel = relationship( "ElementAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: ElementAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='element', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.element_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='element', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='element_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -168,7 +177,7 @@ class Element(Base):
     
     
     def __repr__(self):
-        return f"element(name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        return f"element(name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
         
     
         
@@ -185,6 +194,10 @@ class AnonymousTypeExpression(Base):
     pattern = Column(Text())
     equals_string = Column(Text())
     equals_number = Column(Integer())
+    minimum_value = Column(Integer())
+    maximum_value = Column(Integer())
+    structured_pattern_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    structured_pattern = relationship("PatternExpression", uselist=False)
     
     
     equals_string_in_rel = relationship( "AnonymousTypeExpressionEqualsStringIn" )
@@ -209,7 +222,88 @@ class AnonymousTypeExpression(Base):
     
     
     def __repr__(self):
-        return f"anonymous_type_expression(id={self.id},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},)"
+        return f"anonymous_type_expression(id={self.id},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},minimum_value={self.minimum_value},maximum_value={self.maximum_value},structured_pattern_id={self.structured_pattern_id},)"
+        
+    
+        
+    
+
+
+class StructuredAlias(Base):
+    """
+    object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
+    """
+    __tablename__ = 'structured_alias'
+    
+    id = Column(Integer(), primary_key=True, autoincrement=True )
+    literal_form = Column(Text())
+    predicate = Column(Enum('EXACT_SYNONYM', 'RELATED_SYNONYM', 'BROAD_SYNONYM', 'NARROW_SYNONYM', name='alias_predicate_enum'))
+    description = Column(Text())
+    title = Column(Text())
+    deprecated = Column(Text())
+    from_schema = Column(Text())
+    imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
+    deprecated_element_has_exact_replacement = Column(Text())
+    deprecated_element_has_possible_replacement = Column(Text())
+    element_name = Column(Text(), ForeignKey('element.name'))
+    schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
+    type_definition_name = Column(Text(), ForeignKey('type_definition.name'))
+    subset_definition_name = Column(Text(), ForeignKey('subset_definition.name'))
+    definition_name = Column(Text(), ForeignKey('definition.name'))
+    enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'))
+    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'))
+    class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
+    
+    
+    categories_rel = relationship( "StructuredAliasCategory" )
+    categories = association_proxy("categories_rel", "category",
+                                  creator=lambda x_: StructuredAliasCategory(category=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
+    extensions = relationship( "Extension", foreign_keys="[extension.structured_alias_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
+    annotations = relationship( "Annotation", foreign_keys="[annotation.structured_alias_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.structured_alias_id]")
+    
+    
+    todos_rel = relationship( "StructuredAliasTodos" )
+    todos = association_proxy("todos_rel", "todos",
+                                  creator=lambda x_: StructuredAliasTodos(todos=x_))
+    
+    
+    notes_rel = relationship( "StructuredAliasNotes" )
+    notes = association_proxy("notes_rel", "notes",
+                                  creator=lambda x_: StructuredAliasNotes(notes=x_))
+    
+    
+    comments_rel = relationship( "StructuredAliasComments" )
+    comments = association_proxy("comments_rel", "comments",
+                                  creator=lambda x_: StructuredAliasComments(comments=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='structured_alias', source_slot='examples', mapping_type=None, target_class='example', target_slot='structured_alias_id', join_class=None, uses_join_table=None, multivalued=False)
+    examples = relationship( "Example", foreign_keys="[example.structured_alias_id]")
+    
+    
+    # ManyToMany
+    in_subset = relationship( "SubsetDefinition", secondary="structured_alias_in_subset")
+    
+    
+    see_also_rel = relationship( "StructuredAliasSeeAlso" )
+    see_also = association_proxy("see_also_rel", "see_also",
+                                  creator=lambda x_: StructuredAliasSeeAlso(see_also=x_))
+    
+    
+    def __repr__(self):
+        return f"structured_alias(id={self.id},literal_form={self.literal_form},predicate={self.predicate},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},slot_definition_name={self.slot_definition_name},class_definition_name={self.class_definition_name},)"
         
     
         
@@ -218,7 +312,7 @@ class AnonymousTypeExpression(Base):
 
 class Expression(Base):
     """
-    todo
+    general mixin for any class that can represent some form of expression
     """
     __tablename__ = 'expression'
     
@@ -245,6 +339,8 @@ class AnonymousExpression(Base):
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     
@@ -290,7 +386,95 @@ class AnonymousExpression(Base):
     
     
     def __repr__(self):
-        return f"anonymous_expression(id={self.id},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        return f"anonymous_expression(id={self.id},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        
+    
+        
+    
+
+
+class PathExpression(Base):
+    """
+    An expression that describes an abstract path from an object to another through a sequence of slot lookups
+    """
+    __tablename__ = 'path_expression'
+    
+    id = Column(Integer(), primary_key=True, autoincrement=True )
+    reversed = Column(Boolean())
+    traverse = Column(Text(), ForeignKey('slot_definition.name'))
+    description = Column(Text())
+    title = Column(Text())
+    deprecated = Column(Text())
+    from_schema = Column(Text())
+    imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
+    deprecated_element_has_exact_replacement = Column(Text())
+    deprecated_element_has_possible_replacement = Column(Text())
+    followed_by_id = Column(Text(), ForeignKey('path_expression.id'))
+    followed_by = relationship("PathExpression", uselist=False)
+    range_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'))
+    range_expression = relationship("AnonymousClassExpression", uselist=False)
+    
+    
+    # ManyToMany
+    none_of = relationship( "PathExpression", secondary="path_expression_none_of")
+    
+    
+    # ManyToMany
+    any_of = relationship( "PathExpression", secondary="path_expression_any_of")
+    
+    
+    # ManyToMany
+    all_of = relationship( "PathExpression", secondary="path_expression_all_of")
+    
+    
+    # ManyToMany
+    exactly_one_of = relationship( "PathExpression", secondary="path_expression_exactly_one_of")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    extensions = relationship( "Extension", foreign_keys="[extension.path_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    annotations = relationship( "Annotation", foreign_keys="[annotation.path_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.path_expression_id]")
+    
+    
+    todos_rel = relationship( "PathExpressionTodos" )
+    todos = association_proxy("todos_rel", "todos",
+                                  creator=lambda x_: PathExpressionTodos(todos=x_))
+    
+    
+    notes_rel = relationship( "PathExpressionNotes" )
+    notes = association_proxy("notes_rel", "notes",
+                                  creator=lambda x_: PathExpressionNotes(notes=x_))
+    
+    
+    comments_rel = relationship( "PathExpressionComments" )
+    comments = association_proxy("comments_rel", "comments",
+                                  creator=lambda x_: PathExpressionComments(comments=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='path_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='path_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    examples = relationship( "Example", foreign_keys="[example.path_expression_id]")
+    
+    
+    # ManyToMany
+    in_subset = relationship( "SubsetDefinition", secondary="path_expression_in_subset")
+    
+    
+    see_also_rel = relationship( "PathExpressionSeeAlso" )
+    see_also = association_proxy("see_also_rel", "see_also",
+                                  creator=lambda x_: PathExpressionSeeAlso(see_also=x_))
+    
+    
+    def __repr__(self):
+        return f"path_expression(id={self.id},reversed={self.reversed},traverse={self.traverse},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},followed_by_id={self.followed_by_id},range_expression_id={self.range_expression_id},)"
         
     
         
@@ -345,6 +529,167 @@ class ClassLevelRule(Base):
     
     def __repr__(self):
         return f"class_level_rule(id={self.id},)"
+        
+    
+        
+    
+
+
+class PatternExpression(Base):
+    """
+    a regular expression pattern used to evaluate conformance of a string
+    """
+    __tablename__ = 'pattern_expression'
+    
+    id = Column(Integer(), primary_key=True, autoincrement=True )
+    syntax = Column(Text())
+    interpolated = Column(Boolean())
+    partial_match = Column(Boolean())
+    description = Column(Text())
+    title = Column(Text())
+    deprecated = Column(Text())
+    from_schema = Column(Text())
+    imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
+    deprecated_element_has_exact_replacement = Column(Text())
+    deprecated_element_has_possible_replacement = Column(Text())
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    extensions = relationship( "Extension", foreign_keys="[extension.pattern_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    annotations = relationship( "Annotation", foreign_keys="[annotation.pattern_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.pattern_expression_id]")
+    
+    
+    todos_rel = relationship( "PatternExpressionTodos" )
+    todos = association_proxy("todos_rel", "todos",
+                                  creator=lambda x_: PatternExpressionTodos(todos=x_))
+    
+    
+    notes_rel = relationship( "PatternExpressionNotes" )
+    notes = association_proxy("notes_rel", "notes",
+                                  creator=lambda x_: PatternExpressionNotes(notes=x_))
+    
+    
+    comments_rel = relationship( "PatternExpressionComments" )
+    comments = association_proxy("comments_rel", "comments",
+                                  creator=lambda x_: PatternExpressionComments(comments=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='pattern_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='pattern_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    examples = relationship( "Example", foreign_keys="[example.pattern_expression_id]")
+    
+    
+    # ManyToMany
+    in_subset = relationship( "SubsetDefinition", secondary="pattern_expression_in_subset")
+    
+    
+    see_also_rel = relationship( "PatternExpressionSeeAlso" )
+    see_also = association_proxy("see_also_rel", "see_also",
+                                  creator=lambda x_: PatternExpressionSeeAlso(see_also=x_))
+    
+    
+    def __repr__(self):
+        return f"pattern_expression(id={self.id},syntax={self.syntax},interpolated={self.interpolated},partial_match={self.partial_match},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        
+    
+        
+    
+
+
+class ImportExpression(Base):
+    """
+    an expression describing an import
+    """
+    __tablename__ = 'import_expression'
+    
+    id = Column(Integer(), primary_key=True, autoincrement=True )
+    import_from = Column(Text())
+    import_as = Column(Text())
+    description = Column(Text())
+    title = Column(Text())
+    deprecated = Column(Text())
+    from_schema = Column(Text())
+    imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
+    deprecated_element_has_exact_replacement = Column(Text())
+    deprecated_element_has_possible_replacement = Column(Text())
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='import_map', mapping_type=None, target_class='setting', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    import_map = relationship( "Setting", foreign_keys="[setting.import_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    extensions = relationship( "Extension", foreign_keys="[extension.import_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    annotations = relationship( "Annotation", foreign_keys="[annotation.import_expression_id]")
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.import_expression_id]")
+    
+    
+    todos_rel = relationship( "ImportExpressionTodos" )
+    todos = association_proxy("todos_rel", "todos",
+                                  creator=lambda x_: ImportExpressionTodos(todos=x_))
+    
+    
+    notes_rel = relationship( "ImportExpressionNotes" )
+    notes = association_proxy("notes_rel", "notes",
+                                  creator=lambda x_: ImportExpressionNotes(notes=x_))
+    
+    
+    comments_rel = relationship( "ImportExpressionComments" )
+    comments = association_proxy("comments_rel", "comments",
+                                  creator=lambda x_: ImportExpressionComments(comments=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='import_expression', source_slot='examples', mapping_type=None, target_class='example', target_slot='import_expression_id', join_class=None, uses_join_table=None, multivalued=False)
+    examples = relationship( "Example", foreign_keys="[example.import_expression_id]")
+    
+    
+    # ManyToMany
+    in_subset = relationship( "SubsetDefinition", secondary="import_expression_in_subset")
+    
+    
+    see_also_rel = relationship( "ImportExpressionSeeAlso" )
+    see_also = association_proxy("see_also_rel", "see_also",
+                                  creator=lambda x_: ImportExpressionSeeAlso(see_also=x_))
+    
+    
+    def __repr__(self):
+        return f"import_expression(id={self.id},import_from={self.import_from},import_as={self.import_as},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        
+    
+        
+    
+
+
+class Setting(Base):
+    """
+    assignment of a key to a value
+    """
+    __tablename__ = 'setting'
+    
+    setting_key = Column(Text(), primary_key=True)
+    setting_value = Column(Text(), primary_key=True)
+    schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'), primary_key=True)
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"setting(setting_key={self.setting_key},setting_value={self.setting_value},schema_definition_name={self.schema_definition_name},import_expression_id={self.import_expression_id},)"
         
     
         
@@ -412,18 +757,22 @@ class Example(Base):
     subset_definition_name = Column(Text(), ForeignKey('subset_definition.name'))
     definition_name = Column(Text(), ForeignKey('definition.name'))
     enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'))
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'))
     anonymous_expression_id = Column(Text(), ForeignKey('anonymous_expression.id'))
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'))
     anonymous_slot_expression_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'))
     slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'))
     anonymous_class_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'))
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
     class_rule_id = Column(Text(), ForeignKey('class_rule.id'))
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'))
     permissible_value_text = Column(Text(), ForeignKey('permissible_value.text'))
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'))
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'))
     
     
     def __repr__(self):
-        return f"example(id={self.id},value={self.value},description={self.description},common_metadata_id={self.common_metadata_id},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},anonymous_expression_id={self.anonymous_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},permissible_value_text={self.permissible_value_text},unique_key_id={self.unique_key_id},)"
+        return f"example(id={self.id},value={self.value},description={self.description},common_metadata_id={self.common_metadata_id},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},structured_alias_id={self.structured_alias_id},anonymous_expression_id={self.anonymous_expression_id},path_expression_id={self.path_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},pattern_expression_id={self.pattern_expression_id},import_expression_id={self.import_expression_id},permissible_value_text={self.permissible_value_text},unique_key_unique_key_name={self.unique_key_unique_key_name},)"
         
     
         
@@ -445,18 +794,22 @@ class AltDescription(Base):
     subset_definition_name = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
     definition_name = Column(Text(), ForeignKey('definition.name'), primary_key=True)
     enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'), primary_key=True)
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
     anonymous_expression_id = Column(Text(), ForeignKey('anonymous_expression.id'), primary_key=True)
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
     anonymous_slot_expression_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
     slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
     anonymous_class_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
     class_rule_id = Column(Text(), ForeignKey('class_rule.id'), primary_key=True)
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
     permissible_value_text = Column(Text(), ForeignKey('permissible_value.text'), primary_key=True)
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     
     
     def __repr__(self):
-        return f"alt_description(source={self.source},description={self.description},common_metadata_id={self.common_metadata_id},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},anonymous_expression_id={self.anonymous_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},permissible_value_text={self.permissible_value_text},unique_key_id={self.unique_key_id},)"
+        return f"alt_description(source={self.source},description={self.description},common_metadata_id={self.common_metadata_id},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},structured_alias_id={self.structured_alias_id},anonymous_expression_id={self.anonymous_expression_id},path_expression_id={self.path_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},pattern_expression_id={self.pattern_expression_id},import_expression_id={self.import_expression_id},permissible_value_text={self.permissible_value_text},unique_key_unique_key_name={self.unique_key_unique_key_name},)"
         
     
         
@@ -476,6 +829,8 @@ class PermissibleValue(Base):
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'))
@@ -522,7 +877,7 @@ class PermissibleValue(Base):
     
     
     def __repr__(self):
-        return f"permissible_value(text={self.text},description={self.description},meaning={self.meaning},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},enum_definition_name={self.enum_definition_name},)"
+        return f"permissible_value(text={self.text},description={self.description},meaning={self.meaning},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},enum_definition_name={self.enum_definition_name},)"
         
     
         
@@ -535,31 +890,33 @@ class UniqueKey(Base):
     """
     __tablename__ = 'unique_key'
     
-    id = Column(Integer(), primary_key=True, autoincrement=True )
-    description = Column(Text())
-    title = Column(Text())
-    deprecated = Column(Text())
-    from_schema = Column(Text())
-    imported_from = Column(Text())
-    deprecated_element_has_exact_replacement = Column(Text())
-    deprecated_element_has_possible_replacement = Column(Text())
-    class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
+    unique_key_name = Column(Text(), primary_key=True)
+    description = Column(Text(), primary_key=True)
+    title = Column(Text(), primary_key=True)
+    deprecated = Column(Text(), primary_key=True)
+    from_schema = Column(Text(), primary_key=True)
+    imported_from = Column(Text(), primary_key=True)
+    source = Column(Text(), primary_key=True)
+    in_language = Column(Text(), primary_key=True)
+    deprecated_element_has_exact_replacement = Column(Text(), primary_key=True)
+    deprecated_element_has_possible_replacement = Column(Text(), primary_key=True)
+    class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
     
     
     # ManyToMany
     unique_key_slots = relationship( "SlotDefinition", secondary="unique_key_unique_key_slots")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='unique_key_id', join_class=None, uses_join_table=None, multivalued=False)
-    extensions = relationship( "Extension", foreign_keys="[extension.unique_key_id]")
+    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
+    extensions = relationship( "Extension", foreign_keys="[extension.unique_key_unique_key_name]")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='unique_key_id', join_class=None, uses_join_table=None, multivalued=False)
-    annotations = relationship( "Annotation", foreign_keys="[annotation.unique_key_id]")
+    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
+    annotations = relationship( "Annotation", foreign_keys="[annotation.unique_key_unique_key_name]")
     
     
-    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='unique_key_id', join_class=None, uses_join_table=None, multivalued=False)
-    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.unique_key_id]")
+    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='alt_descriptions', mapping_type=None, target_class='alt_description', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
+    alt_descriptions = relationship( "AltDescription", foreign_keys="[alt_description.unique_key_unique_key_name]")
     
     
     todos_rel = relationship( "UniqueKeyTodos" )
@@ -577,8 +934,8 @@ class UniqueKey(Base):
                                   creator=lambda x_: UniqueKeyComments(comments=x_))
     
     
-    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='examples', mapping_type=None, target_class='example', target_slot='unique_key_id', join_class=None, uses_join_table=None, multivalued=False)
-    examples = relationship( "Example", foreign_keys="[example.unique_key_id]")
+    # One-To-Many: OneToAnyMapping(source_class='unique_key', source_slot='examples', mapping_type=None, target_class='example', target_slot='unique_key_unique_key_name', join_class=None, uses_join_table=None, multivalued=False)
+    examples = relationship( "Example", foreign_keys="[example.unique_key_unique_key_name]")
     
     
     # ManyToMany
@@ -591,7 +948,7 @@ class UniqueKey(Base):
     
     
     def __repr__(self):
-        return f"unique_key(id={self.id},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},class_definition_name={self.class_definition_name},)"
+        return f"unique_key(unique_key_name={self.unique_key_name},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},class_definition_name={self.class_definition_name},)"
         
     
         
@@ -633,14 +990,18 @@ class Extension(Base):
     subset_definition_name = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
     definition_name = Column(Text(), ForeignKey('definition.name'), primary_key=True)
     enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'), primary_key=True)
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
     anonymous_expression_id = Column(Text(), ForeignKey('anonymous_expression.id'), primary_key=True)
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
     anonymous_slot_expression_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
     slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
     anonymous_class_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
     class_rule_id = Column(Text(), ForeignKey('class_rule.id'), primary_key=True)
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
     permissible_value_text = Column(Text(), ForeignKey('permissible_value.text'), primary_key=True)
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     annotation_tag = Column(Text(), ForeignKey('annotation.tag'), primary_key=True)
     extension_tag = Column(Text(), ForeignKey('extension.tag'), primary_key=True)
     extensible_id = Column(Text(), ForeignKey('extensible.id'), primary_key=True)
@@ -651,7 +1012,7 @@ class Extension(Base):
     
     
     def __repr__(self):
-        return f"extension(tag={self.tag},value={self.value},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},anonymous_expression_id={self.anonymous_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},permissible_value_text={self.permissible_value_text},unique_key_id={self.unique_key_id},annotation_tag={self.annotation_tag},extension_tag={self.extension_tag},extensible_id={self.extensible_id},)"
+        return f"extension(tag={self.tag},value={self.value},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},structured_alias_id={self.structured_alias_id},anonymous_expression_id={self.anonymous_expression_id},path_expression_id={self.path_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},pattern_expression_id={self.pattern_expression_id},import_expression_id={self.import_expression_id},permissible_value_text={self.permissible_value_text},unique_key_unique_key_name={self.unique_key_unique_key_name},annotation_tag={self.annotation_tag},extension_tag={self.extension_tag},extensible_id={self.extensible_id},)"
         
     
         
@@ -1051,6 +1412,42 @@ class SchemaDefinitionDefaultCuriMaps(Base):
     
     def __repr__(self):
         return f"schema_definition_default_curi_maps(schema_definition_name={self.schema_definition_name},default_curi_maps={self.default_curi_maps},)"
+        
+    
+        
+    
+
+
+class SchemaDefinitionCategory(Base):
+    """
+    
+    """
+    __tablename__ = 'schema_definition_category'
+    
+    schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'), primary_key=True)
+    category = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"schema_definition_category(schema_definition_name={self.schema_definition_name},category={self.category},)"
+        
+    
+        
+    
+
+
+class SchemaDefinitionKeyword(Base):
+    """
+    
+    """
+    __tablename__ = 'schema_definition_keyword'
+    
+    schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'), primary_key=True)
+    keyword = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"schema_definition_keyword(schema_definition_name={self.schema_definition_name},keyword={self.keyword},)"
         
     
         
@@ -2551,6 +2948,114 @@ class EnumDefinitionSeeAlso(Base):
     
 
 
+class StructuredAliasCategory(Base):
+    """
+    
+    """
+    __tablename__ = 'structured_alias_category'
+    
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
+    category = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"structured_alias_category(structured_alias_id={self.structured_alias_id},category={self.category},)"
+        
+    
+        
+    
+
+
+class StructuredAliasTodos(Base):
+    """
+    
+    """
+    __tablename__ = 'structured_alias_todos'
+    
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
+    todos = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"structured_alias_todos(structured_alias_id={self.structured_alias_id},todos={self.todos},)"
+        
+    
+        
+    
+
+
+class StructuredAliasNotes(Base):
+    """
+    
+    """
+    __tablename__ = 'structured_alias_notes'
+    
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
+    notes = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"structured_alias_notes(structured_alias_id={self.structured_alias_id},notes={self.notes},)"
+        
+    
+        
+    
+
+
+class StructuredAliasComments(Base):
+    """
+    
+    """
+    __tablename__ = 'structured_alias_comments'
+    
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
+    comments = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"structured_alias_comments(structured_alias_id={self.structured_alias_id},comments={self.comments},)"
+        
+    
+        
+    
+
+
+class StructuredAliasInSubset(Base):
+    """
+    
+    """
+    __tablename__ = 'structured_alias_in_subset'
+    
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
+    in_subset = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"structured_alias_in_subset(structured_alias_id={self.structured_alias_id},in_subset={self.in_subset},)"
+        
+    
+        
+    
+
+
+class StructuredAliasSeeAlso(Base):
+    """
+    
+    """
+    __tablename__ = 'structured_alias_see_also'
+    
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
+    see_also = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"structured_alias_see_also(structured_alias_id={self.structured_alias_id},see_also={self.see_also},)"
+        
+    
+        
+    
+
+
 class AnonymousExpressionTodos(Base):
     """
     
@@ -2635,6 +3140,168 @@ class AnonymousExpressionSeeAlso(Base):
     
     def __repr__(self):
         return f"anonymous_expression_see_also(anonymous_expression_id={self.anonymous_expression_id},see_also={self.see_also},)"
+        
+    
+        
+    
+
+
+class PathExpressionNoneOf(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_none_of'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    none_of_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_none_of(path_expression_id={self.path_expression_id},none_of_id={self.none_of_id},)"
+        
+    
+        
+    
+
+
+class PathExpressionAnyOf(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_any_of'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    any_of_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_any_of(path_expression_id={self.path_expression_id},any_of_id={self.any_of_id},)"
+        
+    
+        
+    
+
+
+class PathExpressionAllOf(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_all_of'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    all_of_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_all_of(path_expression_id={self.path_expression_id},all_of_id={self.all_of_id},)"
+        
+    
+        
+    
+
+
+class PathExpressionExactlyOneOf(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_exactly_one_of'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    exactly_one_of_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_exactly_one_of(path_expression_id={self.path_expression_id},exactly_one_of_id={self.exactly_one_of_id},)"
+        
+    
+        
+    
+
+
+class PathExpressionTodos(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_todos'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    todos = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_todos(path_expression_id={self.path_expression_id},todos={self.todos},)"
+        
+    
+        
+    
+
+
+class PathExpressionNotes(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_notes'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    notes = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_notes(path_expression_id={self.path_expression_id},notes={self.notes},)"
+        
+    
+        
+    
+
+
+class PathExpressionComments(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_comments'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    comments = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_comments(path_expression_id={self.path_expression_id},comments={self.comments},)"
+        
+    
+        
+    
+
+
+class PathExpressionInSubset(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_in_subset'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    in_subset = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_in_subset(path_expression_id={self.path_expression_id},in_subset={self.in_subset},)"
+        
+    
+        
+    
+
+
+class PathExpressionSeeAlso(Base):
+    """
+    
+    """
+    __tablename__ = 'path_expression_see_also'
+    
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
+    see_also = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"path_expression_see_also(path_expression_id={self.path_expression_id},see_also={self.see_also},)"
         
     
         
@@ -2923,6 +3590,24 @@ class SlotDefinitionDomainOf(Base):
     
     def __repr__(self):
         return f"slot_definition_domain_of(slot_definition_name={self.slot_definition_name},domain_of={self.domain_of},)"
+        
+    
+        
+    
+
+
+class SlotDefinitionDisjointWith(Base):
+    """
+    
+    """
+    __tablename__ = 'slot_definition_disjoint_with'
+    
+    slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
+    disjoint_with = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"slot_definition_disjoint_with(slot_definition_name={self.slot_definition_name},disjoint_with={self.disjoint_with},)"
         
     
         
@@ -3595,6 +4280,24 @@ class ClassDefinitionDefiningSlots(Base):
     
 
 
+class ClassDefinitionDisjointWith(Base):
+    """
+    
+    """
+    __tablename__ = 'class_definition_disjoint_with'
+    
+    class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
+    disjoint_with = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"class_definition_disjoint_with(class_definition_name={self.class_definition_name},disjoint_with={self.disjoint_with},)"
+        
+    
+        
+    
+
+
 class ClassDefinitionAnyOf(Base):
     """
     
@@ -4045,6 +4748,186 @@ class ClassRuleSeeAlso(Base):
     
 
 
+class PatternExpressionTodos(Base):
+    """
+    
+    """
+    __tablename__ = 'pattern_expression_todos'
+    
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    todos = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"pattern_expression_todos(pattern_expression_id={self.pattern_expression_id},todos={self.todos},)"
+        
+    
+        
+    
+
+
+class PatternExpressionNotes(Base):
+    """
+    
+    """
+    __tablename__ = 'pattern_expression_notes'
+    
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    notes = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"pattern_expression_notes(pattern_expression_id={self.pattern_expression_id},notes={self.notes},)"
+        
+    
+        
+    
+
+
+class PatternExpressionComments(Base):
+    """
+    
+    """
+    __tablename__ = 'pattern_expression_comments'
+    
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    comments = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"pattern_expression_comments(pattern_expression_id={self.pattern_expression_id},comments={self.comments},)"
+        
+    
+        
+    
+
+
+class PatternExpressionInSubset(Base):
+    """
+    
+    """
+    __tablename__ = 'pattern_expression_in_subset'
+    
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    in_subset = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"pattern_expression_in_subset(pattern_expression_id={self.pattern_expression_id},in_subset={self.in_subset},)"
+        
+    
+        
+    
+
+
+class PatternExpressionSeeAlso(Base):
+    """
+    
+    """
+    __tablename__ = 'pattern_expression_see_also'
+    
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    see_also = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"pattern_expression_see_also(pattern_expression_id={self.pattern_expression_id},see_also={self.see_also},)"
+        
+    
+        
+    
+
+
+class ImportExpressionTodos(Base):
+    """
+    
+    """
+    __tablename__ = 'import_expression_todos'
+    
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
+    todos = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"import_expression_todos(import_expression_id={self.import_expression_id},todos={self.todos},)"
+        
+    
+        
+    
+
+
+class ImportExpressionNotes(Base):
+    """
+    
+    """
+    __tablename__ = 'import_expression_notes'
+    
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
+    notes = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"import_expression_notes(import_expression_id={self.import_expression_id},notes={self.notes},)"
+        
+    
+        
+    
+
+
+class ImportExpressionComments(Base):
+    """
+    
+    """
+    __tablename__ = 'import_expression_comments'
+    
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
+    comments = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"import_expression_comments(import_expression_id={self.import_expression_id},comments={self.comments},)"
+        
+    
+        
+    
+
+
+class ImportExpressionInSubset(Base):
+    """
+    
+    """
+    __tablename__ = 'import_expression_in_subset'
+    
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
+    in_subset = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"import_expression_in_subset(import_expression_id={self.import_expression_id},in_subset={self.in_subset},)"
+        
+    
+        
+    
+
+
+class ImportExpressionSeeAlso(Base):
+    """
+    
+    """
+    __tablename__ = 'import_expression_see_also'
+    
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
+    see_also = Column(Text(), primary_key=True)
+    
+    
+    def __repr__(self):
+        return f"import_expression_see_also(import_expression_id={self.import_expression_id},see_also={self.see_also},)"
+        
+    
+        
+    
+
+
 class PermissibleValueTodos(Base):
     """
     
@@ -4141,12 +5024,12 @@ class UniqueKeyUniqueKeySlots(Base):
     """
     __tablename__ = 'unique_key_unique_key_slots'
     
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     unique_key_slots = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
     
     
     def __repr__(self):
-        return f"unique_key_unique_key_slots(unique_key_id={self.unique_key_id},unique_key_slots={self.unique_key_slots},)"
+        return f"unique_key_unique_key_slots(unique_key_unique_key_name={self.unique_key_unique_key_name},unique_key_slots={self.unique_key_slots},)"
         
     
         
@@ -4159,12 +5042,12 @@ class UniqueKeyTodos(Base):
     """
     __tablename__ = 'unique_key_todos'
     
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     todos = Column(Text(), primary_key=True)
     
     
     def __repr__(self):
-        return f"unique_key_todos(unique_key_id={self.unique_key_id},todos={self.todos},)"
+        return f"unique_key_todos(unique_key_unique_key_name={self.unique_key_unique_key_name},todos={self.todos},)"
         
     
         
@@ -4177,12 +5060,12 @@ class UniqueKeyNotes(Base):
     """
     __tablename__ = 'unique_key_notes'
     
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     notes = Column(Text(), primary_key=True)
     
     
     def __repr__(self):
-        return f"unique_key_notes(unique_key_id={self.unique_key_id},notes={self.notes},)"
+        return f"unique_key_notes(unique_key_unique_key_name={self.unique_key_unique_key_name},notes={self.notes},)"
         
     
         
@@ -4195,12 +5078,12 @@ class UniqueKeyComments(Base):
     """
     __tablename__ = 'unique_key_comments'
     
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     comments = Column(Text(), primary_key=True)
     
     
     def __repr__(self):
-        return f"unique_key_comments(unique_key_id={self.unique_key_id},comments={self.comments},)"
+        return f"unique_key_comments(unique_key_unique_key_name={self.unique_key_unique_key_name},comments={self.comments},)"
         
     
         
@@ -4213,12 +5096,12 @@ class UniqueKeyInSubset(Base):
     """
     __tablename__ = 'unique_key_in_subset'
     
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     in_subset = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
     
     
     def __repr__(self):
-        return f"unique_key_in_subset(unique_key_id={self.unique_key_id},in_subset={self.in_subset},)"
+        return f"unique_key_in_subset(unique_key_unique_key_name={self.unique_key_unique_key_name},in_subset={self.in_subset},)"
         
     
         
@@ -4231,12 +5114,12 @@ class UniqueKeySeeAlso(Base):
     """
     __tablename__ = 'unique_key_see_also'
     
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     see_also = Column(Text(), primary_key=True)
     
     
     def __repr__(self):
-        return f"unique_key_see_also(unique_key_id={self.unique_key_id},see_also={self.see_also},)"
+        return f"unique_key_see_also(unique_key_unique_key_name={self.unique_key_unique_key_name},see_also={self.see_also},)"
         
     
         
@@ -4259,14 +5142,18 @@ class SchemaDefinition(Element):
     source_file_date = Column(DateTime())
     source_file_size = Column(Integer())
     generation_date = Column(DateTime())
+    slot_names_unique = Column(Boolean())
     name = Column(Text())
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     
@@ -4310,6 +5197,20 @@ class SchemaDefinition(Element):
     classes = relationship( "ClassDefinition", foreign_keys="[class_definition.schema_definition_name]")
     
     
+    # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='settings', mapping_type=None, target_class='setting', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    settings = relationship( "Setting", foreign_keys="[setting.schema_definition_name]")
+    
+    
+    categories_rel = relationship( "SchemaDefinitionCategory" )
+    categories = association_proxy("categories_rel", "category",
+                                  creator=lambda x_: SchemaDefinitionCategory(category=x_))
+    
+    
+    keywords_rel = relationship( "SchemaDefinitionKeyword" )
+    keywords = association_proxy("keywords_rel", "keyword",
+                                  creator=lambda x_: SchemaDefinitionKeyword(keyword=x_))
+    
+    
     id_prefixes_rel = relationship( "SchemaDefinitionIdPrefixes" )
     id_prefixes = association_proxy("id_prefixes_rel", "id_prefixes",
                                   creator=lambda x_: SchemaDefinitionIdPrefixes(id_prefixes=x_))
@@ -4318,6 +5219,10 @@ class SchemaDefinition(Element):
     aliases_rel = relationship( "SchemaDefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: SchemaDefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.schema_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='schema_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='schema_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -4395,7 +5300,7 @@ class SchemaDefinition(Element):
     
     
     def __repr__(self):
-        return f"schema_definition(id={self.id},version={self.version},license={self.license},default_prefix={self.default_prefix},default_range={self.default_range},metamodel_version={self.metamodel_version},source_file={self.source_file},source_file_date={self.source_file_date},source_file_size={self.source_file_size},generation_date={self.generation_date},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        return f"schema_definition(id={self.id},version={self.version},license={self.license},default_prefix={self.default_prefix},default_range={self.default_range},metamodel_version={self.metamodel_version},source_file={self.source_file},source_file_date={self.source_file_date},source_file_size={self.source_file_size},generation_date={self.generation_date},slot_names_unique={self.slot_names_unique},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
         
     
         
@@ -4417,6 +5322,10 @@ class TypeExpression(Expression):
     pattern = Column(Text())
     equals_string = Column(Text())
     equals_number = Column(Integer())
+    minimum_value = Column(Integer())
+    maximum_value = Column(Integer())
+    structured_pattern_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    structured_pattern = relationship("PatternExpression", uselist=False)
     
     
     equals_string_in_rel = relationship( "TypeExpressionEqualsStringIn" )
@@ -4441,7 +5350,7 @@ class TypeExpression(Expression):
     
     
     def __repr__(self):
-        return f"type_expression(id={self.id},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},)"
+        return f"type_expression(id={self.id},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},minimum_value={self.minimum_value},maximum_value={self.maximum_value},structured_pattern_id={self.structured_pattern_id},)"
         
     
         
@@ -4466,17 +5375,24 @@ class TypeDefinition(Element):
     pattern = Column(Text())
     equals_string = Column(Text())
     equals_number = Column(Integer())
+    minimum_value = Column(Integer())
+    maximum_value = Column(Integer())
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
+    structured_pattern_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    structured_pattern = relationship("PatternExpression", uselist=False)
     
     
     equals_string_in_rel = relationship( "TypeDefinitionEqualsStringIn" )
@@ -4508,6 +5424,10 @@ class TypeDefinition(Element):
     aliases_rel = relationship( "TypeDefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: TypeDefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.type_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='type_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='type_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -4585,7 +5505,7 @@ class TypeDefinition(Element):
     
     
     def __repr__(self):
-        return f"type_definition(typeof={self.typeof},base={self.base},uri={self.uri},repr={self.repr},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
+        return f"type_definition(typeof={self.typeof},base={self.base},uri={self.uri},repr={self.repr},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},minimum_value={self.minimum_value},maximum_value={self.maximum_value},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},structured_pattern_id={self.structured_pattern_id},)"
         
     
         
@@ -4606,11 +5526,14 @@ class SubsetDefinition(Element):
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
@@ -4624,6 +5547,10 @@ class SubsetDefinition(Element):
     aliases_rel = relationship( "SubsetDefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: SubsetDefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.subset_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='subset_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='subset_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -4701,7 +5628,7 @@ class SubsetDefinition(Element):
     
     
     def __repr__(self):
-        return f"subset_definition(name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
+        return f"subset_definition(name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
         
     
         
@@ -4731,11 +5658,14 @@ class Definition(Element):
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     
@@ -4761,6 +5691,10 @@ class Definition(Element):
     aliases_rel = relationship( "DefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: DefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -4838,7 +5772,7 @@ class Definition(Element):
     
     
     def __repr__(self):
-        return f"definition(is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},string_serialization={self.string_serialization},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
+        return f"definition(is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},string_serialization={self.string_serialization},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},)"
         
     
         
@@ -4863,11 +5797,14 @@ class EnumDefinition(Element):
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
@@ -4885,6 +5822,10 @@ class EnumDefinition(Element):
     aliases_rel = relationship( "EnumDefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: EnumDefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.enum_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='enum_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='enum_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -4962,7 +5903,7 @@ class EnumDefinition(Element):
     
     
     def __repr__(self):
-        return f"enum_definition(code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
+        return f"enum_definition(code_set={self.code_set},code_set_tag={self.code_set_tag},code_set_version={self.code_set_version},pv_formula={self.pv_formula},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
         
     
         
@@ -4994,6 +5935,8 @@ class SlotExpression(Expression):
     maximum_cardinality = Column(Integer())
     range_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'))
     range_expression = relationship("AnonymousClassExpression", uselist=False)
+    structured_pattern_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    structured_pattern = relationship("PatternExpression", uselist=False)
     has_member_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'))
     has_member = relationship("AnonymousSlotExpression", uselist=False)
     
@@ -5024,7 +5967,7 @@ class SlotExpression(Expression):
     
     
     def __repr__(self):
-        return f"slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},minimum_value={self.minimum_value},maximum_value={self.maximum_value},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},range_expression_id={self.range_expression_id},has_member_id={self.has_member_id},)"
+        return f"slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},minimum_value={self.minimum_value},maximum_value={self.maximum_value},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},range_expression_id={self.range_expression_id},structured_pattern_id={self.structured_pattern_id},has_member_id={self.has_member_id},)"
         
     
         
@@ -5059,10 +6002,14 @@ class AnonymousSlotExpression(AnonymousExpression):
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     range_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'))
     range_expression = relationship("AnonymousClassExpression", uselist=False)
+    structured_pattern_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    structured_pattern = relationship("PatternExpression", uselist=False)
     has_member_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'))
     has_member = relationship("AnonymousSlotExpression", uselist=False)
     
@@ -5133,7 +6080,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     
     
     def __repr__(self):
-        return f"anonymous_slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},minimum_value={self.minimum_value},maximum_value={self.maximum_value},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},range_expression_id={self.range_expression_id},has_member_id={self.has_member_id},)"
+        return f"anonymous_slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},minimum_value={self.minimum_value},maximum_value={self.maximum_value},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},range_expression_id={self.range_expression_id},structured_pattern_id={self.structured_pattern_id},has_member_id={self.has_member_id},)"
         
     
         
@@ -5158,6 +6105,8 @@ class AnonymousClassExpression(AnonymousExpression):
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
@@ -5224,7 +6173,7 @@ class AnonymousClassExpression(AnonymousExpression):
     
     
     def __repr__(self):
-        return f"anonymous_class_expression(id={self.id},is_a={self.is_a},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},class_definition_name={self.class_definition_name},)"
+        return f"anonymous_class_expression(id={self.id},is_a={self.is_a},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},class_definition_name={self.class_definition_name},)"
         
     
         
@@ -5245,13 +6194,15 @@ class ClassRule(ClassLevelRule):
     id = Column(Integer(), primary_key=True, autoincrement=True )
     bidirectional = Column(Boolean())
     open_world = Column(Boolean())
-    precedence = Column(Integer())
+    rank = Column(Integer())
     deactivated = Column(Boolean())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
@@ -5304,7 +6255,7 @@ class ClassRule(ClassLevelRule):
     
     
     def __repr__(self):
-        return f"class_rule(id={self.id},bidirectional={self.bidirectional},open_world={self.open_world},precedence={self.precedence},deactivated={self.deactivated},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},class_definition_name={self.class_definition_name},preconditions_id={self.preconditions_id},postconditions_id={self.postconditions_id},elseconditions_id={self.elseconditions_id},)"
+        return f"class_rule(id={self.id},bidirectional={self.bidirectional},open_world={self.open_world},rank={self.rank},deactivated={self.deactivated},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},class_definition_name={self.class_definition_name},preconditions_id={self.preconditions_id},postconditions_id={self.postconditions_id},elseconditions_id={self.elseconditions_id},)"
         
     
         
@@ -5330,14 +6281,18 @@ class Annotation(Extension):
     subset_definition_name = Column(Text(), ForeignKey('subset_definition.name'), primary_key=True)
     definition_name = Column(Text(), ForeignKey('definition.name'), primary_key=True)
     enum_definition_name = Column(Text(), ForeignKey('enum_definition.name'), primary_key=True)
+    structured_alias_id = Column(Text(), ForeignKey('structured_alias.id'), primary_key=True)
     anonymous_expression_id = Column(Text(), ForeignKey('anonymous_expression.id'), primary_key=True)
+    path_expression_id = Column(Text(), ForeignKey('path_expression.id'), primary_key=True)
     anonymous_slot_expression_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'), primary_key=True)
     slot_definition_name = Column(Text(), ForeignKey('slot_definition.name'), primary_key=True)
     anonymous_class_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'), primary_key=True)
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'), primary_key=True)
     class_rule_id = Column(Text(), ForeignKey('class_rule.id'), primary_key=True)
+    pattern_expression_id = Column(Text(), ForeignKey('pattern_expression.id'), primary_key=True)
+    import_expression_id = Column(Text(), ForeignKey('import_expression.id'), primary_key=True)
     permissible_value_text = Column(Text(), ForeignKey('permissible_value.text'), primary_key=True)
-    unique_key_id = Column(Text(), ForeignKey('unique_key.id'), primary_key=True)
+    unique_key_unique_key_name = Column(Text(), ForeignKey('unique_key.unique_key_name'), primary_key=True)
     annotatable_id = Column(Text(), ForeignKey('annotatable.id'), primary_key=True)
     annotation_tag = Column(Text(), ForeignKey('annotation.tag'), primary_key=True)
     
@@ -5351,7 +6306,7 @@ class Annotation(Extension):
     
     
     def __repr__(self):
-        return f"annotation(tag={self.tag},value={self.value},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},anonymous_expression_id={self.anonymous_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},permissible_value_text={self.permissible_value_text},unique_key_id={self.unique_key_id},annotatable_id={self.annotatable_id},annotation_tag={self.annotation_tag},)"
+        return f"annotation(tag={self.tag},value={self.value},element_name={self.element_name},schema_definition_name={self.schema_definition_name},type_definition_name={self.type_definition_name},subset_definition_name={self.subset_definition_name},definition_name={self.definition_name},enum_definition_name={self.enum_definition_name},structured_alias_id={self.structured_alias_id},anonymous_expression_id={self.anonymous_expression_id},path_expression_id={self.path_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},class_rule_id={self.class_rule_id},pattern_expression_id={self.pattern_expression_id},import_expression_id={self.import_expression_id},permissible_value_text={self.permissible_value_text},unique_key_unique_key_name={self.unique_key_unique_key_name},annotatable_id={self.annotatable_id},annotation_tag={self.annotation_tag},)"
         
     
         
@@ -5378,6 +6333,9 @@ class SlotDefinition(Definition):
     ifabsent = Column(Text())
     inlined = Column(Boolean())
     inlined_as_list = Column(Boolean())
+    list_elements_unique = Column(Boolean())
+    list_elements_ordered = Column(Boolean())
+    shared = Column(Boolean())
     key = Column(Boolean())
     identifier = Column(Boolean())
     designates_type = Column(Boolean())
@@ -5385,11 +6343,22 @@ class SlotDefinition(Definition):
     owner = Column(Text(), ForeignKey('definition.name'))
     subproperty_of = Column(Text(), ForeignKey('slot_definition.name'))
     symmetric = Column(Boolean())
+    reflexive = Column(Boolean())
+    locally_reflexive = Column(Boolean())
+    irreflexive = Column(Boolean())
+    asymmetric = Column(Boolean())
+    transitive = Column(Boolean())
     inverse = Column(Text(), ForeignKey('slot_definition.name'))
     is_class_field = Column(Boolean())
+    transitive_form_of = Column(Text(), ForeignKey('slot_definition.name'))
+    reflexive_transitive_form_of = Column(Text(), ForeignKey('slot_definition.name'))
     role = Column(Text())
     is_usage_slot = Column(Boolean())
     usage_slot_name = Column(Text())
+    relational_role = Column(Enum('SUBJECT', 'OBJECT', 'PREDICATE', 'NODE', 'OTHER_ROLE', name='relational_role_enum'))
+    slot_group = Column(Text(), ForeignKey('slot_definition.name'))
+    is_grouping_slot = Column(Boolean())
+    children_are_mutually_disjoint = Column(Boolean())
     range = Column(Text(), ForeignKey('element.name'))
     required = Column(Boolean())
     recommended = Column(Boolean())
@@ -5413,11 +6382,14 @@ class SlotDefinition(Definition):
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
@@ -5427,14 +6399,22 @@ class SlotDefinition(Definition):
     class_expression_id = Column(Text(), ForeignKey('class_expression.id'))
     anonymous_class_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'))
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
+    path_rule_id = Column(Text(), ForeignKey('path_expression.id'))
+    path_rule = relationship("PathExpression", uselist=False)
     range_expression_id = Column(Text(), ForeignKey('anonymous_class_expression.id'))
     range_expression = relationship("AnonymousClassExpression", uselist=False)
+    structured_pattern_id = Column(Text(), ForeignKey('pattern_expression.id'))
+    structured_pattern = relationship("PatternExpression", uselist=False)
     has_member_id = Column(Text(), ForeignKey('anonymous_slot_expression.id'))
     has_member = relationship("AnonymousSlotExpression", uselist=False)
     
     
     # ManyToMany
     domain_of = relationship( "ClassDefinition", secondary="slot_definition_domain_of")
+    
+    
+    # ManyToMany
+    disjoint_with = relationship( "SlotDefinition", secondary="slot_definition_disjoint_with")
     
     
     equals_string_in_rel = relationship( "SlotDefinitionEqualsStringIn" )
@@ -5483,6 +6463,10 @@ class SlotDefinition(Definition):
     aliases_rel = relationship( "SlotDefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: SlotDefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.slot_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='slot_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -5560,7 +6544,7 @@ class SlotDefinition(Definition):
     
     
     def __repr__(self):
-        return f"slot_definition(singular_name={self.singular_name},domain={self.domain},slot_uri={self.slot_uri},multivalued={self.multivalued},inherited={self.inherited},readonly={self.readonly},ifabsent={self.ifabsent},inlined={self.inlined},inlined_as_list={self.inlined_as_list},key={self.key},identifier={self.identifier},designates_type={self.designates_type},alias={self.alias},owner={self.owner},subproperty_of={self.subproperty_of},symmetric={self.symmetric},inverse={self.inverse},is_class_field={self.is_class_field},role={self.role},is_usage_slot={self.is_usage_slot},usage_slot_name={self.usage_slot_name},range={self.range},required={self.required},recommended={self.recommended},minimum_value={self.minimum_value},maximum_value={self.maximum_value},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},string_serialization={self.string_serialization},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},slot_expression_id={self.slot_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},class_expression_id={self.class_expression_id},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},range_expression_id={self.range_expression_id},has_member_id={self.has_member_id},)"
+        return f"slot_definition(singular_name={self.singular_name},domain={self.domain},slot_uri={self.slot_uri},multivalued={self.multivalued},inherited={self.inherited},readonly={self.readonly},ifabsent={self.ifabsent},inlined={self.inlined},inlined_as_list={self.inlined_as_list},list_elements_unique={self.list_elements_unique},list_elements_ordered={self.list_elements_ordered},shared={self.shared},key={self.key},identifier={self.identifier},designates_type={self.designates_type},alias={self.alias},owner={self.owner},subproperty_of={self.subproperty_of},symmetric={self.symmetric},reflexive={self.reflexive},locally_reflexive={self.locally_reflexive},irreflexive={self.irreflexive},asymmetric={self.asymmetric},transitive={self.transitive},inverse={self.inverse},is_class_field={self.is_class_field},transitive_form_of={self.transitive_form_of},reflexive_transitive_form_of={self.reflexive_transitive_form_of},role={self.role},is_usage_slot={self.is_usage_slot},usage_slot_name={self.usage_slot_name},relational_role={self.relational_role},slot_group={self.slot_group},is_grouping_slot={self.is_grouping_slot},children_are_mutually_disjoint={self.children_are_mutually_disjoint},range={self.range},required={self.required},recommended={self.recommended},minimum_value={self.minimum_value},maximum_value={self.maximum_value},pattern={self.pattern},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},string_serialization={self.string_serialization},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},slot_expression_id={self.slot_expression_id},anonymous_slot_expression_id={self.anonymous_slot_expression_id},slot_definition_name={self.slot_definition_name},class_expression_id={self.class_expression_id},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},path_rule_id={self.path_rule_id},range_expression_id={self.range_expression_id},structured_pattern_id={self.structured_pattern_id},has_member_id={self.has_member_id},)"
         
     
         
@@ -5581,6 +6565,9 @@ class ClassDefinition(Definition):
     class_uri = Column(Text())
     subclass_of = Column(Text())
     tree_root = Column(Boolean())
+    slot_names_unique = Column(Boolean())
+    represents_relationship = Column(Boolean())
+    children_are_mutually_disjoint = Column(Boolean())
     is_a = Column(Text(), ForeignKey('class_definition.name'))
     abstract = Column(Boolean())
     mixin = Column(Boolean())
@@ -5593,11 +6580,14 @@ class ClassDefinition(Definition):
     name = Column(Text(), primary_key=True)
     definition_uri = Column(Text())
     conforms_to = Column(Text())
+    rank = Column(Integer())
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
     from_schema = Column(Text())
     imported_from = Column(Text())
+    source = Column(Text())
+    in_language = Column(Text())
     deprecated_element_has_exact_replacement = Column(Text())
     deprecated_element_has_possible_replacement = Column(Text())
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
@@ -5633,6 +6623,10 @@ class ClassDefinition(Definition):
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='classification_rules', mapping_type=None, target_class='anonymous_class_expression', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
     classification_rules = relationship( "AnonymousClassExpression", foreign_keys="[anonymous_class_expression.class_definition_name]")
+    
+    
+    # ManyToMany
+    disjoint_with = relationship( "ClassDefinition", secondary="class_definition_disjoint_with")
     
     
     # ManyToMany
@@ -5676,6 +6670,10 @@ class ClassDefinition(Definition):
     aliases_rel = relationship( "ClassDefinitionAliases" )
     aliases = association_proxy("aliases_rel", "aliases",
                                   creator=lambda x_: ClassDefinitionAliases(aliases=x_))
+    
+    
+    # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='structured_aliases', mapping_type=None, target_class='structured_alias', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
+    structured_aliases = relationship( "StructuredAlias", foreign_keys="[structured_alias.class_definition_name]")
     
     
     # One-To-Many: OneToAnyMapping(source_class='class_definition', source_slot='local_names', mapping_type=None, target_class='local_name', target_slot='class_definition_name', join_class=None, uses_join_table=None, multivalued=False)
@@ -5753,7 +6751,7 @@ class ClassDefinition(Definition):
     
     
     def __repr__(self):
-        return f"class_definition(class_uri={self.class_uri},subclass_of={self.subclass_of},tree_root={self.tree_root},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},string_serialization={self.string_serialization},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
+        return f"class_definition(class_uri={self.class_uri},subclass_of={self.subclass_of},tree_root={self.tree_root},slot_names_unique={self.slot_names_unique},represents_relationship={self.represents_relationship},children_are_mutually_disjoint={self.children_are_mutually_disjoint},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},string_serialization={self.string_serialization},name={self.name},definition_uri={self.definition_uri},conforms_to={self.conforms_to},rank={self.rank},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},schema_definition_name={self.schema_definition_name},)"
         
     
         

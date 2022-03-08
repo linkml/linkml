@@ -28,5 +28,7 @@ URI: [linkml:mixin](https://w3id.org/linkml/mixin)
 |  |  |  |
 | --- | --- | --- |
 | **Aliases:** | | trait |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
 | **See also:** | | [https://en.wikipedia.org/wiki/Mixin](https://en.wikipedia.org/wiki/Mixin) |
 

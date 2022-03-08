@@ -2,7 +2,8 @@
 # Slot: ifabsent
 
 
-function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:
+function that provides a default value for the slot.  Possible values for this slot are defined in
+linkml.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * int(value) -- integer value
@@ -29,3 +30,10 @@ slot_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Close Mappings:** | | sh:defaultValue |
+

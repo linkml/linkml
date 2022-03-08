@@ -26,4 +26,5 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | classes without keys or identifiers are necessarily inlined as lists |
+| **In Subsets:** | | basic |
 

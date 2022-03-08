@@ -20,3 +20,11 @@ URI: [linkml:class_uri](https://w3id.org/linkml/class_uri)
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | public ID |
+| **In Subsets:** | | basic |
+

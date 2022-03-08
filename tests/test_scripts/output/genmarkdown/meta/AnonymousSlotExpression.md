@@ -7,7 +7,7 @@
 URI: [linkml:AnonymousSlotExpression](https://w3id.org/linkml/AnonymousSlotExpression)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[SlotExpression],[SlotDefinition],[Extension],[Example],[Element],[SlotExpression]++-%20has_member%200..1>[AnonymousSlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotExpression]++-%20all_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20any_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20exactly_one_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20none_of%200..*>[AnonymousSlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression],[AnonymousClassExpression],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[SlotExpression],[SlotDefinition],[Extension],[Example],[Element],[SlotExpression]++-%20has_member%200..1>[AnonymousSlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotExpression]++-%20all_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20any_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20exactly_one_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20none_of%200..*>[AnonymousSlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression],[AnonymousClassExpression],[Annotation],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[SlotExpression],[SlotDefinition],[PatternExpression],[Extension],[Example],[Element],[SlotExpression]++-%20has_member%200..1>[AnonymousSlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;source(i):uriorcurie%20%3F;in_language(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotExpression]++-%20all_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20any_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20exactly_one_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20none_of%200..*>[AnonymousSlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression],[AnonymousClassExpression],[Annotation],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[SlotExpression],[SlotDefinition],[PatternExpression],[Extension],[Example],[Element],[SlotExpression]++-%20has_member%200..1>[AnonymousSlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F;description(i):string%20%3F;title(i):string%20%3F;deprecated(i):string%20%3F;todos(i):string%20*;notes(i):string%20*;comments(i):string%20*;from_schema(i):uri%20%3F;imported_from(i):string%20%3F;source(i):uriorcurie%20%3F;in_language(i):string%20%3F;see_also(i):uriorcurie%20*;deprecated_element_has_exact_replacement(i):uriorcurie%20%3F;deprecated_element_has_possible_replacement(i):uriorcurie%20%3F],[SlotExpression]++-%20all_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20any_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20exactly_one_of%200..*>[AnonymousSlotExpression],[SlotExpression]++-%20none_of%200..*>[AnonymousSlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[AnonymousExpression]^-[AnonymousSlotExpression],[AnonymousExpression],[AnonymousClassExpression],[Annotation],[AltDescription])
 
 ## Parents
 
@@ -42,6 +42,7 @@ the declaration
 implicitly asserts Y is an instance of C2
 
      * Range: [Element](Element.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
 
 ### Mixed in from slot_expression:
 
@@ -54,30 +55,41 @@ implicitly asserts Y is an instance of C2
  * [required](required.md)  <sub>0..1</sub>
      * Description: true means that the slot must be present in the loaded definition
      * Range: [Boolean](types/Boolean.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
 
 ### Mixed in from slot_expression:
 
  * [recommended](recommended.md)  <sub>0..1</sub>
      * Description: true means that the slot should be present in the loaded definition, but this is not required
      * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
 
 ### Mixed in from slot_expression:
 
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or higher than this
      * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from slot_expression:
 
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or lowe than this
      * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
 
 ### Mixed in from slot_expression:
 
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
 
 ### Mixed in from slot_expression:
 

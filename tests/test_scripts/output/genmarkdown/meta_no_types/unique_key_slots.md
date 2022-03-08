@@ -20,3 +20,11 @@ URI: [linkml:unique_key_slots](https://w3id.org/linkml/unique_key_slots)
 ## Used by
 
  * [UniqueKey](UniqueKey.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | relational_model |
+

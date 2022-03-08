@@ -28,9 +28,13 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
  * definition
  * [Element](Element.md)
  * enum_definition
+ * import_expression
+ * path_expression
+ * pattern_expression
  * permissible_value
  * schema_definition
  * slot_definition
+ * structured_alias
  * subset_definition
  * type_definition
  * unique_key
@@ -41,4 +45,5 @@ URI: [linkml:see_also](https://w3id.org/linkml/see_also)
 | --- | --- | --- |
 | **Mappings:** | | rdfs:seeAlso |
 | **In Subsets:** | | owl |
+|  | | basic |
 

@@ -7,11 +7,11 @@ an expression that constrains the range of values a slot can take
 URI: [linkml:SlotExpression](https://w3id.org/linkml/SlotExpression)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousSlotExpression]<all_of%200..*-++[SlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F],[AnonymousSlotExpression]<any_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<exactly_one_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<none_of%200..*-++[SlotExpression],[SlotDefinition]<all_members%200..*-++[SlotExpression],[AnonymousSlotExpression]<has_member%200..1-++[SlotExpression],[AnonymousClassExpression]<range_expression%200..1-++[SlotExpression],[Element]<range%200..1-%20[SlotExpression],[SlotDefinition]uses%20-.->[SlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[Expression]^-[SlotExpression],[SlotDefinition],[Expression],[Element],[AnonymousSlotExpression],[AnonymousClassExpression])](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousSlotExpression]<all_of%200..*-++[SlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F],[AnonymousSlotExpression]<any_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<exactly_one_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<none_of%200..*-++[SlotExpression],[SlotDefinition]<all_members%200..*-++[SlotExpression],[AnonymousSlotExpression]<has_member%200..1-++[SlotExpression],[AnonymousClassExpression]<range_expression%200..1-++[SlotExpression],[Element]<range%200..1-%20[SlotExpression],[SlotDefinition]uses%20-.->[SlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[Expression]^-[SlotExpression],[SlotDefinition],[Expression],[Element],[AnonymousSlotExpression],[AnonymousClassExpression])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousSlotExpression]<all_of%200..*-++[SlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F],[AnonymousSlotExpression]<any_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<exactly_one_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<none_of%200..*-++[SlotExpression],[SlotDefinition]<all_members%200..*-++[SlotExpression],[AnonymousSlotExpression]<has_member%200..1-++[SlotExpression],[PatternExpression]<structured_pattern%200..1-++[SlotExpression],[AnonymousClassExpression]<range_expression%200..1-++[SlotExpression],[Element]<range%200..1-%20[SlotExpression],[SlotDefinition]uses%20-.->[SlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[Expression]^-[SlotExpression],[SlotDefinition],[PatternExpression],[Expression],[Element],[AnonymousSlotExpression],[AnonymousClassExpression])](https://yuml.me/diagram/nofunky;dir:TB/class/[AnonymousSlotExpression]<all_of%200..*-++[SlotExpression&#124;required:boolean%20%3F;recommended:boolean%20%3F;minimum_value:integer%20%3F;maximum_value:integer%20%3F;pattern:string%20%3F;equals_string:string%20%3F;equals_string_in:string%20*;equals_number:integer%20%3F;equals_expression:string%20%3F;minimum_cardinality:integer%20%3F;maximum_cardinality:integer%20%3F],[AnonymousSlotExpression]<any_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<exactly_one_of%200..*-++[SlotExpression],[AnonymousSlotExpression]<none_of%200..*-++[SlotExpression],[SlotDefinition]<all_members%200..*-++[SlotExpression],[AnonymousSlotExpression]<has_member%200..1-++[SlotExpression],[PatternExpression]<structured_pattern%200..1-++[SlotExpression],[AnonymousClassExpression]<range_expression%200..1-++[SlotExpression],[Element]<range%200..1-%20[SlotExpression],[SlotDefinition]uses%20-.->[SlotExpression],[AnonymousSlotExpression]uses%20-.->[SlotExpression],[Expression]^-[SlotExpression],[SlotDefinition],[PatternExpression],[Expression],[Element],[AnonymousSlotExpression],[AnonymousClassExpression])
 
 ## Parents
 
- *  is_a: [Expression](Expression.md) - todo
+ *  is_a: [Expression](Expression.md) - general mixin for any class that can represent some form of expression
 
 ## Mixin for
 
@@ -38,24 +38,33 @@ the declaration
 implicitly asserts Y is an instance of C2
 
      * Range: [Element](Element.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
  * [range_expression](range_expression.md)  <sub>0..1</sub>
      * Description: A range that is described as a boolean expression combining existing ranges
      * Range: [AnonymousClassExpression](AnonymousClassExpression.md)
  * [required](required.md)  <sub>0..1</sub>
      * Description: true means that the slot must be present in the loaded definition
      * Range: [Boolean](Boolean.md)
+     * in subsets: (minimal,basic,relational_model,object_oriented)
  * [recommended](recommended.md)  <sub>0..1</sub>
      * Description: true means that the slot should be present in the loaded definition, but this is not required
      * Range: [Boolean](Boolean.md)
+     * in subsets: (basic)
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or higher than this
      * Range: [Integer](Integer.md)
+     * in subsets: (basic)
  * [maximum_value](maximum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or lowe than this
      * Range: [Integer](Integer.md)
+     * in subsets: (basic)
  * [pattern](pattern.md)  <sub>0..1</sub>
-     * Description: the string value of the slot must conform to this regular expression
+     * Description: the string value of the slot must conform to this regular expression expressed in the string
      * Range: [String](String.md)
+     * in subsets: (basic)
+ * [structured_pattern](structured_pattern.md)  <sub>0..1</sub>
+     * Description: the string value of the slot must conform to the regular expression in the pattern expression
+     * Range: [PatternExpression](PatternExpression.md)
  * [equals_string](equals_string.md)  <sub>0..1</sub>
      * Description: the slot must have range string and the value of the slot must equal the specified value
      * Range: [String](String.md)

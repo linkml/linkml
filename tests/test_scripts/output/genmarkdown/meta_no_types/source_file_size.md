@@ -26,4 +26,5 @@ URI: [linkml:source_file_size](https://w3id.org/linkml/source_file_size)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | owl |
+|  | | basic |
 

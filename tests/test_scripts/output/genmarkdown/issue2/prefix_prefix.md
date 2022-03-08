@@ -20,3 +20,10 @@ prefix &#8594;  <sub>1..1</sub> ncname
 ## Used by
 
  * prefix
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

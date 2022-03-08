@@ -21,6 +21,10 @@ fields:
 - id: aliases
   display_name: aliases
   cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
 - id: local_names
   display_name: local_names
   cardinality: multi
@@ -59,6 +63,10 @@ fields:
     have broader meaning.
   display_name: broad mappings
   cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions
@@ -108,6 +116,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also
@@ -186,7 +199,7 @@ fields:
   display_name: readonly
 - id: ifabsent
   description: "function that provides a default value for the slot.  Possible values\
-    \ for this slot are defined in biolink.utils.ifabsent_functions.default_library:\n\
+    \ for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n\
     \  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) --\
     \ integer value\n  * str(value) -- string value\n  * default_range -- schema default\
     \ range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n\
@@ -203,6 +216,18 @@ fields:
     means that an inlined slot is represented as a dictionary, whose key is the slot
     key or identifier and whose value is the range instance.
   display_name: inlined_as_list
+- id: list_elements_unique
+  description: If True, then there must be no duplicates in the elements of a multivalued
+    slot
+  display_name: list_elements_unique
+- id: list_elements_ordered
+  description: If True, then the order of elements of a multivalued slot is guaranteed
+    to be preserved. If False, the order may still be preserved but this is not guaranteed
+  display_name: list_elements_ordered
+- id: shared
+  description: If True, then the relationship between the slot domain and range is
+    many to one or many to many
+  display_name: shared
 - id: key
   description: True means that the key slot(s) uniquely identify the container.
   display_name: key
@@ -231,9 +256,25 @@ fields:
   description: Ontology property which this slot is a subproperty of
   display_name: subproperty_of
 - id: symmetric
-  description: True means that any instance of  d s r implies that there is also an
-    instance of r s d
+  description: If s is symmetric, and i.s=v, then v.s=i
   display_name: symmetric
+- id: reflexive
+  description: If s is reflexive, then i.s=i for all instances i
+  display_name: reflexive
+- id: locally_reflexive
+  description: If s is locally_reflexive, then i.s=i for all instances i where s if
+    a class slot for the type of i
+  display_name: locally_reflexive
+- id: irreflexive
+  description: If s is irreflexive, then there exists no i such i.s=i
+  display_name: irreflexive
+- id: asymmetric
+  description: If s is antisymmetric, and i.s=v where i is different from v, v.s cannot
+    have value i
+  display_name: asymmetric
+- id: transitive
+  description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
+  display_name: transitive
 - id: inverse
   description: indicates that any instance of d s r implies that there is also an
     instance of r s' d
@@ -242,6 +283,14 @@ fields:
   description: indicates that any instance, i,  the domain of this slot will include
     an assert of i s range
   display_name: is_class_field
+- id: transitive_form_of
+  description: If s transitive_form_of d, then (1) s holds whenever d holds (2) s
+    is transitive (3) d holds whenever s holds and there are no intermediates, and
+    s is not reflexive
+  display_name: transitive_form_of
+- id: reflexive_transitive_form_of
+  description: transitive_form_of including the reflexive case
+  display_name: reflexive_transitive_form_of
 - id: role
   description: the role played by the slot range
   display_name: role
@@ -251,6 +300,30 @@ fields:
 - id: usage_slot_name
   description: The name of the slot referenced in the slot_usage
   display_name: usage_slot_name
+- id: relational_role
+  description: the role a slot on a relationship class plays, for example, the subject,
+    object or predicate roles
+  display_name: relational_role
+- id: slot_group
+  description: allows for grouping of related slots into a grouping slot that serves
+    the role of a group
+  display_name: slot_group
+- id: is_grouping_slot
+  description: true if this slot is a grouping slot
+  display_name: is_grouping_slot
+- id: path_rule
+  description: a rule for inferring a slot assignment based on evaluating a path through
+    a sequence of slot assignemnts
+  display_name: path_rule
+- id: disjoint_with
+  description: Two classes are disjoint if they have no instances in common, two slots
+    are disjoint if they can never hold between the same two instances
+  display_name: slot_definition_disjoint_with
+  cardinality: multi
+- id: children_are_mutually_disjoint
+  description: If true then all direct is_a children are mutually disjoint and share
+    no instances in common
+  display_name: children_are_mutually_disjoint
 - id: is_a
   description: specifies single-inheritance between classes or slots. While multiple
     inheritance is not allowed, mixins can be provided effectively providing the same
@@ -300,7 +373,12 @@ fields:
   display_name: maximum_value
 - id: pattern
   description: the string value of the slot must conform to this regular expression
+    expressed in the string
   display_name: pattern
+- id: structured_pattern
+  description: the string value of the slot must conform to the regular expression
+    in the pattern expression
+  display_name: structured_pattern
 - id: equals_string
   description: the slot must have range string and the value of the slot must equal
     the specified value
