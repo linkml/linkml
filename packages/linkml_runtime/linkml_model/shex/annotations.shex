@@ -1,3 +1,5 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
 BASE <https://w3id.org/linkml/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -44,7 +46,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <Annotatable> ] ? ;
           <annotations> @<Annotation> *
        ) ;
-       rdf:type [ <Annotation> ] ?
+       rdf:type [ <Annotation> ]
     )
 }
 
@@ -60,7 +62,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
              <value> @<String> ;
              <extensions> @<Extension> *
           ) ;
-          rdf:type [ <Extension> ] ?
+          rdf:type [ <Extension> ]
        )
     } OR @<Annotation>
 )

@@ -32,6 +32,11 @@ imports:
 
 slots:
   mappings:
+    aliases:
+      - xrefs
+      - identifiers
+      - alternate identifiers
+      - alternate ids
     range: uriorcurie
     multivalued: true
     description: >-

@@ -1,5 +1,16 @@
 {
    "$defs": {
+      "AliasPredicateEnum": {
+         "description": "",
+         "enum": [
+            "EXACT_SYNONYM",
+            "RELATED_SYNONYM",
+            "BROAD_SYNONYM",
+            "NARROW_SYNONYM"
+         ],
+         "title": "AliasPredicateEnum",
+         "type": "string"
+      },
       "AltDescription": {
          "additionalProperties": false,
          "description": "an attributed description",
@@ -44,18 +55,16 @@
          "description": "a tag/value pair with the semantics of OWL Annotation",
          "properties": {
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "tag": {
                "description": "a tag associated with an extension",
@@ -73,13 +82,47 @@
          "title": "Annotation",
          "type": "object"
       },
+      "Annotation__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a tag/value pair with the semantics of OWL Annotation",
+         "properties": {
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "value"
+         ],
+         "title": "Annotation",
+         "type": "object"
+      },
       "AnonymousClassExpression": {
          "additionalProperties": false,
          "description": "",
          "properties": {
             "all_of": {
-               "$ref": "#/$defs/AnonymousClassExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousClassExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -87,11 +130,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -138,11 +180,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -152,12 +193,19 @@
                "description": "the imports entry that this element was derived from.  Empty means primary source",
                "type": "string"
             },
+            "in_language": {
+               "type": "string"
+            },
             "in_subset": {
                "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "is_a": {
+               "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
+               "type": "string"
             },
             "none_of": {
                "description": "holds if none of the expressions hold",
@@ -186,6 +234,14 @@
                },
                "description": "the redefinition of a slot in the context of the containing class definition."
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -202,9 +258,18 @@
          "additionalProperties": false,
          "description": "",
          "properties": {
+            "all_members": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/SlotDefinition__identifier_optional"
+               },
+               "description": "the value of the multiavlued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```"
+            },
             "all_of": {
-               "$ref": "#/$defs/AnonymousSlotExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousSlotExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -212,11 +277,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -248,6 +312,10 @@
                "description": "a description of the element's purpose and use",
                "type": "string"
             },
+            "equals_expression": {
+               "description": "the value of the slot must equal the value of the evaluated expression",
+               "type": "string"
+            },
             "equals_number": {
                "description": "the slot must have range of a number and the value of the slot must equal the specified value",
                "type": "integer"
@@ -255,6 +323,13 @@
             "equals_string": {
                "description": "the slot must have range string and the value of the slot must equal the specified value",
                "type": "string"
+            },
+            "equals_string_in": {
+               "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
             },
             "exactly_one_of": {
                "description": "holds if only one of the expressions hold",
@@ -271,18 +346,24 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
                "type": "string"
             },
+            "has_member": {
+               "$ref": "#/$defs/AnonymousSlotExpression",
+               "description": "the values of the slot is multivalued with at least one member satisfying the condition"
+            },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -292,8 +373,16 @@
                },
                "type": "array"
             },
+            "maximum_cardinality": {
+               "description": "the maximum number of entries for a multivalued slot",
+               "type": "integer"
+            },
             "maximum_value": {
                "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+               "type": "integer"
+            },
+            "minimum_cardinality": {
+               "description": "the minimum number of entries for a multivalued slot",
                "type": "integer"
             },
             "minimum_value": {
@@ -315,7 +404,7 @@
                "type": "array"
             },
             "pattern": {
-               "description": "the string value of the slot must conform to this regular expression",
+               "description": "the string value of the slot must conform to this regular expression expressed in the string",
                "type": "string"
             },
             "range": {
@@ -341,6 +430,18 @@
                },
                "type": "array"
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_pattern": {
+               "$ref": "#/$defs/PatternExpression",
+               "description": "the string value of the slot must conform to the regular expression in the pattern expression"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
@@ -358,8 +459,11 @@
          "description": "",
          "properties": {
             "all_of": {
-               "$ref": "#/$defs/AnonymousTypeExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousTypeExpression"
+               },
+               "type": "array"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -376,12 +480,27 @@
                "description": "the slot must have range string and the value of the slot must equal the specified value",
                "type": "string"
             },
+            "equals_string_in": {
+               "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "exactly_one_of": {
                "description": "holds if only one of the expressions hold",
                "items": {
                   "$ref": "#/$defs/AnonymousTypeExpression"
                },
                "type": "array"
+            },
+            "maximum_value": {
+               "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+               "type": "integer"
+            },
+            "minimum_value": {
+               "description": "for slots with ranges of type number, the value must be equal to or higher than this",
+               "type": "integer"
             },
             "none_of": {
                "description": "holds if none of the expressions hold",
@@ -391,8 +510,12 @@
                "type": "array"
             },
             "pattern": {
-               "description": "the string value of the slot must conform to this regular expression",
+               "description": "the string value of the slot must conform to this regular expression expressed in the string",
                "type": "string"
+            },
+            "structured_pattern": {
+               "$ref": "#/$defs/PatternExpression",
+               "description": "the string value of the slot must conform to the regular expression in the pattern expression"
             }
          },
          "required": [],
@@ -414,8 +537,11 @@
                "type": "array"
             },
             "all_of": {
-               "$ref": "#/$defs/AnonymousClassExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousClassExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -423,11 +549,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -456,6 +581,10 @@
                },
                "type": "array"
             },
+            "children_are_mutually_disjoint": {
+               "description": "If true then all direct is_a children are mutually disjoint and share no instances in common",
+               "type": "boolean"
+            },
             "class_uri": {
                "description": "URI of the class in an RDF environment",
                "type": "string"
@@ -463,7 +592,7 @@
             "classification_rules": {
                "description": "the collection of classification rules that apply to all members of this class",
                "items": {
-                  "$ref": "#/$defs/ClassificationRule"
+                  "$ref": "#/$defs/AnonymousClassExpression"
                },
                "type": "array"
             },
@@ -521,6 +650,13 @@
                "description": "a description of the element's purpose and use",
                "type": "string"
             },
+            "disjoint_with": {
+               "description": "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "exact_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                "items": {
@@ -543,11 +679,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -562,6 +697,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -632,12 +770,20 @@
                },
                "type": "array"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "represents_relationship": {
+               "description": "true if this class represents a relationship rather than an entity",
+               "type": "boolean"
             },
             "rules": {
                "description": "the collection of rules that apply to all members of this class",
@@ -659,6 +805,10 @@
                },
                "description": "the redefinition of a slot in the context of the containing class definition."
             },
+            "slot_names_unique": {
+               "description": "if true then induced/mangled slot names are not created for class_usage and attributes",
+               "type": "boolean"
+            },
             "slot_usage": {
                "additionalProperties": {
                   "$ref": "#/$defs/SlotDefinition__identifier_optional"
@@ -672,6 +822,10 @@
                },
                "type": "array"
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
             "status": {
                "description": "status of the element",
                "type": "string"
@@ -679,6 +833,13 @@
             "string_serialization": {
                "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
                "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
             },
             "subclass_of": {
                "description": "rdfs:subClassOf to be emitted in OWL generation",
@@ -707,11 +868,10 @@
                "type": "array"
             },
             "unique_keys": {
-               "description": "Set of unique keys for this slot",
-               "items": {
-                  "$ref": "#/$defs/UniqueKey"
+               "additionalProperties": {
+                  "$ref": "#/$defs/UniqueKey__identifier_optional"
                },
-               "type": "array"
+               "description": "Set of unique keys for this slot"
             },
             "values_from": {
                "description": "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot",
@@ -742,8 +902,11 @@
                "type": "array"
             },
             "all_of": {
-               "$ref": "#/$defs/AnonymousClassExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousClassExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -751,11 +914,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -784,6 +946,10 @@
                },
                "type": "array"
             },
+            "children_are_mutually_disjoint": {
+               "description": "If true then all direct is_a children are mutually disjoint and share no instances in common",
+               "type": "boolean"
+            },
             "class_uri": {
                "description": "URI of the class in an RDF environment",
                "type": "string"
@@ -791,7 +957,7 @@
             "classification_rules": {
                "description": "the collection of classification rules that apply to all members of this class",
                "items": {
-                  "$ref": "#/$defs/ClassificationRule"
+                  "$ref": "#/$defs/AnonymousClassExpression"
                },
                "type": "array"
             },
@@ -849,6 +1015,13 @@
                "description": "a description of the element's purpose and use",
                "type": "string"
             },
+            "disjoint_with": {
+               "description": "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "exact_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                "items": {
@@ -871,11 +1044,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -890,6 +1062,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -960,12 +1135,20 @@
                },
                "type": "array"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "represents_relationship": {
+               "description": "true if this class represents a relationship rather than an entity",
+               "type": "boolean"
             },
             "rules": {
                "description": "the collection of rules that apply to all members of this class",
@@ -987,6 +1170,10 @@
                },
                "description": "the redefinition of a slot in the context of the containing class definition."
             },
+            "slot_names_unique": {
+               "description": "if true then induced/mangled slot names are not created for class_usage and attributes",
+               "type": "boolean"
+            },
             "slot_usage": {
                "additionalProperties": {
                   "$ref": "#/$defs/SlotDefinition__identifier_optional"
@@ -1000,6 +1187,10 @@
                },
                "type": "array"
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
             "status": {
                "description": "status of the element",
                "type": "string"
@@ -1007,6 +1198,13 @@
             "string_serialization": {
                "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
                "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
             },
             "subclass_of": {
                "description": "rdfs:subClassOf to be emitted in OWL generation",
@@ -1035,11 +1233,10 @@
                "type": "array"
             },
             "unique_keys": {
-               "description": "Set of unique keys for this slot",
-               "items": {
-                  "$ref": "#/$defs/UniqueKey"
+               "additionalProperties": {
+                  "$ref": "#/$defs/UniqueKey__identifier_optional"
                },
-               "type": "array"
+               "description": "Set of unique keys for this slot"
             },
             "values_from": {
                "description": "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot",
@@ -1063,11 +1260,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "bidirectional": {
                "description": "in addition to preconditions entailing postconditions, the postconditions entail the preconditions",
@@ -1112,11 +1308,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -1124,6 +1319,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -1148,13 +1346,13 @@
                "$ref": "#/$defs/AnonymousClassExpression",
                "description": "an expression that must hold for an instance of the class, if the preconditions hold"
             },
-            "precedence": {
-               "description": "the relative order in which the rule is applied",
-               "type": "integer"
-            },
             "preconditions": {
                "$ref": "#/$defs/AnonymousClassExpression",
                "description": "an expression that must hold in order for the rule to be applicable to an instance"
+            },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
             },
             "see_also": {
                "description": "a reference",
@@ -1162,6 +1360,14 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
             },
             "todos": {
                "description": "Outstanding issue that needs resolution",
@@ -1173,109 +1379,6 @@
          },
          "required": [],
          "title": "ClassRule",
-         "type": "object"
-      },
-      "ClassificationRule": {
-         "additionalProperties": false,
-         "description": "A rule that determines how to automatically classify an instance as a member of a class",
-         "properties": {
-            "alt_descriptions": {
-               "additionalProperties": {
-                  "$ref": "#/$defs/AltDescription__identifier_optional"
-               }
-            },
-            "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
-               },
-               "type": "array"
-            },
-            "comments": {
-               "description": "notes and comments about an element intended for external consumption",
-               "items": {
-                  "type": "string"
-               },
-               "type": "array"
-            },
-            "deprecated": {
-               "description": "Description of why and when this element will no longer be used",
-               "type": "string"
-            },
-            "deprecated_element_has_exact_replacement": {
-               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
-               "type": "string"
-            },
-            "deprecated_element_has_possible_replacement": {
-               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
-               "type": "string"
-            },
-            "description": {
-               "description": "a description of the element's purpose and use",
-               "type": "string"
-            },
-            "examples": {
-               "description": "example usages of an element",
-               "items": {
-                  "$ref": "#/$defs/Example"
-               },
-               "type": "array"
-            },
-            "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
-               },
-               "type": "array"
-            },
-            "from_schema": {
-               "description": "id of the schema that defined the element",
-               "type": "string"
-            },
-            "imported_from": {
-               "description": "the imports entry that this element was derived from.  Empty means primary source",
-               "type": "string"
-            },
-            "in_subset": {
-               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
-               "items": {
-                  "type": "string"
-               },
-               "type": "array"
-            },
-            "instance_of": {
-               "type": "string"
-            },
-            "notes": {
-               "description": "editorial notes about an element intended for internal consumption",
-               "items": {
-                  "type": "string"
-               },
-               "type": "array"
-            },
-            "see_also": {
-               "description": "a reference",
-               "items": {
-                  "type": "string"
-               },
-               "type": "array"
-            },
-            "slot_conditions": {
-               "additionalProperties": {
-                  "$ref": "#/$defs/SlotDefinition__identifier_optional"
-               },
-               "description": "an expression that must hold in order for the classification rule to take effect"
-            },
-            "todos": {
-               "description": "Outstanding issue that needs resolution",
-               "items": {
-                  "type": "string"
-               },
-               "type": "array"
-            }
-         },
-         "required": [],
-         "title": "ClassificationRule",
          "type": "object"
       },
       "EnumDefinition": {
@@ -1294,11 +1397,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
@@ -1372,11 +1474,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -1391,6 +1492,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -1440,6 +1544,10 @@
                "$ref": "#/$defs/PvFormulaOptions",
                "description": "Defines the specific formula to be used to generate the permissible values."
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -1451,6 +1559,17 @@
                "description": "a reference",
                "items": {
                   "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
                },
                "type": "array"
             },
@@ -1488,11 +1607,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
@@ -1566,11 +1684,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -1585,6 +1702,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -1634,6 +1754,10 @@
                "$ref": "#/$defs/PvFormulaOptions",
                "description": "Defines the specific formula to be used to generate the permissible values."
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -1645,6 +1769,17 @@
                "description": "a reference",
                "items": {
                   "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
                },
                "type": "array"
             },
@@ -1686,11 +1821,10 @@
          "description": "a tag/value pair used to add non-model information to an entry",
          "properties": {
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "tag": {
                "description": "a tag associated with an extension",
@@ -1706,6 +1840,147 @@
             "value"
          ],
          "title": "Extension",
+         "type": "object"
+      },
+      "Extension__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a tag/value pair used to add non-model information to an entry",
+         "properties": {
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "value"
+         ],
+         "title": "Extension",
+         "type": "object"
+      },
+      "ImportExpression": {
+         "additionalProperties": false,
+         "description": "an expression describing an import",
+         "properties": {
+            "alt_descriptions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/AltDescription__identifier_optional"
+               }
+            },
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "comments": {
+               "description": "notes and comments about an element intended for external consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "deprecated": {
+               "description": "Description of why and when this element will no longer be used",
+               "type": "string"
+            },
+            "deprecated_element_has_exact_replacement": {
+               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+               "type": "string"
+            },
+            "deprecated_element_has_possible_replacement": {
+               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+               "type": "string"
+            },
+            "description": {
+               "description": "a description of the element's purpose and use",
+               "type": "string"
+            },
+            "examples": {
+               "description": "example usages of an element",
+               "items": {
+                  "$ref": "#/$defs/Example"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "from_schema": {
+               "description": "id of the schema that defined the element",
+               "type": "string"
+            },
+            "import_as": {
+               "type": "string"
+            },
+            "import_from": {
+               "type": "string"
+            },
+            "import_map": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Setting__identifier_optional"
+               }
+            },
+            "imported_from": {
+               "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
+               "type": "string"
+            },
+            "in_subset": {
+               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "notes": {
+               "description": "editorial notes about an element intended for internal consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "see_also": {
+               "description": "a reference",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
+            "todos": {
+               "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            }
+         },
+         "required": [
+            "import_from"
+         ],
+         "title": "ImportExpression",
          "type": "object"
       },
       "LocalName": {
@@ -1747,9 +2022,156 @@
          "title": "LocalName",
          "type": "object"
       },
-      "PermissibleValue": {
+      "PathExpression": {
          "additionalProperties": false,
-         "description": "a permissible value, accompanied by intended text and an optional mapping to a concept URI",
+         "description": "An expression that describes an abstract path from an object to another through a sequence of slot lookups",
+         "properties": {
+            "all_of": {
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/PathExpression"
+               },
+               "type": "array"
+            },
+            "alt_descriptions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/AltDescription__identifier_optional"
+               }
+            },
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "any_of": {
+               "description": "holds if at least one of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/PathExpression"
+               },
+               "type": "array"
+            },
+            "comments": {
+               "description": "notes and comments about an element intended for external consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "deprecated": {
+               "description": "Description of why and when this element will no longer be used",
+               "type": "string"
+            },
+            "deprecated_element_has_exact_replacement": {
+               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+               "type": "string"
+            },
+            "deprecated_element_has_possible_replacement": {
+               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+               "type": "string"
+            },
+            "description": {
+               "description": "a description of the element's purpose and use",
+               "type": "string"
+            },
+            "exactly_one_of": {
+               "description": "holds if only one of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/PathExpression"
+               },
+               "type": "array"
+            },
+            "examples": {
+               "description": "example usages of an element",
+               "items": {
+                  "$ref": "#/$defs/Example"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "followed_by": {
+               "$ref": "#/$defs/PathExpression",
+               "description": "in a sequential list, this indicates the next member"
+            },
+            "from_schema": {
+               "description": "id of the schema that defined the element",
+               "type": "string"
+            },
+            "imported_from": {
+               "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
+               "type": "string"
+            },
+            "in_subset": {
+               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "none_of": {
+               "description": "holds if none of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/PathExpression"
+               },
+               "type": "array"
+            },
+            "notes": {
+               "description": "editorial notes about an element intended for internal consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "range_expression": {
+               "$ref": "#/$defs/AnonymousClassExpression",
+               "description": "A range that is described as a boolean expression combining existing ranges"
+            },
+            "reversed": {
+               "description": "true if the slot is to be inversed",
+               "type": "boolean"
+            },
+            "see_also": {
+               "description": "a reference",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
+            "todos": {
+               "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "traverse": {
+               "description": "the slot to traverse",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "PathExpression",
+         "type": "object"
+      },
+      "PatternExpression": {
+         "additionalProperties": false,
+         "description": "a regular expression pattern used to evaluate conformance of a string",
          "properties": {
             "alt_descriptions": {
                "additionalProperties": {
@@ -1757,11 +2179,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "comments": {
                "description": "notes and comments about an element intended for external consumption",
@@ -1794,11 +2215,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -1806,6 +2226,124 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
+               "type": "string"
+            },
+            "in_subset": {
+               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "interpolated": {
+               "description": "if true then the pattern is first string interpolated",
+               "type": "boolean"
+            },
+            "notes": {
+               "description": "editorial notes about an element intended for internal consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "partial_match": {
+               "description": "if true then the pattern must match the whole string, as if enclosed in ^...$",
+               "type": "boolean"
+            },
+            "see_also": {
+               "description": "a reference",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "syntax": {
+               "description": "the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
+            "todos": {
+               "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            }
+         },
+         "required": [],
+         "title": "PatternExpression",
+         "type": "object"
+      },
+      "PermissibleValue": {
+         "additionalProperties": false,
+         "description": "a permissible value, accompanied by intended text and an optional mapping to a concept URI",
+         "properties": {
+            "alt_descriptions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/AltDescription__identifier_optional"
+               }
+            },
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "comments": {
+               "description": "notes and comments about an element intended for external consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "deprecated": {
+               "description": "Description of why and when this element will no longer be used",
+               "type": "string"
+            },
+            "deprecated_element_has_exact_replacement": {
+               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+               "type": "string"
+            },
+            "deprecated_element_has_possible_replacement": {
+               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+               "type": "string"
+            },
+            "description": {
+               "description": "a description of the element's purpose and use",
+               "type": "string"
+            },
+            "examples": {
+               "description": "example usages of an element",
+               "items": {
+                  "$ref": "#/$defs/Example"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "from_schema": {
+               "description": "id of the schema that defined the element",
+               "type": "string"
+            },
+            "imported_from": {
+               "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -1820,7 +2358,7 @@
                "type": "string"
             },
             "meaning": {
-               "description": "the value meaning (in the 11179 sense) of a permissible value",
+               "description": "the value meaning of a permissible value",
                "type": "string"
             },
             "mixins": {
@@ -1844,7 +2382,15 @@
                },
                "type": "array"
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
             "text": {
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
                "type": "string"
             },
             "todos": {
@@ -1871,11 +2417,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "comments": {
                "description": "notes and comments about an element intended for external consumption",
@@ -1908,11 +2453,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -1920,6 +2464,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -1934,7 +2481,7 @@
                "type": "string"
             },
             "meaning": {
-               "description": "the value meaning (in the 11179 sense) of a permissible value",
+               "description": "the value meaning of a permissible value",
                "type": "string"
             },
             "mixins": {
@@ -1958,7 +2505,15 @@
                },
                "type": "array"
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
             "text": {
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
                "type": "string"
             },
             "todos": {
@@ -2033,6 +2588,18 @@
          "title": "PvFormulaOptions",
          "type": "string"
       },
+      "RelationalRoleEnum": {
+         "description": "enumeration of roles a slot on a relationship class can play",
+         "enum": [
+            "SUBJECT",
+            "OBJECT",
+            "PREDICATE",
+            "NODE",
+            "OTHER_ROLE"
+         ],
+         "title": "RelationalRoleEnum",
+         "type": "string"
+      },
       "SchemaDefinition": {
          "additionalProperties": false,
          "description": "a collection of subset, type, slot and class definitions",
@@ -2049,14 +2616,20 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "categories": {
+               "description": "controlled terms used to categorize an element",
                "items": {
                   "type": "string"
                },
@@ -2149,11 +2722,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -2186,8 +2758,18 @@
                },
                "type": "array"
             },
+            "in_language": {
+               "type": "string"
+            },
             "in_subset": {
                "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "keywords": {
+               "description": "Keywords or tags used to describe the element",
                "items": {
                   "type": "string"
                },
@@ -2237,6 +2819,10 @@
                },
                "description": "prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -2251,11 +2837,25 @@
                },
                "type": "array"
             },
+            "settings": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Setting__identifier_optional"
+               },
+               "description": "A collection of global variable settings"
+            },
+            "slot_names_unique": {
+               "description": "if true then induced/mangled slot names are not created for class_usage and attributes",
+               "type": "boolean"
+            },
             "slots": {
                "additionalProperties": {
                   "$ref": "#/$defs/SlotDefinition__identifier_optional"
                },
                "description": "slot definitions"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
             },
             "source_file": {
                "description": "name, uri or description of the source of the schema",
@@ -2269,6 +2869,13 @@
             "source_file_size": {
                "description": "size in bytes of the source of the schema",
                "type": "integer"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
             },
             "subsets": {
                "additionalProperties": {
@@ -2305,6 +2912,45 @@
          "title": "SchemaDefinition",
          "type": "object"
       },
+      "Setting": {
+         "additionalProperties": false,
+         "description": "assignment of a key to a value",
+         "properties": {
+            "setting_key": {
+               "description": "the variable name for a setting",
+               "type": "string"
+            },
+            "setting_value": {
+               "description": "The value assigned for a setting",
+               "type": "string"
+            }
+         },
+         "required": [
+            "setting_key",
+            "setting_value"
+         ],
+         "title": "Setting",
+         "type": "object"
+      },
+      "Setting__identifier_optional": {
+         "additionalProperties": false,
+         "description": "assignment of a key to a value",
+         "properties": {
+            "setting_key": {
+               "description": "the variable name for a setting",
+               "type": "string"
+            },
+            "setting_value": {
+               "description": "The value assigned for a setting",
+               "type": "string"
+            }
+         },
+         "required": [
+            "setting_value"
+         ],
+         "title": "Setting",
+         "type": "object"
+      },
       "SlotDefinition": {
          "additionalProperties": false,
          "description": "the definition of a property or a slot",
@@ -2323,9 +2969,18 @@
                },
                "type": "array"
             },
+            "all_members": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/SlotDefinition__identifier_optional"
+               },
+               "description": "the value of the multiavlued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```"
+            },
             "all_of": {
-               "$ref": "#/$defs/AnonymousSlotExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousSlotExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -2333,11 +2988,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -2353,12 +3007,20 @@
                },
                "type": "array"
             },
+            "asymmetric": {
+               "description": "If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i",
+               "type": "boolean"
+            },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "children_are_mutually_disjoint": {
+               "description": "If true then all direct is_a children are mutually disjoint and share no instances in common",
+               "type": "boolean"
             },
             "close_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have close meaning.",
@@ -2411,6 +3073,13 @@
                "description": "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition",
                "type": "boolean"
             },
+            "disjoint_with": {
+               "description": "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "domain": {
                "description": "defines the type of the subject of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts that X is an instance of C1\n",
                "type": "string"
@@ -2422,6 +3091,10 @@
                },
                "type": "array"
             },
+            "equals_expression": {
+               "description": "the value of the slot must equal the value of the evaluated expression",
+               "type": "string"
+            },
             "equals_number": {
                "description": "the slot must have range of a number and the value of the slot must equal the specified value",
                "type": "integer"
@@ -2429,6 +3102,13 @@
             "equals_string": {
                "description": "the slot must have range string and the value of the slot must equal the specified value",
                "type": "string"
+            },
+            "equals_string_in": {
+               "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
             },
             "exact_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
@@ -2452,15 +3132,18 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
                "type": "string"
+            },
+            "has_member": {
+               "$ref": "#/$defs/AnonymousSlotExpression",
+               "description": "the values of the slot is multivalued with at least one member satisfying the condition"
             },
             "id_prefixes": {
                "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
@@ -2474,11 +3157,14 @@
                "type": "boolean"
             },
             "ifabsent": {
-               "description": "function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) -- integer value\n  * str(value) -- string value\n  * default_range -- schema default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class",
+               "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) -- integer value\n  * str(value) -- string value\n  * default_range -- schema default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class",
                "type": "string"
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -2504,12 +3190,20 @@
                "description": "indicates that any instance of d s r implies that there is also an instance of r s' d",
                "type": "string"
             },
+            "irreflexive": {
+               "description": "If s is irreflexive, then there exists no i such i.s=i",
+               "type": "boolean"
+            },
             "is_a": {
                "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
                "type": "string"
             },
             "is_class_field": {
                "description": "indicates that any instance, i,  the domain of this slot will include an assert of i s range",
+               "type": "boolean"
+            },
+            "is_grouping_slot": {
+               "description": "true if this slot is a grouping slot",
                "type": "boolean"
             },
             "is_usage_slot": {
@@ -2525,10 +3219,22 @@
                "format": "date-time",
                "type": "string"
             },
+            "list_elements_ordered": {
+               "description": "If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed",
+               "type": "boolean"
+            },
+            "list_elements_unique": {
+               "description": "If True, then there must be no duplicates in the elements of a multivalued slot",
+               "type": "boolean"
+            },
             "local_names": {
                "additionalProperties": {
                   "$ref": "#/$defs/LocalName__identifier_optional"
                }
+            },
+            "locally_reflexive": {
+               "description": "If s is locally_reflexive, then i.s=i for all instances i where s if a class slot for the type of i",
+               "type": "boolean"
             },
             "mappings": {
                "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
@@ -2537,8 +3243,16 @@
                },
                "type": "array"
             },
+            "maximum_cardinality": {
+               "description": "the maximum number of entries for a multivalued slot",
+               "type": "integer"
+            },
             "maximum_value": {
                "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+               "type": "integer"
+            },
+            "minimum_cardinality": {
+               "description": "the minimum number of entries for a multivalued slot",
                "type": "integer"
             },
             "minimum_value": {
@@ -2593,8 +3307,12 @@
                "description": "the \"owner\" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot",
                "type": "string"
             },
+            "path_rule": {
+               "$ref": "#/$defs/PathExpression",
+               "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts"
+            },
             "pattern": {
-               "description": "the string value of the slot must conform to this regular expression",
+               "description": "the string value of the slot must conform to this regular expression expressed in the string",
                "type": "string"
             },
             "range": {
@@ -2605,6 +3323,10 @@
                "$ref": "#/$defs/AnonymousClassExpression",
                "description": "A range that is described as a boolean expression combining existing ranges"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "readonly": {
                "description": "If present, slot is read only.  Text explains why",
                "type": "string"
@@ -2613,12 +3335,24 @@
                "description": "true means that the slot should be present in the loaded definition, but this is not required",
                "type": "boolean"
             },
+            "reflexive": {
+               "description": "If s is reflexive, then i.s=i for all instances i",
+               "type": "boolean"
+            },
+            "reflexive_transitive_form_of": {
+               "description": "transitive_form_of including the reflexive case",
+               "type": "string"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "relational_role": {
+               "$ref": "#/$defs/RelationalRoleEnum",
+               "description": "the role a slot on a relationship class plays, for example, the subject, object or predicate roles"
             },
             "required": {
                "description": "true means that the slot must be present in the loaded definition",
@@ -2635,12 +3369,24 @@
                },
                "type": "array"
             },
+            "shared": {
+               "description": "If True, then the relationship between the slot domain and range is many to one or many to many",
+               "type": "boolean"
+            },
             "singular_name": {
                "description": "a name that is used in the singular form",
                "type": "string"
             },
+            "slot_group": {
+               "description": "allows for grouping of related slots into a grouping slot that serves the role of a group",
+               "type": "string"
+            },
             "slot_uri": {
                "description": "predicate of this slot for semantic web application",
+               "type": "string"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
                "type": "string"
             },
             "status": {
@@ -2651,12 +3397,23 @@
                "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
                "type": "string"
             },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
+            },
+            "structured_pattern": {
+               "$ref": "#/$defs/PatternExpression",
+               "description": "the string value of the slot must conform to the regular expression in the pattern expression"
+            },
             "subproperty_of": {
                "description": "Ontology property which this slot is a subproperty of",
                "type": "string"
             },
             "symmetric": {
-               "description": "True means that any instance of  d s r implies that there is also an instance of r s d",
+               "description": "If s is symmetric, and i.s=v, then v.s=i",
                "type": "boolean"
             },
             "title": {
@@ -2669,6 +3426,14 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "transitive": {
+               "description": "If s is transitive, and i.s=z, and s.s=j, then i.s=j",
+               "type": "boolean"
+            },
+            "transitive_form_of": {
+               "description": "If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive",
+               "type": "string"
             },
             "usage_slot_name": {
                "description": "The name of the slot referenced in the slot_usage",
@@ -2706,9 +3471,18 @@
                },
                "type": "array"
             },
+            "all_members": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/SlotDefinition__identifier_optional"
+               },
+               "description": "the value of the multiavlued slot is a list where all elements conform to the specified values.\nthis defines a dynamic class with named slots according to matching constraints\n\nE.g to state that all members of a list are between 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n    maximum_value: 10\n```"
+            },
             "all_of": {
-               "$ref": "#/$defs/AnonymousSlotExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousSlotExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -2716,11 +3490,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -2736,12 +3509,20 @@
                },
                "type": "array"
             },
+            "asymmetric": {
+               "description": "If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i",
+               "type": "boolean"
+            },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "children_are_mutually_disjoint": {
+               "description": "If true then all direct is_a children are mutually disjoint and share no instances in common",
+               "type": "boolean"
             },
             "close_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have close meaning.",
@@ -2794,6 +3575,13 @@
                "description": "True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition",
                "type": "boolean"
             },
+            "disjoint_with": {
+               "description": "Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "domain": {
                "description": "defines the type of the subject of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts that X is an instance of C1\n",
                "type": "string"
@@ -2805,6 +3593,10 @@
                },
                "type": "array"
             },
+            "equals_expression": {
+               "description": "the value of the slot must equal the value of the evaluated expression",
+               "type": "string"
+            },
             "equals_number": {
                "description": "the slot must have range of a number and the value of the slot must equal the specified value",
                "type": "integer"
@@ -2812,6 +3604,13 @@
             "equals_string": {
                "description": "the slot must have range string and the value of the slot must equal the specified value",
                "type": "string"
+            },
+            "equals_string_in": {
+               "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
             },
             "exact_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
@@ -2835,15 +3634,18 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
                "type": "string"
+            },
+            "has_member": {
+               "$ref": "#/$defs/AnonymousSlotExpression",
+               "description": "the values of the slot is multivalued with at least one member satisfying the condition"
             },
             "id_prefixes": {
                "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
@@ -2857,11 +3659,14 @@
                "type": "boolean"
             },
             "ifabsent": {
-               "description": "function that provides a default value for the slot.  Possible values for this slot are defined in biolink.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) -- integer value\n  * str(value) -- string value\n  * default_range -- schema default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class",
+               "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) -- integer value\n  * str(value) -- string value\n  * default_range -- schema default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class",
                "type": "string"
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -2887,12 +3692,20 @@
                "description": "indicates that any instance of d s r implies that there is also an instance of r s' d",
                "type": "string"
             },
+            "irreflexive": {
+               "description": "If s is irreflexive, then there exists no i such i.s=i",
+               "type": "boolean"
+            },
             "is_a": {
                "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
                "type": "string"
             },
             "is_class_field": {
                "description": "indicates that any instance, i,  the domain of this slot will include an assert of i s range",
+               "type": "boolean"
+            },
+            "is_grouping_slot": {
+               "description": "true if this slot is a grouping slot",
                "type": "boolean"
             },
             "is_usage_slot": {
@@ -2908,10 +3721,22 @@
                "format": "date-time",
                "type": "string"
             },
+            "list_elements_ordered": {
+               "description": "If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed",
+               "type": "boolean"
+            },
+            "list_elements_unique": {
+               "description": "If True, then there must be no duplicates in the elements of a multivalued slot",
+               "type": "boolean"
+            },
             "local_names": {
                "additionalProperties": {
                   "$ref": "#/$defs/LocalName__identifier_optional"
                }
+            },
+            "locally_reflexive": {
+               "description": "If s is locally_reflexive, then i.s=i for all instances i where s if a class slot for the type of i",
+               "type": "boolean"
             },
             "mappings": {
                "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
@@ -2920,8 +3745,16 @@
                },
                "type": "array"
             },
+            "maximum_cardinality": {
+               "description": "the maximum number of entries for a multivalued slot",
+               "type": "integer"
+            },
             "maximum_value": {
                "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+               "type": "integer"
+            },
+            "minimum_cardinality": {
+               "description": "the minimum number of entries for a multivalued slot",
                "type": "integer"
             },
             "minimum_value": {
@@ -2976,8 +3809,12 @@
                "description": "the \"owner\" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot",
                "type": "string"
             },
+            "path_rule": {
+               "$ref": "#/$defs/PathExpression",
+               "description": "a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts"
+            },
             "pattern": {
-               "description": "the string value of the slot must conform to this regular expression",
+               "description": "the string value of the slot must conform to this regular expression expressed in the string",
                "type": "string"
             },
             "range": {
@@ -2988,6 +3825,10 @@
                "$ref": "#/$defs/AnonymousClassExpression",
                "description": "A range that is described as a boolean expression combining existing ranges"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "readonly": {
                "description": "If present, slot is read only.  Text explains why",
                "type": "string"
@@ -2996,12 +3837,24 @@
                "description": "true means that the slot should be present in the loaded definition, but this is not required",
                "type": "boolean"
             },
+            "reflexive": {
+               "description": "If s is reflexive, then i.s=i for all instances i",
+               "type": "boolean"
+            },
+            "reflexive_transitive_form_of": {
+               "description": "transitive_form_of including the reflexive case",
+               "type": "string"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "relational_role": {
+               "$ref": "#/$defs/RelationalRoleEnum",
+               "description": "the role a slot on a relationship class plays, for example, the subject, object or predicate roles"
             },
             "required": {
                "description": "true means that the slot must be present in the loaded definition",
@@ -3018,12 +3871,24 @@
                },
                "type": "array"
             },
+            "shared": {
+               "description": "If True, then the relationship between the slot domain and range is many to one or many to many",
+               "type": "boolean"
+            },
             "singular_name": {
                "description": "a name that is used in the singular form",
                "type": "string"
             },
+            "slot_group": {
+               "description": "allows for grouping of related slots into a grouping slot that serves the role of a group",
+               "type": "string"
+            },
             "slot_uri": {
                "description": "predicate of this slot for semantic web application",
+               "type": "string"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
                "type": "string"
             },
             "status": {
@@ -3034,12 +3899,23 @@
                "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
                "type": "string"
             },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
+            },
+            "structured_pattern": {
+               "$ref": "#/$defs/PatternExpression",
+               "description": "the string value of the slot must conform to the regular expression in the pattern expression"
+            },
             "subproperty_of": {
                "description": "Ontology property which this slot is a subproperty of",
                "type": "string"
             },
             "symmetric": {
-               "description": "True means that any instance of  d s r implies that there is also an instance of r s d",
+               "description": "If s is symmetric, and i.s=v, then v.s=i",
                "type": "boolean"
             },
             "title": {
@@ -3052,6 +3928,14 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "transitive": {
+               "description": "If s is transitive, and i.s=z, and s.s=j, then i.s=j",
+               "type": "boolean"
+            },
+            "transitive_form_of": {
+               "description": "If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive",
+               "type": "string"
             },
             "usage_slot_name": {
                "description": "The name of the slot referenced in the slot_usage",
@@ -3067,6 +3951,126 @@
          },
          "required": [],
          "title": "SlotDefinition",
+         "type": "object"
+      },
+      "StructuredAlias": {
+         "additionalProperties": false,
+         "description": "object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)",
+         "properties": {
+            "alt_descriptions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/AltDescription__identifier_optional"
+               }
+            },
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "categories": {
+               "description": "The category or categories of an alias. This can be drawn from any relevant vocabulary",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "comments": {
+               "description": "notes and comments about an element intended for external consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "deprecated": {
+               "description": "Description of why and when this element will no longer be used",
+               "type": "string"
+            },
+            "deprecated_element_has_exact_replacement": {
+               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+               "type": "string"
+            },
+            "deprecated_element_has_possible_replacement": {
+               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+               "type": "string"
+            },
+            "description": {
+               "description": "a description of the element's purpose and use",
+               "type": "string"
+            },
+            "examples": {
+               "description": "example usages of an element",
+               "items": {
+                  "$ref": "#/$defs/Example"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "from_schema": {
+               "description": "id of the schema that defined the element",
+               "type": "string"
+            },
+            "imported_from": {
+               "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
+               "type": "string"
+            },
+            "in_subset": {
+               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "literal_form": {
+               "description": "The literal lexical form of a structured alias",
+               "type": "string"
+            },
+            "notes": {
+               "description": "editorial notes about an element intended for internal consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "predicate": {
+               "$ref": "#/$defs/AliasPredicateEnum",
+               "description": "The relationship between an element and its alias "
+            },
+            "see_also": {
+               "description": "a reference",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
+            "todos": {
+               "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            }
+         },
+         "required": [
+            "literal_form"
+         ],
+         "title": "StructuredAlias",
          "type": "object"
       },
       "SubsetDefinition": {
@@ -3085,11 +4089,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
@@ -3151,11 +4154,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -3170,6 +4172,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -3209,6 +4214,10 @@
                },
                "type": "array"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -3220,6 +4229,17 @@
                "description": "a reference",
                "items": {
                   "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
                },
                "type": "array"
             },
@@ -3257,11 +4277,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
@@ -3323,11 +4342,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -3342,6 +4360,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -3381,6 +4402,10 @@
                },
                "type": "array"
             },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
+            },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
                "items": {
@@ -3392,6 +4417,17 @@
                "description": "a reference",
                "items": {
                   "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
                },
                "type": "array"
             },
@@ -3422,8 +4458,11 @@
                "type": "array"
             },
             "all_of": {
-               "$ref": "#/$defs/AnonymousTypeExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousTypeExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -3431,11 +4470,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -3501,6 +4539,13 @@
                "description": "the slot must have range string and the value of the slot must equal the specified value",
                "type": "string"
             },
+            "equals_string_in": {
+               "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "exact_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                "items": {
@@ -3523,11 +4568,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -3542,6 +4586,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -3562,6 +4609,14 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "maximum_value": {
+               "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+               "type": "integer"
+            },
+            "minimum_value": {
+               "description": "for slots with ranges of type number, the value must be equal to or higher than this",
+               "type": "integer"
             },
             "name": {
                "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
@@ -3589,8 +4644,12 @@
                "type": "array"
             },
             "pattern": {
-               "description": "the string value of the slot must conform to this regular expression",
+               "description": "the string value of the slot must conform to this regular expression expressed in the string",
                "type": "string"
+            },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
             },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
@@ -3609,6 +4668,21 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
+            },
+            "structured_pattern": {
+               "$ref": "#/$defs/PatternExpression",
+               "description": "the string value of the slot must conform to the regular expression in the pattern expression"
             },
             "title": {
                "description": "the official title of the element",
@@ -3647,8 +4721,11 @@
                "type": "array"
             },
             "all_of": {
-               "$ref": "#/$defs/AnonymousTypeExpression",
-               "description": "holds if all of the expressions hold"
+               "description": "holds if all of the expressions hold",
+               "items": {
+                  "$ref": "#/$defs/AnonymousTypeExpression"
+               },
+               "type": "array"
             },
             "alt_descriptions": {
                "additionalProperties": {
@@ -3656,11 +4733,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "any_of": {
                "description": "holds if at least one of the expressions hold",
@@ -3726,6 +4802,13 @@
                "description": "the slot must have range string and the value of the slot must equal the specified value",
                "type": "string"
             },
+            "equals_string_in": {
+               "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
             "exact_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
                "items": {
@@ -3748,11 +4831,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -3767,6 +4849,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -3787,6 +4872,14 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "maximum_value": {
+               "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
+               "type": "integer"
+            },
+            "minimum_value": {
+               "description": "for slots with ranges of type number, the value must be equal to or higher than this",
+               "type": "integer"
             },
             "name": {
                "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
@@ -3814,8 +4907,12 @@
                "type": "array"
             },
             "pattern": {
-               "description": "the string value of the slot must conform to this regular expression",
+               "description": "the string value of the slot must conform to this regular expression expressed in the string",
                "type": "string"
+            },
+            "rank": {
+               "description": "the relative order in which the element occurs, lower values are given precedence",
+               "type": "integer"
             },
             "related_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have related meaning.",
@@ -3834,6 +4931,21 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "structured_aliases": {
+               "description": "A list of structured_alias objects.",
+               "items": {
+                  "$ref": "#/$defs/StructuredAlias"
+               },
+               "type": "array"
+            },
+            "structured_pattern": {
+               "$ref": "#/$defs/PatternExpression",
+               "description": "the string value of the slot must conform to the regular expression in the pattern expression"
             },
             "title": {
                "description": "the official title of the element",
@@ -3869,11 +4981,10 @@
                }
             },
             "annotations": {
-               "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
-               "items": {
-                  "$ref": "#/$defs/Annotation"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
                },
-               "type": "array"
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
             },
             "comments": {
                "description": "notes and comments about an element intended for external consumption",
@@ -3906,11 +5017,10 @@
                "type": "array"
             },
             "extensions": {
-               "description": "a tag/text tuple attached to an arbitrary element",
-               "items": {
-                  "$ref": "#/$defs/Extension"
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
                },
-               "type": "array"
+               "description": "a tag/text tuple attached to an arbitrary element"
             },
             "from_schema": {
                "description": "id of the schema that defined the element",
@@ -3918,6 +5028,9 @@
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
                "type": "string"
             },
             "in_subset": {
@@ -3941,12 +5054,141 @@
                },
                "type": "array"
             },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
             "todos": {
                "description": "Outstanding issue that needs resolution",
                "items": {
                   "type": "string"
                },
                "type": "array"
+            },
+            "unique_key_name": {
+               "description": "name of the unique key",
+               "type": "string"
+            },
+            "unique_key_slots": {
+               "description": "list of slot names that form a key",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            }
+         },
+         "required": [
+            "unique_key_name",
+            "unique_key_slots"
+         ],
+         "title": "UniqueKey",
+         "type": "object"
+      },
+      "UniqueKey__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a collection of slots whose values uniquely identify an instance of a class",
+         "properties": {
+            "alt_descriptions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/AltDescription__identifier_optional"
+               }
+            },
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "comments": {
+               "description": "notes and comments about an element intended for external consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "deprecated": {
+               "description": "Description of why and when this element will no longer be used",
+               "type": "string"
+            },
+            "deprecated_element_has_exact_replacement": {
+               "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+               "type": "string"
+            },
+            "deprecated_element_has_possible_replacement": {
+               "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+               "type": "string"
+            },
+            "description": {
+               "description": "a description of the element's purpose and use",
+               "type": "string"
+            },
+            "examples": {
+               "description": "example usages of an element",
+               "items": {
+                  "$ref": "#/$defs/Example"
+               },
+               "type": "array"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "from_schema": {
+               "description": "id of the schema that defined the element",
+               "type": "string"
+            },
+            "imported_from": {
+               "description": "the imports entry that this element was derived from.  Empty means primary source",
+               "type": "string"
+            },
+            "in_language": {
+               "type": "string"
+            },
+            "in_subset": {
+               "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "notes": {
+               "description": "editorial notes about an element intended for internal consumption",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "see_also": {
+               "description": "a reference",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "source": {
+               "description": "A related resource from which the element is derived.",
+               "type": "string"
+            },
+            "title": {
+               "description": "the official title of the element",
+               "type": "string"
+            },
+            "todos": {
+               "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "unique_key_name": {
+               "description": "name of the unique key",
+               "type": "string"
             },
             "unique_key_slots": {
                "description": "list of slot names that form a key",
@@ -3966,8 +5208,315 @@
    "$id": "https://w3id.org/linkml/meta",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
-   "properties": {},
+   "metamodel_version": "1.7.0",
+   "properties": {
+      "aliases": {
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "alt_descriptions": {
+         "additionalProperties": {
+            "$ref": "#/$defs/AltDescription__identifier_optional"
+         }
+      },
+      "annotations": {
+         "additionalProperties": {
+            "$ref": "#/$defs/Annotation__identifier_optional"
+         },
+         "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+      },
+      "broad_mappings": {
+         "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "categories": {
+         "description": "controlled terms used to categorize an element",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "classes": {
+         "additionalProperties": {
+            "$ref": "#/$defs/ClassDefinition__identifier_optional"
+         },
+         "description": "class definitions"
+      },
+      "close_mappings": {
+         "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "comments": {
+         "description": "notes and comments about an element intended for external consumption",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "conforms_to": {
+         "description": "An established standard to which the element conforms.",
+         "type": "string"
+      },
+      "default_curi_maps": {
+         "description": "ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "default_prefix": {
+         "description": "default and base prefix -- used for ':' identifiers, @base and @vocab",
+         "type": "string"
+      },
+      "default_range": {
+         "description": "default slot range to be used if range element is omitted from a slot definition",
+         "type": "string"
+      },
+      "definition_uri": {
+         "description": "the \"native\" URI of the element",
+         "type": "string"
+      },
+      "deprecated": {
+         "description": "Description of why and when this element will no longer be used",
+         "type": "string"
+      },
+      "deprecated_element_has_exact_replacement": {
+         "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+         "type": "string"
+      },
+      "deprecated_element_has_possible_replacement": {
+         "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+         "type": "string"
+      },
+      "description": {
+         "description": "a description of the element's purpose and use",
+         "type": "string"
+      },
+      "emit_prefixes": {
+         "description": "a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "enums": {
+         "additionalProperties": {
+            "$ref": "#/$defs/EnumDefinition__identifier_optional"
+         },
+         "description": "enumerated ranges"
+      },
+      "exact_mappings": {
+         "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "examples": {
+         "description": "example usages of an element",
+         "items": {
+            "$ref": "#/$defs/Example"
+         },
+         "type": "array"
+      },
+      "extensions": {
+         "additionalProperties": {
+            "$ref": "#/$defs/Extension__identifier_optional"
+         },
+         "description": "a tag/text tuple attached to an arbitrary element"
+      },
+      "from_schema": {
+         "description": "id of the schema that defined the element",
+         "type": "string"
+      },
+      "generation_date": {
+         "description": "date and time that the schema was loaded/generated",
+         "format": "date-time",
+         "type": "string"
+      },
+      "id": {
+         "description": "The official schema URI",
+         "type": "string"
+      },
+      "id_prefixes": {
+         "description": "the identifier of this class or slot must begin with the URIs referenced by this prefix",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "imported_from": {
+         "description": "the imports entry that this element was derived from.  Empty means primary source",
+         "type": "string"
+      },
+      "imports": {
+         "description": "other schemas that are included in this schema",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "in_language": {
+         "type": "string"
+      },
+      "in_subset": {
+         "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "keywords": {
+         "description": "Keywords or tags used to describe the element",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "license": {
+         "description": "license for the schema",
+         "type": "string"
+      },
+      "local_names": {
+         "additionalProperties": {
+            "$ref": "#/$defs/LocalName__identifier_optional"
+         }
+      },
+      "mappings": {
+         "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "metamodel_version": {
+         "description": "Version of the metamodel used to load the schema",
+         "type": "string"
+      },
+      "name": {
+         "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
+         "type": "string"
+      },
+      "narrow_mappings": {
+         "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "notes": {
+         "description": "editorial notes about an element intended for internal consumption",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "prefixes": {
+         "additionalProperties": {
+            "$ref": "#/$defs/Prefix__identifier_optional"
+         },
+         "description": "prefix / URI definitions to be added to the context beyond those fetched from prefixcommons in id prefixes"
+      },
+      "rank": {
+         "description": "the relative order in which the element occurs, lower values are given precedence",
+         "type": "integer"
+      },
+      "related_mappings": {
+         "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "see_also": {
+         "description": "a reference",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "settings": {
+         "additionalProperties": {
+            "$ref": "#/$defs/Setting__identifier_optional"
+         },
+         "description": "A collection of global variable settings"
+      },
+      "slot_names_unique": {
+         "description": "if true then induced/mangled slot names are not created for class_usage and attributes",
+         "type": "boolean"
+      },
+      "slots": {
+         "additionalProperties": {
+            "$ref": "#/$defs/SlotDefinition__identifier_optional"
+         },
+         "description": "slot definitions"
+      },
+      "source": {
+         "description": "A related resource from which the element is derived.",
+         "type": "string"
+      },
+      "source_file": {
+         "description": "name, uri or description of the source of the schema",
+         "type": "string"
+      },
+      "source_file_date": {
+         "description": "modification date of the source of the schema",
+         "format": "date-time",
+         "type": "string"
+      },
+      "source_file_size": {
+         "description": "size in bytes of the source of the schema",
+         "type": "integer"
+      },
+      "structured_aliases": {
+         "description": "A list of structured_alias objects.",
+         "items": {
+            "$ref": "#/$defs/StructuredAlias"
+         },
+         "type": "array"
+      },
+      "subsets": {
+         "additionalProperties": {
+            "$ref": "#/$defs/SubsetDefinition__identifier_optional"
+         },
+         "description": "list of subsets referenced in this model"
+      },
+      "title": {
+         "description": "the official title of the element",
+         "type": "string"
+      },
+      "todos": {
+         "description": "Outstanding issue that needs resolution",
+         "items": {
+            "type": "string"
+         },
+         "type": "array"
+      },
+      "types": {
+         "additionalProperties": {
+            "$ref": "#/$defs/TypeDefinition__identifier_optional"
+         },
+         "description": "data types used in the model"
+      },
+      "version": {
+         "description": "particular version of schema",
+         "type": "string"
+      }
+   },
+   "required": [
+      "id",
+      "name"
+   ],
    "title": "meta",
-   "type": "object"
+   "type": "object",
+   "version": "2.0.0"
 }
 

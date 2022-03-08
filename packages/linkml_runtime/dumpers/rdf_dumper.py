@@ -2,9 +2,7 @@ import json
 from typing import Optional
 
 from hbreader import hbread
-from pyld.jsonld import expand
 from rdflib import Graph
-from rdflib_pyld_compat import rdflib_graph_from_pyld_jsonld
 
 
 from linkml_runtime.dumpers.dumper_root import Dumper
@@ -37,8 +35,10 @@ class RDFDumper(Dumper):
             inp_contexts = json.loads(hbread(contexts))
 
         from linkml_runtime.dumpers import json_dumper
-        rdf_jsonld = expand(json_dumper.dumps(element), options=dict(expandContext=inp_contexts))
-        g = rdflib_graph_from_pyld_jsonld(rdf_jsonld)
+        jsonld_str = json_dumper.dumps(element)
+        g = Graph().parse(data=jsonld_str, format='json-ld')
+        #rdf_jsonld = expand()
+        #g = rdflib_graph_from_pyld_jsonld(rdf_jsonld)
 
         if namespaces is not None:
             ns_source = json.loads(hbread(namespaces))
@@ -88,4 +88,4 @@ class RDFDumper(Dumper):
         :return: rdflib Graph containing element
         """
         return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).\
-            serialize(format=fmt).decode()
+            serialize(format=fmt)

@@ -3,8 +3,11 @@
    "$id": "https://w3id.org/linkml/mappings",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {},
+   "required": [],
    "title": "mappings",
-   "type": "object"
+   "type": "object",
+   "version": "2.0.0"
 }
 

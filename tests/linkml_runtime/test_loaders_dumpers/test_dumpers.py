@@ -59,7 +59,7 @@ class DumpersTestCase(LoaderDumperTestCase):
                         lambda: json_dumper.dumps(self.test_package,
                                                   GITHUB_LD11_CONTEXT + 'termci_schema_inlined.context.jsonld'))
 
-    @unittest.skipIf(False, "This needs an enhanced (https://github.com/hsolbrig/pyld) version of pyld")
+    @unittest.skipIf(True, "This needs an enhanced (https://github.com/hsolbrig/pyld) version of pyld")
     def test_rdf_dumper(self):
         """ Test the rdf dumper """
         contexts = os.path.join(LD_11_DIR, 'termci_schema_inlined.context.jsonld')
@@ -82,6 +82,7 @@ class DumpersTestCase(LoaderDumperTestCase):
             txt = f.read()
         with open(self.env.input_path('obo_sample.jsonld'), 'w') as f:
             f.write(txt)
+
 
     @unittest.skip("Waiting until PyLD learns to handle relative context URI's")
     def test_nested_contexts(self):
