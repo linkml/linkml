@@ -22,7 +22,7 @@ watchdog = ">=0.9.0"
 isodate = ">=0.6.0"
 parse = "*"
 hbreader = "*"
-linkml-runtime = ">=1.2.0rc6"
+linkml-runtime = ">=1.2.0"
 linkml-dataops = "*"
 sqlalchemy = ">=1.4.31"
 openpyxl = "*"
@@ -41,4 +41,4 @@ ipykernel = "*"
 chardet = "*"
 
 [pipenv]
-allow_prereleases = true
+allow_prereleases = false
