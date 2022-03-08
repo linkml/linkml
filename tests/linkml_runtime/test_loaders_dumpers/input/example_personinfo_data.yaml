@@ -6,7 +6,7 @@ persons:
     gender: cisgender man
     depicted_by: https://example.org/pictures/fred.jpg
   - id: P:002
-    name: joe schmoe
+    name: joe schmö
     primary_email: joe.schmoe@example.com
     has_employment_history:
       - employed_at: ROR:1

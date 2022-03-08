@@ -16,7 +16,7 @@ P:001 a ns3:Person ;
 P:002 a ns3:Person ;
     ns3:email "joe.schmoe@example.com" ;
     ns3:gender <http://purl.obolibrary.org/obo/GSSO_000372> ;
-    ns3:name "joe schmoe" ;
+    ns3:name "joe schmö" ;
     ns2:current_address [ a ns3:PostalAddress ;
             ns2:city "foo city" ;
             ns2:street "1 foo street" ] ;
