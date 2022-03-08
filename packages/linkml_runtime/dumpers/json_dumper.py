@@ -52,6 +52,7 @@ class JSONDumper(Dumper):
                 return json.JSONDecoder().decode(o)
         return json.dumps(as_json_object(element, contexts, inject_type=inject_type),
                           default=default,
+                          ensure_ascii=False,
                           indent='  ')
 
 

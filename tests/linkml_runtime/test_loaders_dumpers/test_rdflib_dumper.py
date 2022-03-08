@@ -221,7 +221,7 @@ class RdfLibDumperTestCase(unittest.TestCase):
         o1cats = [c.code.text for c in o1.categories]
         o2cats = [c.code.text for c in o2.categories]
         self.assertEqual(p1.name, 'fred bloggs')
-        self.assertEqual(p2.name, 'joe schmoe')
+        self.assertEqual(p2.name, 'joe schmö')
         self.assertEqual(p1.age_in_years, 33)
         self.assertEqual(p1.gender.code.text, 'cisgender man')
         self.assertEqual(p2.gender.code.text, 'transgender man')
