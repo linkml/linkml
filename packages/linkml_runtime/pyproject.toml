@@ -50,6 +50,7 @@ prefixcommons = "*"
 pyyaml = "==5.*,>=5.1.0"
 rdflib = ">=6.0.0"
 requests = "*"
+PyYAML = ">=5.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.2"
