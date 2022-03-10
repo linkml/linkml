@@ -13,7 +13,7 @@ from linkml.utils.generator import Generator, shared_arguments
 logger = logging.getLogger(__name__)
 
 
-class JsonGenerator(Generator):
+class LinkmlGenerator(Generator):
     """This generator provides a direct conversion of a LinkML schema
     into json, optionally merging imports and unrolling induced slots
     into attributes
@@ -51,7 +51,7 @@ class JsonGenerator(Generator):
 
         return
 
-    def serialize(self, **args) -> str:
+    def serialize(self, **kwargs) -> str:
         if self.materialize:
             self.materialize_classes()
 
@@ -66,7 +66,7 @@ class JsonGenerator(Generator):
             )
 
 
-@shared_arguments(JsonGenerator)
+@shared_arguments(LinkmlGenerator)
 @click.option(
     "--materialize-attributes/--no-materialize-attributes",
     default=True,
@@ -75,7 +75,7 @@ class JsonGenerator(Generator):
 )
 @click.command()
 def cli(yamlfile, materialize_attributes, **kwargs):
-    gen = JsonGenerator(
+    gen = LinkmlGenerator(
         yamlfile, materialize_attributes=materialize_attributes, **kwargs
     )
     print(gen.serialize())
