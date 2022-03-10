@@ -1,4 +1,5 @@
 import os
+import json
 from typing import TextIO, Union
 
 import click
@@ -18,7 +19,11 @@ class JsonGenerator(Generator):
     valid_formats = ["json"]
 
     def __init__(
-        self, schema: Union[str, TextIO, SchemaDefinition], class_name: str, **kwargs
+        self,
+        schema: Union[str, TextIO, SchemaDefinition],
+        class_name: str,
+        output_path: str = None,
+        **kwargs
     ):
         self.schemaview = SchemaView(schema)
         self.class_name = class_name
@@ -30,7 +35,7 @@ class JsonGenerator(Generator):
         :type class_name: str
         :return: class object representation, as ClassDefinition
         :rtype: ClassDefinition
-        """                        
+        """
         return self.schemaview.get_class(class_name)
 
     def json(self) -> str:
@@ -38,7 +43,7 @@ class JsonGenerator(Generator):
 
         :return: JSON serialization of ClassDefinition object
         :rtype: str
-        """                
+        """
         c = self._get_class_defn(self.class_name)
         attrs = self.schemaview.class_induced_slots(c.name)
         for a in attrs:
@@ -47,20 +52,25 @@ class JsonGenerator(Generator):
 
         return json_dumper.dumps(c)
 
-    def serialize(self, **args) -> str:
-        serialized_json = self.json()
+    def serialize(self, output=None, **args) -> str:
+        json_str = self.json()
 
-        return serialized_json
+        if output:
+            with open(output, "w", encoding="utf-8") as f:
+                json.dump(json_str, ensure_ascii=False, indent=4)
+        else:
+            return json_str
 
 
 @shared_arguments(JsonGenerator)
 @click.option(
     "--class_name", "-c", required=True, help="Class to retrieve all induced slots on"
 )
+@click.option("--output", "-o", type=click.Path(), help="Path to output JSON file")
 @click.command()
-def cli(yamlfile, class_name, **args):
+def cli(yamlfile, class_name, output, **args):
     gen = JsonGenerator(yamlfile, class_name, **args)
-    print(gen.serialize())
+    print(gen.serialize(output))
 
 
 if __name__ == "__main__":
