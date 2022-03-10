@@ -12,5 +12,6 @@
 
 chardet
 ipykernel
+ipython-genutils
 nbconvert
 nbformat
