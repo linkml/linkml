@@ -39,9 +39,7 @@ class LinkmlGenerator(Generator):
             self.schemaview.merge_imports()
 
     def materialize_classes(self) -> None:
-        """Return list of ClassDefinition objects with each of
-        the classes having their slots materialized as attribues
-        """
+        """Materialize class slots from schema as attribues, in place"""
         all_classes = self.schemaview.all_classes()
 
         for c_name, c_def in all_classes.items():
