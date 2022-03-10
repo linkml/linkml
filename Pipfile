@@ -37,6 +37,7 @@ pandas = "*"
 nbconvert = "*"
 nbformat = "*"
 ipykernel = "*"
+ipython-genutils = "*"
 chardet = "*"
 
 [pipenv]
