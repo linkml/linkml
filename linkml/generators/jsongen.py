@@ -23,7 +23,6 @@ class JsonGenerator(Generator):
         self,
         schema: Union[str, TextIO, SchemaDefinition],
         class_name: str,
-        output_path: str = None,
         **kwargs,
     ):
         self.schemaview = SchemaView(schema)
