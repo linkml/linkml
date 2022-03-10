@@ -1,6 +1,7 @@
+from asyncio.log import logger
 import os
 import json
-from typing import TextIO, Union
+from typing import Dict, List, TextIO, Union
 
 import click
 
@@ -23,7 +24,7 @@ class JsonGenerator(Generator):
         schema: Union[str, TextIO, SchemaDefinition],
         class_name: str,
         output_path: str = None,
-        **kwargs
+        **kwargs,
     ):
         self.schemaview = SchemaView(schema)
         self.class_name = class_name
@@ -52,14 +53,25 @@ class JsonGenerator(Generator):
 
         return json_dumper.dumps(c)
 
-    def serialize(self, output=None, **args) -> str:
-        json_str = self.json()
+    def serialize(
+        self, output=None, **args
+    ) -> Union[str, Dict[str, Union[str, List[str], Dict]]]:
+        json_dict = json.loads(self.json())
 
         if output:
-            with open(output, "w", encoding="utf-8") as f:
-                json.dump(json_str, ensure_ascii=False, indent=4)
+            with open(output, "w") as f:
+                json.dump(
+                    json_dict,
+                    f,
+                    sort_keys=False,
+                    ensure_ascii=False,
+                    indent=4,
+                    separators=(",", ": "),
+                )
+                logger.info(f"The JSON file has been written to {output}")
+                return output
         else:
-            return json_str
+            return json_dict
 
 
 @shared_arguments(JsonGenerator)
