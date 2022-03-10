@@ -12,4 +12,3 @@ LinkML is a linked data modeling language following object-oriented and ontologi
 The complete documentation for LinkML can be found here:
 
  - [linkml.io/linkml](https://linkml.io/linkml)
-
