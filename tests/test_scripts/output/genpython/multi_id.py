@@ -1,5 +1,5 @@
 # Auto generated from multi_id.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-03-09T19:49:53
+# Generation date: 2022-03-10T23:54:14
 # Schema: multi_id
 #
 # id: http://example.org/example/multi_id
