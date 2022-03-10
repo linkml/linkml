@@ -36,6 +36,7 @@ pandas = "*"
 [dev-packages]
 nbconvert = "*"
 nbformat = "*"
+ipython-genutils = "*"
 ipykernel = "*"
 chardet = "*"
 
