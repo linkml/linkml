@@ -1,4 +1,4 @@
-from asyncio.log import logger
+import logging
 import os
 import json
 from typing import Dict, List, TextIO, Union
@@ -12,6 +12,9 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.utils.generator import Generator, shared_arguments
+
+
+logger = logging.getLogger(__name__)
 
 
 class JsonGenerator(Generator):
