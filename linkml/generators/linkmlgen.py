@@ -8,6 +8,7 @@ from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.helpers import write_to_file
 
 
 logger = logging.getLogger(__name__)
@@ -27,8 +28,8 @@ class LinkmlGenerator(Generator):
         self,
         schema: Union[str, TextIO, SchemaDefinition],
         materialize_attributes: bool,
-        mergeimports: bool,
-        format: str,
+        mergeimports: bool = None,
+        format: str = valid_formats[0],
         **kwargs,
     ):
         self.schemaview = SchemaView(schema)
@@ -49,14 +50,28 @@ class LinkmlGenerator(Generator):
 
         return
 
-    def serialize(self, **kwargs) -> str:
+    def serialize(self, output: str = None, **kwargs) -> str:
         if self.materialize:
             self.materialize_classes()
 
         if self.format == "json":
-            return json_dumper.dumps(self.schemaview.schema)
+            json_str = json_dumper.dumps(self.schemaview.schema)
+
+            if output:
+                write_to_file(output, json_str)
+                logger.info(f"Materialized file written to: {output}")
+                return output
+
+            return json_str
         elif self.format == "yaml":
-            return yaml_dumper.dumps(self.schemaview.schema)
+            yaml_str = yaml_dumper.dumps(self.schemaview.schema)
+
+            if output:
+                write_to_file(output, yaml_str)
+                logger.info(f"Materialized file written to: {output}")
+                return output
+
+            return yaml_str
         else:
             raise ValueError(
                 f"{self.format} is an invalid format. Use one of the following "
@@ -71,12 +86,18 @@ class LinkmlGenerator(Generator):
     show_default=True,
     help="Materialize induced slots as attributes",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="""Name of JSON or YAML file to be created""",
+)
 @click.command()
-def cli(yamlfile, materialize_attributes, **kwargs):
+def cli(yamlfile, materialize_attributes, output, **kwargs):
     gen = LinkmlGenerator(
         yamlfile, materialize_attributes=materialize_attributes, **kwargs
     )
-    print(gen.serialize())
+    print(gen.serialize(output=output))
 
 
 if __name__ == "__main__":
