@@ -10,6 +10,7 @@ from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from sqlalchemy.sql.sqltypes import Text, Enum
 
+from linkml.transformers.relmodel_transformer import ForeignKeyPolicy
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -45,6 +46,48 @@ class SQLTableGeneratorTestCase(unittest.TestCase):
         assert "PRIMARY KEY (id)" in ddl
         assert "full_name TEXT" in ddl
         assert 'CREATE TABLE "dummy class"' in ddl
+
+    def test_no_injection(self):
+        """
+        test a minimal schema with no primary names declared
+        """
+        b = SchemaBuilder()
+        slots = ["full name", "description"]
+        b.add_class(DUMMY_CLASS, slots)
+        gen = SQLTableGenerator(b.schema, use_foreign_keys=False)
+        ddl = gen.generate_ddl()
+        #print(ddl)
+        assert "PRIMARY KEY (id)" not in ddl
+        assert "full_name TEXT" in ddl
+        assert 'CREATE TABLE "dummy class"' in ddl
+
+        # now test with full schema
+        gen = SQLTableGenerator(SCHEMA, use_foreign_keys=False)
+        ddl = gen.generate_ddl()
+        assert 'FOREIGN KEY' not in ddl
+
+    def test_dialect(self):
+        """
+        test dialect options
+        """
+        b = SchemaBuilder()
+        slots = ["full name", "description", "age"]
+        b.add_class(DUMMY_CLASS, slots, description='My dummy class')
+        b.add_slot(SlotDefinition("age", range='integer', description='age of person in years'))
+        for dialect in ['postgresql', 'sqlite', 'mysql']:
+            gen = SQLTableGenerator(b.schema, dialect=dialect)
+            ddl = gen.generate_ddl()
+            print(f'DIALECT: {dialect}\n SQL:\n{ddl}')
+            if dialect == 'postgresql':
+                assert 'id SERIAL' in ddl
+                assert "COMMENT ON TABLE" in ddl
+                assert "COMMENT ON COLUMN" in ddl
+            if dialect == 'sqlite':
+                assert 'id INTEGER' in ddl
+                # sqlite does not support comments
+            if dialect == 'mysql':
+                assert 'id INTEGER AUTO_INCREMENT' in ddl
+                assert 'COMMENT' in ddl
 
     def test_generate_ddl(self):
         """Generate contents of DDL file as a string."""

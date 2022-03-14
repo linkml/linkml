@@ -125,6 +125,8 @@ class SQLDDLGenerator(Generator):
     """
     A `Generator` for creating SQL DDL
 
+    DEPRECATED: Use SQLTableGenerator instead
+
     The basic algorithm for mapping a linkml schema S is as follows:
 
      - Each schema S corresponds to one database schema D (see SQLSchema)
@@ -468,6 +470,7 @@ Map classes directly to
 @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
 def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
     """ Generate SQL DDL representation """
+    logging.warning("DEPRECATED: use sqltablegen instead")
     gen = SQLDDLGenerator(yamlfile, **args)
     print(gen.serialize(**args))
     if sqla_file is not None:

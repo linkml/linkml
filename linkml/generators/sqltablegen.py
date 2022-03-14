@@ -1,7 +1,7 @@
 import logging
 import os
 import click
-from typing import List, Dict, Union, TextIO
+from typing import List, Dict, Union, TextIO, Optional
 
 from linkml_runtime.dumpers import yaml_dumper
 from sqlalchemy import MetaData, Table, ForeignKey, Column, create_mock_engine
@@ -12,7 +12,7 @@ from linkml_runtime.utils.formatutils import underscore, camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.yamlgen import YAMLGenerator
-from linkml.transformers.relmodel_transformer import RelationalModelTransformer
+from linkml.transformers.relmodel_transformer import RelationalModelTransformer, ForeignKeyPolicy
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
 
@@ -143,9 +143,11 @@ class SQLTableGenerator(Generator):
         engine = create_mock_engine(
             f'{self.dialect}://./MyDb',
             strategy='mock',
-            executor= dump)
+            executor=dump)
         schema_metadata = MetaData()
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
+        if not self.use_foreign_keys:
+            sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
         tr_result = sqltr.transform(**kwargs)
         schema = tr_result.schema
 
@@ -162,8 +164,16 @@ class SQLTableGenerator(Generator):
             else:
                 return n
 
+        def strip_newlines(txt: Optional[str]) -> str:
+            if txt is None:
+                return ''
+            return txt.replace('\n', '')
+
+        include_comments = self.dialect == 'sqlite'
         sv = SchemaView(schema)
         for cn, c in schema.classes.items():
+            if include_comments:
+                ddl_str += f'-- # Class: "{cn}" Description: "{strip_newlines(c.description)}"\n'
             pk_slot = sv.get_identifier_slot(cn)
             if c.attributes:
                 cols = []
@@ -174,13 +184,17 @@ class SQLTableGenerator(Generator):
                     #else:
                     #    is_pk = True  ## TODO: use unique key
                     args = []
-                    if s.range in schema.classes:
+                    if s.range in schema.classes and self.use_foreign_keys:
                         fk = sql_name(self.get_foreign_key(s.range, sv))
                         args = [ForeignKey(fk)]
                     field_type = self.get_sql_range(s, schema)
                     col = Column(sql_name(sn), field_type, *args, primary_key=is_pk, nullable=not s.required)
+                    if include_comments:
+                        ddl_str += f'--     * Slot: {sn} Description: {strip_newlines(s.description)}\n'
+                    if s.description:
+                        col.comment = s.description
                     cols.append(col)
-                Table(sql_name(cn), schema_metadata, *cols)
+                Table(sql_name(cn), schema_metadata, *cols, comment=str(c.description))
         schema_metadata.create_all(engine)
         return ddl_str
 
@@ -237,23 +251,28 @@ class SQLTableGenerator(Generator):
 
 @shared_arguments(SQLTableGenerator)
 @click.command()
-## @click.option("--dialect", default='sqlite', show_default=True, help="SQL-Alchemy dialect, e.g. sqlite, mysql+odbc")
+@click.option("--dialect", default='sqlite', show_default=True, help="SQL-Alchemy dialect, e.g. sqlite, mysql+odbc")
 @click.option("--sqla-file",
               help="Path to sqlalchemy generated python")
 @click.option("--relmodel-output",
               help="Path to intermediate LinkML YAML of transformed relational model")
 @click.option("--python-import",  help="Python import header for generated sql-alchemy code")
-## @click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="Map classes directly to")
-## @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
-def cli(yamlfile, relmodel_output, sqla_file:str = None, python_import: str = None, **args):
+@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True,
+              help="Emit FK declarations")
+## @click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="Map classes directly to")@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
+def cli(yamlfile, relmodel_output, sqla_file:str = None, python_import: str = None, dialect=None, use_foreign_keys=True, **args):
     """ Generate SQL DDL representation """
     if relmodel_output:
         sv = SchemaView(yamlfile)
         rtr = RelationalModelTransformer(sv)
+        if not use_foreign_keys:
+            rtr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
         rtr_result = rtr.transform('foo')
         relmodel_schema = rtr_result.schema
         yaml_dumper.dump(relmodel_schema, to_file=relmodel_output)
-    gen = SQLTableGenerator(yamlfile, **args)
+    gen = SQLTableGenerator(yamlfile, use_foreign_keys=use_foreign_keys, **args)
+    if dialect:
+        gen.dialect = dialect
     print(gen.generate_ddl())
     if sqla_file is not None:
         raise NotImplementedError('SQLAGen not implemented')
