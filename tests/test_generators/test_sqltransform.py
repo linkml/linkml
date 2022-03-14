@@ -6,7 +6,7 @@ from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer, TransformationResult, \
-    get_primary_key_attributes, get_foreign_key_map
+    get_primary_key_attributes, get_foreign_key_map, ForeignKeyPolicy
 from linkml.utils.schema_builder import SchemaBuilder
 from tests.test_generators.environment import env
 
@@ -189,7 +189,7 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         results = self._translate(b)
         rel_schema = self._translate(b).schema
         rsv = SchemaView(rel_schema)
-        print(yaml_dumper.dumps(rel_schema))
+        #print(yaml_dumper.dumps(rel_schema))
         c = rsv.get_class("c")
         d = rsv.get_class("d")
         c1 = rsv.get_class("c1")
@@ -206,6 +206,24 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
         self.assertDictEqual({}, get_foreign_key_map(c))
         self.assertDictEqual({}, get_foreign_key_map(d))
         self.assertDictEqual({"c_id": "c.id", "has_d_id": "d.id"}, get_foreign_key_map(c_has_d))
+
+    def test_no_foreign_keys(self):
+        """Test Simple transformation with no injections of FKs."""
+        b = SchemaBuilder()
+        slots = ["name", "description", "has_ds"]
+        b.add_class("c", slots).add_class("d", ["name"]).set_slot("has_ds", singular_name="has_d",
+                                                                  range="d", multivalued=True, inlined=False)
+        b.add_class("c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")})
+        b.add_class("d1", is_a="d")
+        sv = SchemaView(b.schema)
+        sqltr = RelationalModelTransformer(sv, foreign_key_policy=ForeignKeyPolicy.NO_FOREIGN_KEYS)
+        result = sqltr.transform()
+        rel_schema = result.schema
+        rsv = SchemaView(rel_schema)
+        print(yaml_dumper.dumps(rel_schema))
+        assert 'c_has_d' not in rsv.all_classes()
+        c1 = rsv.get_class('c1')
+        self.assertCountEqual(c1.attributes.keys(), ['name', 'description', 'has_ds'])
 
 
     def test_aliases(self):
@@ -309,6 +327,8 @@ class RelationalModelTransformerTestCase(unittest.TestCase):
             self.assertEqual(a1.range, 'NewsEvent')
             a2 = c.attributes[f'{cn}_id']
             self.assertEqual(a2.range, cn)
+
+
 
 
 if __name__ == '__main__':

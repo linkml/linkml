@@ -19,6 +19,7 @@ class ForeignKeyPolicy(Enum):
     ALL_REFS_ARE_FKS = "all_refs_are_fks"
     INJECT_FK_FOR_NESTED = "inject_fk_for_nested"
     INJECT_FK_FOR_ALL_REFS = "inject_fk_for_all_refs"
+    NO_FOREIGN_KEYS = "no_foreign_keys"
 
 @dataclass
 class Link:
@@ -123,7 +124,7 @@ class RelationalModelTransformer:
     """
 
     schemaview: SchemaView = None
-    dialect: str = field(default_factory=lambda : 'sqlite')
+    #dialect: str = field(default_factory=lambda : 'sqlite')
     skip_tree_root: bool = field(default_factory=lambda: False)
     skip_abstract: bool = field(default_factory=lambda: True)
     skip_mixins: bool = field(default_factory=lambda: True)
@@ -192,16 +193,22 @@ class RelationalModelTransformer:
         #for link in links:
         for cn in target_sv.all_classes():
             pk = self.get_direct_identifier_attribute(target_sv, cn)
-            if pk is None:
-                pk = self.add_primary_key(cn, target_sv)
-                logging.info(f'Added primary key {cn}.{pk.name}')
-            for link in links:
-                if link.target_class == cn:
-                    link.target_slot = pk.name
+            if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
+                logging.info(f'Will not inject any PKs, and policy == {self.foreign_key_policy}')
+            else:
+                if pk is None:
+                    pk = self.add_primary_key(cn, target_sv)
+                    logging.info(f'Added primary key {cn}.{pk.name}')
+                for link in links:
+                    if link.target_class == cn:
+                        link.target_slot = pk.name
 
+        # TODO: separate out the logic into separate testable methods
         target_sv.set_modified()
         # post-process target schema
         for cn, c in target_sv.all_classes().items():
+            if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
+                continue
             incoming_links = [link for link in links if link.target_class == cn]
             pk_slot = self.get_direct_identifier_attribute(target_sv, cn)
             #if self.is_skip(c) and len(incoming_links) == 0:
@@ -286,6 +293,8 @@ class RelationalModelTransformer:
         target_sv.set_modified()
         fk_policy = self.foreign_key_policy
         for c in target.classes.values():
+            if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
+                continue
             pk_slot = target_sv.get_identifier_slot(c.name)
             for a in list(c.attributes.values()):
                 if pk_slot is None or a.name == pk_slot.name:
