@@ -22,9 +22,9 @@ provides mapping from JSON to RDF.
    gen-jsonld-context personinfo.yaml > personinfo.context.jsonld
 
 You can control the output via
-`prefixes <https://linkml.io/linkml-model/docs/prefixes.html>`__
+`prefixes <https://linkml.io/linkml-model/docs/prefixes/>`__
 declarations and
-`default_curi_maps <https://linkml.io/linkml-model/docs/default_curi_maps.html>`__.
+`default_curi_maps <https://linkml.io/linkml-model/docs/default_curi_maps/>`__.
 
 Any JSON that conforms to the derived JSON Schema (see above) can be
 converted to RDF using this context.

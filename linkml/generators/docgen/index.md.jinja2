@@ -4,4 +4,27 @@
 
 URI: {{ schema.id }}
 
+## Classes
+
+| Class | Description |
+| --- | --- |
+{% for c in schemaview.all_classes().values() -%}
+| {{gen.link(c)}} | {{c.description}} | 
+{% endfor %}
+
+## Slots
+
+| Slot | Description |
+| --- | --- |
+{% for s in schemaview.all_slots().values() -%}
+| {{gen.link(s)}} | {{s.description}} | 
+{% endfor %}
+
+## Enums
+
+| Enums | Description |
+| --- | --- |
+{% for e in schemaview.all_enums().values() -%}
+| {{gen.link(e)}} | {{e.description}} | 
+{% endfor %}
 

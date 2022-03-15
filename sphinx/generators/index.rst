@@ -98,6 +98,7 @@ Others
    :maxdepth: 3
    :caption: Contents:
 
+   linkml
    prefixmap
    sssom
    terminusdb

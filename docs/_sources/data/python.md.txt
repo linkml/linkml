@@ -31,7 +31,7 @@ class Person(NamedThing):
     aliases: Optional[Union[str, List[str]]] = empty_list()
 ```
 
-The generated python classes have additional functinality to help with serializing/deserializing.
+The generated python classes have additional functionality to help with serializing/deserializing.
 
 ## Use in programs
 
@@ -44,10 +44,22 @@ This can be used for programmatic manipulation, e.g:
 
 ## Loaders and dumpers
 
-The linkml_runtime framework is included by default, allowing for dynamic conversion to and from other formats:
+The [linkml-runtime](https://github.com/linkml/linkml-runtime) framework is included by default, allowing for dynamic conversion to and from other formats:
+
+The core LinkML formats are:
+
+* json_loader/json_dumper: to export to and from JSON
+* yaml_loader/yaml_dumper: to export to and from YAML
+* rdflib_loader/rdflib_dumper: to export to and from any rdflib-supported serialization (e.g. .ttl)
+
+We also provide a csv loader/dumper, see [CSVs](csvs) section of the docs
+
+Dumping:
 
 ```python
 >>> from linkml_runtime.dumpers import json_dumper
+>>> from personinfo import Person
+>>> p1 = Person('P1', name='joe schmoe')
 >>> print(json_dumper.dumps(p1))
 {
   "id": "P1",
@@ -55,3 +67,14 @@ The linkml_runtime framework is included by default, allowing for dynamic conver
   "@type": "Person"
 }
 ```
+
+Loading:
+
+```python
+>>> from linkml_runtime.loaders import json_loader
+>>> from personinfo import Person
+>>> p1 = json_loader.load('person_data.json')
+```
+
+For more developer documentations, see the [loaders-and-dumpers](/developers/loaders-and-dumpers.html) section of the developer docs
+

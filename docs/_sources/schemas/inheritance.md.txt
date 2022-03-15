@@ -103,3 +103,17 @@ classes:
 Note that `is_a` has the characteristics of homeomorphicity: `is_a` **SHOULD** only connect either (1) two mixins (2) two non-mixin elements
 
 See also the [Wikipedia page on mixins](https://en.wikipedia.org/wiki/Mixin)
+
+## Materializing inherited slots
+
+the [linkml generator](../generators/linkml) can be used with the
+`--materialize-attributes` option to *materialize* all induced slots
+as attributes. This is useful if you want to make a version of your
+schema for distribution that frees the program that uses the schema
+from the need to traverse hierarchies and implement propagation logic.
+
+For example, if this option is used with the above schema, then the
+Person class will have attributes from both NamedThing and Person
+combined. Furthermore, if Person uses `slot_usage` (see next section)
+to refine the meaning of a generic slot in the context of Person, then
+these will be materialized for Person.

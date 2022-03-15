@@ -29,6 +29,8 @@ See [National Microbiome Data Collaborative](https://github.com/microbiomedata/n
 
 See [Cancer Research Data Commons - Harmonized Model](https://cancerdhc.github.io/ccdhmodel/), developed by the NIH [Center for Cancer Data Harmonization](https://harmonization.datacommons.cancer.gov/)
 
+* [CCDH Pilot Demo](https://docs.google.com/presentation/d/1bw2iY7yoyCAGCKYu21fcSHo7rWXZgbeVac2joTShpPg/edit#slide=id.g6c52a2e8d8_0_177)
+
 ### LinkML
 
 LinkML is itself described as a LinkML model

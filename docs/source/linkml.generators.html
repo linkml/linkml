@@ -793,66 +793,8 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 </dd></dl>
 
 </section>
-<section id="module-linkml.generators.lpgen">
-<span id="linkml-generators-lpgen-module"></span><h2>linkml.generators.lpgen module<a class="headerlink" href="#module-linkml.generators.lpgen" title="Permalink to this headline"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.lpgen.</span></span><span class="sig-name descname"><span class="pre">LogicProgramGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/lpgen.html#LogicProgramGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.utils.generator.Generator</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.emit">
-<span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/lpgen.html#LogicProgramGenerator.emit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.emit" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.generatorname">
-<span class="sig-name descname"><span class="pre">generatorname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lpgen.py'</span></em><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.generatorname" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.generatorversion">
-<span class="sig-name descname"><span class="pre">generatorversion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.0.2'</span></em><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.generatorversion" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.valid_formats">
-<span class="sig-name descname"><span class="pre">valid_formats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['lp',</span> <span class="pre">'sexpr']</span></em><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.valid_formats" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.visit_all_class_slots">
-<span class="sig-name descname"><span class="pre">visit_all_class_slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.visit_all_class_slots" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.visit_class">
-<span class="sig-name descname"><span class="pre">visit_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/linkml/generators/lpgen.html#LogicProgramGenerator.visit_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.visit_class" title="Permalink to this definition"></a></dt>
-<dd><p>Visited once per schema class</p>
-<p>&#64;param cls: class being visited
-&#64;return: Visit slots and end class.  False means skip and go on</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.visit_class_slot">
-<span class="sig-name descname"><span class="pre">visit_class_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliased_slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml/generators/lpgen.html#LogicProgramGenerator.visit_class_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.visit_class_slot" title="Permalink to this definition"></a></dt>
-<dd><p>Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
-for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</p>
-<p>&#64;param cls: containing class
-&#64;param aliased_slot_name: Aliased slot name.  May not be unique across all class slots
-&#64;param slot: slot being visited</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.lpgen.LogicProgramGenerator.visit_slot">
-<span class="sig-name descname"><span class="pre">visit_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml/generators/lpgen.html#LogicProgramGenerator.visit_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.lpgen.LogicProgramGenerator.visit_slot" title="Permalink to this definition"></a></dt>
-<dd><p>Add a slot definition per slot</p>
-<p>&#64;param slot_name:
-&#64;param slot:
-&#64;return:</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="linkml-generators-lpgen-module">
+<h2>linkml.generators.lpgen module<a class="headerlink" href="#linkml-generators-lpgen-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-linkml.generators.markdowngen">
 <span id="linkml-generators-markdowngen-module"></span><h2>linkml.generators.markdowngen module<a class="headerlink" href="#module-linkml.generators.markdowngen" title="Permalink to this headline"></a></h2>
@@ -1413,6 +1355,7 @@ metaclasses     if True, include OWL representations of ClassDefinition, SlotDef
 <dt class="sig sig-object py" id="linkml.generators.projectgen.ProjectGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.projectgen.</span></span><span class="sig-name descname"><span class="pre">ProjectGenerator</span></span><a class="reference internal" href="../_modules/linkml/generators/projectgen.html#ProjectGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.projectgen.ProjectGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generates complete project folders</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.projectgen.ProjectGenerator.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_path:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config:</span> <span class="pre">linkml.generators.projectgen.ProjectConfiguration</span> <span class="pre">=</span> <span class="pre">ProjectConfiguration(directory='tmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generator_args=defaultdict(&lt;class</span> <span class="pre">'dict'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">{})</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/projectgen.html#ProjectGenerator.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.projectgen.ProjectGenerator.generate" title="Permalink to this definition"></a></dt>
@@ -2120,6 +2063,7 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlddlgen.</span></span><span class="sig-name descname"><span class="pre">SQLDDLGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/sqlddlgen.html#SQLDDLGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlddlgen.SQLDDLGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="linkml.utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">linkml.utils.generator.Generator</span></code></a></p>
 <p>A <cite>Generator</cite> for creating SQL DDL</p>
+<p>DEPRECATED: Use SQLTableGenerator instead</p>
 <p>The basic algorithm for mapping a linkml schema S is as follows:</p>
 <blockquote>
 <div><ul class="simple">

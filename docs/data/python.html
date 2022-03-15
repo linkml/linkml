@@ -94,7 +94,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="python">
+  <section id="python">
 <h1>Python<a class="headerlink" href="#python" title="Permalink to this headline"></a></h1>
 <section id="dataclasses">
 <h2>Dataclasses<a class="headerlink" href="#dataclasses" title="Permalink to this headline"></a></h2>
@@ -124,7 +124,7 @@
     <span class="n">aliases</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The generated python classes have additional functinality to help with serializing/deserializing.</p>
+<p>The generated python classes have additional functionality to help with serializing/deserializing.</p>
 </section>
 <section id="use-in-programs">
 <h2>Use in programs<a class="headerlink" href="#use-in-programs" title="Permalink to this headline"></a></h2>
@@ -136,8 +136,18 @@
 </section>
 <section id="loaders-and-dumpers">
 <h2>Loaders and dumpers<a class="headerlink" href="#loaders-and-dumpers" title="Permalink to this headline"></a></h2>
-<p>The linkml_runtime framework is included by default, allowing for dynamic conversion to and from other formats:</p>
+<p>The <a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a> framework is included by default, allowing for dynamic conversion to and from other formats:</p>
+<p>The core LinkML formats are:</p>
+<ul class="simple">
+<li><p>json_loader/json_dumper: to export to and from JSON</p></li>
+<li><p>yaml_loader/yaml_dumper: to export to and from YAML</p></li>
+<li><p>rdflib_loader/rdflib_dumper: to export to and from any rdflib-supported serialization (e.g. .ttl)</p></li>
+</ul>
+<p>We also provide a csv loader/dumper, see <a class="reference internal" href="csvs.html"><span class="doc std std-doc">CSVs</span></a> section of the docs</p>
+<p>Dumping:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s1">&#39;P1&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;joe schmoe&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">json_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">p1</span><span class="p">))</span>
 <span class="go">{</span>
 <span class="go">  &quot;id&quot;: &quot;P1&quot;,</span>
@@ -146,6 +156,13 @@
 <span class="go">}</span>
 </pre></div>
 </div>
+<p>Loading:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="n">json_loader</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">personinfo</span> <span class="kn">import</span> <span class="n">Person</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p1</span> <span class="o">=</span> <span class="n">json_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;person_data.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more developer documentations, see the <span class="xref myst">loaders-and-dumpers</span> section of the developer docs</p>
 </section>
 </section>
 

@@ -79,9 +79,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="working-with-data-in-sql-databases">
+  <section id="working-with-data-in-sql-databases">
 <h1>Working with data in SQL Databases<a class="headerlink" href="#working-with-data-in-sql-databases" title="Permalink to this headline"></a></h1>
 <p><strong>NOTE</strong>: Currently SQL Database support is incomplete</p>
+<p>See <span class="xref myst">part 9 of the tutorial</span> for an introduction.</p>
+<section id="storing-and-retrieving-data-in-sqlite3">
+<h2>Storing and retrieving data in SQLite3<a class="headerlink" href="#storing-and-retrieving-data-in-sqlite3" title="Permalink to this headline"></a></h2>
+<p>See <span class="xref myst">Using SQL DBs</span> in the Developers Guide</p>
+</section>
+<section id="mapping-from-a-linkml-model-to-sql-schemas">
+<h2>Mapping from a LinkML model to SQL Schemas<a class="headerlink" href="#mapping-from-a-linkml-model-to-sql-schemas" title="Permalink to this headline"></a></h2>
+<p>The <span class="xref myst">SQL DDL Generator</span> can be used to generate SQL DDL (<code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statements) from a schema.</p>
+<p>There are many <em>possible</em> ways of mapping a LinkML schema to SQL DDL.
+The existing generator makes a specific set of decisions, in future it may be possible to customize this more to your needs.</p>
+<ul class="simple">
+<li><p>Classes are mapped to a Tables</p></li>
+<li><p>Class slots are mapped to Columns</p>
+<ul>
+<li><p>identifier slots are translated to Primary Keys</p></li>
+<li><p>required slots are translated to mandatory fields</p></li>
+</ul>
+</li>
+<li><p>When handling <span class="xref myst">inheritance</span>:</p>
+<ul>
+<li><p>Tables are generated for both superclasses and child classes</p></li>
+<li><p>Slots are “rolled down” to child classes</p></li>
+</ul>
+</li>
+<li><p>A slot <code class="docutils literal notranslate"><span class="pre">s</span></code> that has a range of a class <code class="docutils literal notranslate"><span class="pre">c</span></code>:</p>
+<ul>
+<li><p>is transformed to a slot <code class="docutils literal notranslate"><span class="pre">s_{key}</span></code></p></li>
+<li><p>this is a foreign key to <code class="docutils literal notranslate"><span class="pre">{key}</span></code> in <code class="docutils literal notranslate"><span class="pre">c</span></code>, where <code class="docutils literal notranslate"><span class="pre">{key}</span></code> is the primary key</p></li>
+</ul>
+</li>
+<li><p>The standard relational model does not allow for direct analogs of multivalued fields</p>
+<ul>
+<li><p>A multivalued slot is modeled as a separate table with a <em>backreference</em> to the holder table</p></li>
+<li><p>If the range of a multivalued slot <code class="docutils literal notranslate"><span class="pre">c.s</span></code> is a Type (literal):
+- this generates a table <code class="docutils literal notranslate"><span class="pre">c_s</span></code> with a backref <code class="docutils literal notranslate"><span class="pre">c_{key}</span></code>
+- the table also include a single-valued <code class="docutils literal notranslate"><span class="pre">s</span></code></p></li>
+<li><p>If the range of a multivalued slot <code class="docutils literal notranslate"><span class="pre">c.s</span></code> is a Class <code class="docutils literal notranslate"><span class="pre">r</span></code>:
+- if <code class="docutils literal notranslate"><span class="pre">s</span></code> is inlined, a backref to <code class="docutils literal notranslate"><span class="pre">c</span></code> is inserted into the table for <code class="docutils literal notranslate"><span class="pre">r</span></code>
+- if <code class="docutils literal notranslate"><span class="pre">s</span></code> is not inlined, a new <em>join table</em> <code class="docutils literal notranslate"><span class="pre">c_s</span></code> is created</p></li>
+</ul>
+</li>
+</ul>
+<p>Mapping is done via SQL Alchemy, which takes care of difference in SQL <em>dialects</em>.</p>
+</section>
+<section id="creation-of-an-object-relation-mapping-layer">
+<h2>Creation of an Object-Relation Mapping layer<a class="headerlink" href="#creation-of-an-object-relation-mapping-layer" title="Permalink to this headline"></a></h2>
+<p>The <span class="xref myst">SQLAlchemy Generator</span> will generate a Python ORM.</p>
+<p>Currently there is no support for ORM generation in other languages.</p>
+<p>Given that ORM layers need to tuned to specific use cases, you may wish to provide your own mapping.
+For Java you can do this by tuning the Jinja2 templates that are generated, see <span class="xref myst">Java Generation</span></p>
+</section>
 </section>
 
 

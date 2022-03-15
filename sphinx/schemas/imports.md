@@ -40,3 +40,18 @@ paths
 
 
 
+## Making merged files for distribution
+
+Sometimes it can be convenient to *merge imports* prior to
+distribution. This makes it easier for programs that want to make use
+of a linkml schema, as they only have to work with one file, rather
+than implementing the full import mechanism. It can also help
+eliminate network dependencies.
+
+All [generators](../generators/) have a `--mergeimports` import that
+will merge the imports closure. i.e. all imported definitions will be
+recursively copied into the main file.
+
+One particularly useful generator is the [linkml
+generator](../generators/linkml). This can be used to make a single
+combined file for distribution (in either JSON or YAML)

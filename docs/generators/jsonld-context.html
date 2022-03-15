@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="SPARQL" href="sparql.html" />
-    <link rel="prev" title="SQL DDL" href="sqlddl.html" /> 
+    <link rel="prev" title="GraphQL" href="graphql.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,29 +46,24 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
-<li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="java.html">Java</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">JSON-LD Contexts</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#treatment-of-obo-prefixes">Treatment of OBO prefixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#schema-frameworks">Schema Frameworks</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#linked-data-standards">Linked Data Standards</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">JSON-LD Contexts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#treatment-of-obo-prefixes">Treatment of OBO prefixes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#docs">Docs</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="sparql.html">SPARQL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shex.html">ShEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shacl.html">SHACL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="owl.html">OWL</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shacl.html">SHACL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#documentation-generation">Documentation Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#language-specific">Language Specific</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#others">Others</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -127,9 +122,9 @@ provides mapping from JSON to RDF.</p>
 </pre></div>
 </div>
 <p>You can control the output via
-<a class="reference external" href="https://linkml.io/linkml-model/docs/prefixes.html">prefixes</a>
+<a class="reference external" href="https://linkml.io/linkml-model/docs/prefixes/">prefixes</a>
 declarations and
-<a class="reference external" href="https://linkml.io/linkml-model/docs/default_curi_maps.html">default_curi_maps</a>.</p>
+<a class="reference external" href="https://linkml.io/linkml-model/docs/default_curi_maps/">default_curi_maps</a>.</p>
 <p>Any JSON that conforms to the derived JSON Schema (see above) can be
 converted to RDF using this context.</p>
 </section>
@@ -217,10 +212,13 @@ to gen-prefix-map:</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-jsonld-context-f">
 <span id="cmdoption-gen-jsonld-context-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-jsonld-context-f" title="Permalink to this definition"></a></dt>
-<dd><p>Output format (default=context)</p>
+<dd><p>Output format</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>context | json</p>
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>context</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>context | json</p>
 </dd>
 </dl>
 </dd></dl>
@@ -228,13 +226,23 @@ to gen-prefix-map:</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-jsonld-context-metadata">
 <span id="cmdoption-gen-jsonld-context-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-jsonld-context-metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–metadata)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-jsonld-context-useuris">
 <span id="cmdoption-gen-jsonld-context-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-jsonld-context-useuris" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–useuris)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
@@ -246,12 +254,21 @@ to gen-prefix-map:</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-jsonld-context-log_level">
 <span id="cmdoption-gen-jsonld-context-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-jsonld-context-log_level" title="Permalink to this definition"></a></dt>
-<dd><p>Logging level (default=WARNING)</p>
+<dd><p>Logging level</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>WARNING</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-jsonld-context-v">
+<span id="cmdoption-gen-jsonld-context-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-jsonld-context-v" title="Permalink to this definition"></a></dt>
+<dd><p>verbosity</p>
 </dd></dl>
 
 <dl class="std option">
@@ -298,7 +315,7 @@ to gen-prefix-map:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="sqlddl.html" class="btn btn-neutral float-left" title="SQL DDL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graphql.html" class="btn btn-neutral float-left" title="GraphQL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="sparql.html" class="btn btn-neutral float-right" title="SPARQL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
