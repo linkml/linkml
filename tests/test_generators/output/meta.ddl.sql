@@ -1,3 +1,1236 @@
+-- # Class: "common_metadata" Description: "Generic metadata shared across definitions"
+--     * Slot: id Description: 
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "element" Description: "a named element in the model"
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "schema_definition" Description: "a collection of subset, type, slot and class definitions"
+--     * Slot: id Description: The official schema URI
+--     * Slot: version Description: particular version of schema
+--     * Slot: license Description: license for the schema
+--     * Slot: default_prefix Description: default and base prefix -- used for ':' identifiers, @base and @vocab
+--     * Slot: default_range Description: default slot range to be used if range element is omitted from a slot definition
+--     * Slot: metamodel_version Description: Version of the metamodel used to load the schema
+--     * Slot: source_file Description: name, uri or description of the source of the schema
+--     * Slot: source_file_date Description: modification date of the source of the schema
+--     * Slot: source_file_size Description: size in bytes of the source of the schema
+--     * Slot: generation_date Description: date and time that the schema was loaded/generated
+--     * Slot: slot_names_unique Description: if true then induced/mangled slot names are not created for class_usage and attributes
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "type_expression" Description: ""
+--     * Slot: id Description: 
+--     * Slot: pattern Description: the string value of the slot must conform to this regular expression expressed in the string
+--     * Slot: equals_string Description: the slot must have range string and the value of the slot must equal the specified value
+--     * Slot: equals_number Description: the slot must have range of a number and the value of the slot must equal the specified value
+--     * Slot: minimum_value Description: for slots with ranges of type number, the value must be equal to or higher than this
+--     * Slot: maximum_value Description: for slots with ranges of type number, the value must be equal to or lowe than this
+--     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
+-- # Class: "anonymous_type_expression" Description: ""
+--     * Slot: id Description: 
+--     * Slot: pattern Description: the string value of the slot must conform to this regular expression expressed in the string
+--     * Slot: equals_string Description: the slot must have range string and the value of the slot must equal the specified value
+--     * Slot: equals_number Description: the slot must have range of a number and the value of the slot must equal the specified value
+--     * Slot: minimum_value Description: for slots with ranges of type number, the value must be equal to or higher than this
+--     * Slot: maximum_value Description: for slots with ranges of type number, the value must be equal to or lowe than this
+--     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
+-- # Class: "type_definition" Description: "A data type definition."
+--     * Slot: typeof Description: Names a parent type
+--     * Slot: base Description: python base type that implements this type definition
+--     * Slot: uri Description: The uri that defines the possible values for the type definition
+--     * Slot: repr Description: the name of the python object that implements this type definition
+--     * Slot: pattern Description: the string value of the slot must conform to this regular expression expressed in the string
+--     * Slot: equals_string Description: the slot must have range string and the value of the slot must equal the specified value
+--     * Slot: equals_number Description: the slot must have range of a number and the value of the slot must equal the specified value
+--     * Slot: minimum_value Description: for slots with ranges of type number, the value must be equal to or higher than this
+--     * Slot: maximum_value Description: for slots with ranges of type number, the value must be equal to or lowe than this
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
+-- # Class: "subset_definition" Description: "the name and description of a subset"
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+-- # Class: "definition" Description: "base class for definitions"
+--     * Slot: is_a Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
+--     * Slot: abstract Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
+--     * Slot: mixin Description: this slot or class can only be used as a mixin.
+--     * Slot: created_by Description: agent that created the element
+--     * Slot: created_on Description: time at which the element was created
+--     * Slot: last_updated_on Description: time at which the element was last updated
+--     * Slot: modified_by Description: agent that modified the element
+--     * Slot: status Description: status of the element
+--     * Slot: string_serialization Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objectsFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "enum_definition" Description: "List of values that constrain the range of a slot"
+--     * Slot: code_set Description: the identifier of an enumeration code set.
+--     * Slot: code_set_tag Description: the version tag of the enumeration code set
+--     * Slot: code_set_version Description: the version identifier of the enumeration code set
+--     * Slot: pv_formula Description: Defines the specific formula to be used to generate the permissible values.
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+-- # Class: "structured_alias" Description: "object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)"
+--     * Slot: id Description: 
+--     * Slot: literal_form Description: The literal lexical form of a structured alias
+--     * Slot: predicate Description: The relationship between an element and its alias 
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+-- # Class: "expression" Description: "general mixin for any class that can represent some form of expression"
+--     * Slot: id Description: 
+-- # Class: "anonymous_expression" Description: ""
+--     * Slot: id Description: 
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "path_expression" Description: "An expression that describes an abstract path from an object to another through a sequence of slot lookups"
+--     * Slot: id Description: 
+--     * Slot: reversed Description: true if the slot is to be inversed
+--     * Slot: traverse Description: the slot to traverse
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: followed_by_id Description: in a sequential list, this indicates the next member
+--     * Slot: range_expression_id Description: A range that is described as a boolean expression combining existing ranges
+-- # Class: "slot_expression" Description: "an expression that constrains the range of values a slot can take"
+--     * Slot: id Description: 
+--     * Slot: range Description: defines the type of the object of the slot.  Given the following slot definition  S1:    domain: C1    range:  C2the declaration  X:    S1: Yimplicitly asserts Y is an instance of C2
+--     * Slot: required Description: true means that the slot must be present in the loaded definition
+--     * Slot: recommended Description: true means that the slot should be present in the loaded definition, but this is not required
+--     * Slot: minimum_value Description: for slots with ranges of type number, the value must be equal to or higher than this
+--     * Slot: maximum_value Description: for slots with ranges of type number, the value must be equal to or lowe than this
+--     * Slot: pattern Description: the string value of the slot must conform to this regular expression expressed in the string
+--     * Slot: equals_string Description: the slot must have range string and the value of the slot must equal the specified value
+--     * Slot: equals_number Description: the slot must have range of a number and the value of the slot must equal the specified value
+--     * Slot: equals_expression Description: the value of the slot must equal the value of the evaluated expression
+--     * Slot: minimum_cardinality Description: the minimum number of entries for a multivalued slot
+--     * Slot: maximum_cardinality Description: the maximum number of entries for a multivalued slot
+--     * Slot: range_expression_id Description: A range that is described as a boolean expression combining existing ranges
+--     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
+--     * Slot: has_member_id Description: the values of the slot is multivalued with at least one member satisfying the condition
+-- # Class: "anonymous_slot_expression" Description: ""
+--     * Slot: id Description: 
+--     * Slot: range Description: defines the type of the object of the slot.  Given the following slot definition  S1:    domain: C1    range:  C2the declaration  X:    S1: Yimplicitly asserts Y is an instance of C2
+--     * Slot: required Description: true means that the slot must be present in the loaded definition
+--     * Slot: recommended Description: true means that the slot should be present in the loaded definition, but this is not required
+--     * Slot: minimum_value Description: for slots with ranges of type number, the value must be equal to or higher than this
+--     * Slot: maximum_value Description: for slots with ranges of type number, the value must be equal to or lowe than this
+--     * Slot: pattern Description: the string value of the slot must conform to this regular expression expressed in the string
+--     * Slot: equals_string Description: the slot must have range string and the value of the slot must equal the specified value
+--     * Slot: equals_number Description: the slot must have range of a number and the value of the slot must equal the specified value
+--     * Slot: equals_expression Description: the value of the slot must equal the value of the evaluated expression
+--     * Slot: minimum_cardinality Description: the minimum number of entries for a multivalued slot
+--     * Slot: maximum_cardinality Description: the maximum number of entries for a multivalued slot
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: range_expression_id Description: A range that is described as a boolean expression combining existing ranges
+--     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
+--     * Slot: has_member_id Description: the values of the slot is multivalued with at least one member satisfying the condition
+-- # Class: "slot_definition" Description: "the definition of a property or a slot"
+--     * Slot: singular_name Description: a name that is used in the singular form
+--     * Slot: domain Description: defines the type of the subject of the slot.  Given the following slot definition  S1:    domain: C1    range:  C2the declaration  X:    S1: Yimplicitly asserts that X is an instance of C1
+--     * Slot: slot_uri Description: predicate of this slot for semantic web application
+--     * Slot: multivalued Description: true means that slot can have more than one value
+--     * Slot: inherited Description: true means that the *value* of a slot is inherited by subclasses
+--     * Slot: readonly Description: If present, slot is read only.  Text explains why
+--     * Slot: ifabsent Description: function that provides a default value for the slot.  Possible values for this slot are defined inlinkml.utils.ifabsent_functions.default_library:  * [Tt]rue -- boolean True  * [Ff]alse -- boolean False  * int(value) -- integer value  * str(value) -- string value  * default_range -- schema default range  * bnode -- blank node identifier  * slot_uri -- URI for the slot  * class_curie -- CURIE for the containing class  * class_uri -- URI for the containing class
+--     * Slot: inlined Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
+--     * Slot: inlined_as_list Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
+--     * Slot: list_elements_unique Description: If True, then there must be no duplicates in the elements of a multivalued slot
+--     * Slot: list_elements_ordered Description: If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the order may still be preserved but this is not guaranteed
+--     * Slot: shared Description: If True, then the relationship between the slot domain and range is many to one or many to many
+--     * Slot: key Description: True means that the key slot(s) uniquely identify the container.
+--     * Slot: identifier Description: True means that the key slot(s) uniquely identify the container. There can be at most one identifier or key per container
+--     * Slot: designates_type Description: True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
+--     * Slot: alias Description: the name used for a slot in the context of its owning class.  If present, this is used instead of the actual slot name.
+--     * Slot: owner Description: the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
+--     * Slot: subproperty_of Description: Ontology property which this slot is a subproperty of
+--     * Slot: symmetric Description: If s is symmetric, and i.s=v, then v.s=i
+--     * Slot: reflexive Description: If s is reflexive, then i.s=i for all instances i
+--     * Slot: locally_reflexive Description: If s is locally_reflexive, then i.s=i for all instances i where s if a class slot for the type of i
+--     * Slot: irreflexive Description: If s is irreflexive, then there exists no i such i.s=i
+--     * Slot: asymmetric Description: If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i
+--     * Slot: transitive Description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
+--     * Slot: inverse Description: indicates that any instance of d s r implies that there is also an instance of r s' d
+--     * Slot: is_class_field Description: indicates that any instance, i,  the domain of this slot will include an assert of i s range
+--     * Slot: transitive_form_of Description: If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive
+--     * Slot: reflexive_transitive_form_of Description: transitive_form_of including the reflexive case
+--     * Slot: role Description: the role played by the slot range
+--     * Slot: is_usage_slot Description: True means that this slot was defined in a slot_usage situation
+--     * Slot: usage_slot_name Description: The name of the slot referenced in the slot_usage
+--     * Slot: relational_role Description: the role a slot on a relationship class plays, for example, the subject, object or predicate roles
+--     * Slot: slot_group Description: allows for grouping of related slots into a grouping slot that serves the role of a group
+--     * Slot: is_grouping_slot Description: true if this slot is a grouping slot
+--     * Slot: children_are_mutually_disjoint Description: If true then all direct is_a children are mutually disjoint and share no instances in common
+--     * Slot: range Description: defines the type of the object of the slot.  Given the following slot definition  S1:    domain: C1    range:  C2the declaration  X:    S1: Yimplicitly asserts Y is an instance of C2
+--     * Slot: required Description: true means that the slot must be present in the loaded definition
+--     * Slot: recommended Description: true means that the slot should be present in the loaded definition, but this is not required
+--     * Slot: minimum_value Description: for slots with ranges of type number, the value must be equal to or higher than this
+--     * Slot: maximum_value Description: for slots with ranges of type number, the value must be equal to or lowe than this
+--     * Slot: pattern Description: the string value of the slot must conform to this regular expression expressed in the string
+--     * Slot: equals_string Description: the slot must have range string and the value of the slot must equal the specified value
+--     * Slot: equals_number Description: the slot must have range of a number and the value of the slot must equal the specified value
+--     * Slot: equals_expression Description: the value of the slot must equal the value of the evaluated expression
+--     * Slot: minimum_cardinality Description: the minimum number of entries for a multivalued slot
+--     * Slot: maximum_cardinality Description: the maximum number of entries for a multivalued slot
+--     * Slot: is_a Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
+--     * Slot: abstract Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
+--     * Slot: mixin Description: this slot or class can only be used as a mixin.
+--     * Slot: created_by Description: agent that created the element
+--     * Slot: created_on Description: time at which the element was created
+--     * Slot: last_updated_on Description: time at which the element was last updated
+--     * Slot: modified_by Description: agent that modified the element
+--     * Slot: status Description: status of the element
+--     * Slot: string_serialization Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objectsFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: slot_expression_id Description: Autocreated FK slot
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: class_expression_id Description: Autocreated FK slot
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: path_rule_id Description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignemnts
+--     * Slot: range_expression_id Description: A range that is described as a boolean expression combining existing ranges
+--     * Slot: structured_pattern_id Description: the string value of the slot must conform to the regular expression in the pattern expression
+--     * Slot: has_member_id Description: the values of the slot is multivalued with at least one member satisfying the condition
+-- # Class: "class_expression" Description: "A boolean expression that can be used to dynamically determine membership of a class"
+--     * Slot: id Description: 
+-- # Class: "anonymous_class_expression" Description: ""
+--     * Slot: id Description: 
+--     * Slot: is_a Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: class_definition_name Description: Autocreated FK slot
+-- # Class: "class_definition" Description: "the definition of a class or interface"
+--     * Slot: class_uri Description: URI of the class in an RDF environment
+--     * Slot: subclass_of Description: rdfs:subClassOf to be emitted in OWL generation
+--     * Slot: tree_root Description: indicator that this is the root class in tree structures
+--     * Slot: slot_names_unique Description: if true then induced/mangled slot names are not created for class_usage and attributes
+--     * Slot: represents_relationship Description: true if this class represents a relationship rather than an entity
+--     * Slot: children_are_mutually_disjoint Description: If true then all direct is_a children are mutually disjoint and share no instances in common
+--     * Slot: is_a Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
+--     * Slot: abstract Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
+--     * Slot: mixin Description: this slot or class can only be used as a mixin.
+--     * Slot: created_by Description: agent that created the element
+--     * Slot: created_on Description: time at which the element was created
+--     * Slot: last_updated_on Description: time at which the element was last updated
+--     * Slot: modified_by Description: agent that modified the element
+--     * Slot: status Description: status of the element
+--     * Slot: string_serialization Description: Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objectsFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm
+--     * Slot: name Description: the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.
+--     * Slot: definition_uri Description: the "native" URI of the element
+--     * Slot: conforms_to Description: An established standard to which the element conforms.
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+-- # Class: "class_level_rule" Description: "A rule that is applied to classes"
+--     * Slot: id Description: 
+-- # Class: "class_rule" Description: "A rule that applies to instances of a class"
+--     * Slot: id Description: 
+--     * Slot: bidirectional Description: in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+--     * Slot: open_world Description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
+--     * Slot: rank Description: the relative order in which the element occurs, lower values are given precedence
+--     * Slot: deactivated Description: a deactivated rule is not executed by the rules engine
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: preconditions_id Description: an expression that must hold in order for the rule to be applicable to an instance
+--     * Slot: postconditions_id Description: an expression that must hold for an instance of the class, if the preconditions hold
+--     * Slot: elseconditions_id Description: an expression that must hold for an instance of the class, if the preconditions no not hold
+-- # Class: "pattern_expression" Description: "a regular expression pattern used to evaluate conformance of a string"
+--     * Slot: id Description: 
+--     * Slot: syntax Description: the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.
+--     * Slot: interpolated Description: if true then the pattern is first string interpolated
+--     * Slot: partial_match Description: if true then the pattern must match the whole string, as if enclosed in ^...$
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "import_expression" Description: "an expression describing an import"
+--     * Slot: id Description: 
+--     * Slot: import_from Description: 
+--     * Slot: import_as Description: 
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+-- # Class: "setting" Description: "assignment of a key to a value"
+--     * Slot: setting_key Description: the variable name for a setting
+--     * Slot: setting_value Description: The value assigned for a setting
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: import_expression_id Description: Autocreated FK slot
+-- # Class: "prefix" Description: "prefix URI tuple"
+--     * Slot: prefix_prefix Description: the nsname (sans ':' for a given prefix)
+--     * Slot: prefix_reference Description: A URI associated with a given prefix
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+-- # Class: "local_name" Description: "an attributed label"
+--     * Slot: local_name_source Description: the ncname of the source of the name
+--     * Slot: local_name_value Description: a name assigned to an element in a given ontology
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+-- # Class: "example" Description: "usage example and description"
+--     * Slot: id Description: 
+--     * Slot: value Description: example value
+--     * Slot: description Description: description of what the value is doing
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+-- # Class: "alt_description" Description: "an attributed description"
+--     * Slot: source Description: the source of an attributed description
+--     * Slot: description Description: text of an attributed description
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+-- # Class: "permissible_value" Description: "a permissible value, accompanied by intended text and an optional mapping to a concept URI"
+--     * Slot: text Description: 
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: meaning Description: the value meaning of a permissible value
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+-- # Class: "unique_key" Description: "a collection of slots whose values uniquely identify an instance of a class"
+--     * Slot: unique_key_name Description: name of the unique key
+--     * Slot: description Description: a description of the element's purpose and use
+--     * Slot: title Description: the official title of the element
+--     * Slot: deprecated Description: Description of why and when this element will no longer be used
+--     * Slot: from_schema Description: id of the schema that defined the element
+--     * Slot: imported_from Description: the imports entry that this element was derived from.  Empty means primary source
+--     * Slot: source Description: A related resource from which the element is derived.
+--     * Slot: in_language Description: 
+--     * Slot: deprecated_element_has_exact_replacement Description: When an element is deprecated, it can be automatically replaced by this uri or curie
+--     * Slot: deprecated_element_has_possible_replacement Description: When an element is deprecated, it can be potentially replaced by this uri or curie
+--     * Slot: class_definition_name Description: Autocreated FK slot
+-- # Class: "annotatable" Description: "mixin for classes that support annotations"
+--     * Slot: id Description: 
+-- # Class: "annotation" Description: "a tag/value pair with the semantics of OWL Annotation"
+--     * Slot: tag Description: a tag associated with an extension
+--     * Slot: value Description: the actual annotation
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: annotatable_id Description: Autocreated FK slot
+--     * Slot: annotation_tag Description: Autocreated FK slot
+-- # Class: "extension" Description: "a tag/value pair used to add non-model information to an entry"
+--     * Slot: tag Description: a tag associated with an extension
+--     * Slot: value Description: the actual annotation
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: annotation_tag Description: Autocreated FK slot
+--     * Slot: extension_tag Description: Autocreated FK slot
+--     * Slot: extensible_id Description: Autocreated FK slot
+-- # Class: "extensible" Description: "mixin for classes that support extension"
+--     * Slot: id Description: 
+-- # Class: "common_metadata_todos" Description: ""
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "common_metadata_notes" Description: ""
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "common_metadata_comments" Description: ""
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "common_metadata_in_subset" Description: ""
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "common_metadata_see_also" Description: ""
+--     * Slot: common_metadata_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "element_id_prefixes" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "element_aliases" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "element_mappings" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "element_exact_mappings" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "element_close_mappings" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "element_related_mappings" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "element_narrow_mappings" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "element_broad_mappings" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "element_todos" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "element_notes" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "element_comments" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "element_in_subset" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "element_see_also" Description: ""
+--     * Slot: element_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "schema_definition_imports" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: imports Description: other schemas that are included in this schema
+-- # Class: "schema_definition_emit_prefixes" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: emit_prefixes Description: a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models.
+-- # Class: "schema_definition_default_curi_maps" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: default_curi_maps Description: ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables
+-- # Class: "schema_definition_category" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: category Description: controlled terms used to categorize an element
+-- # Class: "schema_definition_keyword" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: keyword Description: Keywords or tags used to describe the element
+-- # Class: "schema_definition_id_prefixes" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "schema_definition_aliases" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "schema_definition_mappings" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "schema_definition_exact_mappings" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "schema_definition_close_mappings" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "schema_definition_related_mappings" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "schema_definition_narrow_mappings" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "schema_definition_broad_mappings" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "schema_definition_todos" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "schema_definition_notes" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "schema_definition_comments" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "schema_definition_in_subset" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "schema_definition_see_also" Description: ""
+--     * Slot: schema_definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "type_expression_equals_string_in" Description: ""
+--     * Slot: type_expression_id Description: Autocreated FK slot
+--     * Slot: equals_string_in Description: the slot must have range string and the value of the slot must equal one of the specified values
+-- # Class: "type_expression_none_of" Description: ""
+--     * Slot: type_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "type_expression_exactly_one_of" Description: ""
+--     * Slot: type_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "type_expression_any_of" Description: ""
+--     * Slot: type_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "type_expression_all_of" Description: ""
+--     * Slot: type_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "anonymous_type_expression_equals_string_in" Description: ""
+--     * Slot: anonymous_type_expression_id Description: Autocreated FK slot
+--     * Slot: equals_string_in Description: the slot must have range string and the value of the slot must equal one of the specified values
+-- # Class: "anonymous_type_expression_none_of" Description: ""
+--     * Slot: anonymous_type_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "anonymous_type_expression_exactly_one_of" Description: ""
+--     * Slot: anonymous_type_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "anonymous_type_expression_any_of" Description: ""
+--     * Slot: anonymous_type_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "anonymous_type_expression_all_of" Description: ""
+--     * Slot: anonymous_type_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "type_definition_equals_string_in" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: equals_string_in Description: the slot must have range string and the value of the slot must equal one of the specified values
+-- # Class: "type_definition_none_of" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "type_definition_exactly_one_of" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "type_definition_any_of" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "type_definition_all_of" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "type_definition_id_prefixes" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "type_definition_aliases" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "type_definition_mappings" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "type_definition_exact_mappings" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "type_definition_close_mappings" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "type_definition_related_mappings" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "type_definition_narrow_mappings" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "type_definition_broad_mappings" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "type_definition_todos" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "type_definition_notes" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "type_definition_comments" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "type_definition_in_subset" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "type_definition_see_also" Description: ""
+--     * Slot: type_definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "subset_definition_id_prefixes" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "subset_definition_aliases" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "subset_definition_mappings" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "subset_definition_exact_mappings" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "subset_definition_close_mappings" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "subset_definition_related_mappings" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "subset_definition_narrow_mappings" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "subset_definition_broad_mappings" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "subset_definition_todos" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "subset_definition_notes" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "subset_definition_comments" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "subset_definition_in_subset" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "subset_definition_see_also" Description: ""
+--     * Slot: subset_definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "definition_mixins" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: mixins Description: List of definitions to be mixed in. Targets may be any definition of the same type
+-- # Class: "definition_apply_to" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: apply_to Description: Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
+-- # Class: "definition_values_from" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: values_from Description: the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
+-- # Class: "definition_id_prefixes" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "definition_aliases" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "definition_mappings" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "definition_exact_mappings" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "definition_close_mappings" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "definition_related_mappings" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "definition_narrow_mappings" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "definition_broad_mappings" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "definition_todos" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "definition_notes" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "definition_comments" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "definition_in_subset" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "definition_see_also" Description: ""
+--     * Slot: definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "enum_definition_id_prefixes" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "enum_definition_aliases" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "enum_definition_mappings" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "enum_definition_exact_mappings" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "enum_definition_close_mappings" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "enum_definition_related_mappings" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "enum_definition_narrow_mappings" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "enum_definition_broad_mappings" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "enum_definition_todos" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "enum_definition_notes" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "enum_definition_comments" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "enum_definition_in_subset" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "enum_definition_see_also" Description: ""
+--     * Slot: enum_definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "structured_alias_category" Description: ""
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: category Description: The category or categories of an alias. This can be drawn from any relevant vocabulary
+-- # Class: "structured_alias_todos" Description: ""
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "structured_alias_notes" Description: ""
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "structured_alias_comments" Description: ""
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "structured_alias_in_subset" Description: ""
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "structured_alias_see_also" Description: ""
+--     * Slot: structured_alias_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "anonymous_expression_todos" Description: ""
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "anonymous_expression_notes" Description: ""
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "anonymous_expression_comments" Description: ""
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "anonymous_expression_in_subset" Description: ""
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "anonymous_expression_see_also" Description: ""
+--     * Slot: anonymous_expression_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "path_expression_none_of" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "path_expression_any_of" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "path_expression_all_of" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "path_expression_exactly_one_of" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "path_expression_todos" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "path_expression_notes" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "path_expression_comments" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "path_expression_in_subset" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "path_expression_see_also" Description: ""
+--     * Slot: path_expression_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "slot_expression_equals_string_in" Description: ""
+--     * Slot: slot_expression_id Description: Autocreated FK slot
+--     * Slot: equals_string_in Description: the slot must have range string and the value of the slot must equal one of the specified values
+-- # Class: "slot_expression_none_of" Description: ""
+--     * Slot: slot_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "slot_expression_exactly_one_of" Description: ""
+--     * Slot: slot_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "slot_expression_any_of" Description: ""
+--     * Slot: slot_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "slot_expression_all_of" Description: ""
+--     * Slot: slot_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "anonymous_slot_expression_equals_string_in" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: equals_string_in Description: the slot must have range string and the value of the slot must equal one of the specified values
+-- # Class: "anonymous_slot_expression_none_of" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "anonymous_slot_expression_exactly_one_of" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "anonymous_slot_expression_any_of" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "anonymous_slot_expression_all_of" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "anonymous_slot_expression_todos" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "anonymous_slot_expression_notes" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "anonymous_slot_expression_comments" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "anonymous_slot_expression_in_subset" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "anonymous_slot_expression_see_also" Description: ""
+--     * Slot: anonymous_slot_expression_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "slot_definition_domain_of" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: domain_of Description: the class(es) that reference the slot in a "slots" or "slot_usage" context
+-- # Class: "slot_definition_disjoint_with" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: disjoint_with Description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
+-- # Class: "slot_definition_equals_string_in" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: equals_string_in Description: the slot must have range string and the value of the slot must equal one of the specified values
+-- # Class: "slot_definition_none_of" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "slot_definition_exactly_one_of" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "slot_definition_any_of" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "slot_definition_all_of" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "slot_definition_mixins" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: mixins Description: List of definitions to be mixed in. Targets may be any definition of the same type
+-- # Class: "slot_definition_apply_to" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: apply_to Description: Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
+-- # Class: "slot_definition_values_from" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: values_from Description: the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
+-- # Class: "slot_definition_id_prefixes" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "slot_definition_aliases" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "slot_definition_mappings" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "slot_definition_exact_mappings" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "slot_definition_close_mappings" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "slot_definition_related_mappings" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "slot_definition_narrow_mappings" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "slot_definition_broad_mappings" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "slot_definition_todos" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "slot_definition_notes" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "slot_definition_comments" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "slot_definition_in_subset" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "slot_definition_see_also" Description: ""
+--     * Slot: slot_definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "class_expression_any_of" Description: ""
+--     * Slot: class_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "class_expression_exactly_one_of" Description: ""
+--     * Slot: class_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "class_expression_none_of" Description: ""
+--     * Slot: class_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "class_expression_all_of" Description: ""
+--     * Slot: class_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "anonymous_class_expression_any_of" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "anonymous_class_expression_exactly_one_of" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "anonymous_class_expression_none_of" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "anonymous_class_expression_all_of" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "anonymous_class_expression_todos" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "anonymous_class_expression_notes" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "anonymous_class_expression_comments" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "anonymous_class_expression_in_subset" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "anonymous_class_expression_see_also" Description: ""
+--     * Slot: anonymous_class_expression_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "class_definition_slots" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: slots Description: list of slot names that are applicable to a class
+-- # Class: "class_definition_union_of" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: union_of Description: indicates that the domain class consists exactly of the members of the classes in the range
+-- # Class: "class_definition_defining_slots" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: defining_slots Description: The combination of is a plus defining slots form a genus-differentia definition, or the set of necessary and sufficient conditions that can be transformed into an OWL equivalence axiom
+-- # Class: "class_definition_disjoint_with" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: disjoint_with Description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
+-- # Class: "class_definition_any_of" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: any_of_id Description: holds if at least one of the expressions hold
+-- # Class: "class_definition_exactly_one_of" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: exactly_one_of_id Description: holds if only one of the expressions hold
+-- # Class: "class_definition_none_of" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: none_of_id Description: holds if none of the expressions hold
+-- # Class: "class_definition_all_of" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: all_of_id Description: holds if all of the expressions hold
+-- # Class: "class_definition_mixins" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: mixins Description: List of definitions to be mixed in. Targets may be any definition of the same type
+-- # Class: "class_definition_apply_to" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: apply_to Description: Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
+-- # Class: "class_definition_values_from" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: values_from Description: the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
+-- # Class: "class_definition_id_prefixes" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: id_prefixes Description: the identifier of this class or slot must begin with the URIs referenced by this prefix
+-- # Class: "class_definition_aliases" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: aliases Description: 
+-- # Class: "class_definition_mappings" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: mappings Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+-- # Class: "class_definition_exact_mappings" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: exact_mappings Description: A list of terms from different schemas or terminology systems that have identical meaning.
+-- # Class: "class_definition_close_mappings" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: close_mappings Description: A list of terms from different schemas or terminology systems that have close meaning.
+-- # Class: "class_definition_related_mappings" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: related_mappings Description: A list of terms from different schemas or terminology systems that have related meaning.
+-- # Class: "class_definition_narrow_mappings" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: narrow_mappings Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+-- # Class: "class_definition_broad_mappings" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: broad_mappings Description: A list of terms from different schemas or terminology systems that have broader meaning.
+-- # Class: "class_definition_todos" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "class_definition_notes" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "class_definition_comments" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "class_definition_in_subset" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "class_definition_see_also" Description: ""
+--     * Slot: class_definition_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "class_rule_todos" Description: ""
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "class_rule_notes" Description: ""
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "class_rule_comments" Description: ""
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "class_rule_in_subset" Description: ""
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "class_rule_see_also" Description: ""
+--     * Slot: class_rule_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "pattern_expression_todos" Description: ""
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "pattern_expression_notes" Description: ""
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "pattern_expression_comments" Description: ""
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "pattern_expression_in_subset" Description: ""
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "pattern_expression_see_also" Description: ""
+--     * Slot: pattern_expression_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "import_expression_todos" Description: ""
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "import_expression_notes" Description: ""
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "import_expression_comments" Description: ""
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "import_expression_in_subset" Description: ""
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "import_expression_see_also" Description: ""
+--     * Slot: import_expression_id Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "permissible_value_todos" Description: ""
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "permissible_value_notes" Description: ""
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "permissible_value_comments" Description: ""
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "permissible_value_in_subset" Description: ""
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "permissible_value_see_also" Description: ""
+--     * Slot: permissible_value_text Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
+-- # Class: "unique_key_unique_key_slots" Description: ""
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: unique_key_slots Description: list of slot names that form a key
+-- # Class: "unique_key_todos" Description: ""
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: todos Description: Outstanding issue that needs resolution
+-- # Class: "unique_key_notes" Description: ""
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: notes Description: editorial notes about an element intended for internal consumption
+-- # Class: "unique_key_comments" Description: ""
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: comments Description: notes and comments about an element intended for external consumption
+-- # Class: "unique_key_in_subset" Description: ""
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: in_subset Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
+-- # Class: "unique_key_see_also" Description: ""
+--     * Slot: unique_key_unique_key_name Description: Autocreated FK slot
+--     * Slot: see_also Description: a reference
 
 CREATE TABLE common_metadata (
 	id INTEGER, 
