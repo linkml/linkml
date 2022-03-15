@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="SQL DDL" href="sqlddl.html" />
+    <link rel="next" title="Typescript" href="typescript.html" />
     <link rel="prev" title="Pydantic" href="pydantic.html" /> 
 </head>
 
@@ -46,31 +46,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Generators</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="markdown.html">Markdown</a></li>
-<li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Java</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docs">Docs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#command-line">Command Line</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#code">Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#schema-frameworks">Schema Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#linked-data-standards">Linked Data Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#documentation-generation">Documentation Generation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#language-specific">Language Specific</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="python.html">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Java</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#docs">Docs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#biolink-example">Biolink Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alternate-template-example">Alternate Template Example</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#biolink-example">Biolink Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#alternate-template-example">Alternate Template Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="typescript.html">Typescript</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sparql.html">SPARQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shex.html">ShEx</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shacl.html">SHACL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
-<li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#others">Others</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
@@ -154,10 +148,13 @@ classes with alternate annotations or additional documentation.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-java-f">
 <span id="cmdoption-gen-java-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-java-f" title="Permalink to this definition"></a></dt>
-<dd><p>Output format (default=java)</p>
+<dd><p>Output format</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
+<dt class="field-odd">Default</dt>
 <dd class="field-odd"><p>java</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>java</p>
 </dd>
 </dl>
 </dd></dl>
@@ -165,13 +162,23 @@ classes with alternate annotations or additional documentation.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-java-metadata">
 <span id="cmdoption-gen-java-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-java-metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–metadata)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-java-useuris">
 <span id="cmdoption-gen-java-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-java-useuris" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–useuris)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
@@ -183,12 +190,21 @@ classes with alternate annotations or additional documentation.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-java-log_level">
 <span id="cmdoption-gen-java-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-java-log_level" title="Permalink to this definition"></a></dt>
-<dd><p>Logging level (default=WARNING)</p>
+<dd><p>Logging level</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>WARNING</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-java-v">
+<span id="cmdoption-gen-java-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-java-v" title="Permalink to this definition"></a></dt>
+<dd><p>verbosity</p>
 </dd></dl>
 
 <dl class="std option">
@@ -291,7 +307,7 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="pydantic.html" class="btn btn-neutral float-left" title="Pydantic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="sqlddl.html" class="btn btn-neutral float-right" title="SQL DDL" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="typescript.html" class="btn btn-neutral float-right" title="Typescript" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

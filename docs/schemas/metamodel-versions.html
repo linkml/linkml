@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Versioning of the metamodel &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Versioning of the metamodel</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/metamodel-versions.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="versioning-of-the-metamodel">
+<h1>Versioning of the metamodel<a class="headerlink" href="#versioning-of-the-metamodel" title="Permalink to this headline"></a></h1>
+<section id="versioning-scheme">
+<h2>Versioning scheme<a class="headerlink" href="#versioning-scheme" title="Permalink to this headline"></a></h2>
+<p>The LinkML project uses Semantic Versioning (SemVer)</p>
+<p>Note there are a number of different artefacts in the LinkML project</p>
+<ul class="simple">
+<li><p>Core artefacts</p>
+<ul>
+<li><p>linkml-model: the metamodel, the actual LinkML standard</p></li>
+<li><p>linkml-runtime</p></li>
+<li><p>linkml</p></li>
+</ul>
+</li>
+<li><p>Additional artefacts</p>
+<ul>
+<li><p>linkml-model-enrichment</p></li>
+<li><p>other related projects, e.g. schemasheets</p></li>
+</ul>
+</li>
+</ul>
+<p>These each have their own distinct versioning schemes, which need not be connected.
+Versions are tracked in GitHub, alongside respective PyPI releases.</p>
+<p>However, starting with the release of linkml-model 1.2, <strong>core
+artefacts version numbers are loosely coupled</strong>:</p>
+<ul class="simple">
+<li><p>The major and minor version should match the major and minor version of the metamodel</p></li>
+<li><p>The patch number can vary independently</p></li>
+</ul>
+<p>For example, linkml-runtime 1.5.12 uses the 1.5 series of the metamodel.</p>
+</section>
+<section id="release-candidates">
+<h2>Release Candidates<a class="headerlink" href="#release-candidates" title="Permalink to this headline"></a></h2>
+<p>All release candidates are given a version number <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCHrcNUM</span></code></p>
+<p>These are tagged as pre-releases on GitHub</p>
+</section>
+<section id="metamodel-release-notes">
+<h2>Metamodel Release Notes<a class="headerlink" href="#metamodel-release-notes" title="Permalink to this headline"></a></h2>
+<p>For complete release notes tied to patch releases, see the release notes on GitHub:</p>
+<ul class="simple">
+<li><p>https://github.com/linkml/linkml-model/releases</p></li>
+<li><p>https://github.com/linkml/linkml-runtime/releases</p></li>
+<li><p>https://github.com/linkml/linkml/releases</p></li>
+</ul>
+<section id="linkml-model-1-2">
+<h3>LinkML-Model 1.2<a class="headerlink" href="#linkml-model-1-2" title="Permalink to this headline"></a></h3>
+<p>Highlights:</p>
+<ul class="simple">
+<li><p>A richer set of slots that can be used for schema metadata</p></li>
+<li><p>The introduction of boolean conditions and rules</p></li>
+<li><p>A validation datamodel based on SHACL validation</p></li>
+<li><p>A dataset datamodel based on frictionless, void, dcat, and the HCLS dataset description standard</p></li>
+<li><p>Ability to constrain field values using regular expressions</p></li>
+</ul>
+<p>Selected Changelog:</p>
+<ul class="simple">
+<li><p>new slot: string serialization https://github.com/linkml/linkml-model/pull/25</p></li>
+<li><p>new slot: recommended https://github.com/linkml/linkml-model/pull/26</p></li>
+<li><p>unique keys: https://github.com/linkml/linkml-model/pull/16</p></li>
+<li><p>data validation datamodel: https://github.com/linkml/linkml-model/pull/42</p></li>
+<li><p>pattern on type definitions: https://github.com/linkml/linkml-model/pull/43</p></li>
+<li><p>adding conforms_to: https://github.com/linkml/linkml-model/pull/50</p></li>
+<li><p>add min-max-val-to-type-expression: https://github.com/linkml/linkml-model/pull/57</p></li>
+<li><p>aligning-validation model: https://github.com/linkml/linkml-model/pull/68</p></li>
+<li><p>new slot: source: https://github.com/linkml/linkml-model/pull/62</p></li>
+<li><p>new slots: relational characteristics: https://github.com/linkml/linkml-model/pull/69</p></li>
+<li><p>datasets schema: https://github.com/linkml/linkml-model/pull/67</p></li>
+<li><p>reified statements/edge properties: https://github.com/linkml/linkml-model/pull/61</p></li>
+<li><p>property groups: https://github.com/linkml/linkml-model/pull/71</p></li>
+<li><p>path: https://github.com/linkml/linkml-model/pull/72</p></li>
+<li><p>disjoint_with: https://github.com/linkml/linkml-model/pull/78</p></li>
+<li><p>structured_alias: https://github.com/linkml/linkml-model/pull/66</p></li>
+<li><p>align to skosxl: https://github.com/linkml/linkml-model/pull/86</p></li>
+</ul>
+<p>Complete changelog: https://github.com/linkml/linkml-model/compare/v1.0.0…v1.0.8</p>
+<p>Corresponding framework change highlights, from 1.1 (linkml and linkml-runtime):</p>
+<ul class="simple">
+<li><p>dropped support for rdflib5 – rdflib6 is now required</p></li>
+<li><p>Reduced library dependencies</p></li>
+<li><p>new generators:</p>
+<ul>
+<li><p>SQL DDL</p></li>
+<li><p>SQL Alchemy</p></li>
+<li><p>SHACL</p></li>
+<li><p>Typescript</p></li>
+</ul>
+</li>
+<li><p>Added SchemaView utility</p></li>
+</ul>
+</section>
+<section id="linkml-model-1-0-june-2021">
+<h3>LinkML-Model 1.0: June 2021<a class="headerlink" href="#linkml-model-1-0-june-2021" title="Permalink to this headline"></a></h3>
+<p>This is the first version of LinkML seeded from the historic BiolinkML project</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

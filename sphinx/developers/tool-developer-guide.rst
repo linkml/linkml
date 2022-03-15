@@ -159,6 +159,15 @@ Java classes for any LinkML model. The LinkML metamodel is in LinkML,
 so this can be used to make a Java object model for LinkML itself,
 which can help bootstrap efforts to make domain logical libraries.
 
+Materializing imports and inferences
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The `linkml generator <../generators/linkml.html>`_ can be used to
+materialize imports closure and to materialize inferred/induced slots
+as attributes. This frees the client logic from needing to implement
+this logic locally.
+
+
 General Guidelines for applications
 -----------------------------------
 

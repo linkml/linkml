@@ -106,7 +106,10 @@
 <h1>OWL<a class="headerlink" href="#owl" title="Permalink to this headline"></a></h1>
 <section id="example-output">
 <h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
-<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/owl/personinfo.owl.ttl">personinfo.owl.ttl</a></p>
+<dl class="simple">
+<dt><a href="#id1"><span class="problematic" id="id2">`</span></a>personinfo.owl.ttl</dt><dd><p>&lt;<a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/owl/personinfo.owl.ttl">https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/owl/personinfo.owl.ttl</a>&gt;`_</p>
+</dd>
+</dl>
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
@@ -158,15 +161,22 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <blockquote>
 <div><ul class="simple">
 <li><p>This means <em>punning</em> is used</p></li>
-<li><p>Set <code class="docutils literal notranslate"><span class="pre">metaclass=False</span></code> if you do not want this behavior</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">--no-metaclasses</span></code> if you do not want this behavior</p></li>
 </ul>
 </div></blockquote>
 </li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The current default settings for <code class="docutils literal notranslate"><span class="pre">metaclasses</span></code> and <code class="docutils literal notranslate"><span class="pre">type_objects</span></code> may change in the future</p>
+<p>The current default settings for <code class="docutils literal notranslate"><span class="pre">metaclasses</span></code> and <code class="docutils literal notranslate"><span class="pre">type-objects</span></code> may change in the future</p>
 </div>
+</section>
+<section id="other-examples">
+<h3>Other examples<a class="headerlink" href="#other-examples" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://bioportal.bioontology.org/ontologies/BIOLINK">Biolink</a> :
+translation of Biolink schema to OWL</p></li>
+</ul>
 </section>
 </section>
 <section id="docs">
@@ -245,10 +255,13 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-owl-f">
 <span id="cmdoption-gen-owl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-f" title="Permalink to this definition"></a></dt>
-<dd><p>Output format (default=owl)</p>
+<dd><p>Output format</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>owl | ttl | json-ld | xml | n3 | turtle | ttl | ntriples | nt | nt11 | nquads | trix | trig | hext</p>
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>owl</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>owl | ttl | json-ld | xml | n3 | turtle | ttl | ntriples | nt | nt11 | nquads | trix | trig | hext</p>
 </dd>
 </dl>
 </dd></dl>
@@ -256,13 +269,23 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-owl-metadata">
 <span id="cmdoption-gen-owl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–metadata)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-owl-useuris">
 <span id="cmdoption-gen-owl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-useuris" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–useuris)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
@@ -274,12 +297,21 @@ Assumption, thus OWL reasoners enforce a weaker model</p></li>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-owl-log_level">
 <span id="cmdoption-gen-owl-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-owl-log_level" title="Permalink to this definition"></a></dt>
-<dd><p>Logging level (default=WARNING)</p>
+<dd><p>Logging level</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>WARNING</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-owl-v">
+<span id="cmdoption-gen-owl-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-v" title="Permalink to this definition"></a></dt>
+<dd><p>verbosity</p>
 </dd></dl>
 
 <dl class="std option">

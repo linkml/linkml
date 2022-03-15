@@ -50,6 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#linking-classes-and-slots-with-is-a">Linking classes and slots with <code class="docutils literal notranslate"><span class="pre">is_a</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#abstract-classes-and-slots">Abstract classes and slots</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mixin-classes-and-slots">Mixin classes and slots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#materializing-inherited-slots">Materializing inherited slots</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
@@ -99,7 +100,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="inheritance">
+  <section id="inheritance">
 <h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h1>
 <section id="linking-classes-and-slots-with-is-a">
 <h2>Linking classes and slots with <code class="docutils literal notranslate"><span class="pre">is_a</span></code><a class="headerlink" href="#linking-classes-and-slots-with-is-a" title="Permalink to this headline"></a></h2>
@@ -189,6 +190,19 @@ of multiple inheritance noted in the <a class="reference external" href="https:/
 </div>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">is_a</span></code> has the characteristics of homeomorphicity: <code class="docutils literal notranslate"><span class="pre">is_a</span></code> <strong>SHOULD</strong> only connect either (1) two mixins (2) two non-mixin elements</p>
 <p>See also the <a class="reference external" href="https://en.wikipedia.org/wiki/Mixin">Wikipedia page on mixins</a></p>
+</section>
+<section id="materializing-inherited-slots">
+<h2>Materializing inherited slots<a class="headerlink" href="#materializing-inherited-slots" title="Permalink to this headline"></a></h2>
+<p>the <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">linkml generator</span></a> can be used with the
+<code class="docutils literal notranslate"><span class="pre">--materialize-attributes</span></code> option to <em>materialize</em> all induced slots
+as attributes. This is useful if you want to make a version of your
+schema for distribution that frees the program that uses the schema
+from the need to traverse hierarchies and implement propagation logic.</p>
+<p>For example, if this option is used with the above schema, then the
+Person class will have attributes from both NamedThing and Person
+combined. Furthermore, if Person uses <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code> (see next section)
+to refine the meaning of a generic slot in the context of Person, then
+these will be materialized for Person.</p>
 </section>
 </section>
 

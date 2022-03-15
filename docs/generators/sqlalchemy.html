@@ -198,9 +198,9 @@ section of the SQLA docs.</p>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-declarative">
-<span id="cmdoption-gen-sqlddl-no-declarative"></span><span class="sig-name descname"><span class="pre">--declarative</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-declarative</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-declarative" title="Permalink to this definition"></a></dt>
-<dd><p>SQLA declarative vs imperative</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-pydantic">
+<span id="cmdoption-gen-sqlddl-no-pydantic"></span><span class="sig-name descname"><span class="pre">--pydantic</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-pydantic</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-pydantic" title="Permalink to this definition"></a></dt>
+<dd><p>If True, generate Pydantic classes (imperative mode only)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default</dt>
 <dd class="field-odd"><p>False</p>
@@ -209,12 +209,37 @@ section of the SQLA docs.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-generate-classes">
+<span id="cmdoption-gen-sqlddl-no-generate-classes"></span><span class="sig-name descname"><span class="pre">--generate-classes</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-generate-classes</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-generate-classes" title="Permalink to this definition"></a></dt>
+<dd><p>If True, generate Python datamodel (imperative mode only)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-declarative">
+<span id="cmdoption-gen-sqlddl-no-declarative"></span><span class="sig-name descname"><span class="pre">--declarative</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-declarative</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-declarative" title="Permalink to this definition"></a></dt>
+<dd><p>Generate SQL Alchemy declarative vs imperative</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-sqlddl-f">
 <span id="cmdoption-gen-sqlddl-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-f" title="Permalink to this definition"></a></dt>
-<dd><p>Output format (default=sqla)</p>
+<dd><p>Output format</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
+<dt class="field-odd">Default</dt>
 <dd class="field-odd"><p>sqla</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>sqla</p>
 </dd>
 </dl>
 </dd></dl>
@@ -222,13 +247,23 @@ section of the SQLA docs.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-sqlddl-metadata">
 <span id="cmdoption-gen-sqlddl-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–metadata)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-sqlddl-useuris">
 <span id="cmdoption-gen-sqlddl-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-useuris" title="Permalink to this definition"></a></dt>
-<dd><p>Include metadata in output (default=–useuris)</p>
+<dd><p>Include metadata in output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">
@@ -240,12 +275,21 @@ section of the SQLA docs.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-sqlddl-log_level">
 <span id="cmdoption-gen-sqlddl-log-level"></span><span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlddl-log_level" title="Permalink to this definition"></a></dt>
-<dd><p>Logging level (default=WARNING)</p>
+<dd><p>Logging level</p>
 <dl class="field-list simple">
-<dt class="field-odd">Options</dt>
-<dd class="field-odd"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>WARNING</p>
+</dd>
+<dt class="field-even">Options</dt>
+<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-sqlddl-v">
+<span id="cmdoption-gen-sqlddl-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlddl-v" title="Permalink to this definition"></a></dt>
+<dd><p>verbosity</p>
 </dd></dl>
 
 <dl class="std option">

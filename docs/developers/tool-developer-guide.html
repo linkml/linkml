@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Contributing Code" href="contributing-code.html" />
-    <link rel="prev" title="SQL Alchemy Mappings" href="sqlalchemy.html" /> 
+    <link rel="prev" title="Using SQL Databases" href="using-sql-dbs.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,20 +57,17 @@
 <li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Convetsion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-sql-dbs.html">Using SQL Databases</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Tool Implementor Guide</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#general-considerations">General Considerations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#schema-conformance-levels">Schema Conformance Levels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#other-languages">Other Languages</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#general-guidelines-for-applications">General Guidelines for applications</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#customizing-and-application-hints">Customizing and application hints</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#external-configuration">External Configuration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#schema-hints">Schema Hints</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#using-ontologies-and-standard-vocabularies-to-drive-behavior">Using ontologies and standard vocabularies to drive behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#handling-enums">Handling enums</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#handling-units-and-quantities">Handling units and quantities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-languages">Other Languages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#materializing-imports-and-inferences">Materializing imports and inferences</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#general-guidelines-for-applications">General Guidelines for applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customizing-and-application-hints">Customizing and application hints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-other-frameworks">Using other frameworks</a></li>
 </ul>
 </li>
@@ -249,6 +246,13 @@ implementations for your language.</p>
 Java classes for any LinkML model. The LinkML metamodel is in LinkML,
 so this can be used to make a Java object model for LinkML itself,
 which can help bootstrap efforts to make domain logical libraries.</p>
+<section id="materializing-imports-and-inferences">
+<h3>Materializing imports and inferences<a class="headerlink" href="#materializing-imports-and-inferences" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="../generators/linkml.html">linkml generator</a> can be used to
+materialize imports closure and to materialize inferred/induced slots
+as attributes. This frees the client logic from needing to implement
+this logic locally.</p>
+</section>
 </section>
 <section id="general-guidelines-for-applications">
 <h2>General Guidelines for applications<a class="headerlink" href="#general-guidelines-for-applications" title="Permalink to this headline"></a></h2>
@@ -325,8 +329,6 @@ may help, such as the ability to generate custom language bindings.</p>
 <p>The other two approaches are fairly similar and involve providing a
 mechanism for a generic application to customize look, feel, and
 behavior in a way that doesn’t require changing software/code.</p>
-<section id="external-configuration">
-<h3>External Configuration<a class="headerlink" href="#external-configuration" title="Permalink to this headline"></a></h3>
 <p>External configuration files may be best for “style sheet” type
 configurations for controlling colors, shapes, sizes, etc. These could
 potentially be tweaked by an individual user.</p>
@@ -334,9 +336,6 @@ potentially be tweaked by an individual user.</p>
 recommend creating a schema for your configuration data model. An
 example of this is <a class="reference external" href="https://berkeleybop.github.io/kgviz-model/">KGViz Schema</a> which is a stylesheet
 language for visualizing ontology graphs, based on <cite>Graphviz&lt;https://graphviz.org/&gt;</cite>.</p>
-</section>
-<section id="schema-hints">
-<h3>Schema Hints<a class="headerlink" href="#schema-hints" title="Permalink to this headline"></a></h3>
 <p>Schema hints embed additional information in the schema itself. In
 contrast to external configurations, this is harder for a user to
 change, and so is best suited for ‘centralized’ configuration.</p>
@@ -402,9 +401,6 @@ application.</p>
 this kind of purpose. Furthermore, if you compile your schema to SHACL
 then it will have the dash annotations, allowing you to leverage
 generic SHACL applications (next section).</p>
-</section>
-<section id="using-ontologies-and-standard-vocabularies-to-drive-behavior">
-<h3>Using ontologies and standard vocabularies to drive behavior<a class="headerlink" href="#using-ontologies-and-standard-vocabularies-to-drive-behavior" title="Permalink to this headline"></a></h3>
 <p>Consider a schema that reuses standard vocabularies such as wgs84 for
 slots:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
@@ -434,9 +430,6 @@ slots:</p>
 <p>Applications may choose to have specific behavior for lat-long fields,
 for example, including a map widget. Applications may also choose to
 use mappings as well as the primary URI.</p>
-</section>
-<section id="handling-enums">
-<h3>Handling enums<a class="headerlink" href="#handling-enums" title="Permalink to this headline"></a></h3>
 <p>In addition to the general guidance above, applications may allow for
 custom behavior with enums.</p>
 <p>Applications may choose to display enum permissible values as a
@@ -451,9 +444,6 @@ applications may choose to use an autocomplete service from an
 existing ontology. This has the advantage of lookup on multiple
 different aliases. However, note the autocomplete service may return
 more values than are present in the permissible value list.</p>
-</section>
-<section id="handling-units-and-quantities">
-<h3>Handling units and quantities<a class="headerlink" href="#handling-units-and-quantities" title="Permalink to this headline"></a></h3>
 <p>There are a wide variety of ways to model quantities, and these are
 use case dependent. Is it important to capture ranges or
 precision/error bars? Is the unit baked in to the slot, or does the
@@ -497,7 +487,6 @@ into structured form</p></li>
 </ul>
 </div></blockquote>
 </section>
-</section>
 <section id="using-other-frameworks">
 <h2>Using other frameworks<a class="headerlink" href="#using-other-frameworks" title="Permalink to this headline"></a></h2>
 <p>You should also feel free to build applications that use other
@@ -515,7 +504,7 @@ SHACL and DASH</a>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="sqlalchemy.html" class="btn btn-neutral float-left" title="SQL Alchemy Mappings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="using-sql-dbs.html" class="btn btn-neutral float-left" title="Using SQL Databases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="contributing-code.html" class="btn btn-neutral float-right" title="Contributing Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

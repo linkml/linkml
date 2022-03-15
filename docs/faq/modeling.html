@@ -100,7 +100,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="faq-modeling">
+  <section id="faq-modeling">
 <h1>FAQ: Modeling<a class="headerlink" href="#faq-modeling" title="Permalink to this headline"></a></h1>
 <section id="what-is-the-difference-between-is-a-and-mixins">
 <h2>What is the difference between is_a and mixins?<a class="headerlink" href="#what-is-the-difference-between-is-a-and-mixins" title="Permalink to this headline"></a></h2>
@@ -136,6 +136,7 @@ hierarchies should be stratified.</p>
 <p>Because the same slot can be reused in different classes (with each class potentially refining semantics using slot_usage), it can be useful to give a new “name” for the implicit class-specific version of that slot.</p>
 <p>For example, if you have a slot <code class="docutils literal notranslate"><span class="pre">name</span></code>, and this is used in classes <code class="docutils literal notranslate"><span class="pre">Person</span></code> and <code class="docutils literal notranslate"><span class="pre">Organization</span></code>, and these are refined for each class (for example, “Organization” may refine the name slot to follow a particular regular expression). In some generators such as the markdown generator, you will see “induced” slots such as <code class="docutils literal notranslate"><span class="pre">Organization_name</span></code>.</p>
 <p>The extent to which these are made visible is currently the subject of some discussion, see GitHub for details.</p>
+<p>Induced slots can be <em>materialized</em> as attributes using the <a class="reference internal" href="../generators/linkml.html"><span class="doc std std-doc">linkml generator</span></a></p>
 </section>
 <section id="why-would-i-need-to-define-my-own-types">
 <h2>Why would I need to define my own types?<a class="headerlink" href="#why-would-i-need-to-define-my-own-types" title="Permalink to this headline"></a></h2>

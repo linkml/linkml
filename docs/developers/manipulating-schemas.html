@@ -18,7 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="SQL Alchemy Mappings" href="sqlalchemy.html" />
+    <link rel="next" title="Data Convetsion: Loaders and Dumpers" href="loaders-and-dumpers.html" />
     <link rel="prev" title="Jupyter Notebooks" href="notebooks.html" /> 
 </head>
 
@@ -57,7 +57,8 @@
 <li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Manipulating Schemas</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Convetsion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-sql-dbs.html">Using SQL Databases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool-developer-guide.html">Tool Implementor Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
 </ul>
@@ -666,8 +667,9 @@ the id_prefixes mapped to that element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot">
-<span class="sig-name descname"><span class="pre">get_identifier_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_identifier_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-name descname"><span class="pre">get_identifier_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_identifier_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_identifier_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Find the slot that is the identifier for the given class</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cn</strong> – class name</p></li>
@@ -675,7 +677,24 @@ the id_prefixes mapped to that element.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>name of slot that acts as identifier for the given class</p>
+<dd class="field-even"><p>name of slot that acts as identifier</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_key_slot">
+<span class="sig-name descname"><span class="pre">get_key_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_key_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_key_slot" title="Permalink to this definition"></a></dt>
+<dd><p>Find the slot that is the key for the given class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cn</strong> – class name</p></li>
+<li><p><strong>imports</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of slot that acts as key</p>
 </dd>
 </dl>
 </dd></dl>
@@ -843,7 +862,7 @@ used, otherwise this is constructed from the default prefix combined with the el
 
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.induced_slot">
-<span class="sig-name descname"><span class="pre">induced_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.induced_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.induced_slot" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">induced_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">linkml_runtime.linkml_model.meta.ClassDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mangle_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SlotDefinition</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.induced_slot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.induced_slot" title="Permalink to this definition"></a></dt>
 <dd><p>Given a slot, in the context of a particular class, yield a dynamic SlotDefinition that
 has all properties materialized.</p>
 <p>This makes use of schema slots, such as attributes, slot_usage. It also uses ancestor relationships
@@ -1103,7 +1122,7 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="notebooks.html" class="btn btn-neutral float-left" title="Jupyter Notebooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="sqlalchemy.html" class="btn btn-neutral float-right" title="SQL Alchemy Mappings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="loaders-and-dumpers.html" class="btn btn-neutral float-right" title="Data Convetsion: Loaders and Dumpers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

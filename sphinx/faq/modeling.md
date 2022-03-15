@@ -42,6 +42,8 @@ For example, if you have a slot `name`, and this is used in classes `Person` and
 
 The extent to which these are made visible is currently the subject of some discussion, see GitHub for details.
 
+Induced slots can be *materialized* as attributes using the [linkml generator](../generators/linkml)
+
 ## Why would I need to define my own types?
 
 Types are scalar values such as integers or strings. They are also known as "literals" in RDF.
