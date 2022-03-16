@@ -158,7 +158,7 @@ class OwlSchemaGenerator(Generator):
                                     k_uri,
                                     Literal(v.value)))
                 except ValueError as e:
-                    logging.error('Ignoring namesoace error: {e}')
+                    logging.info('Ignoring namespace error: ' + str(e))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         """
