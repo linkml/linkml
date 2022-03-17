@@ -60,7 +60,7 @@ class JsonSchemaGenerator(Generator):
         self.inline = False
         self.topCls = top_class  ## JSON object is one instance of this
         self.entryProperties = {}
-        self.include_range_class_descendants = kwargs["include_range_class_descendants"] if "include_range_class_descendants" else False
+        self.include_range_class_descendants = kwargs["include_range_class_descendants"] if "include_range_class_descendants" in kwargs else False
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         self.visit_all_slots = True
