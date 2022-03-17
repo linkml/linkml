@@ -1,12 +1,13 @@
 import logging
 import os
 from copy import deepcopy
-from typing import Union, TextIO, Optional, Dict, Tuple
+from typing import List, Union, TextIO, Optional, Dict, Tuple
 
 import click
 from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, PermissibleValueText
 from linkml_runtime.utils.formatutils import camelcase, be, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.utils.generator import Generator, shared_arguments
 
@@ -53,11 +54,13 @@ class JsonSchemaGenerator(Generator):
         :param kwargs:
         """
         super().__init__(schema, **kwargs)
+        self.schemaview = SchemaView(schema)
         self.schemaobj: JsonObj = None
         self.clsobj: JsonObj = None
         self.inline = False
         self.topCls = top_class  ## JSON object is one instance of this
         self.entryProperties = {}
+        self.include_range_class_descendants = kwargs["include_range_class_descendants"]
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         self.visit_all_slots = True
@@ -129,12 +132,24 @@ class JsonSchemaGenerator(Generator):
             enum=permissible_values_texts,
             description=be(enum.description))
 
+    def get_ref_for_descendants(self, descendants: List):
+        ref_list = []
+        for descendant in descendants:
+            descendant_class = self.schema.classes[descendant]
+            if descendant_class.abstract:
+                continue
+            descendant_ref = JsonObj()
+            descendant_ref_obj = camelcase(descendant)
+            descendant_ref['$ref'] = f"#/$defs/{descendant_ref_obj}"
+            ref_list.append(descendant_ref)
+        return ref_list
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
         typ = None          # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         reference = None    # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
         fmt = None          # JSON Schema format (https://json-schema.org/understanding-json-schema/reference/string.html#format)
         reference_obj = None
+        descendants = None
         if slot.range in self.schema.types:
             (typ, fmt) = json_schema_types.get(self.schema.types[slot.range].base.lower(), ("string", None))
         elif slot.range in self.schema.enums:
@@ -143,11 +158,11 @@ class JsonSchemaGenerator(Generator):
             typ = 'object'
         elif slot.range in self.schema.classes and slot.inlined:
             reference_obj = camelcase(slot.range)
+            descendants = self.schemaview.class_descendants(slot.range)
             reference = f"#/$defs/{reference_obj}"
             typ = 'object'
         else:
             typ = "string"
-
         if slot.inlined:
             range_cls = self.schema.classes[slot.range]
             id_slot = None
@@ -169,9 +184,20 @@ class JsonSchemaGenerator(Generator):
                         id_slot_name = id_slot.name
                     self.optional_identifier_class_map[reference_obj] = (id_slot_name, f'{reference_obj}{WITH_OPTIONAL_IDENTIFIER_SUFFIX}')
                 else:
-                    prop = JsonObj(type="array", items=ref)
+                    if descendants and self.include_range_class_descendants:
+                        items = JsonObj()
+                        ref_list = self.get_ref_for_descendants(descendants)
+                        items["oneOf"] = ref_list
+                        prop = JsonObj(type="array", items=items)
+                    else:
+                        prop = JsonObj(type="array", items=ref)
             else:
-                prop = ref
+                if descendants and self.include_range_class_descendants:
+                    prop = JsonObj()
+                    ref_list = self.get_ref_for_descendants(descendants)
+                    prop["oneOf"] = ref_list
+                else:
+                    prop = ref
         else:
             if slot.multivalued:
                 if reference is not None:
@@ -219,6 +245,9 @@ Top level class; slots of this class will become top level properties in the jso
 """)
 @click.option("--not-closed/--closed", default=True, show_default=True, help="""
 Set additionalProperties=False if closed otherwise true if not closed at the global level
+""")
+@click.option("--include-range-class-descendants/--no-range-class-descendants", default=False, show_default=False, help="""
+When handling range constraints, include all descendants of the range class instead of just the range class
 """)
 def cli(yamlfile, **kwargs):
     """ Generate JSON Schema representation of a LinkML model """
