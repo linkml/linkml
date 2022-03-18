@@ -1,0 +1,85 @@
+{
+   "$defs": {
+      "C1": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "prop1": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "prop1"
+         ],
+         "title": "C1",
+         "type": "object"
+      },
+      "C2": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "prop1": {
+               "type": "string"
+            },
+            "prop2": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "prop1",
+            "prop2"
+         ],
+         "title": "C2",
+         "type": "object"
+      },
+      "C3": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "prop1": {
+               "type": "string"
+            },
+            "prop3": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "prop1",
+            "prop3"
+         ],
+         "title": "C3",
+         "type": "object"
+      },
+      "NamedThing": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "prop4": {
+               "oneOf": [
+                  {
+                     "$ref": "#/$defs/C1"
+                  },
+                  {
+                     "$ref": "#/$defs/C2"
+                  },
+                  {
+                     "$ref": "#/$defs/C3"
+                  }
+               ]
+            }
+         },
+         "required": [],
+         "title": "NamedThing",
+         "type": "object"
+      }
+   },
+   "$id": "https://w3id.org/Example-Schema",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "metamodel_version": "1.7.0",
+   "properties": {},
+   "required": [],
+   "title": "Example-Schema",
+   "type": "object",
+   "version": "0.0.0"
+}
