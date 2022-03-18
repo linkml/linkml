@@ -12,6 +12,10 @@ Options:
   --not-closed / --closed         Set additionalProperties=False if closed
                                   otherwise true if not closed at the global
                                   level  [default: not-closed]
+  --include-range-class-descendants / --no-range-class-descendants
+                                  When handling range constraints, include all
+                                  descendants of the range class instead of
+                                  just the range class
   -f, --format [json]             Output format  [default: json]
   --metadata / --no-metadata      Include metadata in output  [default:
                                   metadata]
