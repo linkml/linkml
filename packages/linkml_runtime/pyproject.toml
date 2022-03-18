@@ -47,7 +47,7 @@ json-flattener = ">=0.1.9"
 jsonasobj2 = "==1.*,>=1.0.0,>=1.0.4"
 jsonschema = ">=3.2.0"
 prefixcommons = "*"
-pyyaml = ">=5.1.0"
+pyyaml = "<5.4"
 rdflib = ">=6.0.0"
 requests = "*"
 
