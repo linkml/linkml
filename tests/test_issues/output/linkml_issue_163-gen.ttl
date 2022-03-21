@@ -30,29 +30,29 @@ biolink:Biolink-Model a linkml:SchemaDefinition ;
         "rdfs",
         "skos",
         "xsd" ;
-    linkml:generation_date "2022-03-18T16:01:32"^^xsd:dateTime ;
+    linkml:generation_date "2022-03-21T22:02:35"^^xsd:dateTime ;
     linkml:id <https://w3id.org/biolink/biolink-model> ;
     linkml:imports linkml:types ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:prefixes [ linkml:prefix_prefix "gff3" ;
-            linkml:prefix_reference gff3: ],
-        [ linkml:prefix_prefix "prov" ;
-            linkml:prefix_reference prov: ],
-        [ linkml:prefix_prefix "SIO" ;
-            linkml:prefix_reference <http://semanticscience.org/resource/SIO_> ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference linkml: ],
-        [ linkml:prefix_prefix "dct" ;
+    linkml:prefixes [ linkml:prefix_prefix "dct" ;
             linkml:prefix_reference dcterms: ],
         [ linkml:prefix_prefix "biolink" ;
             linkml:prefix_reference biolink: ],
         [ linkml:prefix_prefix "RO" ;
-            linkml:prefix_reference <http://purl.obolibrary.org/obo/RO_> ] ;
+            linkml:prefix_reference <http://purl.obolibrary.org/obo/RO_> ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "prov" ;
+            linkml:prefix_reference prov: ],
+        [ linkml:prefix_prefix "gff3" ;
+            linkml:prefix_reference gff3: ],
+        [ linkml:prefix_prefix "SIO" ;
+            linkml:prefix_reference <http://semanticscience.org/resource/SIO_> ] ;
     linkml:slots biolink:has_evidence,
         biolink:name,
         biolink:type ;
     linkml:source_file "linkml_issue_163.yaml" ;
-    linkml:source_file_date "2022-03-18T15:54:47"^^xsd:dateTime ;
+    linkml:source_file_date "2022-03-21T21:56:25"^^xsd:dateTime ;
     linkml:source_file_size 1666 ;
     linkml:types biolink:boolean,
         biolink:date,
