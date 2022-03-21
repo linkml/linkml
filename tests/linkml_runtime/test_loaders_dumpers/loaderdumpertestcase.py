@@ -60,9 +60,14 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
 
         # Make sure metadata gets filled out properly
         rel_path = os.path.abspath(os.path.join(test_base.env.cwd, '..'))
-        self.assertEqual('tests/test_loaders_dumpers/input', os.path.relpath(metadata.base_path, rel_path))
-        self.assertEqual(f'tests/test_loaders_dumpers/input/{filename}', os.path.relpath(metadata.source_file,
-                                                                                         rel_path))
+        self.assertEqual(
+            os.path.normpath('tests/test_loaders_dumpers/input'), 
+            os.path.normpath(os.path.relpath(metadata.base_path, rel_path))
+        )
+        self.assertEqual(
+            os.path.normpath(f'tests/test_loaders_dumpers/input/{filename}'), 
+            os.path.normpath(os.path.relpath(metadata.source_file, rel_path))
+        )
 
         fileinfo = FileInfo()
         hbread(filename, fileinfo, self.env.indir)

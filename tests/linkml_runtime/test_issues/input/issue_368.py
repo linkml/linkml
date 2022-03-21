@@ -20,7 +20,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from . issue_368_imports import ParentClass, SampleEnum
+from .issue_368_imports import ParentClass, SampleEnum
 
 metamodel_version = "1.7.0"
 

@@ -42,7 +42,7 @@ def compile_python(text_or_fn: str, package_path: str = None) -> ModuleType:
         else:
             warning(f"There is no established path to {package_path} - compile_python may or may not work")
             path_from_tests_parent = os.path.relpath(package_path, os.path.join(os.getcwd(), '..'))
-        module.__package__ = os.path.dirname(os.path.relpath(path_from_tests_parent, os.getcwd())).replace('/', '.')
+        module.__package__ = os.path.dirname(os.path.relpath(path_from_tests_parent, os.getcwd())).replace(os.path.sep, '.')
     sys.modules[module.__name__] = module
     exec(spec, module.__dict__)
     return module
