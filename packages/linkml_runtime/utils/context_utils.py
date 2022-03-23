@@ -68,7 +68,7 @@ def parse_import_map(map_: Optional[Union[str, Dict[str, str], TextIOWrapper]],
     elif map_.strip().startswith('{'):
         rval = json.loads(map_)
     elif '\n' in map_ or '\r' in map_ or ' ' in map_:
-        rval = yaml.load(map_)
+        rval = yaml.safe_load(map_)
     else:
         with open(map_) as ml:
             return parse_import_map(ml.read(), os.path.dirname(map_))
