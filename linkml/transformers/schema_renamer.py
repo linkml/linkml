@@ -1,8 +1,7 @@
 import inspect
-from collections import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Dict, Type, Any
+from typing import Dict, Type, Any, Callable
 
 import click
 from jsonasobj2 import as_dict
