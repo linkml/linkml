@@ -191,7 +191,7 @@ classes:
     class_uri: http://example.org/tests/cleanyaml/GeographicLocationAtTime
 metamodel_version: 1.7.0
 source_file: yaml_validate_clean.yaml
-source_file_date: '2022-03-24T18:10:11'
+source_file_date: '2022-03-24T19:12:17'
 source_file_size: 577
-generation_date: '2022-03-24T18:18:24'
+generation_date: '2022-03-24T19:21:11'
 
