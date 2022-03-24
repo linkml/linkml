@@ -2,6 +2,7 @@ import os
 import unittest
 import logging
 from copy import copy
+from typing import List
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
@@ -289,6 +290,37 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(all_c, all_c2)
         all_c2_noi = copy(view.all_classes(imports=False))
         assert len(all_c2_noi) == len(all_c2)
+
+    def test_traversal(self):
+        schema = SchemaDefinition(id='test', name='traversal-test')
+        view = SchemaView(schema)
+        view.add_class(ClassDefinition('Root', mixins=['RootMixin']))
+        view.add_class(ClassDefinition('A', is_a='Root', mixins=['Am1', 'Am2', 'AZ']))
+        view.add_class(ClassDefinition('B', is_a='A', mixins=['Bm1', 'Bm2', 'BY']))
+        view.add_class(ClassDefinition('C', is_a='B', mixins=['Cm1', 'Cm2', 'CX']))
+        view.add_class(ClassDefinition('RootMixin', mixin=True))
+        view.add_class(ClassDefinition('Am1', is_a='RootMixin', mixin=True))
+        view.add_class(ClassDefinition('Am2', is_a='RootMixin', mixin=True))
+        view.add_class(ClassDefinition('Bm1', is_a='Am1', mixin=True))
+        view.add_class(ClassDefinition('Bm2', is_a='Am2', mixin=True))
+        view.add_class(ClassDefinition('Cm1', is_a='Bm1', mixin=True))
+        view.add_class(ClassDefinition('Cm2', is_a='Bm2', mixin=True))
+        view.add_class(ClassDefinition('AZ', is_a='RootMixin', mixin=True))
+        view.add_class(ClassDefinition('BY', is_a='RootMixin', mixin=True))
+        view.add_class(ClassDefinition('CX', is_a='RootMixin', mixin=True))
+        def check(ancs: List, expected: List):
+            #print(ancs)
+            self.assertEqual(ancs, expected)
+        check(view.class_ancestors('C', depth_first=True),
+              ['C', 'Cm1', 'Cm2', 'CX', 'B', 'Bm1', 'Bm2', 'BY', 'A', 'Am1', 'Am2', 'AZ', 'Root', 'RootMixin'])
+        check(view.class_ancestors('C', depth_first=False),
+              ['C', 'Cm1', 'Cm2', 'CX', 'B', 'Bm1', 'Bm2', 'RootMixin', 'BY', 'A', 'Am1', 'Am2', 'AZ', 'Root'])
+        check(view.class_ancestors('C', mixins=False),
+              ['C', 'B', 'A', 'Root'])
+        check(view.class_ancestors('C', is_a=False),
+              ['C', 'Cm1', 'Cm2', 'CX'])
+
+
 
     def test_slot_inheritance(self):
         schema = SchemaDefinition(id='test', name='test')
