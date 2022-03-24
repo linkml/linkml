@@ -135,6 +135,8 @@ class SQLStore:
         :param append:
         :return:
         """
+        if self.engine is None:
+            raise ValueError(f'Must set self.engine')
         session_class = sessionmaker(bind=self.engine)
         session = session_class()
         nu_obj = self.to_sqla(element)
@@ -190,7 +192,7 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.module):
                 # TODO: make more efficient
                 if n == typ.__name__:
-                    print(f'Creating {nu_typ} from: {inst_args}')
+                    #print(f'Creating {nu_typ} from: {inst_args}')
                     nu_obj = nu_typ(**inst_args)
                     return nu_obj
             raise ValueError(f'Cannot find {typ.__name__} in {self.module}')
