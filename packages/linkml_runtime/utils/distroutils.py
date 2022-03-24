@@ -1,3 +1,6 @@
+"""
+Packaging for working with LinkML distributions
+"""
 import logging
 import pkgutil
 from pathlib import PurePath
@@ -14,9 +17,14 @@ def get_default_paths(file_type: str) -> List[PurePath]:
     """
     paths = []
     rel_dirs = []
+    srcp = PurePath('src')
     if file_type == 'yaml':
         rel_dirs = [PurePath('model') /'schema',
-                    PurePath('schema')
+                    PurePath('schema'),
+                    srcp / 'linkml',
+                    srcp / 'model',
+                    srcp / 'model' / 'schema',
+                    srcp / 'schema',
                     ]
     elif file_type == 'schema.json':
         rel_dirs = [PurePath('jsonschema')]
@@ -52,7 +60,7 @@ def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PureP
             data = pkgutil.get_data(package, str(full_path))
             break
         except FileNotFoundError:
-            logging.debug(f'{full_path} not found')
+            logging.debug(f'candidate {path} not found')
     if not data:
         raise FileNotFoundError(f'package: {package} file: {file_type}')
     return data.decode(encoding)
