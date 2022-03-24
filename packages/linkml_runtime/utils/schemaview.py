@@ -3,7 +3,7 @@ import uuid
 import logging
 from functools import lru_cache
 from copy import copy, deepcopy
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
@@ -30,7 +30,7 @@ TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
 
 
-def _closure(f, x, reflexive=True, **kwargs):
+def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
     if reflexive:
         rv = [x]
     else:
@@ -38,14 +38,20 @@ def _closure(f, x, reflexive=True, **kwargs):
     visited = []
     todo = [x]
     while len(todo) > 0:
-        i = todo.pop()
+        if depth_first:
+            i = todo.pop()
+        else:
+            i = todo[0]
+            todo = todo[1:]
         visited.append(i)
         vals = f(i)
         for v in vals:
             if v not in visited:
                 todo.append(v)
-                rv.append(v)
+                if v not in rv:
+                    rv.append(v)
     return rv
+    #return list(OrderedDict.fromkeys(rv))
 
 
 def load_schema_wrap(path: str, **kwargs):
@@ -498,7 +504,8 @@ class SchemaView(object):
         return [x.name for x in elts if (x.is_a == slot_name and is_a) or (mixins and slot_name in x.mixins)]
 
     @lru_cache()
-    def class_ancestors(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[ClassDefinitionName]:
+    def class_ancestors(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True,
+                        depth_first=True) -> List[ClassDefinitionName]:
         """
         Closure of class_parents method
 
@@ -507,9 +514,12 @@ class SchemaView(object):
         :param mixins: include mixins (default is True)
         :param is_a: include is_a parents (default is True)
         :param reflexive: include self in set of ancestors
+        :param depth_first:
         :return: ancestor class names
         """
-        return _closure(lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a), class_name, reflexive=reflexive)
+        return _closure(lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+                        class_name,
+                        reflexive=reflexive,  depth_first=depth_first)
 
     @lru_cache()
     def slot_ancestors(self, slot_name: SLOT_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[SlotDefinitionName]:
@@ -523,7 +533,9 @@ class SchemaView(object):
         :param reflexive: include self in set of ancestors
         :return: ancestor slot names
         """
-        return _closure(lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a), slot_name, reflexive=reflexive)
+        return _closure(lambda x: self.slot_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+                        slot_name,
+                        reflexive=reflexive)
 
     @lru_cache()
     def class_descendants(self, class_name: CLASS_NAME, imports=True, mixins=True, reflexive=True, is_a=True) -> List[ClassDefinitionName]:
