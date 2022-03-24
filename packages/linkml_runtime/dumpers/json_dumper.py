@@ -13,7 +13,7 @@ from jsonasobj2 import JsonObj
 
 class JSONDumper(Dumper):
 
-    def dump(self, element: YAMLRoot, to_file: str, contexts: CONTEXTS_PARAM_TYPE = None) -> None:
+    def dump(self, element: YAMLRoot, to_file: str, contexts: CONTEXTS_PARAM_TYPE = None, **kwargs) -> None:
         """
         Write element as json to to_file
         :param element: LinkML object to be serialized as YAML
@@ -26,7 +26,7 @@ class JSONDumper(Dumper):
             * JSON Object
             * A list containing elements of any type named above
         """
-        super().dump(element, to_file, contexts=contexts)
+        super().dump(element, to_file, contexts=contexts, **kwargs)
 
     def dumps(self, element: YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, inject_type=True) -> str:
         """
