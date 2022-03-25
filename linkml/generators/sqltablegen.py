@@ -261,7 +261,6 @@ class SQLTableGenerator(Generator):
 @click.option("--python-import",  help="Python import header for generated sql-alchemy code")
 @click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True,
               help="Emit FK declarations")
-## @click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="Map classes directly to")@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
 def cli(yamlfile, relmodel_output, sqla_file:str = None, python_import: str = None, dialect=None, use_foreign_keys=True, **args):
     """ Generate SQL DDL representation """
     if relmodel_output:

@@ -18,7 +18,7 @@ from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.sqlalchemy import sqlalchemy_imperative_template_str, sqlalchemy_declarative_template_str
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
-from linkml.transformers.relmodel_transformer import RelationalModelTransformer
+from linkml.transformers.relmodel_transformer import RelationalModelTransformer, ForeignKeyPolicy
 from linkml.utils.generator import Generator, shared_arguments
 
 
@@ -45,10 +45,13 @@ class SQLAlchemyGenerator(Generator):
                       model_path: str = None,
                       no_model_import = False,
                       template: TemplateEnum = TemplateEnum.IMPERATIVE,
+                      foreign_key_policy: ForeignKeyPolicy = None,
                       **kwargs) -> str:
         #src_sv = SchemaView(self.schema)
         #self.schema = src_sv.schema
         sqltr = RelationalModelTransformer(self.schemaview)
+        if foreign_key_policy:
+            sqltr.foreign_key_policy = foreign_key_policy
         tgen = SQLTableGenerator(self.schemaview.schema)
         tr_result = sqltr.transform(**kwargs)
         tr_schema = tr_result.schema
@@ -72,13 +75,23 @@ class SQLAlchemyGenerator(Generator):
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
-        for c in tr_schema.classes.values():
-            if len(c.attributes) == 0:
-                raise ValueError(f'Class must have attrs: {c.name}')
+        skip = {}
+        #for c in tr_schema.classes.values():
+        #    if len(c.attributes) == 0:
+        #        skip[c.name] = True
+        #        #raise ValueError(f'Class must have attrs: {c.name}')
         self.add_safe_aliases(tr_schema)
         tr_sv = SchemaView(tr_schema)
         rel_schema_classes_ordered = [tr_sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(tr_sv)]
         rel_schema_classes_ordered = [c for c in rel_schema_classes_ordered if not self.skip(c)]
+        for c in rel_schema_classes_ordered:
+            # For SQLA there needs to be a primary key for each class;
+            # autogenerate this as a compound key if none declared
+            has_pk = any(a for a in c.attributes.values() if 'primary_key' in a.annotations)
+            if not has_pk:
+                for a in c.attributes.values():
+                    ann = Annotation('primary_key', 'true')
+                    a.annotations[ann.tag] = ann
         code = template_obj.render(model_path=model_path,
                                    mappings=tr_result.mappings,
                                    backrefs=backrefs,
@@ -137,6 +150,7 @@ class SQLAlchemyGenerator(Generator):
         is_skip = len(cls.attributes) == 0
         if is_skip:
             logging.error(f'SKIPPING: {cls.name}')
+        return is_skip
 
 
     # TODO: move this
@@ -165,8 +179,10 @@ class SQLAlchemyGenerator(Generator):
               default=False,
               show_default=True,
               help="If True, generate Pydantic classes (imperative mode only)")
+@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True,
+              help="Emit FK declarations")
 @click.command()
-def cli(yamlfile, declarative, generate_classes, pydantic, **args):
+def cli(yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args):
     """ Generate SQL DDL representation """
     if pydantic:
         pygen = PydanticGenerator(yamlfile)
@@ -176,7 +192,11 @@ def cli(yamlfile, declarative, generate_classes, pydantic, **args):
         t = TemplateEnum.DECLARATIVE
     else:
         t = TemplateEnum.IMPERATIVE
-    print(gen.generate_sqla(template=t))
+    if use_foreign_keys:
+        foreign_key_policy = None # default
+    else:
+        foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
+    print(gen.generate_sqla(template=t, foreign_key_policy=foreign_key_policy))
     if generate_classes:
         raise NotImplementedError(f'generate classes not implemented')
 
