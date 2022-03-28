@@ -182,7 +182,7 @@ class SchemaViewTestCase(unittest.TestCase):
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
 
-    def test_classes(self):
+    def test_all_classes_ordered(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         classes = view.all_classes_ordered()
         ordered_c = []
@@ -190,6 +190,15 @@ class SchemaViewTestCase(unittest.TestCase):
             ordered_c.append(c.name)
         print(ordered_c)
         assert ordered_c == sorted(ordered_c)
+
+    def test_all_slots_ordered(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_slots_ordered()
+        ordered_s = []
+        for s in classes.values():
+            ordered_s.append(s.name)
+        print(ordered_s)
+        assert ordered_s == sorted(ordered_s)
 
     def test_rollup_rolldown(self):
         # no import schema
