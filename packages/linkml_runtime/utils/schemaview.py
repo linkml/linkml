@@ -216,6 +216,21 @@ class SchemaView(object):
         """
         return self.all_slots(**kwargs)
 
+    def all_classes_ordered(self, imports=True) ->Dict[ClassDefinitionName, ClassDefinition]:
+        """
+        :param imports: include imports closure
+        :return: all class names in schema view ordered alphabetically, useful primarily for documentation view.
+        """
+        ordered_list_of_names = []
+        ordered_classes = {}
+        for c in self._get_dict(CLASSES, imports):
+            ordered_list_of_names.append(c.name)
+        ordered_list_of_names.sort(reverse=True)
+        for name in ordered_list_of_names:
+            ordered_classes[self.get_class(name).name] = self.get_class(name)
+        return ordered_classes
+
+
     @lru_cache()
     def all_slots(self, imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """

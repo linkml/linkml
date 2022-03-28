@@ -182,6 +182,15 @@ class SchemaViewTestCase(unittest.TestCase):
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
 
+    def test_classes(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_classes()
+        vdict = []
+        for c in classes.values():
+            vdict.append(c)
+        vdict.sort()
+        print(vdict)
+
     def test_rollup_rolldown(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)
