@@ -216,14 +216,14 @@ class SchemaView(object):
         """
         return self.all_slots(**kwargs)
 
-    def all_classes_ordered(self, imports=True) ->Dict[ClassDefinitionName, ClassDefinition]:
+    def all_classes_ordered(self) ->Dict[ClassDefinitionName, ClassDefinition]:
         """
         :param imports: include imports closure
         :return: all class names in schema view ordered alphabetically, useful primarily for documentation view.
         """
         ordered_list_of_names = []
         ordered_classes = {}
-        for c in self._get_dict(CLASSES, imports):
+        for c in self.all_classes():
             ordered_list_of_names.append(c)
         ordered_list_of_names.sort()
         for name in ordered_list_of_names:
@@ -245,6 +245,19 @@ class SchemaView(object):
                         slots[aname] = a
         return slots
 
+    def all_slots_ordered(self) -> Dict[SlotDefinitionName, SlotDefinition]:
+        """
+        :param imports: include imports closure
+        :return: all class names in schema view ordered alphabetically, useful primarily for documentation view.
+        """
+        ordered_list_of_names = []
+        ordered_slots = {}
+        for s in self.all_slots():
+            ordered_list_of_names.append(s)
+        ordered_list_of_names.sort()
+        for name in ordered_list_of_names:
+            ordered_slots[self.get_slot(name).name] = self.get_slot(name)
+        return ordered_slots
 
     @deprecated("Use `all_enums` instead")
     @lru_cache()

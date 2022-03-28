@@ -188,6 +188,7 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
+        print(ordered_c)
         assert ordered_c == sorted(ordered_c)
 
     def test_rollup_rolldown(self):
