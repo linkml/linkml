@@ -184,12 +184,11 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_classes(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        classes = view.all_classes()
-        vdict = []
+        classes = view.all_classes_ordered()
+        ordered_c = []
         for c in classes.values():
-            vdict.append(c)
-        vdict.sort()
-        print(vdict)
+            ordered_c.append(c.name)
+        assert ordered_c == sorted(ordered_c)
 
     def test_rollup_rolldown(self):
         # no import schema

@@ -224,8 +224,8 @@ class SchemaView(object):
         ordered_list_of_names = []
         ordered_classes = {}
         for c in self._get_dict(CLASSES, imports):
-            ordered_list_of_names.append(c.name)
-        ordered_list_of_names.sort(reverse=True)
+            ordered_list_of_names.append(c)
+        ordered_list_of_names.sort()
         for name in ordered_list_of_names:
             ordered_classes[self.get_class(name).name] = self.get_class(name)
         return ordered_classes
