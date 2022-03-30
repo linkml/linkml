@@ -188,11 +188,9 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        print(ordered_c)
         assert ordered_c == sorted(ordered_c)
 
-
-    def test_all_classes_ordered_lexical(self):
+    def test_all_classes_ordered_rank(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         classes = view.all_classes(ordered_by="rank")
         ordered_c = []
@@ -202,14 +200,12 @@ class SchemaViewTestCase(unittest.TestCase):
         assert ordered_c[1] == "activity"
         assert ordered_c[2] == "Company"
 
-
     def test_all_classes_ordered_no_ordered_by(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         classes = view.all_classes()
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        print(ordered_c)
         assert "HasAliases" == ordered_c[0]
         assert "agent" == ordered_c[-1]
 
@@ -222,6 +218,25 @@ class SchemaViewTestCase(unittest.TestCase):
         except ValueError:
             assert ValueError
         assert ValueError
+
+    def test_all_slots_ordered_lexical(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        slots = view.all_slots(ordered_by="lexical")
+        ordered_s = []
+        for s in slots.values():
+            ordered_s.append(s.name)
+        assert ordered_s == sorted(ordered_s)
+
+    def test_all_slots_ordered_rank(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        slots = view.all_slots(ordered_by="rank")
+        ordered_s = []
+        for s in slots.values():
+            ordered_s.append(s.name)
+        print(ordered_s)
+        assert ordered_s[0] == 'id'
+        assert ordered_s[1] == 'name'
+        assert ordered_s[2] == 'description'
 
     def test_rollup_rolldown(self):
         # no import schema

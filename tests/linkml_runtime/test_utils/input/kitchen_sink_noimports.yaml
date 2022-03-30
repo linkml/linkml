@@ -287,11 +287,14 @@ slots:
 
   id:
     identifier: true
+    rank: 1
 
   name:
     required: false
+    rank: 2
 
   description:
+    rank: 3
 
   started at time:
     slot_uri: prov:startedAtTime
