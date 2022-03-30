@@ -201,13 +201,18 @@ class SchemaView(object):
         return self._get_dict(CLASSES, imports)
 
     @lru_cache()
-    def _order_lexically(self, element: str, imports=True):
+    def _order_lexically(self, element: str, imports=True, attributes=True):
         """
         :param element: slots or class type to order
         :param imports
         :return: all classes or slots sorted lexically in schema view
         """
         elements = copy(self._get_dict(element, imports))
+        if element == SLOTS and attributes:
+            for c in self.all_classes().values():
+                for aname, a in c.attributes.items():
+                    if aname not in elements:
+                        elements[aname] = a
         ordered_list_of_names = []
         ordered_elements = {}
         for c in elements:
@@ -248,7 +253,6 @@ class SchemaView(object):
         :return: all classes in schema view
         """
 
-        classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by not in ORDERED_BY:
             raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
 
@@ -291,9 +295,9 @@ class SchemaView(object):
                         slots[aname] = a
 
         if ordered_by == "lexical":
-            return self._order_lexically(element=SLOTS, imports=imports)
+            return self._order_lexically(element=SLOTS, imports=imports, attribtues=attributes)
         elif ordered_by == 'rank':
-            return self._order_rank(element=SLOTS, imports=imports)
+            return self._order_rank(element=SLOTS, imports=imports, attribtues=attributes)
         else:
             # preserve order in YAML
             return slots
