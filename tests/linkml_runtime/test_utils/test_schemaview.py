@@ -195,7 +195,12 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         classes = view.all_classes(ordered_by="rank")
-
+        ordered_c = []
+        for c in classes.values():
+            ordered_c.append(c.name)
+        assert ordered_c[0] == "agent"
+        assert ordered_c[1] == "activity"
+        assert ordered_c[2] == "Company"
 
 
     def test_all_classes_ordered_no_ordered_by(self):

@@ -234,7 +234,7 @@ class SchemaView(object):
                 ordered_classes[self.get_class(v).name] = self.get_class(v)
             ordered_classes.update(unranked_map)
             return ordered_classes
-        else: # else preserve the order in the yaml
+        else:  # else preserve the order in the yaml
             return classes
 
     @deprecated("Use `all_slots` instead")
@@ -274,8 +274,19 @@ class SchemaView(object):
                 ordered_slots[self.get_slot(name).name] = self.get_slot(name)
             return ordered_slots
         elif ordered_by == "rank":
-            # not yet implemented, preserve order
-            return slots
+            rank_map = {}
+            unranked_map = {}
+            rank_ordered_slots = {}
+            for name, definition in slots.items():
+                if definition.rank is None:
+                    unranked_map[self.get_slot(name).name] = self.get_slot(name)
+                else:
+                    rank_map[definition.rank] = name
+            rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
+            for k, v in rank_ordered_map.items():
+                rank_ordered_slots[self.get_slot(v).name] = self.get_slot(v)
+            rank_ordered_slots.update(unranked_map)
+            return rank_ordered_slots
         else:
             # preserve order in YAML
             return slots
