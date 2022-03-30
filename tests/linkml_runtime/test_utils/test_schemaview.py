@@ -182,14 +182,25 @@ class SchemaViewTestCase(unittest.TestCase):
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
 
-    def test_all_classes_ordered(self):
+    def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        classes = view.all_classes_ordered()
+        classes = view.all_classes(ordered_by="lexical")
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
         print(ordered_c)
         assert ordered_c == sorted(ordered_c)
+
+    def test_all_classes_ordered_lexical(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_classes(ordered_by="preserve")
+        ordered_c = []
+        for c in classes.values():
+            ordered_c.append(c.name)
+        print(ordered_c)
+        assert "HasAliases" == ordered_c[0]
+        assert "agent" == ordered_c[-1]
+
 
     def test_all_slots_ordered(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)

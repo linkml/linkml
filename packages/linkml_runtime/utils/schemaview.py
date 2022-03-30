@@ -28,6 +28,8 @@ SUBSET_NAME = Union[SubsetDefinitionName, str]
 TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
 
+ORDERED_BY = ["rank", "preserve", "lexical"]
+
 
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
     if reflexive:
@@ -205,12 +207,12 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all classes in schema view
         """
-        assert ordered_by in ('preserve', 'lexical', 'rank'), "Invalid ordered_by parameter '{}'".format(ordered_by)
 
+        classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by == 'lexical':
             ordered_list_of_names = []
             ordered_classes = {}
-            for c in self.all_classes():
+            for c in classes:
                 ordered_list_of_names.append(c)
             ordered_list_of_names.sort()
             for name in ordered_list_of_names:
@@ -218,9 +220,9 @@ class SchemaView(object):
             return ordered_classes
         elif ordered_by == 'rank':
             # not yet implemented, preserve order
-            return self._get_dict(CLASSES, imports)
-        else:
-            return self._get_dict(CLASSES, imports)
+            return classes
+        else: # else preserve the order in the yaml
+            return classes
 
     @deprecated("Use `all_slots` instead")
     @lru_cache()
