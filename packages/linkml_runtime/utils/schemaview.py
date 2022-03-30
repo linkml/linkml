@@ -200,6 +200,7 @@ class SchemaView(object):
         """
         return self._get_dict(CLASSES, imports)
 
+    @lru_cache()
     def _order_lexically(self, elements: Dict, element_type: str):
         """
         :param elements: slots or classes to order
@@ -217,6 +218,32 @@ class SchemaView(object):
                 ordered_elements[self.get_slot(name).name] = self.get_slot(name)
         return ordered_elements
 
+    @lru_cache()
+    def _order_rank(self, elements: Dict, element_type: str):
+        """
+        :param elements: slots or classes to order
+        :return: all classes or slots sorted by their rank in schema view
+        """
+
+        rank_map = {}
+        unranked_map = {}
+        rank_ordered_elements = {}
+        for name, definition in elements.items():
+            if definition.rank is None:
+                if element_type == "class":
+                    unranked_map[self.get_class(name).name] = self.get_class(name)
+                else:
+                    unranked_map[self.get_slot(name).name] = self.get_slot(name)
+            else:
+                rank_map[definition.rank] = name
+        rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
+        for k, v in rank_ordered_map.items():
+            if element_type == "class":
+                rank_ordered_elements[self.get_class(v).name] = self.get_class(v)
+            else:
+                rank_ordered_elements[self.get_slot(v).name] = self.get_slot(v)
+        rank_ordered_elements.update(unranked_map)
+        return rank_ordered_elements
 
     @lru_cache()
     def all_classes(self, ordered_by='preserve', imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
@@ -228,25 +255,13 @@ class SchemaView(object):
 
         if ordered_by not in ORDERED_BY:
             raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
-        ordered_classes = {}
         classes = copy(self._get_dict(CLASSES, imports))
 
         if ordered_by == 'lexical':
             return self._order_lexically(elements=classes, element_type="classes")
 
         elif ordered_by == 'rank':
-            rank_map = {}
-            unranked_map = {}
-            for name, definition in classes.items():
-                if definition.rank is None:
-                    unranked_map[self.get_class(name).name] = self.get_class(name)
-                else:
-                    rank_map[definition.rank] = name
-            rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
-            for k, v in rank_ordered_map.items():
-                ordered_classes[self.get_class(v).name] = self.get_class(v)
-            ordered_classes.update(unranked_map)
-            return ordered_classes
+            return self._order_rank(elements=classes, element_type="classes")
 
         else:  # else preserve the order in the yaml
             return classes
@@ -281,22 +296,8 @@ class SchemaView(object):
 
         if ordered_by == "lexical":
             return self._order_lexically(elements=slots, element_type="slots")
-
-        elif ordered_by == "rank":
-            rank_map = {}
-            unranked_map = {}
-            rank_ordered_slots = {}
-            for name, definition in slots.items():
-                if definition.rank is None:
-                    unranked_map[self.get_slot(name).name] = self.get_slot(name)
-                else:
-                    rank_map[definition.rank] = name
-            rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
-            for k, v in rank_ordered_map.items():
-                rank_ordered_slots[self.get_slot(v).name] = self.get_slot(v)
-            rank_ordered_slots.update(unranked_map)
-            return rank_ordered_slots
-
+        elif ordered_by == 'rank':
+            return self._order_rank(elements=slots, element_type="slots")
         else:
             # preserve order in YAML
             return slots
