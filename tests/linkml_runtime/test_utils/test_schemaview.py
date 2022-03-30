@@ -211,15 +211,6 @@ class SchemaViewTestCase(unittest.TestCase):
             assert ValueError
         assert ValueError
 
-    def test_all_slots_ordered(self):
-        view = SchemaView(SCHEMA_NO_IMPORTS)
-        classes = view.all_slots_ordered()
-        ordered_s = []
-        for s in classes.values():
-            ordered_s.append(s.name)
-        print(ordered_s)
-        assert ordered_s == sorted(ordered_s)
-
     def test_rollup_rolldown(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)

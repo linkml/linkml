@@ -28,7 +28,7 @@ SUBSET_NAME = Union[SubsetDefinitionName, str]
 TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
 
-ORDERED_BY = ["rank", "preserve", "lexical"]
+ORDERED_BY = ["rank", "lexical", "preserve"]
 
 
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
@@ -52,7 +52,6 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
                 if v not in rv:
                     rv.append(v)
     return rv
-    #return list(OrderedDict.fromkeys(rv))
 
 
 def load_schema_wrap(path: str, **kwargs):
@@ -201,7 +200,7 @@ class SchemaView(object):
         return self._get_dict(CLASSES, imports)
 
     @lru_cache()
-    def all_classes(self, ordered_by="preserve", imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def all_classes(self, ordered_by='preserve', imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
         """
         :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
@@ -209,9 +208,7 @@ class SchemaView(object):
         """
 
         if ordered_by not in ORDERED_BY:
-            print(ordered_by)
-            print(ORDERED_BY)
-            raise ValueError
+            raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
 
         classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by == 'lexical':
@@ -243,9 +240,12 @@ class SchemaView(object):
         """
         :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
+        :param attributes: include attributes as slots or not, default is to include.
         :return: all slots in schema view
         """
-        assert ordered_by in ('preserve', 'lexical', 'rank'), "Invalid ordered_by parameter '{}'".format(ordered_by)
+
+        if ordered_by not in ORDERED_BY:
+            raise ValueError("ordered_by is not in ORDERED_BY enumeration")
 
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
@@ -266,6 +266,7 @@ class SchemaView(object):
             # not yet implemented, preserve order
             return slots
         else:
+            # preserve order in YAML
             return slots
 
     @deprecated("Use `all_enums` instead")
@@ -326,11 +327,11 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all elements in schema view
         """
-        all_classes = self.all_classes(imports)
-        all_slots = self.all_slots(imports)
-        all_enums = self.all_enums(imports)
-        all_types = self.all_types(imports)
-        all_subsets = self.all_subsets(imports)
+        all_classes = self.all_classes(imports=imports)
+        all_slots = self.all_slots(imports=imports)
+        all_enums = self.all_enums(imports=imports)
+        all_types = self.all_types(imports=imports)
+        all_subsets = self.all_subsets(imports=imports)
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
@@ -340,11 +341,11 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all elements in schema view
         """
-        all_classes = self.all_classes(imports)
-        all_slots = self.all_slots(imports)
-        all_enums = self.all_enums(imports)
-        all_types = self.all_types(imports)
-        all_subsets = self.all_subsets(imports)
+        all_classes = self.all_classes(imports=imports)
+        all_slots = self.all_slots(imports=imports)
+        all_enums = self.all_enums(imports=imports)
+        all_types = self.all_types(imports=imports)
+        all_subsets = self.all_subsets(imports=imports)
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
@@ -419,7 +420,7 @@ class SchemaView(object):
         :param imports: include import closure
         :return: class definition
         """
-        c = self.all_classes(imports).get(class_name, None)
+        c = self.all_classes(imports=imports).get(class_name, None)
         if strict and c is None:
             raise ValueError(f'No such class as "{class_name}"')
         else:
@@ -432,9 +433,9 @@ class SchemaView(object):
         :param imports: include import closure
         :return: slot definition
         """
-        slot = self.all_slots(imports).get(slot_name, None)
+        slot = self.all_slots(imports=imports).get(slot_name, None)
         if slot is None and attributes:
-            for c in self.all_classes(imports).values():
+            for c in self.all_classes(imports=imports).values():
                 if slot_name in c.attributes:
                     if slot is not None:
                         # slot name is ambiguous, no results
@@ -525,7 +526,7 @@ class SchemaView(object):
         :param is_a: include is_a parents (default is True)
         :return: all direct child class names (is_a and mixins)
         """
-        elts = [self.get_class(x) for x in self.all_classes(imports)]
+        elts = [self.get_class(x) for x in self.all_classes(imports=imports)]
         return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
 
     @lru_cache()
