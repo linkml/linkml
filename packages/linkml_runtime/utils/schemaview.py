@@ -298,13 +298,13 @@ class SchemaView(object):
                     if aname not in slots:
                         slots[aname] = a
 
-        if ordered_by == "lexical":
+        if ordered_by == 'lexical':
             ordered_slots = self._order_lexically(element=SLOTS, imports=imports, attributes=attributes)
         elif ordered_by == 'rank':
             ordered_slots = self._order_rank(element=SLOTS, imports=imports, attributes=attributes)
         else:
-            ordered_slots = slots
             # preserve order in YAML
+            ordered_slots = slots
         return ordered_slots
 
     @deprecated("Use `all_enums` instead")
