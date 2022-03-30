@@ -299,6 +299,7 @@ slots:
   started at time:
     slot_uri: prov:startedAtTime
     range: date
+    rank: 1
 
   ended at time:
     slot_uri: prov:endedAtTime

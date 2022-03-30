@@ -196,9 +196,15 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        assert ordered_c[0] == "agent"
-        assert ordered_c[1] == "activity"
-        assert ordered_c[2] == "Company"
+        first_in_line = []
+        second_in_line = []
+        for name, definition in classes.items():
+            if definition.rank == 1:
+                first_in_line.append(name)
+            elif definition.rank == 2:
+                second_in_line.append(name)
+        assert ordered_c[0] in first_in_line
+        assert ordered_c[10] not in second_in_line
 
     def test_all_classes_ordered_no_ordered_by(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -234,9 +240,16 @@ class SchemaViewTestCase(unittest.TestCase):
         for s in slots.values():
             ordered_s.append(s.name)
         print(ordered_s)
-        assert ordered_s[0] == 'id'
-        assert ordered_s[1] == 'name'
-        assert ordered_s[2] == 'description'
+        first_in_line = []
+        second_in_line = []
+        for name, definition in slots.items():
+            if definition.rank == 1:
+                first_in_line.append(name)
+            elif definition.rank == 2:
+                second_in_line.append(name)
+        assert ordered_s[0] in first_in_line
+        assert ordered_s[10] not in second_in_line
+
 
     def test_rollup_rolldown(self):
         # no import schema
