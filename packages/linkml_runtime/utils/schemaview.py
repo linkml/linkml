@@ -200,6 +200,24 @@ class SchemaView(object):
         """
         return self._get_dict(CLASSES, imports)
 
+    def _order_lexically(self, elements: Dict, element_type: str):
+        """
+        :param elements: slots or classes to order
+        :return: all classes or slots sorted lexically in schema view
+        """
+        ordered_list_of_names = []
+        ordered_elements = {}
+        for c in elements:
+            ordered_list_of_names.append(c)
+        ordered_list_of_names.sort()
+        for name in ordered_list_of_names:
+            if element_type == 'class':
+                ordered_elements[self.get_class(name).name] = self.get_class(name)
+            else:
+                ordered_elements[self.get_slot(name).name] = self.get_slot(name)
+        return ordered_elements
+
+
     @lru_cache()
     def all_classes(self, ordered_by='preserve', imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
         """
@@ -212,15 +230,10 @@ class SchemaView(object):
             raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
         ordered_classes = {}
         classes = copy(self._get_dict(CLASSES, imports))
-        if ordered_by == 'lexical':
-            ordered_list_of_names = []
 
-            for c in classes:
-                ordered_list_of_names.append(c)
-            ordered_list_of_names.sort()
-            for name in ordered_list_of_names:
-                ordered_classes[self.get_class(name).name] = self.get_class(name)
-            return ordered_classes
+        if ordered_by == 'lexical':
+            return self._order_lexically(elements=classes, element_type="classes")
+
         elif ordered_by == 'rank':
             rank_map = {}
             unranked_map = {}
@@ -234,6 +247,7 @@ class SchemaView(object):
                 ordered_classes[self.get_class(v).name] = self.get_class(v)
             ordered_classes.update(unranked_map)
             return ordered_classes
+
         else:  # else preserve the order in the yaml
             return classes
 
@@ -264,15 +278,10 @@ class SchemaView(object):
                 for aname, a in c.attributes.items():
                     if aname not in slots:
                         slots[aname] = a
+
         if ordered_by == "lexical":
-            ordered_list_of_names = []
-            ordered_slots = {}
-            for s in slots:
-                ordered_list_of_names.append(s)
-            ordered_list_of_names.sort()
-            for name in ordered_list_of_names:
-                ordered_slots[self.get_slot(name).name] = self.get_slot(name)
-            return ordered_slots
+            return self._order_lexically(elements=slots, element_type="slots")
+
         elif ordered_by == "rank":
             rank_map = {}
             unranked_map = {}
@@ -287,6 +296,7 @@ class SchemaView(object):
                 rank_ordered_slots[self.get_slot(v).name] = self.get_slot(v)
             rank_ordered_slots.update(unranked_map)
             return rank_ordered_slots
+
         else:
             # preserve order in YAML
             return slots
