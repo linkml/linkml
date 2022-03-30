@@ -19,7 +19,7 @@ jinja2
 jsonasobj2~=1.0, >=1.0.3
 jsonschema>=3.0.1
 linkml-dataops
-linkml-runtime>=1.2.0
+linkml-runtime~=1.2.4
 myst-parser
 openpyxl
 pandas
@@ -30,7 +30,7 @@ pyjsg>=0.11.6
 pyshex>=0.7.20
 pyshexc>=0.8.3
 python-dateutil
-pyyaml<5.4
+pyyaml
 rdflib>=6.0.0
 requests>=2.22
 sphinx
