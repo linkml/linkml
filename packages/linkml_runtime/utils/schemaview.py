@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
 
-
 SLOTS = 'slots'
 CLASSES = 'classes'
 ENUMS = 'enums'
@@ -200,12 +199,28 @@ class SchemaView(object):
         return self._get_dict(CLASSES, imports)
 
     @lru_cache()
-    def all_classes(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def all_classes(self, ordered_by="preserve", imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
         """
+        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
         :return: all classes in schema view
         """
-        return self._get_dict(CLASSES, imports)
+        assert ordered_by in ('preserve', 'lexical', 'rank'), "Invalid ordered_by parameter '{}'".format(ordered_by)
+
+        if ordered_by == 'lexical':
+            ordered_list_of_names = []
+            ordered_classes = {}
+            for c in self.all_classes():
+                ordered_list_of_names.append(c)
+            ordered_list_of_names.sort()
+            for name in ordered_list_of_names:
+                ordered_classes[self.get_class(name).name] = self.get_class(name)
+            return ordered_classes
+        elif ordered_by == 'rank':
+            # not yet implemented, preserve order
+            return self._get_dict(CLASSES, imports)
+        else:
+            return self._get_dict(CLASSES, imports)
 
     @deprecated("Use `all_slots` instead")
     @lru_cache()
@@ -216,48 +231,35 @@ class SchemaView(object):
         """
         return self.all_slots(**kwargs)
 
-    def all_classes_ordered(self) ->Dict[ClassDefinitionName, ClassDefinition]:
-        """
-        :param imports: include imports closure
-        :return: all class names in schema view ordered alphabetically, useful primarily for documentation view.
-        """
-        ordered_list_of_names = []
-        ordered_classes = {}
-        for c in self.all_classes():
-            ordered_list_of_names.append(c)
-        ordered_list_of_names.sort()
-        for name in ordered_list_of_names:
-            ordered_classes[self.get_class(name).name] = self.get_class(name)
-        return ordered_classes
-
-
     @lru_cache()
-    def all_slots(self, imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slots(self, ordered_by="preserve", imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
+        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
         :return: all slots in schema view
         """
+        assert ordered_by in ('preserve', 'lexical', 'rank'), "Invalid ordered_by parameter '{}'".format(ordered_by)
+
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
             for c in self.all_classes().values():
                 for aname, a in c.attributes.items():
                     if aname not in slots:
                         slots[aname] = a
-        return slots
-
-    def all_slots_ordered(self) -> Dict[SlotDefinitionName, SlotDefinition]:
-        """
-        :param imports: include imports closure
-        :return: all class names in schema view ordered alphabetically, useful primarily for documentation view.
-        """
-        ordered_list_of_names = []
-        ordered_slots = {}
-        for s in self.all_slots():
-            ordered_list_of_names.append(s)
-        ordered_list_of_names.sort()
-        for name in ordered_list_of_names:
-            ordered_slots[self.get_slot(name).name] = self.get_slot(name)
-        return ordered_slots
+        if ordered_by == "lexical":
+            ordered_list_of_names = []
+            ordered_slots = {}
+            for s in slots:
+                ordered_list_of_names.append(s)
+            ordered_list_of_names.sort()
+            for name in ordered_list_of_names:
+                ordered_slots[self.get_slot(name).name] = self.get_slot(name)
+            return ordered_slots
+        elif ordered_by == "rank":
+            # not yet implemented, preserve order
+            return slots
+        else:
+            return slots
 
     @deprecated("Use `all_enums` instead")
     @lru_cache()
