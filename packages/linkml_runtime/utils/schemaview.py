@@ -223,12 +223,17 @@ class SchemaView(object):
         return ordered_elements
 
     @lru_cache()
-    def _order_rank(self, element: str, imports=True):
+    def _order_rank(self, element: str, imports=True, attributes=True):
         """
         :param elements: slots or classes to order
         :return: all classes or slots sorted by their rank in schema view
         """
         elements = copy(self._get_dict(element, imports))
+        if element == SLOTS and attributes:
+            for c in self.all_classes().values():
+                for aname, a in c.attributes.items():
+                    if aname not in elements:
+                        elements[aname] = a
         rank_map = {}
         unranked_map = {}
         rank_ordered_elements = {}
@@ -295,9 +300,9 @@ class SchemaView(object):
                         slots[aname] = a
 
         if ordered_by == "lexical":
-            return self._order_lexically(element=SLOTS, imports=imports, attribtues=attributes)
+            return self._order_lexically(element=SLOTS, imports=imports, attributes=attributes)
         elif ordered_by == 'rank':
-            return self._order_rank(element=SLOTS, imports=imports, attribtues=attributes)
+            return self._order_rank(element=SLOTS, imports=imports, attributes=attributes)
         else:
             # preserve order in YAML
             return slots
