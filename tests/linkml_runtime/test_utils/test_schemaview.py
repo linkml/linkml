@@ -185,6 +185,7 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         classes = view.all_classes(ordered_by="lexical")
+
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
@@ -231,6 +232,7 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_s = []
         for s in slots.values():
             ordered_s.append(s.name)
+        print(ordered_s)
         assert ordered_s == sorted(ordered_s)
 
     def test_all_slots_ordered_rank(self):

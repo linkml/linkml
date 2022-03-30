@@ -201,47 +201,42 @@ class SchemaView(object):
         return self._get_dict(CLASSES, imports)
 
     @lru_cache()
-    def _order_lexically(self, elements: Dict, element_type: str):
+    def _order_lexically(self, element: str, imports=True):
         """
-        :param elements: slots or classes to order
+        :param element: slots or class type to order
+        :param imports
         :return: all classes or slots sorted lexically in schema view
         """
+        elements = copy(self._get_dict(element, imports))
         ordered_list_of_names = []
         ordered_elements = {}
         for c in elements:
             ordered_list_of_names.append(c)
         ordered_list_of_names.sort()
         for name in ordered_list_of_names:
-            if element_type == 'class':
-                ordered_elements[self.get_class(name).name] = self.get_class(name)
-            else:
-                ordered_elements[self.get_slot(name).name] = self.get_slot(name)
+            ordered_elements[self.get_element(name).name] = self.get_element(name)
         return ordered_elements
 
     @lru_cache()
-    def _order_rank(self, elements: Dict, element_type: str):
+    def _order_rank(self, element: str, imports=True):
         """
         :param elements: slots or classes to order
         :return: all classes or slots sorted by their rank in schema view
         """
-
+        elements = copy(self._get_dict(element, imports))
         rank_map = {}
         unranked_map = {}
         rank_ordered_elements = {}
         for name, definition in elements.items():
             if definition.rank is None:
-                if element_type == "class":
-                    unranked_map[self.get_class(name).name] = self.get_class(name)
-                else:
-                    unranked_map[self.get_slot(name).name] = self.get_slot(name)
+                unranked_map[self.get_element(name).name] = self.get_element(name)
+
             else:
                 rank_map[definition.rank] = name
         rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
         for k, v in rank_ordered_map.items():
-            if element_type == "class":
-                rank_ordered_elements[self.get_class(v).name] = self.get_class(v)
-            else:
-                rank_ordered_elements[self.get_slot(v).name] = self.get_slot(v)
+            rank_ordered_elements[self.get_element(v).name] = self.get_element(v)
+
         rank_ordered_elements.update(unranked_map)
         return rank_ordered_elements
 
@@ -253,18 +248,19 @@ class SchemaView(object):
         :return: all classes in schema view
         """
 
+        classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by not in ORDERED_BY:
             raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
-        classes = copy(self._get_dict(CLASSES, imports))
 
         if ordered_by == 'lexical':
-            return self._order_lexically(elements=classes, element_type="classes")
+            ordered_classes = self._order_lexically(element=CLASSES, imports=imports)
 
         elif ordered_by == 'rank':
-            return self._order_rank(elements=classes, element_type="classes")
+            ordered_classes = self._order_rank(element=CLASSES, imports=imports)
 
         else:  # else preserve the order in the yaml
-            return classes
+            ordered_classes = copy(self._get_dict(CLASSES, imports))
+        return ordered_classes
 
     @deprecated("Use `all_slots` instead")
     @lru_cache()
@@ -295,9 +291,9 @@ class SchemaView(object):
                         slots[aname] = a
 
         if ordered_by == "lexical":
-            return self._order_lexically(elements=slots, element_type="slots")
+            return self._order_lexically(element=SLOTS, imports=imports)
         elif ordered_by == 'rank':
-            return self._order_rank(elements=slots, element_type="slots")
+            return self._order_rank(element=SLOTS, imports=imports)
         else:
             # preserve order in YAML
             return slots
