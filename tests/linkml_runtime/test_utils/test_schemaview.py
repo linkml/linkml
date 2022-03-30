@@ -191,6 +191,13 @@ class SchemaViewTestCase(unittest.TestCase):
         print(ordered_c)
         assert ordered_c == sorted(ordered_c)
 
+
+    def test_all_classes_ordered_lexical(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_classes(ordered_by="rank")
+
+
+
     def test_all_classes_ordered_no_ordered_by(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         classes = view.all_classes()

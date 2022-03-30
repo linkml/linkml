@@ -1,6 +1,7 @@
 import os
 import uuid
 import logging
+import collections
 from functools import lru_cache
 from copy import copy, deepcopy
 from collections import defaultdict, OrderedDict
@@ -209,11 +210,11 @@ class SchemaView(object):
 
         if ordered_by not in ORDERED_BY:
             raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
-
+        ordered_classes = {}
         classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by == 'lexical':
             ordered_list_of_names = []
-            ordered_classes = {}
+
             for c in classes:
                 ordered_list_of_names.append(c)
             ordered_list_of_names.sort()
@@ -221,8 +222,18 @@ class SchemaView(object):
                 ordered_classes[self.get_class(name).name] = self.get_class(name)
             return ordered_classes
         elif ordered_by == 'rank':
-            # not yet implemented, preserve order
-            return classes
+            rank_map = {}
+            unranked_map = {}
+            for name, definition in classes.items():
+                if definition.rank is None:
+                    unranked_map[self.get_class(name).name] = self.get_class(name)
+                else:
+                    rank_map[definition.rank] = name
+            rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
+            for k, v in rank_ordered_map.items():
+                ordered_classes[self.get_class(v).name] = self.get_class(v)
+            ordered_classes.update(unranked_map)
+            return ordered_classes
         else: # else preserve the order in the yaml
             return classes
 
@@ -356,6 +367,7 @@ class SchemaView(object):
         for s in schemas:
             # get the value of element name from the schema, if empty, return empty dictionary.
             d1 = getattr(s, slot_name, {})
+            # {**d,**d1} syntax merges dictionary a and b into a single dictionary, removing duplicates.
             d = {**d, **d1}
 
         return d
