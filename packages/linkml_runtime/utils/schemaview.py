@@ -263,12 +263,11 @@ class SchemaView(object):
 
         if ordered_by == 'lexical':
             ordered_classes = self._order_lexically(element=CLASSES, imports=imports)
-
         elif ordered_by == 'rank':
             ordered_classes = self._order_rank(element=CLASSES, imports=imports)
-
         else:  # else preserve the order in the yaml
             ordered_classes = copy(self._get_dict(CLASSES, imports))
+
         return ordered_classes
 
     @deprecated("Use `all_slots` instead")
@@ -300,12 +299,13 @@ class SchemaView(object):
                         slots[aname] = a
 
         if ordered_by == "lexical":
-            return self._order_lexically(element=SLOTS, imports=imports, attributes=attributes)
+            ordered_slots = self._order_lexically(element=SLOTS, imports=imports, attributes=attributes)
         elif ordered_by == 'rank':
-            return self._order_rank(element=SLOTS, imports=imports, attributes=attributes)
+            ordered_slots = self._order_rank(element=SLOTS, imports=imports, attributes=attributes)
         else:
+            ordered_slots = slots
             # preserve order in YAML
-            return slots
+        return ordered_slots
 
     @deprecated("Use `all_enums` instead")
     @lru_cache()
