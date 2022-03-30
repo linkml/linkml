@@ -208,6 +208,11 @@ class SchemaView(object):
         :return: all classes in schema view
         """
 
+        if ordered_by not in ORDERED_BY:
+            print(ordered_by)
+            print(ORDERED_BY)
+            raise ValueError
+
         classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by == 'lexical':
             ordered_list_of_names = []
