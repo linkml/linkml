@@ -231,7 +231,7 @@ def tsv2model(tsvfile, **args):
 @click.option('--results', '-r', help='mapping results file')
 def enrich(yamlfile, results, **args):
     """ Infer a model from a TSV """
-    yamlobj = yaml.load(open(yamlfile))
+    yamlobj = yaml.safe_load(open(yamlfile))
     cache = {}
     infer_enum_meanings(yamlobj, cache=cache)
     if results is not None:
