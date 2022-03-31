@@ -1,6 +1,7 @@
 import os
 import uuid
 import logging
+import collections
 from functools import lru_cache
 from copy import copy, deepcopy
 from collections import defaultdict, OrderedDict
@@ -9,13 +10,12 @@ from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
-
+from enum import Enum
 logger = logging.getLogger(__name__)
 
 
 MAPPING_TYPE = str  ## e.g. broad, exact, related, ...
 CACHE_SIZE = 1024
-
 
 SLOTS = 'slots'
 CLASSES = 'classes'
@@ -28,6 +28,12 @@ SLOT_NAME = Union[SlotDefinitionName, str]
 SUBSET_NAME = Union[SubsetDefinitionName, str]
 TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
+
+
+class OrderedBy(Enum):
+    RANK = "rank"
+    LEXICAL = "lexical"
+    PRESERVE = "preserve"
 
 
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
@@ -51,7 +57,6 @@ def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
                 if v not in rv:
                     rv.append(v)
     return rv
-    #return list(OrderedDict.fromkeys(rv))
 
 
 def load_schema_wrap(path: str, **kwargs):
@@ -199,13 +204,60 @@ class SchemaView(object):
         """
         return self._get_dict(CLASSES, imports)
 
-    @lru_cache()
-    def all_classes(self, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def _order_lexically(self, elements: dict):
         """
+        :param element: slots or class type to order
+        :param imports
+        :return: all classes or slots sorted lexically in schema view
+        """
+        ordered_list_of_names = []
+        ordered_elements = {}
+        for c in elements:
+            ordered_list_of_names.append(c)
+        ordered_list_of_names.sort()
+        for name in ordered_list_of_names:
+            ordered_elements[self.get_element(name).name] = self.get_element(name)
+        return ordered_elements
+
+    def _order_rank(self, elements: dict):
+        """
+        :param elements: slots or classes to order
+        :return: all classes or slots sorted by their rank in schema view
+        """
+
+        rank_map = {}
+        unranked_map = {}
+        rank_ordered_elements = {}
+        for name, definition in elements.items():
+            if definition.rank is None:
+                unranked_map[self.get_element(name).name] = self.get_element(name)
+
+            else:
+                rank_map[definition.rank] = name
+        rank_ordered_map = collections.OrderedDict(sorted(rank_map.items()))
+        for k, v in rank_ordered_map.items():
+            rank_ordered_elements[self.get_element(v).name] = self.get_element(v)
+
+        rank_ordered_elements.update(unranked_map)
+        return rank_ordered_elements
+
+    @lru_cache()
+    def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+        """
+        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
         :return: all classes in schema view
         """
-        return self._get_dict(CLASSES, imports)
+        classes = copy(self._get_dict(CLASSES, imports))
+
+        if ordered_by == OrderedBy.LEXICAL:
+            ordered_classes = self._order_lexically(elements=classes)
+        elif ordered_by == OrderedBy.RANK:
+            ordered_classes = self._order_rank(elements=classes)
+        else:  # else preserve the order in the yaml
+            ordered_classes = classes
+
+        return ordered_classes
 
     @deprecated("Use `all_slots` instead")
     @lru_cache()
@@ -217,19 +269,29 @@ class SchemaView(object):
         return self.all_slots(**kwargs)
 
     @lru_cache()
-    def all_slots(self, imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slots(self, ordered_by=OrderedBy.PRESERVE, imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
+        :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
+        :param attributes: include attributes as slots or not, default is to include.
         :return: all slots in schema view
         """
+
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
             for c in self.all_classes().values():
                 for aname, a in c.attributes.items():
                     if aname not in slots:
                         slots[aname] = a
-        return slots
 
+        if ordered_by == OrderedBy.LEXICAL:
+            ordered_slots = self._order_lexically(elements=slots)
+        elif ordered_by == OrderedBy.RANK:
+            ordered_slots = self._order_rank(elements=slots)
+        else:
+            # preserve order in YAML
+            ordered_slots = slots
+        return ordered_slots
 
     @deprecated("Use `all_enums` instead")
     @lru_cache()
@@ -289,11 +351,11 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all elements in schema view
         """
-        all_classes = self.all_classes(imports)
-        all_slots = self.all_slots(imports)
-        all_enums = self.all_enums(imports)
-        all_types = self.all_types(imports)
-        all_subsets = self.all_subsets(imports)
+        all_classes = self.all_classes(imports=imports)
+        all_slots = self.all_slots(imports=imports)
+        all_enums = self.all_enums(imports=imports)
+        all_types = self.all_types(imports=imports)
+        all_subsets = self.all_subsets(imports=imports)
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
@@ -303,11 +365,11 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all elements in schema view
         """
-        all_classes = self.all_classes(imports)
-        all_slots = self.all_slots(imports)
-        all_enums = self.all_enums(imports)
-        all_types = self.all_types(imports)
-        all_subsets = self.all_subsets(imports)
+        all_classes = self.all_classes(imports=imports)
+        all_slots = self.all_slots(imports=imports)
+        all_enums = self.all_enums(imports=imports)
+        all_types = self.all_types(imports=imports)
+        all_subsets = self.all_subsets(imports=imports)
         # {**a,**b} syntax merges dictionary a and b into a single dictionary, removing duplicates.
         return {**all_classes, **all_slots, **all_enums, **all_types, **all_subsets}
 
@@ -318,6 +380,7 @@ class SchemaView(object):
         for s in schemas:
             # get the value of element name from the schema, if empty, return empty dictionary.
             d1 = getattr(s, slot_name, {})
+            # {**d,**d1} syntax merges dictionary a and b into a single dictionary, removing duplicates.
             d = {**d, **d1}
 
         return d
@@ -382,7 +445,7 @@ class SchemaView(object):
         :param imports: include import closure
         :return: class definition
         """
-        c = self.all_classes(imports).get(class_name, None)
+        c = self.all_classes(imports=imports).get(class_name, None)
         if strict and c is None:
             raise ValueError(f'No such class as "{class_name}"')
         else:
@@ -395,9 +458,9 @@ class SchemaView(object):
         :param imports: include import closure
         :return: slot definition
         """
-        slot = self.all_slots(imports).get(slot_name, None)
+        slot = self.all_slots(imports=imports).get(slot_name, None)
         if slot is None and attributes:
-            for c in self.all_classes(imports).values():
+            for c in self.all_classes(imports=imports).values():
                 if slot_name in c.attributes:
                     if slot is not None:
                         # slot name is ambiguous, no results
@@ -488,7 +551,7 @@ class SchemaView(object):
         :param is_a: include is_a parents (default is True)
         :return: all direct child class names (is_a and mixins)
         """
-        elts = [self.get_class(x) for x in self.all_classes(imports)]
+        elts = [self.get_class(x) for x in self.all_classes(imports=imports)]
         return [x.name for x in elts if (x.is_a == class_name and is_a) or (mixins and class_name in x.mixins)]
 
     @lru_cache()

@@ -170,6 +170,7 @@ classes:
     attributes:
       ceo:
         range: Person
+    rank: 3
 
   Dataset:
     attributes:
@@ -203,6 +204,7 @@ classes:
       - prov:Activity
     narrow_mappings:
       - GO:0005198
+    rank: 2
 
   agent:
     description: "a provence-generating agent"
@@ -211,6 +213,7 @@ classes:
         - acted on behalf of
         - was informed by
     class_uri: prov:Agent
+    rank: 1
 
 slots:
   employed at:
@@ -284,15 +287,19 @@ slots:
 
   id:
     identifier: true
+    rank: 1
 
   name:
     required: false
+    rank: 2
 
   description:
+    rank: 3
 
   started at time:
     slot_uri: prov:startedAtTime
     range: date
+    rank: 1
 
   ended at time:
     slot_uri: prov:endedAtTime

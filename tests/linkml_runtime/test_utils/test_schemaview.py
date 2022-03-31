@@ -7,7 +7,7 @@ from typing import List
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
-from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage
+from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
 
@@ -181,6 +181,67 @@ class SchemaViewTestCase(unittest.TestCase):
         for sn in ds_slots:
             s = view.induced_slot(sn, 'Dataset')
             logging.debug(s)
+
+    def test_all_classes_ordered_lexical(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_classes(ordered_by=OrderedBy.LEXICAL)
+
+        ordered_c = []
+        for c in classes.values():
+            ordered_c.append(c.name)
+        assert ordered_c == sorted(ordered_c)
+
+    def test_all_classes_ordered_rank(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_classes(ordered_by=OrderedBy.RANK)
+        ordered_c = []
+        for c in classes.values():
+            ordered_c.append(c.name)
+        first_in_line = []
+        second_in_line = []
+        for name, definition in classes.items():
+            if definition.rank == 1:
+                first_in_line.append(name)
+            elif definition.rank == 2:
+                second_in_line.append(name)
+        assert ordered_c[0] in first_in_line
+        assert ordered_c[10] not in second_in_line
+
+    def test_all_classes_ordered_no_ordered_by(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        classes = view.all_classes()
+        ordered_c = []
+        for c in classes.values():
+            ordered_c.append(c.name)
+        assert "HasAliases" == ordered_c[0]
+        assert "agent" == ordered_c[-1]
+
+    def test_all_slots_ordered_lexical(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        slots = view.all_slots(ordered_by=OrderedBy.LEXICAL)
+        ordered_s = []
+        for s in slots.values():
+            ordered_s.append(s.name)
+        print(ordered_s)
+        assert ordered_s == sorted(ordered_s)
+
+    def test_all_slots_ordered_rank(self):
+        view = SchemaView(SCHEMA_NO_IMPORTS)
+        slots = view.all_slots(ordered_by=OrderedBy.RANK)
+        ordered_s = []
+        for s in slots.values():
+            ordered_s.append(s.name)
+        print(ordered_s)
+        first_in_line = []
+        second_in_line = []
+        for name, definition in slots.items():
+            if definition.rank == 1:
+                first_in_line.append(name)
+            elif definition.rank == 2:
+                second_in_line.append(name)
+        assert ordered_s[0] in first_in_line
+        assert ordered_s[10] not in second_in_line
+
 
     def test_rollup_rolldown(self):
         # no import schema
