@@ -218,7 +218,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_all_slots_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        slots = view.all_slots(ordered_by="lexical")
+        slots = view.all_slots(ordered_by=OrderedBy.LEXICAL)
         ordered_s = []
         for s in slots.values():
             ordered_s.append(s.name)
@@ -227,7 +227,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_all_slots_ordered_rank(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        slots = view.all_slots(ordered_by="rank")
+        slots = view.all_slots(ordered_by=OrderedBy.RANK)
         ordered_s = []
         for s in slots.values():
             ordered_s.append(s.name)
