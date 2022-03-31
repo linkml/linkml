@@ -216,16 +216,6 @@ class SchemaViewTestCase(unittest.TestCase):
         assert "HasAliases" == ordered_c[0]
         assert "agent" == ordered_c[-1]
 
-    def test_all_classes_ordered_by_fail(self):
-        view = SchemaView(SCHEMA_NO_IMPORTS)
-        try:
-            {
-                view.all_classes(ordered_by="wonky_non_enumerated_value")
-            }
-        except ValueError:
-            assert ValueError
-        assert ValueError
-
     def test_all_slots_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
         slots = view.all_slots(ordered_by="lexical")
