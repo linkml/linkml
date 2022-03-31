@@ -10,7 +10,7 @@ from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map
 from linkml_runtime.linkml_model.meta import *
-
+from enum import Enum
 logger = logging.getLogger(__name__)
 
 
@@ -29,9 +29,11 @@ SUBSET_NAME = Union[SubsetDefinitionName, str]
 TYPE_NAME = Union[TypeDefinitionName, str]
 ENUM_NAME = Union[EnumDefinitionName, str]
 
-ORDERED_BY = ["rank", "lexical", "preserve"]
 
-
+class OrderedBy(Enum):
+    RANK = "rank"
+    LEXICAL = "lexical"
+    PRESERVE = "preserve"
 
 
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
@@ -240,19 +242,17 @@ class SchemaView(object):
         return rank_ordered_elements
 
     @lru_cache()
-    def all_classes(self, ordered_by='preserve', imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
+    def all_classes(self, ordered_by=OrderedBy.PRESERVE, imports=True) -> Dict[ClassDefinitionName, ClassDefinition]:
         """
         :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
         :return: all classes in schema view
         """
         classes = copy(self._get_dict(CLASSES, imports))
-        if ordered_by not in ORDERED_BY:
-            raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
 
-        if ordered_by == 'lexical':
+        if ordered_by == OrderedBy.LEXICAL:
             ordered_classes = self._order_lexically(elements=classes)
-        elif ordered_by == 'rank':
+        elif ordered_by == OrderedBy.RANK:
             ordered_classes = self._order_rank(elements=classes)
         else:  # else preserve the order in the yaml
             ordered_classes = classes
@@ -269,16 +269,13 @@ class SchemaView(object):
         return self.all_slots(**kwargs)
 
     @lru_cache()
-    def all_slots(self, ordered_by="preserve", imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
+    def all_slots(self, ordered_by=OrderedBy.PRESERVE, imports=True, attributes=True) -> Dict[SlotDefinitionName, SlotDefinition]:
         """
         :param ordered_by: an enumerated parameter that returns all the slots in the order specified.
         :param imports: include imports closure
         :param attributes: include attributes as slots or not, default is to include.
         :return: all slots in schema view
         """
-
-        if ordered_by not in ORDERED_BY:
-            raise ValueError("ordered_by is not in ORDERED_BY enumeration")
 
         slots = copy(self._get_dict(SLOTS, imports))
         if attributes:
@@ -287,9 +284,9 @@ class SchemaView(object):
                     if aname not in slots:
                         slots[aname] = a
 
-        if ordered_by == 'lexical':
+        if ordered_by == OrderedBy.LEXICAL:
             ordered_slots = self._order_lexically(elements=slots)
-        elif ordered_by == 'rank':
+        elif ordered_by == OrderedBy.RANK:
             ordered_slots = self._order_rank(elements=slots)
         else:
             # preserve order in YAML
