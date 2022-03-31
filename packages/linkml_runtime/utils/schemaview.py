@@ -32,6 +32,8 @@ ENUM_NAME = Union[EnumDefinitionName, str]
 ORDERED_BY = ["rank", "lexical", "preserve"]
 
 
+
+
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
     if reflexive:
         rv = [x]
@@ -200,19 +202,12 @@ class SchemaView(object):
         """
         return self._get_dict(CLASSES, imports)
 
-    @lru_cache()
-    def _order_lexically(self, element: str, imports=True, attributes=True):
+    def _order_lexically(self, elements: dict):
         """
         :param element: slots or class type to order
         :param imports
         :return: all classes or slots sorted lexically in schema view
         """
-        elements = copy(self._get_dict(element, imports))
-        if element == SLOTS and attributes:
-            for c in self.all_classes().values():
-                for aname, a in c.attributes.items():
-                    if aname not in elements:
-                        elements[aname] = a
         ordered_list_of_names = []
         ordered_elements = {}
         for c in elements:
@@ -222,18 +217,12 @@ class SchemaView(object):
             ordered_elements[self.get_element(name).name] = self.get_element(name)
         return ordered_elements
 
-    @lru_cache()
-    def _order_rank(self, element: str, imports=True, attributes=True):
+    def _order_rank(self, elements: dict):
         """
         :param elements: slots or classes to order
         :return: all classes or slots sorted by their rank in schema view
         """
-        elements = copy(self._get_dict(element, imports))
-        if element == SLOTS and attributes:
-            for c in self.all_classes().values():
-                for aname, a in c.attributes.items():
-                    if aname not in elements:
-                        elements[aname] = a
+
         rank_map = {}
         unranked_map = {}
         rank_ordered_elements = {}
@@ -257,16 +246,16 @@ class SchemaView(object):
         :param imports: include imports closure
         :return: all classes in schema view
         """
-
+        classes = copy(self._get_dict(CLASSES, imports))
         if ordered_by not in ORDERED_BY:
             raise ValueError("missing ordered_by value in ORDERED_BY enumeration" + str(ordered_by))
 
         if ordered_by == 'lexical':
-            ordered_classes = self._order_lexically(element=CLASSES, imports=imports)
+            ordered_classes = self._order_lexically(elements=classes)
         elif ordered_by == 'rank':
-            ordered_classes = self._order_rank(element=CLASSES, imports=imports)
+            ordered_classes = self._order_rank(elements=classes)
         else:  # else preserve the order in the yaml
-            ordered_classes = copy(self._get_dict(CLASSES, imports))
+            ordered_classes = classes
 
         return ordered_classes
 
@@ -299,9 +288,9 @@ class SchemaView(object):
                         slots[aname] = a
 
         if ordered_by == 'lexical':
-            ordered_slots = self._order_lexically(element=SLOTS, imports=imports, attributes=attributes)
+            ordered_slots = self._order_lexically(elements=slots)
         elif ordered_by == 'rank':
-            ordered_slots = self._order_rank(element=SLOTS, imports=imports, attributes=attributes)
+            ordered_slots = self._order_rank(elements=slots)
         else:
             # preserve order in YAML
             ordered_slots = slots
