@@ -7,7 +7,7 @@ from typing import List
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
-from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage
+from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
 from linkml_runtime.utils.schemaops import roll_up, roll_down
 from tests.test_utils import INPUT_DIR
 
@@ -184,7 +184,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_all_classes_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        classes = view.all_classes(ordered_by="lexical")
+        classes = view.all_classes(ordered_by=OrderedBy.LEXICAL)
 
         ordered_c = []
         for c in classes.values():
@@ -193,7 +193,7 @@ class SchemaViewTestCase(unittest.TestCase):
 
     def test_all_classes_ordered_rank(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        classes = view.all_classes(ordered_by="rank")
+        classes = view.all_classes(ordered_by=OrderedBy.RANK)
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
