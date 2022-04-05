@@ -180,15 +180,14 @@ class PydanticGenerator(OOCodeGenerator):
         :return: Dictionary of dictionaries with predefined slot values for each class
         """
         sv = self.schemaview
-        #
+        default_prefix = sv.schema.default_prefix
         slot_values = defaultdict(dict)
         for class_def in sv.all_classes().values():
 
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
-                    # todo: get the actual class prefix
-                    slot_values[camelcase(class_def.name)][slot.name] = "example:" + camelcase(class_def.name)
+                    slot_values[camelcase(class_def.name)][slot.name] = f"{default_prefix}:{camelcase(class_def.name)}"
         return slot_values
 
     def serialize(self) -> str:
