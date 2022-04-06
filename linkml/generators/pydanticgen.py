@@ -80,6 +80,12 @@ class {{ c.name }}
 
 {% endfor %}
 
+# Update forward refs
+# see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
+{% for c in schema.classes.values() -%} 
+{{ c.name }}.update_forward_refs()
+{% endfor %}
+
 """
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
