@@ -28,15 +28,6 @@ from pydantic.dataclasses import dataclass
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
 
-# Pydantic config and validators
-class PydanticConfig:
-    \"\"\" Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ \"\"\"
-
-    validate_assignment = True
-    validate_all = True
-    underscore_attrs_are_private = True
-    extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}
-    arbitrary_types_allowed = True  # TODO re-evaluate this
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
@@ -54,9 +45,8 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 
 {%- for c in schema.classes.values() %}
-@dataclass(config=PydanticConfig)
 class {{ c.name }} 
-                   {%- if c.is_a %}({{c.is_a}}){% endif -%}
+                   {%- if c.is_a %}({{c.is_a}}){% else %}(BaseModel){% endif -%}
                    {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
                   :
     {% if c.description -%}
@@ -64,6 +54,19 @@ class {{ c.name }}
     {{ c.description }}
     \"\"\"
     {%- endif %}
+    
+    {% if not c.is_a -%} 
+    # Pydantic config and validators
+    class Config:
+        \"\"\" Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ \"\"\"
+    
+        validate_assignment = True
+        validate_all = True
+        underscore_attrs_are_private = True
+        extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}
+        arbitrary_types_allowed = True  # TODO re-evaluate this
+    {%- endif -%}
+    
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(None
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
@@ -77,11 +80,6 @@ class {{ c.name }}
 
 {% endfor %}
 
-# Update forward refs
-# see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-{% for c in schema.classes.values() -%} 
-{{ c.name }}.__pydantic_model__.update_forward_refs()
-{% endfor %}
 """
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
