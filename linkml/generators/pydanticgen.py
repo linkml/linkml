@@ -67,8 +67,8 @@ class {{ c.name }}
     {%- endif %}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
-    {%- if slot_values[c.name][attr.name] -%} 
-        [\"{{ slot_values[c.name][attr.name] }}\"]
+    {%- if predefined_slot_values[c.name][attr.name] -%} 
+        [\"{{ predefined_slot_values[c.name][attr.name] }}\"]
     {%- else -%}
         None
     {%- endif -%}    
@@ -175,7 +175,7 @@ class PydanticGenerator(OOCodeGenerator):
                 )
         return slist
 
-    def get_slot_values(self) -> Dict[str, Dict[str, str]]:
+    def get_predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
         """
         :return: Dictionary of dictionaries with predefined slot values for each class
         """
@@ -267,7 +267,7 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, slot_values=self.get_slot_values(), allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, predefined_slot_values=self.get_predefined_slot_values(), allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
         return code
 
 
