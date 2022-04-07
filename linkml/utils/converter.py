@@ -1,4 +1,11 @@
+import logging
+import os
+from pathlib import Path
+from typing import List
+
 import click
+from linkml_runtime.linkml_model import Prefix
+
 from linkml.utils import validation, datautils
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.schemaview import SchemaView
@@ -21,10 +28,17 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
               help="Output format. Inferred from output suffix if not specified")
 @click.option("--target-class", "-C",
               help="name of class in datamodel that the root node instantiates")
+@click.option("--target-class-from-path/--no-target-class-from-path",
+              default=False,
+              show_default=True,
+              help="Infer the target class from the filename, should be ClassName-<other-chars>.{yaml,json,...}")
 @click.option("--index-slot", "-S",
               help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s",
               help="Path to schema specified as LinkML yaml")
+@click.option("--prefix", "-P",
+              multiple=True,
+              help="Prefixmap base=URI pairs")
 @click.option("--validate/--no-validate",
               default=True,
               show_default=True,
@@ -34,6 +48,8 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
               help="path to JSON-LD context file. Required for RDF input/output")
 @click.argument("input")
 def cli(input, module, target_class, context=None, output=None, input_format=None, output_format=None,
+        prefix: List = [],
+        target_class_from_path=None,
         schema=None, validate=None, index_slot=None) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -50,8 +66,20 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
             python_module = PythonGenerator(schema).compile_module()
     else:
         python_module = compile_python(module)
+    prefix_map = {}
+    if prefix:
+        for p in prefix:
+            base, uri = p.split('=')
+            prefix_map[base] = uri
     if schema is not None:
         sv = SchemaView(schema)
+        if prefix_map:
+            for k, v in prefix_map.items():
+                sv.schema.prefixes[k] = Prefix(k, v)
+                sv.set_modified()
+    if target_class is None and target_class_from_path:
+        target_class = os.path.basename(input).split('-')[0]
+        logging.info(f"inferred target class = {target_class} from {input}")
     if target_class is None:
         target_class = infer_root_class(sv)
     if target_class is None:
