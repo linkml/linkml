@@ -67,17 +67,19 @@ def _rename_project(new_name: str):
     - moves source yaml file
     - updates about.yaml
 
+    Assumes you are in the project directory
+
     :param new_name:
     :return:
     """
-    new_dir = project_name_as_directory(new_name)
+    logging.info(f'Renaming to {new_name}')
+    cwd = os.getcwd()
+    logging.info(f'Current dir: {cwd}')
     project = get_project_info()
     project.name = new_name
-    path_toks = project.source_schema_path.split('/')
-    old_filename = path_toks.pop()
     new_filename = underscore(new_name)
-    new_source_schema_path = Path('/'.join(path_toks)) / new_filename
-    new_source_schema_path = f'{new_source_schema_path}.yaml'
+    new_source_schema_path = Path(project.source_schema_path).parent / f'{new_filename}.yaml'
+    logging.info(f'Moving from {project.source_schema_path} ==> {new_source_schema_path}')
     shutil.move(project.source_schema_path, new_source_schema_path)
     project.source_schema_path = str(new_source_schema_path)
     save_project_info(project,)
@@ -145,9 +147,15 @@ def main(verbose: int, quiet: bool):
 
 @main.command()
 @click.option("-T", "--template-directory",
-              help="Path to a template directory.")
+              help="Path to a template directory. If empty, then the default linkml-project-template will be used")
+@click.option("-d", "--directory",
+              help="Path to a target directory")
 @click.option("-V", "--template-version",
               help="Version of template.")
+@click.option("-D", "--description",
+              default="my awesome datamodel is for awesome things",
+              show_default=True,
+              help="Description of project")
 @click.option('--force/--no-force',
               default=False,
               show_default=True,
@@ -155,13 +163,20 @@ def main(verbose: int, quiet: bool):
 @click.argument("name")
 def new(
         name,
+        description,
+        directory,
         template_directory,
         template_version,
         force: bool
 ):
     """
     Create a new project
+
+    This will use:
+    https://github.com/linkml/linkml-project-template
     """
+    if '/' in name:
+        raise ValueError(f'Name cannot contain slashes')
     tmpdir = tempfile.TemporaryDirectory()
     if template_directory is None:
         download_template_directory(tmpdir)
@@ -172,11 +187,15 @@ def new(
         else:
             raise ValueError(f'Expected one subfolder: {entries} in {tmpdir}')
     project_dir = project_name_as_directory(name)
+    if directory is not None:
+        project_dir = str(Path(directory) / project_dir)
     if Path(project_dir).exists() and not force:
         logging.info(f'Project dir {project_dir} exists')
         raise PermissionError(f'Will not overrid {project_dir}')
     output_directory = project_dir
     logging.info(f'Walking: {template_directory}')
+    params = dict(name=name,
+                  description=description)
     for root, dirs, files in os.walk(template_directory, topdown=True):
         logging.info(f'Dirs: {dirs} {files}')
         dirs[:] = [d for d in dirs if d not in ['.git', 'project']]
@@ -195,19 +214,26 @@ def new(
                     target_path = target_path.replace(TEMPLATE_SUFFIX, "")
                     logging.info('  Applying j2: {} -> {}'.format(source_path, target_path))
                     with open(target_path, "w", encoding="utf-8") as out:
-                        out.write(template.render(name=name))
+                        out.write(template.render(**params))
                 pass
             else:
                 logging.info('  Copying: {} -> {}'.format(source_path, target_path))
                 copyfile(source_path, target_path)
     with cd(project_dir):
         _rename_project(name)
+    print(f'** NEW PROJECT CREATED **')
+    print(f'Next steps:\n')
+    print(f'cd {project_dir}')
+    print(f'make setup')
 
 @main.command()
 @click.argument("name")
 def rename(
         name
 ):
+    """
+    Rename a project
+    """
     _rename_project(name)
 
 

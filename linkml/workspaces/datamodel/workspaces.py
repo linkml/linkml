@@ -1,5 +1,5 @@
 # Auto generated from workspaces.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-04-02T18:51:32
+# Generation date: 2022-04-07T18:13:53
 # Schema: workspace
 #
 # id: https://w3id.org/linkml/workspace
@@ -61,8 +61,16 @@ class FileSystemPath(String):
     type_model_uri = WORKSPACE.FileSystemPath
 
 
+class ProjectName(String):
+    """ A project name MUST contain no whitespace and SHOULD only contains alphanumeric characters and hyphens (no underscores) """
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "ProjectName"
+    type_model_uri = WORKSPACE.ProjectName
+
+
 # Class references
-class ProjectName(extended_str):
+class ProjectName(ProjectName):
     pass
 
 
@@ -86,8 +94,10 @@ class Project(YAMLRoot):
 
     name: Union[str, ProjectName] = None
     uuid: Optional[str] = None
+    github_organization: Optional[Union[dict, "GitHubAccount"]] = None
     creation_date: Optional[Union[str, XSDDateTime]] = None
     schema: Optional[Union[dict, Any]] = None
+    description: Optional[str] = None
     source_schema_path: Optional[Union[str, FileSystemPath]] = None
     data_files: Optional[Union[Union[str, FileSystemPath], List[Union[str, FileSystemPath]]]] = empty_list()
     source_google_sheet_docs: Optional[Union[Dict[Union[str, GoogleSheetsDocId], Union[dict, "GoogleSheetsDoc"]], List[Union[dict, "GoogleSheetsDoc"]]]] = empty_dict()
@@ -104,8 +114,14 @@ class Project(YAMLRoot):
         if self.uuid is not None and not isinstance(self.uuid, str):
             self.uuid = str(self.uuid)
 
+        if self.github_organization is not None and not isinstance(self.github_organization, GitHubAccount):
+            self.github_organization = GitHubAccount(**as_dict(self.github_organization))
+
         if self.creation_date is not None and not isinstance(self.creation_date, XSDDateTime):
             self.creation_date = XSDDateTime(self.creation_date)
+
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
 
         if self.source_schema_path is not None and not isinstance(self.source_schema_path, FileSystemPath):
             self.source_schema_path = FileSystemPath(self.source_schema_path)
@@ -223,11 +239,17 @@ slots.project__name = Slot(uri=WORKSPACE.name, name="project__name", curie=WORKS
 slots.project__uuid = Slot(uri=WORKSPACE.uuid, name="project__uuid", curie=WORKSPACE.curie('uuid'),
                    model_uri=WORKSPACE.project__uuid, domain=None, range=Optional[str])
 
+slots.project__github_organization = Slot(uri=WORKSPACE.github_organization, name="project__github_organization", curie=WORKSPACE.curie('github_organization'),
+                   model_uri=WORKSPACE.project__github_organization, domain=None, range=Optional[Union[dict, GitHubAccount]])
+
 slots.project__creation_date = Slot(uri=WORKSPACE.creation_date, name="project__creation_date", curie=WORKSPACE.curie('creation_date'),
                    model_uri=WORKSPACE.project__creation_date, domain=None, range=Optional[Union[str, XSDDateTime]])
 
 slots.project__schema = Slot(uri=WORKSPACE.schema, name="project__schema", curie=WORKSPACE.curie('schema'),
                    model_uri=WORKSPACE.project__schema, domain=None, range=Optional[Union[dict, Any]])
+
+slots.project__description = Slot(uri=WORKSPACE.description, name="project__description", curie=WORKSPACE.curie('description'),
+                   model_uri=WORKSPACE.project__description, domain=None, range=Optional[str])
 
 slots.project__source_schema_path = Slot(uri=WORKSPACE.source_schema_path, name="project__source_schema_path", curie=WORKSPACE.curie('source_schema_path'),
                    model_uri=WORKSPACE.project__source_schema_path, domain=None, range=Optional[Union[str, FileSystemPath]])
