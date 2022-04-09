@@ -50,7 +50,7 @@ def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = N
         JsonObj(**{"@context": context_list[0] if len(context_list) == 1 else context_list})
 
 
-def map_import(importmap: dict[str, str], namespaces: Callable[[None], "Namespaces"], imp: Any) -> str:
+def map_import(importmap: Dict[str, str], namespaces: Callable[[None], "Namespaces"], imp: Any) -> str:
     sname = str(imp)
     if ':' in sname:
         prefix, lname = sname.split(':', 1)
