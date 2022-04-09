@@ -4,7 +4,7 @@
 [![badge](https://img.shields.io/badge/launch-binder-579ACA.svg)](https://mybinder.org/v2/gh/linkml/linkml/main?filepath=notebooks)
 [![DOI](https://zenodo.org/badge/13996/linkml/linkml.svg)](https://zenodo.org/badge/latestdoi/13996/linkml/linkml)
 [![PyPIDownloadsTotal](https://pepy.tech/badge/linkml)](https://pepy.tech/project/linkml)
-[![PyPIDownloadsMonth](https://img.shields.io/pypi/dm/scanpy?logo=PyPI&color=blue)](https://pypi.org/project/linkml)
+[![PyPIDownloadsMonth](https://img.shields.io/pypi/dm/linkml?logo=PyPI&color=blue)](https://pypi.org/project/linkml)
 
 
 # LinkML - Linked Data Modeling Language
