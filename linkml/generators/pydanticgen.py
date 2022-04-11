@@ -68,7 +68,7 @@ class {{ c.name }}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
     {%- if predefined_slot_values[c.name][attr.name] -%} 
-        [\"{{ predefined_slot_values[c.name][attr.name] }}\"]
+        {{ predefined_slot_values[c.name][attr.name] }}
     {%- else -%}
         None
     {%- endif -%}    
@@ -187,7 +187,13 @@ class PydanticGenerator(OOCodeGenerator):
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
-                    slot_values[camelcase(class_def.name)][slot.name] = f"{default_prefix}:{camelcase(class_def.name)}"
+                    slot_values[camelcase(class_def.name)][slot.name] = f"\"{default_prefix}:{camelcase(class_def.name)}\""
+                    if slot.multivalued:
+                        slot_values[camelcase(class_def.name)][slot.name] = "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
+                # Have a default factory of list for multivalued fields that don't
+                # get any other sort of predefined value above this point
+                elif slot.multivalued:
+                    slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
         return slot_values
 
     def serialize(self) -> str:
