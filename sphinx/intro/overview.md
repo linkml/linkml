@@ -64,7 +64,7 @@ and transformations between different representations of the same
 data; for example, if your JSON documents need to work in concert with
 your relational database or graph store.
 
-LinkML has many different generators [existing
+LinkML has many different generators for [existing
 frameworks](../generators/index) that allow the translation of a LinkML
 schema to other frameworks:
 
@@ -75,7 +75,7 @@ schema to other frameworks:
 
 ## Feature: Generation of documentation and websites
 
-Using the LinkML toolchain you can go from a schema to statically
+Using the LinkML toolchain you can go from a schema to a statically
 hosted searchable website in minutes, with pages for each of your
 schema elements. Using lightweight namespace registries such as
 w3id.org you can easily have resolvable URIs for all your concepts.
@@ -98,7 +98,7 @@ LinkML is part of a growing [ecosystem](../ecosystem) of general purpose tools t
 
  - [linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment) bootstraps schemas from existing structured and semi-structured sources
  - [linkml-owl](https://github.com/linkml/linkml-owl) allows for generation of complex OWL axioms from datamodels
- - [DataHarmonizer](https://github.com/Public-Health-Bioinformatics/DataHarmonizer) is a ontology-based curation tool that is being adapter to LinkML
+ - [DataHarmonizer](https://github.com/Public-Health-Bioinformatics/DataHarmonizer) is an ontology-based curation tool that is being adapted to LinkML
 
 ## We eat our own dogfood!
 
