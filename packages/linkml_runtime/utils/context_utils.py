@@ -1,7 +1,7 @@
 import json
 import os
 from io import TextIOWrapper
-from typing import Optional, Union, List, Any, Dict
+from typing import Optional, Union, List, Any, Dict, Callable
 
 import yaml
 from jsonasobj2 import JsonObj, loads
@@ -48,6 +48,17 @@ def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = N
         context_list.append(JsonObj(**{'@base': str(base)}))
     return None if not context_list else \
         JsonObj(**{"@context": context_list[0] if len(context_list) == 1 else context_list})
+
+
+def map_import(importmap: Dict[str, str], namespaces: Callable[[None], "Namespaces"], imp: Any) -> str:
+    sname = str(imp)
+    if ':' in sname:
+        prefix, lname = sname.split(':', 1)
+        prefix += ':'
+        sname = importmap.get(prefix, prefix) + lname
+    sname = importmap.get(sname, sname)  # Import map may use CURIE
+    sname = str(namespaces().uri_for(sname)) if ':' in sname else sname
+    return importmap.get(sname, sname)  # It may also use URI or other forms
 
 
 def parse_import_map(map_: Optional[Union[str, Dict[str, str], TextIOWrapper]],

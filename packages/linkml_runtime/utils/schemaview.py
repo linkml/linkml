@@ -8,7 +8,7 @@ from collections import defaultdict, OrderedDict
 from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
-from linkml_runtime.utils.context_utils import parse_import_map
+from linkml_runtime.utils.context_utils import parse_import_map, map_import
 from linkml_runtime.linkml_model.meta import *
 from enum import Enum
 logger = logging.getLogger(__name__)
@@ -140,10 +140,7 @@ class SchemaView(object):
     def load_import(self, imp: str, from_schema: SchemaDefinition = None):
         if from_schema is None:
             from_schema = self.schema
-        # TODO: this code is copied from linkml.utils.schemaloader; put this somewhere reusable
-        sname = self.importmap.get(str(imp), imp)               # Import map may use CURIE
-        sname = self.namespaces().uri_for(sname) if ':' in sname else sname
-        sname = self.importmap.get(str(sname), sname)               # It may also use URI or other forms
+        sname = map_import(self.importmap, self.namespaces, imp)
         logging.info(f'Loading schema {sname} from {from_schema.source_file}')
         schema = load_schema_wrap(sname + '.yaml',
                                   base_dir=os.path.dirname(from_schema.source_file) if from_schema.source_file else None)
