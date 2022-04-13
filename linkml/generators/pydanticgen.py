@@ -148,6 +148,7 @@ class PydanticGenerator(OOCodeGenerator):
         Overridden method include mixin classes
 
         TODO: This should move to SchemaView
+
         """
         clist = list(clist)
         slist = []  # sorted
