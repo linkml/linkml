@@ -10,6 +10,7 @@
 # `Pipfile.lock` and then regenerate `requirements*.txt`.
 ################################################################################
 
+antlr4-python3-runtime~=4.9, <4.10
 argparse>=1.4.0
 click>=7.0
 graphviz>=0.10.1
