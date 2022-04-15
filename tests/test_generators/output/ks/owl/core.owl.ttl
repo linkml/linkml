@@ -13,10 +13,10 @@
     IAO:0000700 core:Activity,
         core:Agent ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2022-04-09T22:54:59" ;
+    linkml:generation_date "2022-04-14T01:45:40" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "core.yaml" ;
-    linkml:source_file_date "2022-04-09T22:49:06" ;
+    linkml:source_file_date "2022-04-14T01:40:23" ;
     linkml:source_file_size 1902 .
 
 core:activity_set a owl:ObjectProperty ;
@@ -78,25 +78,25 @@ prov:wasInformedBy a owl:ObjectProperty ;
 core:Agent a owl:Class ;
     rdfs:label "agent" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass core:Agent ;
+            owl:onProperty prov:actedOnBehalfOf ],
+        [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
             owl:onProperty core:id ;
             owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass core:Activity ;
-            owl:onProperty prov:wasInformedBy ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass core:Agent ;
-            owl:onProperty prov:actedOnBehalfOf ] ;
+            owl:onProperty prov:wasInformedBy ] ;
     skos:exactMatch prov:Agent .
 
 core:Activity a owl:Class ;
     rdfs:label "activity" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass core:Agent ;
-            owl:onProperty prov:wasAssociatedWith ],
+            owl:onClass core:Activity ;
+            owl:onProperty prov:wasInformedBy ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
             owl:onProperty core:id ;
@@ -107,20 +107,20 @@ core:Activity a owl:Class ;
             owl:onProperty prov:used ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass core:Activity ;
-            owl:onProperty prov:wasInformedBy ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
             owl:onProperty prov:endedAtTime ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty core:description ],
+            owl:onClass core:Agent ;
+            owl:onProperty prov:wasAssociatedWith ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
-            owl:onProperty prov:startedAtTime ] ;
+            owl:onProperty prov:startedAtTime ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty core:description ] ;
     skos:exactMatch prov:Activity .
 
 
