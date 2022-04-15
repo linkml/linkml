@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 from typing import Union, TextIO, Dict, List
+from collections import defaultdict
 
 import click
 from jinja2 import Template
@@ -68,7 +69,12 @@ class {{ c.name }}
     {%- endif -%}
     
     {% for attr in c.attributes.values() if c.attributes -%}
-    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(None
+    {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
+    {%- if predefined_slot_values[c.name][attr.name] -%} 
+        [\"{{ predefined_slot_values[c.name][attr.name] }}\"]
+    {%- else -%}
+        None
+    {%- endif -%}    
     {%- if attr.title != None %}, title="{{attr.title}}"{% endif -%}
     {%- if attr.description %}, description=\"\"\"{{attr.description}}\"\"\"{% endif -%}
     {%- if attr.minimum_value != None %}, ge={{attr.minimum_value}}{% endif -%}
@@ -173,6 +179,20 @@ class PydanticGenerator(OOCodeGenerator):
                 )
         return slist
 
+    def get_predefined_slot_values(self) -> Dict[str, Dict[str, str]]:
+        """
+        :return: Dictionary of dictionaries with predefined slot values for each class
+        """
+        sv = self.schemaview
+        default_prefix = sv.schema.default_prefix
+        slot_values = defaultdict(dict)
+        for class_def in sv.all_classes().values():
+
+            for slot_name in sv.class_slots(class_def.name):
+                slot = sv.induced_slot(slot_name, class_def.name)
+                if slot.designates_type:
+                    slot_values[camelcase(class_def.name)][slot.name] = f"{default_prefix}:{camelcase(class_def.name)}"
+        return slot_values
 
     def serialize(self) -> str:
         sv = self.schemaview
@@ -251,7 +271,7 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, predefined_slot_values=self.get_predefined_slot_values(), allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
         return code
 
 
