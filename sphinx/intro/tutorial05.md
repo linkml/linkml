@@ -138,6 +138,16 @@ Outputs:
 }
 ```
 
+## Alternatives
+
+- LinkML also includes a more lightweight Python object model maker for [generating Pydantic datamodels](https://linkml.io/linkml/generators/pydantic.html)
+- We also provide a generator for [creating SQL Alchemy models](https://linkml.io/linkml/generators/sqlalchemy.html)
+- We are gradually adding support for other languages
+   - [java](https://linkml.io/linkml/generators/java.html)
+   - [typescript generators](https://linkml.io/linkml/generators/java.html) for javascript developers
+- For a full list of generators see [generators](https://linkml.io/linkml/generators/index.html)
+
+
 ## Further reading
 
 * [linkml-runtime](https://github.com/linkml/linkml-runtime)

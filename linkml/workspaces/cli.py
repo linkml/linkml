@@ -22,11 +22,14 @@ from linkml.workspaces.datamodel.workspaces import Project, Workspace
 import yaml
 import requests
 
+VERSION_STR = str
 TEMPLATE_SUFFIX = ".jinja"
 ABOUT_FILE = 'about.yaml'
+PROJECT_TEMPLATE_API_URL = 'https://api.github.com/repos/linkml/linkml-project-template/releases/latest'
 
-def download_template_directory(tmpdir: tempfile.TemporaryDirectory):
-    r = requests.get('https://api.github.com/repos/linkml/linkml-project-template/releases/latest')
+
+def download_template_directory(tmpdir: tempfile.TemporaryDirectory) -> VERSION_STR:
+    r = requests.get(PROJECT_TEMPLATE_API_URL)
     if r.status_code == 200:
         url = r.json()['tarball_url']
         r = requests.get(url, stream=True)
@@ -34,7 +37,10 @@ def download_template_directory(tmpdir: tempfile.TemporaryDirectory):
             logging.info(f'uncompressing {url}')
             file = tarfile.open(fileobj=r.raw, mode="r|gz")
             file.extractall(path=tmpdir.name)
-    logging.info(f'TMP: {tmpdir.name}')
+        logging.info(f'TMP: {tmpdir.name}')
+        return str(url).split('/')[-1]
+    else:
+        raise FileNotFoundError(f'{PROJECT_TEMPLATE_API_URL} responded with {r.code} // {r.text}')
 
 
 
@@ -111,21 +117,6 @@ output_directory_option = click.option(
     type=click.Path(),
     help="Output directory path.",
 )
-metadata_option = click.option(
-    "-m",
-    "--metadata",
-    required=False,
-    type=click.Path(),
-    help="The path to a file containing the sssom metadata (including prefix_map) to be used.",
-)
-transpose_option = click.option("-t", "--transpose/--no-transpose", default=False)
-fields_option = click.option(
-    "-F",
-    "--fields",
-    nargs=2,
-    default=("subject_category", "object_category"),
-    help="Fields.",
-)
 
 
 @click.group()
@@ -174,28 +165,36 @@ def new(
 
     This will use:
     https://github.com/linkml/linkml-project-template
+
+    Example:
+
+        linkml-ws new my-awesome-project
     """
     if '/' in name:
         raise ValueError(f'Name cannot contain slashes')
+    template_version = None
     tmpdir = tempfile.TemporaryDirectory()
     if template_directory is None:
-        download_template_directory(tmpdir)
+        template_version = download_template_directory(tmpdir)
         entries = list(os.listdir(tmpdir.name))
         print(entries)
         if len(entries) == 1:
             template_directory = str(Path(tmpdir.name) / entries[0])
         else:
-            raise ValueError(f'Expected one subfolder: {entries} in {tmpdir}')
+            raise ValueError(f'Expected a single subfolder: {entries} in {tmpdir}')
+    else:
+        template_version = 'snapshot'
     project_dir = project_name_as_directory(name)
     if directory is not None:
         project_dir = str(Path(directory) / project_dir)
     if Path(project_dir).exists() and not force:
         logging.info(f'Project dir {project_dir} exists')
-        raise PermissionError(f'Will not overrid {project_dir}')
+        raise PermissionError(f'Will not override existing folder: {project_dir}')
     output_directory = project_dir
     logging.info(f'Walking: {template_directory}')
     params = dict(name=name,
-                  description=description)
+                  description=description,
+                  template_version=template_version)
     for root, dirs, files in os.walk(template_directory, topdown=True):
         logging.info(f'Dirs: {dirs} {files}')
         dirs[:] = [d for d in dirs if d not in ['.git', 'project']]
