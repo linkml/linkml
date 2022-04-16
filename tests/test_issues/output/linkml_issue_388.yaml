@@ -99,6 +99,6 @@ classes:
     class_uri: this:C3
 metamodel_version: 1.7.0
 source_file: linkml_issue_388.yaml
-source_file_date: '2022-04-14T01:40:23'
+source_file_date: '2022-04-16T00:43:10'
 source_file_size: 648
-generation_date: '2022-04-14T01:46:54'
+generation_date: '2022-04-16T00:49:42'
