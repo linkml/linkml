@@ -133,7 +133,7 @@ class ProjectGenerator:
 
 @click.command()
 @click.option("--dir", "-d",
-              help="DIRECTORY in which to place generated files. E.g. linkml_model, biolink_model")
+              help="directory in which to place generated files. E.g. linkml_model, biolink_model")
 @click.option("--generator-arguments", "-A",
               help="yaml configuration for generators")
 @click.option("--config-file", "-C",
