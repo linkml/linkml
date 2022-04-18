@@ -117,20 +117,12 @@ class ProjectGenerator:
                 
                 serialize_args = {'mergeimports': config.mergeimports}
 
-                # serialize_args = {}
-
-                print(all_gen_args)
-
-
                 for k, v in all_gen_args.items():
                     # all ARG_DICT values are interpolatable
                     if isinstance(v, str):
                         v = v.format(name=name, parent=parent_dir)
                     serialize_args[k] = v
                 logging.info(f' {gen_name} ARGS: {serialize_args}')
-
-                print(serialize_args)
-
 
                 gen_dump = gen.serialize(**serialize_args)
                 if parts[-1] != '':
