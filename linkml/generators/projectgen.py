@@ -23,6 +23,8 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.generators.excelgen import ExcelGenerator
+from linkml.generators.javagen import JavaGenerator
 
 PATH_FSTRING = str
 GENERATOR_NAME = str
@@ -46,8 +48,10 @@ GEN_MAP = {
     'shex': (ShExGenerator, 'shex/{name}.shex', {}),
     'shacl': (ShaclGenerator, 'shacl/{name}.shacl.ttl', {}),
     'sqlddl': (SQLDDLGenerator, 'sqlschema/{name}.sql', {}),
-    'java': (SQLDDLGenerator, 'java/{name}.sql', {}),
-    'excel': (SQLDDLGenerator, 'excel/{name}.xlsx', {}),
+    # # linkml/generators/javagen.py uses different architecture from most of the other generators
+    # # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path
+    # 'java': (JavaGenerator, 'java/{name}.java', {'directory': '{parent}'}),
+    # 'excel': (ExcelGenerator, 'excel/{name}.xlsx', {'output': '{parent}/{name}.xlsx'}),
 }
 
 @lru_cache()
@@ -110,13 +114,24 @@ class ProjectGenerator:
                 all_gen_args = {**default_gen_args, **config.generator_args.get(gen_name, {})}
                 gen: Generator
                 gen = gen_cls(local_path, **all_gen_args)
+                
                 serialize_args = {'mergeimports': config.mergeimports}
+
+                # serialize_args = {}
+
+                print(all_gen_args)
+
+
                 for k, v in all_gen_args.items():
                     # all ARG_DICT values are interpolatable
                     if isinstance(v, str):
                         v = v.format(name=name, parent=parent_dir)
                     serialize_args[k] = v
                 logging.info(f' {gen_name} ARGS: {serialize_args}')
+
+                print(serialize_args)
+
+
                 gen_dump = gen.serialize(**serialize_args)
                 if parts[-1] != '':
                     # markdowngen does not write to a file
@@ -126,7 +141,7 @@ class ProjectGenerator:
 
 @click.command()
 @click.option("--dir", "-d",
-              help="directory in which to place generated files. E.g. linkml_model, biolink_model")
+              help="DIRECTORY in which to place generated files. E.g. linkml_model, biolink_model")
 @click.option("--generator-arguments", "-A",
               help="yaml configuration for generators")
 @click.option("--config-file", "-C",
@@ -199,8 +214,4 @@ def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, merg
 
 if __name__ == '__main__':
     cli()
-
-
-
-
 
