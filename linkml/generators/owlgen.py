@@ -107,6 +107,8 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((uri, SKOS.altLabel, Literal(s)))
         if e.title is not None:
             self.graph.add((uri, DCTERMS.title, Literal(e.title)))
+        if e.description is not None:
+            self.graph.add((uri, RDFS.comment, Literal(e.description)))
         if e.mappings is not None:
             for m in e.mappings:
                 m_uri = self.namespaces.uri_for(m)
