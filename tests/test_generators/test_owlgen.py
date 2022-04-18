@@ -68,7 +68,7 @@ class OwlGeneratorTestCase(unittest.TestCase):
                                  mergeimports=False,
                                  metaclasses=False,
                                  type_objects=False,
-                                 metdata_profile=MetadataProfile.rdfs,
+                                 metadata_profile=MetadataProfile.rdfs,
                                  ontology_uri_suffix='.owl.ttl').serialize(mergeimports=False)
         with open(OWL_OUTPUT_RDFS, 'w') as stream:
             stream.write(owl)
@@ -78,13 +78,8 @@ class OwlGeneratorTestCase(unittest.TestCase):
         for c in owl_classes:
             # check not using the default metadata profile
             self.assertEqual([], list(g.objects(c, SKOS.definition)))
-            #for desc in g.objects(c, RDFS.comment):
-            #    print(f'{c}: {desc}')
         # check that definitions are present, and use the RDFS profile
         self.assertIn(Literal("A person, living or dead"), g.objects(KS.Person, RDFS.comment))
-
-
-
 
 
 if __name__ == '__main__':
