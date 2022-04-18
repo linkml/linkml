@@ -114,16 +114,13 @@ class ProjectGenerator:
                 all_gen_args = {**default_gen_args, **config.generator_args.get(gen_name, {})}
                 gen: Generator
                 gen = gen_cls(local_path, **all_gen_args)
-                
                 serialize_args = {'mergeimports': config.mergeimports}
-
                 for k, v in all_gen_args.items():
                     # all ARG_DICT values are interpolatable
                     if isinstance(v, str):
                         v = v.format(name=name, parent=parent_dir)
                     serialize_args[k] = v
                 logging.info(f' {gen_name} ARGS: {serialize_args}')
-
                 gen_dump = gen.serialize(**serialize_args)
                 if parts[-1] != '':
                     # markdowngen does not write to a file
