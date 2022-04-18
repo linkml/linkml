@@ -88,9 +88,7 @@ def parse_import_map(map_: Optional[Union[str, Dict[str, str], TextIOWrapper]],
         outmap = dict()
         for k, v in rval.items():
             if ':' not in v:
-                v = os.path.join(base, v)
-                if ':/' not in v:
-                    v = os.path.abspath(v) + (os.sep if v.endswith(os.sep) else '')
+                v = os.path.join(os.path.abspath(base), v)
             outmap[k] = v
         rval = outmap
     return rval
