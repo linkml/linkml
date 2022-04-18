@@ -3,6 +3,7 @@
 model classes are translated to OWL classes, slots to OWL properties.
 """
 import os
+from enum import unique, Enum
 from typing import Union, TextIO, Optional, cast
 import logging
 
@@ -12,12 +13,27 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDFS, SKOS, DCTERMS
 from rdflib.plugin import plugins as rdflib_plugins, Parser as rdflib_Parser
 
-from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE, METAMODEL_YAML_URI, META_BASE_URI
+from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE, METAMODEL_YAML_URI, \
+    META_BASE_URI
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
     TypeDefinitionName, SlotDefinition, TypeDefinition, Element, EnumDefinition, EnumDefinitionName, Definition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.schemaloader import SchemaLoader
+
+
+@unique
+class MetadataProfile(Enum):
+    """
+    An enumeration of the different kinds of profiles used for
+    metadata of generated OWL elements
+    """
+    linkml = 'linkml'
+    rdfs = 'rdfs'
+
+    @staticmethod
+    def list():
+        return list(map(lambda c: c.value, MetadataProfile))
 
 
 class ElementDefinition(object):
@@ -37,18 +53,20 @@ class OwlSchemaGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ['owl', 'ttl'] + [x.name for x in rdflib_plugins(None, rdflib_Parser) if '/' not in str(x.name)]
+    metadata_profile: MetadataProfile = None
     visits_are_sorted = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], ontology_uri_suffix: str=None,
+    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], ontology_uri_suffix: str = None,
                  type_objects=True,
                  metaclasses=True,
+                 metadata_profile: MetadataProfile = None,
                  add_ols_annotations=True,
                  **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.graph: Optional[Graph] = None
         self.metamodel = SchemaLoader(LOCAL_METAMODEL_YAML_FILE, importmap=kwargs.get('importmap', None),
                                       mergeimports=self.merge_imports) \
-            if os.path.exists(LOCAL_METAMODEL_YAML_FILE) else\
+            if os.path.exists(LOCAL_METAMODEL_YAML_FILE) else \
             SchemaLoader(METAMODEL_YAML_URI, base_dir=META_BASE_URI, importmap=kwargs.get('importmap', None),
                          mergeimports=self.merge_imports)
         self.metamodel.resolve()
@@ -57,6 +75,7 @@ class OwlSchemaGenerator(Generator):
         self.ontology_uri_suffix = ontology_uri_suffix
         self.type_objects = type_objects
         self.metaclasses = metaclasses
+        self.metadata_profile = metadata_profile
         self.add_ols_annotations = add_ols_annotations
 
     def visit_schema(self, output: Optional[str] = None, **_):
@@ -101,6 +120,7 @@ class OwlSchemaGenerator(Generator):
         :param uri: URI representation of schema element
         :return:
         """
+        metadata_profile = self.metadata_profile
         # TODO: use metamodel annotations to drive this rather than hardcoding
         if e.aliases is not None:
             for s in e.aliases:
@@ -108,7 +128,13 @@ class OwlSchemaGenerator(Generator):
         if e.title is not None:
             self.graph.add((uri, DCTERMS.title, Literal(e.title)))
         if e.description is not None:
-            self.graph.add((uri, RDFS.comment, Literal(e.description)))
+            if metadata_profile is None or metadata_profile == MetadataProfile.linkml:
+                prop = SKOS.definition
+            elif metadata_profile == MetadataProfile.rdfs:
+                prop = RDFS.comment
+            else:
+                raise ValueError(f'Cannot handle metadata profile: {metadata_profile}')
+            self.graph.add((uri, prop, Literal(e.description)))
         if e.mappings is not None:
             for m in e.mappings:
                 m_uri = self.namespaces.uri_for(m)
@@ -292,7 +318,6 @@ class OwlSchemaGenerator(Generator):
 
         return True
 
-
     def visit_slot(self, slot_name: str, slot: SlotDefinition) -> None:
         """ Add a slot definition per slot
 
@@ -311,7 +336,7 @@ class OwlSchemaGenerator(Generator):
             return
 
         slot_uri = self._prop_uri(slot.name)
-        #logging.error(f'SLOT_URI={slot_uri}')
+        # logging.error(f'SLOT_URI={slot_uri}')
 
         # Slots may be modeled as Object or Datatype Properties
         # if type_objects is True, then ALL slots are ObjectProperties
@@ -321,15 +346,15 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((slot_uri, RDF.type,
                             self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][camelcase('slot definition')]))
 
-        slots_with_same_uri = [s.name for s in self.schema.slots.values() if slot_uri == self._prop_uri(s.name)]
+        slots_with_same_uri = [s.name for s in self.schema.slots.values() if slot_uri == self._prop_uri(s.name) and not s.usage_slot_name]
         if len(slots_with_same_uri) > 1:
-            logging.error(f'Multiple slots with URI: {slot_uri}: {slots_with_same_uri}; consider giving each a unique slot_uri')
+            logging.error(
+                f'Multiple slots with URI: {slot_uri}: {slots_with_same_uri}; consider giving each a unique slot_uri')
             return
 
         self.add_mappings(slot)
         self.add_metadata(slot, slot_uri)
         self._add_element_properties(slot_uri, slot)
-
 
         self.graph.add((slot_uri, RDFS.range, self._range_uri(slot)))
         if slot.domain:
@@ -377,7 +402,7 @@ class OwlSchemaGenerator(Generator):
         g.add((enum_uri, RDF.type, OWL.Class))
         if self.metaclasses:
             g.add((enum_uri, RDF.type,
-                  self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][camelcase('enum definition')]))
+                   self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME][camelcase('enum definition')]))
         self._add_element_properties(enum_uri, e)
         pv_uris = []
         for pv in e.permissible_values.values():
@@ -385,8 +410,8 @@ class OwlSchemaGenerator(Generator):
                 pv_uri = self.namespaces.uri_for(pv.meaning)
             else:
                 pv_uri = enum_uri + '#' + pv.text.replace(' ', '+')
-                #pv_uri = self.namespaces.uri_for(downcase(pv.text))
-                #pv_uri = None
+                # pv_uri = self.namespaces.uri_for(downcase(pv.text))
+                # pv_uri = None
             pv_uris.append(pv_uri)
             if pv_uri:
                 g.add((pv_uri, RDF.type, OWL.Class))
@@ -399,8 +424,6 @@ class OwlSchemaGenerator(Generator):
             union_bnode = BNode()
             Collection(self.graph, union_bnode, pv_uris)
             self.graph.add((enum_uri, OWL.unionOf, union_bnode))
-
-
 
     def _add_element_properties(self, uri: URIRef, el: Element) -> None:
         for k, v in el.__dict__.items():
@@ -417,8 +440,6 @@ class OwlSchemaGenerator(Generator):
                         self.graph.add((uri,
                                         prop_uri,
                                         Literal(e)))
-
-
 
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
         if self.type_objects:
@@ -465,7 +486,7 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((metac_uri, RDF.type, OWL.Class))
         self._add_element_properties(metac_uri, metac)
 
-    def slot_owl_type(self, slot : SlotDefinition) -> URIRef:
+    def slot_owl_type(self, slot: SlotDefinition) -> URIRef:
         if self.type_objects:
             return OWL.ObjectProperty
         elif slot.range in self.schema.classes:
@@ -478,7 +499,7 @@ class OwlSchemaGenerator(Generator):
             raise Exception(f'Unknown range: {slot.range}')
 
     # @Deprecated
-    def is_slot_object_property(self, slot : SlotDefinition) -> bool:
+    def is_slot_object_property(self, slot: SlotDefinition) -> bool:
         if self.type_objects:
             return True
         elif slot.range in self.schema.classes:
@@ -495,6 +516,11 @@ class OwlSchemaGenerator(Generator):
 @click.command()
 @click.option("-o", "--output",
               help="Output file name")
+@click.option("--metadata-profile",
+              default=MetadataProfile.linkml.value,
+              show_default=True,
+              type=click.Choice(MetadataProfile.list()),
+              help="What kind of metadata profile to use for annotations on generated OWL objects")
 @click.option("--type-objects/--no-type-objects",
               default=True,
               show_default=True,
@@ -511,7 +537,7 @@ class OwlSchemaGenerator(Generator):
               default='.owl.ttl',
               show_default=True,
               help="Suffix to append to schema id to generate OWL Ontology IRI")
-def cli(yamlfile, **kwargs):
+def cli(yamlfile, metadata_profile: str, **kwargs):
     """ Generate an OWL representation of a LinkML model
 
     Examples:
@@ -526,7 +552,11 @@ def cli(yamlfile, **kwargs):
 
     For more info, see: https://linkml.io/linkml/generators/owl
     """
-    print(OwlSchemaGenerator(yamlfile, **kwargs).serialize(**kwargs))
+    if metadata_profile is not None:
+        metadata_profile = MetadataProfile(metadata_profile)
+    else:
+        metadata_profile = MetadataProfile.linkml
+    print(OwlSchemaGenerator(yamlfile, metadata_profile=metadata_profile, **kwargs).serialize(**kwargs))
 
 
 if __name__ == '__main__':
