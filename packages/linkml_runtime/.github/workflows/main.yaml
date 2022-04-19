@@ -8,11 +8,18 @@ on: [pull_request]
 
 jobs:
   test:
-
-    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        exclude:
+        - os: windows-latest
+          python-version: "3.7"
+        - os: windows-latest
+          python-version: "3.8"
+
+    runs-on: ${{ matrix.os }}
 
     steps:
 
@@ -80,7 +87,7 @@ jobs:
       - name: Upload coverage report
         uses: codecov/codecov-action@v1.0.5
         with:
-          name: codecov-results-${{ matrix.python-version }}
+          name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+          file: coverage.xml
           fail_ci_if_error: true
