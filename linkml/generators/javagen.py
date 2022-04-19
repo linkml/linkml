@@ -70,7 +70,7 @@ class JavaGenerator(OOCodeGenerator):
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
 
-    def serialize(self, directory: str) -> None:
+    def serialize(self, directory: str, **kwargs) -> None:
         sv = self.schemaview
 
         if self.template_file is not None:
@@ -101,7 +101,7 @@ def cli(yamlfile, output_directory=None, package=None, template_file=None, head=
         genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
     JavaGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta,
-                  gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory)
+                  gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory, **args)
 
 
 if __name__ == '__main__':
