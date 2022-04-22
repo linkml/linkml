@@ -114,13 +114,18 @@ class PydanticGenerator(OOCodeGenerator):
                  template_file: str = None,
                  allow_extra = False,
                  format: str = valid_formats[0],
-                 genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
+                 genmeta: bool=False,
+                 gen_classvars: bool=True,
+                 gen_slots: bool=True,
+                 gen_mixin_inheritance: bool = True,
+                 **kwargs) -> None:
         self.sorted_class_names = None
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         self.template_file = template_file
         self.allow_extra = allow_extra
+        self.gen_mixin_inheritance = gen_mixin_inheritance
 
     def map_type(self, t: TypeDefinition) -> str:
         return TYPEMAP.get(t.base, t.base)
@@ -205,7 +210,7 @@ class PydanticGenerator(OOCodeGenerator):
             class_parents = []
             if class_def.is_a:
                 class_parents.append(camelcase(class_def.is_a))
-            if class_def.mixins:
+            if self.gen_mixin_inheritance and class_def.mixins:
                 class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
             if len(class_parents) > 0:
                 # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
