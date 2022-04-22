@@ -57,8 +57,7 @@ class {{ e.name }}(str, Enum):
 {%- for c in schema.classes.values() %}
 @dataclass(config=PydanticConfig)
 class {{ c.name }} 
-                   {%- if c.is_a %}({{c.is_a}}){% endif -%}
-                   {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
+                   {%- if class_isa_plus_mixins[c.name] %}({{class_isa_plus_mixins[c.name]|join(', ')}}){% endif -%}                   
                   :
     {% if c.description -%}
     \"\"\"
@@ -116,6 +115,7 @@ class PydanticGenerator(OOCodeGenerator):
                  allow_extra = False,
                  format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
+        self.sorted_class_names = None
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
@@ -129,10 +129,8 @@ class PydanticGenerator(OOCodeGenerator):
         # TODO: make an explicit class to represent how an enum is passed to the template
         enums = {}
         for enum_name, enum_orignal in all_enums.items():
-            enum = {}
-            enum['name'] = camelcase(enum_name)
+            enum = {'name': camelcase(enum_name), 'values': {}}
 
-            enum['values'] = {}
             for pv in enum_orignal.permissible_values.values():
                 label = self.generate_enum_label(pv.text)
                 enum['values'][label] = pv.text
@@ -196,6 +194,26 @@ class PydanticGenerator(OOCodeGenerator):
                     slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
         return slot_values
 
+    def get_class_isa_plus_mixins(self) -> Dict[str, List[str]]:
+        """
+        Generate the inheritance list for each class from is_a plus mixins
+        :return:
+        """
+        sv = self.schemaview
+        parents = {}
+        for class_def in sv.all_classes().values():
+            class_parents = []
+            if class_def.is_a:
+                class_parents.append(camelcase(class_def.is_a))
+            if class_def.mixins:
+                class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
+            if len(class_parents) > 0:
+                # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
+                class_parents.sort(key=lambda x: self.sorted_class_names.index(x))
+                class_parents.reverse()
+                parents[camelcase(class_def.name)] = class_parents
+        return parents
+
     def serialize(self) -> str:
         sv = self.schemaview
 
@@ -213,6 +231,7 @@ class PydanticGenerator(OOCodeGenerator):
         enums = self.generate_enums(sv.all_enums())
 
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
+        self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
         # Don't want to generate classes when class_uri is linkml:Any, will
         # just swap in typing.Any instead down below
@@ -273,7 +292,10 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, predefined_slot_values=self.get_predefined_slot_values(), allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums,
+                                   predefined_slot_values=self.get_predefined_slot_values(),
+                                   allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version,
+                                   version=self.schema.version, class_isa_plus_mixins=self.get_class_isa_plus_mixins())
         return code
 
 
