@@ -19,20 +19,16 @@ def materialize_patterns(schema_view: SchemaView):
 
     for k, setting in settings_dict.items():
 
-        # TODO: handle keys with "."
-        if "." in k:
-            continue
-
-        format_spec[k] = setting.setting_value
+        # create spec dictionary with keys that will replace
+        # substrings in the structured pattern syntax
+        format_spec["{" + k + "}"] = setting.setting_value
 
     for _, slot_defn in schema_view.all_slots().items():
         if slot_defn.structured_pattern:
             struct_pat = slot_defn.structured_pattern
 
-            # TODO: handle keys with "."
-            if "." in struct_pat.syntax:
-                continue
-
-            # computer pattern from structured patterns
-            # and settings dictionary
-            slot_defn.pattern = struct_pat.syntax.format(**format_spec)
+            # compute pattern from structured patterns
+            # and format_spec dictionary
+            slot_defn.pattern = " ".join(
+                format_spec.get(pat, pat) for pat in struct_pat.syntax.split()
+            )
