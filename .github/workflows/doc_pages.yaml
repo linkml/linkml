@@ -33,17 +33,11 @@ jobs:
         pipenv install --dev sphinxcontrib-mermaid
         pipenv install --dev sphinx-rtd-theme
 
-
-
-    # - name: install
-    #   run: poetry install -E docs
-
     - name: Build documentation.
       run: |
         mkdir gh-pages
         touch gh-pages/.nojekyll
         cd docs/
-#         poetry run sphinx-build -b html . _build
         pipenv run sphinx-build -b html . _build
         cp -r _build/* ../gh-pages/
     - name: Deploy documentation.
