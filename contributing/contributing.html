@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contribution Guidelines &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FAQ" href="../faq/index.html" />
+    <link rel="prev" title="LinkML specification" href="../specifications/linkml-spec.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contribution Guidelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-author-a-unit-test-for-an-issue">How to Author a Unit Test for an Issue</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-author-a-unit-test-for-new-functionality">How to Author a Unit Test for New Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#general-tips">General Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-tests-locally">Running Tests Locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#release-to-pypi">Release to PyPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Contribution Guidelines</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/contributing/contributing.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contribution-guidelines">
+<h1>Contribution Guidelines<a class="headerlink" href="#contribution-guidelines" title="Permalink to this headline"></a></h1>
+<section id="how-to-author-a-unit-test-for-an-issue">
+<h2>How to Author a Unit Test for an Issue<a class="headerlink" href="#how-to-author-a-unit-test-for-an-issue" title="Permalink to this headline"></a></h2>
+<p>The following section has instructions on how to write a unit test specific to an issue that you are encountering.</p>
+<ul class="simple">
+<li><p>There are a number of repos under the linkml <a class="reference external" href="https://github.com/linkml">organization</a> banner. Such as the main <a class="reference external" href="https://github.com/linkml/linkml">linkml</a> library, <a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a>, <a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a>, etc. Make sure you are creating the test in the appropriate repo. For ex., if there is a bug that you have noticed with respect to one of the generators, then you want to be creating the test in the main linkml library repo.</p></li>
+<li><p>The location where all the issue specific unit tests are created, is in this location: <a class="reference external" href="https://github.com/linkml/linkml/tree/main/tests/test_issues">linkml/tests/test-issues</a>.</p></li>
+<li><p>You can create a new test called <code class="docutils literal notranslate"><span class="pre">test_linkml_issue_NNN.py</span></code>. It is perhaps easiest to just copy over a test from an existing issue and modify it.</p></li>
+</ul>
+<p>Note: You will see a number of issues which are named <code class="docutils literal notranslate"><span class="pre">test_issue_NNN.py</span></code>. The numbers and convention for those issues are with reference to the old biolinkml issue numbering convention.</p>
+<ul class="simple">
+<li><p>All tests within this repo are Python <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittest</a> tests. The unittest module is bundled natively with the latest versions of Python. The tests can be run using either the unittest module, or using the <a class="reference external" href="https://docs.pytest.org/en/6.2.x/">pytest</a> library.</p></li>
+</ul>
+<p>To run your test using unittest:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">unittest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_issues</span><span class="o">/</span><span class="n">test_linkml_issue_NNN</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>To run your test using pytest:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span> <span class="n">tests</span><span class="o">/</span><span class="n">test_issues</span><span class="o">/</span><span class="n">test_linkml_issue_NNN</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Most tests will use a schema, and sometimes a datafile as input. One pattern is that you include in the Python file as docstrings. Another pattern is to include them as separate YAML files. If you include separate YAML files, then they must be added to the following location: <a class="reference external" href="https://github.com/linkml/linkml/tree/main/tests/test_issues/input">tests/test_issues/input</a>, and follow the same naming convention as the test_issue itself, i.e., <code class="docutils literal notranslate"><span class="pre">linkml_issue_NNN.yaml</span></code>.</p></li>
+</ul>
+</section>
+<section id="how-to-author-a-unit-test-for-new-functionality">
+<h2>How to Author a Unit Test for New Functionality<a class="headerlink" href="#how-to-author-a-unit-test-for-new-functionality" title="Permalink to this headline"></a></h2>
+<p>The following section has instructions on how to write a unit test for new functionality that you are requesting.</p>
+<p>Follow the same procedure as above, but add this test to the appropriate folder. For example, if you are requesting a new LinkML generator, then the test must be added to this location: <a class="reference external" href="https://github.com/linkml/linkml/tree/main/tests/test_generators">tests/test_generators</a>.</p>
+</section>
+<section id="general-tips">
+<h2>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>Always make sure to use <code class="docutils literal notranslate"><span class="pre">assert</span></code> statements to compare the expected value with the actual value, rather than simply printing or logging the expected and actual values.</p></li>
+<li><p>Avoid using <code class="docutils literal notranslate"><span class="pre">print</span></code> statements for logging purposes. Use the <code class="docutils literal notranslate"><span class="pre">logging</span></code> module natively provided by Python approporiately with it’s various logging levels like <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>, <code class="docutils literal notranslate"><span class="pre">INFO</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>, etc.</p></li>
+<li><p>You can create a config file by copying the <a class="reference external" href="https://github.com/linkml/linkml/blob/main/tests/test_config.ini.example">test_config.ini.example</a> to a <code class="docutils literal notranslate"><span class="pre">test_config.ini</span></code> file and making changes, for example, to the logging levels:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">test</span><span class="o">.</span><span class="n">settings</span><span class="p">]</span>
+<span class="n">DEFAULT_LOG_LEVEL</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span>
+<span class="n">DEFAULT_LOG_LEVEL_TEXT</span><span class="p">:</span> <span class="n">ERROR</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Never hardcode any file paths. Always use import variables such as <code class="docutils literal notranslate"><span class="pre">INPUT_DIR</span></code>, <code class="docutils literal notranslate"><span class="pre">OUTPUT_DIR</span></code> and use <code class="docutils literal notranslate"><span class="pre">os.path.join()</span></code> to make file paths. This ensures that the tests will run independent of the OS they are running on.</p></li>
+</ul>
+</section>
+<section id="running-tests-locally">
+<h2>Running Tests Locally<a class="headerlink" href="#running-tests-locally" title="Permalink to this headline"></a></h2>
+<p>PyCharm, IntelliJ:</p>
+<p>To run a single test:</p>
+<ul class="simple">
+<li><p>Open to Run/Debug</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">+</span></code> to add test</p></li>
+<li><p>Choose Python “tests &gt; unittests”</p></li>
+<li><p>In dialog:</p>
+<ul>
+<li><p>Target: Select Script path, browse to test script</p></li>
+<li><p>Choose Python interpreter</p></li>
+<li><p>Click ‘OK’ to save</p></li>
+</ul>
+</li>
+<li><p>Run or debug the test from the configurations menu</p></li>
+</ul>
+<p>To run all tests:</p>
+<ul class="simple">
+<li><p>Open to Run/Debug</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">+</span></code> to add test</p></li>
+<li><p>Choose “Python tests &gt; unittests”</p></li>
+</ul>
+</section>
+<section id="release-to-pypi">
+<h2>Release to PyPI<a class="headerlink" href="#release-to-pypi" title="Permalink to this headline"></a></h2>
+<p>A Github action is set up to automatically release the package to PyPI. When it is ready for a new release, create a <a class="reference external" href="https://github.com/linkml/releases">Github release</a>. The version should be in the vX.X.X format following <a class="reference external" href="https://semver.org/">the semantic versioning specification</a>.Release notes should always be autogenerated.</p>
+<p>After the release is created, the GitHub action will be triggered to publish to PyPI. The release version will be used to create the PyPI package.</p>
+<p>If the PyPI release failed, make fixes, <a class="reference external" href="https://docs.github.com/en/enterprise/2.16/user/github/administering-a-repository/editing-and-deleting-releases#deleting-a-release">delete</a> the GitHub release, and recreate a release with the same version again.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../specifications/linkml-spec.html" class="btn btn-neutral float-left" title="LinkML specification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../faq/index.html" class="btn btn-neutral float-right" title="FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
