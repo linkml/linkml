@@ -1,3 +1,4 @@
+import tempfile
 import unittest
 
 from tests.test_utils.environment import env
@@ -15,7 +16,24 @@ class PatternTestCase(unittest.TestCase):
         sv = SchemaView(env.input_path("pattern-example.yaml"))
         materialize_patterns(sv)
 
-        print(yaml_dumper.dumps(sv.schema))
+        # create tempfile where the materializes YAML 
+        # file should be saved
+        new_file, filename = tempfile.mkstemp()
+
+        path_to_yaml = filename + ".yaml"
+
+        yaml_dumper.dump(sv.schema, path_to_yaml)
+
+        sv = SchemaView(path_to_yaml)
+
+        slot_patterns = []  # patterns associated with all slots
+        for _, slot_defn in sv.all_slots().items():
+            slot_patterns.append(slot_defn.pattern)
+
+        # check that the expected patterns are associated with
+        # at least one of the slots in the SchemaView
+        self.assertIn("\\d+[\\.\\d+] (centimeter|meter|inch)", slot_patterns)
+        self.assertIn("\\d+[\\.\\d+] (kg|g|lbs|stone)", slot_patterns)
 
 
 if __name__ == "__main__":
