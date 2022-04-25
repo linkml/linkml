@@ -31,11 +31,12 @@ jobs:
         pipenv install --dev sphinx
         pipenv install --dev sphinxcontrib.httpdomain
         pipenv install --dev sphinxcontrib-mermaid
+        pipenv install --dev sphinx-rtd-theme
 
 
 
-#     - name: install
-#       run: poetry install -E docs
+    # - name: install
+    #   run: poetry install -E docs
 
     - name: Build documentation.
       run: |
