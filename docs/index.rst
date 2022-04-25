@@ -56,7 +56,7 @@ Developers
 
 If you are a developer looking to either contribute to the framework,
 or make use of any linkml package programmatically, this section is
-for you
+for you:
 
 .. toctree::
    :maxdepth: 2
