@@ -1,3 +1,0 @@
-# Schemas
-
-A LinkML *Schema* is...
