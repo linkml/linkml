@@ -21,16 +21,16 @@ jobs:
 #       uses: snok/install-poetry@v1.3
       
     - name: Install Pipenv
-    run: |
-      python -m pip install --upgrade pip
-      pip install pipenv
-      pipenv install --dev
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv
+        pipenv install --dev
       
     - name: Install Sphinx
-    run: |
-      pipenv install --dev sphinx
-      pipenv install --dev sphinxcontrib.httpdomain
-      pipenv install --dev sphinxcontrib-mermaid
+      run: |
+        pipenv install --dev sphinx
+        pipenv install --dev sphinxcontrib.httpdomain
+        pipenv install --dev sphinxcontrib-mermaid
 
 
 
