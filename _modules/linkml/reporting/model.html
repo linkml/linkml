@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.reporting.model &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.reporting.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.reporting.model</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Auto generated from reporting.yaml by pythongen.py version: 0.9.0</span>
+<span class="c1"># Generation date: 2021-09-01 20:03</span>
+<span class="c1"># Schema: reporting</span>
+<span class="c1">#</span>
+<span class="c1"># id: https://w3id.org/linkml/reporting</span>
+<span class="c1"># description: A datamodel for reports on data</span>
+<span class="c1"># license: https://creativecommons.org/publicdomain/zero/1.0/</span>
+
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PvFormulaOptions</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.slot</span> <span class="kn">import</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">empty_list</span><span class="p">,</span> <span class="n">empty_dict</span><span class="p">,</span> <span class="n">bnode</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.dataclass_extensions_376</span> <span class="kn">import</span> <span class="n">dataclasses_init_fn_with_kwargs</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">sfx</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.curienamespace</span> <span class="kn">import</span> <span class="n">CurieNamespace</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="n">Nodeidentifier</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Uriorcurie</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">NodeIdentifier</span><span class="p">,</span> <span class="n">URIorCURIE</span>
+
+<span class="n">metamodel_version</span> <span class="o">=</span> <span class="s2">&quot;1.7.0&quot;</span>
+
+<span class="c1"># Overwrite dataclasses _init_fn to add **kwargs in __init__</span>
+<span class="n">dataclasses</span><span class="o">.</span><span class="n">_init_fn</span> <span class="o">=</span> <span class="n">dataclasses_init_fn_with_kwargs</span>
+
+<span class="c1"># Namespaces</span>
+<span class="n">LINKML</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;linkml&#39;</span><span class="p">,</span> <span class="s1">&#39;https://w3id.org/linkml/&#39;</span><span class="p">)</span>
+<span class="n">OWL</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;owl&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.w3.org/2002/07/owl#&#39;</span><span class="p">)</span>
+<span class="n">PAV</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;pav&#39;</span><span class="p">,</span> <span class="s1">&#39;http://purl.org/pav/&#39;</span><span class="p">)</span>
+<span class="n">RDF</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;rdf&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#&#39;</span><span class="p">)</span>
+<span class="n">RDFS</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;rdfs&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.w3.org/2000/01/rdf-schema#&#39;</span><span class="p">)</span>
+<span class="n">REPORTING</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;reporting&#39;</span><span class="p">,</span> <span class="s1">&#39;https://w3id.org/linkml/report&#39;</span><span class="p">)</span>
+<span class="n">SCHEMA</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;schema&#39;</span><span class="p">,</span> <span class="s1">&#39;http://schema.org/&#39;</span><span class="p">)</span>
+<span class="n">SKOS</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;skos&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.w3.org/2004/02/skos/core#&#39;</span><span class="p">)</span>
+<span class="n">XSD</span> <span class="o">=</span> <span class="n">CurieNamespace</span><span class="p">(</span><span class="s1">&#39;xsd&#39;</span><span class="p">,</span> <span class="s1">&#39;http://www.w3.org/2001/XMLSchema#&#39;</span><span class="p">)</span>
+<span class="n">DEFAULT_</span> <span class="o">=</span> <span class="n">REPORTING</span>
+
+
+<span class="c1"># Types</span>
+
+<span class="c1"># Class references</span>
+
+
+
+<div class="viewcode-block" id="Report"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.Report">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Report</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A report object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">Report</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reporting:Report&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;report&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">Report</span>
+
+    <span class="n">results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;CheckResult&quot;</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="s2">&quot;CheckResult&quot;</span><span class="p">]]]]</span> <span class="o">=</span> <span class="n">empty_list</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">CheckResult</span><span class="p">)</span> <span class="k">else</span> <span class="n">CheckResult</span><span class="p">(</span><span class="o">**</span><span class="n">as_dict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CheckResult"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.CheckResult">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CheckResult</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An individual check</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">CheckResult</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reporting:CheckResult&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;check_result&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">CheckResult</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">URIorCURIE</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">instantiates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">object</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">object_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">URIorCURIE</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">URIorCURIE</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instantiates</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predicate</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predicate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_str</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object_str</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">NodeIdentifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Problem"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.Problem">[docs]</a><span class="k">class</span> <span class="nc">Problem</span><span class="p">(</span><span class="n">CheckResult</span><span class="p">):</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">Problem</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reporting:Problem&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;problem&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">Problem</span></div>
+
+
+<div class="viewcode-block" id="ProblemSlotUndeclared"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.ProblemSlotUndeclared">[docs]</a><span class="k">class</span> <span class="nc">ProblemSlotUndeclared</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A problem in which an undeclared slot is used</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">ProblemSlotUndeclared</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reporting:ProblemSlotUndeclared&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;problem_slot_undeclared&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">ProblemSlotUndeclared</span></div>
+
+
+<div class="viewcode-block" id="ProblemSlotInapplicable"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.ProblemSlotInapplicable">[docs]</a><span class="k">class</span> <span class="nc">ProblemSlotInapplicable</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A problem in which a slot is used in an instance of a class where the slot is not applicable for that class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">ProblemSlotInapplicable</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reporting:ProblemSlotInapplicable&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;problem_slot_inapplicable&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">ProblemSlotInapplicable</span></div>
+
+
+<div class="viewcode-block" id="ProblemSlotMissing"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.ProblemSlotMissing">[docs]</a><span class="k">class</span> <span class="nc">ProblemSlotMissing</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A problem in which an instance of a class has a required slot which is not filled in</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">ProblemSlotMissing</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;reporting:ProblemSlotMissing&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;problem_slot_missing&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPORTING</span><span class="o">.</span><span class="n">ProblemSlotMissing</span></div>
+
+
+<span class="c1"># Enumerations</span>
+<div class="viewcode-block" id="SeverityOptions"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.SeverityOptions">[docs]</a><span class="k">class</span> <span class="nc">SeverityOptions</span><span class="p">(</span><span class="n">EnumDefinitionImpl</span><span class="p">):</span>
+
+    <span class="n">FATAL</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;FATAL&quot;</span><span class="p">)</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;WARNING&quot;</span><span class="p">)</span>
+    <span class="n">INFO</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+
+    <span class="n">_defn</span> <span class="o">=</span> <span class="n">EnumDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SeverityOptions&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+<span class="c1"># Slots</span>
+<div class="viewcode-block" id="slots"><a class="viewcode-back" href="../../../linkml.reporting.html#linkml.reporting.model.slots">[docs]</a><span class="k">class</span> <span class="nc">slots</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">URIorCURIE</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">instantiates</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">instantiates</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;instantiates&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;instantiates&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">instantiates</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">predicate</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">predicate</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;predicate&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;predicate&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">predicate</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">object</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">object</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">object_str</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">object_str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;object_str&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;object_str&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">object_str</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NodeIdentifier</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">severity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;severity&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">severity</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;SeverityOptions&quot;</span><span class="p">]])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;info&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span>
+
+<span class="n">slots</span><span class="o">.</span><span class="n">report__results</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">results</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;report__results&quot;</span><span class="p">,</span> <span class="n">curie</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">curie</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">),</span>
+                   <span class="n">model_uri</span><span class="o">=</span><span class="n">REPORTING</span><span class="o">.</span><span class="n">report__results</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">CheckResult</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">CheckResult</span><span class="p">]]]])</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

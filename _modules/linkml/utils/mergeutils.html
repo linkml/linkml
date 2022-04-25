@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.utils.mergeutils &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.utils.mergeutils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.utils.mergeutils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">URIRef</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">Element</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">,</span> \
+    <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">EnumDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">extended_str</span>
+
+
+<div class="viewcode-block" id="merge_schemas"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_schemas">[docs]</a><span class="k">def</span> <span class="nf">merge_schemas</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">mergee</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">namespaces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Namespaces</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Merge mergee into target &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Schema name must be supplied&quot;</span>
+    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">license</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">license</span> <span class="o">=</span> <span class="n">mergee</span><span class="o">.</span><span class="n">license</span>
+
+    <span class="n">target</span><span class="o">.</span><span class="n">imports</span> <span class="o">+=</span> <span class="p">[</span><span class="n">imp</span> <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">imports</span> <span class="k">if</span> <span class="n">imp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">imports</span><span class="p">]</span>
+    <span class="n">set_from_schema</span><span class="p">(</span><span class="n">mergee</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">namespaces</span><span class="p">:</span>
+        <span class="n">merge_namespaces</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mergee</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">merge_imports</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">:</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">imported_from</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">imported_from_uri</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">imported_from</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imported_from</span><span class="p">:</span>
+            <span class="n">imported_from_uri</span> <span class="o">=</span> <span class="n">imported_from</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">imported_from_uri</span> <span class="o">=</span> <span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">imported_from</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span>
+    <span class="n">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="n">mergee</span><span class="o">.</span><span class="n">enums</span><span class="p">,</span> <span class="n">imported_from</span><span class="p">,</span> <span class="n">imported_from_uri</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="merge_namespaces"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_namespaces">[docs]</a><span class="k">def</span> <span class="nf">merge_namespaces</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">mergee</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">namespaces</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add the mergee namespace definitions to target</span>
+
+<span class="sd">    :param target:</span>
+<span class="sd">    :param mergee:</span>
+<span class="sd">    :param namespaces:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">namespaces</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span>
+        <span class="c1"># if prefix.prefix_prefix not in target.prefixes:</span>
+        <span class="c1">#     target.prefixes[prefix.prefix_prefix] = prefix</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span> <span class="ow">and</span> \
+                <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span> <span class="o">!=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prefix: </span><span class="si">{</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="si">}</span><span class="s1"> mismatch between </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">mergee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">mmap</span> <span class="ow">in</span> <span class="n">mergee</span><span class="o">.</span><span class="n">default_curi_maps</span><span class="p">:</span>
+        <span class="n">namespaces</span><span class="o">.</span><span class="n">add_prefixmap</span><span class="p">(</span><span class="n">mmap</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_from_schema"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.set_from_schema">[docs]</a><span class="k">def</span> <span class="nf">set_from_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">id</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">SlotDefinition</span><span class="p">):</span>
+                <span class="n">fragment</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fragment</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
+                <span class="n">ns</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ns</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">URIRef</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+            <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">definition_uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ns</span><span class="si">}{</span><span class="n">fragment</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="merge_dicts"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_dicts">[docs]</a><span class="k">def</span> <span class="nf">merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Element</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Element</span><span class="p">],</span> <span class="n">imported_from</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                <span class="n">imported_from_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">merge_imports</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">!=</span> <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conflicting URIs (</span><span class="si">{</span><span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="si">}</span><span class="s2">) for item: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="c1"># currently all imports closures are merged into main schema, EXCEPT</span>
+        <span class="c1"># internal linkml types, which are considered separate</span>
+        <span class="c1"># https://github.com/linkml/issues/121</span>
+        <span class="k">if</span> <span class="n">imported_from</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">merge_imports</span> <span class="ow">or</span> <span class="n">imported_from</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;linkml&quot;</span><span class="p">)</span> <span class="ow">or</span> \
+                    <span class="n">imported_from_uri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://w3id.org/biolink/linkml&quot;</span><span class="p">):</span>
+                <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">imported_from</span> <span class="o">=</span> <span class="n">imported_from</span></div>
+
+
+<div class="viewcode-block" id="merge_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_slots">[docs]</a><span class="k">def</span> <span class="nf">merge_slots</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">],</span> <span class="n">source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">],</span>
+                <span class="n">skip</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inheriting</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge slot source into target</span>
+
+<span class="sd">    :param target: slot to merge into</span>
+<span class="sd">    :param source: slot to be merged from</span>
+<span class="sd">    :param skip: Properties to not merge (used to prevent provenance such as &#39;inherited from&#39; from propagating)</span>
+<span class="sd">    :param inheriting: True means source is the parent.  False means that everything gets copied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">skip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">skip</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">skip</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">inheriting</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">_inherited_slots</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inheriting</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">target</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="slot_usage_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.slot_usage_name">[docs]</a><span class="k">def</span> <span class="nf">slot_usage_name</span><span class="p">(</span><span class="n">usage_name</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">owning_class</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinitionName</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Synthesize a unique name for an overridden slot</span>
+
+<span class="sd">    :param usage_name:</span>
+<span class="sd">    :param owning_class:</span>
+<span class="sd">    :return: Synthesized name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">SlotDefinitionName</span><span class="p">(</span><span class="n">extended_str</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">owning_class</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">usage_name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="alias_root"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.alias_root">[docs]</a><span class="k">def</span> <span class="nf">alias_root</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">slotname</span><span class="p">:</span> <span class="n">SlotDefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Return the ultimate alias of a slot &quot;&quot;&quot;</span>
+    <span class="n">alias</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">slotname</span><span class="p">]</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">slotname</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">slots</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">alias</span> <span class="ow">and</span> <span class="n">alias</span> <span class="o">==</span> <span class="n">slotname</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error: Slot </span><span class="si">{slotname}</span><span class="s2"> is aliased to itself.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">alias_root</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">alias</span><span class="p">))</span> <span class="k">if</span> <span class="n">alias</span> <span class="k">else</span> <span class="n">slotname</span></div>
+
+
+<div class="viewcode-block" id="merge_classes"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_classes">[docs]</a><span class="k">def</span> <span class="nf">merge_classes</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+                  <span class="n">at_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Merge the slots in source into target</span>
+
+<span class="sd">    :param schema: Containing schema</span>
+<span class="sd">    :param target: mergee</span>
+<span class="sd">    :param source: class to merge</span>
+<span class="sd">    :param at_end: True means add mergee to the end.  False to the front</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># List of grounded slots referenced in the target class</span>
+    <span class="n">target_base_slots</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">alias_root</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">slotname</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">slots</span> <span class="k">if</span> <span class="n">at_end</span> <span class="k">else</span> <span class="n">source</span><span class="o">.</span><span class="n">slots</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">slotbase</span> <span class="o">=</span> <span class="n">alias_root</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">slotname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slotbase</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
+            <span class="n">slotname</span> <span class="o">=</span> <span class="n">slot_usage_name</span><span class="p">(</span><span class="n">slotbase</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slotbase</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target_base_slots</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slotname</span><span class="p">)</span> <span class="k">if</span> <span class="n">at_end</span> <span class="k">else</span> <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">slotname</span><span class="p">)</span>
+            <span class="n">target_base_slots</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slotbase</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="merge_enums"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.mergeutils.merge_enums">[docs]</a><span class="k">def</span> <span class="nf">merge_enums</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">,</span>
+                  <span class="n">at_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Merge the slots in source into target</span>
+
+<span class="sd">    :param schema: Containing schema</span>
+<span class="sd">    :param target: mergee</span>
+<span class="sd">    :param source: enum to merge</span>
+<span class="sd">    :param at_end: True means add mergee to the end.  False to the front</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: Finish enumeration merge code</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

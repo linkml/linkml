@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 1: Creating your first LinkML schema &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Part 2: Adding a container object" href="tutorial02.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Part 1: Creating your first LinkML schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#your-first-schema">Your first schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-to-json-schema">Converting to JSON-Schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-and-validating-data">Creating and validating data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-json">Working with JSON</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#converting-to-rdf">Converting to RDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#collections-of-data">Collections of data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial09.html">Part 9: Working with SQL databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="tutorial.html">Tutorial</a> &raquo;</li>
+      <li>Part 1: Creating your first LinkML schema</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/tutorial01.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="part-1-creating-your-first-linkml-schema">
+<h1>Part 1: Creating your first LinkML schema<a class="headerlink" href="#part-1-creating-your-first-linkml-schema" title="Permalink to this headline"></a></h1>
+<p>We assume that you already have LinkML <a class="reference internal" href="install.html"><span class="doc std std-doc">installed</span></a></p>
+<p>For the purposes of this tutorial, the simplest setup is to use a virtual environment, and then install linkml:</p>
+<!-- NO_EXECUTE -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir linkml-tutorial
+<span class="nb">cd</span> linkml-tutorial
+python3 -m venv venv
+<span class="nb">source</span> venv/bin/activate
+pip install linkml
+</pre></div>
+</div>
+<p>You can check the install worked:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert --help
+</pre></div>
+</div>
+<p>As always, you can consult the <a class="reference internal" href="../faq/index.html"><span class="doc std std-doc">FAQ</span></a> if you have issues.</p>
+<section id="your-first-schema">
+<h2>Your first schema<a class="headerlink" href="#your-first-schema" title="Permalink to this headline"></a></h2>
+<p>Our first schema consists of a single <em>class</em> <code class="docutils literal notranslate"><span class="pre">Person</span></code>, with a number of <em>slots</em>:</p>
+<p>First create a file</p>
+<p>personinfo.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+<p>(note that all files are available in the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/tutorial">examples/tutorial</a> folder of this repository)</p>
+</section>
+<section id="converting-to-json-schema">
+<h2>Converting to JSON-Schema<a class="headerlink" href="#converting-to-json-schema" title="Permalink to this headline"></a></h2>
+<p>Now run the following command on the file you just created:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml 
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Person&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;aliases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">         </span><span class="p">},</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Person&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">},</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;$id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;metamodel_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.7.0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;personinfo&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Don’t worry if you don’t know much about JSON-Schema. This is just an illustration that LinkML can be used in combination with a number of frameworks.</p>
+</section>
+<section id="creating-and-validating-data">
+<h2>Creating and validating data<a class="headerlink" href="#creating-and-validating-data" title="Permalink to this headline"></a></h2>
+<p>Let’s create an example data file. The file will contain an <em>instance</em> of the class we defined in our <code class="docutils literal notranslate"><span class="pre">personinfo.yaml</span></code> schema:</p>
+<p>data.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
+<span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Validate:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml data.yaml 
+</pre></div>
+</div>
+<p>You should see no errors. This means your data is valid. Success!</p>
+<p>To see an example of data not validating:</p>
+<p>bad-data.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
+<span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span><span class="w"></span>
+<span class="nt">made_up_field</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello</span><span class="w"></span>
+</pre></div>
+</div>
+<!-- FAIL -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml bad-data.yaml
+</pre></div>
+</div>
+<p>This should report an error to the effect that <code class="docutils literal notranslate"><span class="pre">made_up_field</span></code> is not known.</p>
+</section>
+<section id="working-with-json">
+<h2>Working with JSON<a class="headerlink" href="#working-with-json" title="Permalink to this headline"></a></h2>
+<p>One of the advantages of LinkML is the same datamodel can be used for multiple expressions of the same data, for example:</p>
+<ul class="simple">
+<li><p>YAML/JSON</p></li>
+<li><p>TSVs/spreadsheets</p></li>
+<li><p>RDF</p></li>
+<li><p>Relational Databases</p></li>
+</ul>
+<p>There are various complexities involved in going between these, but YAML and JSON are basically interchangeable with LinkML</p>
+<p>data.json:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="nt">&quot;phone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;555-555-5555&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This will validate in the same way as the equivalent YAML file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml data.json
+</pre></div>
+</div>
+</section>
+<section id="converting-to-rdf">
+<h2>Converting to RDF<a class="headerlink" href="#converting-to-rdf" title="Permalink to this headline"></a></h2>
+<p>You can use the linkml convert tool to convert your data to other formats, including RDF:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert -s personinfo.yaml data.yaml -o data.ttl
+</pre></div>
+</div>
+<p>(Note the converter uses the suffix to determine that RDF/turtle is required, but you can be explicit by setting <code class="docutils literal notranslate"><span class="pre">-t</span></code>)</p>
+<p>This will produce an RDF/turtle file as follows</p>
+<!-- MATCHES data.ttl -->
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo/&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="p">[]</span> <span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">age</span> <span class="s">&quot;32&quot;</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">full_name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">id</span> <span class="s">&quot;ORCID:1234&quot;</span> <span class="p">;</span>
+    <span class="nn">ns1</span><span class="p">:</span><span class="nt">phone</span> <span class="s">&quot;555-555-5555&quot;</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>If you are not familiar with RDF that’s OK! RDF is just one of the possible ways of working with LinkML.</p>
+<p>If you are familiar with RDF, the first thing you will likely notice
+is that we are not reusing standard URIs for our properties and
+classes. Don’t worry! We will get to this later.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>Extend the example schema to include fields for <code class="docutils literal notranslate"><span class="pre">occupation</span></code> and <code class="docutils literal notranslate"><span class="pre">employed_by</span></code></p></li>
+<li><p>Create a test data instance to indicate Clark Kent has an occupation of reporter and is employed by the Daily Planet</p></li>
+<li><p>Validate the data</p></li>
+</ol>
+</section>
+<section id="collections-of-data">
+<h2>Collections of data<a class="headerlink" href="#collections-of-data" title="Permalink to this headline"></a></h2>
+<p>Our toy example so far has a single person instance. Next we’ll see how to exchange lists of records.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial02.html" class="btn btn-neutral float-right" title="Part 2: Adding a container object" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

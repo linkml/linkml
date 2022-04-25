@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 3: Adding constraints and performing validation &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Part 4: Working with RDF" href="tutorial04.html" />
+    <link rel="prev" title="Part 2: Adding a container object" href="tutorial02.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial01.html">Part 1: Creating your first LinkML schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Part 3: Adding constraints and performing validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-schema">Example schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-data">Example data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-json-schema-directly">Using the JSON Schema directly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-validation-strategies">Other validation strategies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#further-reading">Further reading</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial09.html">Part 9: Working with SQL databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="tutorial.html">Tutorial</a> &raquo;</li>
+      <li>Part 3: Adding constraints and performing validation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/tutorial03.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="part-3-adding-constraints-and-performing-validation">
+<h1>Part 3: Adding constraints and performing validation<a class="headerlink" href="#part-3-adding-constraints-and-performing-validation" title="Permalink to this headline"></a></h1>
+<p>Now we will add richer information to our schema, including:</p>
+<ul class="simple">
+<li><p>adding <em>range</em>s for fields such as age</p></li>
+<li><p>using <em>pattern</em> to force a field to conform to a regular expression</p></li>
+<li><p>declaring the <code class="docutils literal notranslate"><span class="pre">id</span></code> slot to be an <em>identifier</em></p></li>
+<li><p>declaring the <code class="docutils literal notranslate"><span class="pre">full_name</span></code> slot to be required</p></li>
+<li><p>adding textual descriptions of schema elements</p></li>
+</ul>
+<section id="example-schema">
+<h2>Example schema<a class="headerlink" href="#example-schema" title="Permalink to this headline"></a></h2>
+<p>personinfo.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">     </span><span class="c1">## unique key for a person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">       </span><span class="c1">## must be supplied</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">    </span><span class="c1">## range is a list</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w">   </span><span class="c1">## regular expression</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w">       </span><span class="c1">## an int between 0 and 200</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
+</pre></div>
+</div>
+<p>We use yaml comment syntax (i.e the part after <code class="docutils literal notranslate"><span class="pre">#</span></code>) for comments - these are ignored by the parser.</p>
+<p>Depicted as:</p>
+<p><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BContainer%5D++-%20persons%200..*%3E%5BPerson%7Cid:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F%5D,%5BContainer%5D" /></p>
+<p>Note that we haven’t declared ranges for some fields, but the <em>default_range</em> directive at the schema level ensures things default to string.</p>
+</section>
+<section id="example-data">
+<h2>Example data<a class="headerlink" href="#example-data" title="Permalink to this headline"></a></h2>
+<p>Let’s deliberately introduce some bad data to make sure our validator is working:</p>
+<p>bad-data.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Running the following command:</p>
+<!-- FAIL -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml bad-data.yaml
+</pre></div>
+</div>
+<p>Will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ValueError</span><span class="p">:</span> <span class="n">full_name</span> <span class="n">must</span> <span class="n">be</span> <span class="n">supplied</span>
+</pre></div>
+</div>
+<p>better-data-v1.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
+</pre></div>
+</div>
+<!-- FAIL -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml better-data-v1.yaml
+</pre></div>
+</div>
+<p>Will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ValueError</span><span class="p">:</span> <span class="n">File</span> <span class="s2">&quot;&lt;file&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">6</span><span class="p">,</span> <span class="n">col</span> <span class="mi">9</span><span class="p">:</span> <span class="n">ORCID</span><span class="p">:</span><span class="mi">1234</span><span class="p">:</span> <span class="n">duplicate</span> <span class="n">key</span>
+</pre></div>
+</div>
+<p>Let’s fix that:</p>
+<p>better-data-v2.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span><span class="w"></span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1-800-kryptonite</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w"></span>
+</pre></div>
+</div>
+<!-- FAIL -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-validate -s personinfo.yaml better-data-v2.yaml
+</pre></div>
+</div>
+<p>Will result in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;pattern&#39;</span><span class="p">:</span> <span class="s1">&#39;^[</span><span class="se">\\</span><span class="s1">d</span><span class="se">\\</span><span class="s1">(</span><span class="se">\\</span><span class="s1">)</span><span class="se">\\</span><span class="s1">-]+$&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}</span>
+
+<span class="n">On</span> <span class="n">instance</span><span class="p">[</span><span class="s1">&#39;persons&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;phone&#39;</span><span class="p">]:</span>
+    <span class="s1">&#39;1-800-kryptonite&#39;</span>
+</pre></div>
+</div>
+<p>This reflexts that the phone number doesn’t conform to the regular expression syntax we stated.</p>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
+<ol class="arabic simple">
+<li><p>See if you can iterate on the example file to get something that works.</p></li>
+</ol>
+</section>
+<section id="using-the-json-schema-directly">
+<h2>Using the JSON Schema directly<a class="headerlink" href="#using-the-json-schema-directly" title="Permalink to this headline"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml-validate</span></code> command is a wrapper than can be used for an
+open-ended number of validator implementations. The current default is
+to use a JSON Schema validator. This involves converting LinkML to
+JSON-Schema - note that there are some features of LinkML not
+supported by JSON-Schema, so the current validator is not guaranteed
+to be complete.</p>
+<p>If you prefer you can use your own JSON Schema validator. First compile to jsonschema:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml &gt; personinfo.schema.json
+</pre></div>
+</div>
+<p>You can then use the <code class="docutils literal notranslate"><span class="pre">jsonschema</span></code> command that comes with the python library (any jsonschema validator will do here)</p>
+<!-- FAIL -->
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jsonschema -i bad-data.json personinfo.schema.json
+</pre></div>
+</div>
+<p>In general this should give you similar results, with some caveats:</p>
+<ul class="simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">bad-data.yaml</span></code> can be converted to <code class="docutils literal notranslate"><span class="pre">bad-data.json</span></code> using https://www.json2yaml.com/.</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">linkml-validator</span></code> will first perform an internal conversion prior to using the jsonschema validator, and some errors may be caught at that stage</p></li>
+<li><p>the conversion process may mask some errors - e.g. if a slot has range integer and is supplied as a string, implicit conversion is used</p></li>
+</ul>
+<p>See the <a class="reference internal" href="../generators/json-schema.html"><span class="doc std std-doc">JSON-Schema generator</span></a> docs for more info on JSON-Schema validation</p>
+</section>
+<section id="other-validation-strategies">
+<h2>Other validation strategies<a class="headerlink" href="#other-validation-strategies" title="Permalink to this headline"></a></h2>
+<p>Other strategies include</p>
+<ul class="simple">
+<li><p>converting data to a relational database and doing performant evaluation in SQL</p></li>
+<li><p>converting data to RDF and using either Shape validators or SPARQL queries</p></li>
+</ul>
+<p>The next section deals with working with RDF data.</p>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../data/working-with-data.html"><span class="doc std std-doc">Working with Data</span></a></p></li>
+<li><p>Metamodel Specification</p>
+<ul>
+<li><p><a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/required">required</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/minimum_value">minimum_value</a> slot</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/maximum_value">maximum_value</a> slot</p></li>
+</ul>
+</li>
+<li><p>FAQ:</p>
+<ul>
+<li><p><a class="reference internal" href="../faq/why-linkml.html#why-should-i-use-linkml-over-shex-shacl"><span class="std std-ref">LinkML vs shape languages</span></a></p></li>
+</ul>
+</li>
+<li><p>Generators:</p>
+<ul>
+<li><p><a class="reference internal" href="../generators/json-schema.html"><span class="doc std std-doc">JSON Schema Generator</span></a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial02.html" class="btn btn-neutral float-left" title="Part 2: Adding a container object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial04.html" class="btn btn-neutral float-right" title="Part 4: Working with RDF" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

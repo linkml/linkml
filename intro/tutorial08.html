@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Part 8: Generating Projects &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Part 9: Working with SQL databases" href="tutorial09.html" />
+    <link rel="prev" title="Part 7: Slots and inheritance" href="tutorial07.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial01.html">Part 1: Creating your first LinkML schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Part 8: Generating Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#github-guides">GitHub Guides</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#projectgen-docs">ProjectGen docs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linkml-model-template">linkml-model-template</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#registering-your-schema">Registering your schema</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial09.html">Part 9: Working with SQL databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="tutorial.html">Tutorial</a> &raquo;</li>
+      <li>Part 8: Generating Projects</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/tutorial08.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="part-8-generating-projects">
+<h1>Part 8: Generating Projects<a class="headerlink" href="#part-8-generating-projects" title="Permalink to this headline"></a></h1>
+<p>In previous parts of this tutorial, we have covered</p>
+<ul class="simple">
+<li><p>how to generate JSON-Schema, for use in JSON validation</p></li>
+<li><p>how to generate Python classes, for use in code</p></li>
+<li><p>how to generate ShEx and JSON-LD contexts, for use with RDF data</p></li>
+</ul>
+<p>Later on we will explore generation of other downstream artefacts like SQL CREATE TABLE statements and markdown documentation.</p>
+<p>Even though you don’t necessarily need all of these output artefacts,
+it can be useful to regularly generate these whenever you change your
+schema. The <code class="docutils literal notranslate"><span class="pre">gen-project</span></code> script will do this for you.</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<p>Given a schema:</p>
+<p>personinfo.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
+<span class="nt">prefixes</span><span class="p">:</span><span class="w">                                 </span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ORCID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span><span class="w"></span>
+<span class="nt">imports</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">  </span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w">             </span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w">   </span><span class="c1">## specified as a list</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">full_name</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aliases</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">phone</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id_prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span><span class="w"></span>
+
+<span class="c1"># slots are first-class entities in the metamodel</span><span class="w"></span>
+<span class="c1"># delcaring them here allows them to be reused elsewhere</span><span class="w"></span>
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w"></span>
+<span class="w">  </span><span class="nt">aliases</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span><span class="w"></span>
+<span class="w">  </span><span class="nt">phone</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The JSON-Schema that is generated should be the same as in the previous example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-project -d personinfo/ personinfo.yaml
+</pre></div>
+</div>
+<p>This will place all artefacts in the <code class="docutils literal notranslate"><span class="pre">personinfo</span></code> dir:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls personinfo/
+</pre></div>
+</div>
+<p>Outputs:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>docs
+excel
+graphql
+java
+jsonld
+jsonschema
+owl
+personinfo.py
+prefixmap
+protobuf
+shacl
+shex
+sqlschema
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<section id="github-guides">
+<h3>GitHub Guides<a class="headerlink" href="#github-guides" title="Permalink to this headline"></a></h3>
+<p>We recommend maintaing your source for your schema, plus all generated products in GitHub</p>
+<p>Some resources to help you:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://swcarpentry.github.io/git-novice/">software carpentry guide</a></p></li>
+<li><p>We hace created a <a class="reference external" href="https://docs.google.com/presentation/u/0/d/1ydkB8y3cPYcDZYCT9DcENQk6gwWr0xR6/">slide deck on GitHub</a> for LinkML users</p></li>
+</ul>
+</section>
+<section id="projectgen-docs">
+<h3>ProjectGen docs<a class="headerlink" href="#projectgen-docs" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><span class="xref myst">project-generator</span></p></li>
+</ul>
+</section>
+<section id="linkml-model-template">
+<h3>linkml-model-template<a class="headerlink" href="#linkml-model-template" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="https://github.com/linkml/linkml-model-template">linkml/linkml-model-template</a> utility will allow you to set up a whole GitHub repository, with a Makefile that can be used to regenerate all downstream products. However, note that this uses an older version of the templates.</p>
+</section>
+<section id="registering-your-schema">
+<h3>Registering your schema<a class="headerlink" href="#registering-your-schema" title="Permalink to this headline"></a></h3>
+<p>Once you have authored a schema, generated a full project, and are
+managing everything in GitHub, you may want to consider registering
+your schema. To do this, make a GitHub Pull Request (PR) on the main
+<a class="reference external" href="https://linkml.io/linkml-registry/home/">linkml-registry</a> metadata
+file, which is here:</p>
+<p><a class="reference external" href="https://github.com/linkml/linkml-registry/blob/main/models.yaml">https://github.com/linkml/linkml-registry/blob/main/models.yaml</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial07.html" class="btn btn-neutral float-left" title="Part 7: Slots and inheritance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial09.html" class="btn btn-neutral float-right" title="Part 9: Working with SQL databases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

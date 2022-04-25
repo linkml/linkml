@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generators &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="JSON Schema" href="json-schema.html" />
+    <link rel="prev" title="Python" href="../data/python.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#schema-frameworks">Schema Frameworks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protobuf.html">ProtoBuf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="graphql.html">GraphQL</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#linked-data-standards">Linked Data Standards</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparql.html">SPARQL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shex.html">ShEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shacl.html">SHACL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="owl.html">OWL</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation-generation">Documentation Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="markdown.html">Markdown</a></li>
+<li class="toctree-l3"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#language-specific">Language Specific</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python.html">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html">Pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="java.html">Java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="typescript.html">Typescript</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#database">Database</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlddl.html">SQL DDL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#others">Others</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sssom.html">SSSOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Generators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generators/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="generators">
+<span id="id1"></span><h1>Generators<a class="headerlink" href="#generators" title="Permalink to this headline"></a></h1>
+<p>A LinkML <em>generator</em> is code that transforms a linkml schema into a
+datamodel expressed using another framework, or into some other
+artefact, such as JSON-Schema, or markdown documentation.</p>
+<p>Generators allow you to tap into the rich tooling offered in other
+technical stacks. The philosophy of LinkML is to embrace and reuse
+these existing frameworks, rather than serve as an alternative.</p>
+<section id="schema-frameworks">
+<h2>Schema Frameworks<a class="headerlink" href="#schema-frameworks" title="Permalink to this headline"></a></h2>
+<p>These generators translate from a LinkML model to commonly used web
+standards for structuring data such as JSON-Schema, Protocol Buffers
+(ProtoBuf), and GraphQL.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="json-schema.html">JSON Schema</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="json-schema.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json-schema.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#inheritance">Inheritance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#composition">Composition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#inlining">Inlining</a></li>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#patterns">Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#enums">Enums</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="json-schema.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="json-schema.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protobuf.html">ProtoBuf</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protobuf.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protobuf.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protobuf.html#inheritance">Inheritance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="protobuf.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="protobuf.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="protobuf.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="graphql.html">GraphQL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="graphql.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graphql.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="graphql.html#inheritance">Inheritance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="graphql.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="graphql.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="graphql.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="linked-data-standards">
+<h2>Linked Data Standards<a class="headerlink" href="#linked-data-standards" title="Permalink to this headline"></a></h2>
+<p><cite>Linked Data &lt;https://en.wikipedia.org/wiki/Linked_data&gt;_</cite> is a broad
+term encompassing frameworks based on RDF and URIs/IRIs. LinkML
+schemas, can be translated directly into RDF, or they can be mapped to
+OWL, or translated to shape languages such as ShEx and SHACL.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html#treatment-of-obo-prefixes">Treatment of OBO prefixes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jsonld-context.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jsonld-context.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jsonld-context.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sparql.html">SPARQL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sparql.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sparql.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sparql.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparql.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shex.html">ShEx</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shex.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shex.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="shex.html#translation">Translation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="shex.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="shex.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shex.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="shacl.html">SHACL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="shacl.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shacl.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shacl.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="shacl.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shacl.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="owl.html">OWL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="owl.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="owl.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="owl.html#mapping">Mapping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="owl.html#other-examples">Other examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="owl.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="owl.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="owl.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="documentation-generation">
+<h2>Documentation Generation<a class="headerlink" href="#documentation-generation" title="Permalink to this headline"></a></h2>
+<p>These generators will translate LinkML models into documentation,
+including UML class diagrams and markdown websites that can be easily
+published on static hosting sites.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="markdown.html">Markdown</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown.html#use-with-mkdocs">Use with mkdocs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown.html#uml-class-diagrams">UML Class Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown.html#alternatives">Alternatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="markdown.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markdown.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-generator.html">Project Generator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-generator.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-generator.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="project-generator.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="project-generator.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="language-specific">
+<h2>Language Specific<a class="headerlink" href="#language-specific" title="Permalink to this headline"></a></h2>
+<p>These will generate object models that are particular to specific
+languages such as Python, Javascript, or Java.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python.html#dataclasses">Dataclasses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#inheritance">Inheritance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#object-creation">Object Creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#non-inlined-references">Non-inlined references</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#types">Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#code-docs">Code Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#code">Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#additional-notes">Additional Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#code-generation-for-linkml-slots">Code generation for LinkML slots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python.html#python-generation-for-an-inherited-type">3) Python generation for an inherited Type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#non-keyed-non-identified-classes">1) Non-keyed, non-identified classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#key-or-identified-class-references">Key or identified class <em>references</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#input-in-the-form-of-a-dictionary">Input in the form of a dictionary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="python.html#input-in-the-form-of-a-list">Input in the form of a list</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydantic.html">Pydantic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydantic.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydantic.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydantic.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html#code">Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydantic.html#additional-notes">Additional Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydantic.html#biolink-example">Biolink Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="java.html">Java</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="java.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="java.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="java.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="java.html#code">Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="java.html#additional-notes">Additional Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="java.html#biolink-example">Biolink Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="java.html#alternate-template-example">Alternate Template Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="typescript.html">Typescript</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="typescript.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="typescript.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="typescript.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="typescript.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="database">
+<h2>Database<a class="headerlink" href="#database" title="Permalink to this headline"></a></h2>
+<p>Generators specific to database frameworks. Currently only SQL databases.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sqlddl.html">SQL DDL</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlddl.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlddl.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sqlddl.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlddl.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlddl.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy.html#declarative-mode">Declarative Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sqlalchemy.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="others">
+<h2>Others<a class="headerlink" href="#others" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sssom.html">SSSOM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sssom.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sssom.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sssom.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="terminusdb.html">TerminusDB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="terminusdb.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terminusdb.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="terminusdb.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="terminusdb.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="excel.html">Excel Spreadsheet</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="excel.html#example-output">Example Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excel.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="excel.html#docs">Docs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="excel.html#command-line">Command Line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="excel.html#code">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../data/python.html" class="btn btn-neutral float-left" title="Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="json-schema.html" class="btn btn-neutral float-right" title="JSON Schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

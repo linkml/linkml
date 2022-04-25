@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.generators.namespacegen &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.generators.namespacegen</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.generators.namespacegen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+
+<span class="kn">from</span> <span class="nn">linkml.generators</span> <span class="kn">import</span> <span class="n">PYTHON_GEN_VERSION</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pythongen</span> <span class="kn">import</span> <span class="n">PythonGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">split_line</span><span class="p">,</span> <span class="n">be</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">shared_arguments</span>
+
+
+<div class="viewcode-block" id="NamespaceGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator">[docs]</a><span class="k">class</span> <span class="nc">NamespaceGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
+    <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="n">PYTHON_GEN_VERSION</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]</span>
+    <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="NamespaceGenerator.gen_namespaces"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.gen_namespaces">[docs]</a>    <span class="k">def</span> <span class="nf">gen_namespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n\t\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="sa">f</span><span class="s2">&quot;CurieNamespace(&#39;</span><span class="si">{</span><span class="n">pfx</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="n">pfx</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;),&quot;</span>
+            <span class="k">for</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_prefixes</span><span class="p">)</span> <span class="k">if</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span>
+        <span class="p">])</span></div>
+
+<div class="viewcode-block" id="NamespaceGenerator.gen_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.namespacegen.NamespaceGenerator.gen_schema">[docs]</a>    <span class="k">def</span> <span class="nf">gen_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">split_descripton</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">#              &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split_line</span><span class="p">(</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">),</span> <span class="n">split_len</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;# Auto generated from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="si">}</span><span class="s1"> by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorname</span><span class="si">}</span><span class="s1"> version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generatorversion</span><span class="si">}</span><span class="s1"></span>
+<span class="s1"># Generation date: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span><span class="si">}</span><span class="s1"></span>
+<span class="s1"># Schema: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">#&#39;&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s1"></span>
+<span class="s1"># id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"></span>
+<span class="s1"># description: </span><span class="si">{</span><span class="n">split_descripton</span><span class="si">}</span><span class="s1"></span>
+<span class="s1"># license: </span><span class="si">{</span><span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">license</span><span class="p">)</span><span class="si">}</span><span class="s1"></span>
+
+<span class="s1">from collections import defaultdict</span>
+<span class="s1">from typing import Iterable, Dict, Tuple</span>
+
+<span class="s1">from linkml_runtime.utils.curienamespace import CurieNamespace</span>
+
+<span class="s1">GENE = &#39;gene&#39;</span>
+<span class="s1">DISEASE = &#39;disease&#39;</span>
+<span class="s1">CHEMICAL_SUBSTANCE = &#39;chemical substance&#39;</span>
+
+<span class="s1">SYMBOL = &#39;Approved_Symbol&#39;</span>
+
+
+<span class="s1">class IdentifierResolverException(RuntimeError):</span>
+<span class="s1">    pass</span>
+
+
+<span class="s1">class BiolinkNameSpace:</span>
+<span class="s1">    &quot;&quot;&quot;</span>
+<span class="s1">    Map of BioLink Model registered URI Namespaces</span>
+<span class="s1">    &quot;&quot;&quot;</span>
+
+<span class="s1">    _namespaces = [</span>
+<span class="s1">        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_namespaces</span><span class="p">()</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">    ]</span>
+
+<span class="s1">    # class level dictionaries</span>
+
+<span class="s1">    _prefix_map: Dict[str, CurieNamespace] = </span><span class="se">{{}}</span><span class="s1"></span>
+
+<span class="s1">    @classmethod</span>
+<span class="s1">    def _get_prefix_map(cls):</span>
+<span class="s1">        if not cls._prefix_map:</span>
+<span class="s1">            for ns in cls._namespaces:</span>
+<span class="s1">                # index by upper case for uniformity of search</span>
+<span class="s1">                cls._prefix_map[ns.prefix.upper()] = ns</span>
+<span class="s1">        return cls._prefix_map</span>
+
+<span class="s1">    @classmethod</span>
+<span class="s1">    def parse_curie(cls, curie: str) -&gt; Tuple[CurieNamespace, str]:</span>
+<span class="s1">        &quot;&quot;&quot;</span>
+<span class="s1">        Parse a candidate CURIE</span>
+<span class="s1">        :param curie: candidate curie string</span>
+<span class="s1">        :return: CURIE namespace and object_id</span>
+<span class="s1">        &quot;&quot;&quot;</span>
+<span class="s1">        found = CurieNamespace(&quot;&quot;, &quot;&quot;), curie  # default value if not a CURIE or unknown XMLNS prefix</span>
+<span class="s1">        if &#39;:&#39; in curie:</span>
+<span class="s1">            part = curie.split(&quot;:&quot;)</span>
+<span class="s1">            # Normalize retrieval with upper case of prefix for lookup</span>
+<span class="s1">            prefix = part[0].upper()</span>
+<span class="s1">            if prefix in cls._get_prefix_map():</span>
+<span class="s1">                found = cls._prefix_map[prefix], part[1]</span>
+<span class="s1">        return found</span>
+
+<span class="s1">    @classmethod</span>
+<span class="s1">    def parse_uri(cls, uri: str) -&gt; Tuple[CurieNamespace,  str]:</span>
+<span class="s1">        &quot;&quot;&quot;</span>
+<span class="s1">        Parse a candidate URI</span>
+<span class="s1">        :param uri: candidate URI string</span>
+<span class="s1">        :return: namespace and object_id</span>
+<span class="s1">        &quot;&quot;&quot;</span>
+<span class="s1">        found = CurieNamespace(&quot;&quot;, &quot;&quot;), uri   # default value returned if unknown URI namespace</span>
+
+<span class="s1">        # TODO: is there a more efficient lookup scheme here than a linear search of namespaces?</span>
+<span class="s1">        for ns in cls._namespaces:</span>
+<span class="s1">            base_uri = str(ns)</span>
+<span class="s1">            if uri.startswith(base_uri):</span>
+<span class="s1">                # simple minded deletion of base_uri to give the object_id</span>
+<span class="s1">                object_id = uri.replace(base_uri, &quot;&quot;)</span>
+<span class="s1">                found = ns, object_id</span>
+<span class="s1">                break</span>
+<span class="s1">        return found</span>
+
+<span class="s1">    @classmethod</span>
+<span class="s1">    def parse_identifier(cls,  identifier: str) -&gt; Tuple[CurieNamespace,  str]:</span>
+
+<span class="s1">        # trivial case of a null identifier?</span>
+<span class="s1">        if not identifier:</span>
+<span class="s1">            return CurieNamespace(&quot;&quot;, &quot;&quot;), &quot;&quot;</span>
+
+<span class="s1">        # check if this is a candidate URI...</span>
+<span class="s1">        if identifier.lower().startswith(&quot;http&quot;):</span>
+<span class="s1">            # guess that perhaps it is, so try to parse it</span>
+<span class="s1">            return cls.parse_uri(identifier)</span>
+
+<span class="s1">        else:  # attempt to parse as a CURIE</span>
+<span class="s1">            return cls.parse_curie(identifier)</span>
+
+
+<span class="s1">def object_id(identifier, keep_version=False) -&gt; str:</span>
+<span class="s1">    &quot;&quot;&quot;</span>
+<span class="s1">    Returns the core object_id of a CURIE, with or without the version suffix.</span>
+<span class="s1">    Note:  not designed to be used with a URI (will give an invalid outcome)</span>
+<span class="s1">    :param identifier: candidate CURIE identifier for processing</span>
+<span class="s1">    :param keep_version: True if the version string suffix is to be retained in the identifier</span>
+<span class="s1">    :return:</span>
+<span class="s1">    &quot;&quot;&quot;</span>
+<span class="s1">    # trivial case: null input value?</span>
+<span class="s1">    if not identifier:</span>
+<span class="s1">        return identifier</span>
+
+<span class="s1">    if &#39;:&#39; in identifier:</span>
+<span class="s1">        identifier = identifier.split(&quot;:&quot;)[1]</span>
+
+<span class="s1">    if not keep_version and &#39;.&#39; in identifier:</span>
+<span class="s1">        identifier = identifier.split(&quot;.&quot;)[0]</span>
+
+<span class="s1">    return identifier</span>
+
+
+<span class="s1">def fix_curies(identifiers, prefix=&#39;&#39;):</span>
+<span class="s1">    &quot;&quot;&quot;</span>
+<span class="s1">    Applies the specified XMLNS prefix to (an) identifier(s) known</span>
+<span class="s1">    to be &quot;raw&quot; IDs as keys in a dictionary or elements in a list (or a simple string)</span>
+<span class="s1">    :param identifiers:</span>
+<span class="s1">    :param prefix:</span>
+<span class="s1">    :return:</span>
+<span class="s1">    &quot;&quot;&quot;</span>
+<span class="s1">    if not prefix:</span>
+<span class="s1">        # return identifiers without modification</span>
+<span class="s1">        # Caller may already consider them in curie format</span>
+<span class="s1">        return identifiers</span>
+
+<span class="s1">    if isinstance(identifiers, dict):</span>
+<span class="s1">        curie_dict = defaultdict(dict)</span>
+<span class="s1">        for key in identifiers.keys():</span>
+<span class="s1">            curie_dict[prefix + &#39;:&#39; + object_id(key, keep_version=True)] = identifiers[key]</span>
+<span class="s1">        return curie_dict</span>
+
+<span class="s1">    # identifiers assumed to be just a single object identifier</span>
+<span class="s1">    elif isinstance(identifiers, str):</span>
+<span class="s1">        # single string to convert</span>
+<span class="s1">        return prefix + &#39;:&#39; + object_id(identifiers, keep_version=True)</span>
+
+<span class="s1">    elif isinstance(identifiers, Iterable):</span>
+<span class="s1">        return [prefix + &#39;:&#39; + object_id(x, keep_version=True) for x in identifiers]</span>
+
+<span class="s1">    else:</span>
+<span class="s1">        raise RuntimeError(&quot;fix_curie() is not sure how to fix an instance of data type &#39;&quot;, type(identifiers))</span>
+
+
+<span class="s1">def curie(identifier) -&gt; str:</span>
+<span class="s1">    # Ignore enpty strings</span>
+<span class="s1">    if not identifier:</span>
+<span class="s1">        return &quot;&quot;</span>
+<span class="s1">    else:</span>
+<span class="s1">        namespace: CurieNamespace</span>
+<span class="s1">        identifier_object_id: str</span>
+<span class="s1">        namespace, identifier_object_id = BiolinkNameSpace.parse_identifier(identifier)</span>
+<span class="s1">        return namespace.curie(identifier_object_id)</span>
+<span class="s1">&#39;&#39;&#39;</span></div></div>
+
+
+<span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">NamespaceGenerator</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generate a namespace manager for all of the prefixes represented in a LinkML model &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">NamespaceGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span><span class="o">**</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">cli</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

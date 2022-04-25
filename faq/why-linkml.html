@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ: Why LinkML &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FAQ: Modeling" href="modeling.html" />
+    <link rel="prev" title="FAQ: General" href="general.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">FAQ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="general.html">FAQ: General</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FAQ: Why LinkML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-at-all">Why should I use LinkML at all?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#my-data-is-a-simple-spreadsheet-tsv-why-should-i-use-linkml">My data is a simple spreadsheet/TSV, why should I use LinkML?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-json-schema">Why should I use LinkML over JSON-Schema?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-shex-shacl">Why should I use LinkML over ShEx/SHACL?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-sql-ddl">Why should I use LinkML over SQL DDL?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-uml">Why should I use LinkML over UML?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-owl">Why should I use LinkML over OWL?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-custom-spreadsheets">Why should I use LinkML over Custom spreadsheets?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-csv-on-the-web">Why should I use LinkML over CSV-on-the-web?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-should-i-use-linkml-over-iso-11179">Why should I use LinkML over ISO-11179?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">FAQ: Contributing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">FAQ</a> &raquo;</li>
+      <li>FAQ: Why LinkML</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/faq/why-linkml.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="faq-why-linkml">
+<h1>FAQ: Why LinkML<a class="headerlink" href="#faq-why-linkml" title="Permalink to this headline"></a></h1>
+<section id="why-should-i-use-linkml-at-all">
+<h2>Why should I use LinkML at all?<a class="headerlink" href="#why-should-i-use-linkml-at-all" title="Permalink to this headline"></a></h2>
+<p>All data follows some kind of schema or data model, whether it is explicitly articulated, or implicit / in the background. In our experience it is always beneficial to explicitly articulate that schema. This holds true for a range of situations, including:</p>
+<ul class="simple">
+<li><p>you have simple tabular data in TSVs or a spreadsheet</p></li>
+<li><p>you have a highly interlinked relational model</p></li>
+<li><p>you are working with JSON documents in a document store like MongoDB</p></li>
+<li><p>you have a knowledge graph in Neo4J</p></li>
+<li><p>you are working with linked data in RDF</p></li>
+</ul>
+<p>LinkML is designed to be flexible enough to cover all these use cases, allowing for lighweight semantic data dictionaries for tabular data, through rich interlinked schemas for knowledge graphs and triplestores</p>
+</section>
+<section id="my-data-is-a-simple-spreadsheet-tsv-why-should-i-use-linkml">
+<h2>My data is a simple spreadsheet/TSV, why should I use LinkML?<a class="headerlink" href="#my-data-is-a-simple-spreadsheet-tsv-why-should-i-use-linkml" title="Permalink to this headline"></a></h2>
+<p>If your data is a simple CSV then using a framework like LinkML may seem daunting. It may be tempting to include a simple README alongside your TSV describing the column headers. While this is certainly better than not having any data description at all, consider some of the drawbacks:</p>
+<ul class="simple">
+<li><p>the README isn’t a computer-digestible representation of your data</p></li>
+<li><p>you do not have a mechanism for validating the TSV</p></li>
+<li><p>you lack a computable way of mapping your column headers to a standard data dictionary, vocabulary</p></li>
+</ul>
+<p>LinkML provides an easy way of making your data computable. You can start with a very simple schema, with a single class, and one slot per column in your TSV; for example, for a dataset where the rows represent people:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">occupation</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+</pre></div>
+</div>
+<p>this is already useful as it states which column headers are expected in your data.</p>
+<p>you can later expand that to provide constraints on the values each column:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"> </span><span class="c1">## this ensures the id field is unique</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@[\\S\\.]+\\S+&quot;</span><span class="w">   </span><span class="c1">## regular expression</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
+<span class="w">      </span><span class="nt">occupation_class</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">job_code</span><span class="w">   </span><span class="c1">## enumeration</span><span class="w"></span>
+<span class="w">    </span><span class="nt">unique_keys</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">email is unique</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">email</span><span class="w"></span>
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">job_code</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">scientific</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">technical</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">service</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can also provide textual descriptions and additional metadata on the columns that may be useful for human users</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unique identifier</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the full name of the person</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the persons email address</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the age of the person in years</span><span class="w"></span>
+<span class="w">      </span><span class="nt">occupation_class</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the kind of job the person has</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+</pre></div>
+</div>
+<p>If you like, you can provide both linked data IRIs to your schema elements, or mappings to existing systems, for example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">foaf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://xmlns.com/foaf/0.1/</span><span class="w"></span>
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:identifier</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w"></span>
+<span class="w">      </span><span class="nt">email</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:email</span><span class="w"></span>
+<span class="w">        </span><span class="nt">exact_mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foaf:email</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This has a number of advantages:</p>
+<ul class="simple">
+<li><p>you make the intended meaning of your columns more transparent and explicit</p></li>
+<li><p>your TSVs can be automatically translated to JSON-LD and RDF via the LinkML framework</p></li>
+<li><p>it faciliates automated and semi-automated mapping between your data and other representations</p></li>
+</ul>
+<p>There are a number of proposed frameworks for providing lightweight data dictionaries for your TSVs/spreadsheets:</p>
+<ul class="simple">
+<li><p>frictionless table schemas</p></li>
+<li><p>csvy</p></li>
+<li><p>csv on the web</p></li>
+</ul>
+<p>One advantage of LinkML is that it is not <em>only</em> for TSVs</p>
+</section>
+<section id="why-should-i-use-linkml-over-json-schema">
+<h2>Why should I use LinkML over JSON-Schema?<a class="headerlink" href="#why-should-i-use-linkml-over-json-schema" title="Permalink to this headline"></a></h2>
+<p>JSON-Schema is a fantastic framework for validating JSON documents. If your primary use case is validating JSON documents then by all means keep using it!</p>
+<p>However, if any of the following apply to you, you may want to consider LinkML - and remember, you can always compile your LinkML schema down to JSON-Schema!</p>
+<ul class="simple">
+<li><p>You want to make use inheritance/polymorphism</p></li>
+<li><p>you want a language with a simple core based around familiar concepts of classes and fields (slots)</p></li>
+<li><p>you want to make your data more FAIR (Findable Accessible Interoperable Reusable), for example, by annotating schema elements with IRIs</p></li>
+<li><p>you want to use JSON-LD but don’t want to coordinate separate JSON-Schema and JSON-LD context documents - LinkML is an all-in-one-solution!</p></li>
+<li><p>you want a more advanced ontology-aware enumerations</p></li>
+<li><p>you want your datamodel to be used in other frameworks than JSON - e.g. TSVs, SQL databases, Triplestores, graph databases</p></li>
+</ul>
+<p>When making your decision, you should weigh factors such as the fact that things that can be expressed in one framework may not be expressible in the other.</p>
+<p>See also FAQ entries in <a class="reference internal" href="modeling.html"><span class="doc std std-doc">modeling</span></a> which compare some similar constructs.</p>
+</section>
+<section id="why-should-i-use-linkml-over-shex-shacl">
+<h2>Why should I use LinkML over ShEx/SHACL?<a class="headerlink" href="#why-should-i-use-linkml-over-shex-shacl" title="Permalink to this headline"></a></h2>
+<p>ShEx and SHACL are both excellent “shape” languages for providing
+closed-world constraints on top of RDF/triples. If your universe
+consists entirely of RDF then you may want to consider adopting one of
+these as your primary means of expressing your data!</p>
+<p>However, if any of the following apply to you, you may want to
+consider LinkML - and remember, you can always compile your LinkML
+schema to ShEx, with a prototype SHACL generator now available.</p>
+<ul class="simple">
+<li><p>you want your datamodel to work for non-RDF representations such as JSON, YAML, and relational databases</p></li>
+<li><p>your user based and developer base is not entirely semantic web / linked data enthusiasts</p></li>
+<li><p>your emphasis is more on data modeling rather than validation</p></li>
+</ul>
+<p>Full disclosure: LinkML lead developer Harold Solbrig is also one of the authors of the ShEx specification.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/shex.html">ShEx generator</a></p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/shacl.html">SHACL generator</a></p></li>
+</ul>
+</section>
+<section id="why-should-i-use-linkml-over-sql-ddl">
+<h2>Why should I use LinkML over SQL DDL?<a class="headerlink" href="#why-should-i-use-linkml-over-sql-ddl" title="Permalink to this headline"></a></h2>
+<p>SQL Data Description Language (DDL; or simply “CREATE TABLE”
+statements) is a means of describing the structure of a relational
+database.</p>
+<p>If you are using a relational database and have minimal lightweight
+application code that performs direct SQL queries over data, there may
+be no compelling use case for LinkML.</p>
+<p>However, most information architectures that use a SQL database also
+involve some alternative representation of the data - for example, a
+JSON representation in an API, or an object representation – or even
+an RDF representation. It can be challenging to keep these different
+representations in sync. There are frequently excellent products that
+solve “one part” of this mapping problem – e.g. an ORM (Object
+Relational Mapping) tool. LinkML is intended to allow you to give a
+“bigger picture” view of your model that is as independent as possible
+from underlying storage or exchange technologies, and at the same time
+can be compiled down.</p>
+<p>LinkML also allows you to specify URIs and CURIE/URI mappings for each
+element of your schema, which provides a declarative specification of
+how your data should be mapped. For example, if you are trying to
+bring together two schemas (whether via federation or via
+warehousing), if both schemas annotate the same field with the same
+URI then we know these can be merged.</p>
+<p>Even if you are not interested in mapping your SQL data model to
+anything else, it can still be a great idea to use LinkML as a data
+definition language for your schema, especially if you have a schema
+with many fields that a domain scientist or stakeholder needs to
+understand.</p>
+<p>In our opinion, SQL DDL is not a great language for data
+dictionaries. There is a lack of standard ways to even add comments or
+descriptions to fields, and it can be challenging to introspect
+these. LinkML provides a simple easy to use way to provide rich
+metadata about your fields.</p>
+<p>Compare:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">sample</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w">  </span><span class="c1">-- unique sample id</span>
+<span class="w">  </span><span class="n">individual_id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">person</span><span class="p">.</span><span class="n">id</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">disease</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">src</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="n">collec_location</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">geoloc</span><span class="p">.</span><span class="n">id</span><span class="p">),</span><span class="w"></span>
+<span class="w">  </span><span class="p">...</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>with:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Sample</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">identifier</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SAMPLEDB:SAM\\d{8}&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A unique identifier for the sample</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sample name</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A human-readable name for the sample</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NarrativeText</span><span class="w"></span>
+<span class="w">      </span><span class="nt">disease</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disease</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the disease with which the patient was diagnosed</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span><span class="w"></span>
+<span class="w">      </span><span class="nt">src</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tissue source</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the anatomical location from which the tissue was sampled</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DiseaseEnum</span><span class="w"></span>
+<span class="w">        </span><span class="nt">todos</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model this using an ontology term instead</span><span class="w"></span>
+<span class="w">      </span><span class="nt">collec_location</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collection location</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the geocoordinates of the site where the sampling was obtained</span><span class="w"></span>
+<span class="w">        </span><span class="nt">notes</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">this should NOT be the site of processing</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GeoLoc</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Here we have a standard way of providing human-readable names for our
+columns (via <a class="reference external" href="https://w3id.org/linkml/title">title</a>). We have a
+human-friendly textual description. Both of these could be used to
+drive dynamic tooltips in an application that collects or displays data.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/sqlddl.html">SQL Table generator</a></p></li>
+</ul>
+</section>
+<section id="why-should-i-use-linkml-over-uml">
+<h2>Why should I use LinkML over UML?<a class="headerlink" href="#why-should-i-use-linkml-over-uml" title="Permalink to this headline"></a></h2>
+<p>UML is a powerful language for software engineer diagramming. <a class="reference external" href="https://en.wikipedia.org/wiki/Class_diagram">UML
+Class Diagrams</a> provide a
+standard way to draw a class hierarchy for a program, that has some
+similarities to LinkML.</p>
+<p>There are a number of reasons to use LinkML over UML</p>
+<ul class="simple">
+<li><p>The UML standard is large and complex</p></li>
+<li><p>UML is more geared towards software engineering and includes features not needed for data modeling, such as operations</p></li>
+<li><p>UML tools are complex and expensive (both financially and in terms of learning curves)</p></li>
+<li><p>In contrast LinkML makes it easy to author schemas using nothing more than a text editor</p></li>
+<li><p>All the tooling for LinkML is free and open</p></li>
+<li><p>LinkML has the ability to compile to other frameworks</p></li>
+<li><p>LinkML has facilities for semantic modeling, not anticipated in UML</p></li>
+</ul>
+<p>Currently there is no way to generate complete UML from a LinkML schema.</p>
+<p>However, the yUML generator (used in <a class="reference external" href="https://linkml.io/linkml/generators/markdown.html">the markdown generator</a>) can be used to make yUML diagrams for any class or schema.</p>
+</section>
+<section id="why-should-i-use-linkml-over-owl">
+<h2>Why should I use LinkML over OWL?<a class="headerlink" href="#why-should-i-use-linkml-over-owl" title="Permalink to this headline"></a></h2>
+<p>LinkML is in a very different class of languages from OWL. LinkML is a
+schema language, with features in common with JSON-Schema, XML Schema,
+UML, SQL DDL, shape languages such as ShEx/SHACL.</p>
+<p>In our experience OWL is best for “open model” direct representations
+of domain knowledge, and should not be used as a schema
+language. However, we appreciate this is nuanced, and we welcome any
+questions or discussions via our GitHub issue tracker.</p>
+<p>If you do have a schema expressed in OWL, you can use the linkml
+toolkit to infer/bootstrap a LinkML schema from it. But note this is a
+heuristic procedure, and will not give you sensible results from a
+large “terminological” ontology.</p>
+<p>It <em>is</em> possible to use LinkML to help you structure an OWL ontology
+by using LinkML as a metaclass authoring system. See
+<a class="reference external" href="https://chemkg.github.io/chemrof/ontology">ChemSchema</a> for
+an example, and see also the
+<a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> framework.</p>
+<p>See also:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/generators/owl.html">OWL generator</a></p></li>
+</ul>
+</section>
+<section id="why-should-i-use-linkml-over-custom-spreadsheets">
+<h2>Why should I use LinkML over Custom spreadsheets?<a class="headerlink" href="#why-should-i-use-linkml-over-custom-spreadsheets" title="Permalink to this headline"></a></h2>
+<p>It is common in many projects for metadata elements and data dictionaries to be maintained as ad-hoc spreadsheets.</p>
+<p>Doing this in the absence of any over-arching framework can be
+problematic. It is easy for mistakes to creep into these spreadsheets
+unnoticed, often the semantics are unclear, and when developers are
+asked to write validators or UIs driven by these spreadsheets the lack
+of clear semantics can lead to repetitive error-prone code that is
+costly to maintain.</p>
+<p>LinkML provides a more systematic way to manage data dictionaries and metadata elements.</p>
+<p>Historically this has required use of YAML files to maintain a schema,
+which can be offputting to non-technical metadata curators. A new framework allows the best of both worlds:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/schemasheets">SchemaSheets</a> – author schemas as spreadsheets</p></li>
+</ul>
+<p>This framework allows schemas to be maintained using Excel, google sheets, or TSVs, providing flexibility to non-technical modelers, with all the benefits of linkml.</p>
+</section>
+<section id="why-should-i-use-linkml-over-csv-on-the-web">
+<h2>Why should I use LinkML over CSV-on-the-web?<a class="headerlink" href="#why-should-i-use-linkml-over-csv-on-the-web" title="Permalink to this headline"></a></h2>
+<p>The W3C <a class="reference external" href="https://www.w3.org/TR/tabular-data-primer/">CSV on the Web</a>
+(CSVW) Working Group have developed standard ways to express metadata about
+CSVs and other kinds of tabular data.</p>
+<p>An example use of CSVW is to semantically describe the columns in a
+CSV/TSV, for example a CSV about country locations and nomenculature. The following in Example 10 from the CSVW primer:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;@context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.w3.org/ns/csvw&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;countries.csv&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;tableSchema&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;columns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;country&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The ISO two-letter code for a country, in lowercase.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;country group&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A lowercase two-letter code for a group of countries.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name (en)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The official name of the country in English.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name (fr)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The official name of the country in French.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name (de)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The official name of the country in German.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latitude&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The latitude of an indicative point in the country.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;titles&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;longitude&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dc:description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The longitude of an indicative point in the country.&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}]</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>CSVW provides a number of advantages for making data FAIR over the use
+of CSVs alone, or CSVs in combination with non-machine readable documentation files.</p>
+<p>Most of the things that can be said using CSVW can also be said with
+LinkML, and LinkML is not restricted solely to CSVs - e.g. you can
+semantically describe JSON files with LinkML too.</p>
+<p>We are currently planning on writing a generator for CSVW JSON-LD.</p>
+</section>
+<section id="why-should-i-use-linkml-over-iso-11179">
+<h2>Why should I use LinkML over ISO-11179?<a class="headerlink" href="#why-should-i-use-linkml-over-iso-11179" title="Permalink to this headline"></a></h2>
+<p>ISO-11179 is an ISO standard for Metadata and Metadata Registries. It
+provides a rich standardized way of exchanging data dictionaries. For
+example, an ISO-11179 registry can be used to register all of the
+columns in a data file or tags in an XML file, and to map semantics
+onto these, making integration across datasets more automatable.</p>
+<p>Currently ISO-11179 and LinkML serve different purposes, but there are
+overlaps in goals, and we are currently working on documentation
+clarifying the connection.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="general.html" class="btn btn-neutral float-left" title="FAQ: General" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modeling.html" class="btn btn-neutral float-right" title="FAQ: Modeling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The LinkML Ecosystem &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="LinkML specification" href="specifications/linkml-spec.html" />
+    <link rel="prev" title="Examples of use" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples of use</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The LinkML Ecosystem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tools-that-build-off-linkml">Tools that build off LinkML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-harmonizer">Data Harmonizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#koza">Koza</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#schemasheets">Schemasheets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bootstrapping-models">Bootstrapping Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#templated-owl-generation">Templated OWL generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#datalog-reasoning">Datalog reasoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sparql-templates">SPARQL templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sssom-py">SSSOM-py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>The LinkML Ecosystem</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ecosystem.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-linkml-ecosystem">
+<h1>The LinkML Ecosystem<a class="headerlink" href="#the-linkml-ecosystem" title="Permalink to this headline"></a></h1>
+<p>LinkML is part of a growing ecosystem of tools; these may be at varying levels of maturity</p>
+<section id="tools-that-build-off-linkml">
+<h2>Tools that build off LinkML<a class="headerlink" href="#tools-that-build-off-linkml" title="Permalink to this headline"></a></h2>
+<section id="data-harmonizer">
+<h3>Data Harmonizer<a class="headerlink" href="#data-harmonizer" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Public-Health-Bioinformatics/DataHarmonizer">DataHarmonizer</a> is a ontology-based curation tool that is being adapter to LinkML</p></li>
+</ul>
+</section>
+<section id="koza">
+<h3>Koza<a class="headerlink" href="#koza" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/monarch-initiative/koza">Koza</a> is a data transformation framework for LinkML models</p></li>
+</ul>
+</section>
+<section id="schemasheets">
+<h3>Schemasheets<a class="headerlink" href="#schemasheets" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/schemasheets">Schemasheets</a> allows the specification of schemas via excel and google sheets</p></li>
+</ul>
+</section>
+<section id="bootstrapping-models">
+<h3>Bootstrapping Models<a class="headerlink" href="#bootstrapping-models" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a> bootstraps schemas from existing structured and semi-structured sources</p></li>
+</ul>
+</section>
+<section id="templated-owl-generation">
+<h3>Templated OWL generation<a class="headerlink" href="#templated-owl-generation" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> allows schemas to be used as templates for generating OWL ontologies from LinkML data</p></li>
+</ul>
+</section>
+<section id="datalog-reasoning">
+<h3>Datalog reasoning<a class="headerlink" href="#datalog-reasoning" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-datalog">linkml-datalog</a> allows rule-based reasoning over linkml data</p></li>
+</ul>
+</section>
+<section id="sparql-templates">
+<h3>SPARQL templates<a class="headerlink" href="#sparql-templates" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/sparqlfun">sparqlfun</a> is a framework for generating and executing queries against sparql endpoints</p></li>
+</ul>
+</section>
+<section id="sssom-py">
+<h3>SSSOM-py<a class="headerlink" href="#sssom-py" title="Permalink to this headline"></a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/mapping-commons/sssom-py">sssom-py</a> is a toolkit for managing mappings and is driven by a linkml schema</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples of use" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="specifications/linkml-spec.html" class="btn btn-neutral float-right" title="LinkML specification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

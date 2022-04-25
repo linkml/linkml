@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tool Implementor Guide &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing Code" href="contributing-code.html" />
+    <link rel="prev" title="Using SQL Databases" href="using-sql-dbs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developers guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Convetsion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="using-sql-dbs.html">Using SQL Databases</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tool Implementor Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-considerations">General Considerations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#schema-conformance-levels">Schema Conformance Levels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-languages">Other Languages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#materializing-imports-and-inferences">Materializing imports and inferences</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#general-guidelines-for-applications">General Guidelines for applications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customizing-and-application-hints">Customizing and application hints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-other-frameworks">Using other frameworks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Developers guide</a> &raquo;</li>
+      <li>Tool Implementor Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developers/tool-developer-guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tool-implementor-guide">
+<h1>Tool Implementor Guide<a class="headerlink" href="#tool-implementor-guide" title="Permalink to this headline"></a></h1>
+<p>This guide is for developers of <em>generic</em> LinkML tools that operate
+over the linkml metamodel, for example:</p>
+<ul class="simple">
+<li><p>Generic Web-based data submission tools driven by a LinkML schema</p></li>
+<li><p>Tools that produce or modify LinkML schemas</p></li>
+<li><p>Tools that analyze schemas or align schemas or schema elements</p></li>
+<li><p>Tools that auto-genete APIs from schemas</p></li>
+<li><p>Generic faceted data browsers that flexibly operate over multiple
+schemas (see   <a class="reference external" href="https://docs.google.com/document/d/1jOLRF_doeSomVxZD5H8Ig_WujQ-2sNxhvWBmojZos3o/edit">this draft</a></p></li>
+<li><p>Schema editors for LinkML itself</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This guide is <em>not</em> intended for developers of <em>specific</em>
+applications that are built for any one particular
+schema. For example, if I am building an application geared
+towards entering phenotypic data about patients then I may
+want to build that application around a schema for
+patients. In this case, my application isn’t intended to
+work with other schemas, and hence does not need to know
+anything about the linkml metamodel.</p>
+</div>
+<p>An example of a generic-schema driven editing application is json-editor
+<a class="reference external" href="https://github.com/json-editor/json-editor">https://github.com/json-editor/json-editor</a>, which provides a way
+to create instance data for an arbitrary JSON-Schema.</p>
+<p>[react-jsonschema-form](<a class="reference external" href="https://rjsf-team.github.io/react-jsonschema-form/">https://rjsf-team.github.io/react-jsonschema-form/</a>)
+is based on the same idea.</p>
+<p>Another example is <a class="reference external" href="https://github.com/cidgoh/DataHarmonizer">DataHarmonizer</a> which provides a
+spreadsheet-like data entry interface for any “flat” LinkML schema.</p>
+<section id="general-considerations">
+<h2>General Considerations<a class="headerlink" href="#general-considerations" title="Permalink to this headline"></a></h2>
+<p>Any generic LinkML application will be driven by a LinkML <em>model</em>
+(schema), which itself conforms to the <a class="reference external" href="https://w3id.org/linkml">LinkML metamodel</a>. It follows that these applications will
+itself need to conform to that model.</p>
+<p>One challenge is that the LinkML metamodel includes many different
+features, not all of which may be required for a particular
+application. See the section on Schema Conformance Levels for guidance
+here, as this will help you target your application to a particular
+profile.</p>
+<p>Another challenge is working with schemas themselves. The native
+syntax for LinkML is YAML, and YAML parsers are provided with all
+major languages. However, you will likely need to do more than parse
+the model. There is a lot of “business logic” associated with a
+model. For example, the rules that govern
+<span class="xref std std-doc">inheritance and refinement of slots</span>.</p>
+<p>For Python applications, the SchemaView library provides this business
+logic, but currently this logic must be re-implemented for different
+languages. This may be a concern if you are building web applications
+in JavaScript. The section on Working with Other Languages addresses
+this.</p>
+<p>Another challenge with building generic applications is making these
+configurable at the schema level for different domains. The section on
+customization and application hints deals with this.</p>
+<p>Finally, you may wish to target a different framework than LinkML
+itself. For semantic web applications, ShEx or SHACL may be a good
+choice to build applications from. One advantage of LinkML is that you
+can author in LinkML and compile to these other frameworks. But there
+are trade-offs here. See the section on Other Frameworks.</p>
+</section>
+<section id="schema-conformance-levels">
+<h2>Schema Conformance Levels<a class="headerlink" href="#schema-conformance-levels" title="Permalink to this headline"></a></h2>
+<p>LinkML is a rich language supporting extensible types, inheritance,
+use of Linked Data IRIs, ontological enums, imports, rules, boolean
+constructs. It can be daunting to consider building a tool that
+supports all of this. Thankfully this is not necessary.</p>
+<p>We are including support for the notion of “conformance levels” or
+“profiles” to LinkML. This will allow applications to clearly state
+what parts of the specification are supported, and for people
+deploying the application to adapt accordingly.</p>
+<dl class="simple">
+<dt>.note:: An example use case is a simple questionnaire UI/application that is</dt><dd><p>driven by a LinkML schema, where each question is a slot and
+each answer either free text or in the case of multiple
+choice, an enum. There is no need for inheritance in this
+case, so the application only needs to pay attention to
+elements in the schema such as <cite>slots</cite> and
+<cite>permissible_values</cite>.</p>
+</dd>
+</dl>
+<p>Currently specific conformance levels in LinkML have not been defined,
+but current thinking is to have different categories:</p>
+<ul>
+<li><p>A <em>structural</em> conformance level that pertains to logical parts of
+the schema</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The minimal level would include <cite>classes</cite>, <cite>attributes</cite>, <cite>range</cite>
+and basic builtin types, as well as cardinalities</p></li>
+<li><p>The next level would include class inheritance and slots, and
+basic enums</p></li>
+<li><p>The level above this would include slot inheritance, and slot
+overrides with <cite>slot_usage</cite></p></li>
+<li><p>The highest level would include boolean expressions and rules</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>A <em>metadata</em> conformance level that pertains to informational
+aspects of the schema that do not drive validation or inference</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>minimal metadata would include metaslots for <cite>description</cite>,
+<cite>comments</cite></p></li>
+<li><p>above this, a minimal semantic level would include class and
+slot uris, and mappings</p></li>
+<li><p>the full level would include all possible metaslots</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>The LinkML framework provides some functionality for being able to do
+transformations “down” levels. For example, a rich schema that uses
+inheritance and <cite>slot_usage</cite> can be “rolled down” to a schema that
+includes only leaf elements, with inferred slots materialized as
+attributes. The resulting schema will be less rich, but may be
+sufficient for certain kinds of applications.</p>
+<p>See the YAML Generator for one such tool.</p>
+</section>
+<section id="other-languages">
+<h2>Other Languages<a class="headerlink" href="#other-languages" title="Permalink to this headline"></a></h2>
+<p>LinkML is programming language neutral. However, currently much of the
+stack for introspecting schemas is written in Python.</p>
+<p>For example, in Python, if you want a list of slots for that class you can use <span class="xref std std-ref">class_slots</span>. But
+what if you are building a generic JavaScript data entry widget that
+will work for any LinkML class?</p>
+<p>There are a few broad approaches here:</p>
+<ul class="simple">
+<li><p>1. Use the direct output of your language’s YAML/JSON parser, and
+implement logic ad-hoc</p></li>
+<li><p>2. Develop a full blown analog of the Python SchemaView class for
+your language</p></li>
+<li><p>3. Write Python code to transform LinkML YAML into a native form
+geared for your application</p></li>
+</ul>
+<p>The first approach may be easiest, but we would only recommend this
+for simple schemas (low structural conformance – see above).</p>
+<p>If you are interested in approach 2, please make an issue on our
+GitHub repo so we can coordinate! We may have suggestions for general
+strategies for bootstrapping. And we may already have prototype
+implementations for your language.</p>
+<p>For example, we have a prototype Java code generator that can create
+Java classes for any LinkML model. The LinkML metamodel is in LinkML,
+so this can be used to make a Java object model for LinkML itself,
+which can help bootstrap efforts to make domain logical libraries.</p>
+<section id="materializing-imports-and-inferences">
+<h3>Materializing imports and inferences<a class="headerlink" href="#materializing-imports-and-inferences" title="Permalink to this headline"></a></h3>
+<p>The <a class="reference external" href="../generators/linkml.html">linkml generator</a> can be used to
+materialize imports closure and to materialize inferred/induced slots
+as attributes. This frees the client logic from needing to implement
+this logic locally.</p>
+</section>
+</section>
+<section id="general-guidelines-for-applications">
+<h2>General Guidelines for applications<a class="headerlink" href="#general-guidelines-for-applications" title="Permalink to this headline"></a></h2>
+<p>These guidelines apply to how applications should use elements of the
+LinkML metamodel.</p>
+<ul class="simple">
+<li><p>Applications should use <a class="reference external" href="https://w3id.org/linkml/">title</a> to
+obtain the user-friendly name for a slot. For example a
+spreadsheet-like data entry tool should display these as column
+headers</p></li>
+<li><p>If <cite>title</cite> field is not available, use the <cite>name</cite> slot</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/description">description</a> slot should
+be used to provide information to users, e.g. as tool-tips</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/pattern">pattern</a> slot should be used
+to constrain values entered by the user</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/required">required</a> slot should be used
+to indicate to users if a field is not filled in. Applications MAY
+choose to still allow such data to be saved, e.g. if the user is in
+an intermediate state</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/multivalued">multivalued</a> slot should
+be used to indicate whether data should be inputted or displayed as
+a list/set</p></li>
+<li><p>The <a class="reference external" href="https://w3id.org/linkml/range">range</a> slot should
+be used to constrain values for a slot. The application should also
+apply relevant logic to this calculation depending on conformance
+level supported.</p></li>
+<li><p>The URI of a construct may be used to provide links for a user to
+find more information in an element. For example, in a data entry
+form a column may have a hyperlink to complete documentation on that
+data dictionary element</p></li>
+<li><p>An application may use the primary URI of a concept or its mappings
+to look up semantics for the type and behave appropriately (see
+examples with geolocation below)</p></li>
+<li><p>Minimally, data entry applications should treat enums as dropdowns
+or radio-button selectors</p></li>
+<li><p>In a data entry application, a slot that is multivalued and has a
+range of an enum may be implemented as a multi-select.</p></li>
+<li><p>Enums that take exactly two possible permissible values may be
+displayed as toggles</p></li>
+<li><p>Applications may choose to use standard ontology browsers such as
+OLS or BioPortal, or standard query endpoints to obtain more
+information on enums. See below.</p></li>
+</ul>
+<p>Slots that may potentially be added to provide applications with
+hints:</p>
+<ul class="simple">
+<li><p>precedence order</p></li>
+<li><p>grouping categories</p></li>
+</ul>
+</section>
+<section id="customizing-and-application-hints">
+<h2>Customizing and application hints<a class="headerlink" href="#customizing-and-application-hints" title="Permalink to this headline"></a></h2>
+<p>One challenge with generic applications is that they often look and
+feel… generic. This can have some advantages, e.g. consistent look
+and feel. But in general UX can be improved by customizing things.</p>
+<p>There are three broad approaches:</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>Make a custom application, with custom domain logic implemented programmatically</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>Define configuration files</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="3">
+<li><p>Add schema hints</p></li>
+</ol>
+</li>
+</ul>
+<p>The first approach is out of scope for this guide – but if you do go
+down this route, the LinkML framework provides various utilities that
+may help, such as the ability to generate custom language bindings.</p>
+<p>The other two approaches are fairly similar and involve providing a
+mechanism for a generic application to customize look, feel, and
+behavior in a way that doesn’t require changing software/code.</p>
+<p>External configuration files may be best for “style sheet” type
+configurations for controlling colors, shapes, sizes, etc. These could
+potentially be tweaked by an individual user.</p>
+<p>It is easy to roll your own configuration format, but we would
+recommend creating a schema for your configuration data model. An
+example of this is <a class="reference external" href="https://berkeleybop.github.io/kgviz-model/">KGViz Schema</a> which is a stylesheet
+language for visualizing ontology graphs, based on <cite>Graphviz&lt;https://graphviz.org/&gt;</cite>.</p>
+<p>Schema hints embed additional information in the schema itself. In
+contrast to external configurations, this is harder for a user to
+change, and so is best suited for ‘centralized’ configuration.</p>
+<p>A simple example might be a slot that takes a string as range. A
+generic data entry application has no way of knowing how big a text
+entry box to provide, and whether this should accept single-line or
+multi-line output. The application could ‘play it safe’ and give the
+user a large multi-line box, but this would be poor UX if the string
+field is always a 3-letter code.</p>
+<p>LinkML allows for slots and types to be annotated with information
+that would serve as hints for applications. It is up to you the level
+of granularity you provide here. However, specifying the precise
+number of rows and columns may be embedding too much application logic
+in the schema. Instead we encourage thinking of “semantic types”. For
+example, you could define two types:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">NameString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[^\\n]$&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A description that holds a human readable name</span><span class="w"></span>
+<span class="w">    </span><span class="nt">comments</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This is designed to support different styles of names from</span><span class="w"></span>
+<span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">multiple languages, but certain characters such as newlines are</span><span class="w"></span>
+<span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">never in names</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">FormattedString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">A string in which characters such as newlines are</span><span class="w"></span>
+<span class="w">      </span><span class="no">permitted and used for formatting</span><span class="w"></span>
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">full_name</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NameString</span><span class="w"></span>
+<span class="w">  </span><span class="nt">address</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FormattedString</span><span class="w"></span>
+</pre></div>
+</div>
+<p>And then hardcode these types into the application.</p>
+<p>A more flexible approach would be instead to use annotations on the
+types:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">NameString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[^\\n]$&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">dash.singleLine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">FormattedString</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">dash.singleLine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This is better as you can reuse the same vocabulary on different
+types, and you introduce decoupling between specific schemas and your
+application.</p>
+<p>In this case, we are reusing the <a class="reference external" href="https://datashapes.org/forms.html">dash vocabulary</a> which is intended for exactly
+this kind of purpose. Furthermore, if you compile your schema to SHACL
+then it will have the dash annotations, allowing you to leverage
+generic SHACL applications (next section).</p>
+<p>Consider a schema that reuses standard vocabularies such as wgs84 for
+slots:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">wgs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.w3.org/2003/01/geo/wgs84_pos#</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">latitude</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">geolocation value</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal degree</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">latitude</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wgs:lat</span><span class="w"></span>
+<span class="w">    </span><span class="nt">exact_mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:latitude</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">longitude</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">geolocation value</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal degree</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">longitude</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wgs:long</span><span class="w"></span>
+<span class="w">    </span><span class="nt">exact_mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:longitude</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Applications may choose to have specific behavior for lat-long fields,
+for example, including a map widget. Applications may also choose to
+use mappings as well as the primary URI.</p>
+<p>In addition to the general guidance above, applications may allow for
+custom behavior with enums.</p>
+<p>Applications may choose to display enum permissible values as a
+hierarchy, especially if there are many permissible values. The
+hierarchy is not provided in the schema itself, but additional APIs or
+ontology files can be used. The choice of which relationship types to
+display in the hierarchy may be ontology or application dependent but
+applications are encouraged to use standard annotations from an
+ontology like OMO.</p>
+<p>For open-ended enums or enums with very many permissible values,
+applications may choose to use an autocomplete service from an
+existing ontology. This has the advantage of lookup on multiple
+different aliases. However, note the autocomplete service may return
+more values than are present in the permissible value list.</p>
+<p>There are a wide variety of ways to model quantities, and these are
+use case dependent. Is it important to capture ranges or
+precision/error bars? Is the unit baked in to the slot, or does the
+user specify this? Is the quantity captured as a single parseable text
+string, or is a complex object used?</p>
+<p>The modeling decisions will vary based on the use case. However, if
+certain conventions are followed, then generic applications can be made
+‘smart’.</p>
+<p>For example, if we model quantity values as classes and reuse the
+concept from the standard <cite>qudt&lt;http://qudt.org/&gt;</cite> vocabulary:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">quantity value</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">    </span><span class="no">A simple quantity, e.g. 2cm</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">verbatim</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">        </span><span class="no">Unnormalized atomic string representation, should in syntax {number} {unit}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">has unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">        </span><span class="no">The unit of the quantity</span><span class="w"></span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qudt:unit</span><span class="w"></span>
+<span class="w">    </span><span class="nt">has numeric value</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">        </span><span class="no">The number part of the quantity</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">double</span><span class="w"></span>
+<span class="w">  </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">qudt:QuantityValue</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mappings</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:QuantityValue</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then applications can be aware of the semantics of this field and act
+accordingly; for example:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>allow free text entry and use a library like <cite>quantulum&lt;https://github.com/marcolagi/quantulum&gt;</cite> to parse
+into structured form</p></li>
+<li><p>allow for conversion between units</p></li>
+<li><p>use sliders to allow input</p></li>
+<li><p>etc</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="using-other-frameworks">
+<h2>Using other frameworks<a class="headerlink" href="#using-other-frameworks" title="Permalink to this headline"></a></h2>
+<p>You should also feel free to build applications that use other
+frameworks. You can compile to these from LinkML, but be aware that
+you will be restricted to the expressivity of that language–e.g. a
+project like json-edit can only make use of what is expressible in
+JSON Schema.</p>
+<p>If considering a non-LinkML framework for form-based data entry we
+would strongly recommend SHACL + DASH. See <a class="reference external" href="https://datashapes.org/forms.html">Form Generation using
+SHACL and DASH</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="using-sql-dbs.html" class="btn btn-neutral float-left" title="Using SQL Databases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing-code.html" class="btn btn-neutral float-right" title="Contributing Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

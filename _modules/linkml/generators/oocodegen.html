@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.generators.oocodegen &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.generators.oocodegen</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.generators.oocodegen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">unicodedata</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">lcamelcase</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+
+
+<span class="n">SAFE_NAME</span> <span class="o">=</span> <span class="nb">str</span>
+<span class="n">TYPE_EXPRESSION</span> <span class="o">=</span> <span class="nb">str</span>
+<span class="n">ANNOTATION</span> <span class="o">=</span> <span class="nb">str</span>
+<span class="n">PACKAGE</span> <span class="o">=</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="OODocument"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OODocument">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OODocument</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A collection of one or more OO classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">SAFE_NAME</span>
+    <span class="n">package</span><span class="p">:</span> <span class="n">PACKAGE</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">source_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;OOClass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">imports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span></div>
+
+
+<div class="viewcode-block" id="OOField"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOField">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OOField</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A field belonging to an OO class that corresponds to a LinkML class slot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">SAFE_NAME</span>
+    <span class="nb">range</span><span class="p">:</span> <span class="n">TYPE_EXPRESSION</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ANNOTATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">source_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span></div>
+
+<div class="viewcode-block" id="OOClass"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOClass">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">OOClass</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object-oriented class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">SAFE_NAME</span>
+    <span class="n">is_a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SAFE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">abstract</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mixins</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SAFE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OOField</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ANNOTATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">package</span><span class="p">:</span> <span class="n">PACKAGE</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">source_class</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="OOCodeGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator">[docs]</a><span class="k">class</span> <span class="nc">OOCodeGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="n">package</span><span class="p">:</span> <span class="n">PACKAGE</span> <span class="o">=</span> <span class="s2">&quot;example&quot;</span>
+    <span class="n">java_style</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="OOCodeGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.serialize">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.get_class_name"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.get_class_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_class_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.get_slot_name"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.get_slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_slot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sn</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">java_style</span><span class="p">:</span>
+            <span class="n">safe_sn</span> <span class="o">=</span> <span class="n">lcamelcase</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">safe_sn</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">safe_sn</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.map_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.map_type">[docs]</a>    <span class="k">def</span> <span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">base</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.make_multivalued"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.make_multivalued">[docs]</a>    <span class="k">def</span> <span class="nf">make_multivalued</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">range</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;List&lt;</span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s1">&gt;&#39;</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.replace_invalid_identifier_character"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.replace_invalid_identifier_character">[docs]</a>    <span class="k">def</span> <span class="nf">replace_invalid_identifier_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">or</span> <span class="n">char</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="ow">or</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">char</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">underscore</span><span class="p">(</span><span class="n">unicodedata</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">char</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.generate_enum_label"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.generate_enum_label">[docs]</a>    <span class="k">def</span> <span class="nf">generate_enum_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">label</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># add an underscore if the value starts with a digit</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(?=^\d)&#39;</span><span class="p">,</span><span class="s1">&#39;number_&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+            <span class="n">safe_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">label</span><span class="p">:</span>
+                <span class="n">safe_label</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace_invalid_identifier_character</span><span class="p">(</span><span class="n">character</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">safe_label</span></div>
+
+<div class="viewcode-block" id="OOCodeGenerator.create_documents"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.oocodegen.OOCodeGenerator.create_documents">[docs]</a>    <span class="k">def</span> <span class="nf">create_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">OODocument</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Currently hardcoded for java-style</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+            <span class="n">safe_cn</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+            <span class="n">oodoc</span> <span class="o">=</span> <span class="n">OODocument</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">safe_cn</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="n">source_schema</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+            <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oodoc</span><span class="p">)</span>
+            <span class="n">ooclass</span> <span class="o">=</span> <span class="n">OOClass</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">safe_cn</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[],</span> <span class="n">source_class</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+            <span class="c1"># currently hardcoded for java style, one class per doc</span>
+            <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ooclass</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">abstract</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">abstract</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">is_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_name</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
+                <span class="n">parent_slots</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parent_slots</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">parent_slots</span><span class="p">:</span>
+                    <span class="c1"># TODO: overrides</span>
+                    <span class="k">continue</span>
+                <span class="n">safe_sn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot_name</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
+                <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span>
+                <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+
+                <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># TODO: schemaview should infer this</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
+
+                <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="s1">&#39;string&#39;</span>
+
+                <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_name</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
+                    <span class="n">t</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># If mapping fails,</span>
+                        <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_type</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_type</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown range </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
+                    <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_multivalued</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
+                <span class="n">oofield</span> <span class="o">=</span> <span class="n">OOField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">safe_sn</span><span class="p">,</span> <span class="n">source_slot</span><span class="o">=</span><span class="n">slot</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">)</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">docs</span></div></div>
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.utils.typereferences &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.utils.typereferences</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.utils.typereferences</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">SubsetDefinitionName</span><span class="p">,</span> \
+    <span class="n">ElementName</span><span class="p">,</span> <span class="n">EnumDefinitionName</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">empty_set</span>
+
+
+<div class="viewcode-block" id="RefType"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.typereferences.RefType">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">RefType</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<span class="n">ClassType</span> <span class="o">=</span> <span class="n">RefType</span><span class="p">(</span><span class="s1">&#39;Class&#39;</span><span class="p">)</span>
+<span class="n">TypeType</span> <span class="o">=</span> <span class="n">RefType</span><span class="p">(</span><span class="s1">&#39;Type&#39;</span><span class="p">)</span>
+<span class="n">SlotType</span> <span class="o">=</span> <span class="n">RefType</span><span class="p">(</span><span class="s1">&#39;Slot&#39;</span><span class="p">)</span>
+<span class="n">SubsetType</span> <span class="o">=</span> <span class="n">RefType</span><span class="p">(</span><span class="s1">&#39;Subset&#39;</span><span class="p">)</span>
+<span class="n">EnumType</span> <span class="o">=</span> <span class="n">RefType</span><span class="p">(</span><span class="s1">&#39;Enum&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="References"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.typereferences.References">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">References</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Summary of references to a given class. The reference class is the key to the dictionary carrying classrefs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">classrefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>     <span class="c1"># Refs of type class</span>
+    <span class="n">slotrefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>       <span class="c1"># Refs of type slot</span>
+    <span class="n">typerefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>       <span class="c1"># Refs of type type</span>
+    <span class="n">subsetrefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">SubsetDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>   <span class="c1"># Refs of type subset</span>
+    <span class="n">enumrefs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="n">empty_set</span><span class="p">()</span>       <span class="c1"># Refs of type enum</span>
+
+<div class="viewcode-block" id="References.addref"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.typereferences.References.addref">[docs]</a>    <span class="k">def</span> <span class="nf">addref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromtype</span><span class="p">:</span> <span class="n">RefType</span><span class="p">,</span> <span class="n">fromname</span><span class="p">:</span> <span class="n">ElementName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">ClassType</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">classrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">fromname</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">TypeType</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">typerefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TypeDefinitionName</span><span class="p">(</span><span class="n">fromname</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">SlotType</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">(</span><span class="n">fromname</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">SubsetType</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsetrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">SubsetDefinitionName</span><span class="p">(</span><span class="n">fromname</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">fromtype</span> <span class="ow">is</span> <span class="n">EnumType</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">EnumDefinitionName</span><span class="p">(</span><span class="n">fromname</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown typ: </span><span class="si">{</span><span class="n">fromtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="References.update"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.typereferences.References.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;References&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">classrefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">slotrefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">typerefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">typerefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subsetrefs</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">subsetrefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enumrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">enumrefs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classrefs</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slotrefs</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">typerefs</span><span class="p">)</span> <span class="ow">or</span>\
+               <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subsetrefs</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enumrefs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

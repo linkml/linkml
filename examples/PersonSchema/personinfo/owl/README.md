@@ -1,1 +1,0 @@
-# OWL generated from personinfo

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.generators.sqlalchemygen &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.generators.sqlalchemygen</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.generators.sqlalchemygen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">,</span> \
+    <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">Prefix</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">camelcase</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+
+<span class="kn">from</span> <span class="nn">linkml.generators.pydanticgen</span> <span class="kn">import</span> <span class="n">PydanticGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.sqlalchemy</span> <span class="kn">import</span> <span class="n">sqlalchemy_imperative_template_str</span><span class="p">,</span> <span class="n">sqlalchemy_declarative_template_str</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pythongen</span> <span class="kn">import</span> <span class="n">PythonGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.sqltablegen</span> <span class="kn">import</span> <span class="n">SQLTableGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.transformers.relmodel_transformer</span> <span class="kn">import</span> <span class="n">RelationalModelTransformer</span><span class="p">,</span> <span class="n">ForeignKeyPolicy</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+
+
+<span class="k">class</span> <span class="nc">TemplateEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">DECLARATIVE</span> <span class="o">=</span> <span class="s2">&quot;declarative&quot;</span>
+    <span class="n">IMPERATIVE</span> <span class="o">=</span> <span class="s2">&quot;imperative&quot;</span>
+
+<div class="viewcode-block" id="SQLAlchemyGenerator"><a class="viewcode-back" href="../../../generators/sqlalchemy.html#linkml.generators.sqlalchemygen.SQLAlchemyGenerator">[docs]</a><span class="k">class</span> <span class="nc">SQLAlchemyGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sqla&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;sqlite&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span> <span class="o">=</span> <span class="n">schema</span>
+        <span class="c1">#super().__init__(schema, **kwargs)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span>
+
+    <span class="k">def</span> <span class="nf">generate_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">no_model_import</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                      <span class="n">template</span><span class="p">:</span> <span class="n">TemplateEnum</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">IMPERATIVE</span><span class="p">,</span>
+                      <span class="n">foreign_key_policy</span><span class="p">:</span> <span class="n">ForeignKeyPolicy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1">#src_sv = SchemaView(self.schema)</span>
+        <span class="c1">#self.schema = src_sv.schema</span>
+        <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">foreign_key_policy</span><span class="p">:</span>
+            <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">foreign_key_policy</span>
+        <span class="n">tgen</span> <span class="o">=</span> <span class="n">SQLTableGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">tr_schema</span> <span class="o">=</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">schema</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tr_schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">sql_range</span> <span class="o">=</span> <span class="n">tgen</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">tr_schema</span><span class="p">)</span>
+                <span class="n">sql_type</span> <span class="o">=</span> <span class="n">sql_range</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+                <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span><span class="s1">&#39;sql_type&#39;</span><span class="p">,</span> <span class="n">sql_type</span><span class="p">)</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span>
+                <span class="c1">#a.sql_type = sql_type</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">IMPERATIVE</span><span class="p">:</span>
+            <span class="n">template_str</span> <span class="o">=</span> <span class="n">sqlalchemy_imperative_template_str</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span><span class="p">:</span>
+            <span class="n">template_str</span> <span class="o">=</span> <span class="n">sqlalchemy_declarative_template_str</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown template type: </span><span class="si">{</span><span class="n">template</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Package for dataclasses ==  </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">backrefs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">mappings</span><span class="p">:</span>
+            <span class="n">backrefs</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">source_class</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="n">skip</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1">#for c in tr_schema.classes.values():</span>
+        <span class="c1">#    if len(c.attributes) == 0:</span>
+        <span class="c1">#        skip[c.name] = True</span>
+        <span class="c1">#        #raise ValueError(f&#39;Class must have attrs: {c.name}&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_safe_aliases</span><span class="p">(</span><span class="n">tr_schema</span><span class="p">)</span>
+        <span class="n">tr_sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">tr_schema</span><span class="p">)</span>
+        <span class="n">rel_schema_classes_ordered</span> <span class="o">=</span> <span class="p">[</span><span class="n">tr_sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">order_classes_by_hierarchy</span><span class="p">(</span><span class="n">tr_sv</span><span class="p">)]</span>
+        <span class="n">rel_schema_classes_ordered</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rel_schema_classes_ordered</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rel_schema_classes_ordered</span><span class="p">:</span>
+            <span class="c1"># For SQLA there needs to be a primary key for each class;</span>
+            <span class="c1"># autogenerate this as a compound key if none declared</span>
+            <span class="n">has_pk</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="s1">&#39;primary_key&#39;</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">has_pk</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span><span class="s1">&#39;primary_key&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">)</span>
+                    <span class="n">a</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">ann</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">template_obj</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span>
+                                   <span class="n">mappings</span><span class="o">=</span><span class="n">tr_result</span><span class="o">.</span><span class="n">mappings</span><span class="p">,</span>
+                                   <span class="n">backrefs</span><span class="o">=</span><span class="n">backrefs</span><span class="p">,</span>
+                                   <span class="n">classname</span><span class="o">=</span><span class="n">camelcase</span><span class="p">,</span>
+                                   <span class="n">no_model_import</span><span class="o">=</span><span class="n">no_model_import</span><span class="p">,</span>
+                                   <span class="n">is_join_table</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;linkml:derived_from&#39;</span><span class="p">),</span>
+                                   <span class="n">classes</span><span class="o">=</span><span class="n">rel_schema_classes_ordered</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">code</span>
+
+    <span class="k">def</span> <span class="nf">compile_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">compile_python_dataclasses</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">pydantic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">model_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">template</span><span class="p">:</span> <span class="n">TemplateEnum</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">IMPERATIVE</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates and compiles SQL Alchemy bindings</span>
+
+<span class="sd">        - If template is DECLARATIVE, then a single python module with classes is generated</span>
+<span class="sd">        - If template is IMPERATIVE, only mappings are generated</span>
+<span class="sd">             - if compile_python_dataclasses is True then a standard datamodel is generated</span>
+
+<span class="sd">        :param compile_python_dataclasses: (default False)</span>
+<span class="sd">        :param model_path:</span>
+<span class="sd">        :param template:</span>
+<span class="sd">        :param kwargs:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span><span class="p">:</span>
+            <span class="n">sqla_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sqla</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_model_import</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">sqla_code</span><span class="p">,</span> <span class="n">package_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">compile_python_dataclasses</span><span class="p">:</span>
+            <span class="c1"># concatenate the python dataclasses with the sqla code</span>
+            <span class="k">if</span> <span class="n">pydantic</span><span class="p">:</span>
+                <span class="n">pygen</span> <span class="o">=</span> <span class="n">PydanticGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span> <span class="n">allow_extra</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pygen</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">)</span>
+            <span class="n">dc_code</span> <span class="o">=</span> <span class="n">pygen</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+            <span class="n">sqla_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sqla</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_model_import</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dc_code</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">sqla_code</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">package_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sqla</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">package_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_safe_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="c1">#c.alias = underscore(c.name)</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">alias</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">skip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">is_skip</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">is_skip</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SKIPPING: </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">is_skip</span>
+
+
+    <span class="c1"># TODO: move this</span>
+    <span class="k">def</span> <span class="nf">order_classes_by_hierarchy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]:</span>
+        <span class="n">olist</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_roots</span><span class="p">()</span>
+        <span class="n">unprocessed</span> <span class="o">=</span> <span class="p">[</span><span class="n">cn</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span> <span class="k">if</span> <span class="n">cn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">olist</span><span class="p">]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">unprocessed</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ext_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cn</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">unprocessed</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_parents</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">olist</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cycle in hierarchy, cannot process: </span><span class="si">{</span><span class="n">unprocessed</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">olist</span> <span class="o">+=</span> <span class="n">ext_list</span>
+            <span class="n">unprocessed</span> <span class="o">=</span> <span class="p">[</span><span class="n">cn</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">unprocessed</span> <span class="k">if</span> <span class="n">cn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">olist</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">olist</span></div>
+
+
+<span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">SQLAlchemyGenerator</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--declarative/--no-declarative&quot;</span><span class="p">,</span>
+              <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate SQL Alchemy declarative vs imperative&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--generate-classes/--no-generate-classes&quot;</span><span class="p">,</span>
+              <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If True, generate Python datamodel (imperative mode only)&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--pydantic/--no-pydantic&quot;</span><span class="p">,</span>
+              <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If True, generate Pydantic classes (imperative mode only)&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--use-foreign-keys/--no-use-foreign-keys&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Emit FK declarations&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">declarative</span><span class="p">,</span> <span class="n">generate_classes</span><span class="p">,</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">use_foreign_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generate SQL DDL representation &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">pydantic</span><span class="p">:</span>
+        <span class="n">pygen</span> <span class="o">=</span> <span class="n">PydanticGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">pygen</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">SQLAlchemyGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">declarative</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">IMPERATIVE</span>
+    <span class="k">if</span> <span class="n">use_foreign_keys</span><span class="p">:</span>
+        <span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># default</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">NO_FOREIGN_KEYS</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">generate_sqla</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">foreign_key_policy</span><span class="o">=</span><span class="n">foreign_key_policy</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">generate_classes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;generate classes not implemented&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">cli</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

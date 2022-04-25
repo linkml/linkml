@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkML at a glance &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quick Install Guide" href="install.html" />
+    <link rel="prev" title="LinkML Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LinkML at a glance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#feature-easy-to-author-schemas">Feature: Easy to author schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feature-rich-modeling-language">Feature: Rich modeling language</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-bridge-between-frameworks">A bridge between frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feature-generation-of-documentation-and-websites">Feature: Generation of documentation and websites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-rapidly-growing-toolchain">A rapidly growing toolchain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#we-eat-our-own-dogfood">We eat our own dogfood!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-examples">More examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>LinkML at a glance</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/intro/overview.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="linkml-at-a-glance">
+<h1>LinkML at a glance<a class="headerlink" href="#linkml-at-a-glance" title="Permalink to this headline"></a></h1>
+<p>LinkML is a flexible modeling language that allows you to author
+<a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">schemas</a> (“models”) in YAML that describe the structure of your
+data. The language is designed to allow for both simple use cases such
+as describing the column headers in a spreadsheet through to creating
+a complex interlinked schema.</p>
+<p>LinkML is designed to work in harmony with other frameworks, including
+both semantic RDF-based frameworks as well as frameworks more familiar
+to developers such as JSON.</p>
+<section id="feature-easy-to-author-schemas">
+<h2>Feature: Easy to author schemas<a class="headerlink" href="#feature-easy-to-author-schemas" title="Permalink to this headline"></a></h2>
+<p>LinkML models are organized around the core concepts of <strong>Classes</strong>
+and <strong>Slots</strong>. They are authored in YAML and allow both rich
+expressivity while keeping things simple in a way that allows
+non-technical domain modelers to contribute.</p>
+<p>Example schema fragment, for modeling people:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span><span class="w"></span>
+<span class="w">      </span><span class="no">A person (alive, dead, undead, or fictional).</span><span class="w"></span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w"></span>
+<span class="w">    </span><span class="nt">mixins</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HasAliases</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primary_email</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">birth_date</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">current_address</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_employment_history</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_familial_relationships</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">has_medical_history</span><span class="w"></span>
+<span class="nn">...</span><span class="w"></span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a> for the complete example</p>
+</section>
+<section id="feature-rich-modeling-language">
+<h2>Feature: Rich modeling language<a class="headerlink" href="#feature-rich-modeling-language" title="Permalink to this headline"></a></h2>
+<p>LinkML offers many features of use to data modelers, while retaining a simple core</p>
+<ul class="simple">
+<li><p>Classes can be arranged in <a class="reference internal" href="../schemas/inheritance.html"><span class="doc std std-doc">inheritance hierarchies</span></a></p></li>
+<li><p>Powerful <span class="xref myst">Semantic enumerations</span> that can optionally be backed by ontologies</p></li>
+<li><p>Create <span class="xref myst">data models</span> that are independent of a database technology</p></li>
+<li><p>Develop machine-actionable reporting standards and data dictionaries</p></li>
+<li><p>Include rich annotations, <a href="#id1"><span class="problematic" id="id2">metadata &lt;schemas/models:model metadata and directives&gt;</span></a>, and <a class="reference internal" href="../schemas/uris-and-mappings.html"><span class="doc std std-doc">mappings</span></a> as part of a model</p></li>
+<li><p>“Linked Data” ready</p>
+<ul>
+<li><p>All schemas have a corresponding JSON-LD context</p></li>
+<li><p><a class="reference internal" href="../data/rdf.html"><span class="doc std std-doc">Compatibility with RDF tooling</span></a>, without committing to an RDF stack</p></li>
+<li><p>Compilation to <a class="reference internal" href="../generators/shacl.html"><span class="doc std std-doc">SHACL</span></a> and <a class="reference internal" href="../generators/shex.html"><span class="doc std std-doc">ShEx</span></a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="a-bridge-between-frameworks">
+<h2>A bridge between frameworks<a class="headerlink" href="#a-bridge-between-frameworks" title="Permalink to this headline"></a></h2>
+<p>Many frameworks lock you in to a particular view of the world or
+technology. This can lead to <em>silos</em>, and the need to create mappings
+and transformations between different representations of the same
+data; for example, if your JSON documents need to work in concert with
+your relational database or graph store.</p>
+<p>LinkML has many different generators for <a class="reference internal" href="../generators/index.html"><span class="doc std std-doc">existing
+frameworks</span></a> that allow the translation of a LinkML
+schema to other frameworks:</p>
+<ul class="simple">
+<li><p>Convert to JSON-LD contexts, and instantly port your data to RDF</p></li>
+<li><p>Convert to JSON-Schema and using JSON-Schema validators</p></li>
+<li><p>Convert to ShEx and validate your data as RDF</p></li>
+<li><p>Convert to Python dataclasses for easy use within applications</p></li>
+</ul>
+</section>
+<section id="feature-generation-of-documentation-and-websites">
+<h2>Feature: Generation of documentation and websites<a class="headerlink" href="#feature-generation-of-documentation-and-websites" title="Permalink to this headline"></a></h2>
+<p>Using the LinkML toolchain you can go from a schema to a statically
+hosted searchable website in minutes, with pages for each of your
+schema elements. Using lightweight namespace registries such as
+w3id.org you can easily have resolvable URIs for all your concepts.</p>
+<p>Showcase:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://biolink.github.io/biolink-model/">Biolink</a></p></li>
+<li><p><a class="reference external" href="https://cancerdhc.github.io/ccdhmodel">CCDH Model</a></p></li>
+<li><p><a class="reference external" href="https://microbiomedata.github.io/nmdc-schema/">NMDC</a></p></li>
+</ul>
+</section>
+<section id="a-rapidly-growing-toolchain">
+<h2>A rapidly growing toolchain<a class="headerlink" href="#a-rapidly-growing-toolchain" title="Permalink to this headline"></a></h2>
+<p>The core LinkML toolchain allows for:</p>
+<ul class="simple">
+<li><p>conversion between JSON, TSV, and RDF</p></li>
+<li><p>data validation of JSON, TSVs, or RDF using either JSON-Schema, SPARQL, or ShEx</p></li>
+<li><p>easy programmatic manipulation of schemas</p></li>
+</ul>
+<p>LinkML is part of a growing <a class="reference internal" href="../ecosystem.html"><span class="doc std std-doc">ecosystem</span></a> of general purpose tools that make curating, mapping, ingesting, and organizing data much easier</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a> bootstraps schemas from existing structured and semi-structured sources</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a> allows for generation of complex OWL axioms from datamodels</p></li>
+<li><p><a class="reference external" href="https://github.com/Public-Health-Bioinformatics/DataHarmonizer">DataHarmonizer</a> is an ontology-based curation tool that is being adapted to LinkML</p></li>
+</ul>
+</section>
+<section id="we-eat-our-own-dogfood">
+<h2>We eat our own dogfood!<a class="headerlink" href="#we-eat-our-own-dogfood" title="Permalink to this headline"></a></h2>
+<p>The LinkML schema language is itself defined in LinkML, and we use our own toolchain for working with it!</p>
+<p>For example, the <a class="reference external" href="https://linkml.github.io/linkml-model/docs/">linkml-model reference</a> is generated from the <a class="reference external" href="https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema">source metamodel</a></p>
+</section>
+<section id="more-examples">
+<h2>More examples<a class="headerlink" href="#more-examples" title="Permalink to this headline"></a></h2>
+<p>See the <a class="reference internal" href="../examples.html"><span class="doc std std-doc">examples</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="LinkML Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Quick Install Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

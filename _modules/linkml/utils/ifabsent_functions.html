@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml.utils.ifabsent_functions &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml.utils.ifabsent_functions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml.utils.ifabsent_functions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Match</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">sfx</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
+
+
+<div class="viewcode-block" id="strval"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.strval">[docs]</a><span class="k">def</span> <span class="nf">strval</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s1">&quot;&#39;</span></div>
+
+
+<div class="viewcode-block" id="default_uri_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.default_uri_for">[docs]</a><span class="k">def</span> <span class="nf">default_uri_for</span><span class="p">(</span><span class="n">loader</span><span class="p">:</span> <span class="n">SchemaLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">dflt</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="k">if</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="k">else</span> <span class="n">sfx</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sfx</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">dflt</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="default_curie_or_uri"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.default_curie_or_uri">[docs]</a><span class="k">def</span> <span class="nf">default_curie_or_uri</span><span class="p">(</span><span class="n">loader</span><span class="p">:</span> <span class="n">SchemaLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">dflt</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="k">if</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="k">else</span> <span class="n">sfx</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;:/&#39;</span> <span class="ow">in</span> <span class="n">dflt</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">prefix_for</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">dflt</span> <span class="o">=</span> <span class="n">prefix</span>
+    <span class="k">return</span> <span class="n">dflt</span></div>
+
+
+<div class="viewcode-block" id="curie_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.curie_for">[docs]</a><span class="k">def</span> <span class="nf">curie_for</span><span class="p">(</span><span class="n">loader</span><span class="p">:</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="n">is_class</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot; Return the Curie for the schema in loader.  Return None if there is no curie form &quot;&quot;&quot;</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">default_curie_or_uri</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;camelcase(self.name)&quot;</span> <span class="k">if</span> <span class="n">is_class</span> <span class="k">else</span> <span class="s2">&quot;underscore(self.alias if self.alias else self.name)&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;:/&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">prefix</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot; + &#39;</span> <span class="o">+</span> <span class="n">suffix</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pn</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">default_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">pn</span> <span class="o">+</span> <span class="s1">&#39;&quot; + &#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span> <span class="k">if</span> <span class="n">pn</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="uri_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.uri_for">[docs]</a><span class="k">def</span> <span class="nf">uri_for</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loader</span><span class="p">:</span> <span class="n">SchemaLoader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">loader</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="n">strval</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="default_ns_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.default_ns_for">[docs]</a><span class="k">def</span> <span class="nf">default_ns_for</span><span class="p">(</span><span class="n">loader</span><span class="p">:</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Return code to produce the default namespace for the supplied class &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: figure out how to mark a slot as a namespace</span>
+    <span class="k">return</span> <span class="s2">&quot;sfx(str(self.id))&quot;</span> <span class="k">if</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span> <span class="k">else</span> <span class="s2">&quot;None&quot;</span></div>
+    <span class="c1"># cls_id = None</span>
+    <span class="c1"># for slotname in cls.slots:</span>
+    <span class="c1">#     slot = loader.schema.slots[slotname]</span>
+    <span class="c1">#     if slot.identifier:</span>
+    <span class="c1">#         cls_id = slotname</span>
+    <span class="c1"># return f&quot;sfx(str(self.{cls_id}))&quot; if cls_id else &quot;None&quot;</span>
+
+<span class="c1"># Library of named default values -- this is here to prevent code injection</span>
+<span class="c1"># Contents: Match text (as re),</span>
+<span class="c1">#           flag that indicates whether we&#39;re generating a default value expression or postinig code</span>
+<span class="c1">#           Function that takes the match string, SchemaLoader, ClassDefinition, and SlotDefinition and returns the</span>
+<span class="c1">#           appropriate string</span>
+<span class="n">default_library</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Text</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[Tt]rue&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[Ff]alse&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;int\((-?[1-9][0-9]*)\)&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span>
+    <span class="c1"># TODO: We have to make the real URI available before any of these can work</span>
+    <span class="c1"># (&quot;class_uri&quot;, True, lambda _, loader, ___, ____: f&#39;&quot;{default_uri_for(loader)}&quot; + camelcase(self.name)&#39;),</span>
+    <span class="c1"># (&quot;slot_uri&quot;, True, lambda _, loader, ___, ____: f&#39;&quot;{default_uri_for(loader)}&quot; + underscore(self.alias if self.alias else self.name)&#39;),</span>
+    <span class="c1"># (&quot;class_curie&quot;, True, lambda _, loader, ___, ____: curie_for(loader, True)),</span>
+    <span class="c1"># (&quot;slot_curie&quot;, True, lambda _, loader, ___, ____: curie_for(loader, False)),</span>
+    <span class="p">(</span><span class="s2">&quot;class_uri&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;slot_uri&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;class_curie&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;slot_curie&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
+    <span class="c1"># TODO: If you assign a range in the constructor, mergeutils has no way of knowing whether the range</span>
+    <span class="c1">#       was overridden or just defaulted.  We need to let the old code continue to work until we get</span>
+    <span class="c1">#       this bit resolved</span>
+    <span class="c1"># (&quot;default_range&quot;, False, lambda _, loader, __, ____: f&quot;ElementName({strval(loader.schema.default_range)})&quot;),</span>
+    <span class="p">(</span><span class="s2">&quot;default_range&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;bnode&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="s2">&quot;bnode()&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;string\((.*)\)&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">___</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="n">strval</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span>
+    <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;uri\((.*)\)&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">:</span> <span class="n">uri_for</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">loader</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;default_ns&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">____</span><span class="p">:</span> <span class="n">default_ns_for</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="isabsent_match"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.isabsent_match">[docs]</a><span class="k">def</span> <span class="nf">isabsent_match</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="n">Text</span><span class="p">)</span> <span class="o">-&gt;</span> \
+        <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Match</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">SchemaLoader</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]]:</span>
+    <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">postinit</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">default_library</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span> <span class="o">+</span> <span class="s1">&#39;$&#39;</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">postinit</span><span class="p">,</span> <span class="n">f</span></div>
+
+
+<div class="viewcode-block" id="ifabsent_value_declaration"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.ifabsent_value_declaration">[docs]</a><span class="k">def</span> <span class="nf">ifabsent_value_declaration</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">postinit</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">isabsent_match</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">postinit</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ifabsent_postinit_declaration"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.ifabsent_functions.ifabsent_postinit_declaration">[docs]</a><span class="k">def</span> <span class="nf">ifabsent_postinit_declaration</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">postinit</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">isabsent_match</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">postinit</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
