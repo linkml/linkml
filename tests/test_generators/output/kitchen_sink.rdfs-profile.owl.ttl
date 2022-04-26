@@ -38,10 +38,10 @@
         ks:WithLocation ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     rdfs:seeAlso "https://example.org/" ;
-    linkml:generation_date "2022-04-26T00:08:33" ;
+    linkml:generation_date "2022-04-26T21:51:22" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "kitchen_sink.yaml" ;
-    linkml:source_file_date "2022-04-26T00:03:29" ;
+    linkml:source_file_date "2022-04-26T21:46:02" ;
     linkml:source_file_size 6551 .
 
 ks:DiagnosisType a owl:Class ;
@@ -78,17 +78,17 @@ prov:wasGeneratedBy a owl:ObjectProperty ;
 ks:Dataset a owl:Class ;
     rdfs:label "Dataset" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ks:CodeSystem ;
-            owl:onProperty ks:code_systems ],
-        [ a owl:Restriction ;
             owl:allValuesFrom <https://w3id.org/linkml/tests/core/Activity> ;
             owl:onProperty ks:activities ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ks:Person ;
-            owl:onProperty ks:persons ],
+            owl:allValuesFrom ks:CodeSystem ;
+            owl:onProperty ks:code_systems ],
         [ a owl:Restriction ;
             owl:allValuesFrom ks:Company ;
-            owl:onProperty ks:companies ] .
+            owl:onProperty ks:companies ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom ks:Person ;
+            owl:onProperty ks:persons ] .
 
 ks:EmploymentEventType a owl:Class ;
     rdfs:label "EmploymentEventType" ;
@@ -123,28 +123,28 @@ ks:MarriageEvent a owl:Class ;
     rdfs:label "MarriageEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass ks:Person ;
-            owl:onProperty ks:married_to ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass ks:Place ;
             owl:onProperty ks:in_location ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass ks:Person ;
+            owl:onProperty ks:married_to ],
         ks:Event,
         ks:WithLocation .
 
 ks:Organization a owl:Class ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ],
-        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         [ a owl:Restriction ;
             owl:allValuesFrom xsd:string ;
             owl:onProperty skos:altLabel ],
+        [ a owl:Restriction ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
+            owl:qualifiedCardinality 1 ],
         ks:HasAliases .
 
 ks:activities a owl:ObjectProperty ;
@@ -323,12 +323,12 @@ ks:MedicalEvent a owl:Class ;
     rdfs:label "MedicalEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass ks:Place ;
-            owl:onProperty ks:in_location ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass ks:DiagnosisConcept ;
             owl:onProperty ks:diagnosis ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass ks:Place ;
+            owl:onProperty ks:in_location ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass ks:ProcedureConcept ;
@@ -347,7 +347,7 @@ ks:Relationship a owl:Class ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
-            owl:onProperty prov:endedAtTime ],
+            owl:onProperty prov:startedAtTime ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:string ;
@@ -355,7 +355,7 @@ ks:Relationship a owl:Class ;
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
-            owl:onProperty prov:startedAtTime ],
+            owl:onProperty prov:endedAtTime ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:string ;
@@ -473,30 +473,30 @@ ks:Event a owl:Class ;
             owl:onProperty ks:is_current ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onClass ks:AnyObject ;
+            owl:onProperty ks:metadata ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
             owl:onProperty prov:startedAtTime ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
-            owl:onProperty prov:endedAtTime ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass ks:AnyObject ;
-            owl:onProperty ks:metadata ] .
+            owl:onProperty prov:endedAtTime ] .
 
 ks:Place a owl:Class ;
     rdfs:label "Place" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+        [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
             owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:allValuesFrom xsd:string ;
             owl:onProperty skos:altLabel ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         ks:HasAliases .
 
 <https://w3id.org/linkml/tests/core/Agent> a owl:Class ;
@@ -507,13 +507,13 @@ ks:Place a owl:Class ;
             owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
             owl:onProperty prov:wasInformedBy ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
-            owl:onProperty prov:actedOnBehalfOf ],
-        [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
-            owl:qualifiedCardinality 1 ] ;
+            owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
+            owl:onProperty prov:actedOnBehalfOf ] ;
     skos:exactMatch prov:Agent .
 
 <https://w3id.org/linkml/tests/core/name> a owl:DatatypeProperty ;
@@ -528,33 +528,33 @@ ks:Person a owl:Class ;
     rdfs:label "Person" ;
     rdfs:comment "A person, living or dead" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:integer ;
-            owl:onProperty ks:age_in_years ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom ks:EmploymentEvent ;
-            owl:onProperty ks:has_employment_history ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom xsd:string ;
-            owl:onProperty skos:altLabel ],
-        [ a owl:Restriction ;
             owl:allValuesFrom ks:FamilialRelationship ;
             owl:onProperty ks:has_familial_relationships ],
         [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onClass ks:BirthEvent ;
-            owl:onProperty ks:has_birth_event ],
+            owl:allValuesFrom ks:Address ;
+            owl:onProperty ks:addresses ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ks:Address ;
-            owl:onProperty ks:addresses ],
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass ks:BirthEvent ;
+            owl:onProperty ks:has_birth_event ],
         [ a owl:Restriction ;
             owl:onDataRange xsd:string ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ;
             owl:qualifiedCardinality 1 ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom ks:EmploymentEvent ;
+            owl:onProperty ks:has_employment_history ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onDataRange xsd:integer ;
+            owl:onProperty ks:age_in_years ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty skos:altLabel ],
         [ a owl:Restriction ;
             owl:allValuesFrom ks:MedicalEvent ;
             owl:onProperty ks:has_medical_history ],
@@ -570,8 +570,16 @@ ks:Person a owl:Class ;
             owl:onProperty <https://w3id.org/linkml/tests/core/description> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty prov:used ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
             owl:onProperty prov:startedAtTime ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
+            owl:onProperty prov:wasInformedBy ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onDataRange xsd:date ;
@@ -582,16 +590,8 @@ ks:Person a owl:Class ;
             owl:qualifiedCardinality 1 ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass <https://w3id.org/linkml/tests/core/Activity> ;
-            owl:onProperty prov:wasInformedBy ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/tests/core/Agent> ;
-            owl:onProperty prov:wasAssociatedWith ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty prov:used ] ;
+            owl:onProperty prov:wasAssociatedWith ] ;
     skos:exactMatch prov:Activity .
 
 
