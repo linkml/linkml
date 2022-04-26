@@ -1,5 +1,0 @@
-# Data Objects
-
- * JSON
- * YAML
- * 

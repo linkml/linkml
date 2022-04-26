@@ -23,6 +23,8 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.generators.excelgen import ExcelGenerator
+from linkml.generators.javagen import JavaGenerator
 
 PATH_FSTRING = str
 GENERATOR_NAME = str
@@ -46,8 +48,10 @@ GEN_MAP = {
     'shex': (ShExGenerator, 'shex/{name}.shex', {}),
     'shacl': (ShaclGenerator, 'shacl/{name}.shacl.ttl', {}),
     'sqlddl': (SQLDDLGenerator, 'sqlschema/{name}.sql', {}),
-    'java': (SQLDDLGenerator, 'java/{name}.sql', {}),
-    'excel': (SQLDDLGenerator, 'excel/{name}.xlsx', {}),
+    # # linkml/generators/javagen.py uses different architecture from most of the other generators
+    # # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path
+    # 'java': (JavaGenerator, 'java/{name}.java', {'directory': '{parent}'}),
+    # 'excel': (ExcelGenerator, 'excel/{name}.xlsx', {'output': '{parent}/{name}.xlsx'}),
 }
 
 @lru_cache()
@@ -199,8 +203,4 @@ def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, merg
 
 if __name__ == '__main__':
     cli()
-
-
-
-
 
