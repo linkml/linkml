@@ -127,8 +127,6 @@ class PydanticGenerator(OOCodeGenerator):
         self.allow_extra = allow_extra
         self.gen_mixin_inheritance = gen_mixin_inheritance
 
-    def map_type(self, t: TypeDefinition) -> str:
-        return TYPEMAP.get(t.base, t.base)
 
     def generate_enums(self, all_enums: Dict[EnumDefinitionName, EnumDefinition]) -> Dict[str, dict]:
         # TODO: make an explicit class to represent how an enum is passed to the template
@@ -219,6 +217,18 @@ class PydanticGenerator(OOCodeGenerator):
                 parents[camelcase(class_def.name)] = class_parents
         return parents
 
+    def get_mixin_identifier_range(self, mixin) -> str:
+        sv = self.schemaview
+        id_ranges = list({_get_pyrange(sv.get_type(sv.get_identifier_slot(c).range), sv)
+                          for c in sv.class_descendants(mixin.name, mixins=True)
+                          if sv.get_identifier_slot(c) is not None})
+        if len(id_ranges) == 0:
+            return None
+        elif len(id_ranges) == 1:
+            return id_ranges[0]
+        else:
+            return f"Union[{'.'.join(id_ranges)}]"
+
     def serialize(self) -> str:
         sv = self.schemaview
 
@@ -266,17 +276,22 @@ class PydanticGenerator(OOCodeGenerator):
                 collection_key = None
                 if s.range in sv.all_classes():
                     range_cls = sv.get_class(s.range)
+                    range_cls_identifier_slot_range = None
+                    if sv.get_identifier_slot(range_cls.name) is not None:
+                        range_cls_identifier_slot_range = _get_pyrange(sv.get_type(sv.get_identifier_slot(range_cls.name).range), sv)
+                    if range_cls_identifier_slot_range is None and self.gen_mixin_inheritance and sv.is_mixin(range_cls.name):
+                        range_cls_identifier_slot_range = self.get_mixin_identifier_range(range_cls)
+
                     if range_cls.class_uri == "linkml:Any":
                         pyrange = 'Any'
                     elif s.inlined \
-                            or (self.gen_mixin_inheritance and sv.is_mixin(range_cls.name)) \
-                            or sv.get_identifier_slot(range_cls.name) is None:
+                            or range_cls_identifier_slot_range is None:
                         pyrange = f'{camelcase(s.range)}'
                         if sv.get_identifier_slot(range_cls.name) is not None and not s.inlined_as_list:
                             #collection_type = sv.get_identifier_slot(range_cls.name).range
                             collection_type = 'str'
                     else:
-                        pyrange = camelcase(range_cls.name)
+                        pyrange = range_cls_identifier_slot_range
                 elif s.range in sv.all_enums():
                     pyrange = f'{camelcase(s.range)}'
                 elif s.range in sv.all_types():

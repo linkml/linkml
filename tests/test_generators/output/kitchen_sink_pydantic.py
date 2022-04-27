@@ -63,7 +63,7 @@ class Friend:
 
 
 @dataclass(config=PydanticConfig)
-class Person:
+class Person(HasAliases):
     """
     A person, living or dead
     """
@@ -80,7 +80,7 @@ class Person:
 
 
 @dataclass(config=PydanticConfig)
-class Organization:
+class Organization(HasAliases):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
@@ -89,7 +89,7 @@ class Organization:
 
 
 @dataclass(config=PydanticConfig)
-class Place:
+class Place(HasAliases):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
@@ -110,7 +110,7 @@ class Concept:
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
-    in_code_system: Optional[str] = Field(None)
+    in_code_system: Optional[CodeSystem] = Field(None)
     
 
 
@@ -119,7 +119,7 @@ class DiagnosisConcept(Concept):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
-    in_code_system: Optional[str] = Field(None)
+    in_code_system: Optional[CodeSystem] = Field(None)
     
 
 
@@ -128,7 +128,7 @@ class ProcedureConcept(Concept):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
-    in_code_system: Optional[str] = Field(None)
+    in_code_system: Optional[CodeSystem] = Field(None)
     
 
 
@@ -157,7 +157,7 @@ class FamilialRelationship(Relationship):
     
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
-    related_to: str = Field(None)
+    related_to: Person = Field(None)
     type: FamilialRelationshipType = Field(None)
     
 
@@ -165,7 +165,7 @@ class FamilialRelationship(Relationship):
 @dataclass(config=PydanticConfig)
 class BirthEvent(Event):
     
-    in_location: Optional[str] = Field(None)
+    in_location: Optional[Place] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
@@ -176,7 +176,7 @@ class BirthEvent(Event):
 @dataclass(config=PydanticConfig)
 class EmploymentEvent(Event):
     
-    employed_at: Optional[str] = Field(None)
+    employed_at: Optional[Company] = Field(None)
     type: Optional[EmploymentEventType] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
@@ -188,7 +188,7 @@ class EmploymentEvent(Event):
 @dataclass(config=PydanticConfig)
 class MedicalEvent(Event):
     
-    in_location: Optional[str] = Field(None)
+    in_location: Optional[Place] = Field(None)
     diagnosis: Optional[DiagnosisConcept] = Field(None)
     procedure: Optional[ProcedureConcept] = Field(None)
     started_at_time: Optional[date] = Field(None)
@@ -201,15 +201,15 @@ class MedicalEvent(Event):
 @dataclass(config=PydanticConfig)
 class WithLocation:
     
-    in_location: Optional[str] = Field(None)
+    in_location: Optional[Place] = Field(None)
     
 
 
 @dataclass(config=PydanticConfig)
-class MarriageEvent(Event):
+class MarriageEvent(WithLocation, Event):
     
-    married_to: Optional[str] = Field(None)
-    in_location: Optional[str] = Field(None)
+    married_to: Optional[Person] = Field(None)
+    in_location: Optional[Place] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
@@ -220,7 +220,7 @@ class MarriageEvent(Event):
 @dataclass(config=PydanticConfig)
 class Company(Organization):
     
-    ceo: Optional[str] = Field(None)
+    ceo: Optional[Person] = Field(None)
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
@@ -275,8 +275,8 @@ class Activity:
     id: Optional[str] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
-    was_informed_by: Optional[str] = Field(None)
-    was_associated_with: Optional[str] = Field(None)
+    was_informed_by: Optional[Activity] = Field(None)
+    was_associated_with: Optional[Agent] = Field(None)
     used: Optional[str] = Field(None)
     description: Optional[str] = Field(None)
     
@@ -288,8 +288,8 @@ class Agent:
     a provence-generating agent
     """
     id: Optional[str] = Field(None)
-    acted_on_behalf_of: Optional[str] = Field(None)
-    was_informed_by: Optional[str] = Field(None)
+    acted_on_behalf_of: Optional[Agent] = Field(None)
+    was_informed_by: Optional[Activity] = Field(None)
     
 
 
