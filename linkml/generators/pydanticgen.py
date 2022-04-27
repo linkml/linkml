@@ -266,16 +266,17 @@ class PydanticGenerator(OOCodeGenerator):
                 collection_key = None
                 if s.range in sv.all_classes():
                     range_cls = sv.get_class(s.range)
-                    #pyrange = f'"{camelcase(s.range)}"'
                     if range_cls.class_uri == "linkml:Any":
                         pyrange = 'Any'
-                    elif s.inlined or sv.get_identifier_slot(range_cls.name) is None:
+                    elif s.inlined \
+                            or (self.gen_mixin_inheritance and sv.is_mixin(range_cls.name)) \
+                            or sv.get_identifier_slot(range_cls.name) is None:
                         pyrange = f'{camelcase(s.range)}'
                         if sv.get_identifier_slot(range_cls.name) is not None and not s.inlined_as_list:
                             #collection_type = sv.get_identifier_slot(range_cls.name).range
                             collection_type = 'str'
                     else:
-                        pyrange = 'str'
+                        pyrange = camelcase(range_cls.name)
                 elif s.range in sv.all_enums():
                     pyrange = f'{camelcase(s.range)}'
                 elif s.range in sv.all_types():
