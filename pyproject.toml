@@ -1,3 +1,132 @@
+[tool.poetry]
+name = "linkml"
+version = "0.0.0"
+description = "Linked Open Data Modeling Language"
+authors = [
+    "Chris Mungall <cjmungall@lbl.gov>",
+    "Harold Solbrig <solbrig@jhu.edu>",
+    "Sujay Patil <spatil@lbl.gov>",
+    "Harshad Hegde <hhegde@lbl.gov>",
+    "Sierra Moxon <smoxon@lbl.gov>",
+    "Mark Andrew Miller <MAM@lbl.gov>",
+    "Deepak Unni <deepak.unni3@lbl.gov>",
+    "Bill Duncan <wdduncan@gmail.com>",
+    "Joseph Eugene Flack IV <joeflack4@gmail.com>",
+    "Gaurav Vaidya <gaurav@renci.org>",
+    "Kevin Schaper <kevinschaper@gmail.com>",
+]
+
+readme = "README.md"
+
+homepage = "https://linkml.io/linkml/"
+repository = "https://github.com/linkml/linkml"
+documentation = "https://linkml.io/linkml/"
+
+keywords = ["schema", "linked data", "data modeling", "rdf", "owl", "biolink"]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10"
+]
+
+packages = [
+    { include = "linkml" }
+]
+
+[tool.poetry.scripts]    
+gen-jsonld-context = "linkml.generators.jsonldcontextgen:cli"
+gen-prefix-map = "linkml.generators.prefixmapgen:cli"
+gen-csv = "linkml.generators.csvgen:cli"
+gen-graphviz = "linkml.generators.dotgen:cli"
+gen-golr-views = "linkml.generators.golrgen:cli"
+gen-graphql = "linkml.generators.graphqlgen:cli"
+gen-java = "linkml.generators.javagen:cli"
+gen-jsonld = "linkml.generators.jsonldgen:cli"
+gen-json-schema = "linkml.generators.jsonschemagen:cli"
+gen-markdown = "linkml.generators.markdowngen:cli"
+gen-doc = "linkml.generators.docgen:cli"
+gen-prolog = "linkml.generators.lpgen:cli"
+gen-namespaces = "linkml.generators.namespacegen:cli"
+gen-owl = "linkml.generators.owlgen:cli"
+gen-proto = "linkml.generators.protogen:cli"
+gen-py-classes = "linkml.generators.pythongen:cli"
+gen-python = "linkml.generators.pythongen:cli"
+gen-pydantic = "linkml.generators.pydanticgen:cli"
+gen-rdf = "linkml.generators.rdfgen:cli"
+gen-shex = "linkml.generators.shexgen:cli"
+gen-shacl = "linkml.generators.shaclgen:cli"
+gen-sparql = "linkml.generators.sparqlgen:cli"
+gen-typescript = "linkml.generators.typescriptgen:cli"
+gen-terminusdb = "linkml.generators.terminusdbgen:cli"
+gen-yuml = "linkml.generators.yumlgen:cli"
+gen-yaml = "linkml.generators.yamlgen:cli"
+gen-sqla = "linkml.generators.sqlalchemygen:cli"
+gen-sqlddl = "linkml.generators.sqltablegen:cli"
+gen-sqlddl-legacy = "linkml.generators.sqlddlgen:cli"
+gen-sqltables = "linkml.generators.sqltablegen:cli"
+gen-project = "linkml.generators.projectgen:cli"
+run-tutorial = "linkml.utils.execute_tutorial:cli"
+linkml-ws = "linkml.workspaces.cli:main"
+linkml-convert = "linkml.utils.converter:cli"
+linkml-sqldb = "linkml.utils.sqlutils:main"
+linkml-validate = "linkml.validators.jsonschemavalidator:cli"
+linkml-jsonschema-validate = "linkml.validators.jsonschemavalidator:cli"
+linkml-sparql-validate = "linkml.validators.sparqlvalidator:cli"
+gen-excel = "linkml.generators.excelgen:cli"
+gen-sssom = "linkml.generators.sssomgen:cli"
+gen-linkml = "linkml.generators.linkmlgen:cli"
+
+[tool.poetry.dependencies]
+python = "~=3.7.6"
+antlr4-python3-runtime = "<4.10,==4.*,>=4.9.0"
+argparse = ">=1.4.0"
+click = ">=7.0"
+graphviz = ">=0.10.1"
+hbreader = "*"
+isodate = ">=0.6.0"
+jinja2 = "*"
+jsonasobj2 = "==1.*,>=1.0.0,>=1.0.3"
+jsonschema = ">=3.0.1"
+linkml-dataops = "*"
+linkml-runtime = "==1.2.*,>=1.2.4"
+myst-parser = "*"
+openpyxl = "*"
+pandas = "*"
+parse = "*"
+prefixcommons = ">=0.1.7"
+pydantic = "*"
+pyjsg = ">=0.11.6"
+pyshex = ">=0.7.20"
+pyshexc = ">=0.8.3"
+python-dateutil = "*"
+pyyaml = "*"
+rdflib = ">=6.0.0"
+requests = ">=2.22"
+sphinx = "*"
+sphinx-click = "*"
+sphinx-rtd-theme = "*"
+sqlalchemy = ">=1.4.31"
+watchdog = ">=0.9.0"
+
+[tool.poetry.dev-dependencies]
+chardet = "*"
+ipykernel = "*"
+ipython-genutils = "*"
+nbconvert = "*"
+nbformat = "*"
+
+[tool.poetry.extras]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-mermaid"]
+
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
