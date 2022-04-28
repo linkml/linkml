@@ -1,5 +1,6 @@
 import unittest
 
+
 from linkml_runtime.linkml_model import SlotDefinition
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
