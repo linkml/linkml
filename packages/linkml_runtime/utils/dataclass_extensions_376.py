@@ -9,15 +9,15 @@ import dataclasses
 loc_fn = dataclasses._create_fn
 
 
-def dc_create_fn(name, args, body, *posargs, **kwargs):
+def dc_create_fn(name, args, body, *_posargs, **_kwargs):
     # If overriding the initializer and using a post init
     if name == '__init__' and dataclasses._POST_INIT_NAME in body[-1]:
         # Then insert the kwargs into the both the call and the post init
         pi_parms = body[-1].rsplit(')', 1)[0]
-        body[-1] = pi_parms + ('' if pi_parms[-1] == '(' else ',') + ' **kwargs)'
-        return loc_fn(name, list(args) + ["**kwargs"], body, *posargs, **kwargs)
+        body[-1] = pi_parms + ('' if pi_parms[-1] == '(' else ',') + ' **_kwargs)'
+        return loc_fn(name, list(args) + ["**_kwargs"], body, *_posargs, **_kwargs)
     else:
-        return loc_fn(name, args, body, *posargs, **kwargs)
+        return loc_fn(name, args, body, *_posargs, **_kwargs)
 
 
 dataclasses._create_fn = dc_create_fn
