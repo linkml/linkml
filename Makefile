@@ -57,3 +57,6 @@ rtd:
 	cd sphinx && $(RUN) make html
 deploy-rtd:
 	cd sphinx && $(RUN) make deploy
+
+server:
+	$(RUN) uvicorn main:app --reload
