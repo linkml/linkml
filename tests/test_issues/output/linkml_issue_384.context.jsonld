@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from linkml_issue_384.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-04-27T17:17:15\n    Schema: personinfo\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: \n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from linkml_issue_384.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-04-28T01:31:21\n    Schema: personinfo\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: \n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "linkml": "https://w3id.org/linkml/",
       "personinfo": "https://w3id.org/linkml/examples/personinfo/",
