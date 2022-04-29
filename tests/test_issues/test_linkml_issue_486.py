@@ -1,7 +1,7 @@
 import unittest
 
 
-from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.linkml_model import SlotDefinition, Definition, Element
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -42,6 +42,7 @@ class FastAPICase(unittest.TestCase):
         ```
         """
         response = client.get("/linkml_slot/")
+        print(response.text)
         assert response.status_code == 200
 
 if __name__ == '__main__':
