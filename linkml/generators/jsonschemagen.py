@@ -225,6 +225,8 @@ class JsonSchemaGenerator(Generator):
             prop.minimum = slot.minimum_value
         if slot.maximum_value is not None:
             prop.maximum = slot.maximum_value
+        if slot.equals_string is not None:
+            prop.const = slot.equals_string
         self.clsobj.properties[underscore(aliased_slot_name)] = prop
         if (self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name)) or \
                 (self.topCls is None and cls.tree_root):

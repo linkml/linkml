@@ -49,10 +49,10 @@ class Issue726ConstCase(TestEnvironmentTestCase):
         js = json.loads(output)
         top_props = js['properties']
         s1C = top_props['s1']
-        s2C = top_props['s1']
+        s2C = top_props['s2']
         D = js['$defs']['D']['properties']
         s1D = D['s1']
-        s2D = D['s1']
+        s2D = D['s2']
         self.assertEqual(s1C['const'], 'foo')
         self.assertEqual(s2C['const'], 'bar')
         self.assertNotIn('const', s1D)
