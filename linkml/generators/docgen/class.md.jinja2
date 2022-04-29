@@ -4,11 +4,17 @@
 {{header}}
 {%- endif -%}
 
+{{ element.description }}
+```mermaid
+ classDiagram
+      {% for s in schemaview.class_ancestors(element.name) -%}
+        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name) -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
 
-
-{% if element.description %}
-_{{ element.description }}_
-{% endif %}
+```
 
 {% if element.abstract %}
 * __NOTE__: this is an abstract class and should not be instantiated directly
