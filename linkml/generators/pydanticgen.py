@@ -229,6 +229,34 @@ class PydanticGenerator(OOCodeGenerator):
         else:
             return f"Union[{'.'.join(id_ranges)}]"
 
+    def get_class_slot_range(self, slot):
+        sv = self.schemaview
+        range_cls = sv.get_class(slot.range)
+
+        # Hardcoded handling for Any
+        if range_cls.class_uri == "linkml:Any":
+            return 'Any'
+
+        # Inline the class itself only if the class is defined as inline, or if the class has no
+        # identifier slot and also isn't a mixin.
+        if slot.inlined or \
+                (sv.get_identifier_slot(range_cls.name) is None and not sv.is_mixin(range_cls.name)):
+            return f'{camelcase(slot.range)}'
+
+        # For the more difficult cases, set string as the default and attempt to improve it
+        range_cls_identifier_slot_range = 'str'
+
+        # For mixins, try to use the identifier slot of descendant classes
+        if self.gen_mixin_inheritance and sv.is_mixin(range_cls.name) and sv.get_identifier_slot(range_cls.name):
+            range_cls_identifier_slot_range = self.get_mixin_identifier_range(range_cls)
+
+        # If the class itself has an identifier slot, it can be allowed to overwrite a value from mixin above
+        if sv.get_identifier_slot(range_cls.name) is not None \
+                and sv.get_identifier_slot(range_cls.name).range is not None:
+            range_cls_identifier_slot_range = _get_pyrange(sv.get_type(sv.get_identifier_slot(range_cls.name).range), sv)
+
+        return range_cls_identifier_slot_range
+
     def serialize(self) -> str:
         sv = self.schemaview
 
@@ -275,23 +303,7 @@ class PydanticGenerator(OOCodeGenerator):
                 class_def.attributes[s.name] = s
                 collection_key = None
                 if s.range in sv.all_classes():
-                    range_cls = sv.get_class(s.range)
-                    range_cls_identifier_slot_range = None
-                    if sv.get_identifier_slot(range_cls.name) is not None:
-                        range_cls_identifier_slot_range = _get_pyrange(sv.get_type(sv.get_identifier_slot(range_cls.name).range), sv)
-                    if range_cls_identifier_slot_range is None and self.gen_mixin_inheritance and sv.is_mixin(range_cls.name):
-                        range_cls_identifier_slot_range = self.get_mixin_identifier_range(range_cls)
-
-                    if range_cls.class_uri == "linkml:Any":
-                        pyrange = 'Any'
-                    elif s.inlined \
-                            or range_cls_identifier_slot_range is None:
-                        pyrange = f'{camelcase(s.range)}'
-                        if sv.get_identifier_slot(range_cls.name) is not None and not s.inlined_as_list:
-                            #collection_type = sv.get_identifier_slot(range_cls.name).range
-                            collection_type = 'str'
-                    else:
-                        pyrange = range_cls_identifier_slot_range
+                    pyrange = self.get_class_slot_range(s)
                 elif s.range in sv.all_enums():
                     pyrange = f'{camelcase(s.range)}'
                 elif s.range in sv.all_types():
