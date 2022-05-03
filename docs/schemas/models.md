@@ -287,6 +287,8 @@ enums:
         meaning: GSSO:000385
 ```
 
+A similar modeling concept, 'values_from' is a set of identifiers that form the possible values for the range of a slot.
+
 ## Subsets
 
 Elements of a schema can be partitioned into named [subsets](https://w3id.org/linkml/SubsetDefinition). These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposes.
