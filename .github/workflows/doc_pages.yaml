@@ -1,0 +1,39 @@
+name: Sphinx Documentation
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python 3.
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+
+    - name: Install Poetry.
+      uses: snok/install-poetry@v1.3
+      
+    - name: install
+      run: poetry install -E docs
+
+    - name: Build documentation.
+      run: |
+        mkdir gh-pages
+        touch gh-pages/.nojekyll
+        cd docs/
+        poetry run sphinx-build -b html . _build
+        cp -r _build/* ../gh-pages/
+    - name: Deploy documentation.
+      if: ${{ github.event_name == 'push' }}
+      uses: JamesIves/github-pages-deploy-action@v4.3.0
+      with:
+        branch: gh-pages
+        force: true
+        folder: gh-pages

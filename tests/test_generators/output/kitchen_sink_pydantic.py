@@ -63,7 +63,7 @@ class Friend:
 
 
 @dataclass(config=PydanticConfig)
-class Person:
+class Person(HasAliases):
     """
     A person, living or dead
     """
@@ -80,7 +80,7 @@ class Person:
 
 
 @dataclass(config=PydanticConfig)
-class Organization:
+class Organization(HasAliases):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
@@ -89,7 +89,7 @@ class Organization:
 
 
 @dataclass(config=PydanticConfig)
-class Place:
+class Place(HasAliases):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
@@ -206,7 +206,7 @@ class WithLocation:
 
 
 @dataclass(config=PydanticConfig)
-class MarriageEvent(Event):
+class MarriageEvent(WithLocation, Event):
     
     married_to: Optional[str] = Field(None)
     in_location: Optional[str] = Field(None)
