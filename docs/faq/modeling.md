@@ -165,3 +165,55 @@ In future, the LinkML framework will
 
  * warn if a reserved term is used
  * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
+
+## When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?
+
+Relationships between classes can be defined in a few ways:
+- via slots that dictate the link via domain and range constraints.
+- via objects that capture the two objects and the relationship between those concepts.
+
+via slots that dictate the link via domain and range constraints
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  allele:
+    slots:
+       - allele of
+  gene:
+     
+slots:
+  allele of: 
+     type: uriorcurie
+     domain: allele
+     range: gene
+```
+
+via objects that capture the two objects and the relationship between those concepts
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  allele:
+  gene:
+  allele gene relation:
+     slots:
+        - subject
+        - object
+        - predicate
+      
+slots:
+  predicate: 
+     range: predicate_enum
+  subject:
+     range: allele
+  object:
+     range: gene
+
+enums:
+  predicate_enum:
+    permissible_values:
+      allele_of:
+```
