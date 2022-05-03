@@ -41,13 +41,16 @@ The [prefixes](https://w3id.org/linkml/prefixes) section contains a list of pref
 With the above prefixmap, the CURIE `schema:Person` will expand to http://schema.org/Person
 
 ## class uri and slot uri
+For more information on the importance of URIs, even for modeling components themselves: https://www.cogsci.ed.ac.uk/~ht/WhatAreURIs/
+slot and class URIs in LinkML define a robust and unique place to consistently find information about a class or slot in a LinkML model
+on the web.
 
 The two slots
 
  * [class_uri](https://w3id.org/linkml/class_uri)
  * [slot_uri](https://w3id.org/linkml/slot_uri)
 
-can be used to declare URIs for classes and slots respectively. These are typically specified as CURIEs
+can be used to declare URIs for classes and slots respectively. These are typically specified as CURIEs.
 
 ```yaml
 classes:
