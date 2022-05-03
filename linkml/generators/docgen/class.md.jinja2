@@ -7,7 +7,7 @@
 {{ element.description }}
 ```mermaid
  classDiagram
-      {% for s in schemaview.class_ancestors(element.name) -%}
+      {% for s in schemaview.class_ancestors(element.name, reflexive=false) -%}
         {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
       {% endfor %}
       {% for s in schemaview.class_induced_slots(element.name) -%}
