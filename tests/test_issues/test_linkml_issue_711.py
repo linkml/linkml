@@ -63,7 +63,7 @@ slots:
     annotations:
       ae:metadata: "Local prefixed annotation"
       is_current: Local unpredixed annotation
-      oa:non_existing: "This annotation will be skipped silently"
+      err:non_existing: "This annotation will be skipped silently"
       oa:describing: "Annotation not in prefxes, but present in metamodel namespaces"
   
   family name:
