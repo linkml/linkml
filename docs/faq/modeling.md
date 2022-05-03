@@ -202,8 +202,37 @@ slots:
 
 ```
 
-
 ## How do I constrain a range of a slot to a certain branch of an ontology
+A solution to this question is in active development, in the short term, the best way to constrain
+a slot by a certain branch of an ontology is by extracting the terms in the ontology that form the constraint
+into an enumeration:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+    slot_usage:
+       variant type:
+          pattern: '^SO:\d+$'
+        
+slots:
+  variant type:
+  range: variant_type_enum
+
+enums:
+  variant_type_enum:
+    permissible_values: 
+      point_mutation:
+          meaning: SO:12345
+      SO:deletion:
+          meaning: SO:24681
+      SO:insertion: 
+          meaning: SO:36912
+```
+
 
 ## How do I do the equivalent of JSON-Schema composition?
 
