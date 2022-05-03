@@ -168,8 +168,13 @@ In future, the LinkML framework will
 
 ## What are id_prefixes used for and why do we want them?
 
-The LinkML meta modeling element, id_prefixes, are used to give an indication of the ids expected to be used
-in decreasing priority order for a particular class.
+The LinkML meta modeling element, [id_prefixes](https://w3id.org/linkml/id_prefixes) can be applied to any Class. This is used to specify which prefixes should be used on the identifiers for that class.
+
+The id_prefixes are listed in decreasing priority order, with the "preferred" prefix listed first.
 
 Downstream software components can use this field to constrain data entry to a particular kind of identifier.
+
+To see examples, Biolink uses id_prefixes extensively. For example, the [MolecularEntity](https://biolink.github.io/biolink-model/docs/MolecularEntity) class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.
+
+For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
 
