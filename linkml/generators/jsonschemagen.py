@@ -229,6 +229,8 @@ class JsonSchemaGenerator(Generator):
             prop.const = slot.equals_string
         if slot.equals_number is not None:
             prop.const = slot.equals_number
+        if slot.if_absent:
+            prop.const = slot.if_absent
         self.clsobj.properties[underscore(aliased_slot_name)] = prop
         if (self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name)) or \
                 (self.topCls is None and cls.tree_root):
