@@ -165,3 +165,11 @@ In future, the LinkML framework will
 
  * warn if a reserved term is used
  * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
+
+## What are id_prefixes used for and why do we want them?
+
+The LinkML meta modeling element, id_prefixes, are used to give an indication of the ids expected to be used
+in decreasing priority order for a particular class.
+
+Downstream software components can use this field to constrain data entry to a particular kind of identifier.
+
