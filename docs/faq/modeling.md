@@ -165,3 +165,6 @@ In future, the LinkML framework will
 
  * warn if a reserved term is used
  * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
+
+## What is a good use case of subproperty_of? 
+
