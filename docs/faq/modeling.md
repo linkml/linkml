@@ -85,6 +85,126 @@ More on enums:
 
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
+## How do I constrain a range to a certain ontology 
+LinkML team is working actively on solutions to this commonly asked question:
+https://github.com/linkml/linkml/issues/274
+
+
+At the moment, LinkML has several ways to restrict the value of a field:
+- use a regular expression
+- constrain using values from an enumeration
+- define a vocabulary or term class and constrain the range to that class
+- declare id_prefixes for a class that represent a particular ontology
+
+use a regular expression:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+
+slots:
+  variant type:
+  pattern: '^SO:\d+$'
+```
+
+constrain using values from an enumeration:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+    slot_usage:
+       variant type:
+          pattern: '^SO:\d+$'
+        
+slots:
+  variant type:
+  range: variant_type_enum
+
+enums:
+  variant_type_enum:
+    permissible_values: 
+      point_mutation:
+          meaning: SO:12345
+      SO:deletion:
+          meaning: SO:24681
+      SO:insertion: 
+          meaning: SO:36912
+```
+
+define a vocabulary or term class
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+  ontology term:
+     slots:
+        - name
+        - id
+        - ontology namespace
+        - synonyms
+        - secondary ids
+
+
+slots:
+  variant type:
+    range: ontology term
+  name:
+  id:
+     type: uriorcurie
+  ontology namespace:
+  synonyms:
+  secondary ids:
+
+```
+
+declare id_prefixes for a class that constrain the kinds of identifiers used to describe the class
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+  sequence ontology term:
+     slots:
+        - name
+        - id
+        - ontology namespace
+        - synonyms
+        - secondary ids
+    id_prefixes:
+       - SO
+
+
+slots:
+  variant type:
+    range: sequence ontology term
+  name:
+  id:
+    identifier: true
+    type: uriorcurie
+  ontology namespace:
+  synonyms:
+  secondary ids:
+
+```
+
+
+## How do I constrain a range of a slot to a certain branch of an ontology
+
 ## How do I do the equivalent of JSON-Schema composition?
 
 See: [Schema Composition](https://json-schema.org/understanding-json-schema/reference/combining.html) in JSON-Schema docs
