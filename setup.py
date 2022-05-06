@@ -11,5 +11,6 @@ NAME = 'linkml'
 setup(
     name=NAME,
     setup_requires=['pbr'],
+    install_requires=['poetry'],
     pbr=True,
 )
