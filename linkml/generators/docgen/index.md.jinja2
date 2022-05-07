@@ -4,44 +4,20 @@
 
 URI: {{ schema.id }}
 
-## Classes (nodes)
+## Classes
 
 | Class | Description |
-{% for c in schemaview.all_classes(ordered_by="lexical").values()|sort(attribute='name') -%}
-{%- if 'association' not in schemaview.class_ancestors(c.name) and not schemaview.is_mixin(c.name) -%}
+{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
 | --- | --- |
 | {{gen.link(c)}} | {{c.description}} |
-{%- endif -%}
 {% endfor %}
 
-## Class (node) Properties
+## Class Properties
 
 | Property | Description |
-{% for np in schemaview.all_slots(ordered_by="lexical").values()|sort(attribute='name') -%}
-{%- if 'node property' in schemaview.slot_ancestors(np.name) -%}
+{% for np in schemaview.all_slots().values()|sort(attribute='name') -%}
 | --- | --- |
 | {{gen.link(np)}} | {{np.description}} |
-{%- endif -%}
-{% endfor %}
-
-## Associations (edges)
-
-| Association | Description |
-{% for a in schemaview.all_classes(ordered_by="lexical").values()|sort(attribute='name') -%}
-{%- if 'association'  in schemaview.class_ancestors(a.name) and not schemaview.is_mixin(a.name) -%}
-| --- | --- |
-| {{gen.link(a)}} | {{a.description}} |
-{%- endif -%}
-{% endfor %}
-
-## Predicates
-
-| Property | Description | Inverse |
-{% for s in schemaview.all_slots(ordered_by="lexical").values()|sort(attribute='name') -%}
-{%- if 'related to' in schemaview.slot_ancestors(s.name) -%}
-| --- | --- | --- |
-| {{gen.link(s)}} | {{s.description}} | {%- if not s.symmetric -%} {{schemaview.inverse(s.name)}} {%- else %} symmetric {%- endif -%} |
-{%- endif -%}
 {% endfor %}
 
 ## Annotation (edge) Properties
