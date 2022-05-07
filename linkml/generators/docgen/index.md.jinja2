@@ -12,22 +12,12 @@ URI: {{ schema.id }}
 | {{gen.link(c)}} | {{c.description}} |
 {% endfor %}
 
-## Class Properties
+## Slots
 
-| Property | Description |
-{% for np in schemaview.all_slots().values()|sort(attribute='name') -%}
+| Slot | Description |
+{% for s in schemaview.all_slots().values()|sort(attribute='name') -%}
 | --- | --- |
-| {{gen.link(np)}} | {{np.description}} |
-{% endfor %}
-
-## Annotation (edge) Properties
-
-| Property | Description |
-{% for ep in schemaview.all_slots(ordered_by="lexical").values()|sort(attribute='name') -%}
-{%- if 'association slot' in schemaview.slot_ancestors(ep.name) -%}
-| --- | --- |
-| {{gen.link(ep)}} | {{ep.description}} |
-{%- endif -%}
+| {{gen.link(s)}} | {{s.description}} |
 {% endfor %}
 
 ## Enumerations
