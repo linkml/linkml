@@ -1,12 +1,14 @@
-# Class:  {{ gen.name(element) }}
+# Class: {{ gen.name(element) }}
+
+{%- if header -%}
+{{header}}
+{%- endif -%}
+
+
 
 {% if element.description %}
 _{{ element.description }}_
 {% endif %}
-
-{% if element.comments -%}}
-{{element.comments}}
-{% endif -%}}
 
 {% if element.abstract %}
 * __NOTE__: this is an abstract class and should not be instantiated directly
@@ -14,6 +16,9 @@ _{{ element.description }}_
 {% if element.mixin %}
 * __NOTE__: this is a mixin class intended to be used in combination with other classes, and not used directly
 {% endif %}
+
+URI: {{ gen.uri_link(element) }}
+
 
 
 {% if schemaview.class_parents(element.name) %}
@@ -48,12 +53,9 @@ _{{ element.description }}_
 {% endif %}
 
 
-URI: {{ gen.uri_link(element) }}
-
 {% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
-## Inheritance
 
-### Parent Classes
+## Parent Classes
 {% if schemaview.class_parents(element.name) %}
 {{ gen.inheritance_tree(element, mixins=True) }}
 {% else %}
@@ -63,7 +65,7 @@ None
 
 {% if schemaview.class_children(element.name, mixins=False) %}
 
-### Children
+## Children
 
 {{ gen.inheritance_tree(element, mixins=True) }}
 {% else %}
@@ -74,8 +76,28 @@ None
 
 | Name | Range | Cardinality | Description  | Info |
 | ---  | --- | --- | --- | --- |
-{% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+{% for s in schemaview.class_induced_slots(element.name) -%}
 | {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{s.description}}  | . |
+{% endfor %}
+
+## Usages
+
+{% if schemaview.usage_index().get(element.name) %}
+| used by | used in | type | used |
+| ---  | --- | --- | --- |
+{% for usage in schemaview.usage_index().get(element.name) -%}
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+{% endfor %}
+{% endif %}
+
+{% include "common_metadata.md.jinja2" %}
+
+
+{% if element.rules or element.classification_rules %}
+
+## Rules
+
+{% endif %}
 
 {% if schemaview.get_mappings(element.name).items() -%}
 ## Mappings
@@ -90,16 +112,6 @@ None
 
 {% endif -%}
 
-## Usages
-{% if schemaview.usage_index().get(element.name) %}
-| used by | used in | type | used |
-| ---  | --- | --- | --- |
-{% for usage in schemaview.usage_index().get(element.name) -%}
-| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
-
-## Rules
-
-{% endif %}
 
 ## LinkML Specification
 
