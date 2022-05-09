@@ -143,3 +143,58 @@ URI: [linkml:AnonymousExpression](https://w3id.org/linkml/AnonymousExpression)
  * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
+     * Description: A list of structured_alias objects.
+     * Range: [StructuredAlias](StructuredAlias.md)
+
+### Mixed in from common_metadata:
+
+ * [mappings](mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [close mappings](close_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have close meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [related mappings](related_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have related meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)

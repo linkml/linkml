@@ -28,9 +28,6 @@ core:Activity a sh:NodeShape ;
     sh:description "a provence-generating activity" ;
     sh:ignoredProperties ( rdf:type ) ;
     sh:property [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path core:id ],
-        [ sh:maxCount 1 ;
             sh:order 5 ;
             sh:path prov:used ],
         [ sh:maxCount 1 ;
@@ -39,6 +36,14 @@ core:Activity a sh:NodeShape ;
         [ sh:maxCount 1 ;
             sh:order 6 ;
             sh:path core:description ],
+        [ sh:class core:Activity ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 3 ;
+            sh:path prov:wasInformedBy ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path core:id ],
         [ sh:class prov:Agent ;
             sh:maxCount 1 ;
             sh:nodeKind sh:IRI ;
@@ -46,11 +51,6 @@ core:Activity a sh:NodeShape ;
             sh:path prov:wasAssociatedWith ],
         [ sh:maxCount 1 ;
             sh:order 2 ;
-            sh:path prov:endedAtTime ],
-        [ sh:class core:Activity ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 3 ;
-            sh:path prov:wasInformedBy ] ;
+            sh:path prov:endedAtTime ] ;
     sh:targetClass core:Activity .
 
