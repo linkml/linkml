@@ -11,7 +11,8 @@
 
 LinkML is a linked data modeling language following object-oriented and ontological principles. LinkML models are typically authored in YAML, and can be converted to other schema representation formats such as JSON or RDF.
 
+This repo holds the tools for generating and working with LinkML. For the LinkML schema (metamodel), please see https://github.com/linkml/linkml-model
+
 The complete documentation for LinkML can be found here:
 
  - [linkml.io/linkml](https://linkml.io/linkml)
-
