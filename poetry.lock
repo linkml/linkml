@@ -565,7 +565,7 @@ linkml-runtime = ">=1.1.6"
 
 [[package]]
 name = "linkml-runtime"
-version = "1.2.11rc1"
+version = "1.2.12"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 category = "main"
 optional = false
@@ -1485,7 +1485,7 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.6"
-content-hash = "f7bc3e93a0b36f2ed278cf00b3ba0aa2a75ffd87aa088d8f5c07553d7ff4ccf6"
+content-hash = "8f4c3732291bf28d953d0bf4c6424bff7f4478a45477be360b3068f10e42be27"
 
 [metadata.files]
 alabaster = [
@@ -1797,8 +1797,8 @@ linkml-dataops = [
     {file = "linkml_dataops-0.1.0.tar.gz", hash = "sha256:4550eab65e78b70dc3b9c651724a94ac2b1d1edb2fbe576465f1d6951a54ed04"},
 ]
 linkml-runtime = [
-    {file = "linkml_runtime-1.2.11rc1-py3-none-any.whl", hash = "sha256:f19b3eb291de6cb6a934c485406ab3e8b56fd3ec49f82fe65158447493c2afc7"},
-    {file = "linkml_runtime-1.2.11rc1.tar.gz", hash = "sha256:23611c79902fbd1c8ec9ab29c952f7f8817b094de361eeb0df236038f39dfb38"},
+    {file = "linkml_runtime-1.2.12-py3-none-any.whl", hash = "sha256:fddb8708a78a07b683bf722639605a54ceab6a0073c99a513a8552b255191baa"},
+    {file = "linkml_runtime-1.2.12.tar.gz", hash = "sha256:71e1ba9493c4853e73b75f7094f123c4b07f32d120c7626e5a811bd0d3d2c81f"},
 ]
 markdown-it-py = [
     {file = "markdown-it-py-2.1.0.tar.gz", hash = "sha256:cf7e59fed14b5ae17c0006eff14a2d9a00ed5f3a846148153899a0224e2c07da"},
