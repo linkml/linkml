@@ -1035,7 +1035,7 @@ slots:
     inherited: true
     description:  |-
       function that provides a default value for the slot.  Possible values for this slot are defined in
-      linkml.utils.ifabsent_functions.default_library:
+      linkml_runtime.utils.ifabsent_functions.default_library:
         * [Tt]rue -- boolean True
         * [Ff]alse -- boolean False
         * int(value) -- integer value
@@ -1787,6 +1787,15 @@ classes:
       - see_also
       - deprecated element has exact replacement
       - deprecated element has possible replacement
+      - aliases
+      - structured_aliases
+      - mappings
+      - exact mappings
+      - close mappings
+      - related mappings
+      - narrow mappings
+      - broad mappings
+      - rank
     in_subset:
       - basic
 
@@ -1804,17 +1813,8 @@ classes:
       - name
       - id_prefixes
       - definition_uri
-      - aliases
-      - structured_aliases
       - local_names
       - conforms_to
-      - mappings
-      - exact mappings
-      - close mappings
-      - related mappings
-      - narrow mappings
-      - broad mappings
-      - rank
     see_also:
       - https://en.wikipedia.org/wiki/Data_element
     in_subset:
@@ -2028,6 +2028,8 @@ classes:
       - range_expression
       - required
       - recommended
+      - inlined
+      - inlined_as_list
       - minimum_value
       - maximum_value
       - pattern
@@ -2083,8 +2085,6 @@ classes:
       - inherited
       - readonly
       - ifabsent
-      - inlined
-      - inlined_as_list
       - list_elements_unique
       - list_elements_ordered
       - shared
