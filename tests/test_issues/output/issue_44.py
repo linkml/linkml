@@ -1,5 +1,5 @@
 # Auto generated from issue_44.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-05-09T21:15:02
+# Generation date: 2022-05-10T00:14:00
 # Schema: test44
 #
 # id: https://example.com/test44
