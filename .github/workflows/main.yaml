@@ -11,13 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.7.6", "3.8", "3.9", "3.10"]
-        exclude:
-          - os: windows-latest
-            python-version: "3.7.6"
-          - os: windows-latest
-            python-version: "3.8"
 
     runs-on: ${{ matrix.os }}
 
@@ -58,6 +53,12 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
+
+      #----------------------------------------------
+      #         setup and install graphviz
+      #----------------------------------------------
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v1
 
       #----------------------------------------------
       #    install your root project, if required
