@@ -70,6 +70,49 @@ fields:
   description: When an element is deprecated, it can be potentially replaced by this
     uri or curie
   display_name: deprecated element has possible replacement
+- id: aliases
+  display_name: aliases
+  cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
+- id: mappings
+  description: A list of terms from different schemas or terminology systems that
+    have comparable meaning. These may include terms that are precisely equivalent,
+    broader or narrower in meaning, or otherwise semantically related but not equivalent
+    from a strict ontological perspective.
+  display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
 - id: range
   description: "defines the type of the object of the slot.  Given the following slot\
     \ definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n \
@@ -86,6 +129,16 @@ fields:
   description: true means that the slot should be present in the loaded definition,
     but this is not required
   display_name: recommended
+- id: inlined
+  description: True means that keyed or identified slot appears in an outer structure
+    by value.  False means that only the key or identifier for the slot appears within
+    the domain, referencing a structure that appears elsewhere.
+  display_name: inlined
+- id: inlined_as_list
+  description: True means that an inlined slot is represented as a list of range instances.  False
+    means that an inlined slot is represented as a dictionary, whose key is the slot
+    key or identifier and whose value is the range instance.
+  display_name: inlined_as_list
 - id: minimum_value
   description: for slots with ranges of type number, the value must be equal to or
     higher than this

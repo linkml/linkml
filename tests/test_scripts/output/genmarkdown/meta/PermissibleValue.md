@@ -7,7 +7,7 @@ a permissible value, accompanied by intended text and an optional mapping to a c
 URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[PermissibleValue]<mixins%200..*-%20[PermissibleValue&#124;text:string;description:string%20%3F;meaning:uriorcurie%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[PermissibleValue]<is_a%200..1-%20[PermissibleValue],[EnumDefinition]++-%20permissible_values%200..*>[PermissibleValue],[PermissibleValue]uses%20-.->[Extensible],[PermissibleValue]uses%20-.->[Annotatable],[PermissibleValue]uses%20-.->[CommonMetadata],[Extension],[Extensible],[Example],[EnumDefinition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
@@ -155,6 +155,61 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
  * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
+     * Description: A list of structured_alias objects.
+     * Range: [StructuredAlias](StructuredAlias.md)
+
+### Mixed in from common_metadata:
+
+ * [mappings](mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [close mappings](close_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have close meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [related mappings](related_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have related meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
 
 ## Other properties
 

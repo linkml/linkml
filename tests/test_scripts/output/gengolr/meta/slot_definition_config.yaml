@@ -18,55 +18,12 @@ fields:
 - id: definition_uri
   description: the "native" URI of the element
   display_name: definition_uri
-- id: aliases
-  display_name: aliases
-  cardinality: multi
-- id: structured_aliases
-  description: A list of structured_alias objects.
-  display_name: structured_aliases
-  cardinality: multi
 - id: local_names
   display_name: local_names
   cardinality: multi
 - id: conforms_to
   description: An established standard to which the element conforms.
   display_name: conforms_to
-- id: mappings
-  description: A list of terms from different schemas or terminology systems that
-    have comparable meaning. These may include terms that are precisely equivalent,
-    broader or narrower in meaning, or otherwise semantically related but not equivalent
-    from a strict ontological perspective.
-  display_name: mappings
-  cardinality: multi
-- id: exact_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have identical meaning.
-  display_name: exact mappings
-  cardinality: multi
-- id: close_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have close meaning.
-  display_name: close mappings
-  cardinality: multi
-- id: related_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have related meaning.
-  display_name: related mappings
-  cardinality: multi
-- id: narrow_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have narrower meaning.
-  display_name: narrow mappings
-  cardinality: multi
-- id: broad_mappings
-  description: A list of terms from different schemas or terminology systems that
-    have broader meaning.
-  display_name: broad mappings
-  cardinality: multi
-- id: rank
-  description: the relative order in which the element occurs, lower values are given
-    precedence
-  display_name: rank
 - id: extensions
   description: a tag/text tuple attached to an arbitrary element
   display_name: extensions
@@ -133,6 +90,49 @@ fields:
   description: When an element is deprecated, it can be potentially replaced by this
     uri or curie
   display_name: deprecated element has possible replacement
+- id: aliases
+  display_name: aliases
+  cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
+- id: mappings
+  description: A list of terms from different schemas or terminology systems that
+    have comparable meaning. These may include terms that are precisely equivalent,
+    broader or narrower in meaning, or otherwise semantically related but not equivalent
+    from a strict ontological perspective.
+  display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
 - id: abstract
   description: an abstract class is a high level class or slot that is typically used
     to group common slots together and cannot be directly instantiated.
@@ -199,23 +199,13 @@ fields:
   display_name: readonly
 - id: ifabsent
   description: "function that provides a default value for the slot.  Possible values\
-    \ for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n\
+    \ for this slot are defined in\nlinkml_runtime.utils.ifabsent_functions.default_library:\n\
     \  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) --\
     \ integer value\n  * str(value) -- string value\n  * default_range -- schema default\
     \ range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n\
     \  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the\
     \ containing class"
   display_name: ifabsent
-- id: inlined
-  description: True means that keyed or identified slot appears in an outer structure
-    by value.  False means that only the key or identifier for the slot appears within
-    the domain, referencing a structure that appears elsewhere.
-  display_name: inlined
-- id: inlined_as_list
-  description: True means that an inlined slot is represented as a list of range instances.  False
-    means that an inlined slot is represented as a dictionary, whose key is the slot
-    key or identifier and whose value is the range instance.
-  display_name: inlined_as_list
 - id: list_elements_unique
   description: If True, then there must be no duplicates in the elements of a multivalued
     slot
@@ -363,6 +353,16 @@ fields:
   description: true means that the slot should be present in the loaded definition,
     but this is not required
   display_name: recommended
+- id: inlined
+  description: True means that keyed or identified slot appears in an outer structure
+    by value.  False means that only the key or identifier for the slot appears within
+    the domain, referencing a structure that appears elsewhere.
+  display_name: inlined
+- id: inlined_as_list
+  description: True means that an inlined slot is represented as a list of range instances.  False
+    means that an inlined slot is represented as a dictionary, whose key is the slot
+    key or identifier and whose value is the range instance.
+  display_name: inlined_as_list
 - id: minimum_value
   description: for slots with ranges of type number, the value must be equal to or
     higher than this

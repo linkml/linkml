@@ -165,3 +165,21 @@ In future, the LinkML framework will
 
  * warn if a reserved term is used
  * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
+
+## When is it important to have mappings?
+
+Any element in a LinkML schema can have any number of *mappings* associated with it
+
+Mappings are useful in a variety of ways including: 
+
+- they make your data and your schema more FAIR (Findable, Accessable, Reusable, and Interoperable)
+- when people use data that conforms to your model, and integrated with data that conforms to another model, they can use mappings between models to help automate data harmonization.  
+- mappings can provide links to other documentation sources for your model, allowing expertise to be shared between projects and not duplicated
+- mappings allow advanced users to reason over your model.
+
+Mappings can be established for exact equivalences, close, related, narrow and broad equivalences
+For more detail on the kinds of mappings (and their mappings to SKOS): https://linkml.io/linkml-model/docs/mappings/)
+
+Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
+encourage adding them *prospectively* as you build our your datamodel, rather than doing this *retrospectively*. Thinking about mappings
+will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.

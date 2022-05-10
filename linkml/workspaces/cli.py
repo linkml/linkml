@@ -141,6 +141,10 @@ def main(verbose: int, quiet: bool):
               help="Path to a template directory. If empty, then the default linkml-project-template will be used")
 @click.option("-d", "--directory",
               help="Path to a target directory")
+@click.option("-U", "--organization",
+              default='my_org',
+              show_default=True,
+              help="Name of github organization")
 @click.option("-V", "--template-version",
               help="Version of template.")
 @click.option("-D", "--description",
@@ -155,6 +159,7 @@ def main(verbose: int, quiet: bool):
 def new(
         name,
         description,
+        organization,
         directory,
         template_directory,
         template_version,
@@ -193,6 +198,10 @@ def new(
     output_directory = project_dir
     logging.info(f'Walking: {template_directory}')
     params = dict(name=name,
+                  dash_name=project_name_as_directory(name),
+                  organization=organization,
+                  namespace=underscore(organization),
+                  underscore_name=project_name_as_underscore(name),
                   description=description,
                   template_version=template_version)
     for root, dirs, files in os.walk(template_directory, topdown=True):

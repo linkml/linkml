@@ -39,6 +39,15 @@ type AnonymousClassExpression implements ClassExpression
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     isA: Definition
     anyOf: [AnonymousClassExpression]
     exactlyOneOf: [AnonymousClassExpression]
@@ -67,6 +76,15 @@ type AnonymousExpression implements Expression, Extensible, Annotatable, CommonM
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type AnonymousSlotExpression implements SlotExpression
@@ -89,10 +107,21 @@ type AnonymousSlotExpression implements SlotExpression
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     range: Element
     rangeExpression: AnonymousClassExpression
     required: Boolean
     recommended: Boolean
+    inlined: Boolean
+    inlinedAsList: Boolean
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
@@ -131,17 +160,8 @@ type ClassDefinition implements ClassExpression
     name: String!
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -160,6 +180,15 @@ type ClassDefinition implements ClassExpression
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     abstract: Boolean
     mixin: Boolean
     valuesFrom: [Uriorcurie]
@@ -234,6 +263,14 @@ type ClassRule implements Extensible, Annotatable, CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
   }
 
 interface CommonMetadata
@@ -254,17 +291,8 @@ interface CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
-  }
-
-interface Definition
-  {
-    name: String!
-    idPrefixes: [Ncname]
-    definitionUri: Uriorcurie
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    localNames: [LocalName]
-    conformsTo: String
     mappings: [Uriorcurie]
     exactMappings: [Uriorcurie]
     closeMappings: [Uriorcurie]
@@ -272,6 +300,15 @@ interface Definition
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     rank: Integer
+  }
+
+interface Definition
+  {
+    name: String!
+    idPrefixes: [Ncname]
+    definitionUri: Uriorcurie
+    localNames: [LocalName]
+    conformsTo: String
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -290,6 +327,15 @@ interface Definition
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     isA: Definition
     abstract: Boolean
     mixin: Boolean
@@ -309,17 +355,8 @@ type Element implements Extensible, Annotatable, CommonMetadata
     name: String!
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -338,6 +375,15 @@ type Element implements Extensible, Annotatable, CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type EnumDefinition
@@ -345,17 +391,8 @@ type EnumDefinition
     name: String!
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -374,6 +411,15 @@ type EnumDefinition
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     codeSet: Uriorcurie
     codeSetTag: String
     codeSetVersion: String
@@ -426,6 +472,15 @@ type ImportExpression implements Extensible, Annotatable, CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type LocalName
@@ -462,6 +517,15 @@ type PathExpression implements Expression, Extensible, Annotatable, CommonMetada
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type PatternExpression implements Extensible, Annotatable, CommonMetadata
@@ -487,6 +551,15 @@ type PatternExpression implements Extensible, Annotatable, CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type PermissibleValue implements Extensible, Annotatable, CommonMetadata
@@ -513,6 +586,15 @@ type PermissibleValue implements Extensible, Annotatable, CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type Prefix
@@ -525,17 +607,8 @@ type SchemaDefinition
   {
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -554,6 +627,15 @@ type SchemaDefinition
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     id: Uri!
     version: String
     imports: [Uriorcurie]
@@ -591,17 +673,8 @@ type SlotDefinition implements SlotExpression
     name: String!
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -620,6 +693,15 @@ type SlotDefinition implements SlotExpression
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     abstract: Boolean
     mixin: Boolean
     valuesFrom: [Uriorcurie]
@@ -636,8 +718,6 @@ type SlotDefinition implements SlotExpression
     inherited: Boolean
     readonly: String
     ifabsent: String
-    inlined: Boolean
-    inlinedAsList: Boolean
     listElementsUnique: Boolean
     listElementsOrdered: Boolean
     shared: Boolean
@@ -674,6 +754,8 @@ type SlotDefinition implements SlotExpression
     rangeExpression: AnonymousClassExpression
     required: Boolean
     recommended: Boolean
+    inlined: Boolean
+    inlinedAsList: Boolean
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
@@ -698,6 +780,8 @@ interface SlotExpression
     rangeExpression: AnonymousClassExpression
     required: Boolean
     recommended: Boolean
+    inlined: Boolean
+    inlinedAsList: Boolean
     minimumValue: Integer
     maximumValue: Integer
     pattern: String
@@ -739,6 +823,15 @@ type StructuredAlias implements Expression, Extensible, Annotatable, CommonMetad
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type SubsetDefinition
@@ -746,17 +839,8 @@ type SubsetDefinition
     name: String!
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -775,6 +859,15 @@ type SubsetDefinition
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 type TypeDefinition implements TypeExpression
@@ -782,17 +875,8 @@ type TypeDefinition implements TypeExpression
     name: String!
     idPrefixes: [Ncname]
     definitionUri: Uriorcurie
-    aliases: [String]
-    structuredAliases: [StructuredAlias]
     localNames: [LocalName]
     conformsTo: String
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    rank: Integer
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -811,6 +895,15 @@ type TypeDefinition implements TypeExpression
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
     typeof: TypeDefinition
     base: String
     uri: Uriorcurie
@@ -865,6 +958,15 @@ type UniqueKey implements Extensible, Annotatable, CommonMetadata
     seeAlso: [Uriorcurie]
     deprecatedElementHasExactReplacement: Uriorcurie
     deprecatedElementHasPossibleReplacement: Uriorcurie
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [Uriorcurie]
+    exactMappings: [Uriorcurie]
+    closeMappings: [Uriorcurie]
+    relatedMappings: [Uriorcurie]
+    narrowMappings: [Uriorcurie]
+    broadMappings: [Uriorcurie]
+    rank: Integer
   }
 
 
