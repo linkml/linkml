@@ -123,6 +123,7 @@ ipykernel = "*"
 ipython-genutils = "*"
 nbconvert = "*"
 nbformat = "*"
+codecov = "^2.1.12"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-mermaid"]
