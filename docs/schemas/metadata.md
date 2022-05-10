@@ -47,6 +47,11 @@ Person:
     - individual
 ```
 
+In practice, aliases are used to help interpret the model, not as an equivalent name for a class or slot name.
+Downstream tooling could use these aliases to help users query the model for example, but the LinkML tooling does not consider 
+aliases and element names interchangeable. 
+
+
 ## deprecation
 
 Any schema element can be deprecated, with a reason provided; optionally, a replacement can be provided
