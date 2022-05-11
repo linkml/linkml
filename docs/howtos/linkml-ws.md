@@ -31,7 +31,11 @@ Some important points to keep in mind about this structure:
 
 * To take advantage of the directory structure, familiarize yourself with 
 all the commands that are available at your disposal as Makefile targets, by 
-running: 
+running:
+
+```bash
+make help
+```
 
 * Configure the name of your data model and the path to your data model in 
 the `about.yaml` file, since the Makefile targets pick variable names 
@@ -51,7 +55,8 @@ dependent on the already defined targets and variables, you can specify them in 
 ## Command Reference
 
 ```
-poetry run linkml-ws new --help 
+✗ poetry run linkml-ws new --help
+
 Usage: linkml-ws new [OPTIONS] NAME
 
   Create a new project
