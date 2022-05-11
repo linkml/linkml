@@ -11,27 +11,6 @@ Generators allow you to tap into the rich tooling offered in other
 technical stacks. The philosophy of LinkML is to embrace and reuse
 these existing frameworks, rather than serve as an alternative.
 
-Pre-modeling Setup
-------------------
-
-This generator helps you get setup with a pre-defined project structure, 
-or, a workspace, for when you want to start modeling your own LinkML 
-model. To take full advantage of the contents of this project template, 
-we recommend familiarizing yourself with the various targets provided in 
-the Makefile. You can do so by running:
-
-.. code:: bash
-   make help
-
-Note: The default package manager that the generator sets you up with is 
-`poetry <https://python-poetry.org/>`_.
-
-.. toctree::
-   :maxdepth: 3
-   :caption: Contents
-
-   ws-new
-
 Schema Frameworks
 -----------------
 
