@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkML Workspace Generator &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>LinkML Workspace Generator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/howtos/linkml-ws.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="linkml-workspace-generator">
+<h1>LinkML Workspace Generator<a class="headerlink" href="#linkml-workspace-generator" title="Permalink to this headline"></a></h1>
+<section id="pre-modeling-setup">
+<h2>Pre-modeling Setup<a class="headerlink" href="#pre-modeling-setup" title="Permalink to this headline"></a></h2>
+<p>This generator helps you get setup with a pre-defined project structure,
+or, a workspace, for when you want to start modeling your own LinkML
+model. To take full advantage of the contents of this project template,
+we recommend familiarizing yourself with the various targets provided in
+the Makefile. You can do so by running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make <span class="nb">help</span>
+</pre></div>
+</div>
+<p>Note: The default package manager that the generator sets you up with is
+<a class="reference external" href="https://python-poetry.org/">poetry</a>.</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p>If you are a data modeler, and want to start authoring LinkML data models
+to describe the strcuture of your datasets, then the first step to do after
+installing the linkml library itself, is to let linkml do the heavy lifting
+and use it to generate a well defined directory structure for your project.</p>
+<p>The workspace generator creates a directory structure is that is based off of
+this Github template: <a class="reference external" href="https://github.com/linkml/linkml-project-template">linkml-project-structure</a></p>
+</section>
+<section id="general-tips">
+<h2>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this headline"></a></h2>
+<p>Some important points to keep in mind about this structure:</p>
+<ul class="simple">
+<li><p>To take advantage of the directory structure, familiarize yourself with
+all the commands that are available at your disposal as Makefile targets, by
+running:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make <span class="nb">help</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Configure the name of your data model and the path to your data model in
+the <code class="docutils literal notranslate"><span class="pre">about.yaml</span></code> file, since the Makefile targets pick variable names
+from there.</p></li>
+<li><p>The core LinkML YAML data model can be found at: <code class="docutils literal notranslate"><span class="pre">src</span> <span class="pre">&gt;</span> <span class="pre">linkml</span> <span class="pre">&gt;</span> <span class="pre">my_data_model.yaml</span></code>.</p></li>
+<li><p>The generator super charges your project with automatic documentation generation
+capabilities using <a class="reference external" href="https://www.mkdocs.org/">Mkdocs</a>, and package management
+using <a class="reference external" href="https://python-poetry.org/">poetry</a>.</p></li>
+<li><p>To extend the Makefile and add your own custom make targets, that may or may not be
+dependent on the already defined targets and variables, you can specify them in the
+<code class="docutils literal notranslate"><span class="pre">project.Makefile</span></code> file.</p></li>
+</ul>
+</section>
+<section id="command-reference">
+<h2>Command Reference<a class="headerlink" href="#command-reference" title="Permalink to this headline"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>✗ poetry run linkml-ws new --help
+
+Usage: linkml-ws new [OPTIONS] NAME
+
+  Create a new project
+
+  This will use: https://github.com/linkml/linkml-project-template
+
+  Example:
+
+      linkml-ws new my-awesome-project
+
+Options:
+  -T, --template-directory TEXT  Path to a template directory. If empty, then
+                                 the default linkml-project-template will be
+                                 used
+  -d, --directory TEXT           Path to a target directory
+  -U, --organization TEXT        Name of github organization  [default:
+                                 my_org]
+  -V, --template-version TEXT    Version of template.
+  -D, --description TEXT         Description of project  [default: my awesome
+                                 datamodel is for awesome things]
+  --force / --no-force           overwrite project dir if exists already
+                                 [default: no-force]
+  --help                         Show this message and exit.
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
