@@ -43,11 +43,12 @@ class ProtoGenerator(Generator):
         print(" }")
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        qual = 'repeated ' if slot.multivalued else 'optional ' if not slot.required or slot.key else ''
+        qual = 'repeated ' if slot.multivalued else ''
         slotname = lcamelcase(aliased_slot_name)
         slot_range = camelcase(slot.range)
-        self.relative_slot_num += 1
-        print(f"  {qual}{slotname} {slot_range} = {self.relative_slot_num}")
+        if slot.rank is None:
+            raise ValueError("for proto files, we need a rank to determine the resulting proto tag.")
+        print(f" {qual} {lcamelcase(slot_range)} {(slotname)} = {slot.rank}")
 
 
 @shared_arguments(ProtoGenerator)
