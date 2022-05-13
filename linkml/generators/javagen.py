@@ -42,9 +42,9 @@ public {% if cls.abstract -%}abstract {%- endif %}class {{ cls.name }} {% if cls
 
 TYPEMAP = {
     "str": "String",
-    "int": "Integer",
-    "float": "Float",
-    "Bool": "Boolean",
+    "int": "int",
+    "float": "float",
+    "Bool": "boolean",
     "XSDDate": "String",
     "URIorCURIE": "String"
 }
