@@ -4,4 +4,31 @@ import java.util.List;
 
 public record {{ cls.name }}({% for f in cls.all_fields %}
     {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
-{%- endfor %}) {}
+{%- endfor %}) {
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+{% for f in cls.all_fields %}
+        private {{ f.range }} {{ f.name }} = ""; //TODO: need to generate appropriate default/empty values for each type
+{%- endfor %}
+{% for f in cls.all_fields %}
+
+        public Builder {{ f.name }}({{ f.range }} {{ f.name }}) {
+            this.{{ f.name }} = Objects.requireNonNull({{ f.name }});
+            return this;
+        }
+{%- endfor %}
+
+    public {{ cls.name }} build() {
+            return new {{ cls.name }}(
+               {%- for f in cls.all_fields -%}
+               {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
+               {%- endfor -%}
+            );
+        }
+    }
+}
+
