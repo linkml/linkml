@@ -48,7 +48,7 @@ class GenRDFTestCase(ClickTestCase):
         if expected != cntxt_txt:
             with open(cntxt_file_path, 'w') as f:
                 f.write(cntxt_txt)
-        return urljoin('file:', cntxt_file_path)
+        return PurePath(cntxt_file_path).as_uri()
 
     def test_meta(self):
         """ Test the RDF generator on the metamodel """
