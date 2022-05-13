@@ -133,7 +133,7 @@
     <span class="c1"># # linkml/generators/javagen.py uses different architecture from most of the other generators</span>
     <span class="c1"># # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path</span>
     <span class="c1"># &#39;java&#39;: (JavaGenerator, &#39;java/{name}.java&#39;, {&#39;directory&#39;: &#39;{parent}&#39;}),</span>
-    <span class="c1"># &#39;excel&#39;: (ExcelGenerator, &#39;excel/{name}.xlsx&#39;, {&#39;output&#39;: &#39;{parent}/{name}.xlsx&#39;}),</span>
+    <span class="s1">&#39;excel&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">ExcelGenerator</span><span class="p">,</span> <span class="s1">&#39;excel/</span><span class="si">{name}</span><span class="s1">.xlsx&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{parent}</span><span class="s1">/</span><span class="si">{name}</span><span class="s1">.xlsx&#39;</span><span class="p">}),</span>
 <span class="p">}</span>
 
 <div class="viewcode-block" id="get_local_imports"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.projectgen.get_local_imports">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
@@ -195,7 +195,14 @@
                 <span class="n">gen_path_full</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
                 <span class="n">all_gen_args</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_gen_args</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">generator_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gen_name</span><span class="p">,</span> <span class="p">{})}</span>
                 <span class="n">gen</span><span class="p">:</span> <span class="n">Generator</span>
+                
+                <span class="c1"># special check for output key because ExcelGenerator and</span>
+                <span class="c1"># SSSOMGenerator read in output file name during initialization</span>
+                <span class="k">if</span> <span class="s2">&quot;output&quot;</span> <span class="ow">in</span> <span class="n">all_gen_args</span><span class="p">:</span>
+                    <span class="n">all_gen_args</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_gen_args</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent_dir</span><span class="p">)</span>
+
                 <span class="n">gen</span> <span class="o">=</span> <span class="n">gen_cls</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="o">**</span><span class="n">all_gen_args</span><span class="p">)</span>
+
                 <span class="n">serialize_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mergeimports&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">}</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">all_gen_args</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="c1"># all ARG_DICT values are interpolatable</span>
@@ -204,11 +211,19 @@
                     <span class="n">serialize_args</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">gen_name</span><span class="si">}</span><span class="s1"> ARGS: </span><span class="si">{</span><span class="n">serialize_args</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="n">gen_dump</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">serialize_args</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                    <span class="c1"># markdowngen does not write to a file</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
-                        <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span></div></div>
+
+                <span class="k">if</span> <span class="n">gen_name</span> <span class="o">!=</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                        <span class="c1"># markdowngen does not write to a file</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># special handling for excel generator</span>
+                    <span class="c1"># we do not need to route the output</span>
+                    <span class="c1"># into a file like the other generators</span>
+                    <span class="n">gen</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">serialize_args</span><span class="p">)</span></div></div>
+                
 
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--dir&quot;</span><span class="p">,</span> <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
