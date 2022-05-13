@@ -24,6 +24,8 @@ class ProtoGenerator(Generator):
         self.generate_header()
 
     def generate_header(self):
+        print(f' syntax="proto3";')
+        print(f' package')
         print(f"// metamodel_version: {self.schema.metamodel_version}")
         if self.schema.version:
             print(f"// version: {self.schema.version}")
@@ -47,7 +49,9 @@ class ProtoGenerator(Generator):
         slotname = lcamelcase(aliased_slot_name)
         slot_range = camelcase(slot.range)
         if slot.rank is None:
-            raise ValueError("for proto files, we need a rank to determine the resulting proto tag.")
+            # numbering of slots is important in the proto implementation
+            # and should be determined by the rank param. 
+            slot.rank = 0
         print(f" {qual} {lcamelcase(slot_range)} {(slotname)} = {slot.rank}")
 
 
