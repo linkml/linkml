@@ -1,0 +1,7 @@
+package {{ doc.package }};
+
+import java.util.List;
+
+public record {{ cls.name }}({% for f in cls.all_fields %}
+    {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
+{%- endfor %}) {}

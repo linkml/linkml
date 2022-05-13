@@ -47,6 +47,7 @@ class OOClass:
     abstract: Optional[bool] = None
     mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
     fields: List[OOField] = field(default_factory=lambda: [])
+    all_fields: List[OOField] = field(default_factory=lambda: [])
     annotations: List[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
@@ -120,9 +121,6 @@ class OOCodeGenerator(Generator):
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                if sn in parent_slots:
-                    # TODO: overrides
-                    continue
                 safe_sn = self.get_slot_name(sn)
                 slot = sv.induced_slot(sn, cn)
                 range = slot.range
@@ -149,7 +147,10 @@ class OOCodeGenerator(Generator):
                 if slot.multivalued:
                     range = self.make_multivalued(range)
                 oofield = OOField(name=safe_sn, source_slot=slot, range=range)
-                ooclass.fields.append(oofield)
+                if sn not in parent_slots:
+                    ooclass.fields.append(oofield)
+                ooclass.all_fields.append(oofield)
+
         return docs
 
 
