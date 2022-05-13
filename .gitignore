@@ -75,6 +75,7 @@ instance/
 .env
 
 # virtualenv
+.venv
 venv/
 ENV/
 
