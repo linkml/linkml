@@ -13,7 +13,7 @@ public record {{ cls.name }}({% for f in cls.all_fields -%}
 
     public static class Builder {
 {% for f in cls.all_fields %}
-        private {{ f.range }} {{ f.name }} = ""; //TODO: need to generate appropriate default/empty values for each type
+        private {{ f.range }} {{ f.name }} = {{ f.default_value }};
 {%- endfor %}
 {% for f in cls.all_fields %}
 

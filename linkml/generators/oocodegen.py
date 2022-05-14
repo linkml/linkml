@@ -34,6 +34,7 @@ class OOField:
     """
     name: SAFE_NAME
     range: TYPE_EXPRESSION = None
+    default_value: str = None
     annotations: List[ANNOTATION] = field(default_factory=lambda: [])
     source_slot: SlotDefinition = field(default_factory=lambda: [])
 
@@ -124,6 +125,7 @@ class OOCodeGenerator(Generator):
                 safe_sn = self.get_slot_name(sn)
                 slot = sv.induced_slot(sn, cn)
                 range = slot.range
+                default_value = "null"
 
                 if range is None:
                     # TODO: schemaview should infer this
@@ -134,6 +136,7 @@ class OOCodeGenerator(Generator):
 
                 if range in sv.all_classes():
                     range = self.get_class_name(range)
+                    default_value = "null"
                 elif range in sv.all_types():
                     t = sv.get_type(range)
                     range = self.map_type(t)
@@ -144,9 +147,18 @@ class OOCodeGenerator(Generator):
                 else:
                     raise Exception(f'Unknown range {range}')
 
+                # Set default values for
+                if range == 'boolean':
+                    default_value = 'false'
+                elif range == 'integer':
+                    default_value = '0'
+                elif range == 'String':
+                    default_value = '""'
+
                 if slot.multivalued:
                     range = self.make_multivalued(range)
-                oofield = OOField(name=safe_sn, source_slot=slot, range=range)
+                    default_value = "List.of()"
+                oofield = OOField(name=safe_sn, source_slot=slot, range=range, default_value=default_value)
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
