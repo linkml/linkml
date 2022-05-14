@@ -1,8 +1,9 @@
 package {{ doc.package }};
 
 import java.util.List;
+import java.util.Objects;
 
-public record {{ cls.name }}({% for f in cls.all_fields %}
+public record {{ cls.name }}({% for f in cls.all_fields -%}
     {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
 {%- endfor %}) {
 
@@ -25,7 +26,7 @@ public record {{ cls.name }}({% for f in cls.all_fields %}
     public {{ cls.name }} build() {
             return new {{ cls.name }}(
                {%- for f in cls.all_fields -%}
-               {{f.range}} {{ f.name }}{{ ", " if not loop.last else "" }}
+               {{ f.name }}{{ ", " if not loop.last else "" }}
                {%- endfor -%}
             );
         }
