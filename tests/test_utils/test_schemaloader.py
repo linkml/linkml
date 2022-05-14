@@ -1,6 +1,5 @@
 import logging
 import os
-from pathlib import PurePath
 import unittest
 from io import StringIO
 from typing import Optional
