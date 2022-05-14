@@ -129,7 +129,7 @@ class SchemaLoaderTestCase(TestEnvironmentTestCase):
 
     def test_importmap(self):
         """ Test the importmap parameter """
-        fn = PurePath(env.input_path('import_test_1.yaml')).as_uri()
+        fn = env.input_path('import_test_1.yaml')
         importmap = {"http://example.org/import_test_2" : "import_test_2",
                       "loc/imp3": "import_test_3",
                       "base:import_test_4": "http://example.org/import_test_4",
