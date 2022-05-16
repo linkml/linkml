@@ -223,6 +223,8 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         assert len(p2_recap.aliases) == 1
         assert p2_recap.aliases[0] == 'foo'
         assert p2_recap.current_address.city == 'big city'
+        session.close()
+        engine.dispose()
 
     def test_sqla_imperative_pydantic_exec(self):
         """
@@ -277,6 +279,8 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         p2_recap = persons[0]
         p2mh = p2_recap.has_medical_history
         assert p2mh[0].duration == e1.duration
+        session.close()
+        engine.dispose()
 
     def test_sqla_declarative_exec(self):
         """
@@ -356,6 +360,8 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         assert any(r for r in p1_famrels if (r.related_to == 'P2' and r.type == 'SIBLING_OF'))
         assert any(n for n in p1_news if (n.headline == "foo"))
         session.commit()
+        session.close()
+        engine.dispose()
 
 
 if __name__ == '__main__':
