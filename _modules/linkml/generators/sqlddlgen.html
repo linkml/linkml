@@ -389,7 +389,7 @@
                     <span class="k">if</span> <span class="n">ref_pk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">sqlcol</span><span class="o">.</span><span class="n">foreign_key</span><span class="o">=</span><span class="n">ref_pk</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No PK for </span><span class="si">{</span><span class="n">ref</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No PK for </span><span class="si">{</span><span class="n">ref</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">sqlschema</span><span class="o">.</span><span class="n">tables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">pk</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_singular_primary_key</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">pk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
