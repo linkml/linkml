@@ -76,7 +76,7 @@ myschema.yaml
 with the contents:
 ```bash
 - id: myschema
-- name: myschem
+- name: myschema
 imports:  
 - linkml:types
 - my_schema_domain_1
