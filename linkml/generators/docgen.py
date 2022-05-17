@@ -57,6 +57,7 @@ class DocGenerator(Generator):
     template_mappings: Dict[str, str] = None
     directory = None
     template_directory = None
+    genmeta = False
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
                  directory: str = None,
@@ -81,6 +82,7 @@ class DocGenerator(Generator):
         self.format = format
         self.directory = directory
         self.template_directory = template_directory
+        self.genmeta = genmeta
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -108,6 +110,8 @@ class DocGenerator(Generator):
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template('class')
         for cn, c in sv.all_classes().items():
+            if self._is_external(c):
+                continue
             n = self.name(c)
             out_str = template.render(gen=self,
                                       element=c,
@@ -115,6 +119,8 @@ class DocGenerator(Generator):
             self._write(out_str, directory, n)
         template = self._get_template('slot')
         for sn, s in sv.all_slots().items():
+            if self._is_external(s):
+                continue
             n = self.name(s)
             out_str = template.render(gen=self,
                                       element=s,
@@ -122,6 +128,8 @@ class DocGenerator(Generator):
             self._write(out_str, directory, n)
         template = self._get_template('enum')
         for en, e in sv.all_enums().items():
+            if self._is_external(e):
+                continue
             n = self.name(e)
             out_str = template.render(gen=self,
                                       element=e,
@@ -129,6 +137,8 @@ class DocGenerator(Generator):
             self._write(out_str, directory, n)
         template = self._get_template('type')
         for tn, t in sv.all_types().items():
+            if self._is_external(t):
+                continue
             n = self.name(t)
             out_str = template.render(gen=self,
                                       element=t,
@@ -192,8 +202,6 @@ class DocGenerator(Generator):
             env = Environment(loader=loader)
             return env.get_template(base_file_name)
 
-
-
     def name(self, element: Element) -> str:
         """
         Returns the name of the element in its canonical form
@@ -230,7 +238,6 @@ class DocGenerator(Generator):
         sc = element.from_schema
         return f'[{curie}]({uri})'
 
-
     def link(self, e: Union[Definition, DefinitionName]) -> str:
         """
         Render an element as a hyperlink
@@ -242,7 +249,9 @@ class DocGenerator(Generator):
             return 'NONE'
         if not isinstance(e, Definition):
             e = self.schemaview.get_element(e)
-        if isinstance(e, ClassDefinition):
+        if self._is_external(e):
+            return self.uri_link(e)
+        elif isinstance(e, ClassDefinition):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(camelcase(e.name))
@@ -252,6 +261,13 @@ class DocGenerator(Generator):
             return self._markdown_link(underscore(e.name))
         else:
             return e.name
+
+    def _is_external(self, element: Element) -> bool:
+        # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
+        if element.from_schema == 'https://w3id.org/linkml/types' and not self.genmeta:
+            return True
+        else:
+            return False
 
     def _markdown_link(self, n: str, subfolder: str = None) -> str:
         if subfolder:
