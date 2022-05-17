@@ -175,7 +175,7 @@ class SchemaView(object):
                     todo.append(i)
         if inject_metadata:
             for s in self.schema_map.values():
-                for x in {**s.classes, **s.enums, **s.slots, **s.subsets}.values():
+                for x in {**s.classes, **s.enums, **s.slots, **s.subsets, **s.types}.values():
                     x.from_schema = s.id
                 for c in s.classes.values():
                     for a in c.attributes.values():
