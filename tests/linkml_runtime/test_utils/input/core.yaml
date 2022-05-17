@@ -18,6 +18,8 @@ license: https://creativecommons.org/publicdomain/zero/1.0/
 
 types:
 
+  SymbolString:
+    typeof: string
 
 classes:
 

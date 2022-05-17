@@ -4,6 +4,7 @@ import logging
 from copy import copy
 from typing import List
 
+from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
     ClassDefinitionName
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
@@ -318,23 +319,31 @@ class SchemaViewTestCase(unittest.TestCase):
         assert 'activity' not in view.all_classes(imports=False)
         assert 'string' in view.all_types()
         assert 'string' not in view.all_types(imports=False)
+        self.assertCountEqual(['SymbolString', 'string'], view.type_ancestors('SymbolString'))
 
         for tn, t in view.all_types().items():
             self.assertEqual(tn, t.name)
+            induced_t = view.induced_type(tn)
+            self.assertIsNotNone(induced_t.uri)
+            #self.assertIsNotNone(induced_t.repr)
+            self.assertIsNotNone(induced_t.base)
             if t in view.all_types(imports=False).values():
                 self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', t.from_schema)
             else:
                 self.assertIn(t.from_schema, ['https://w3id.org/linkml/tests/core', 'https://w3id.org/linkml/types'])
         for en, e in view.all_enums().items():
             self.assertEqual(en, e.name)
-            print(f'{en}: {e.from_schema}')
             if e in view.all_enums(imports=False).values():
                 self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', e.from_schema)
             else:
                 self.assertEqual('https://w3id.org/linkml/tests/core', e.from_schema)
+            #for pv in e.permissible_values.values():
+            #    print(f'{pv.text}: {pv.from_schema} : {view.slot_permissible_value_ancestors(pv)}')
         for sn, s in view.all_slots().items():
             self.assertEqual(sn, s.name)
-            #self.assertIsNotNone(s.slot_uri)
+            s_induced = view.induced_slot(sn)
+            self.assertIsNotNone(s_induced.range)
+            #self.assertIsNotNone(s_induced.slot_uri)
             if s in view.all_slots(imports=False).values():
                 self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
             else:
