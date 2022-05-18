@@ -50,8 +50,10 @@
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">URIs and Mappings</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#background-uris-iris-and-curies">background: URIs, IRIs, and CURIEs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#prefixes">prefixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uri-prefixes">URI Prefixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#class-uri-and-slot-uri">class uri and slot uri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enumerations-and-the-meaning-slot">Enumerations and the meaning slot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#relationship-to-iso-11179-3">Relationship to ISO-11179-3</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mappings">mappings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id-prefixes">id_prefixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
@@ -110,10 +112,15 @@
 <h2>background: URIs, IRIs, and CURIEs<a class="headerlink" href="#background-uris-iris-and-curies" title="Permalink to this headline"></a></h2>
 <p>URIs and IRIs are generalizations of URLs. URIs are used as identifiers in linked data standards and vocabularies.</p>
 <p>For example, in <a class="reference external" href="http://schema.org">schema.org</a>, the URI <a class="reference external" href="http://schema.org/Person">http://schema.org/Person</a> is the identifier for the Person concept.</p>
-<p>URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map <code class="docutils literal notranslate"><span class="pre">schema</span></code> to <code class="docutils literal notranslate"><span class="pre">http://schema.org/</span></code>, then we can use the CURIE <code class="docutils literal notranslate"><span class="pre">schema:Person</span></code> to denote the person concept</p>
+<p>URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map <code class="docutils literal notranslate"><span class="pre">schema</span></code> to <code class="docutils literal notranslate"><span class="pre">http://schema.org/</span></code>, then we can use the CURIE <code class="docutils literal notranslate"><span class="pre">schema:Person</span></code> to denote the person concept.</p>
+<p>For more on URIs and their importance in Linked Data, see</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.w3.org/DesignIssues/LinkedData.html">Linked Data</a> by Tim Berners-Lee from 2006</p></li>
+<li><p><a class="reference external" href="https://www.cogsci.ed.ac.uk/~ht/WhatAreURIs/">What are URIs</a> by Henry S Thompson from 2010</p></li>
+</ul>
 </section>
-<section id="prefixes">
-<h2>prefixes<a class="headerlink" href="#prefixes" title="Permalink to this headline"></a></h2>
+<section id="uri-prefixes">
+<h2>URI Prefixes<a class="headerlink" href="#uri-prefixes" title="Permalink to this headline"></a></h2>
 <p>A typical header for a linkml schema may look like this:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
@@ -141,12 +148,13 @@
 </section>
 <section id="class-uri-and-slot-uri">
 <h2>class uri and slot uri<a class="headerlink" href="#class-uri-and-slot-uri" title="Permalink to this headline"></a></h2>
-<p>The two slots</p>
+<p>Slot and class URIs in LinkML provide the <em>meaning</em> for a class or slot, and give a robust and unique place to consistently find information about a class or slot in a LinkML model on the web.</p>
+<p>The two metamodel slots</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://w3id.org/linkml/class_uri">class_uri</a></p></li>
 <li><p><a class="reference external" href="https://w3id.org/linkml/slot_uri">slot_uri</a></p></li>
 </ul>
-<p>can be used to declare URIs for classes and slots respectively. These are typically specified as CURIEs</p>
+<p>can be used to declare URIs for classes and slots respectively. These are typically specified as CURIEs.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
@@ -168,6 +176,21 @@
 <p>When a <a class="reference internal" href="../generators/jsonld-context.html"><span class="doc std std-doc">JSON-LD context is generated</span></a> for this schema, it will map json elements to their full linked data IRIs</p>
 <p>If class and slot uris are omitted, then they are still generated behind the scenes, using the <a class="reference external" href="https://w3id.org/linkml/default_prefix">default_prefix</a> slot at the schema level</p>
 <p>For example, if Person did not declare a class_uri, then a CURIE <code class="docutils literal notranslate"><span class="pre">personinfo:Person</span></code> would be used, which would expand to <code class="docutils literal notranslate"><span class="pre">https://w3id.org/linkml/examples/personinfo/Person</span></code></p>
+</section>
+<section id="enumerations-and-the-meaning-slot">
+<h2>Enumerations and the meaning slot<a class="headerlink" href="#enumerations-and-the-meaning-slot" title="Permalink to this headline"></a></h2>
+<p>The metamodel slot</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/meaning">meaning</a></p></li>
+</ul>
+<p>Can be optionally used with a <a class="reference external" href="https://w3id.org/linkml/PermissibleValue">PermissibleValue</a> as part of an <em>enumeration</em></p>
+</section>
+<section id="relationship-to-iso-11179-3">
+<h2>Relationship to ISO-11179-3<a class="headerlink" href="#relationship-to-iso-11179-3" title="Permalink to this headline"></a></h2>
+<p>The LinkML metamodel is strongly influenced by and attempts to conform to the model in <a class="reference external" href="https://www.iso.org/standard/50340.html">ISO/IEC 11179-3</a> - Metadata registries – Part 3: Registry metamodel and basic attributes.</p>
+<p>For those familiar with the ISO 11179-3 model, the class_uri identifies the object class referenced by the data element.  The slot_uri names the particular property.</p>
+<p>For more, see this short slide deck:</p>
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 </section>
 <section id="mappings">
 <h2>mappings<a class="headerlink" href="#mappings" title="Permalink to this headline"></a></h2>
