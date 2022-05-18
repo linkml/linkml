@@ -64,6 +64,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology">How do I constrain a range of a slot to a certain branch of an ontology</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml">When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them">What are id_prefixes used for and why do we want them?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
 </ul>
@@ -389,6 +390,56 @@ Python keyword, and the generated python code will raise errors. For now the rec
 <li><p>warn if a reserved term is used</p></li>
 <li><p>provide a mechanism for transparent mapping between a schema element and a “safe” version of the element</p></li>
 </ul>
+</section>
+<section id="when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml">
+<h2>When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?<a class="headerlink" href="#when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml" title="Permalink to this headline"></a></h2>
+<p>Relationships between classes can be defined in a few ways:</p>
+<ul class="simple">
+<li><p>via slots that dictate the link via domain and range constraints.</p></li>
+<li><p>via objects that capture the two objects and the relationship between those concepts.</p></li>
+</ul>
+<p>via slots that dictate the link via domain and range constraints</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">allele</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele of</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gene</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span>
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">allele of</span><span class="p">:</span><span class="w"> </span>
+<span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
+<span class="w">     </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span><span class="w"></span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
+</pre></div>
+</div>
+<p>via objects that capture the two objects and the relationship between those concepts</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">allele</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gene</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">allele gene relation</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate</span><span class="w"></span>
+<span class="w">      </span>
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">predicate</span><span class="p">:</span><span class="w"> </span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">predicate_enum</span><span class="w"></span>
+<span class="w">  </span><span class="nt">subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">allele</span><span class="w"></span>
+<span class="w">  </span><span class="nt">object</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gene</span><span class="w"></span>
+
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">predicate_enum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">allele_of</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
 <section id="what-are-id-prefixes-used-for-and-why-do-we-want-them">
 <h2>What are id_prefixes used for and why do we want them?<a class="headerlink" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them" title="Permalink to this headline"></a></h2>
