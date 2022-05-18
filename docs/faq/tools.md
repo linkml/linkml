@@ -196,4 +196,13 @@ There are a number of strategies for performing deductive inference:
 * Convert your [schema to OWL](https://linkml.io/linkml/generators/owl) and your [data to RDF](https://linkml.io/linkml/data/rdf) and use an OWL reasoner
 * Use the (experimental) [linkml-datalog](https://github.com/linkml/linkml-datalog) framework
 
+## What does _if_missing mean in my JSON output?
 
+If you pass a LinkML object directly to `json.dump` you will see internal hidden fields, these start with underscore: e.g. `_if_missing`.
+
+We recommend instead using `json_dumper.dump` in the linkml-runtime package, which will give the *canonical* JSON representation of a LinkML object.
+
+See:
+
+ - [working with data - python](https://linkml.io/linkml/data/python.html)
+ - [loaders and dumpers, code docs](https://linkml.io/linkml/developers/loaders-and-dumpers.html)
