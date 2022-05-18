@@ -60,6 +60,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#what-are-induced-slots">What are induced slots?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-need-to-define-my-own-types">Why would I need to define my own types?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-want-to-use-enums-over-strings">Why would I want to use enums over strings?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-a-range-to-a-certain-ontology">How do I constrain a range to a certain ontology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology">How do I constrain a range of a slot to a certain branch of an ontology</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
@@ -172,6 +174,145 @@ text.</p>
 <p>Enums also give you hooks into ontologies and vocabulaies.</p>
 <p>More on enums:</p>
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+</section>
+<section id="how-do-i-constrain-a-range-to-a-certain-ontology">
+<h2>How do I constrain a range to a certain ontology<a class="headerlink" href="#how-do-i-constrain-a-range-to-a-certain-ontology" title="Permalink to this headline"></a></h2>
+<p>LinkML team is working actively on solutions to this commonly asked question:
+https://github.com/linkml/linkml/issues/274</p>
+<p>At the moment, LinkML has several ways to restrict the value of a field:</p>
+<ul class="simple">
+<li><p>use a regular expression</p></li>
+<li><p>constrain using values from an enumeration</p></li>
+<li><p>define a vocabulary or term class and constrain the range to that class</p></li>
+<li><p>declare id_prefixes for a class that represent a particular ontology</p></li>
+</ul>
+<p>use a regular expression:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^SO:\d+$&#39;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>constrain using values from an enumeration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^SO:\d+$&#39;</span><span class="w"></span>
+<span class="w">        </span>
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span><span class="w"></span>
+
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:deletion</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:insertion</span><span class="p p-Indicator">:</span><span class="w"> </span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span><span class="w"></span>
+</pre></div>
+</div>
+<p>define a vocabulary or term class</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ontology term</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span><span class="w"></span>
+
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology term</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ontology namespace</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">synonyms</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+<p>declare id_prefixes for a class that constrain the kinds of identifiers used to describe the class</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
+<span class="w">  </span><span class="nt">sequence ontology term</span><span class="p">:</span><span class="w"></span>
+<span class="w">     </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ontology namespace</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synonyms</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondary ids</span><span class="w"></span>
+<span class="w">  </span><span class="w w-Error">  </span><span class="nt">id_prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO</span><span class="w"></span>
+
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sequence ontology term</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ontology namespace</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">synonyms</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">secondary ids</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology">
+<h2>How do I constrain a range of a slot to a certain branch of an ontology<a class="headerlink" href="#how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology" title="Permalink to this headline"></a></h2>
+<p>A solution to this question is in active development, in the short term, the best way to constrain
+a slot by a certain branch of an ontology is by extracting the terms in the ontology that form the constraint
+into an enumeration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
+<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^SO:\d+$&#39;</span><span class="w"></span>
+<span class="w">        </span>
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span><span class="w"></span>
+
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:deletion</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span><span class="w"></span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:insertion</span><span class="p p-Indicator">:</span><span class="w"> </span>
+<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
 <section id="how-do-i-do-the-equivalent-of-json-schema-composition">
 <h2>How do I do the equivalent of JSON-Schema composition?<a class="headerlink" href="#how-do-i-do-the-equivalent-of-json-schema-composition" title="Permalink to this headline"></a></h2>
