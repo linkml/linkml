@@ -315,6 +315,19 @@ In future, the LinkML framework will
  * warn if a reserved term is used
  * provide a mechanism for transparent mapping between a schema element and a "safe" version of the element
 
+## What are id_prefixes used for and why do we want them?
+
+The LinkML meta modeling element, [id_prefixes](https://w3id.org/linkml/id_prefixes) can be applied to any Class. This is used to specify which prefixes should be used on the identifiers for that class.
+
+The id_prefixes are listed in decreasing priority order, with the "preferred" prefix listed first.
+
+Downstream software components can use this field to constrain data entry to a particular kind of identifier.
+
+To see examples, Biolink uses id_prefixes extensively. For example, the [MolecularEntity](https://biolink.github.io/biolink-model/docs/MolecularEntity) class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.
+
+For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
+
+
 ## When is it important to have mappings?
 
 Any element in a LinkML schema can have any number of *mappings* associated with it
@@ -332,3 +345,4 @@ For more detail on the kinds of mappings (and their mappings to SKOS): https://l
 Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
 encourage adding them *prospectively* as you build our your datamodel, rather than doing this *retrospectively*. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.
+

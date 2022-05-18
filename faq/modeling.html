@@ -64,6 +64,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology">How do I constrain a range of a slot to a certain branch of an ontology</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them">What are id_prefixes used for and why do we want them?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
 </ul>
 </li>
@@ -388,6 +389,14 @@ Python keyword, and the generated python code will raise errors. For now the rec
 <li><p>warn if a reserved term is used</p></li>
 <li><p>provide a mechanism for transparent mapping between a schema element and a “safe” version of the element</p></li>
 </ul>
+</section>
+<section id="what-are-id-prefixes-used-for-and-why-do-we-want-them">
+<h2>What are id_prefixes used for and why do we want them?<a class="headerlink" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them" title="Permalink to this headline"></a></h2>
+<p>The LinkML meta modeling element, <a class="reference external" href="https://w3id.org/linkml/id_prefixes">id_prefixes</a> can be applied to any Class. This is used to specify which prefixes should be used on the identifiers for that class.</p>
+<p>The id_prefixes are listed in decreasing priority order, with the “preferred” prefix listed first.</p>
+<p>Downstream software components can use this field to constrain data entry to a particular kind of identifier.</p>
+<p>To see examples, Biolink uses id_prefixes extensively. For example, the <a class="reference external" href="https://biolink.github.io/biolink-model/docs/MolecularEntity">MolecularEntity</a> class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.</p>
+<p>For more, see <a class="reference external" href="https://linkml.io/linkml/schemas/uris-and-mappings.html">URIs and Mappings</a></p>
 </section>
 <section id="when-is-it-important-to-have-mappings">
 <h2>When is it important to have mappings?<a class="headerlink" href="#when-is-it-important-to-have-mappings" title="Permalink to this headline"></a></h2>
