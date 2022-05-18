@@ -73,12 +73,12 @@ Instances of this class *should* have identifiers with one of the following pref
 name: Person
 id_prefixes:
 - P
-exact_mappings:
-- schema:Person
 description: A person, living or dead
 in_subset:
 - subset A
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
+exact_mappings:
+- schema:Person
 mixins:
 - HasAliases
 slots:
@@ -105,12 +105,12 @@ slot_usage:
 name: Person
 id_prefixes:
 - P
-exact_mappings:
-- schema:Person
 description: A person, living or dead
 in_subset:
 - subset A
 from_schema: https://w3id.org/linkml/tests/kitchen_sink
+exact_mappings:
+- schema:Person
 mixins:
 - HasAliases
 slot_usage:
@@ -137,33 +137,33 @@ attributes:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: has_employment_history
     owner: Person
     range: EmploymentEvent
+    inlined: true
+    inlined_as_list: true
   has familial relationships:
     name: has familial relationships
     in_subset:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: has_familial_relationships
     owner: Person
     range: FamilialRelationship
+    inlined: true
+    inlined_as_list: true
   has medical history:
     name: has medical history
     in_subset:
     - subset B
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: has_medical_history
     owner: Person
     range: MedicalEvent
+    inlined: true
+    inlined_as_list: true
   age in years:
     name: age in years
     description: number of years since birth

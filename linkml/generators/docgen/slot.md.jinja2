@@ -22,7 +22,7 @@ URI: [{{ gen.uri(element) }}]({{ gen.uri(element) }})
 
 ## Properties
 
- * Range: {{element.range}}
+ * Range: {{gen.link(element.range)}}
 
 {% if schemaview.usage_index().get(element.name) %}
 | used by | used in | type | used |

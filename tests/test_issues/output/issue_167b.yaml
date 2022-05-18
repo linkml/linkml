@@ -159,12 +159,12 @@ slots:
     domain: annotatable
     slot_uri: linkml:annotations
     multivalued: true
-    inlined: true
     owner: annotation
     domain_of:
     - annotatable
     - annotation
     range: annotation
+    inlined: true
   extensions:
     name: extensions
     definition_uri: https://w3id.org/linkml/extensions
@@ -174,12 +174,12 @@ slots:
     domain: extensible
     slot_uri: linkml:extensions
     multivalued: true
-    inlined: true
     owner: extensible
     domain_of:
     - extension
     - extensible
     range: extension
+    inlined: true
   extension_tag:
     name: extension_tag
     definition_uri: https://w3id.org/linkml/extension_tag
@@ -288,6 +288,6 @@ classes:
     class_uri: linkml:Extensible
 metamodel_version: 1.7.0
 source_file: issue_167b.yaml
-source_file_date: '2022-01-05T01:06:03'
+source_file_date: '2022-05-09T21:08:42'
 source_file_size: 818
-generation_date: '2022-01-05T01:11:11'
+generation_date: '2022-05-09T21:14:50'

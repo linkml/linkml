@@ -85,6 +85,155 @@ More on enums:
 
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
+## How do I constrain a range to a certain ontology 
+LinkML team is working actively on solutions to this commonly asked question:
+https://github.com/linkml/linkml/issues/274
+
+
+At the moment, LinkML has several ways to restrict the value of a field:
+- use a regular expression
+- constrain using values from an enumeration
+- define a vocabulary or term class and constrain the range to that class
+- declare id_prefixes for a class that represent a particular ontology
+
+use a regular expression:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+
+slots:
+  variant type:
+  pattern: '^SO:\d+$'
+```
+
+constrain using values from an enumeration:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+    slot_usage:
+       variant type:
+          pattern: '^SO:\d+$'
+        
+slots:
+  variant type:
+  range: variant_type_enum
+
+enums:
+  variant_type_enum:
+    permissible_values: 
+      point_mutation:
+          meaning: SO:12345
+      SO:deletion:
+          meaning: SO:24681
+      SO:insertion: 
+          meaning: SO:36912
+```
+
+define a vocabulary or term class
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+  ontology term:
+     slots:
+        - name
+        - id
+        - ontology namespace
+        - synonyms
+        - secondary ids
+
+
+slots:
+  variant type:
+    range: ontology term
+  name:
+  id:
+     type: uriorcurie
+  ontology namespace:
+  synonyms:
+  secondary ids:
+
+```
+
+declare id_prefixes for a class that constrain the kinds of identifiers used to describe the class
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+  sequence ontology term:
+     slots:
+        - name
+        - id
+        - ontology namespace
+        - synonyms
+        - secondary ids
+    id_prefixes:
+       - SO
+
+
+slots:
+  variant type:
+    range: sequence ontology term
+  name:
+  id:
+    identifier: true
+    type: uriorcurie
+  ontology namespace:
+  synonyms:
+  secondary ids:
+
+```
+
+## How do I constrain a range of a slot to a certain branch of an ontology
+A solution to this question is in active development, in the short term, the best way to constrain
+a slot by a certain branch of an ontology is by extracting the terms in the ontology that form the constraint
+into an enumeration:
+
+```yaml
+default_prefix: my_schema
+
+classes:
+  variant:
+    slots:
+       - variant type
+    slot_usage:
+       variant type:
+          pattern: '^SO:\d+$'
+        
+slots:
+  variant type:
+  range: variant_type_enum
+
+enums:
+  variant_type_enum:
+    permissible_values: 
+      point_mutation:
+          meaning: SO:12345
+      SO:deletion:
+          meaning: SO:24681
+      SO:insertion: 
+          meaning: SO:36912
+```
+
+
 ## How do I do the equivalent of JSON-Schema composition?
 
 See: [Schema Composition](https://json-schema.org/understanding-json-schema/reference/combining.html) in JSON-Schema docs
@@ -177,4 +326,23 @@ Downstream software components can use this field to constrain data entry to a p
 To see examples, Biolink uses id_prefixes extensively. For example, the [MolecularEntity](https://biolink.github.io/biolink-model/docs/MolecularEntity) class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.
 
 For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
+
+
+## When is it important to have mappings?
+
+Any element in a LinkML schema can have any number of *mappings* associated with it
+
+Mappings are useful in a variety of ways including: 
+
+- they make your data and your schema more FAIR (Findable, Accessable, Reusable, and Interoperable)
+- when people use data that conforms to your model, and integrated with data that conforms to another model, they can use mappings between models to help automate data harmonization.  
+- mappings can provide links to other documentation sources for your model, allowing expertise to be shared between projects and not duplicated
+- mappings allow advanced users to reason over your model.
+
+Mappings can be established for exact equivalences, close, related, narrow and broad equivalences
+For more detail on the kinds of mappings (and their mappings to SKOS): https://linkml.io/linkml-model/docs/mappings/)
+
+Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
+encourage adding them *prospectively* as you build our your datamodel, rather than doing this *retrospectively*. Thinking about mappings
+will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.
 

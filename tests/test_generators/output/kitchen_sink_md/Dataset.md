@@ -50,29 +50,29 @@ attributes:
     name: persons
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
+    range: Person
     inlined: true
     inlined_as_list: true
-    range: Person
   companies:
     name: companies
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
+    range: Company
     inlined: true
     inlined_as_list: true
-    range: Company
   activities:
     name: activities
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
+    range: activity
     inlined: true
     inlined_as_list: true
-    range: activity
   code systems:
     name: code systems
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
     range: CodeSystem
+    inlined: true
 tree_root: true
 
 ```
@@ -89,37 +89,37 @@ attributes:
     name: persons
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: persons
     owner: Dataset
     range: Person
+    inlined: true
+    inlined_as_list: true
   companies:
     name: companies
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: companies
     owner: Dataset
     range: Company
+    inlined: true
+    inlined_as_list: true
   activities:
     name: activities
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: activities
     owner: Dataset
     range: activity
+    inlined: true
+    inlined_as_list: true
   code systems:
     name: code systems
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
     multivalued: true
-    inlined: true
     alias: code_systems
     owner: Dataset
     range: CodeSystem
+    inlined: true
 tree_root: true
 
 ```

@@ -7,7 +7,7 @@ Generic metadata shared across definitions
 URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Example],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[UniqueKey]uses%20-.->[CommonMetadata],[StructuredAlias]uses%20-.->[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[PatternExpression]uses%20-.->[CommonMetadata],[PathExpression]uses%20-.->[CommonMetadata],[ImportExpression]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[ClassRule]uses%20-.->[CommonMetadata],[AnonymousExpression]uses%20-.->[CommonMetadata],[UniqueKey],[StructuredAlias],[PermissibleValue],[PatternExpression],[PathExpression],[ImportExpression],[Element],[ClassRule],[AnonymousExpression],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[Example],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[UniqueKey]uses%20-.->[CommonMetadata],[StructuredAlias]uses%20-.->[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[PatternExpression]uses%20-.->[CommonMetadata],[PathExpression]uses%20-.->[CommonMetadata],[ImportExpression]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[ClassRule]uses%20-.->[CommonMetadata],[AnonymousExpression]uses%20-.->[CommonMetadata],[UniqueKey],[StructuredAlias],[PermissibleValue],[PatternExpression],[PathExpression],[ImportExpression],[Element],[ClassRule],[AnonymousExpression],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[Example],[StructuredAlias]<structured_aliases%200..*-++[CommonMetadata&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[UniqueKey]uses%20-.->[CommonMetadata],[StructuredAlias]uses%20-.->[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[PatternExpression]uses%20-.->[CommonMetadata],[PathExpression]uses%20-.->[CommonMetadata],[ImportExpression]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[ClassRule]uses%20-.->[CommonMetadata],[AnonymousExpression]uses%20-.->[CommonMetadata],[UniqueKey],[PermissibleValue],[PatternExpression],[PathExpression],[ImportExpression],[Element],[ClassRule],[AnonymousExpression],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[Example],[StructuredAlias]<structured_aliases%200..*-++[CommonMetadata&#124;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[SubsetDefinition]<in_subset%200..*-%20[CommonMetadata],[Example]<examples%200..*-++[CommonMetadata],[AltDescription]<alt_descriptions%200..*-++[CommonMetadata],[UniqueKey]uses%20-.->[CommonMetadata],[StructuredAlias]uses%20-.->[CommonMetadata],[PermissibleValue]uses%20-.->[CommonMetadata],[PatternExpression]uses%20-.->[CommonMetadata],[PathExpression]uses%20-.->[CommonMetadata],[ImportExpression]uses%20-.->[CommonMetadata],[Element]uses%20-.->[CommonMetadata],[ClassRule]uses%20-.->[CommonMetadata],[AnonymousExpression]uses%20-.->[CommonMetadata],[UniqueKey],[PermissibleValue],[PatternExpression],[PathExpression],[ImportExpression],[Element],[ClassRule],[AnonymousExpression],[AltDescription])
 
 ## Mixin for
 
@@ -86,6 +86,34 @@ URI: [linkml:CommonMetadata](https://w3id.org/linkml/CommonMetadata)
  * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
+ * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Range: [String](String.md)
+     * in subsets: (basic)
+ * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
+     * Description: A list of structured_alias objects.
+     * Range: [StructuredAlias](StructuredAlias.md)
+ * [mappings](mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+     * Range: [Uriorcurie](Uriorcurie.md)
+ * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+ * [close mappings](close_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have close meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+ * [related mappings](related_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have related meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+ * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+ * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)
 
 ## Other properties
 

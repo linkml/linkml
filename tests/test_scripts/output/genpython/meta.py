@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-03-08T17:01:54
+# Generation date: 2022-05-09T21:16:17
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -152,6 +152,15 @@ class CommonMetadata(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, "StructuredAlias"], List[Union[dict, "StructuredAlias"]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.description is not None and not isinstance(self.description, str):
@@ -207,77 +216,11 @@ class CommonMetadata(YAMLRoot):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
-        super().__post_init__(**kwargs)
-
-
-@dataclass
-class Element(YAMLRoot):
-    """
-    a named element in the model
-    """
-    _inherited_slots: ClassVar[List[str]] = []
-
-    class_class_uri: ClassVar[URIRef] = LINKML.Element
-    class_class_curie: ClassVar[str] = "linkml:Element"
-    class_name: ClassVar[str] = "element"
-    class_model_uri: ClassVar[URIRef] = LINKML.Element
-
-    name: Union[str, ElementName] = None
-    id_prefixes: Optional[Union[Union[str, NCName], List[Union[str, NCName]]]] = empty_list()
-    definition_uri: Optional[Union[str, URIorCURIE]] = None
-    aliases: Optional[Union[str, List[str]]] = empty_list()
-    structured_aliases: Optional[Union[Union[dict, "StructuredAlias"], List[Union[dict, "StructuredAlias"]]]] = empty_list()
-    local_names: Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]] = empty_dict()
-    conforms_to: Optional[str] = None
-    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    rank: Optional[int] = None
-    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
-    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
-    description: Optional[str] = None
-    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
-    title: Optional[str] = None
-    deprecated: Optional[str] = None
-    todos: Optional[Union[str, List[str]]] = empty_list()
-    notes: Optional[Union[str, List[str]]] = empty_list()
-    comments: Optional[Union[str, List[str]]] = empty_list()
-    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
-    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
-    from_schema: Optional[Union[str, URI]] = None
-    imported_from: Optional[str] = None
-    source: Optional[Union[str, URIorCURIE]] = None
-    in_language: Optional[str] = None
-    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
-    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
-    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
-
-    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self._is_empty(self.name):
-            self.MissingRequiredField("name")
-        if not isinstance(self.name, ElementName):
-            self.name = ElementName(self.name)
-
-        if not isinstance(self.id_prefixes, list):
-            self.id_prefixes = [self.id_prefixes] if self.id_prefixes is not None else []
-        self.id_prefixes = [v if isinstance(v, NCName) else NCName(v) for v in self.id_prefixes]
-
-        if self.definition_uri is not None and not isinstance(self.definition_uri, URIorCURIE):
-            self.definition_uri = URIorCURIE(self.definition_uri)
-
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
         self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
-
-        self._normalize_inlined_as_dict(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", keyed=True)
-
-        if self.conforms_to is not None and not isinstance(self.conforms_to, str):
-            self.conforms_to = str(self.conforms_to)
 
         if not isinstance(self.mappings, list):
             self.mappings = [self.mappings] if self.mappings is not None else []
@@ -305,6 +248,72 @@ class Element(YAMLRoot):
 
         if self.rank is not None and not isinstance(self.rank, int):
             self.rank = int(self.rank)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class Element(YAMLRoot):
+    """
+    a named element in the model
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.Element
+    class_class_curie: ClassVar[str] = "linkml:Element"
+    class_name: ClassVar[str] = "element"
+    class_model_uri: ClassVar[URIRef] = LINKML.Element
+
+    name: Union[str, ElementName] = None
+    id_prefixes: Optional[Union[Union[str, NCName], List[Union[str, NCName]]]] = empty_list()
+    definition_uri: Optional[Union[str, URIorCURIE]] = None
+    local_names: Optional[Union[Dict[Union[str, LocalNameLocalNameSource], Union[dict, "LocalName"]], List[Union[dict, "LocalName"]]]] = empty_dict()
+    conforms_to: Optional[str] = None
+    extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[Dict[Union[str, AnnotationTag], Union[dict, Annotation]], List[Union[dict, Annotation]]]] = empty_dict()
+    description: Optional[str] = None
+    alt_descriptions: Optional[Union[Dict[Union[str, AltDescriptionSource], Union[dict, "AltDescription"]], List[Union[dict, "AltDescription"]]]] = empty_dict()
+    title: Optional[str] = None
+    deprecated: Optional[str] = None
+    todos: Optional[Union[str, List[str]]] = empty_list()
+    notes: Optional[Union[str, List[str]]] = empty_list()
+    comments: Optional[Union[str, List[str]]] = empty_list()
+    examples: Optional[Union[Union[dict, "Example"], List[Union[dict, "Example"]]]] = empty_list()
+    in_subset: Optional[Union[Union[str, SubsetDefinitionName], List[Union[str, SubsetDefinitionName]]]] = empty_list()
+    from_schema: Optional[Union[str, URI]] = None
+    imported_from: Optional[str] = None
+    source: Optional[Union[str, URIorCURIE]] = None
+    in_language: Optional[str] = None
+    see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
+    deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, "StructuredAlias"], List[Union[dict, "StructuredAlias"]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.name):
+            self.MissingRequiredField("name")
+        if not isinstance(self.name, ElementName):
+            self.name = ElementName(self.name)
+
+        if not isinstance(self.id_prefixes, list):
+            self.id_prefixes = [self.id_prefixes] if self.id_prefixes is not None else []
+        self.id_prefixes = [v if isinstance(v, NCName) else NCName(v) for v in self.id_prefixes]
+
+        if self.definition_uri is not None and not isinstance(self.definition_uri, URIorCURIE):
+            self.definition_uri = URIorCURIE(self.definition_uri)
+
+        self._normalize_inlined_as_dict(slot_name="local_names", slot_type=LocalName, key_name="local_name_source", keyed=True)
+
+        if self.conforms_to is not None and not isinstance(self.conforms_to, str):
+            self.conforms_to = str(self.conforms_to)
 
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
@@ -362,6 +371,39 @@ class Element(YAMLRoot):
 
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
 
         super().__post_init__(**kwargs)
 
@@ -802,6 +844,15 @@ class StructuredAlias(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, "StructuredAlias"], List[Union[dict, "StructuredAlias"]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.literal_form):
@@ -872,6 +923,39 @@ class StructuredAlias(YAMLRoot):
 
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
 
         super().__post_init__(**kwargs)
 
@@ -978,6 +1062,15 @@ class AnonymousExpression(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
@@ -1037,6 +1130,39 @@ class AnonymousExpression(YAMLRoot):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
+
         super().__post_init__(**kwargs)
 
 
@@ -1078,6 +1204,15 @@ class PathExpression(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.followed_by is not None and not isinstance(self.followed_by, PathExpression):
@@ -1165,6 +1300,39 @@ class PathExpression(YAMLRoot):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
+
         super().__post_init__(**kwargs)
 
 
@@ -1173,7 +1341,7 @@ class SlotExpression(Expression):
     """
     an expression that constrains the range of values a slot can take
     """
-    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "minimum_value", "maximum_value", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.SlotExpression
     class_class_curie: ClassVar[str] = "linkml:SlotExpression"
@@ -1184,6 +1352,8 @@ class SlotExpression(Expression):
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     required: Optional[Union[bool, Bool]] = None
     recommended: Optional[Union[bool, Bool]] = None
+    inlined: Optional[Union[bool, Bool]] = None
+    inlined_as_list: Optional[Union[bool, Bool]] = None
     minimum_value: Optional[int] = None
     maximum_value: Optional[int] = None
     pattern: Optional[str] = None
@@ -1213,6 +1383,12 @@ class SlotExpression(Expression):
 
         if self.recommended is not None and not isinstance(self.recommended, Bool):
             self.recommended = Bool(self.recommended)
+
+        if self.inlined is not None and not isinstance(self.inlined, Bool):
+            self.inlined = Bool(self.inlined)
+
+        if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
+            self.inlined_as_list = Bool(self.inlined_as_list)
 
         if self.minimum_value is not None and not isinstance(self.minimum_value, int):
             self.minimum_value = int(self.minimum_value)
@@ -1271,7 +1447,7 @@ class SlotExpression(Expression):
 
 @dataclass
 class AnonymousSlotExpression(AnonymousExpression):
-    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "minimum_value", "maximum_value", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+    _inherited_slots: ClassVar[List[str]] = ["range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
     class_class_curie: ClassVar[str] = "linkml:AnonymousSlotExpression"
@@ -1282,6 +1458,8 @@ class AnonymousSlotExpression(AnonymousExpression):
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     required: Optional[Union[bool, Bool]] = None
     recommended: Optional[Union[bool, Bool]] = None
+    inlined: Optional[Union[bool, Bool]] = None
+    inlined_as_list: Optional[Union[bool, Bool]] = None
     minimum_value: Optional[int] = None
     maximum_value: Optional[int] = None
     pattern: Optional[str] = None
@@ -1311,6 +1489,12 @@ class AnonymousSlotExpression(AnonymousExpression):
 
         if self.recommended is not None and not isinstance(self.recommended, Bool):
             self.recommended = Bool(self.recommended)
+
+        if self.inlined is not None and not isinstance(self.inlined, Bool):
+            self.inlined = Bool(self.inlined)
+
+        if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
+            self.inlined_as_list = Bool(self.inlined_as_list)
 
         if self.minimum_value is not None and not isinstance(self.minimum_value, int):
             self.minimum_value = int(self.minimum_value)
@@ -1372,7 +1556,7 @@ class SlotDefinition(Definition):
     """
     the definition of a property or a slot
     """
-    _inherited_slots: ClassVar[List[str]] = ["domain", "multivalued", "inherited", "readonly", "ifabsent", "inlined", "inlined_as_list", "list_elements_unique", "list_elements_ordered", "shared", "key", "identifier", "designates_type", "role", "relational_role", "range", "required", "recommended", "minimum_value", "maximum_value", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
+    _inherited_slots: ClassVar[List[str]] = ["domain", "multivalued", "inherited", "readonly", "ifabsent", "list_elements_unique", "list_elements_ordered", "shared", "key", "identifier", "designates_type", "role", "relational_role", "range", "required", "recommended", "inlined", "inlined_as_list", "minimum_value", "maximum_value", "pattern", "structured_pattern", "equals_string", "equals_string_in", "equals_number", "equals_expression", "minimum_cardinality", "maximum_cardinality"]
 
     class_class_uri: ClassVar[URIRef] = LINKML.SlotDefinition
     class_class_curie: ClassVar[str] = "linkml:SlotDefinition"
@@ -1387,8 +1571,6 @@ class SlotDefinition(Definition):
     inherited: Optional[Union[bool, Bool]] = None
     readonly: Optional[str] = None
     ifabsent: Optional[str] = None
-    inlined: Optional[Union[bool, Bool]] = None
-    inlined_as_list: Optional[Union[bool, Bool]] = None
     list_elements_unique: Optional[Union[bool, Bool]] = None
     list_elements_ordered: Optional[Union[bool, Bool]] = None
     shared: Optional[Union[bool, Bool]] = None
@@ -1425,6 +1607,8 @@ class SlotDefinition(Definition):
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     required: Optional[Union[bool, Bool]] = None
     recommended: Optional[Union[bool, Bool]] = None
+    inlined: Optional[Union[bool, Bool]] = None
+    inlined_as_list: Optional[Union[bool, Bool]] = None
     minimum_value: Optional[int] = None
     maximum_value: Optional[int] = None
     pattern: Optional[str] = None
@@ -1468,12 +1652,6 @@ class SlotDefinition(Definition):
 
         if self.ifabsent is not None and not isinstance(self.ifabsent, str):
             self.ifabsent = str(self.ifabsent)
-
-        if self.inlined is not None and not isinstance(self.inlined, Bool):
-            self.inlined = Bool(self.inlined)
-
-        if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
-            self.inlined_as_list = Bool(self.inlined_as_list)
 
         if self.list_elements_unique is not None and not isinstance(self.list_elements_unique, Bool):
             self.list_elements_unique = Bool(self.list_elements_unique)
@@ -1586,6 +1764,12 @@ class SlotDefinition(Definition):
 
         if self.recommended is not None and not isinstance(self.recommended, Bool):
             self.recommended = Bool(self.recommended)
+
+        if self.inlined is not None and not isinstance(self.inlined, Bool):
+            self.inlined = Bool(self.inlined)
+
+        if self.inlined_as_list is not None and not isinstance(self.inlined_as_list, Bool):
+            self.inlined_as_list = Bool(self.inlined_as_list)
 
         if self.minimum_value is not None and not isinstance(self.minimum_value, int):
             self.minimum_value = int(self.minimum_value)
@@ -1895,6 +2079,14 @@ class ClassRule(ClassLevelRule):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.preconditions is not None and not isinstance(self.preconditions, AnonymousClassExpression):
@@ -1975,6 +2167,36 @@ class ClassRule(ClassLevelRule):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
         super().__post_init__(**kwargs)
 
 
@@ -2011,6 +2233,15 @@ class PatternExpression(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.syntax is not None and not isinstance(self.syntax, str):
@@ -2079,6 +2310,39 @@ class PatternExpression(YAMLRoot):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
+
         super().__post_init__(**kwargs)
 
 
@@ -2115,6 +2379,15 @@ class ImportExpression(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.import_from):
@@ -2183,6 +2456,39 @@ class ImportExpression(YAMLRoot):
 
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
 
         super().__post_init__(**kwargs)
 
@@ -2362,6 +2668,15 @@ class PermissibleValue(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.text):
@@ -2436,6 +2751,39 @@ class PermissibleValue(YAMLRoot):
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
 
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
+
         super().__post_init__(**kwargs)
 
 
@@ -2471,6 +2819,15 @@ class UniqueKey(YAMLRoot):
     see_also: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
     deprecated_element_has_exact_replacement: Optional[Union[str, URIorCURIE]] = None
     deprecated_element_has_possible_replacement: Optional[Union[str, URIorCURIE]] = None
+    aliases: Optional[Union[str, List[str]]] = empty_list()
+    structured_aliases: Optional[Union[Union[dict, StructuredAlias], List[Union[dict, StructuredAlias]]]] = empty_list()
+    mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    close_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    related_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    narrow_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    broad_mappings: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    rank: Optional[int] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.unique_key_name):
@@ -2540,6 +2897,39 @@ class UniqueKey(YAMLRoot):
 
         if self.deprecated_element_has_possible_replacement is not None and not isinstance(self.deprecated_element_has_possible_replacement, URIorCURIE):
             self.deprecated_element_has_possible_replacement = URIorCURIE(self.deprecated_element_has_possible_replacement)
+
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        self._normalize_inlined_as_dict(slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False)
+
+        if not isinstance(self.mappings, list):
+            self.mappings = [self.mappings] if self.mappings is not None else []
+        self.mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.mappings]
+
+        if not isinstance(self.exact_mappings, list):
+            self.exact_mappings = [self.exact_mappings] if self.exact_mappings is not None else []
+        self.exact_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.exact_mappings]
+
+        if not isinstance(self.close_mappings, list):
+            self.close_mappings = [self.close_mappings] if self.close_mappings is not None else []
+        self.close_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.close_mappings]
+
+        if not isinstance(self.related_mappings, list):
+            self.related_mappings = [self.related_mappings] if self.related_mappings is not None else []
+        self.related_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.related_mappings]
+
+        if not isinstance(self.narrow_mappings, list):
+            self.narrow_mappings = [self.narrow_mappings] if self.narrow_mappings is not None else []
+        self.narrow_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.narrow_mappings]
+
+        if not isinstance(self.broad_mappings, list):
+            self.broad_mappings = [self.broad_mappings] if self.broad_mappings is not None else []
+        self.broad_mappings = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.broad_mappings]
+
+        if self.rank is not None and not isinstance(self.rank, int):
+            self.rank = int(self.rank)
 
         super().__post_init__(**kwargs)
 

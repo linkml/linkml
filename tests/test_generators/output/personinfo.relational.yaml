@@ -170,35 +170,35 @@ slots:
     name: has_employment_history
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: has_employment_history
     range: EmploymentEvent
+    inlined: true
+    inlined_as_list: true
   has_familial_relationships:
     name: has_familial_relationships
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: has_familial_relationships
     range: FamilialRelationship
+    inlined: true
+    inlined_as_list: true
   has_medical_history:
     name: has_medical_history
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: has_medical_history
     range: MedicalEvent
+    inlined: true
+    inlined_as_list: true
   aliases:
     name: aliases
-    exact_mappings:
-    - schema:alternateName
     annotations:
       primary_key:
         tag: primary_key
         value: 'true'
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
+    exact_mappings:
+    - schema:alternateName
     singular_name: alias
     multivalued: true
     alias: aliases
@@ -224,18 +224,18 @@ slots:
     name: persons
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: persons
     range: Person
+    inlined: true
+    inlined_as_list: true
   organizations:
     name: organizations
     from_schema: https://w3id.org/linkml/examples/personinfo_relational
     multivalued: true
-    inlined: true
-    inlined_as_list: true
     alias: organizations
     range: Organization
+    inlined: true
+    inlined_as_list: true
 classes:
   NamedThing:
     name: NamedThing
@@ -1011,10 +1011,10 @@ classes:
             tag: foreign_key
             value: DiagnosisConcept.id
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
-        inlined: true
         alias: diagnosis_id
         owner: MedicalEvent
         range: DiagnosisConcept
+        inlined: true
       procedure_id:
         name: procedure_id
         annotations:
@@ -1025,10 +1025,10 @@ classes:
             tag: foreign_key
             value: ProcedureConcept.id
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
-        inlined: true
         alias: procedure_id
         owner: MedicalEvent
         range: ProcedureConcept
+        inlined: true
     class_uri: personinfo:MedicalEvent
   NewsEvent:
     name: NewsEvent
@@ -1176,13 +1176,13 @@ classes:
         range: Person
       alias:
         name: alias
-        exact_mappings:
-        - schema:alternateName
         annotations:
           primary_key:
             tag: primary_key
             value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        exact_mappings:
+        - schema:alternateName
         singular_name: alias
         slot_uri: rdf:object
         multivalued: false
@@ -1276,13 +1276,13 @@ classes:
         range: HasAliases
       alias:
         name: alias
-        exact_mappings:
-        - schema:alternateName
         annotations:
           primary_key:
             tag: primary_key
             value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        exact_mappings:
+        - schema:alternateName
         singular_name: alias
         slot_uri: rdf:object
         multivalued: false
@@ -1376,13 +1376,13 @@ classes:
         range: Organization
       alias:
         name: alias
-        exact_mappings:
-        - schema:alternateName
         annotations:
           primary_key:
             tag: primary_key
             value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        exact_mappings:
+        - schema:alternateName
         singular_name: alias
         slot_uri: rdf:object
         multivalued: false
@@ -1476,13 +1476,13 @@ classes:
         range: Place
       alias:
         name: alias
-        exact_mappings:
-        - schema:alternateName
         annotations:
           primary_key:
             tag: primary_key
             value: 'true'
         from_schema: https://w3id.org/linkml/examples/personinfo_relational
+        exact_mappings:
+        - schema:alternateName
         singular_name: alias
         slot_uri: rdf:object
         multivalued: false

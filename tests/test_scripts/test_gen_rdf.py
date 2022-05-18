@@ -1,4 +1,5 @@
 import os
+from pathlib import PurePath
 import re
 import unittest
 # This has to occur post ClickTestCase
@@ -47,7 +48,7 @@ class GenRDFTestCase(ClickTestCase):
         if expected != cntxt_txt:
             with open(cntxt_file_path, 'w') as f:
                 f.write(cntxt_txt)
-        return urljoin('file:', cntxt_file_path)
+        return PurePath(cntxt_file_path).as_uri()
 
     def test_meta(self):
         """ Test the RDF generator on the metamodel """
@@ -67,7 +68,8 @@ class GenRDFTestCase(ClickTestCase):
 
     def test_make_script(self):
         """ Test a relative file path in JSON """
-        self.do_test(f"--context {LOCAL_METAMODEL_LDCONTEXT_FILE}",
+        local_metamodel_LDcontext_file = PurePath(LOCAL_METAMODEL_LDCONTEXT_FILE).as_posix()
+        self.do_test(f"--context {local_metamodel_LDcontext_file}",
                      'make_output.ttl', filtr=filtr, comparator=ClickTestCase.rdf_comparator)
 
 
