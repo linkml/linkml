@@ -19,7 +19,9 @@ URI: [linkml:inlined_as_list](https://w3id.org/linkml/inlined_as_list)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
 
 ## Other properties
 

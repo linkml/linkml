@@ -181,12 +181,24 @@ class OwlSchemaGenerator(Generator):
             if ':' in k:
                 k_curie = k
                 try:
-                    k_uri = self.metamodel.namespaces.uri_for(k_curie)
-                    self.graph.add((uri,
+                    k_uri = self.namespaces.uri_for(k_curie) 
+                except ValueError as e:
+                    try:
+                        k_uri = self.metamodel.namespaces.uri_for(k_curie)
+                    except ValueError as me:
+                        logging.info('Ignoring namespace error: ' + str(me))
+                finally:
+                    if k_uri is not None:
+                        self.graph.add((uri,
                                     k_uri,
                                     Literal(v.value)))
-                except ValueError as e:
-                    logging.info('Ignoring namespace error: ' + str(e))
+            # use default schema prefix
+            else:
+                try:
+                    k_uri = self.namespaces.uri_for(underscore(k))
+                    self.graph.add((uri, k_uri, Literal(v.value)))
+                except Exception as e:
+                    logging.info('Ignoring annotation error: ' + str(e))
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         """
@@ -474,6 +486,7 @@ class OwlSchemaGenerator(Generator):
         if p is not None and p.slot_uri is not None:
             return self.namespaces.uri_for(p.slot_uri)
         else:
+            logging.error(self.schema.slots)
             raise Exception(f'No slot_uri for {pn} // {p}')
 
     def _type_uri(self, tn: TypeDefinitionName) -> URIRef:

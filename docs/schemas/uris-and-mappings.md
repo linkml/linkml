@@ -8,9 +8,14 @@ URIs and IRIs are generalizations of URLs. URIs are used as identifiers in linke
 
 For example, in [schema.org](http://schema.org), the URI [http://schema.org/Person](http://schema.org/Person) is the identifier for the Person concept.
 
-URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map `schema` to `http://schema.org/`, then we can use the CURIE `schema:Person` to denote the person concept
+URIs can be shortended as CURIEs (Compact URIs). Given a prefix declaration where we map `schema` to `http://schema.org/`, then we can use the CURIE `schema:Person` to denote the person concept.
 
-## prefixes
+For more on URIs and their importance in Linked Data, see
+
+- [Linked Data](https://www.w3.org/DesignIssues/LinkedData.html) by Tim Berners-Lee from 2006
+- [What are URIs](https://www.cogsci.ed.ac.uk/~ht/WhatAreURIs/) by Henry S Thompson from 2010
+
+## URI Prefixes
 
 A typical header for a linkml schema may look like this:
 
@@ -42,12 +47,14 @@ With the above prefixmap, the CURIE `schema:Person` will expand to http://schema
 
 ## class uri and slot uri
 
-The two slots
+Slot and class URIs in LinkML provide the *meaning* for a class or slot, and give a robust and unique place to consistently find information about a class or slot in a LinkML model on the web.
+
+The two metamodel slots
 
  * [class_uri](https://w3id.org/linkml/class_uri)
  * [slot_uri](https://w3id.org/linkml/slot_uri)
 
-can be used to declare URIs for classes and slots respectively. These are typically specified as CURIEs
+can be used to declare URIs for classes and slots respectively. These are typically specified as CURIEs.
 
 ```yaml
 classes:
@@ -73,6 +80,26 @@ When a [JSON-LD context is generated](../generators/jsonld-context) for this sch
 If class and slot uris are omitted, then they are still generated behind the scenes, using the [default_prefix](https://w3id.org/linkml/default_prefix) slot at the schema level
 
 For example, if Person did not declare a class_uri, then a CURIE `personinfo:Person` would be used, which would expand to `https://w3id.org/linkml/examples/personinfo/Person`
+
+
+## Enumerations and the meaning slot
+
+The metamodel slot
+
+ * [meaning](https://w3id.org/linkml/meaning)
+
+Can be optionally used with a [PermissibleValue](https://w3id.org/linkml/PermissibleValue) as part of an *enumeration*
+
+## Relationship to ISO-11179-3
+
+The LinkML metamodel is strongly influenced by and attempts to conform to the model in [ISO/IEC 11179-3](https://www.iso.org/standard/50340.html) - Metadata registries -- Part 3: Registry metamodel and basic attributes.
+
+For those familiar with the ISO 11179-3 model, the class_uri identifies the object class referenced by the data element.  The slot_uri names the particular property.
+
+For more, see this short slide deck:
+
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
 
 ## mappings
 

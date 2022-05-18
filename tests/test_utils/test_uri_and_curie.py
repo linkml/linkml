@@ -1,4 +1,5 @@
 import os
+from pathlib import PurePath
 import unittest
 from types import ModuleType
 
@@ -42,7 +43,7 @@ class URIAndCurieTestCase(GeneratorTestCase):
                               id2="ex:id2")
         instance_jsonld = loads('{ "ex": "http://example.org/test/inst#" }')
 
-        g = as_rdf(curie_obj, [env.input_path(self.model_name + '.jsonld'), instance_jsonld])
+        g = as_rdf(curie_obj, [PurePath(env.input_path(self.model_name + '.jsonld')).as_uri(), instance_jsonld])
         env.eval_single_file(env.expected_path('uriandcurie.ttl'), g.serialize(format='ttl').decode(), lambda s: s,
                              compare_rdf)
 

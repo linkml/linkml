@@ -75,7 +75,7 @@ implicitly asserts that X is an instance of C1
      * Range: [String](types/String.md)
  * [ifabsent](ifabsent.md)  <sub>0..1</sub>
      * Description: function that provides a default value for the slot.  Possible values for this slot are defined in
-linkml.utils.ifabsent_functions.default_library:
+linkml_runtime.utils.ifabsent_functions.default_library:
   * [Tt]rue -- boolean True
   * [Ff]alse -- boolean False
   * int(value) -- integer value
@@ -86,14 +86,6 @@ linkml.utils.ifabsent_functions.default_library:
   * class_curie -- CURIE for the containing class
   * class_uri -- URI for the containing class
      * Range: [String](types/String.md)
- * [inlined](inlined.md)  <sub>0..1</sub>
-     * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
-     * Range: [Boolean](types/Boolean.md)
-     * in subsets: (basic)
- * [inlined_as_list](inlined_as_list.md)  <sub>0..1</sub>
-     * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
-     * Range: [Boolean](types/Boolean.md)
-     * in subsets: (basic)
  * [list_elements_unique](list_elements_unique.md)  <sub>0..1</sub>
      * Description: If True, then there must be no duplicates in the elements of a multivalued slot
      * Range: [Boolean](types/Boolean.md)
@@ -210,40 +202,12 @@ linkml.utils.ifabsent_functions.default_library:
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [aliases](aliases.md)  <sub>0..\*</sub>
-     * Range: [String](types/String.md)
-     * in subsets: (basic)
- * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
-     * Description: A list of structured_alias objects.
-     * Range: [StructuredAlias](StructuredAlias.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
  * [conforms_to](conforms_to.md)  <sub>0..1</sub>
      * Description: An established standard to which the element conforms.
      * Range: [String](types/String.md)
      * in subsets: (owl,basic)
- * [mappings](mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [close mappings](close_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have close meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [related mappings](related_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have related meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [rank](rank.md)  <sub>0..1</sub>
-     * Description: the relative order in which the element occurs, lower values are given precedence
-     * Range: [Integer](types/Integer.md)
-     * in subsets: (basic)
  * [abstract](abstract.md)  <sub>0..1</sub>
      * Description: an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.
      * Range: [Boolean](types/Boolean.md)
@@ -316,6 +280,20 @@ implicitly asserts Y is an instance of C2
 
  * [recommended](recommended.md)  <sub>0..1</sub>
      * Description: true means that the slot should be present in the loaded definition, but this is not required
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [inlined](inlined.md)  <sub>0..1</sub>
+     * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [inlined_as_list](inlined_as_list.md)  <sub>0..1</sub>
+     * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
      * Range: [Boolean](types/Boolean.md)
      * in subsets: (basic)
 

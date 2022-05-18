@@ -53,9 +53,9 @@ URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisC
 <details>
 ```yaml
 name: DiagnosisConcept
+from_schema: https://w3id.org/linkml/tests/kitchen_sink
 close_mappings:
 - biolink:Disease
-from_schema: https://w3id.org/linkml/tests/kitchen_sink
 is_a: Concept
 
 ```
@@ -66,9 +66,9 @@ is_a: Concept
 <details>
 ```yaml
 name: DiagnosisConcept
+from_schema: https://w3id.org/linkml/tests/kitchen_sink
 close_mappings:
 - biolink:Disease
-from_schema: https://w3id.org/linkml/tests/kitchen_sink
 is_a: Concept
 attributes:
   id:

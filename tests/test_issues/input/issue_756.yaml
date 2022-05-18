@@ -1,0 +1,47 @@
+id: https://example.com/test
+name: test
+description: test
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+prefixes:
+  test: https://example.com/test/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  NCBITaxon: http://purl.obolibrary.org/obo/NCBITaxon_
+
+default_prefix: test
+default_range: string
+
+emit_prefixes:
+  - xsd
+  - schema
+  - NCBITaxon
+
+classes:
+
+  NamedThing:
+    description: A generic grouping for any identifiable entity
+    slots:
+      - id
+      - name
+      - description
+      - twentyq_cat
+    close_mappings:
+      - schema:Thing
+
+slots:
+  twentyq_cat:
+    range: string
+
+enums:
+  twentyq_cat_enum:
+    permissible_values:
+      - animal:
+          meaning: NCBITaxon:33208
+          mappings:
+            - https://www.wikidata.org/wiki/Q729
+      - vegetable
+      - mineral
+
