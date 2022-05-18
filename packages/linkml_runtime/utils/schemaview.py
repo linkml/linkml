@@ -529,6 +529,16 @@ class SchemaView(object):
         return self._parents(cls, imports, mixins, is_a)
 
     @lru_cache()
+    def enum_parents(self, enum_name: ENUM_NAME, imports=True, mixins=True, is_a=True) -> List[EnumDefinitionName]:
+        """
+        :param enum_name: child enum name
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :return: all direct parent enum names (is_a and mixins)
+        """
+        return []
+
+    @lru_cache()
     def slot_parents(self, slot_name: SLOT_NAME, imports=True, mixins=True, is_a=True) -> List[SlotDefinitionName]:
         """
         :param slot_name: child slot name
@@ -538,6 +548,19 @@ class SchemaView(object):
         """
         s = self.get_slot(slot_name, imports, strict=True)
         return self._parents(s, imports, mixins, is_a)
+
+    @lru_cache()
+    def type_parents(self, type_name: TYPE_NAME, imports=True) -> List[TypeDefinitionName]:
+        """
+        :param type_name: child type name
+        :param imports: include import closure
+        :return: all direct parent enum names (is_a and mixins)
+        """
+        typ = self.get_type(type_name, imports, strict=True)
+        if typ.typeof:
+            return [typ.typeof]
+        else:
+            return []
 
     @lru_cache()
     def class_children(self, class_name: CLASS_NAME, imports=True, mixins=True, is_a=True) -> List[ClassDefinitionName]:
@@ -579,6 +602,39 @@ class SchemaView(object):
         """
         return _closure(lambda x: self.class_parents(x, imports=imports, mixins=mixins, is_a=is_a),
                         class_name,
+                        reflexive=reflexive,  depth_first=depth_first)
+
+    @lru_cache()
+    def enum_ancestors(self, enum_name: ENUM_NAME, imports=True, mixins=True, reflexive=True, is_a=True,
+                        depth_first=True) -> List[EnumDefinitionName]:
+        """
+        Closure of enum_parents method
+
+        :param enum_name: query enum
+        :param imports: include import closure
+        :param mixins: include mixins (default is True)
+        :param is_a: include is_a parents (default is True)
+        :param reflexive: include self in set of ancestors
+        :param depth_first:
+        :return: ancestor enum names
+        """
+        return _closure(lambda x: self.enum_parents(x, imports=imports, mixins=mixins, is_a=is_a),
+                        enum_name,
+                        reflexive=reflexive,  depth_first=depth_first)
+
+    @lru_cache()
+    def type_ancestors(self, type_name: TYPES, imports=True, reflexive=True, depth_first=True) -> List[TypeDefinitionName]:
+        """
+        All ancestors of a type via typeof
+
+        :param type_name: query type
+        :param imports: include import closure
+        :param reflexive: include self in set of ancestors
+        :param depth_first:
+        :return: ancestor class names
+        """
+        return _closure(lambda x: self.type_parents(x, imports=imports),
+                        type_name,
                         reflexive=reflexive,  depth_first=depth_first)
 
     @lru_cache()
@@ -950,14 +1006,18 @@ class SchemaView(object):
         :return: dynamic slot constructed by inference
         """
         slot = self.get_slot(slot_name, imports, attributes=False)
-        cls = self.get_class(class_name, imports)
+        if class_name:
+            cls = self.get_class(class_name, imports, strict=True)
+        else:
+            cls = None
         # attributes take priority over schema-level slot definitions, IF
         # the attributes is declared for the class or an ancestor
-        for an in self.class_ancestors(class_name):
-            a = self.get_class(an, imports)
-            if slot_name in a.attributes:
-                slot = a.attributes[slot_name]
-                break
+        if cls:
+            for an in self.class_ancestors(class_name):
+                a = self.get_class(an, imports)
+                if slot_name in a.attributes:
+                    slot = a.attributes[slot_name]
+                    break
         islot = None
         if slot is not None:
             # case 1: there is an explicit declaration of the slot
@@ -985,7 +1045,9 @@ class SchemaView(object):
             # inheritance of slots; priority order
             #   slot-level assignment < ancestor slot_usage < self slot_usage
             v = getattr(islot, metaslot_name, None)
-            if metaslot_name in SlotDefinition._inherited_slots:
+            if not cls:
+                propagated_from = []
+            elif metaslot_name in SlotDefinition._inherited_slots:
                 propagated_from = self.class_ancestors(class_name, reflexive=True, mixins=True)
             else:
                 propagated_from = [class_name]
@@ -1011,8 +1073,8 @@ class SchemaView(object):
                 setattr(islot, metaslot_name, v)
         if slot.inlined_as_list:
             slot.inlined = True
-        mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
         if mangle_name:
+            mangled_name = f'{camelcase(class_name)}__{underscore(slot_name)}'
             islot.name = mangled_name
         if not islot.alias:
             islot.alias = underscore(slot_name)
@@ -1053,6 +1115,34 @@ class SchemaView(object):
             c.attributes[a.name] = a
         c.slots = []
         return c
+
+    @lru_cache()
+    def induced_type(self, type_name: TYPE_NAME = None) -> TypeDefinition:
+        """
+
+        :param type_name:
+        :return:
+        """
+        t = deepcopy(self.get_type(type_name))
+        if t.typeof:
+            parent = self.induced_type(t.typeof)
+            if t.uri is None:
+                t.uri = parent.uri
+            if t.base is None:
+                t.base = parent.base
+            if t.repr is None:
+                t.repr = parent.repr
+        return t
+
+    @lru_cache()
+    def induced_enum(self, enum_name: ENUM_NAME = None) -> EnumDefinition:
+        """
+
+        :param enum_name:
+        :return:
+        """
+        e = deepcopy(self.get_enum(enum_name))
+        return e
 
     @lru_cache()
     def get_identifier_slot(self, cn: CLASS_NAME, use_key=False, imports=True) -> Optional[SlotDefinition]:
