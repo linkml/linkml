@@ -112,7 +112,7 @@ class DocGenerator(Generator):
         for cn, c in sv.all_classes().items():
             if self._is_external(c):
                 continue
-            n = self.name(c)
+            n = self.name(c, term_id=True)
             out_str = template.render(gen=self,
                                       element=c,
                                       schemaview=sv)
@@ -130,7 +130,7 @@ class DocGenerator(Generator):
         for en, e in sv.all_enums().items():
             if self._is_external(e):
                 continue
-            n = self.name(e)
+            n = self.name(e, term_id=True)
             out_str = template.render(gen=self,
                                       element=e,
                                       schemaview=sv)
@@ -139,7 +139,7 @@ class DocGenerator(Generator):
         for tn, t in sv.all_types().items():
             if self._is_external(t):
                 continue
-            n = self.name(t)
+            n = self.name(t, term_id=True)
             out_str = template.render(gen=self,
                                       element=t,
                                       schemaview=sv)
