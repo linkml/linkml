@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Union, Dict, List, Any, Type, Tuple
 from functools import lru_cache
 from dataclasses import dataclass, field
-from xml.dom.minidom import NamedNodeMap
 
 import click
 import yaml
