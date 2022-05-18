@@ -588,7 +588,7 @@ linkml-runtime = ">=1.1.6"
 
 [[package]]
 name = "linkml-runtime"
-version = "1.2.13"
+version = "1.2.14"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 category = "main"
 optional = false
@@ -1500,7 +1500,7 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.6"
-content-hash = "b5d72ad2a49570747365565d897945a0c7d3567878be3941adcc1ee91ec22a9c"
+content-hash = "8aa7e69c4f711271feec36036d8095ecdb56db908dff8e3a1cda030fbe7c0439"
 
 [metadata.files]
 alabaster = [
@@ -1860,8 +1860,8 @@ linkml-dataops = [
     {file = "linkml_dataops-0.1.0.tar.gz", hash = "sha256:4550eab65e78b70dc3b9c651724a94ac2b1d1edb2fbe576465f1d6951a54ed04"},
 ]
 linkml-runtime = [
-    {file = "linkml_runtime-1.2.13-py3-none-any.whl", hash = "sha256:7b00ad1a0e2afee4c92ebbf6518594864a28d72817398f45ba09a1f6b8e0bdec"},
-    {file = "linkml_runtime-1.2.13.tar.gz", hash = "sha256:a4fc14830ff3ca8c56881f55ac3e745ba4c43fc4a75a49c9711c4868dfb2074a"},
+    {file = "linkml_runtime-1.2.14-py3-none-any.whl", hash = "sha256:fff32adf21461f333f0aae3d5f4584032d3511671813868bc23851fe01ace1a2"},
+    {file = "linkml_runtime-1.2.14.tar.gz", hash = "sha256:5cd2c92818cc9b45f89c107a665d88c7330a8b860f564e71ddc6ac7a54a02f05"},
 ]
 markdown-it-py = [
     {file = "markdown-it-py-2.1.0.tar.gz", hash = "sha256:cf7e59fed14b5ae17c0006eff14a2d9a00ed5f3a846148153899a0224e2c07da"},
@@ -1950,6 +1950,7 @@ numpy = [
     {file = "numpy-1.22.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8251ed96f38b47b4295b1ae51631de7ffa8260b5b087808ef09a39a9d66c97ab"},
     {file = "numpy-1.22.3-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:48a3aecd3b997bf452a2dedb11f4e79bc5bfd21a1d4cc760e703c31d57c84b3e"},
     {file = "numpy-1.22.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a3bae1a2ed00e90b3ba5f7bd0a7c7999b55d609e0c54ceb2b076a25e345fa9f4"},
+    {file = "numpy-1.22.3-cp310-cp310-win32.whl", hash = "sha256:f950f8845b480cffe522913d35567e29dd381b0dc7e4ce6a4a9f9156417d2430"},
     {file = "numpy-1.22.3-cp310-cp310-win_amd64.whl", hash = "sha256:08d9b008d0156c70dc392bb3ab3abb6e7a711383c3247b410b39962263576cd4"},
     {file = "numpy-1.22.3-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:201b4d0552831f7250a08d3b38de0d989d6f6e4658b709a02a73c524ccc6ffce"},
     {file = "numpy-1.22.3-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:f8c1f39caad2c896bc0018f699882b345b2a63708008be29b1f355ebf6f933fe"},
