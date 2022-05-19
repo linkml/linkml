@@ -70,6 +70,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#can-i-generate-a-website-from-a-linkml-schema">Can I generate a website from a LinkML schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-customize-the-markdown-generation-for-my-schema-site">Can I customize the Markdown generation for my schema site?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-does-if-missing-mean-in-my-json-output">What does _if_missing mean in my JSON output?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
@@ -286,6 +287,16 @@ LinkML as a schema language.</p>
 <ul class="simple">
 <li><p>Convert your <a class="reference external" href="https://linkml.io/linkml/generators/owl">schema to OWL</a> and your <a class="reference external" href="https://linkml.io/linkml/data/rdf">data to RDF</a> and use an OWL reasoner</p></li>
 <li><p>Use the (experimental) <a class="reference external" href="https://github.com/linkml/linkml-datalog">linkml-datalog</a> framework</p></li>
+</ul>
+</section>
+<section id="what-does-if-missing-mean-in-my-json-output">
+<h2>What does _if_missing mean in my JSON output?<a class="headerlink" href="#what-does-if-missing-mean-in-my-json-output" title="Permalink to this headline"></a></h2>
+<p>If you pass a LinkML object directly to <code class="docutils literal notranslate"><span class="pre">json.dump</span></code> you will see internal hidden fields, these start with underscore: e.g. <code class="docutils literal notranslate"><span class="pre">_if_missing</span></code>.</p>
+<p>We recommend instead using <code class="docutils literal notranslate"><span class="pre">json_dumper.dump</span></code> in the linkml-runtime package, which will give the <em>canonical</em> JSON representation of a LinkML object.</p>
+<p>See:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/data/python.html">working with data - python</a></p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml/developers/loaders-and-dumpers.html">loaders and dumpers, code docs</a></p></li>
 </ul>
 </section>
 </section>
