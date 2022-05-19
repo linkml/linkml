@@ -112,7 +112,7 @@ class DocGenerator(Generator):
         for cn, c in sv.all_classes().items():
             if self._is_external(c):
                 continue
-            n = self.name(c, term_id=True)
+            n = self.name(c)
             out_str = template.render(gen=self,
                                       element=c,
                                       schemaview=sv)
@@ -121,7 +121,7 @@ class DocGenerator(Generator):
         for sn, s in sv.all_slots().items():
             if self._is_external(s):
                 continue
-            n = self.name(s, term_id=True)
+            n = self.name(s, use_slot_uris=True)
             out_str = template.render(gen=self,
                                       element=s,
                                       schemaview=sv)
@@ -130,7 +130,7 @@ class DocGenerator(Generator):
         for en, e in sv.all_enums().items():
             if self._is_external(e):
                 continue
-            n = self.name(e, term_id=True)
+            n = self.name(e)
             out_str = template.render(gen=self,
                                       element=e,
                                       schemaview=sv)
@@ -139,7 +139,7 @@ class DocGenerator(Generator):
         for tn, t in sv.all_types().items():
             if self._is_external(t):
                 continue
-            n = self.name(t, term_id=True)
+            n = self.name(t)
             out_str = template.render(gen=self,
                                       element=t,
                                       schemaview=sv)
@@ -202,19 +202,19 @@ class DocGenerator(Generator):
             env = Environment(loader=loader)
             return env.get_template(base_file_name)
 
-    def name(self, element: Element, term_id=False) -> str:
+    def name(self, element: Element, use_slot_uris=False) -> str:
         """
         Returns the name of the element in its canonical form
 
         :param element: SchemaView element definition
-        :param term_id: use Term ID from slot_uri instead of
+        :param use_slot_uris: use Term ID from slot_uri instead of
         traditional name
         :return: slot name or numeric portion of CURIE prefixed 
         slot_uri
         """
         if type(element).class_name == 'slot_definition':
 
-            if term_id:
+            if use_slot_uris:
                 if element.slot_uri is not None:
                     return element.slot_uri.split(":")[1]
                 else:
@@ -248,12 +248,12 @@ class DocGenerator(Generator):
         sc = element.from_schema
         return f'[{curie}]({uri})'
 
-    def link(self, e: Union[Definition, DefinitionName], term_id=False) -> str:
+    def link(self, e: Union[Definition, DefinitionName], use_slot_uris=False) -> str:
         """
         Render an element as a hyperlink
 
         :param e:
-        :param term_id: use Term ID from slot_uri instead of
+        :param use_slot_uris: use Term ID from slot_uri instead of
         traditional name
         :return:
         """
@@ -261,12 +261,14 @@ class DocGenerator(Generator):
             return 'NONE'
         if not isinstance(e, Definition):
             e = self.schemaview.get_element(e)
-        if isinstance(e, ClassDefinition):
+        if self._is_external(e):
+            return self.uri_link(e)
+        elif isinstance(e, ClassDefinition):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, SlotDefinition):
-            if term_id:
+            if use_slot_uris:
                 if e.slot_uri is not None:
                     return self._markdown_link(e.slot_uri.split(":")[1])
 
