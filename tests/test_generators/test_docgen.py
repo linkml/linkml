@@ -60,9 +60,19 @@ class DocGeneratorTestCase(unittest.TestCase):
                                'http://www.w3.org/2004/02/skos/core#altLabel',
                                after='aliases')
         # test index docs
-        assert_mdfile_contains('aliases.md',
-                               'http://www.w3.org/2004/02/skos/core#altLabel',
-                               after='aliases')
+        assert_mdfile_contains('index.md',
+                               '[EmploymentEventType](EmploymentEventType.md)',
+                               after='Enumerations')
+        assert_mdfile_contains('index.md',
+                               'a provence-generating activity',
+                               after='Classes')
+        # test internal links
+        assert_mdfile_contains('ceo.md',
+                               'Range: [Person](Person.md)',
+                               after='Properties')
+        # TODO: external links
+
+
 
 
     def test_custom_directory(self):

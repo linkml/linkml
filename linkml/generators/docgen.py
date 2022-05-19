@@ -124,6 +124,7 @@ class DocGenerator(Generator):
             if self._is_external(s):
                 continue
             n = self.name(s)
+            s = sv.induced_slot(sn)
             out_str = template.render(gen=self,
                                       element=s,
                                       schemaview=sv)
@@ -142,6 +143,7 @@ class DocGenerator(Generator):
             if self._is_external(t):
                 continue
             n = self.name(t)
+            t = sv.induced_type(tn)
             out_str = template.render(gen=self,
                                       element=t,
                                       schemaview=sv)
