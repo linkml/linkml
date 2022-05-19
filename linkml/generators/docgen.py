@@ -1,3 +1,4 @@
+from email.policy import default
 import os
 import logging
 from pathlib import Path
@@ -62,6 +63,7 @@ class DocGenerator(Generator):
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
                  directory: str = None,
                  template_directory: str = None,
+                 use_slot_uris: bool = False,
                  format: str = valid_formats[0],
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         """
@@ -82,6 +84,7 @@ class DocGenerator(Generator):
         self.format = format
         self.directory = directory
         self.template_directory = template_directory
+        self.use_slot_uris = use_slot_uris
         self.genmeta = genmeta
 
     def serialize(self, directory: str = None) -> None:
@@ -121,7 +124,7 @@ class DocGenerator(Generator):
         for sn, s in sv.all_slots().items():
             if self._is_external(s):
                 continue
-            n = self.name(s, use_slot_uris=True)
+            n = self.name(s, use_slot_uris=self.use_slot_uris)
             out_str = template.render(gen=self,
                                       element=s,
                                       schemaview=sv)
@@ -424,8 +427,9 @@ class DocGenerator(Generator):
 @shared_arguments(DocGenerator)
 @click.option("--directory", "-d", required=True, help="Folder to which document files are written")
 @click.option("--template-directory", help="Folder in which custom templates are kept")
+@click.option("--use-slot-uris/--no-use-slot-uris", default=False, help="Use IDs from slot_uri instead of names")
 @click.command()
-def cli(yamlfile, directory, template_directory, **args):
+def cli(yamlfile, directory, template_directory, use_slot_uris, **args):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
@@ -433,7 +437,7 @@ def cli(yamlfile, directory, template_directory, **args):
     If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
     each type of entity inside
     """
-    gen = DocGenerator(yamlfile, directory=directory, template_directory=template_directory, **args)
+    gen = DocGenerator(yamlfile, directory=directory, template_directory=template_directory, use_slot_uris=use_slot_uris, **args)
     print(gen.serialize())
 
 
