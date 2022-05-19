@@ -1,4 +1,3 @@
-from email.policy import default
 import os
 import logging
 from pathlib import Path
@@ -124,7 +123,7 @@ class DocGenerator(Generator):
         for sn, s in sv.all_slots().items():
             if self._is_external(s):
                 continue
-            n = self.name(s, use_slot_uris=self.use_slot_uris)
+            n = self.name(s)
             out_str = template.render(gen=self,
                                       element=s,
                                       schemaview=sv)
@@ -205,19 +204,17 @@ class DocGenerator(Generator):
             env = Environment(loader=loader)
             return env.get_template(base_file_name)
 
-    def name(self, element: Element, use_slot_uris=False) -> str:
+    def name(self, element: Element) -> str:
         """
         Returns the name of the element in its canonical form
 
         :param element: SchemaView element definition
-        :param use_slot_uris: use Term ID from slot_uri instead of
-        traditional name
         :return: slot name or numeric portion of CURIE prefixed 
         slot_uri
         """
         if type(element).class_name == 'slot_definition':
 
-            if use_slot_uris:
+            if self.use_slot_uris:
                 if element.slot_uri is not None:
                     return element.slot_uri.split(":")[1]
                 else:
@@ -251,13 +248,11 @@ class DocGenerator(Generator):
         sc = element.from_schema
         return f'[{curie}]({uri})'
 
-    def link(self, e: Union[Definition, DefinitionName], use_slot_uris=False) -> str:
+    def link(self, e: Union[Definition, DefinitionName]) -> str:
         """
         Render an element as a hyperlink
 
         :param e:
-        :param use_slot_uris: use Term ID from slot_uri instead of
-        traditional name
         :return:
         """
         if e is None:
@@ -271,7 +266,7 @@ class DocGenerator(Generator):
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, SlotDefinition):
-            if use_slot_uris:
+            if self.use_slot_uris:
                 if e.slot_uri is not None:
                     return self._markdown_link(e.slot_uri.split(":")[1])
 
