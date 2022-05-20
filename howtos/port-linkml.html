@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Porting LinkML tools to other languages &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Porting LinkML tools to other languages</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/howtos/port-linkml.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="porting-linkml-tools-to-other-languages">
+<h1>Porting LinkML tools to other languages<a class="headerlink" href="#porting-linkml-tools-to-other-languages" title="Permalink to this headline"></a></h1>
+<section id="preamble">
+<h2>Preamble<a class="headerlink" href="#preamble" title="Permalink to this headline"></a></h2>
+<p>__ this is an advanced how-to guide that is not expected to be useful for typical LinkML users or developers__.</p>
+<p>If you are thinking of porting LinkML please contact us first!</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<p>LinkML is a programming language-neutral framework. Using LinkML you
+can specify a datamodel for your project, and use LinkML tools for
+validating data. These tools are in Python, but they can be executed
+during the development cycle of your project, avoiding python
+dependencies in non-python code.</p>
+<p>For a small but growing set of languages there is support for
+<a class="reference external" href="https://linkml.io/linkml/generators/index.html">generating data access object
+models</a> for that
+language. For other languages it should be possible to code up
+generators using the flexible Jinja2 template based generator
+framework.</p>
+<p>However, there may still be cases where it is desirable to have full
+LinkML support within a language other than python, typically when
+writing a generic application that is designed to work with <em>any</em>
+LinkML model.</p>
+<p>Examples of these might be:</p>
+<ol class="arabic simple">
+<li><p>A generic data editor or visualizer for LinkML models</p></li>
+<li><p>A code generator for a particular language where one wants to take advantage of features of that language</p></li>
+</ol>
+<p>For more on the first use case, see the <a class="reference external" href="https://linkml.io/linkml/developers/tool-developer-guide.html">tool developer guide</a>.</p>
+<p>As an example of the second, consider writing a code generator for
+Java that creates data access classes with the ability to customize
+the generation for various different styles of java annotations
+(Jackson, Lombok, Hibernate, …). While this could be done in Python
+and Jinja2 templates, there is an advantage to leveraging existing
+tooling in the host language.</p>
+<p>It may be tempting to take the “easy” approach and simply write code
+that works directly from LinkML yaml files. This is a good approach if
+you are targeting one of the simple sub-profiles of LinkML but if you
+are aiming for a more powerful library then this has a number of disadvantages.</p>
+</section>
+<section id="definitions">
+<h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>LinkML framework: a general purpose programming library for working with LinkML models</p></li>
+<li><p>Target Language: the programming language one wishes to write a LinkML framework for</p></li>
+<li><p>LinkML metamodel: A schema that describes LinkML itself</p></li>
+</ul>
+</section>
+</section>
+<section id="overview-of-python-framework">
+<h1>Overview of Python Framework<a class="headerlink" href="#overview-of-python-framework" title="Permalink to this headline"></a></h1>
+<p>Currently there are 3 core repos:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a> This holds the Source of Truth for the <em>metamodel</em></p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a> A runtime library that is depended on by schema-specific generated python dataclass libraries</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml">linkml</a> The core tooling, including <a class="reference external" href="https://linkml.io/linkml/generators/index.html">generators</a></p></li>
+</ul>
+<p>This guide assumes familiarity with all of the above</p>
+<p>Note that there are no runtime dependencies on linkml-model; this
+would create a circularity since the metamodel is like any other
+schema and depends on the runtime. Instead, linkml-model is synced into linkml-runtime.</p>
+</section>
+<section id="how-to-port-to-your-language-of-choice">
+<h1>How to Port to your language of choice<a class="headerlink" href="#how-to-port-to-your-language-of-choice" title="Permalink to this headline"></a></h1>
+<section id="step-1-bootstrap-metamodel-data-access-classes">
+<h2>Step 1: Bootstrap metamodel data access classes<a class="headerlink" href="#step-1-bootstrap-metamodel-data-access-classes" title="Permalink to this headline"></a></h2>
+<p>Even if you intended to ultimately use the target language for doing
+codegen, we strongly recommend you bootstrap by using the existing
+generators framework. This may take a little bit of Python coding and some Jinja2 templates.</p>
+<p>Consult some of the existing generators to see how this is done. Be
+sure to use the newer style SchemaView generators.</p>
+<p>for example: https://github.com/linkml/linkml/blob/main/linkml/generators/javagen.py</p>
+<p>Definitely make an issue on our repo so you can coordinate with others interested in support for the target language!</p>
+<p>When writing the bootstrap generators there are a number of design decisions:</p>
+<ul class="simple">
+<li><p>Should the generated code be standalone, or should there be runtime dependencies?</p></li>
+<li><p>If there are runtime dependencies, are these on 3rd party libraries or something you will generate?</p></li>
+<li><p>What are the appropriate constructs to map to in the target language?</p></li>
+<li><p>How do you intend to handle serialization and parsing to/from JSON?</p></li>
+<li><p>What is your strategy for validation within the target language?</p></li>
+<li><p>How should imports be handled in a way that comports well with the target lnaguage</p></li>
+</ul>
+<p>There are no right or wrong answers here. A good strategy is to start with the simplest thing that could work and build out from there.</p>
+<p>By way of comparison here are some rough descriptions of existing generators and their decisions:</p>
+<section id="case-study-pydanticgen">
+<h3>Case study: pydanticgen<a class="headerlink" href="#case-study-pydanticgen" title="Permalink to this headline"></a></h3>
+<p><strong>pydanticgen</strong>: this generates largely standalone python classes, with only a dependency on the 3rd party pydantic framework (all classes ultimately inherit from BaseModel)</p>
+</section>
+<section id="case-study-pythongen">
+<h3>Case study: pythongen<a class="headerlink" href="#case-study-pythongen" title="Permalink to this headline"></a></h3>
+<p><strong>pythongen</strong>: this builds fully-featured Python classes that follow
+the dataclasses framework, which is part of the Python core. These
+classes are not standalone however. Let’s examine the header of
+generated classes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PvFormulaOptions</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.slot</span> <span class="kn">import</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">empty_list</span><span class="p">,</span> <span class="n">empty_dict</span><span class="p">,</span> <span class="n">bnode</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.dataclass_extensions_376</span> <span class="kn">import</span> <span class="n">dataclasses_init_fn_with_kwargs</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span><span class="p">,</span> <span class="n">sfx</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.curienamespace</span> <span class="kn">import</span> <span class="n">CurieNamespace</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Uriorcurie</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">URIorCURIE</span>
+</pre></div>
+</div>
+<p>Many of these are part of Python:</p>
+<p>The standard typing library is used for type hints:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>the standard python dataclasses library is used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="o">...</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>Others are dependencies on either the linkml-runtime itself or on external libraries</p>
+<p>All classes inherit from YAMLRoot which itself inherits from JsonObj in jsonasonj2:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+<span class="o">...</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NamedThing</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">as_dict</span></code> method from jsonasobj2 provides convenient methods for normalizing inputs to initialization routines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
+<span class="o">...</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MedicalEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+        <span class="o">...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span><span class="p">,</span> <span class="n">DiagnosisConcept</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span> <span class="o">=</span> <span class="n">DiagnosisConcept</span><span class="p">(</span><span class="o">**</span><span class="n">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">diagnosis</span><span class="p">))</span>
+
+</pre></div>
+</div>
+<p>rdflib.URIRef is used to allow for introspection to retrieve the URI of any LinkML class at rumtime:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">URIRef</span>
+<span class="o">...</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">NamedThing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A person (alive, dead, undead, or fictional).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_inherited_slots</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">class_class_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">SCHEMA</span><span class="o">.</span><span class="n">Person</span>
+    <span class="n">class_class_curie</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;schema:Person&quot;</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Person&quot;</span>
+    <span class="n">class_model_uri</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">URIRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">PERSONINFO</span><span class="o">.</span><span class="n">Person</span>
+</pre></div>
+</div>
+<p>Additionally, if parts of the metamodel are imported - such as for <code class="docutils literal notranslate"><span class="pre">linkml:types</span></code> this generates a corresponding python import:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.types</span> <span class="kn">import</span> <span class="n">Boolean</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.metamodelcore</span> <span class="kn">import</span> <span class="n">Bool</span><span class="p">,</span> <span class="n">XSDDate</span>
+<span class="o">...</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="n">YAMLRoot</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">started_at_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">XSDDate</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+</pre></div>
+</div>
+<p>the python generator will also generate subclasses of builtin Python strings - these are useful for non-inlined references to type the reference slot:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">extended_str</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span>
+
+<span class="k">class</span> <span class="nc">NamedThingId</span><span class="p">(</span><span class="n">extended_str</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">PersonId</span><span class="p">(</span><span class="n">NamedThingId</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="o">...</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FamilialRelationship</span><span class="p">(</span><span class="n">Relationship</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;FamilialRelationshipType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">related_to</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PersonId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+</pre></div>
+</div>
+<p>All of these decisions lead to a very fully featured set of generated data access classes, but these decisions do not need to be replicated when writing a generator for your target language.</p>
+</section>
+<section id="case-study-typescriptgen">
+<h3>Case study: typescriptgen<a class="headerlink" href="#case-study-typescriptgen" title="Permalink to this headline"></a></h3>
+<p>In contrast to the python approaches, this targets typescript <em>Interfaces</em> as the construct of choice in the target language</p>
+<p>Note that interfaces are “compiled away” but are used for static analyis and IDE support</p>
+</section>
+<section id="case-study-javagen">
+<h3>Case study: javagen<a class="headerlink" href="#case-study-javagen" title="Permalink to this headline"></a></h3>
+<p>Currently the approaches here are under discussion. There are different choices of target language construct:</p>
+<ul class="simple">
+<li><p>classes</p></li>
+<li><p>interfaces</p></li>
+<li><p>records (introduced in java 16)</p></li>
+</ul>
+<p>The current pattern for generation roughly follows the pydanticgen approach of generating largely standalone classes (soon: records)</p>
+</section>
+<section id="implementing-for-your-target-language">
+<h3>Implementing for your target language<a class="headerlink" href="#implementing-for-your-target-language" title="Permalink to this headline"></a></h3>
+<p>We recommend starting with a generator for simple standalone classes. These do not need to be as fully featured as pythongen. You can treat things like annotating
+model elements with URIs, providing introspection support, and generating JSON as separate concerns – at least at first.</p>
+</section>
+</section>
+<section id="step-2-generate-data-access-classes-for-the-metamodel">
+<h2>Step 2: Generate data access classes for the metamodel<a class="headerlink" href="#step-2-generate-data-access-classes-for-the-metamodel" title="Permalink to this headline"></a></h2>
+<p>This will give you the equivalent of meta.py, types,py in linkml-runtime.</p>
+<p>E.g if your target langauge is C, and you decided on structs as target construct, then you will have structs with names like <code class="docutils literal notranslate"><span class="pre">ClassDefinition</span></code>, <code class="docutils literal notranslate"><span class="pre">SchemaDefinition</span></code></p>
+<p>Depending on the approach you took in Step 1, this may also include an approach to instantiate this target language datamodel from YAML or JSON.</p>
+<p>If you have that then you should have the ability to do the equivalent of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.loaders</span> <span class="kn">import</span> <span class="n">yaml_loader</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
+
+<span class="n">schema</span> <span class="o">=</span> <span class="n">yaml_loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;my-schema.yaml&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">SchemaDefinition</span><span class="p">)</span>
+<span class="c1"># now do things with the schema</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-implement-core-logic-for-derived-schemas">
+<h2>Step 3: Implement core logic for derived schemas<a class="headerlink" href="#step-3-implement-core-logic-for-derived-schemas" title="Permalink to this headline"></a></h2>
+<p>By this stage you can load and dump schema objects in a type-safe way. It may be tempting to just go off and implement things with this.</p>
+<p>However, you will also want to implement the core logic of LinkML as defined in the LinkML specification, under “Derived Schemas”. You can do this simply by implementing the spec in your target language,
+but a more pragmatic approach is to port the python class SchemaView</p>
+<p>SchemaView is a class in linkml-runtime here: https://github.com/linkml/linkml-runtime</p>
+<p>Note that you may only need to implement this for a simple profile of linkml before moving to the next step. As an example, see the SchemaView.js class in linkml-runtime.js</p>
+<p>This may include:</p>
+<ul class="simple">
+<li><p>basic inheritance methods using is_a and mixins</p></li>
+<li><p>induced class slots/attributes</p></li>
+</ul>
+</section>
+<section id="step-4-optional-jettison-the-bootstrap-approach">
+<h2>Step 4 (optional): Jettison the bootstrap approach<a class="headerlink" href="#step-4-optional-jettison-the-bootstrap-approach" title="Permalink to this headline"></a></h2>
+<p>Now you have a core framework - perhaps not yet complete - for your target language, you may wish to jettison the original generator you wrote with Python/Jinja2 and implement this in the target language. This culd have advantages such as leveraging code generation frameworks in that target language (this is the case for Java that has a rich codegen framework)</p>
+<p>At this stage you may wish to revisit some design decisions in the original generator, and make the generated code more fully featured like pythongen.</p>
+</section>
+</section>
+<section id="summary">
+<h1>Summary<a class="headerlink" href="#summary" title="Permalink to this headline"></a></h1>
+<p>This guide is by its nature high level, and various decisions will be determined by specific features of the target language or even by developer preference. As we gain more experience and port core linkml utilities to more target languages we will update this guide.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -113,7 +113,26 @@ data:
           name: humans
         NCBITaxon:9682:
           ...
+```
 
+Note that in the above the `id` field is *not* included in the actual
+organism object, as it is acting as a key for that object, it doesn't 
+need to be included. However, it is still legal to include it,
+like this:
+
+```yaml
+- id: NCBITaxon:40674
+  name: mammals
+  has_subtypes:
+    NCBITaxon:9443:
+      id: NCBITaxon:9443
+      name: primates
+      has_subtypes:
+        NCBITaxon:9606:
+          id: NCBITaxon:9606
+          name: humans
+        NCBITaxon:9682:
+          ...
 ```
 
 ## Inlining a single-valued object

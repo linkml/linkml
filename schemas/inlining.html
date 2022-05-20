@@ -201,6 +201,24 @@
 <span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 </pre></div>
 </div>
+<p>Note that in the above the <code class="docutils literal notranslate"><span class="pre">id</span></code> field is <em>not</em> included in the actual
+organism object, as it is acting as a key for that object, it doesn’t
+need to be included. However, it is still legal to include it,
+like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:40674</span><span class="w"></span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mammals</span><span class="w"></span>
+<span class="w">  </span><span class="nt">has_subtypes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9443</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">primates</span><span class="w"></span>
+<span class="w">      </span><span class="nt">has_subtypes</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span><span class="w"></span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">humans</span><span class="w"></span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9682</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
 <section id="inlining-a-single-valued-object">
 <h2>Inlining a single-valued object<a class="headerlink" href="#inlining-a-single-valued-object" title="Permalink to this headline"></a></h2>

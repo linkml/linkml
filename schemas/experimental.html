@@ -58,6 +58,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#unions-as-ranges">Unions as ranges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#rules">Rules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#defining-slots">Defining slots</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#equals-expression">equals_expression</a></li>
 </ul>
 </li>
 </ul>
@@ -213,6 +214,33 @@ class can be inferred based on ranges of those slots</p>
 </div>
 <p>And using an OWL reasoner will give the intended inferences.</p>
 <p>This feature is experimental, and may be replaced by a more general rules mechanism in future.</p>
+</section>
+<section id="equals-expression">
+<h2>equals_expression<a class="headerlink" href="#equals-expression" title="Permalink to this headline"></a></h2>
+<p><a class="reference external" href="https://w3id.org/linkml/equals_expression">equals_expression</a> can be used
+to specify that the value of a slot should be equal to an evaluable expression,
+where that expression can contain other slot values as terms.</p>
+<p>For example, a schema may allow two separate age slots for specifying
+age in years or in months. <code class="docutils literal notranslate"><span class="pre">equals_expression</span></code> is used to specify one in terns
+of another:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">age_in_years</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
+<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_months}</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">12&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">age_in_months</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">12&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">is_juvenile</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span><span class="w"></span>
+<span class="w">    </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">18&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The expression is specified using a simple subset of Python.
+Slot names may be enclosed in curly braces - if any of the slot
+values is None then the entire expression evaluates to None.</p>
 </section>
 </section>
 
