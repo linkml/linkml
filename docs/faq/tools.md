@@ -31,7 +31,16 @@ See the [installation guide](intro/install).
 Currently the main way to author a schema is to edit schema YAML files
 in a text editor or IDE (Integrated Development Environment).
 
-We recommend using an IDE that has support for YAML format
+We recommend using an IDE that has support for YAML format.
+
+The meta model, here: https://w3id.org/linkml/meta.schema.json can be incorporated into pycharm for model development
+syntax validation.  For more details on pycharm specifically: https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom
+
+See the section below on "Are there tools for editing my data?" for
+suggestions (note that your schema *is* data - schemas instantiate the
+schema class in the metamodel)
+
+One possible alternative to authoring schemas in YAML is to enter the schema in a *spreadsheet*, which is our next question...
 
 ## Is there a tool to manage schemas as spreadsheets?
 
@@ -172,6 +181,7 @@ gen-markdown -d docs personinfo.yaml
 ```
 
 It will place all the markdown documents you need to run a [mkdocs](https://www.mkdocs.org/) site
+
 
 ## Can I customize the Markdown generation for my schema site?
 

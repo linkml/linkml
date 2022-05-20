@@ -127,3 +127,33 @@ And using an OWL reasoner will give the intended inferences.
 
 This feature is experimental, and may be replaced by a more general rules mechanism in future.
 
+## equals_expression
+
+[equals_expression](https://w3id.org/linkml/equals_expression) can be used
+to specify that the value of a slot should be equal to an evaluable expression,
+where that expression can contain other slot values as terms.
+
+For example, a schema may allow two separate age slots for specifying
+age in years or in months. `equals_expression` is used to specify one in terns
+of another:
+
+```yaml
+slots:
+  ...
+  age_in_years:
+    range: decimal
+    minimum_value: 0
+    maximum_value: 999
+    equals_expression: "{age_in_months} / 12"
+  age_in_months:
+    range: decimal
+    equals_expression: "{age_in_years} * 12"
+  is_juvenile:
+    range: boolean
+    equals_expression: "{age_in_years} < 18"
+```
+
+The expression is specified using a simple subset of Python.
+Slot names may be enclosed in curly braces - if any of the slot
+values is None then the entire expression evaluates to None.
+
