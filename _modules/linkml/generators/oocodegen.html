@@ -116,6 +116,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">SAFE_NAME</span>
     <span class="nb">range</span><span class="p">:</span> <span class="n">TYPE_EXPRESSION</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">default_value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ANNOTATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
     <span class="n">source_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span></div>
 
@@ -129,6 +130,7 @@
     <span class="n">abstract</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">mixins</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SAFE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
     <span class="n">fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OOField</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">all_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OOField</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ANNOTATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
     <span class="n">package</span><span class="p">:</span> <span class="n">PACKAGE</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">source_class</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">=</span> <span class="kc">None</span></div>
@@ -202,12 +204,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">parent_slots</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">parent_slots</span><span class="p">:</span>
-                    <span class="c1"># TODO: overrides</span>
-                    <span class="k">continue</span>
                 <span class="n">safe_sn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot_name</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span>
                 <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span>
                 <span class="nb">range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
+                <span class="n">default_value</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>
 
                 <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># TODO: schemaview should infer this</span>
@@ -218,6 +218,7 @@
 
                 <span class="k">if</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
                     <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_name</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
+                    <span class="n">default_value</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>
                 <span class="k">elif</span> <span class="nb">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">():</span>
                     <span class="n">t</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
                     <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -228,10 +229,22 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown range </span><span class="si">{</span><span class="nb">range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
+                <span class="c1"># Set default values for</span>
+                <span class="k">if</span> <span class="nb">range</span> <span class="o">==</span> <span class="s1">&#39;boolean&#39;</span><span class="p">:</span>
+                    <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;false&#39;</span>
+                <span class="k">elif</span> <span class="nb">range</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">:</span>
+                    <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+                <span class="k">elif</span> <span class="nb">range</span> <span class="o">==</span> <span class="s1">&#39;String&#39;</span><span class="p">:</span>
+                    <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;&quot;&quot;&#39;</span>
+
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
                     <span class="nb">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_multivalued</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span>
-                <span class="n">oofield</span> <span class="o">=</span> <span class="n">OOField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">safe_sn</span><span class="p">,</span> <span class="n">source_slot</span><span class="o">=</span><span class="n">slot</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">)</span>
-                <span class="n">ooclass</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
+                    <span class="n">default_value</span> <span class="o">=</span> <span class="s2">&quot;List.of()&quot;</span>
+                <span class="n">oofield</span> <span class="o">=</span> <span class="n">OOField</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">safe_sn</span><span class="p">,</span> <span class="n">source_slot</span><span class="o">=</span><span class="n">slot</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">default_value</span><span class="o">=</span><span class="n">default_value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent_slots</span><span class="p">:</span>
+                    <span class="n">ooclass</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
+                <span class="n">ooclass</span><span class="o">.</span><span class="n">all_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">docs</span></div></div>
 
 
