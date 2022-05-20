@@ -34,7 +34,7 @@ classes:
       s3:
         equals_number: 32
       s5: 
-        if_absent: foo
+        ifabsent: foo
   D:
     slots:
       - s1
@@ -53,10 +53,10 @@ slots:
     equals_number: 7
     range: integer
   s5: 
-    description: test override for if_absent
+    description: test override for ifabsent
     range: string
   s6:
-    if_absent: foo
+    ifabsent: foo
     range: string
 """
 
