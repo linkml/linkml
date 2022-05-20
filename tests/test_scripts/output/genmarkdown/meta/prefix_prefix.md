@@ -20,3 +20,10 @@ URI: [linkml:prefix_prefix](https://w3id.org/linkml/prefix_prefix)
 ## Used by
 
  * [Prefix](Prefix.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

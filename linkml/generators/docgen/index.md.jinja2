@@ -1,0 +1,37 @@
+# {{ schema.name }}
+
+{{ schema.description }}
+
+URI: {{ schema.id }}
+
+## Classes
+
+| Class | Description |
+{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
+| --- | --- |
+| {{gen.link(c)}} | {{c.description}} |
+{% endfor %}
+
+## Slots
+
+| Slot | Description |
+{% for s in schemaview.all_slots().values()|sort(attribute='name') -%}
+| --- | --- |
+| {{gen.link(s)}} | {{s.description}} |
+{% endfor %}
+
+## Enumerations
+
+| Enumeration | Description |
+| --- | --- |
+{% for e in schemaview.all_enums().values()|sort(attribute='name') -%}
+| {{gen.link(e)}} | {{e.description}} |
+{% endfor %}
+
+## Subsets
+
+| Subset | Description |
+| --- | --- |
+{% for ss in schemaview.all_subsets().values()|sort(attribute='name') -%}
+| {{gen.link(ss)}} | {{ss.description}} |
+{% endfor %}

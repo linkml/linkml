@@ -1,4 +1,4 @@
-id: phenotypic_quality
+# metamodel_version: 1.7.0# version: 1.8.2id: phenotypic_quality
 schema_generating: true
 description: A property of a phenotype
 display_name: phenotypic quality

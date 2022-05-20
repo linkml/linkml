@@ -20,3 +20,11 @@ URI: [linkml:types](https://w3id.org/linkml/types)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

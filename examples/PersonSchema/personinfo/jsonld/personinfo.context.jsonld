@@ -1,10 +1,14 @@
 {
-   "_comments": "Auto generated from personinfo.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-09-13 12:01\n    Schema: personinfo\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: Information about people, based on [schema.org](http://schema.org)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from personinfo.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-02-11T17:52:21\n    Schema: personinfo\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: Information about people, based on [schema.org](http://schema.org)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
+      "CODE": "http://example.org/code/",
+      "GEO": "http://example.org/geoloc/",
       "GSSO": {
          "@id": "http://purl.obolibrary.org/obo/GSSO_",
          "@prefix": true
       },
+      "P": "http://example.org/P/",
+      "ROR": "http://example.org/ror/",
       "famrel": "https://example.org/FamilialRelations#",
       "linkml": "https://w3id.org/linkml/",
       "personinfo": "https://w3id.org/linkml/examples/personinfo/",

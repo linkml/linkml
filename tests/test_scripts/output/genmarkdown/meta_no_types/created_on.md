@@ -28,4 +28,5 @@ URI: [linkml:created_on](https://w3id.org/linkml/created_on)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | pav:createdOn |
+| **In Subsets:** | | basic |
 

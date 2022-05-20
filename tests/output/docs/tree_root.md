@@ -20,3 +20,10 @@ URI: [linkml:tree_root](https://w3id.org/linkml/tree_root)
 ## Used by
 
  * [ClassDefinition](ClassDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

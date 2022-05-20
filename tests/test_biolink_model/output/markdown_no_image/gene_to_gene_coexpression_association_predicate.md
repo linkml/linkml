@@ -2,7 +2,7 @@
 # Slot: predicate
 
 
-
+A high-level grouping for the relationship type. AKA minimal predicate. This is analogous to category for nodes.
 
 URI: [biolink:gene_to_gene_coexpression_association_predicate](https://w3id.org/biolink/vocab/gene_to_gene_coexpression_association_predicate)
 
@@ -21,3 +21,14 @@ URI: [biolink:gene_to_gene_coexpression_association_predicate](https://w3id.org/
 ## Used by
 
  * [GeneToGeneCoexpressionAssociation](GeneToGeneCoexpressionAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

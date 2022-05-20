@@ -28,4 +28,5 @@ URI: [linkml:modified_by](https://w3id.org/linkml/modified_by)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | oslc:modifiedBy |
+| **In Subsets:** | | basic |
 

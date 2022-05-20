@@ -20,3 +20,10 @@ slot_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 ## Used by
 
  * slot_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Mappings:** | | skos:prefLabel |
+

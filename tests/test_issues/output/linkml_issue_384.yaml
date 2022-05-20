@@ -1,0 +1,391 @@
+name: personinfo
+id: https://w3id.org/linkml/examples/personinfo
+imports:
+- linkml:types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  sdo:
+    prefix_prefix: sdo
+    prefix_reference: http://schema.org/
+default_prefix: https://w3id.org/linkml/examples/personinfo/
+default_range: string
+types:
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDTime
+    uri: xsd:dateTime
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    description: a complete URI
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    comments:
+    - Used for inheritence and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+slots:
+  id:
+    name: id
+    definition_uri: https://w3id.org/linkml/examples/personinfo/id
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/id
+    owner: Thing
+    domain_of:
+    - Thing
+    range: string
+  full_name:
+    name: full_name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    title: full name
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    owner: Thing
+    domain_of:
+    - Thing
+    range: string
+  parent:
+    name: parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/parent
+    multivalued: true
+    range: Thing
+    inlined: true
+  person__aliases:
+    name: person__aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/aliases
+    multivalued: true
+    alias: aliases
+    owner: Person
+    domain_of:
+    - Person
+    range: string
+  person__phone:
+    name: person__phone
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/phone
+    alias: phone
+    owner: Person
+    domain_of:
+    - Person
+    range: string
+  person__age:
+    name: person__age
+    description: age in years
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/age
+    alias: age
+    owner: Person
+    domain_of:
+    - Person
+    range: integer
+  geoObject__aliases:
+    name: geoObject__aliases
+    comments:
+    - we introduce a deliberate conflict (single vs multivalied) with the aliases
+      attribute that is local to person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/aliases
+    multivalued: false
+    alias: aliases
+    owner: GeoObject
+    domain_of:
+    - GeoObject
+    range: string
+  geoObject__age:
+    name: geoObject__age
+    comments:
+    - we introduce a deliberate conflict (type vs class range) with the age attribute
+      that is local to person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/age
+    alias: age
+    owner: GeoObject
+    domain_of:
+    - GeoObject
+    range: GeoAge
+    inlined: true
+  geoAge__unit:
+    name: geoAge__unit
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/unit
+    alias: unit
+    owner: GeoAge
+    domain_of:
+    - GeoAge
+    range: string
+  geoAge__value:
+    name: geoAge__value
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: https://w3id.org/linkml/examples/personinfo/value
+    alias: value
+    owner: GeoAge
+    domain_of:
+    - GeoAge
+    range: float
+  Person_parent:
+    name: Person_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: parent
+    domain: Person
+    slot_uri: https://w3id.org/linkml/examples/personinfo/parent
+    multivalued: true
+    alias: parent
+    owner: Person
+    domain_of:
+    - Person
+    is_usage_slot: true
+    usage_slot_name: parent
+    range: Person
+    inlined: true
+  Organization_full_name:
+    name: Organization_full_name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    description: name of the organization, e.g. ACME inc
+    title: full name
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: full_name
+    domain: Organization
+    slot_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    alias: full_name
+    owner: Organization
+    domain_of:
+    - Organization
+    is_usage_slot: true
+    usage_slot_name: full_name
+    range: string
+  Organization_parent:
+    name: Organization_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: parent
+    domain: Organization
+    slot_uri: https://w3id.org/linkml/examples/personinfo/parent
+    multivalued: true
+    alias: parent
+    owner: Organization
+    domain_of:
+    - Organization
+    is_usage_slot: true
+    usage_slot_name: parent
+    range: Organization
+    inlined: true
+classes:
+  Thing:
+    name: Thing
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Thing
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - id
+    - full_name
+    class_uri: https://w3id.org/linkml/examples/personinfo/Thing
+  Person:
+    name: Person
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    mappings:
+    - sdo:Person
+    is_a: Thing
+    slots:
+    - id
+    - full_name
+    - person__aliases
+    - person__phone
+    - person__age
+    - Person_parent
+    slot_usage:
+      parent:
+        name: parent
+        range: Person
+    attributes:
+      aliases:
+        name: aliases
+        multivalued: true
+      phone:
+        name: phone
+      age:
+        name: age
+        description: age in years
+        range: integer
+    class_uri: sdo:Person
+  Organization:
+    name: Organization
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Organization
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: Thing
+    slots:
+    - id
+    - Organization_full_name
+    - Organization_parent
+    slot_usage:
+      full_name:
+        name: full_name
+        description: name of the organization, e.g. ACME inc
+      parent:
+        name: parent
+        range: Organization
+    class_uri: https://w3id.org/linkml/examples/personinfo/Organization
+  GeoObject:
+    name: GeoObject
+    definition_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: Thing
+    slots:
+    - id
+    - full_name
+    - geoObject__aliases
+    - geoObject__age
+    attributes:
+      aliases:
+        name: aliases
+        comments:
+        - we introduce a deliberate conflict (single vs multivalied) with the aliases
+          attribute that is local to person
+        multivalued: false
+      age:
+        name: age
+        comments:
+        - we introduce a deliberate conflict (type vs class range) with the age attribute
+          that is local to person
+        range: GeoAge
+    class_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
+  GeoAge:
+    name: GeoAge
+    definition_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - geoAge__unit
+    - geoAge__value
+    attributes:
+      unit:
+        name: unit
+      value:
+        name: value
+        range: float
+    class_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
+metamodel_version: 1.7.0
+source_file: linkml_issue_384.yaml
+source_file_date: '2022-05-10T00:26:24'
+source_file_size: 1220
+generation_date: '2022-05-10T00:33:20'

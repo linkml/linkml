@@ -29,6 +29,7 @@ URI: [biolink:GeneProductIsoformMixin](https://w3id.org/biolink/vocab/GeneProduc
  * [macromolecular machine mixin➞name](macromolecular_machine_mixin_name.md)  <sub>0..1</sub>
      * Description: genes are typically designated by a short symbol and a full name. We map the symbol to the default display name and use an additional slot for full name
      * Range: [SymbolType](types/SymbolType.md)
+     * in subsets: (translator_minimal,samples)
  * [synonym](synonym.md)  <sub>0..\*</sub>
      * Description: Alternate human-readable names for a thing
      * Range: [LabelType](types/LabelType.md)

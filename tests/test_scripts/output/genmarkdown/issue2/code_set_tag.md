@@ -26,4 +26,5 @@ enum_definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | enum_definition cannot have both a code_set_tag and a code_set_version |
+| **In Subsets:** | | basic |
 

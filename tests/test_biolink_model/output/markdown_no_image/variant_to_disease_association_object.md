@@ -27,5 +27,10 @@ URI: [biolink:variant_to_disease_association_object](https://w3id.org/biolink/vo
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
 | **Examples:** | | Example(value='MONDO:0016419', description='hereditary breast cancer') |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
 

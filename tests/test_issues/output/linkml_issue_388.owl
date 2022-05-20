@@ -1,0 +1,67 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix other: <https://example.org/other/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix this: <https://example.org/this/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/linkml/examples/personinfo> a owl:Ontology ;
+    rdfs:label "personinfo" ;
+    IAO:0000700 this:C1,
+        this:C2,
+        this:C3 ;
+    linkml:generation_date "2022-05-10T00:33:22" ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:source_file "linkml_issue_388.yaml" ;
+    linkml:source_file_date "2022-05-10T00:26:24" ;
+    linkml:source_file_size 648 .
+
+this:C2 a owl:Class ;
+    rdfs:label "C2" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass this:MyInt ;
+            owl:onProperty this:a ] .
+
+this:C3 a owl:Class ;
+    rdfs:label "C3" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass this:C1 ;
+            owl:onProperty other:a ] .
+
+this:MyInt a owl:Class ;
+    rdfs:label "my_int" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange <http://example.org/UNKNOWN/xsd/integer> ;
+            owl:onProperty linkml:topValue ;
+            owl:qualifiedCardinality 1 ] .
+
+this:MyStr a owl:Class ;
+    rdfs:label "my_str" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange <http://example.org/UNKNOWN/xsd/string> ;
+            owl:onProperty linkml:topValue ;
+            owl:qualifiedCardinality 1 ] .
+
+other:a a owl:ObjectProperty ;
+    rdfs:label "a" ;
+    rdfs:range this:C1 ;
+    skos:definition "other-a in the context of C3" ;
+    skos:exactMatch other:a .
+
+this:a a owl:ObjectProperty .
+
+linkml:topValue a owl:DatatypeProperty ;
+    rdfs:label "value" .
+
+this:C1 a owl:Class ;
+    rdfs:label "C1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass this:MyStr ;
+            owl:onProperty this:a ] .
+
+

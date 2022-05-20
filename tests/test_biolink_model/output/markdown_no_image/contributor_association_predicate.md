@@ -21,3 +21,14 @@ URI: [biolink:contributor_association_predicate](https://w3id.org/biolink/vocab/
 ## Used by
 
  * [ContributorAssociation](ContributorAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

@@ -1,0 +1,56 @@
+@prefix core: <https://w3id.org/linkml/tests/core/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+prov:Agent a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "a provence-generating agent" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path core:id ],
+        [ sh:class prov:Agent ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 1 ;
+            sh:path prov:actedOnBehalfOf ],
+        [ sh:class core:Activity ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 2 ;
+            sh:path prov:wasInformedBy ] ;
+    sh:targetClass prov:Agent .
+
+core:Activity a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "a provence-generating activity" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:class prov:Agent ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 4 ;
+            sh:path prov:wasAssociatedWith ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path core:id ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 5 ;
+            sh:path prov:used ],
+        [ sh:class core:Activity ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 3 ;
+            sh:path prov:wasInformedBy ],
+        [ sh:maxCount 1 ;
+            sh:order 6 ;
+            sh:path core:description ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path prov:endedAtTime ] ;
+    sh:targetClass core:Activity .
+

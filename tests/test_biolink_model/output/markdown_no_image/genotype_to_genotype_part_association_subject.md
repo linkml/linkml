@@ -21,3 +21,14 @@ URI: [biolink:genotype_to_genotype_part_association_subject](https://w3id.org/bi
 ## Used by
 
  * [GenotypeToGenotypePartAssociation](GenotypeToGenotypePartAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

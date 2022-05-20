@@ -26,4 +26,5 @@ URI: [linkml:metamodel_version](https://w3id.org/linkml/metamodel_version)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | owl |
+|  | | basic |
 

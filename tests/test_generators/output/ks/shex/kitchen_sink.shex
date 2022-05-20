@@ -1,8 +1,10 @@
 BASE <https://w3id.org/linkml/tests/kitchen_sink/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX linkml: <https://w3id.org/linkml/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX schema1: <http://schema.org/>
 PREFIX core: <https://w3id.org/linkml/tests/core/>
 
 
@@ -34,6 +36,10 @@ linkml:Objectidentifier IRI
 
 linkml:Nodeidentifier NONLITERAL
 
+core:PhoneNumberType xsd:string
+
+core:AgeInYearsType xsd:integer
+
 core:Activity CLOSED {
     (  $core:Activity_tes (  prov:startedAtTime @linkml:Date ? ;
           prov:endedAtTime @linkml:Date ? ;
@@ -62,6 +68,12 @@ core:Agent CLOSED {
     )
 }
 
+<AnyObject> CLOSED {
+    (  $<AnyObject_tes> rdf:type . * ;
+       rdf:type [ linkml:Any ] ?
+    )
+}
+
 <BirthEvent> CLOSED {
     (  $<BirthEvent_tes> (  &<Event_tes> ;
           rdf:type [ <Event> ] ? ;
@@ -71,10 +83,24 @@ core:Agent CLOSED {
     )
 }
 
+<ClassWithSpaces>  (
+    CLOSED {
+       (  $<ClassWithSpaces_tes> <slot_with_space_1> @linkml:String ? ;
+          rdf:type [ <ClassWithSpaces> ] ?
+       )
+    } OR @<SubclassTest>
+)
+
+<CodeSystem> CLOSED {
+    (  $<CodeSystem_tes> core:name @linkml:String ? ;
+       rdf:type [ <CodeSystem> ]
+    )
+}
+
 <Company> CLOSED {
     (  $<Company_tes> (  &<Organization_tes> ;
           rdf:type [ <Organization> ] ? ;
-          <ceo> @<Person> ?
+          schema1:ceo @<Person> ?
        ) ;
        rdf:type [ <Company> ]
     )
@@ -82,7 +108,9 @@ core:Agent CLOSED {
 
 <Concept>  (
     CLOSED {
-       (  $<Concept_tes> core:name @linkml:String ? ;
+       (  $<Concept_tes> (  core:name @linkml:String ? ;
+             <in_code_system> @<CodeSystem> ?
+          ) ;
           rdf:type [ <Concept> ]
        )
     } OR @<DiagnosisConcept> OR @<ProcedureConcept>
@@ -91,7 +119,8 @@ core:Agent CLOSED {
 <Dataset> CLOSED {
     (  $<Dataset_tes> (  <persons> @<Person> * ;
           <companies> @<Company> * ;
-          <activities> @core:Activity *
+          <activities> @core:Activity * ;
+          <code_systems> @<CodeSystem> *
        ) ;
        rdf:type [ <Dataset> ] ?
     )
@@ -108,7 +137,8 @@ core:Agent CLOSED {
 <EmploymentEvent> CLOSED {
     (  $<EmploymentEvent_tes> (  &<Event_tes> ;
           rdf:type [ <Event> ] ? ;
-          <employed_at> @<Company> ?
+          <employed_at> @<Company> ? ;
+          <type> @<EmploymentEventType> ?
        ) ;
        rdf:type [ <EmploymentEvent> ] ?
     )
@@ -118,12 +148,19 @@ core:Agent CLOSED {
     CLOSED {
        (  $<Event_tes> (  prov:startedAtTime @linkml:Date ? ;
              prov:endedAtTime @linkml:Date ? ;
-             <is_current> @linkml:Boolean ?
+             <is_current> @linkml:Boolean ? ;
+             <metadata> @<AnyObject> ?
           ) ;
           rdf:type [ <Event> ] ?
        )
     } OR @<BirthEvent> OR @<EmploymentEvent> OR @<MarriageEvent> OR @<MedicalEvent>
 )
+
+<FakeClass> CLOSED {
+    (  $<FakeClass_tes> <test_attribute> @linkml:String ? ;
+       rdf:type [ <FakeClass> ] ?
+    )
+}
 
 <FamilialRelationship> CLOSED {
     (  $<FamilialRelationship_tes> (  &<Relationship_tes> ;
@@ -135,8 +172,14 @@ core:Agent CLOSED {
     )
 }
 
+<Friend> {
+    (  $<Friend_tes> core:name @linkml:String ? ;
+       rdf:type [ <Friend> ] ?
+    )
+}
+
 <HasAliases> {
-    (  $<HasAliases_tes> <aliases> @linkml:String * ;
+    (  $<HasAliases_tes> skos:altLabel @linkml:String * ;
        rdf:type [ <HasAliases> ] ?
     )
 }
@@ -169,7 +212,7 @@ core:Agent CLOSED {
        (  $<Organization_tes> (  &<HasAliases_tes> ;
              rdf:type [ <HasAliases> ] ? ;
              core:name @linkml:String ? ;
-             <aliases> @linkml:String *
+             skos:altLabel @linkml:String *
           ) ;
           rdf:type [ <Organization> ]
        )
@@ -179,14 +222,14 @@ core:Agent CLOSED {
 <Person> CLOSED {
     (  $<Person_tes> (  &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
-          <name> @linkml:String ? ;
+          core:name @linkml:String ? ;
           <has_employment_history> @<EmploymentEvent> * ;
           <has_familial_relationships> @<FamilialRelationship> * ;
           <has_medical_history> @<MedicalEvent> * ;
           <age_in_years> @linkml:Integer ? ;
           <addresses> @<Address> * ;
           <has_birth_event> @<BirthEvent> ? ;
-          <aliases> @linkml:String *
+          skos:altLabel @linkml:String *
        ) ;
        rdf:type [ <Person> ]
     )
@@ -196,7 +239,7 @@ core:Agent CLOSED {
     (  $<Place_tes> (  &<HasAliases_tes> ;
           rdf:type [ <HasAliases> ] ? ;
           core:name @linkml:String ? ;
-          <aliases> @linkml:String *
+          skos:altLabel @linkml:String *
        ) ;
        rdf:type [ <Place> ]
     )
@@ -221,6 +264,15 @@ core:Agent CLOSED {
        )
     } OR @<FamilialRelationship>
 )
+
+<SubclassTest> CLOSED {
+    (  $<SubclassTest_tes> (  &<ClassWithSpaces_tes> ;
+          rdf:type [ <ClassWithSpaces> ] ? ;
+          <slot_with_space_2> @<ClassWithSpaces> ?
+       ) ;
+       rdf:type [ <SubclassTest> ] ?
+    )
+}
 
 <WithLocation> {
     (  $<WithLocation_tes> <in_location> @<Place> ? ;

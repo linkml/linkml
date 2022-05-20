@@ -1,4 +1,6 @@
 import abc
+import re
+import unicodedata
 from dataclasses import dataclass, field
 from typing import Optional, List
 
@@ -32,6 +34,7 @@ class OOField:
     """
     name: SAFE_NAME
     range: TYPE_EXPRESSION = None
+    default_value: str = None
     annotations: List[ANNOTATION] = field(default_factory=lambda: [])
     source_slot: SlotDefinition = field(default_factory=lambda: [])
 
@@ -42,11 +45,14 @@ class OOClass:
     """
     name: SAFE_NAME
     is_a: Optional[SAFE_NAME] = None
+    abstract: Optional[bool] = None
     mixins: List[SAFE_NAME] = field(default_factory=lambda: [])
     fields: List[OOField] = field(default_factory=lambda: [])
+    all_fields: List[OOField] = field(default_factory=lambda: [])
     annotations: List[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
+
 
 class OOCodeGenerator(Generator):
     package: PACKAGE = "example"
@@ -72,6 +78,26 @@ class OOCodeGenerator(Generator):
     def make_multivalued(self, range: str) -> str:
         return f'List<{range}>'
 
+    def replace_invalid_identifier_character(self, char: str) -> str:
+        if char.isalpha() or char.isnumeric() or char == '_':
+            return char
+        else:
+            return underscore(unicodedata.name(char))
+
+    def generate_enum_label(self, value: str) -> str:
+        label = underscore(value)
+        if label.isidentifier():
+            return label
+        else:
+            # add an underscore if the value starts with a digit
+            label = re.sub('(?=^\d)','number_', label)
+
+            safe_label = ""
+            for character in label:
+                safe_label += self.replace_invalid_identifier_character(character)
+
+            return safe_label
+
     def create_documents(self) -> List[OODocument]:
         """
         Currently hardcoded for java-style
@@ -80,7 +106,7 @@ class OOCodeGenerator(Generator):
         sv: SchemaView
         sv = self.schemaview
         docs = []
-        for cn in sv.all_class(imports=False):
+        for cn in sv.all_classes(imports=False):
             c = sv.get_class(cn)
             safe_cn = camelcase(cn)
             oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
@@ -88,18 +114,18 @@ class OOCodeGenerator(Generator):
             ooclass = OOClass(name=safe_cn, package=self.package, fields=[], source_class=c)
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]
+            if c.abstract:
+                ooclass.abstract = c.abstract
             if c.is_a:
                 ooclass.is_a = self.get_class_name(c.is_a)
                 parent_slots = sv.class_slots(c.is_a)
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                if sn in parent_slots:
-                    # TODO: overrides
-                    continue
                 safe_sn = self.get_slot_name(sn)
                 slot = sv.induced_slot(sn, cn)
                 range = slot.range
+                default_value = "null"
 
                 if range is None:
                     # TODO: schemaview should infer this
@@ -108,22 +134,35 @@ class OOCodeGenerator(Generator):
                 if range is None:
                     range = 'string'
 
-                if range in sv.all_class():
+                if range in sv.all_classes():
                     range = self.get_class_name(range)
-                elif range in sv.all_type():
+                    default_value = "null"
+                elif range in sv.all_types():
                     t = sv.get_type(range)
                     range = self.map_type(t)
                     if range is None: # If mapping fails,
                         range = self.map_type(sv.all_type().get('string'))
-                elif range in sv.all_enum():
+                elif range in sv.all_enums():
                     range = self.map_type(sv.all_type().get('string'))
                 else:
                     raise Exception(f'Unknown range {range}')
 
+                # Set default values for
+                if range == 'boolean':
+                    default_value = 'false'
+                elif range == 'integer':
+                    default_value = '0'
+                elif range == 'String':
+                    default_value = '""'
+
                 if slot.multivalued:
                     range = self.make_multivalued(range)
-                oofield = OOField(name=safe_sn, source_slot=slot, range=range)
-                ooclass.fields.append(oofield)
+                    default_value = "List.of()"
+                oofield = OOField(name=safe_sn, source_slot=slot, range=range, default_value=default_value)
+                if sn not in parent_slots:
+                    ooclass.fields.append(oofield)
+                ooclass.all_fields.append(oofield)
+
         return docs
 
 

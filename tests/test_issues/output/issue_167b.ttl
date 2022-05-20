@@ -18,7 +18,7 @@ ex:annotations_test a linkml:SchemaDefinition ;
     linkml:default_prefix "ex" ;
     linkml:default_range ex:string ;
     linkml:emit_prefixes "linkml" ;
-    linkml:generation_date "2021-06-07 18:06"^^xsd:dateTime ;
+    linkml:generation_date "2022-01-05T01:11:09"^^xsd:dateTime ;
     linkml:id <http://example.org/tests/issue167b> ;
     linkml:imports linkml:annotations,
         linkml:extensions,
@@ -33,7 +33,7 @@ ex:annotations_test a linkml:SchemaDefinition ;
         ex:extension_value,
         ex:extensions ;
     linkml:source_file "issue_167b.yaml" ;
-    linkml:source_file_date "Mon Jun  7 18:02:49 2021"^^xsd:dateTime ;
+    linkml:source_file_date "2022-01-05T01:06:03"^^xsd:dateTime ;
     linkml:source_file_size 818 ;
     linkml:types ex:boolean,
         ex:date,
@@ -210,11 +210,12 @@ ex:annotations a linkml:SlotDefinition ;
 ex:extension_tag a linkml:SlotDefinition ;
     skos:definition "a tag associated with an extension" ;
     skos:inScheme linkml:extensions ;
-    linkml:alias "tag" ;
+    skos:prefLabel "tag" ;
     linkml:definition_uri linkml:extension_tag ;
     linkml:domain ex:Extension ;
     linkml:domain_of ex:Extension ;
     linkml:imported_from "linkml:extensions" ;
+    linkml:key true ;
     linkml:owner ex:Extension ;
     linkml:range ex:uriorcurie ;
     linkml:required true ;
@@ -223,7 +224,7 @@ ex:extension_tag a linkml:SlotDefinition ;
 ex:extension_value a linkml:SlotDefinition ;
     skos:definition "the actual annotation" ;
     skos:inScheme linkml:extensions ;
-    linkml:alias "value" ;
+    skos:prefLabel "value" ;
     linkml:definition_uri linkml:extension_value ;
     linkml:domain ex:Extension ;
     linkml:domain_of ex:Extension ;

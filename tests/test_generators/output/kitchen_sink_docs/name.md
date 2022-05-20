@@ -20,9 +20,11 @@ None &#8594;  <sub>0..1</sub> [String](String.md)
 
 ## Used by
 
+ * [CodeSystem](CodeSystem.md)
  * [Company](Company.md)
  * [Concept](Concept.md)
  * [DiagnosisConcept](DiagnosisConcept.md)
+ * [Friend](Friend.md)
  * [Organization](Organization.md)
  * [Place](Place.md)
  * [ProcedureConcept](ProcedureConcept.md)

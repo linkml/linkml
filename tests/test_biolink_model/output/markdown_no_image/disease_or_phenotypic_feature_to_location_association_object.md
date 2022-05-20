@@ -26,5 +26,10 @@ URI: [biolink:disease_or_phenotypic_feature_to_location_association_object](http
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
 | **Examples:** | | Example(value='UBERON:0002048', description='lung') |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
 

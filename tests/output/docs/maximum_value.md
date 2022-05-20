@@ -19,4 +19,17 @@ URI: [linkml:maximum_value](https://w3id.org/linkml/maximum_value)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [AnonymousTypeExpression](AnonymousTypeExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
+ * [TypeDefinition](TypeDefinition.md)
+ * [TypeExpression](TypeExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | high value |
+| **In Subsets:** | | basic |
+

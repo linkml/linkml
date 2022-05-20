@@ -43,7 +43,7 @@ class RDFGenerator(Generator):
         graph = Graph()
         graph.parse(data=jsonld_str, format="json-ld", base=str(self.namespaces._base), prefix=True)
         if output:
-            with open(output, 'w') as outf:
+            with open(output, 'w', encoding='UTF-8') as outf:
                 outf.write(self._data(graph))
         else:
             print(self._data(graph))
@@ -52,7 +52,7 @@ class RDFGenerator(Generator):
 @shared_arguments(RDFGenerator)
 @click.command()
 @click.option("-o", "--output", help="Output file name")
-@click.option("--context", default=[METAMODEL_CONTEXT_URI], multiple=True,
+@click.option("--context", default=[METAMODEL_CONTEXT_URI], show_default=True, multiple=True,
               help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI})")
 def cli(yamlfile, **kwargs):
     """ Generate an RDF representation of a LinkML model """

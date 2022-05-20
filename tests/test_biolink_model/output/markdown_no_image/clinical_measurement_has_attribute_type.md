@@ -2,7 +2,7 @@
 # Slot: has attribute type
 
 
-
+connects an attribute to a class that describes it
 
 URI: [biolink:clinical_measurement_has_attribute_type](https://w3id.org/biolink/vocab/clinical_measurement_has_attribute_type)
 
@@ -21,3 +21,12 @@ URI: [biolink:clinical_measurement_has_attribute_type](https://w3id.org/biolink/
 ## Used by
 
  * [ClinicalMeasurement](ClinicalMeasurement.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | samples |
+| **Narrow Mappings:** | | LOINC:has_modality_type |
+|  | | LOINC:has_view_type |
+

@@ -1,0 +1,51 @@
+#license: https://creativecommons.org/publicdomain/zero/1.0/
+#mapping_set_id: https://w3id.org/linkml/tests/kitchen_sink
+#mapping_tool: https://w3id.org/linkml/
+#creator_id: linkml_user
+#mapping_date: 2022-05-10
+#curie_map: 
+# pav: http://purl.org/pav/
+# dce: http://purl.org/dc/elements/1.1/
+# lego: http://geneontology.org/lego/
+# linkml: https://w3id.org/linkml/
+# biolink: https://w3id.org/biolink/
+# ks: https://w3id.org/linkml/tests/kitchen_sink/
+# RO: http://purl.obolibrary.org/obo/RO_
+# BFO: http://purl.obolibrary.org/obo/BFO_
+# CODE: http://example.org/code/
+# ROR: http://example.org/ror/
+# A: http://example.org/activities/
+# P: http://example.org/person/
+# skos: http://www.w3.org/2004/02/skos/core#
+# bizcodes: https://example.org/bizcodes/
+# schema: http://schema.org/
+# wikidata: http://www.wikidata.org/entity/
+subject_id	subject_label	predicate_id	predicate_modifier	object_id	object_label	match_type	subject_source	object_source	mapping_tool	confidence	subject_match_field	object_match_field	subject_category	object_category	match_string	comment
+ks:EmploymentEventType#HIRE	HIRE	skos:exactMatch		bizcodes:001		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink						EmploymentEventType			
+ks:EmploymentEventType#FIRE	FIRE	skos:exactMatch		bizcodes:002		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink						EmploymentEventType			
+ks:EmploymentEventType#PROMOTION	PROMOTION	skos:exactMatch		bizcodes:003		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink						EmploymentEventType			
+ks:EmploymentEventType#TRANSFER	TRANSFER	skos:exactMatch		bizcodes:004		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink						EmploymentEventType			
+ks:addresses	addresses	skos:exactMatch		wd:Q319608		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:age_in_years	age in years	skos:exactMatch		wd:Q185836		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:diagnosis	diagnosis	skos:exactMatch		wd:Q16644043		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:employed_at	employed at	skos:exactMatch		wd:Q2266417		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_employment_history	has employment history	skos:broadMatch		wd:Q656365		skos:broadMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_employment_history	has employment history	skos:broadMatch		wd:Q309		skos:broadMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_familial_relationships	has familial relationships	skos:broadMatch		wd:Q24026687		skos:broadMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_marriage_history	has marriage history	skos:broadMatch		wd:Q8445		skos:broadMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_marriage_history	has marriage history	skos:broadMatch		wd:Q309		skos:broadMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_medical_history	has medical history	skos:broadMatch		wd:Q309		skos:broadMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:has_medical_history	has medical history	skos:exactMatch		wd:Q15762873		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:married_to	married to	skos:exactMatch		wd:Q105123727		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:procedure	procedure	skos:exactMatch		wd:Q41689629		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Address	Address	skos:exactMatch		wd:Q319608		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Address	Address	skos:exactMatch		schema:PostalAddress		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Company	Company	skos:exactMatch		wd:Q783794		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Concept	Concept	skos:exactMatch		wd:Q151885		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Event	Event	skos:exactMatch		wd:Q1656682		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Event	Event	skos:exactMatch		schema:Event		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Organization	Organization	skos:exactMatch		wd:Q43229		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Organization	Organization	skos:exactMatch		schema:Organization		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+schema:Person	Person	skos:exactMatch		wd:Q215627		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Place	Place	skos:exactMatch		wd:Q98929991		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									
+ks:Relationship	Relationship	skos:exactMatch		wd:Q7310741		skos:exactMatch	https://w3id.org/linkml/tests/kitchen_sink									

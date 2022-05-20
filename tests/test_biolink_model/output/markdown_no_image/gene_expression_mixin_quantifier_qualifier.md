@@ -23,3 +23,14 @@ URI: [biolink:gene_expression_mixin_quantifier_qualifier](https://w3id.org/bioli
  * [GeneExpressionMixin](GeneExpressionMixin.md)
  * [GeneToGeneCoexpressionAssociation](GeneToGeneCoexpressionAssociation.md)
  * [VariantToGeneExpressionAssociation](VariantToGeneExpressionAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Narrow Mappings:** | | LOINC:analyzes |
+|  | | LOINC:measured_by |
+|  | | LOINC:property_of |
+|  | | SEMMEDDB:measures |
+|  | | UMLS:measures |
+

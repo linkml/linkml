@@ -1,5 +1,5 @@
 # Auto generated from core.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-30 01:42
+# Generation date: 2022-05-10T00:32:01
 # Schema: core
 #
 # id: https://w3id.org/linkml/tests/core
@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.types import Date, String
 from linkml_runtime.utils.metamodelcore import XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -37,10 +38,24 @@ DCE = CurieNamespace('dce', 'http://purl.org/dc/elements/1.1/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = CORE
 
 
 # Types
+class PhoneNumberType(str):
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "phone number type"
+    type_model_uri = CORE.PhoneNumberType
+
+
+class AgeInYearsType(int):
+    type_class_uri = XSD.integer
+    type_class_curie = "xsd:integer"
+    type_name = "age in years type"
+    type_model_uri = CORE.AgeInYearsType
+
 
 # Class references
 class ActivityId(extended_str):

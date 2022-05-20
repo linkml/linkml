@@ -21,3 +21,14 @@ URI: [biolink:chemical_to_entity_association_mixin_subject](https://w3id.org/bio
 ## Used by
 
  * [ChemicalToEntityAssociationMixin](ChemicalToEntityAssociationMixin.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

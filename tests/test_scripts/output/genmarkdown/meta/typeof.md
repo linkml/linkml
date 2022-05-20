@@ -28,4 +28,5 @@ URI: [linkml:typeof](https://w3id.org/linkml/typeof)
 | **Comments:** | | the target type definition of the typeof slot is referred to as the "parent type" |
 |  | | the type definition containing the typeof slot is referred to as the "child type" |
 |  | | type definitions without a typeof slot are referred to as a "root type" |
+| **In Subsets:** | | basic |
 

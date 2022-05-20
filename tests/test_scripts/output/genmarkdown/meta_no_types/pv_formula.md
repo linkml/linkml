@@ -27,4 +27,5 @@ URI: [linkml:pv_formula](https://w3id.org/linkml/pv_formula)
 | --- | --- | --- |
 | **Comments:** | | you cannot have BOTH the permissible_values and permissible_value_formula tag |
 |  | | code_set must be supplied for this to be valid |
+| **In Subsets:** | | basic |
 

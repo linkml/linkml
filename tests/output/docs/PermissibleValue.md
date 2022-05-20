@@ -28,17 +28,23 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
  * [text](text.md)  <sub>1..1</sub>
      * Range: [String](types/String.md)
+     * in subsets: (basic)
  * [description](description.md)  <sub>0..1</sub>
      * Description: a description of the element's purpose and use
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (basic)
  * [meaning](meaning.md)  <sub>0..1</sub>
-     * Description: the value meaning (in the 11179 sense) of a permissible value
+     * Description: the value meaning of a permissible value
      * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (basic)
  * [permissible_value➞is_a](permissible_value_is_a.md)  <sub>0..1</sub>
+     * Description: specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded
      * Range: [PermissibleValue](PermissibleValue.md)
+     * in subsets: (basic,object_oriented)
  * [permissible_value➞mixins](permissible_value_mixins.md)  <sub>0..\*</sub>
+     * Description: List of definitions to be mixed in. Targets may be any definition of the same type
      * Range: [PermissibleValue](PermissibleValue.md)
+     * in subsets: (basic,object_oriented)
 
 ### Mixed in from extensible:
 
@@ -56,45 +62,56 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
  * [alt_descriptions](alt_descriptions.md)  <sub>0..\*</sub>
      * Range: [AltDescription](AltDescription.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [title](title.md)  <sub>0..1</sub>
+     * Description: the official title of the element
+     * Range: [String](types/String.md)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [deprecated](deprecated.md)  <sub>0..1</sub>
      * Description: Description of why and when this element will no longer be used
      * Range: [String](types/String.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [todos](todos.md)  <sub>0..\*</sub>
      * Description: Outstanding issue that needs resolution
      * Range: [String](types/String.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
  * [notes](notes.md)  <sub>0..\*</sub>
      * Description: editorial notes about an element intended for internal consumption
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [comments](comments.md)  <sub>0..\*</sub>
      * Description: notes and comments about an element intended for external consumption
      * Range: [String](types/String.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [examples](examples.md)  <sub>0..\*</sub>
      * Description: example usages of an element
      * Range: [Example](Example.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
  * [in_subset](in_subset.md)  <sub>0..\*</sub>
      * Description: used to indicate membership of a term in a defined subset of terms used for a particular domain or application (e.g. the translator_minimal subset holding the minimal set of predicates used in a translator knowledge graph)
      * Range: [SubsetDefinition](SubsetDefinition.md)
+     * in subsets: (basic)
 
 ### Mixed in from common_metadata:
 
@@ -110,10 +127,22 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
 
 ### Mixed in from common_metadata:
 
+ * [source](source.md)  <sub>0..1</sub>
+     * Description: A related resource from which the element is derived.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [in_language](in_language.md)  <sub>0..1</sub>
+     * Range: [String](types/String.md)
+
+### Mixed in from common_metadata:
+
  * [see_also](see_also.md)  <sub>0..\*</sub>
      * Description: a reference
      * Range: [Uriorcurie](types/Uriorcurie.md)
-     * in subsets: (owl)
+     * in subsets: (owl,basic)
 
 ### Mixed in from common_metadata:
 
@@ -126,3 +155,66 @@ URI: [linkml:PermissibleValue](https://w3id.org/linkml/PermissibleValue)
  * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Range: [String](types/String.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
+     * Description: A list of structured_alias objects.
+     * Range: [StructuredAlias](StructuredAlias.md)
+
+### Mixed in from common_metadata:
+
+ * [mappings](mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [close mappings](close_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have close meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [related mappings](related_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have related meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
+     * Range: [Uriorcurie](types/Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
+     * Range: [Integer](types/Integer.md)
+     * in subsets: (basic)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | PV |
+| **In Subsets:** | | basic |
+

@@ -26,4 +26,5 @@ URI: [linkml:source_file_date](https://w3id.org/linkml/source_file_date)
 |  |  |  |
 | --- | --- | --- |
 | **In Subsets:** | | owl |
+|  | | basic |
 

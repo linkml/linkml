@@ -44,11 +44,11 @@ slots:
     name: sa
     definition_uri: http://example.org/tests/issue167/sa
     from_schema: http://example.org/tests/issue167
-    range: string
     slot_uri: http://example.org/tests/issue167/sa
     owner: c1
     domain_of:
     - c1
+    range: string
   sb:
     name: sb
     definition_uri: http://example.org/tests/issue167/sb
@@ -61,12 +61,12 @@ slots:
             tag: http://semantics.r.us/c1
             value: '143'
     from_schema: http://example.org/tests/issue167
-    range: integer
     slot_uri: http://example.org/tests/issue167/sb
     owner: c2
     domain_of:
     - c1
     - c2
+    range: integer
 classes:
   c1:
     name: c1
@@ -93,6 +93,6 @@ classes:
     class_uri: http://example.org/tests/issue167/C2
 metamodel_version: 1.7.0
 source_file: issue_167.yaml
-source_file_date: Tue Jul 20 18:41:38 2021
+source_file_date: '2021-10-27T23:28:23'
 source_file_size: 852
-generation_date: 2021-07-20 18:45
+generation_date: '2021-10-27T23:34:37'

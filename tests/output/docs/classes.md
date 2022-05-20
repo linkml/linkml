@@ -20,3 +20,13 @@ URI: [linkml:classes](https://w3id.org/linkml/classes)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | minimal |
+|  | | basic |
+|  | | relational_model |
+|  | | object_oriented |
+

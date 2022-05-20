@@ -1,0 +1,51 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_type_expression
+schema_generating: true
+display_name: anonymous_type_expression
+document_category: anonymous_type_expression
+weight: 20
+fields:
+- id: pattern
+  description: the string value of the slot must conform to this regular expression
+    expressed in the string
+  display_name: pattern
+- id: structured_pattern
+  description: the string value of the slot must conform to the regular expression
+    in the pattern expression
+  display_name: structured_pattern
+- id: equals_string
+  description: the slot must have range string and the value of the slot must equal
+    the specified value
+  display_name: equals_string
+- id: equals_string_in
+  description: the slot must have range string and the value of the slot must equal
+    one of the specified values
+  display_name: equals_string_in
+  cardinality: multi
+- id: equals_number
+  description: the slot must have range of a number and the value of the slot must
+    equal the specified value
+  display_name: equals_number
+- id: minimum_value
+  description: for slots with ranges of type number, the value must be equal to or
+    higher than this
+  display_name: minimum_value
+- id: maximum_value
+  description: for slots with ranges of type number, the value must be equal to or
+    lowe than this
+  display_name: maximum_value
+- id: none_of
+  description: holds if none of the expressions hold
+  display_name: type_expression_none_of
+  cardinality: multi
+- id: exactly_one_of
+  description: holds if only one of the expressions hold
+  display_name: type_expression_exactly_one_of
+  cardinality: multi
+- id: any_of
+  description: holds if at least one of the expressions hold
+  display_name: type_expression_any_of
+  cardinality: multi
+- id: all_of
+  description: holds if all of the expressions hold
+  display_name: type_expression_all_of
+  cardinality: multi

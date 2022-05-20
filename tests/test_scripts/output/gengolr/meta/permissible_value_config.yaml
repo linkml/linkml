@@ -1,4 +1,4 @@
-id: permissible_value
+# metamodel_version: 1.7.0# version: 2.0.0id: permissible_value
 schema_generating: true
 description: a permissible value, accompanied by intended text and an optional mapping
   to a concept URI
@@ -12,11 +12,20 @@ fields:
   description: a description of the element's purpose and use
   display_name: description
 - id: meaning
-  description: the value meaning (in the 11179 sense) of a permissible value
+  description: the value meaning of a permissible value
   display_name: meaning
 - id: is_a
+  description: specifies single-inheritance between classes or slots. While multiple
+    inheritance is not allowed, mixins can be provided effectively providing the same
+    thing. The semantics are the same when translated to formalisms that allow MI
+    (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python
+    classes) then is a is used. When translating a framework without polymorphism
+    (e.g. json-schema, solr document schema) then is a and mixins are recursively
+    unfolded
   display_name: permissible_value_is_a
 - id: mixins
+  description: List of definitions to be mixed in. Targets may be any definition of
+    the same type
   display_name: permissible_value_mixins
   cardinality: multi
 - id: extensions
@@ -30,6 +39,9 @@ fields:
 - id: alt_descriptions
   display_name: alt_descriptions
   cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
 - id: deprecated
   description: Description of why and when this element will no longer be used
   display_name: deprecated
@@ -62,6 +74,11 @@ fields:
   description: the imports entry that this element was derived from.  Empty means
     primary source
   display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
 - id: see_also
   description: a reference
   display_name: see_also
@@ -74,3 +91,46 @@ fields:
   description: When an element is deprecated, it can be potentially replaced by this
     uri or curie
   display_name: deprecated element has possible replacement
+- id: aliases
+  display_name: aliases
+  cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
+- id: mappings
+  description: A list of terms from different schemas or terminology systems that
+    have comparable meaning. These may include terms that are precisely equivalent,
+    broader or narrower in meaning, or otherwise semantically related but not equivalent
+    from a strict ontological perspective.
+  display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank

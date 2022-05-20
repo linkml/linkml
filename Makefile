@@ -45,6 +45,14 @@ examples/%-data.jsonld: examples/%-data.json examples/%.context.jsonld
 examples/%-data.nt: examples/%-data.jsonld
 	riot $< > $@
 
+linkml/workspaces/datamodel/workspaces.py: linkml/workspaces/datamodel/workspaces.yaml
+	$(RUN) gen-python $< > $@.tmp && mv $@.tmp $@
+
+TUTORIALS = 01 02 03 04 05 06 07 08 09 10
+test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
+test-tutorial-%: sphinx/intro/tutorial%.md
+	pipenv run python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
+
 rtd:
 	cd sphinx && $(RUN) make html
 deploy-rtd:

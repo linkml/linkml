@@ -22,4 +22,13 @@ definition &#8594;  <sub>0..1</sub> definition
 
 ## Used by
 
+ * anonymous_class_expression
  * definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

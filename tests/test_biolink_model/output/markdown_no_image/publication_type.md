@@ -31,4 +31,7 @@ URI: [biolink:publication_type](https://w3id.org/biolink/vocab/publication_type)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | dct:type |
+| **Exact Mappings:** | | alliancegenome:soTermId |
+|  | | gff3:type |
+|  | | gpi:DB_Object_Type |
 

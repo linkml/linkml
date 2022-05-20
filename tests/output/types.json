@@ -1,7 +1,7 @@
 {
   "name": "types",
-  "title": "Core LinkML metamodel types",
   "description": "Shared type definitions for the core LinkML mode and metamodel",
+  "title": "Core LinkML metamodel types",
   "id": "https://w3id.org/linkml/types",
   "version": "2.0.0",
   "license": "https://creativecommons.org/publicdomain/zero/1.0/",
@@ -169,9 +169,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "types.yaml",
-  "source_file_date": "Mon Sep 27 21:44:23 2021",
+  "source_file_date": "2021-10-27T23:30:13",
   "source_file_size": 2676,
-  "generation_date": "2021-09-27 21:45",
+  "generation_date": "2021-10-27T23:30:55",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

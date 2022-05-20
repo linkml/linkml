@@ -1,0 +1,207 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: anonymous_slot_expression
+schema_generating: true
+display_name: anonymous_slot_expression
+document_category: anonymous_slot_expression
+weight: 20
+fields:
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
+  cardinality: multi
+- id: description
+  description: a description of the element's purpose and use
+  display_name: description
+- id: alt_descriptions
+  display_name: alt_descriptions
+  cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
+- id: deprecated
+  description: Description of why and when this element will no longer be used
+  display_name: deprecated
+- id: todos
+  description: Outstanding issue that needs resolution
+  display_name: todos
+  cardinality: multi
+- id: notes
+  description: editorial notes about an element intended for internal consumption
+  display_name: notes
+  cardinality: multi
+- id: comments
+  description: notes and comments about an element intended for external consumption
+  display_name: comments
+  cardinality: multi
+- id: examples
+  description: example usages of an element
+  display_name: examples
+  cardinality: multi
+- id: in_subset
+  description: used to indicate membership of a term in a defined subset of terms
+    used for a particular domain or application (e.g. the translator_minimal subset
+    holding the minimal set of predicates used in a translator knowledge graph)
+  display_name: in_subset
+  cardinality: multi
+- id: from_schema
+  description: id of the schema that defined the element
+  display_name: from_schema
+- id: imported_from
+  description: the imports entry that this element was derived from.  Empty means
+    primary source
+  display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
+- id: see_also
+  description: a reference
+  display_name: see_also
+  cardinality: multi
+- id: deprecated_element_has_exact_replacement
+  description: When an element is deprecated, it can be automatically replaced by
+    this uri or curie
+  display_name: deprecated element has exact replacement
+- id: deprecated_element_has_possible_replacement
+  description: When an element is deprecated, it can be potentially replaced by this
+    uri or curie
+  display_name: deprecated element has possible replacement
+- id: aliases
+  display_name: aliases
+  cardinality: multi
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
+  cardinality: multi
+- id: mappings
+  description: A list of terms from different schemas or terminology systems that
+    have comparable meaning. These may include terms that are precisely equivalent,
+    broader or narrower in meaning, or otherwise semantically related but not equivalent
+    from a strict ontological perspective.
+  display_name: mappings
+  cardinality: multi
+- id: exact_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have identical meaning.
+  display_name: exact mappings
+  cardinality: multi
+- id: close_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have close meaning.
+  display_name: close mappings
+  cardinality: multi
+- id: related_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have related meaning.
+  display_name: related mappings
+  cardinality: multi
+- id: narrow_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have narrower meaning.
+  display_name: narrow mappings
+  cardinality: multi
+- id: broad_mappings
+  description: A list of terms from different schemas or terminology systems that
+    have broader meaning.
+  display_name: broad mappings
+  cardinality: multi
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
+- id: range
+  description: "defines the type of the object of the slot.  Given the following slot\
+    \ definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n \
+    \   S1: Y\n\nimplicitly asserts Y is an instance of C2\n"
+  display_name: range
+- id: range_expression
+  description: A range that is described as a boolean expression combining existing
+    ranges
+  display_name: range_expression
+- id: required
+  description: true means that the slot must be present in the loaded definition
+  display_name: required
+- id: recommended
+  description: true means that the slot should be present in the loaded definition,
+    but this is not required
+  display_name: recommended
+- id: inlined
+  description: True means that keyed or identified slot appears in an outer structure
+    by value.  False means that only the key or identifier for the slot appears within
+    the domain, referencing a structure that appears elsewhere.
+  display_name: inlined
+- id: inlined_as_list
+  description: True means that an inlined slot is represented as a list of range instances.  False
+    means that an inlined slot is represented as a dictionary, whose key is the slot
+    key or identifier and whose value is the range instance.
+  display_name: inlined_as_list
+- id: minimum_value
+  description: for slots with ranges of type number, the value must be equal to or
+    higher than this
+  display_name: minimum_value
+- id: maximum_value
+  description: for slots with ranges of type number, the value must be equal to or
+    lowe than this
+  display_name: maximum_value
+- id: pattern
+  description: the string value of the slot must conform to this regular expression
+    expressed in the string
+  display_name: pattern
+- id: structured_pattern
+  description: the string value of the slot must conform to the regular expression
+    in the pattern expression
+  display_name: structured_pattern
+- id: equals_string
+  description: the slot must have range string and the value of the slot must equal
+    the specified value
+  display_name: equals_string
+- id: equals_string_in
+  description: the slot must have range string and the value of the slot must equal
+    one of the specified values
+  display_name: equals_string_in
+  cardinality: multi
+- id: equals_number
+  description: the slot must have range of a number and the value of the slot must
+    equal the specified value
+  display_name: equals_number
+- id: equals_expression
+  description: the value of the slot must equal the value of the evaluated expression
+  display_name: equals_expression
+- id: minimum_cardinality
+  description: the minimum number of entries for a multivalued slot
+  display_name: minimum_cardinality
+- id: maximum_cardinality
+  description: the maximum number of entries for a multivalued slot
+  display_name: maximum_cardinality
+- id: has_member
+  description: the values of the slot is multivalued with at least one member satisfying
+    the condition
+  display_name: has_member
+- id: all_members
+  description: "the value of the multiavlued slot is a list where all elements conform\
+    \ to the specified values.\nthis defines a dynamic class with named slots according\
+    \ to matching constraints\n\nE.g to state that all members of a list are between\
+    \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n\
+    \    maximum_value: 10\n```"
+  display_name: all_members
+  cardinality: multi
+- id: none_of
+  description: holds if none of the expressions hold
+  display_name: slot_expression_none_of
+  cardinality: multi
+- id: exactly_one_of
+  description: holds if only one of the expressions hold
+  display_name: slot_expression_exactly_one_of
+  cardinality: multi
+- id: any_of
+  description: holds if at least one of the expressions hold
+  display_name: slot_expression_any_of
+  cardinality: multi
+- id: all_of
+  description: holds if all of the expressions hold
+  display_name: slot_expression_all_of
+  cardinality: multi

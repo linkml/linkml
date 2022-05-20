@@ -1,5 +1,10 @@
 
-# core schema
+# core
+
+
+**metamodel version:** 1.7.0
+
+**version:** None
 
 
 core schema imported by kitchen_sink
@@ -55,6 +60,7 @@ core schema imported by kitchen_sink
 
 #### Defined
 
+ * [AgeInYearsType](types/AgeInYearsType.md)  (**int**) 
  * [Boolean](types/Boolean.md)  (**Bool**)  - A binary (true or false) value
  * [Date](types/Date.md)  (**XSDDate**)  - a date (year, month and day) in an idealized calendar
  * [Datetime](types/Datetime.md)  (**XSDDateTime**)  - The combination of a date and time
@@ -65,6 +71,7 @@ core schema imported by kitchen_sink
  * [Ncname](types/Ncname.md)  (**NCName**)  - Prefix part of CURIE
  * [Nodeidentifier](types/Nodeidentifier.md)  (**NodeIdentifier**)  - A URI, CURIE or BNODE that represents a node in a model.
  * [Objectidentifier](types/Objectidentifier.md)  (**ElementIdentifier**)  - A URI or CURIE that represents an object in the model.
+ * [PhoneNumberType](types/PhoneNumberType.md)  (**str**) 
  * [String](types/String.md)  (**str**)  - A character string
  * [Time](types/Time.md)  (**XSDTime**)  - A time object represents a (local) time of day, independent of any particular day
  * [Uri](types/Uri.md)  (**URI**)  - a complete URI

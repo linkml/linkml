@@ -26,5 +26,10 @@ URI: [biolink:disease_to_entity_association_mixin_subject](https://w3id.org/biol
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
 | **Examples:** | | Example(value='MONDO:0017314', description='Ehlers-Danlos syndrome, vascular type') |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
 

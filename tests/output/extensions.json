@@ -185,15 +185,15 @@
       "description": "a tag/text tuple attached to an arbitrary element",
       "from_schema": "https://w3id.org/linkml/extensions",
       "domain": "Extensible",
-      "range": "Extension",
       "slot_uri": "https://w3id.org/linkml/extensions",
       "multivalued": true,
-      "inlined": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
+      "range": "Extension",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -202,14 +202,15 @@
       "description": "a tag associated with an extension",
       "from_schema": "https://w3id.org/linkml/extensions",
       "domain": "Extension",
-      "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/tag",
-      "required": true,
+      "key": true,
       "alias": "tag",
       "owner": "Extension",
       "domain_of": [
         "Extension"
       ],
+      "range": "uriorcurie",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -218,14 +219,14 @@
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "domain": "Extension",
-      "range": "string",
       "slot_uri": "https://w3id.org/linkml/value",
-      "required": true,
       "alias": "value",
       "owner": "Extension",
       "domain_of": [
         "Extension"
       ],
+      "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     }
   ],
@@ -260,9 +261,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "extensions.yaml",
-  "source_file_date": "Sun Jun  6 23:07:12 2021",
-  "source_file_size": 1043,
-  "generation_date": "2021-06-06 23:07",
+  "source_file_date": "2022-05-09T21:10:26",
+  "source_file_size": 1057,
+  "generation_date": "2022-05-09T21:11:08",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

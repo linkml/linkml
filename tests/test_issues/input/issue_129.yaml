@@ -20,6 +20,7 @@ classes:
       - has prop
       - has d
       - has ds
+      - has ds2
       - children
       - parent
   d:
@@ -44,6 +45,10 @@ slots:
     multivalued: false
     inlined: true
   has ds:
+    range: d
+    multivalued: true
+    inlined_as_list: true
+  has ds2:
     range: d
     multivalued: true
     inlined: true

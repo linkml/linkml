@@ -7,7 +7,7 @@
 URI: [ks:Dataset](https://w3id.org/linkml/tests/kitchen_sink/Dataset)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Activity],[Person],[Activity]<activities%200..*-++[Dataset],[Company]<companies%200..*-++[Dataset],[Person]<persons%200..*-++[Dataset],[Company])](https://yuml.me/diagram/nofunky;dir:TB/class/[Activity],[Person],[Activity]<activities%200..*-++[Dataset],[Company]<companies%200..*-++[Dataset],[Person]<persons%200..*-++[Dataset],[Company])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Activity],[Person],[CodeSystem]<code%20systems%200..*-++[Dataset],[Activity]<activities%200..*-++[Dataset],[Company]<companies%200..*-++[Dataset],[Person]<persons%200..*-++[Dataset],[Company],[CodeSystem])](https://yuml.me/diagram/nofunky;dir:TB/class/[Activity],[Person],[CodeSystem]<code%20systems%200..*-++[Dataset],[Activity]<activities%200..*-++[Dataset],[Company]<companies%200..*-++[Dataset],[Person]<persons%200..*-++[Dataset],[Company],[CodeSystem])
 
 ## Attributes
 
@@ -20,3 +20,5 @@ URI: [ks:Dataset](https://w3id.org/linkml/tests/kitchen_sink/Dataset)
      * Range: [Company](Company.md)
  * [➞activities](dataset__activities.md)  <sub>0..\*</sub>
      * Range: [Activity](Activity.md)
+ * [➞code systems](dataset__code_systems.md)  <sub>0..\*</sub>
+     * Range: [CodeSystem](CodeSystem.md)

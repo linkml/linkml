@@ -21,3 +21,15 @@ URI: [biolink:entity_to_phenotypic_feature_association_mixin_description](https:
 ## Used by
 
  * [EntityToPhenotypicFeatureAssociationMixin](EntityToPhenotypicFeatureAssociationMixin.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | definition |
+| **Mappings:** | | dct:description |
+| **In Subsets:** | | translator_minimal |
+| **Exact Mappings:** | | IAO:0000115 |
+|  | | skos:definitions |
+| **Narrow Mappings:** | | gff3:Description |
+

@@ -20,3 +20,11 @@ URI: [linkml:subsets](https://w3id.org/linkml/subsets)
 ## Used by
 
  * [SchemaDefinition](SchemaDefinition.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+| **Exact Mappings:** | | OIO:hasSubset |
+

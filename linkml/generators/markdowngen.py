@@ -24,7 +24,7 @@ class MarkdownGenerator(Generator):
     The markdown is suitable for deployment as a MkDocs or Sphinx site
     """
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.1.1"
+    generatorversion = "0.2.1"
     directory_output = True
     valid_formats = ["md"]
     visit_all_class_slots = False
@@ -65,9 +65,12 @@ class MarkdownGenerator(Generator):
         if not self.no_types_dir:
             os.makedirs(os.path.join(directory, 'types'), exist_ok=True)
 
-        with open(self.exist_warning(directory, index_file), 'w') as ixfile:
+        with open(self.exist_warning(directory, index_file), 'w', encoding='UTF-8') as ixfile:
             with redirect_stdout(ixfile):
-                self.frontmatter(f"{self.schema.name} schema")
+                self.frontmatter(f"{self.schema.name}")
+                self.para(
+                    f"**metamodel version:** {self.schema.metamodel_version}\n\n**version:** {self.schema.version}"
+                )
                 self.para(be(self.schema.description))
 
                 self.header(3, 'Classes')
@@ -116,9 +119,9 @@ class MarkdownGenerator(Generator):
         if self.gen_classes and cls.name not in self.gen_classes:
             return False
 
-        with open(self.exist_warning(self.dir_path(cls)), 'w') as clsfile:
+        with open(self.exist_warning(self.dir_path(cls)), 'w', encoding='UTF-8') as clsfile:
             with redirect_stdout(clsfile):
-                class_curi = self.namespaces.uri_or_curie_for(self.namespaces._base, camelcase(cls.name))
+                class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
                 class_uri = self.namespaces.uri_for(class_curi)
                 self.element_header(cls, cls.name, class_curi, class_uri)
                 print()
@@ -206,7 +209,7 @@ class MarkdownGenerator(Generator):
         return False
 
     def visit_type(self, typ: TypeDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(typ)), 'w') as typefile:
+        with open(self.exist_warning(self.dir_path(typ)), 'w', encoding='UTF-8') as typefile:
             with redirect_stdout(typefile):
                 type_uri = typ.definition_uri
                 type_curie = self.namespaces.curie_for(type_uri)
@@ -222,9 +225,10 @@ class MarkdownGenerator(Generator):
                 self.element_properties(typ)
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(slot)), 'w') as slotfile:
+        with open(self.exist_warning(self.dir_path(slot)), 'w', encoding='UTF-8') as slotfile:
             with redirect_stdout(slotfile):
-                slot_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(slot.name))
+                import logging
+                slot_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(slot.name))
                 slot_uri = self.namespaces.uri_for(slot_curie)
                 self.element_header(slot,aliased_slot_name, slot_curie, slot_uri)
                 self.mappings(slot)
@@ -252,17 +256,17 @@ class MarkdownGenerator(Generator):
                 self.element_properties(slot)
 
     def visit_enum(self, enum: EnumDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(enum)), 'w') as enumfile:
+        with open(self.exist_warning(self.dir_path(enum)), 'w', encoding='UTF-8') as enumfile:
             with redirect_stdout(enumfile):
-                enum_curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(enum.name))
+                enum_curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(enum.name))
                 enum_uri = self.namespaces.uri_for(enum_curie)
                 self.element_header(obj=enum, name=enum.name, curie=enum_curie, uri=enum_uri)
                 self.element_properties(enum)
 
     def visit_subset(self, subset: SubsetDefinition) -> None:
-        with open(self.exist_warning(self.dir_path(subset)), 'w') as subsetfile:
+        with open(self.exist_warning(self.dir_path(subset)), 'w', encoding='UTF-8') as subsetfile:
             with redirect_stdout(subsetfile):
-                curie = self.namespaces.uri_or_curie_for(self.namespaces._base, underscore(subset.name))
+                curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
                 uri = self.namespaces.uri_for(curie)
                 self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri)
                 # TODO: consider showing hierarchy within a subset
@@ -304,7 +308,10 @@ class MarkdownGenerator(Generator):
             obj_type = 'Subset'
         else:
             obj_type = 'Class'
-        self.header(1, f"{obj_type}: {name}" + (f" _(deprecated)_" if obj.deprecated else ""))
+
+        header_label = f"{obj_type}: ~~{name}~~ _(deprecated)_" if obj.deprecated else f"{obj_type}: {name}"
+        self.header(1, header_label)
+
         self.para(be(obj.description))
         print(f'URI: [{curie}]({uri})')
         print()
@@ -362,7 +369,7 @@ class MarkdownGenerator(Generator):
             prop_list('In Subsets', obj.in_subset)
             # from_schema
             # imported_from
-            prop_list('See also', obj.see_also)
+            prop_list('See also', [f'[{v}]({v})' for v in obj.see_also])
             prop_list('Exact Mappings', obj.exact_mappings)
             prop_list('Close Mappings', obj.close_mappings)
             prop_list('Narrow Mappings', obj.narrow_mappings)
@@ -630,8 +637,8 @@ class MarkdownGenerator(Generator):
 @shared_arguments(MarkdownGenerator)
 @click.command()
 @click.option("--dir", "-d", required=True, help="Output directory")
-@click.option("--classes", "-c", default=None, multiple=True, help="Class(es) to emit")
-@click.option("--map-fields", "-M", default=None, multiple=True, help="Map metamodel fields, e.g. slot=field")
+@click.option("--classes", "-c", multiple=True, help="Class(es) to emit")
+@click.option("--map-fields", "-M", multiple=True, help="Map metamodel fields, e.g. slot=field")
 @click.option("--img", "-i",  is_flag=True, help="Download YUML images to 'image' directory")
 @click.option("--index-file", "-I", help="Name of markdown file that holds index")
 @click.option("--noimages", is_flag=True, help="Do not (re-)generate images")

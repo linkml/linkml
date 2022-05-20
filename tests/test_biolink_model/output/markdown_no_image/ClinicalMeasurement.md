@@ -22,13 +22,16 @@ URI: [biolink:ClinicalMeasurement](https://w3id.org/biolink/vocab/ClinicalMeasur
 ### Own
 
  * [clinical measurement➞has attribute type](clinical_measurement_has_attribute_type.md)  <sub>1..1</sub>
+     * Description: connects an attribute to a class that describes it
      * Range: [OntologyClass](OntologyClass.md)
+     * in subsets: (samples)
 
 ### Inherited from clinical attribute:
 
  * [attribute➞name](attribute_name.md)  <sub>0..1</sub>
      * Description: The human-readable 'attribute name' can be set to a string which reflects its context of interpretation, e.g. SEPIO evidence/provenance/confidence annotation or it can default to the name associated with the 'has attribute type' slot ontology term.
      * Range: [LabelType](types/LabelType.md)
+     * in subsets: (translator_minimal,samples)
  * [has quantitative value](has_quantitative_value.md)  <sub>0..\*</sub>
      * Description: connects an attribute to a value
      * Range: [QuantityValue](QuantityValue.md)

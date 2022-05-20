@@ -30,8 +30,8 @@ CREATE TABLE "DiagnosisConcept" (
 );
 
 CREATE TABLE "Event" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	duration FLOAT, 
 	is_current BOOLEAN, 
 	PRIMARY KEY (started_at_time, ended_at_time, duration, is_current)
@@ -73,16 +73,16 @@ CREATE TABLE "ProcedureConcept" (
 );
 
 CREATE TABLE "Relationship" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	related_to TEXT, 
 	type TEXT, 
 	PRIMARY KEY (started_at_time, ended_at_time, related_to, type)
 );
 
 CREATE TABLE "FamilialRelationship" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	related_to TEXT NOT NULL, 
 	type VARCHAR(10) NOT NULL, 
 	"Person_id" TEXT, 
@@ -92,8 +92,8 @@ CREATE TABLE "FamilialRelationship" (
 );
 
 CREATE TABLE "MedicalEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	duration FLOAT, 
 	is_current BOOLEAN, 
 	in_location TEXT, 
@@ -134,8 +134,8 @@ CREATE TABLE "Place_aliases" (
 );
 
 CREATE TABLE "EmploymentEvent" (
-	started_at_time TEXT, 
-	ended_at_time TEXT, 
+	started_at_time DATE, 
+	ended_at_time DATE, 
 	duration FLOAT, 
 	is_current BOOLEAN, 
 	employed_at TEXT, 

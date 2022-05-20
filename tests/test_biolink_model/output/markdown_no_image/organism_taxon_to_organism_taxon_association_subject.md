@@ -2,7 +2,7 @@
 # Slot: subject
 
 
-
+connects an association to the subject of the association. For example, in a gene-to-phenotype association, the gene is subject and phenotype is object.
 
 URI: [biolink:organism_taxon_to_organism_taxon_association_subject](https://w3id.org/biolink/vocab/organism_taxon_to_organism_taxon_association_subject)
 
@@ -23,3 +23,14 @@ URI: [biolink:organism_taxon_to_organism_taxon_association_subject](https://w3id
 ## Used by
 
  * [OrganismTaxonToOrganismTaxonAssociation](OrganismTaxonToOrganismTaxonAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

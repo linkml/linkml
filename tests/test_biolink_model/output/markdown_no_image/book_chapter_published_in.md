@@ -21,3 +21,10 @@ URI: [biolink:book_chapter_published_in](https://w3id.org/biolink/vocab/book_cha
 ## Used by
 
  * [BookChapter](BookChapter.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | WIKIDATA_PROPERTY:P1433 |
+

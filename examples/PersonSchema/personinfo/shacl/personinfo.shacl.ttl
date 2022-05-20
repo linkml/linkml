@@ -1,0 +1,328 @@
+@prefix GSSO: <http://purl.obolibrary.org/obo/GSSO_> .
+@prefix famrel: <https://example.org/FamilialRelations#> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema1: <http://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+personinfo:Concept a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:name ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path schema1:identifier ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path schema1:description ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema1:image ] ;
+    sh:targetClass personinfo:Concept .
+
+personinfo:Container a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:class schema1:Person ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path personinfo:persons ],
+        [ sh:class schema1:Organization ;
+            sh:nodeKind sh:IRI ;
+            sh:order 1 ;
+            sh:path personinfo:organizations ] ;
+    sh:targetClass personinfo:Container .
+
+personinfo:Event a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path personinfo:is_current ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:endedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path personinfo:duration ] ;
+    sh:targetClass personinfo:Event .
+
+personinfo:HasAliases a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "A mixin applied to any class that can have aliases/alternateNames" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:order 0 ;
+            sh:path personinfo:aliases ] ;
+    sh:targetClass personinfo:HasAliases .
+
+personinfo:NamedThing a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "A generic grouping for any identifiable entity" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:name ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path schema1:identifier ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path schema1:description ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema1:image ] ;
+    sh:targetClass personinfo:NamedThing .
+
+personinfo:Relationship a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path personinfo:type ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path personinfo:related_to ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:endedAtTime ] ;
+    sh:targetClass personinfo:Relationship .
+
+personinfo:WithLocation a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:class personinfo:Place ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path personinfo:in_location ] ;
+    sh:targetClass personinfo:WithLocation .
+
+schema1:Person a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "A person (alive, dead, undead, or fictional)." ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:birthDate ],
+        [ sh:class schema1:PostalAddress ;
+            sh:description "The address at which a person currently lives" ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 4 ;
+            sh:path personinfo:current_address ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path schema1:email ;
+            sh:pattern "^\\S+@[\\S+\\.]+\\S+" ],
+        [ sh:maxCount 1 ;
+            sh:order 9 ;
+            sh:path schema1:identifier ],
+        [ sh:class personinfo:FamilialRelationship ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 6 ;
+            sh:path personinfo:has_familial_relationships ],
+        [ sh:class personinfo:EmploymentEvent ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 5 ;
+            sh:path personinfo:has_employment_history ],
+        [ sh:maxCount 1 ;
+            sh:order 10 ;
+            sh:path schema1:name ],
+        [ sh:class personinfo:MedicalEvent ;
+            sh:nodeKind sh:BlankNode ;
+            sh:order 7 ;
+            sh:path personinfo:has_medical_history ],
+        [ sh:maxCount 1 ;
+            sh:order 12 ;
+            sh:path schema1:image ],
+        [ sh:maxCount 1 ;
+            sh:maxInclusive 999 ;
+            sh:minInclusive 0 ;
+            sh:order 2 ;
+            sh:path personinfo:age_in_years ],
+        [ sh:maxCount 1 ;
+            sh:order 11 ;
+            sh:path schema1:description ],
+        [ sh:in ( GSSO:009254 GSSO:009253 GSSO:000384 GSSO:000372 GSSO:000371 GSSO:000385 ) ;
+            sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema1:gender ],
+        [ sh:order 8 ;
+            sh:path personinfo:aliases ] ;
+    sh:targetClass schema1:Person .
+
+schema1:PostalAddress a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path personinfo:street ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path personinfo:postal_code ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path personinfo:city ] ;
+    sh:targetClass schema1:PostalAddress .
+
+personinfo:DiagnosisConcept a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path schema1:identifier ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:name ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path schema1:description ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema1:image ] ;
+    sh:targetClass personinfo:DiagnosisConcept .
+
+personinfo:EmploymentEvent a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:class schema1:Organization ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path personinfo:employed_at ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path prov:endedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 4 ;
+            sh:path personinfo:is_current ],
+        [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path personinfo:duration ] ;
+    sh:targetClass personinfo:EmploymentEvent .
+
+personinfo:FamilialRelationship a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path prov:endedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path prov:startedAtTime ],
+        [ sh:in ( famrel:01 famrel:02 famrel:01 ) ;
+            sh:maxCount 1 ;
+            sh:minCount 1 ;
+            sh:order 3 ;
+            sh:path personinfo:type ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path personinfo:related_to ] ;
+    sh:targetClass personinfo:FamilialRelationship .
+
+personinfo:MedicalEvent a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path prov:startedAtTime ],
+        [ sh:maxCount 1 ;
+            sh:order 5 ;
+            sh:path personinfo:duration ],
+        [ sh:class personinfo:DiagnosisConcept ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 1 ;
+            sh:path personinfo:diagnosis ],
+        [ sh:maxCount 1 ;
+            sh:order 4 ;
+            sh:path prov:endedAtTime ],
+        [ sh:class personinfo:Place ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 0 ;
+            sh:path personinfo:in_location ],
+        [ sh:maxCount 1 ;
+            sh:order 6 ;
+            sh:path personinfo:is_current ],
+        [ sh:class personinfo:ProcedureConcept ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 2 ;
+            sh:path personinfo:procedure ] ;
+    sh:targetClass personinfo:MedicalEvent .
+
+personinfo:ProcedureConcept a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 3 ;
+            sh:path schema1:image ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path schema1:identifier ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:name ],
+        [ sh:maxCount 1 ;
+            sh:order 2 ;
+            sh:path schema1:description ] ;
+    sh:targetClass personinfo:ProcedureConcept .
+
+schema1:Organization a sh:NodeShape ;
+    sh:closed true ;
+    sh:description "An organization such as a company or university" ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:class personinfo:Place ;
+            sh:maxCount 1 ;
+            sh:nodeKind sh:IRI ;
+            sh:order 2 ;
+            sh:path personinfo:founding_location ],
+        [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path personinfo:founding_date ],
+        [ sh:maxCount 1 ;
+            sh:order 4 ;
+            sh:path schema1:identifier ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path personinfo:mission_statement ],
+        [ sh:order 3 ;
+            sh:path personinfo:aliases ],
+        [ sh:maxCount 1 ;
+            sh:order 5 ;
+            sh:path schema1:name ],
+        [ sh:maxCount 1 ;
+            sh:order 6 ;
+            sh:path schema1:description ],
+        [ sh:maxCount 1 ;
+            sh:order 7 ;
+            sh:path schema1:image ] ;
+    sh:targetClass schema1:Organization .
+
+personinfo:Place a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property [ sh:maxCount 1 ;
+            sh:order 1 ;
+            sh:path schema1:name ],
+        [ sh:order 2 ;
+            sh:path personinfo:aliases ],
+        [ sh:maxCount 1 ;
+            sh:order 0 ;
+            sh:path schema1:identifier ] ;
+    sh:targetClass personinfo:Place .
+

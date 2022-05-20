@@ -22,6 +22,11 @@
                },
                "type": "array"
             },
+            "has_ds2": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/D__identifier_optional"
+               }
+            },
             "has_prop": {
                "type": "boolean"
             },
@@ -57,11 +62,24 @@
          ],
          "title": "D",
          "type": "object"
+      },
+      "D__identifier_optional": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "D",
+         "type": "object"
       }
    },
    "$id": "http://example.org/sample/types",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {
       "age_in_years": {
          "type": "integer"
@@ -81,6 +99,11 @@
          },
          "type": "array"
       },
+      "has_ds2": {
+         "additionalProperties": {
+            "$ref": "#/$defs/D__identifier_optional"
+         }
+      },
       "has_prop": {
          "type": "boolean"
       },
@@ -97,6 +120,10 @@
          "type": "array"
       }
    },
+   "required": [
+      "id"
+   ],
    "title": "types",
-   "type": "object"
+   "type": "object",
+   "version": null
 }

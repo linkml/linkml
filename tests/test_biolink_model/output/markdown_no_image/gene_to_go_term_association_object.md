@@ -26,5 +26,10 @@ URI: [biolink:gene_to_go_term_association_object](https://w3id.org/biolink/vocab
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
 | **Examples:** | | Example(value='GO:0016301', description='kinase activity') |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
 

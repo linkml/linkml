@@ -16,13 +16,14 @@ URI: [linkml:owl](https://w3id.org/linkml/owl)
 ### Slots
 
  * comments
- * description
+ * conforms_to
  * [examples](examples.md) - example usages of an element
  * generation_date
  * license
  * metamodel_version
  * name
  * notes
+ * schema_definition_name
  * see_also
  * source_file
  * source_file_date

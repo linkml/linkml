@@ -21,3 +21,14 @@ URI: [biolink:organism_taxon_to_organism_taxon_specialization_object](https://w3
 ## Used by
 
  * [OrganismTaxonToOrganismTaxonSpecialization](OrganismTaxonToOrganismTaxonSpecialization.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
+

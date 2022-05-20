@@ -21,3 +21,10 @@ URI: [biolink:article_iso_abbreviation](https://w3id.org/biolink/vocab/article_i
 ## Used by
 
  * [Article](Article.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Exact Mappings:** | | WIKIDATA_PROPERTY:P1160 |
+

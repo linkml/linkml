@@ -1,0 +1,104 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/this/personinfo> a linkml:SchemaDefinition ;
+    linkml:classes <https://example.org/this/C1>,
+        <https://example.org/this/C2>,
+        <https://example.org/this/C3> ;
+    linkml:default_prefix "this" ;
+    linkml:default_range <https://example.org/this/my_str> ;
+    linkml:generation_date "2022-05-10T00:33:22"^^xsd:dateTime ;
+    linkml:id <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:prefixes [ linkml:prefix_prefix "other" ;
+            linkml:prefix_reference <https://example.org/other/> ],
+        [ linkml:prefix_prefix "this" ;
+            linkml:prefix_reference <https://example.org/this/> ],
+        [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ] ;
+    linkml:slots <https://example.org/this/c1__a>,
+        <https://example.org/this/c2__a>,
+        <https://example.org/this/c3__a> ;
+    linkml:source_file "linkml_issue_388.yaml" ;
+    linkml:source_file_date "2022-05-10T00:26:24"^^xsd:dateTime ;
+    linkml:source_file_size 648 ;
+    linkml:types <https://example.org/this/my_int>,
+        <https://example.org/this/my_str> .
+
+<https://example.org/this/c1__a> a linkml:SlotDefinition ;
+    skos:definition "this-a in the context of C1" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "a" ;
+    linkml:domain_of <https://example.org/this/C1> ;
+    linkml:owner <https://example.org/this/C1> ;
+    linkml:range <https://example.org/this/my_str> ;
+    linkml:slot_uri <https://example.org/this/a> .
+
+<https://example.org/this/c2__a> a linkml:SlotDefinition ;
+    skos:definition "this-a in the context of C2" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "a" ;
+    linkml:domain_of <https://example.org/this/C2> ;
+    linkml:owner <https://example.org/this/C2> ;
+    linkml:range <https://example.org/this/my_int> ;
+    linkml:slot_uri <https://example.org/this/a> .
+
+<https://example.org/this/c3__a> a linkml:SlotDefinition ;
+    skos:definition "other-a in the context of C3" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:mappingRelation <https://example.org/other/a> ;
+    skos:prefLabel "a" ;
+    linkml:domain_of <https://example.org/this/C3> ;
+    linkml:inlined true ;
+    linkml:owner <https://example.org/this/C3> ;
+    linkml:range <https://example.org/this/C1> ;
+    linkml:slot_uri <https://example.org/other/a> .
+
+<https://example.org/this/my_int> a linkml:TypeDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:base "integer" ;
+    linkml:definition_uri <https://example.org/this/MyInt> ;
+    linkml:uri <http://example.org/UNKNOWN/xsd/integer> .
+
+<https://example.org/this/my_str> a linkml:TypeDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:base "str" ;
+    linkml:definition_uri <https://example.org/this/MyStr> ;
+    linkml:uri <http://example.org/UNKNOWN/xsd/string> .
+
+<https://example.org/this/C2> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:attributes <https://example.org/this/a> ;
+    linkml:class_uri <https://example.org/this/C2> ;
+    linkml:definition_uri <https://example.org/this/C2> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://example.org/this/c2__a> .
+
+<https://example.org/this/C3> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:attributes <https://example.org/this/a> ;
+    linkml:class_uri <https://example.org/this/C3> ;
+    linkml:definition_uri <https://example.org/this/C3> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://example.org/this/c3__a> .
+
+<https://example.org/this/a> a linkml:SlotDefinition ;
+    skos:definition "other-a in the context of C3",
+        "this-a in the context of C1",
+        "this-a in the context of C2" ;
+    linkml:range <https://example.org/this/C1>,
+        <https://example.org/this/my_int>,
+        <https://example.org/this/my_str> ;
+    linkml:slot_uri <other:a> .
+
+<https://example.org/this/C1> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:attributes <https://example.org/this/a> ;
+    linkml:class_uri <https://example.org/this/C1> ;
+    linkml:definition_uri <https://example.org/this/C1> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://example.org/this/c1__a> .
+
+

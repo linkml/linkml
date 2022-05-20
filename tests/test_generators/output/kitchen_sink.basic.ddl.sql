@@ -28,6 +28,15 @@ CREATE TABLE "BirthEvent" (
 	in_location TEXT
 );
 
+CREATE TABLE class_with_spaces (
+	slot_with_space_1 TEXT
+);
+
+CREATE TABLE "CodeSystem" (
+	id TEXT NOT NULL, 
+	name TEXT
+);
+
 CREATE TABLE "Company" (
 	id TEXT NOT NULL, 
 	name TEXT, 
@@ -37,31 +46,39 @@ CREATE TABLE "Company" (
 
 CREATE TABLE "Concept" (
 	id TEXT NOT NULL, 
-	name TEXT
+	name TEXT, 
+	in_code_system TEXT
 );
 
 CREATE TABLE "Dataset" (
 	persons TEXT, 
 	companies TEXT, 
-	activities TEXT
+	activities TEXT, 
+	code_systems TEXT
 );
 
 CREATE TABLE "DiagnosisConcept" (
 	id TEXT NOT NULL, 
-	name TEXT
+	name TEXT, 
+	in_code_system TEXT
 );
 
 CREATE TABLE "EmploymentEvent" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN, 
-	employed_at TEXT
+	employed_at TEXT, 
+	type VARCHAR(9)
 );
 
 CREATE TABLE "Event" (
 	started_at_time DATE, 
 	ended_at_time DATE, 
 	is_current BOOLEAN
+);
+
+CREATE TABLE "FakeClass" (
+	test_attribute TEXT
 );
 
 CREATE TABLE "FamilialRelationship" (
@@ -114,7 +131,8 @@ CREATE TABLE "Place" (
 
 CREATE TABLE "ProcedureConcept" (
 	id TEXT NOT NULL, 
-	name TEXT
+	name TEXT, 
+	in_code_system TEXT
 );
 
 CREATE TABLE "Relationship" (
@@ -122,4 +140,9 @@ CREATE TABLE "Relationship" (
 	ended_at_time DATE, 
 	related_to TEXT, 
 	type TEXT
+);
+
+CREATE TABLE subclass_test (
+	slot_with_space_1 TEXT, 
+	slot_with_space_2 TEXT
 );

@@ -21,3 +21,14 @@ URI: [biolink:anatomical_entity_to_anatomical_entity_part_of_association_object]
 ## Used by
 
  * [AnatomicalEntityToAnatomicalEntityPartOfAssociation](AnatomicalEntityToAnatomicalEntityPartOfAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
+

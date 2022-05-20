@@ -1,0 +1,17 @@
+.. _faq:
+
+FAQ
+===
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   general
+   why-linkml
+   installation
+   modeling
+   tools
+   getting-help
+   contributing
+   troubleshooting

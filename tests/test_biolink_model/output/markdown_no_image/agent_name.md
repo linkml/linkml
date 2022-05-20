@@ -21,3 +21,19 @@ URI: [biolink:agent_name](https://w3id.org/biolink/vocab/agent_name)
 ## Used by
 
  * [Agent](Agent.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Aliases:** | | label |
+|  | | display name |
+|  | | title |
+| **Mappings:** | | rdfs:label |
+| **In Subsets:** | | translator_minimal |
+|  | | samples |
+| **Exact Mappings:** | | gff3:Name |
+|  | | gpi:DB_Object_Name |
+| **Narrow Mappings:** | | dct:title |
+|  | | WIKIDATA_PROPERTY:P1476 |
+

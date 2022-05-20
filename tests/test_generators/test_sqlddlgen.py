@@ -1,6 +1,8 @@
 import os
+import re
 import sqlite3
 import unittest
+import tempfile
 from contextlib import redirect_stdout
 
 from linkml_runtime.utils.compile_python import compile_python
@@ -31,17 +33,45 @@ def create_and_compile_sqla_bindings(gen: SQLDDLGenerator, path: str = SQLA_CODE
 
 class SQLDDLTestCase(unittest.TestCase):
 
-    def test_sqlddl_basic(self):
-        """ DDL  """
+    def test_sqlddl_serialize(self):
+        """Test case to validate output of serialize method."""
         gen = SQLDDLGenerator(SCHEMA, mergeimports=True, direct_mapping=True)
         ddl = gen.serialize()
-        with open(BASIC_DDL_PATH, 'w') as stream:
+
+        new_file, filename = tempfile.mkstemp()
+        temp_py_filepath = filename + ".py"
+        
+        with open(temp_py_filepath, 'w') as stream:
             stream.write(ddl)
-        with open(BASIC_SQLA_CODE, 'w') as stream:
-            with redirect_stdout(stream):
-                gen.write_sqla_python_imperative('output.kitchen_sink')
-                # don't load this - will conflict
-                #create_and_compile_sqla_bindings(gen, BASIC_SQLA_CODE)
+        
+        py_file_list = []
+        with open(temp_py_filepath) as file:
+            lines = file.readlines()
+            py_file_list = [line.rstrip() for line in lines]
+
+        tbl_list = []
+        for item in py_file_list:
+            res = re.search(r"\"(.*?)\"", item)
+            if res:
+                tbl_list.append(res.group(1))
+
+        self.assertTrue(all(x in tbl_list for x in ["Address",
+                                                    "BirthEvent",
+                                                    "Company",
+                                                    "Concept",
+                                                    "Dataset",
+                                                    "DiagnosisConcept",
+                                                    "EmploymentEvent",
+                                                    "Event",
+                                                    "FamilialRelationship",
+                                                    "MarriageEvent",
+                                                    "MedicalEvent",
+                                                    "Organization",
+                                                    "Person",
+                                                    "Place",
+                                                    "ProcedureConcept",
+                                                    "Relationship"]),
+                        f"Expected classes from {SCHEMA} not written to {temp_py_filepath}")
 
     def test_sqlddl(self):
         """ DDL  """

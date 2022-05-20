@@ -21,3 +21,14 @@ URI: [biolink:gene_to_expression_site_association_subject](https://w3id.org/biol
 ## Used by
 
  * [GeneToExpressionSiteAssociation](GeneToExpressionSiteAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

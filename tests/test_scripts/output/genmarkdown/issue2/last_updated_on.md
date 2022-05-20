@@ -28,4 +28,5 @@ URI: [linkml:last_updated_on](https://w3id.org/linkml/last_updated_on)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | pav:lastUpdatedOn |
+| **In Subsets:** | | basic |
 

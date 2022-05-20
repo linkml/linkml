@@ -1,0 +1,387 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix schema: <http://schema.org/> .
+@prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/linkml/examples/personinfo/personinfo> a linkml:SchemaDefinition ;
+    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
+        <https://w3id.org/linkml/examples/personinfo/GeoObject>,
+        <https://w3id.org/linkml/examples/personinfo/Organization>,
+        <https://w3id.org/linkml/examples/personinfo/Person>,
+        <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:default_prefix "https://w3id.org/linkml/examples/personinfo/" ;
+    linkml:default_range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:generation_date "2021-10-18 01:27"^^xsd:dateTime ;
+    linkml:id <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:imports linkml:types ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:prefixes [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference linkml: ],
+        [ linkml:prefix_prefix "sdo" ;
+            linkml:prefix_reference schema: ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/Organization_full_name>,
+        <https://w3id.org/linkml/examples/personinfo/Organization_parent>,
+        <https://w3id.org/linkml/examples/personinfo/Person_parent>,
+        <https://w3id.org/linkml/examples/personinfo/full_name>,
+        <https://w3id.org/linkml/examples/personinfo/geoAge__unit>,
+        <https://w3id.org/linkml/examples/personinfo/geoAge__value>,
+        <https://w3id.org/linkml/examples/personinfo/geoObject__age>,
+        <https://w3id.org/linkml/examples/personinfo/geoObject__aliases>,
+        <https://w3id.org/linkml/examples/personinfo/id>,
+        <https://w3id.org/linkml/examples/personinfo/parent>,
+        <https://w3id.org/linkml/examples/personinfo/person__age>,
+        <https://w3id.org/linkml/examples/personinfo/person__aliases>,
+        <https://w3id.org/linkml/examples/personinfo/person__phone> ;
+    linkml:source_file "linkml_issue_384.yaml" ;
+    linkml:source_file_date "Mon Oct 18 01:20:49 2021"^^xsd:dateTime ;
+    linkml:source_file_size 1220 ;
+    linkml:types <https://w3id.org/linkml/examples/personinfo/boolean>,
+        <https://w3id.org/linkml/examples/personinfo/date>,
+        <https://w3id.org/linkml/examples/personinfo/datetime>,
+        <https://w3id.org/linkml/examples/personinfo/decimal>,
+        <https://w3id.org/linkml/examples/personinfo/double>,
+        <https://w3id.org/linkml/examples/personinfo/float>,
+        <https://w3id.org/linkml/examples/personinfo/integer>,
+        <https://w3id.org/linkml/examples/personinfo/ncname>,
+        <https://w3id.org/linkml/examples/personinfo/nodeidentifier>,
+        <https://w3id.org/linkml/examples/personinfo/objectidentifier>,
+        <https://w3id.org/linkml/examples/personinfo/string>,
+        <https://w3id.org/linkml/examples/personinfo/time>,
+        <https://w3id.org/linkml/examples/personinfo/uri>,
+        <https://w3id.org/linkml/examples/personinfo/uriorcurie> .
+
+<https://w3id.org/linkml/examples/personinfo/boolean> a linkml:TypeDefinition ;
+    skos:definition "A binary (true or false) value" ;
+    skos:inScheme linkml:types ;
+    linkml:base "Bool" ;
+    linkml:definition_uri linkml:Boolean ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "bool" ;
+    linkml:uri xsd:boolean .
+
+<https://w3id.org/linkml/examples/personinfo/date> a linkml:TypeDefinition ;
+    skos:definition "a date (year, month and day) in an idealized calendar" ;
+    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:inScheme linkml:types ;
+    linkml:base "XSDDate" ;
+    linkml:definition_uri linkml:Date ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:date .
+
+<https://w3id.org/linkml/examples/personinfo/datetime> a linkml:TypeDefinition ;
+    skos:definition "The combination of a date and time" ;
+    skos:inScheme linkml:types ;
+    linkml:base "XSDDateTime" ;
+    linkml:definition_uri linkml:Datetime ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:dateTime .
+
+<https://w3id.org/linkml/examples/personinfo/decimal> a linkml:TypeDefinition ;
+    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    skos:inScheme linkml:types ;
+    linkml:base "Decimal" ;
+    linkml:definition_uri linkml:Decimal ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:decimal .
+
+<https://w3id.org/linkml/examples/personinfo/double> a linkml:TypeDefinition ;
+    skos:definition "A real number that conforms to the xsd:double specification" ;
+    skos:inScheme linkml:types ;
+    linkml:base "float" ;
+    linkml:definition_uri linkml:Double ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:double .
+
+<https://w3id.org/linkml/examples/personinfo/ncname> a linkml:TypeDefinition ;
+    skos:definition "Prefix part of CURIE" ;
+    skos:inScheme linkml:types ;
+    linkml:base "NCName" ;
+    linkml:definition_uri linkml:Ncname ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:string .
+
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> a linkml:TypeDefinition ;
+    skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
+    skos:inScheme linkml:types ;
+    linkml:base "NodeIdentifier" ;
+    linkml:definition_uri linkml:Nodeidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:nonLiteral .
+
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> a linkml:TypeDefinition ;
+    skos:definition "A URI or CURIE that represents an object in the model." ;
+    skos:inScheme linkml:types ;
+    skos:note "Used for inheritence and type checking" ;
+    linkml:base "ElementIdentifier" ;
+    linkml:definition_uri linkml:Objectidentifier ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri shex:iri .
+
+<https://w3id.org/linkml/examples/personinfo/time> a linkml:TypeDefinition ;
+    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
+    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:inScheme linkml:types ;
+    linkml:base "XSDTime" ;
+    linkml:definition_uri linkml:Time ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:dateTime .
+
+<https://w3id.org/linkml/examples/personinfo/uri> a linkml:TypeDefinition ;
+    skos:definition "a complete URI" ;
+    skos:inScheme linkml:types ;
+    linkml:base "URI" ;
+    linkml:definition_uri linkml:Uri ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
+
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> a linkml:TypeDefinition ;
+    skos:definition "a URI or a CURIE" ;
+    skos:inScheme linkml:types ;
+    linkml:base "URIorCURIE" ;
+    linkml:definition_uri linkml:Uriorcurie ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri xsd:anyURI .
+
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> a linkml:SlotDefinition ;
+    dcterms:title "full name" ;
+    skos:definition "name of the organization, e.g. ACME inc" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "full_name" ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/full_name> ;
+    linkml:domain <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/full_name> ;
+    linkml:is_usage_slot true ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/full_name> ;
+    linkml:usage_slot_name "full_name" .
+
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "parent" ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:domain <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:inlined true ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:is_usage_slot true ;
+    linkml:multivalued true ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:usage_slot_name "parent" .
+
+<https://w3id.org/linkml/examples/personinfo/Person_parent> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "parent" ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:domain <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:inlined true ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:is_usage_slot true ;
+    linkml:multivalued true ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:usage_slot_name "parent" .
+
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "unit" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/unit> .
+
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "value" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/float> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/value> .
+
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:note "we introduce a deliberate conflict (type vs class range) with the age attribute that is local to person" ;
+    skos:prefLabel "age" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
+    linkml:inlined true ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/age> .
+
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:note "we introduce a deliberate conflict (single vs multivalied) with the aliases attribute that is local to person" ;
+    skos:prefLabel "aliases" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/aliases> .
+
+<https://w3id.org/linkml/examples/personinfo/person__age> a linkml:SlotDefinition ;
+    skos:definition "age in years" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "age" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/integer> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/age> .
+
+<https://w3id.org/linkml/examples/personinfo/person__aliases> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "aliases" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:multivalued true ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/aliases> .
+
+<https://w3id.org/linkml/examples/personinfo/person__phone> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:prefLabel "phone" ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/phone> .
+
+<https://w3id.org/linkml/examples/personinfo/phone> a linkml:SlotDefinition .
+
+<https://w3id.org/linkml/examples/personinfo/unit> a linkml:SlotDefinition .
+
+<https://w3id.org/linkml/examples/personinfo/value> a linkml:SlotDefinition ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/float> .
+
+<https://w3id.org/linkml/examples/personinfo/float> a linkml:TypeDefinition ;
+    skos:definition "A real number that conforms to the xsd:float specification" ;
+    skos:inScheme linkml:types ;
+    linkml:base "float" ;
+    linkml:definition_uri linkml:Float ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:float .
+
+<https://w3id.org/linkml/examples/personinfo/integer> a linkml:TypeDefinition ;
+    skos:definition "An integer" ;
+    skos:inScheme linkml:types ;
+    linkml:base "int" ;
+    linkml:definition_uri linkml:Integer ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:integer .
+
+<https://w3id.org/linkml/examples/personinfo/age> a linkml:SlotDefinition ;
+    skos:definition "age in years" ;
+    skos:note "we introduce a deliberate conflict (type vs class range) with the age attribute that is local to person" ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/GeoAge>,
+        <https://w3id.org/linkml/examples/personinfo/integer> .
+
+<https://w3id.org/linkml/examples/personinfo/aliases> a linkml:SlotDefinition ;
+    skos:note "we introduce a deliberate conflict (single vs multivalied) with the aliases attribute that is local to person" ;
+    linkml:multivalued true .
+
+<https://w3id.org/linkml/examples/personinfo/GeoObject> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
+        <https://w3id.org/linkml/examples/personinfo/aliases> ;
+    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/full_name>,
+        <https://w3id.org/linkml/examples/personinfo/geoObject__age>,
+        <https://w3id.org/linkml/examples/personinfo/geoObject__aliases>,
+        <https://w3id.org/linkml/examples/personinfo/id> .
+
+<https://w3id.org/linkml/examples/personinfo/id> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/id> ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/id> .
+
+<https://w3id.org/linkml/examples/personinfo/GeoAge> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:attributes <https://w3id.org/linkml/examples/personinfo/unit>,
+        <https://w3id.org/linkml/examples/personinfo/value> ;
+    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/geoAge__unit>,
+        <https://w3id.org/linkml/examples/personinfo/geoAge__value> .
+
+<https://w3id.org/linkml/examples/personinfo/full_name> a linkml:SlotDefinition ;
+    dcterms:title "full name" ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/full_name> ;
+    linkml:domain_of <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:owner <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/string> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/full_name> .
+
+<https://w3id.org/linkml/examples/personinfo/parent> a linkml:SlotDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/parent> ;
+    linkml:inlined true ;
+    linkml:multivalued true ;
+    linkml:range <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/parent> .
+
+<https://w3id.org/linkml/examples/personinfo/string> a linkml:TypeDefinition ;
+    skos:definition "A character string" ;
+    skos:inScheme linkml:types ;
+    linkml:base "str" ;
+    linkml:definition_uri linkml:String ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri xsd:string .
+
+<https://w3id.org/linkml/examples/personinfo/Organization> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/Organization_full_name>,
+        <https://w3id.org/linkml/examples/personinfo/Organization_parent>,
+        <https://w3id.org/linkml/examples/personinfo/id> .
+
+<https://w3id.org/linkml/examples/personinfo/Thing> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/full_name>,
+        <https://w3id.org/linkml/examples/personinfo/id> .
+
+<https://w3id.org/linkml/examples/personinfo/Person> a linkml:ClassDefinition ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    skos:mappingRelation <sdo:Person> ;
+    linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
+        <https://w3id.org/linkml/examples/personinfo/aliases>,
+        <https://w3id.org/linkml/examples/personinfo/phone> ;
+    linkml:class_uri schema:Person ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Person> ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/Person_parent>,
+        <https://w3id.org/linkml/examples/personinfo/full_name>,
+        <https://w3id.org/linkml/examples/personinfo/id>,
+        <https://w3id.org/linkml/examples/personinfo/person__age>,
+        <https://w3id.org/linkml/examples/personinfo/person__aliases>,
+        <https://w3id.org/linkml/examples/personinfo/person__phone> .
+
+

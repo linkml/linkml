@@ -7,7 +7,7 @@ a tag/value pair used to add non-model information to an entry
 URI: [linkml:Extension](https://w3id.org/linkml/Extension)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag:uriorcurie;value:string],[Extension]^-[Annotation],[Extensible],[Annotation])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag:uriorcurie;value:string],[Extension]^-[Annotation],[Extensible],[Annotation])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag(pk):uriorcurie;value:string],[Extension]^-[Annotation],[Extensible],[Annotation])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension]<extensions%200..*-++[Extension&#124;tag(pk):uriorcurie;value:string],[Extension]^-[Annotation],[Extensible],[Annotation])
 
 ## Children
 

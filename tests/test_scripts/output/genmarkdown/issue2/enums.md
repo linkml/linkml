@@ -20,3 +20,11 @@ schema_definition &#8594;  <sub>0..\*</sub> enum_definition
 ## Used by
 
  * schema_definition
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+|  | | object_oriented |
+

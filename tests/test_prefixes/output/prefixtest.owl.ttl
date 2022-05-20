@@ -1,215 +1,68 @@
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix linkml: <https://w3id.org/linkml/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-linkml:Boolean a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "boolean" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:boolean ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A binary (true or false) value" .
-
-linkml:Date a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "date" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:date ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a date (year, month and day) in an idealized calendar" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
-
-linkml:Datetime a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "datetime" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:dateTime ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "The combination of a date and time" .
-
-linkml:Decimal a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "decimal" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:decimal ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" .
-
-linkml:Double a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "double" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:double ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number that conforms to the xsd:double specification" .
-
-linkml:Float a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "float" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:float ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A real number that conforms to the xsd:float specification" .
-
-linkml:Integer a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "integer" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:integer ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "An integer" .
-
-linkml:Ncname a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "ncname" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "Prefix part of CURIE" .
-
-linkml:Nodeidentifier a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "nodeidentifier" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://www.w3.org/ns/shex#nonLiteral> ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A URI, CURIE or BNODE that represents a node in a model." .
-
-linkml:Objectidentifier a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "objectidentifier" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://www.w3.org/ns/shex#iri> ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A URI or CURIE that represents an object in the model." ;
-    skos:note "Used for inheritence and type checking" .
-
-linkml:SubsetDefinition a owl:Class ;
-    rdfs:label "subset_definition" ;
-    skos:definition "the name and description of a subset" .
-
-linkml:Time a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "time" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:dateTime ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
-    skos:editorialNote "URI is dateTime because OWL reasoners don't work with straight date or time" .
-
-linkml:Uri a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "uri" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:anyURI ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a complete URI" .
-
-linkml:Uriorcurie a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "uriorcurie" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:anyURI ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "a URI or a CURIE" .
-
-<https://w3id.org/linkml/tests/prefixtest.owl.ttl> a owl:Ontology ;
-    rdfs:label "prefixtest" ;
-    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    rdfs:seeAlso "https://example.org/" ;
-    skos:definition "Prefix Test Schema" ;
-    linkml:generation_date "2021-09-30 01:42" ;
-    linkml:metamodel_version "1.7.0" ;
-    linkml:source_file "prefixtest.yaml" ;
-    linkml:source_file_date "Thu Sep 30 01:38:25 2021" ;
-    linkml:source_file_size 1196 .
-
-<https://w3id.org/linkml/tests/prefixtest/Class> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "Class" ;
-    skos:exactMatch owl:Class .
-
-<https://w3id.org/linkml/tests/prefixtest/Foo> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "Foo" .
-
-<https://w3id.org/linkml/tests/prefixtest/Gene> a owl:Class,
-        linkml:ClassDefinition ;
-    rdfs:label "Gene" ;
-    skos:closeMatch <http://purl.obolibrary.org/obo/PR_000000001>,
-        <https://www.wikidata.org/wiki/Q7187> ;
-    skos:exactMatch <http://purl.obolibrary.org/obo/SO_0000704>,
-        <http://semanticscience.org/resource/SIO_010035>,
-        <https://w3id.org/biolink/Gene> .
-
-<https://w3id.org/linkml/tests/prefixtest/additionalName> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "additionalName" ;
-    rdfs:range linkml:String .
-
-<https://w3id.org/linkml/tests/prefixtest/id> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "id" ;
-    rdfs:range linkml:String .
-
-<https://w3id.org/linkml/tests/prefixtest/label> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "label" ;
-    rdfs:range linkml:String .
-
-<https://w3id.org/linkml/tests/prefixtest/native> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "native" ;
-    rdfs:range linkml:String .
-
-<https://w3id.org/linkml/tests/prefixtest/part_of> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "part of" ;
-    rdfs:range linkml:String .
-
-<https://w3id.org/linkml/tests/prefixtest/type> a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "type" ;
-    rdfs:range linkml:String .
-
-linkml:ClassDefinition a owl:Class ;
-    rdfs:label "class_definition" ;
-    skos:definition "the definition of a class or interface" .
-
-linkml:SlotDefinition a owl:Class ;
-    rdfs:label "slot_definition" ;
-    skos:definition "the definition of a property or a slot" .
-
-linkml:String a owl:Class,
-        linkml:TypeDefinition ;
-    rdfs:label "string" ;
-    rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange xsd:string ;
-            owl:onProperty linkml:topValue ;
-            owl:qualifiedCardinality 1 ] ;
-    skos:definition "A character string" .
-
-linkml:TypeDefinition a owl:Class ;
-    rdfs:label "type_definition" ;
-    skos:definition "A data type definition." .
-
-linkml:topValue a owl:DatatypeProperty ;
-    rdfs:label "value" .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/2004/02/skos/core#closeMatch> <https://www.wikidata.org/wiki/Q7187> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <https://w3id.org/linkml/metamodel_version> "1.7.0" .
+<https://w3id.org/linkml/SubsetDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <https://w3id.org/linkml/generation_date> "2022-05-10T00:33:34" .
+<http://schema.org/additionalName> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://schema.org/additionalName> .
+<https://w3id.org/linkml/TypeDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest/Foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://www.w3.org/2000/01/rdf-schema#seeAlso> "https://example.org/" .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <https://w3id.org/linkml/source_file_date> "2022-05-10T00:26:24" .
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .
+<http://purl.obolibrary.org/obo/BFO_0000050> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<https://w3id.org/linkml/tests/prefixtest/Foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<http://purl.obolibrary.org/obo/BFO_0000050> <http://www.w3.org/2000/01/rdf-schema#range> <https://w3id.org/linkml/String> .
+<http://purl.obolibrary.org/obo/BFO_0000050> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://purl.obolibrary.org/obo/BFO_0000050> .
+<http://purl.obolibrary.org/obo/BFO_0000050> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://schema.org/isPartOf> .
+<https://w3id.org/linkml/TypeDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "type_definition" .
+<https://w3id.org/linkml/topValue> <http://www.w3.org/2000/01/rdf-schema#label> "value" .
+<https://w3id.org/linkml/tests/prefixtest/id> <http://www.w3.org/2000/01/rdf-schema#label> "id" .
+<http://schema.org/additionalName> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/SlotDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "slot_definition" .
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#range> <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/prefixtest/native> <http://www.w3.org/2000/01/rdf-schema#label> "native" .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://purl.obolibrary.org/obo/IAO_0000700> <https://w3id.org/linkml/tests/prefixtest/Foo> .
+<https://w3id.org/linkml/tests/prefixtest/Class> <http://www.w3.org/2000/01/rdf-schema#label> "Class" .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/2000/01/rdf-schema#label> "Gene" .
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#label> "type" .
+<https://w3id.org/linkml/SlotDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://purl.obolibrary.org/obo/IAO_0000700> <https://w3id.org/linkml/tests/prefixtest/Gene> .
+<https://w3id.org/linkml/SubsetDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "subset_definition" .
+<http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://www.w3.org/2000/01/rdf-schema#label> .
+<https://w3id.org/linkml/tests/prefixtest/id> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+<https://w3id.org/linkml/topValue> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://semanticscience.org/resource/SIO_010035> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://purl.org/dc/terms/license> "https://creativecommons.org/publicdomain/zero/1.0/" .
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/tests/prefixtest/native> <http://www.w3.org/2000/01/rdf-schema#range> <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/2004/02/skos/core#closeMatch> <http://purl.obolibrary.org/obo/PR_000000001> .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2000/01/rdf-schema#label> "label" .
+<https://w3id.org/linkml/ClassDefinition> <http://www.w3.org/2000/01/rdf-schema#label> "class_definition" .
+<https://w3id.org/linkml/tests/prefixtest/native> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://purl.obolibrary.org/obo/SO_0000704> .
+<http://schema.org/additionalName> <http://www.w3.org/2000/01/rdf-schema#label> "additionalName" .
+<http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2000/01/rdf-schema#range> <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/ClassDefinition> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest/Foo> <http://www.w3.org/2000/01/rdf-schema#label> "Foo" .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://www.w3.org/2000/01/rdf-schema#label> "prefixtest" .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <http://purl.obolibrary.org/obo/IAO_0000700> <https://w3id.org/linkml/tests/prefixtest/Class> .
+<https://w3id.org/linkml/tests/prefixtest/Gene> <http://www.w3.org/2004/02/skos/core#exactMatch> <https://w3id.org/biolink/Gene> .
+<http://schema.org/additionalName> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <https://w3id.org/linkml/source_file_size> "1247"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<http://schema.org/additionalName> <http://www.w3.org/2000/01/rdf-schema#range> <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/prefixtest/native> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/tests/prefixtest/Class> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest.owl.ttl> <https://w3id.org/linkml/source_file> "prefixtest.yaml" .
+<https://w3id.org/linkml/tests/prefixtest/Class> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/tests/prefixtest/id> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://purl.obolibrary.org/obo/BFO_0000050> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<http://purl.obolibrary.org/obo/BFO_0000050> <http://www.w3.org/2000/01/rdf-schema#label> "part of" .
+<https://w3id.org/linkml/tests/prefixtest/Class> <http://www.w3.org/2004/02/skos/core#exactMatch> <http://www.w3.org/2002/07/owl#Class> .
+<https://w3id.org/linkml/tests/prefixtest/id> <http://www.w3.org/2000/01/rdf-schema#range> <https://w3id.org/linkml/String> .
 
 

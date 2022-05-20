@@ -26,5 +26,10 @@ URI: [biolink:gene_to_expression_site_association_object](https://w3id.org/bioli
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
 | **Examples:** | | Example(value='UBERON:0002037', description='cerebellum') |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
 

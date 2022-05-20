@@ -21,6 +21,7 @@ prefixes:
   SIO: 'http://semanticscience.org/resource/SIO_'
   wd: https://www.wikidata.org/wiki/
   dbont: http://dbpedia.org/ontology/
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
 default_prefix: prefixtest
 see_also:
   - https://example.org/

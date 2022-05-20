@@ -1,5 +1,14 @@
+import logging
+import os
+from pathlib import Path
+from typing import List
+
 import click
-from linkml.utils import validation
+from linkml_runtime.linkml_model import Prefix
+from linkml_runtime.utils import inference_utils
+from linkml_runtime.utils.inference_utils import infer_all_slot_values
+
+from linkml.utils import validation, datautils
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -21,26 +30,40 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
               help="Output format. Inferred from output suffix if not specified")
 @click.option("--target-class", "-C",
               help="name of class in datamodel that the root node instantiates")
+@click.option("--target-class-from-path/--no-target-class-from-path",
+              default=False,
+              show_default=True,
+              help="Infer the target class from the filename, should be ClassName-<other-chars>.{yaml,json,...}")
 @click.option("--index-slot", "-S",
               help="top level slot. Required for CSV dumping/loading")
 @click.option("--schema", "-s",
               help="Path to schema specified as LinkML yaml")
+@click.option("--prefix", "-P",
+              multiple=True,
+              help="Prefixmap base=URI pairs")
 @click.option("--validate/--no-validate",
               default=True,
+              show_default=True,
               help="Validate against the schema")
+@click.option("--infer/--no-infer",
+              default=False,
+              show_default=True,
+              help="Infer missing slot values")
 @click.option("--context", "-c",
               multiple=True,
               help="path to JSON-LD context file. Required for RDF input/output")
 @click.argument("input")
 def cli(input, module, target_class, context=None, output=None, input_format=None, output_format=None,
-        schema=None, validate=None, index_slot=None) -> None:
+        prefix: List = [],
+        target_class_from_path=None,
+        schema=None, validate=None, infer=None, index_slot=None) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
 
     The instance data must conform to a LinkML model, and there must be python dataclasses
     generated from that model. The converter works by first using a linkml-runtime loader to
     instantiate in-memory model objects, then dumpers are used to serialize.
-    When converting to or from RDF, a JSON-lD context must also be passed
+    When converting to or from RDF, a JSON-LD context must also be passed
     """
     if module is None:
         if schema is None:
@@ -49,8 +72,20 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
             python_module = PythonGenerator(schema).compile_module()
     else:
         python_module = compile_python(module)
+    prefix_map = {}
+    if prefix:
+        for p in prefix:
+            base, uri = p.split('=')
+            prefix_map[base] = uri
     if schema is not None:
         sv = SchemaView(schema)
+        if prefix_map:
+            for k, v in prefix_map.items():
+                sv.schema.prefixes[k] = Prefix(k, v)
+                sv.set_modified()
+    if target_class is None and target_class_from_path:
+        target_class = os.path.basename(input).split('-')[0]
+        logging.info(f"inferred target class = {target_class} from {input}")
     if target_class is None:
         target_class = infer_root_class(sv)
     if target_class is None:
@@ -61,13 +96,11 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
 
     inargs = {}
     outargs = {}
-    if input_format == 'rdf':
-        if len(context) == 0:
-            if schema is not None:
-                context = [_get_context(schema)]
-            else:
-                raise Exception('Must pass in context OR schema for RDF output')
-        inargs['contexts'] = list(context)[0]
+    if datautils._is_rdf_format(input_format):
+        if sv is None:
+            raise Exception(f'Must pass schema arg')
+        inargs['schemaview'] = sv
+        inargs['fmt'] = input_format
     if _is_xsv(input_format):
         if index_slot is None:
             index_slot = infer_index_slot(sv, target_class)
@@ -76,6 +109,9 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
         inargs['index_slot'] = index_slot
         inargs['schema'] = schema
     obj = loader.load(source=input,  target_class=py_target_class, **inargs)
+    if infer:
+        infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
+        infer_all_slot_values(obj, schemaview=sv, config=infer_config)
     if validate:
         if schema is None:
             raise Exception('--schema must be passed in order to validate. Suppress with --no-validate')
@@ -83,13 +119,18 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
         validation.validate_object(obj, schema)
 
     output_format = _get_format(output, output_format, default='json')
-    if output_format == 'rdf':
+    if output_format == 'json-ld':
         if len(context) == 0:
             if schema is not None:
                 context = [_get_context(schema)]
             else:
                 raise Exception('Must pass in context OR schema for RDF output')
         outargs['contexts'] = list(context)
+        outargs['fmt'] = 'json-ld'
+    if output_format == 'rdf' or output_format == 'ttl':
+        if sv is None:
+            raise Exception(f'Must pass schema arg')
+        outargs['schemaview'] = sv
     if _is_xsv(output_format):
         if index_slot is None:
             index_slot = infer_index_slot(sv, target_class)

@@ -25,6 +25,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.metamodelcore import Bool
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -227,10 +228,11 @@ Person(id='42', last_name='smith', first_name=['Joe', 'Bob'], age=43, living=Non
     foaf:lastName "smith" .
 
 
+# metamodel_version: 1.7.0
 BASE <http://example.org/model/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 
 <String> xsd:string
@@ -242,7 +244,7 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 <FriendlyPerson> CLOSED {
     (  $<FriendlyPerson_tes> (  &<Person_tes> ;
           rdf:type [ <Person> ] ? ;
-          <knows> @<Person> +
+          foaf:knows @<Person> +
        ) ;
        rdf:type [ <FriendlyPerson> ]
     )
@@ -264,5 +266,4 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
 
 Conforms
-  Testing <http://example.org/people/42> against shape http://example.org/model/FriendlyPerson
-       No matching triples found for predicate samp:knows
+Conforms

@@ -27,4 +27,8 @@ URI: [biolink:pairwise_molecular_interaction_id](https://w3id.org/biolink/vocab/
 |  |  |  |
 | --- | --- | --- |
 | **Examples:** | | Example(value='WB:WBInteraction000538741', description=None) |
+| **In Subsets:** | | translator_minimal |
+| **Exact Mappings:** | | alliancegenome:primaryId |
+|  | | gff3:ID |
+|  | | gpi:DB_Object_ID |
 

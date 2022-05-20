@@ -1,5 +1,6 @@
 import unittest
 import click
+from pathlib import PurePath
 
 from linkml.generators import jsonldcontextgen
 from tests.test_scripts.environment import env
@@ -55,7 +56,7 @@ class GenContextTestCase(ClickTestCase):
         # Note: two warnings are expected below:
         #   WARNING:ContextGenerator:No namespace defined for URI: http://example.org/slot/su
         #   WARNING:ContextGenerator:No namespace defined for URI: http://example.org/class/cu
-        self.do_test(env.input_path('uri_tests.yaml'), 'uri_tests.jsonld', filtr=ldcontext_metadata_filter,
+        self.do_test(PurePath(env.input_path('uri_tests.yaml')).as_posix(), 'uri_tests.jsonld', filtr=ldcontext_metadata_filter,
                      add_yaml=False)
 
 

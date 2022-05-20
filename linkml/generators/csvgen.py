@@ -23,6 +23,12 @@ class CsvGenerator(Generator):
         self.sep: Optional[str] = None
         self.closure: Optional[Set[ClassDefinitionName]] = None       # List of classes to include in output
         self.writer: Optional[DictWriter] = None
+        self.generate_header()
+
+    def generate_header(self):
+        print(f"# metamodel_version: {self.schema.metamodel_version}")
+        if self.schema.version:
+            print(f"# version: {self.schema.version}")
 
     def visit_schema(self, classes: List[ClassDefinitionName] = None, **_) -> None:
         # Note: classes comes from the "root" argument
@@ -55,7 +61,7 @@ class CsvGenerator(Generator):
 
 @shared_arguments(CsvGenerator)
 @click.command()
-@click.option("--root", "-r", default=None, multiple=True, help="Class(es) to transform")
+@click.option("--root", "-r", multiple=True, help="Class(es) to transform")
 def cli(yamlfile, root=None, **args):
     """ Generate CSV/TSV file from LinkML model """
     print(CsvGenerator(yamlfile, **args).serialize(classes=root, **args))

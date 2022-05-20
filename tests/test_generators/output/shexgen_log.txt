@@ -27,11 +27,13 @@
           "in_location": "GEO:1234",
           "diagnosis": {
             "id": "CODE:D0001",
-            "name": "headache"
+            "name": "headache",
+            "in_code_system": "DiseaseCodes"
           },
           "procedure": {
             "id": "CODE:P0001",
-            "name": "trepanation"
+            "name": "trepanation",
+            "in_code_system": "ProcedureCodes"
           }
         }
       ],
@@ -56,6 +58,16 @@
       "was_associated_with": "Agent:987"
     }
   ],
+  "code_systems": {
+    "DiseaseCodes": {
+      "id": "DiseaseCodes",
+      "name": "disease codes"
+    },
+    "ProcedureCodes": {
+      "id": "ProcedureCodes",
+      "name": "disease codes"
+    }
+  },
   "@type": "Dataset",
   "@context": {
     "A": "http://example.org/activities/",
@@ -71,6 +83,7 @@
     },
     "ROR": "http://example.org/ror/",
     "biolink": "https://w3id.org/biolink/",
+    "bizcodes": "https://example.org/bizcodes/",
     "core": "https://w3id.org/linkml/tests/core/",
     "dce": "http://purl.org/dc/elements/1.1/",
     "ks": "https://w3id.org/linkml/tests/kitchen_sink/",
@@ -78,6 +91,8 @@
     "linkml": "https://w3id.org/linkml/",
     "pav": "http://purl.org/pav/",
     "prov": "http://www.w3.org/ns/prov#",
+    "schema": "http://schema.org/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
     "@vocab": "https://w3id.org/linkml/tests/kitchen_sink/",
     "acted_on_behalf_of": {
       "@type": "@id",
@@ -98,9 +113,13 @@
       "@id": "core:agent_set"
     },
     "ceo": {
-      "@type": "@id"
+      "@type": "@id",
+      "@id": "schema:ceo"
     },
     "activities": {
+      "@type": "@id"
+    },
+    "code_systems": {
       "@type": "@id"
     },
     "companies": {
@@ -137,7 +156,13 @@
     "has_medical_history": {
       "@type": "@id"
     },
+    "aliases": {
+      "@id": "skos:altLabel"
+    },
     "id": "@id",
+    "in_code_system": {
+      "@type": "@id"
+    },
     "in_location": {
       "@type": "@id"
     },
@@ -145,6 +170,9 @@
       "@type": "xsd:boolean"
     },
     "married_to": {
+      "@type": "@id"
+    },
+    "metadata": {
       "@type": "@id"
     },
     "name": {
@@ -156,6 +184,9 @@
     "started_at_time": {
       "@type": "xsd:date",
       "@id": "prov:startedAtTime"
+    },
+    "slot_with_space_2": {
+      "@type": "@id"
     },
     "used": {
       "@id": "prov:used"
@@ -177,16 +208,9 @@
     },
     "Agent": {
       "@id": "prov:Agent"
+    },
+    "AnyObject": {
+      "@id": "linkml:Any"
     }
   }
-}Eval _:b1 = (False, 'No starting shape')
-Eval _:b0 = (False, 'No starting shape')
-Eval _:b2 = (False, 'No starting shape')
-Eval http://example.org/person/001 = (False, 'No starting shape')
-Eval http://example.org/activities/1 = (False, 'No starting shape')
-Eval http://example.org/code/P0001 = (False, 'No starting shape')
-Eval _:b3 = (False, 'No starting shape')
-Eval _:b4 = (False, 'No starting shape')
-Eval http://example.org/ror/1 = (False, 'No starting shape')
-Eval http://example.org/code/D0001 = (False, 'No starting shape')
-Eval http://example.org/person/002 = (False, 'No starting shape')
+}Eval N1c4fa4f47ca142478854dc73486b5ed1 = (False, 'No starting shape')

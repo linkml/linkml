@@ -21,3 +21,14 @@ URI: [biolink:material_sample_to_entity_association_mixin_subject](https://w3id.
 ## Used by
 
  * [MaterialSampleToEntityAssociationMixin](MaterialSampleToEntityAssociationMixin.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
+

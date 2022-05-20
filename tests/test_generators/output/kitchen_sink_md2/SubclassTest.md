@@ -1,0 +1,1 @@
+# FAKE TEMPLATE subclass test

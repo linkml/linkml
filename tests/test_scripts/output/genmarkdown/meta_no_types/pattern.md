@@ -2,7 +2,7 @@
 # Slot: pattern
 
 
-the string value of the slot must conform to this regular expression
+the string value of the slot must conform to this regular expression expressed in the string
 
 URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 
@@ -19,5 +19,16 @@ URI: [linkml:pattern](https://w3id.org/linkml/pattern)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
+ * [AnonymousTypeExpression](AnonymousTypeExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
  * [TypeDefinition](TypeDefinition.md)
+ * [TypeExpression](TypeExpression.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **In Subsets:** | | basic |
+

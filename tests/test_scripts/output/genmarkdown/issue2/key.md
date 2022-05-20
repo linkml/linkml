@@ -30,4 +30,6 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  | | a given domain can have at most one key slot (restriction to be removed in the future) |
 |  | | identifiers and keys are mutually exclusive.  A given domain cannot have both |
 |  | | a key slot is automatically required.  Keys cannot be optional |
+| **In Subsets:** | | basic |
+|  | | relational_model |
 

@@ -1,0 +1,338 @@
+name: personinfo
+description: Information about people, based on [schema.org](http://schema.org)
+id: https://w3id.org/linkml/examples/personinfo
+imports:
+- linkml:types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  personinfo:
+    prefix_prefix: personinfo
+    prefix_reference: https://w3id.org/linkml/examples/personinfo/
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  schema:
+    prefix_prefix: schema
+    prefix_reference: http://schema.org/
+  rdfs:
+    prefix_prefix: rdfs
+    prefix_reference: http://www.w3.org/2000/01/rdf-schema#
+  prov:
+    prefix_prefix: prov
+    prefix_reference: http://www.w3.org/ns/prov#
+  GSSO:
+    prefix_prefix: GSSO
+    prefix_reference: http://purl.obolibrary.org/obo/GSSO_
+  famrel:
+    prefix_prefix: famrel
+    prefix_reference: https://example.org/FamilialRelations#
+emit_prefixes:
+- rdf
+- rdfs
+- xsd
+- skos
+default_curi_maps:
+- semweb_context
+default_prefix: personinfo
+default_range: string
+subsets:
+  basic_subset:
+    name: basic_subset
+    description: A subset of the schema that handles basic information
+enums:
+  familialrelationshiptype_ENUM:
+    name: familialrelationshiptype_ENUM
+    permissible_values:
+      SIBLING_OF:
+        text: SIBLING_OF
+        meaning: famrel:01
+      PARENT_OF:
+        text: PARENT_OF
+        meaning: famrel:02
+      CHILD_OF:
+        text: CHILD_OF
+        meaning: famrel:01
+  gendertype_ENUM:
+    name: gendertype_ENUM
+    permissible_values:
+      nonbinary man:
+        text: nonbinary man
+        meaning: GSSO:009254
+      nonbinary woman:
+        text: nonbinary woman
+        meaning: GSSO:009253
+      transgender woman:
+        text: transgender woman
+        meaning: GSSO:000384
+      transgender man:
+        text: transgender man
+        meaning: GSSO:000372
+      cisgender man:
+        text: cisgender man
+        meaning: GSSO:000371
+      cisgender woman:
+        text: cisgender woman
+        meaning: GSSO:000385
+  diagnosistype_ENUM:
+    name: diagnosistype_ENUM
+slots:
+  id_slot:
+    name: id_slot
+    slot_uri: schema:identifier
+    identifier: true
+  name_slot:
+    name: name_slot
+    slot_uri: schema:name
+  description_slot:
+    name: description_slot
+    slot_uri: schema:description
+  image_slot:
+    name: image_slot
+    slot_uri: schema:image
+  gender_slot:
+    name: gender_slot
+    slot_uri: schema:gender
+    range: gendertype_ENUM
+  primary_email_slot:
+    name: primary_email_slot
+    slot_uri: schema:email
+  birth_date_slot:
+    name: birth_date_slot
+    slot_uri: schema:birthDate
+  employed_at_slot:
+    name: employed_at_slot
+    range: ORGANIZATION
+  is_current_slot:
+    name: is_current_slot
+    range: boolean
+  has_employment_history_slot:
+    name: has_employment_history_slot
+    multivalued: true
+    range: EMPLOYMENTEVENT
+    inlined_as_list: true
+  has_medical_history_slot:
+    name: has_medical_history_slot
+    multivalued: true
+    range: MEDICALEVENT
+    inlined_as_list: true
+  has_familial_relationships_slot:
+    name: has_familial_relationships_slot
+    multivalued: true
+    range: FAMILIALRELATIONSHIP
+    inlined_as_list: true
+  children_slot:
+    name: children_slot
+    singular_name: child
+    multivalued: true
+    range: PERSON
+    inlined_as_list: true
+  in_location_slot:
+    name: in_location_slot
+    range: PLACE
+  current_address_slot:
+    name: current_address_slot
+    description: The address at which a person currently lives
+    range: ADDRESS
+  age_in_years_slot:
+    name: age_in_years_slot
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+  related_to_slot:
+    name: related_to_slot
+  type_slot:
+    name: type_slot
+  street_slot:
+    name: street_slot
+  city_slot:
+    name: city_slot
+  mission_statement_slot:
+    name: mission_statement_slot
+  founding_date_slot:
+    name: founding_date_slot
+  founding_location_slot:
+    name: founding_location_slot
+    range: PLACE
+  postal_code_slot:
+    name: postal_code_slot
+    range: string
+  started_at_time_slot:
+    name: started_at_time_slot
+    slot_uri: prov:startedAtTime
+    range: date
+  duration_slot:
+    name: duration_slot
+    range: float
+  diagnosis_slot:
+    name: diagnosis_slot
+    range: DIAGNOSISCONCEPT
+    inlined: true
+  procedure_slot:
+    name: procedure_slot
+    range: PROCEDURECONCEPT
+    inlined: true
+  ended_at_time_slot:
+    name: ended_at_time_slot
+    slot_uri: prov:endedAtTime
+    range: date
+  persons_slot:
+    name: persons_slot
+    multivalued: true
+    range: PERSON
+    inlined: true
+    inlined_as_list: true
+  organizations_slot:
+    name: organizations_slot
+    multivalued: true
+    range: ORGANIZATION
+    inlined: true
+    inlined_as_list: true
+classes:
+  NAMEDTHING:
+    name: NAMEDTHING
+    description: A generic grouping for any identifiable entity
+    close_mappings:
+    - schema:Thing
+    slots:
+    - id_slot
+    - name_slot
+    - description_slot
+    - image_slot
+  PERSON:
+    name: PERSON
+    description: A person (alive, dead, undead, or fictional).
+    in_subset:
+    - basic_subset
+    is_a: NAMEDTHING
+    mixins:
+    - HASALIASES
+    - HASNEWSEVENTS
+    slots:
+    - primary_email_slot
+    - birth_date_slot
+    - age_in_years_slot
+    - gender_slot
+    - current_address_slot
+    - has_employment_history_slot
+    - has_familial_relationships_slot
+    - has_medical_history_slot
+    slot_usage:
+      primary_email_slot:
+        name: primary_email_slot
+        pattern: ^\S+@[\S+\.]+\S+
+    class_uri: schema:Person
+  HASALIASES:
+    name: HASALIASES
+    description: A mixin applied to any class that can have aliases/alternateNames
+    mixin: true
+    attributes:
+      aliases_slot:
+        name: aliases_slot
+        exact_mappings:
+        - schema:alternateName
+        singular_name: alias
+        multivalued: true
+  HASNEWSEVENTS:
+    name: HASNEWSEVENTS
+    mixin: true
+    attributes:
+      has_news_events_slot:
+        name: has_news_events_slot
+        singular_name: has_news_event
+        multivalued: true
+        range: NEWSEVENT
+  ORGANIZATION:
+    name: ORGANIZATION
+    description: An organization such as a company or university
+    is_a: NAMEDTHING
+    mixins:
+    - HASALIASES
+    - HASNEWSEVENTS
+    slots:
+    - mission_statement_slot
+    - founding_date_slot
+    - founding_location_slot
+    - current_address_slot
+    class_uri: schema:Organization
+  PLACE:
+    name: PLACE
+    mixins:
+    - HASALIASES
+    slots:
+    - id_slot
+    - name_slot
+  ADDRESS:
+    name: ADDRESS
+    slots:
+    - street_slot
+    - city_slot
+    - postal_code_slot
+    class_uri: schema:PostalAddress
+  EVENT:
+    name: EVENT
+    close_mappings:
+    - schema:Event
+    slots:
+    - started_at_time_slot
+    - ended_at_time_slot
+    - duration_slot
+    - is_current_slot
+  CONCEPT:
+    name: CONCEPT
+    is_a: NAMEDTHING
+  DIAGNOSISCONCEPT:
+    name: DIAGNOSISCONCEPT
+    is_a: CONCEPT
+  PROCEDURECONCEPT:
+    name: PROCEDURECONCEPT
+    is_a: CONCEPT
+  RELATIONSHIP:
+    name: RELATIONSHIP
+    slots:
+    - started_at_time_slot
+    - ended_at_time_slot
+    - related_to_slot
+    - type_slot
+  FAMILIALRELATIONSHIP:
+    name: FAMILIALRELATIONSHIP
+    is_a: RELATIONSHIP
+    slot_usage:
+      type_slot:
+        name: type_slot
+        range: familialrelationshiptype_ENUM
+        required: true
+      related_to_slot:
+        name: related_to_slot
+        range: PERSON
+        required: true
+  EMPLOYMENTEVENT:
+    name: EMPLOYMENTEVENT
+    is_a: EVENT
+    slots:
+    - employed_at_slot
+  MEDICALEVENT:
+    name: MEDICALEVENT
+    is_a: EVENT
+    slots:
+    - in_location_slot
+    - diagnosis_slot
+    - procedure_slot
+  NEWSEVENT:
+    name: NEWSEVENT
+    is_a: EVENT
+    attributes:
+      headline_slot:
+        name: headline_slot
+  WITHLOCATION:
+    name: WITHLOCATION
+    mixin: true
+    slots:
+    - in_location_slot
+  CONTAINER:
+    name: CONTAINER
+    slots:
+    - name_slot
+    - persons_slot
+    - organizations_slot
+    tree_root: true
+source_file: /home/runner/work/linkml/linkml/tests/test_generators/input/personinfo.yaml

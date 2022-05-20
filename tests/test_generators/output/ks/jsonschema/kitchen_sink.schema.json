@@ -69,6 +69,14 @@
          "title": "Agent",
          "type": "object"
       },
+      "AnyObject": {
+         "additionalProperties": true,
+         "description": "Example of unconstrained class",
+         "properties": {},
+         "required": [],
+         "title": "AnyObject",
+         "type": "object"
+      },
       "BirthEvent": {
          "additionalProperties": false,
          "description": "",
@@ -83,6 +91,10 @@
             "is_current": {
                "type": "boolean"
             },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
+            },
             "started_at_time": {
                "format": "date",
                "type": "string"
@@ -90,6 +102,50 @@
          },
          "required": [],
          "title": "BirthEvent",
+         "type": "object"
+      },
+      "ClassWithSpaces": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "slot_with_space_1": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "ClassWithSpaces",
+         "type": "object"
+      },
+      "CodeSystem": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "id"
+         ],
+         "title": "CodeSystem",
+         "type": "object"
+      },
+      "CodeSystem__identifier_optional": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "CodeSystem",
          "type": "object"
       },
       "Company": {
@@ -125,6 +181,9 @@
             "id": {
                "type": "string"
             },
+            "in_code_system": {
+               "type": "string"
+            },
             "name": {
                "type": "string"
             }
@@ -144,6 +203,11 @@
                   "$ref": "#/$defs/Activity"
                },
                "type": "array"
+            },
+            "code_systems": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/CodeSystem__identifier_optional"
+               }
             },
             "companies": {
                "items": {
@@ -169,6 +233,9 @@
             "id": {
                "type": "string"
             },
+            "in_code_system": {
+               "type": "string"
+            },
             "name": {
                "type": "string"
             }
@@ -181,7 +248,9 @@
       },
       "DiagnosisType": {
          "description": "",
-         "enum": [],
+         "enum": [
+            "TODO"
+         ],
          "title": "DiagnosisType",
          "type": "string"
       },
@@ -199,14 +268,32 @@
             "is_current": {
                "type": "boolean"
             },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
+            },
             "started_at_time": {
                "format": "date",
                "type": "string"
+            },
+            "type": {
+               "$ref": "#/$defs/EmploymentEventType"
             }
          },
          "required": [],
          "title": "EmploymentEvent",
          "type": "object"
+      },
+      "EmploymentEventType": {
+         "description": "codes for different kinds of employment/HR related events",
+         "enum": [
+            "HIRE",
+            "FIRE",
+            "PROMOTION",
+            "TRANSFER"
+         ],
+         "title": "EmploymentEventType",
+         "type": "string"
       },
       "Event": {
          "additionalProperties": false,
@@ -219,6 +306,10 @@
             "is_current": {
                "type": "boolean"
             },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
+            },
             "started_at_time": {
                "format": "date",
                "type": "string"
@@ -226,6 +317,18 @@
          },
          "required": [],
          "title": "Event",
+         "type": "object"
+      },
+      "FakeClass": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "test_attribute": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "FakeClass",
          "type": "object"
       },
       "FamilialRelationship": {
@@ -281,6 +384,10 @@
             "married_to": {
                "type": "string"
             },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
+            },
             "started_at_time": {
                "format": "date",
                "type": "string"
@@ -306,6 +413,10 @@
             },
             "is_current": {
                "type": "boolean"
+            },
+            "metadata": {
+               "$ref": "#/$defs/AnyObject",
+               "description": "Example of a slot that has an unconstrained range"
             },
             "procedure": {
                "$ref": "#/$defs/ProcedureConcept"
@@ -342,9 +453,17 @@
          "title": "Organization",
          "type": "object"
       },
+      "OtherCodes": {
+         "description": "",
+         "enum": [
+            "a b"
+         ],
+         "title": "OtherCodes",
+         "type": "string"
+      },
       "Person": {
          "additionalProperties": false,
-         "description": "",
+         "description": "A person, living or dead",
          "properties": {
             "addresses": {
                "items": {
@@ -353,6 +472,7 @@
                "type": "array"
             },
             "age_in_years": {
+               "description": "number of years since birth",
                "maximum": 999,
                "minimum": 0,
                "type": "integer"
@@ -428,6 +548,9 @@
             "id": {
                "type": "string"
             },
+            "in_code_system": {
+               "type": "string"
+            },
             "name": {
                "type": "string"
             }
@@ -460,12 +583,54 @@
          "required": [],
          "title": "Relationship",
          "type": "object"
+      },
+      "SubclassTest": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "slot_with_space_1": {
+               "type": "string"
+            },
+            "slot_with_space_2": {
+               "$ref": "#/$defs/ClassWithSpaces"
+            }
+         },
+         "required": [],
+         "title": "SubclassTest",
+         "type": "object"
       }
    },
    "$id": "https://w3id.org/linkml/tests/kitchen_sink",
    "$schema": "http://json-schema.org/draft-07/schema#",
-   "additionalProperties": true,
-   "properties": {},
+   "additionalProperties": false,
+   "metamodel_version": "1.7.0",
+   "properties": {
+      "activities": {
+         "items": {
+            "$ref": "#/$defs/Activity"
+         },
+         "type": "array"
+      },
+      "code_systems": {
+         "additionalProperties": {
+            "$ref": "#/$defs/CodeSystem__identifier_optional"
+         }
+      },
+      "companies": {
+         "items": {
+            "$ref": "#/$defs/Company"
+         },
+         "type": "array"
+      },
+      "persons": {
+         "items": {
+            "$ref": "#/$defs/Person"
+         },
+         "type": "array"
+      }
+   },
+   "required": [],
    "title": "kitchen_sink",
-   "type": "object"
+   "type": "object",
+   "version": null
 }

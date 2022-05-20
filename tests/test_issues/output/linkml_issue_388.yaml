@@ -1,0 +1,104 @@
+name: personinfo
+id: https://w3id.org/linkml/examples/personinfo
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  this:
+    prefix_prefix: this
+    prefix_reference: https://example.org/this/
+  other:
+    prefix_prefix: other
+    prefix_reference: https://example.org/other/
+default_prefix: this
+default_range: my_str
+types:
+  my_str:
+    name: my_str
+    definition_uri: https://example.org/this/MyStr
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    base: str
+    uri: xsd:string
+  my_int:
+    name: my_int
+    definition_uri: https://example.org/this/MyInt
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    base: integer
+    uri: xsd:integer
+slots:
+  c1__a:
+    name: c1__a
+    description: this-a in the context of C1
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: this:a
+    alias: a
+    owner: C1
+    domain_of:
+    - C1
+    range: my_str
+  c2__a:
+    name: c2__a
+    description: this-a in the context of C2
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: this:a
+    alias: a
+    owner: C2
+    domain_of:
+    - C2
+    range: my_int
+  c3__a:
+    name: c3__a
+    description: other-a in the context of C3
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    mappings:
+    - other:a
+    slot_uri: other:a
+    alias: a
+    owner: C3
+    domain_of:
+    - C3
+    range: C1
+    inlined: true
+classes:
+  C1:
+    name: C1
+    definition_uri: https://example.org/this/C1
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - c1__a
+    attributes:
+      a:
+        name: a
+        description: this-a in the context of C1
+        range: my_str
+    class_uri: this:C1
+  C2:
+    name: C2
+    definition_uri: https://example.org/this/C2
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - c2__a
+    attributes:
+      a:
+        name: a
+        description: this-a in the context of C2
+        range: my_int
+    class_uri: this:C2
+  C3:
+    name: C3
+    definition_uri: https://example.org/this/C3
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - c3__a
+    attributes:
+      a:
+        name: a
+        description: other-a in the context of C3
+        slot_uri: other:a
+        range: C1
+    class_uri: this:C3
+metamodel_version: 1.7.0
+source_file: linkml_issue_388.yaml
+source_file_date: '2022-05-10T00:26:24'
+source_file_size: 648
+generation_date: '2022-05-10T00:33:22'

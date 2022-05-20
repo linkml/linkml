@@ -47,6 +47,7 @@
    "$id": "http://example.org/sample/types",
    "$schema": "http://json-schema.org/draft-07/schema#",
    "additionalProperties": true,
+   "metamodel_version": "1.7.0",
    "properties": {
       "id": {
          "type": "string"
@@ -61,6 +62,11 @@
          "type": "array"
       }
    },
+   "required": [
+      "id",
+      "issue_status"
+   ],
    "title": "types",
-   "type": "object"
+   "type": "object",
+   "version": null
 }

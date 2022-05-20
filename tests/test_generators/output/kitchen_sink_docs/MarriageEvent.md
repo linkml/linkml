@@ -7,7 +7,7 @@
 URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[WithLocation],[Place],[Person],[Person]<married%20to%200..1-%20[MarriageEvent&#124;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[MarriageEvent]uses%20-.->[WithLocation],[Event]^-[MarriageEvent],[Event])](https://yuml.me/diagram/nofunky;dir:TB/class/[WithLocation],[Place],[Person],[Person]<married%20to%200..1-%20[MarriageEvent&#124;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[MarriageEvent]uses%20-.->[WithLocation],[Event]^-[MarriageEvent],[Event])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[WithLocation],[Place],[Person],[Person]<married%20to%200..1-%20[MarriageEvent&#124;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[MarriageEvent]uses%20-.->[WithLocation],[Event]^-[MarriageEvent],[Event],[AnyObject])](https://yuml.me/diagram/nofunky;dir:TB/class/[WithLocation],[Place],[Person],[Person]<married%20to%200..1-%20[MarriageEvent&#124;started_at_time(i):date%20%3F;ended_at_time(i):date%20%3F;is_current(i):boolean%20%3F],[MarriageEvent]uses%20-.->[WithLocation],[Event]^-[MarriageEvent],[Event],[AnyObject])
 
 ## Parents
 
@@ -37,6 +37,9 @@ URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
      * Range: [Date](Date.md)
  * [is current](is_current.md)  <sub>0..1</sub>
      * Range: [Boolean](Boolean.md)
+ * [metadata](metadata.md)  <sub>0..1</sub>
+     * Description: Example of a slot that has an unconstrained range
+     * Range: [AnyObject](AnyObject.md)
 
 ### Mixed in from WithLocation:
 

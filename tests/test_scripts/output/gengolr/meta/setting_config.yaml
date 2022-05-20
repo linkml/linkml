@@ -1,0 +1,13 @@
+# metamodel_version: 1.7.0# version: 2.0.0id: setting
+schema_generating: true
+description: assignment of a key to a value
+display_name: setting
+document_category: setting
+weight: 20
+fields:
+- id: setting_key
+  description: the variable name for a setting
+  display_name: setting_key
+- id: setting_value
+  description: The value assigned for a setting
+  display_name: setting_value

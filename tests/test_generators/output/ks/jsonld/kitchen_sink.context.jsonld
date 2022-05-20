@@ -1,5 +1,5 @@
 {
-   "_comments": "Auto generated from kitchen_sink.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2021-09-30 01:42\n    Schema: kitchen_sink\n    \n    id: https://w3id.org/linkml/tests/kitchen_sink\n    description: Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists to test all features of linkml.\n\nThis particular text field exists to demonstrate markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links, e.g to [Person](Person.md)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "_comments": "Auto generated from kitchen_sink.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-05-10T00:31:54\n    Schema: kitchen_sink\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/tests/kitchen_sink\n    description: Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists to test all features of linkml.\n\nThis particular text field exists to demonstrate markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links, e.g to [Person](Person.md)\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
    "@context": {
       "A": "http://example.org/activities/",
       "BFO": {
@@ -14,6 +14,7 @@
       },
       "ROR": "http://example.org/ror/",
       "biolink": "https://w3id.org/biolink/",
+      "bizcodes": "https://example.org/bizcodes/",
       "core": "https://w3id.org/linkml/tests/core/",
       "dce": "http://purl.org/dc/elements/1.1/",
       "ks": "https://w3id.org/linkml/tests/kitchen_sink/",
@@ -21,6 +22,8 @@
       "linkml": "https://w3id.org/linkml/",
       "pav": "http://purl.org/pav/",
       "prov": "http://www.w3.org/ns/prov#",
+      "schema": "http://schema.org/",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
       "@vocab": "https://w3id.org/linkml/tests/kitchen_sink/",
       "acted_on_behalf_of": {
          "@type": "@id",
@@ -41,9 +44,13 @@
          "@id": "core:agent_set"
       },
       "ceo": {
-         "@type": "@id"
+         "@type": "@id",
+         "@id": "schema:ceo"
       },
       "activities": {
+         "@type": "@id"
+      },
+      "code_systems": {
          "@type": "@id"
       },
       "companies": {
@@ -80,7 +87,13 @@
       "has_medical_history": {
          "@type": "@id"
       },
+      "aliases": {
+         "@id": "skos:altLabel"
+      },
       "id": "@id",
+      "in_code_system": {
+         "@type": "@id"
+      },
       "in_location": {
          "@type": "@id"
       },
@@ -88,6 +101,9 @@
          "@type": "xsd:boolean"
       },
       "married_to": {
+         "@type": "@id"
+      },
+      "metadata": {
          "@type": "@id"
       },
       "name": {
@@ -99,6 +115,9 @@
       "started_at_time": {
          "@type": "xsd:date",
          "@id": "prov:startedAtTime"
+      },
+      "slot_with_space_2": {
+         "@type": "@id"
       },
       "used": {
          "@id": "prov:used"
@@ -120,6 +139,9 @@
       },
       "Agent": {
          "@id": "prov:Agent"
+      },
+      "AnyObject": {
+         "@id": "linkml:Any"
       }
    }
 }

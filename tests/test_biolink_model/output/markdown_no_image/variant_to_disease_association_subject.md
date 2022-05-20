@@ -27,5 +27,10 @@ URI: [biolink:variant_to_disease_association_subject](https://w3id.org/biolink/v
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | annotation subject (ga4gh) |
+|  | | node with outgoing relationship (neo4j) |
+| **Mappings:** | | rdf:subject |
 | **Examples:** | | Example(value='ClinVar:52241', description='NM_000059.3(BRCA2):c.7007G>C (p.Arg2336Pro)') |
+| **Exact Mappings:** | | owl:annotatedSource |
+|  | | OBAN:association_has_subject |
 

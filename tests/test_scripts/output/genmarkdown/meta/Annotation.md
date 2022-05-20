@@ -7,7 +7,7 @@ a tag/value pair with the semantics of OWL Annotation
 URI: [linkml:Annotation](https://w3id.org/linkml/Annotation)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Annotation]<annotations%200..*-++[Annotation&#124;tag(i):uriorcurie;value(i):string],[Annotation]uses%20-.->[Annotatable],[Extension]^-[Annotation],[Annotatable])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Annotation]<annotations%200..*-++[Annotation&#124;tag(i):uriorcurie;value(i):string],[Annotation]uses%20-.->[Annotatable],[Extension]^-[Annotation],[Annotatable])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Annotation]<annotations%200..*-++[Annotation&#124;tag(pk)(i):uriorcurie;value(i):string],[Annotation]uses%20-.->[Annotatable],[Extension]^-[Annotation],[Annotatable])](https://yuml.me/diagram/nofunky;dir:TB/class/[Extension],[Annotation]<annotations%200..*-++[Annotation&#124;tag(pk)(i):uriorcurie;value(i):string],[Annotation]uses%20-.->[Annotatable],[Extension]^-[Annotation],[Annotatable])
 
 ## Parents
 

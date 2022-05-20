@@ -1,5 +1,5 @@
 # Auto generated from issue_84.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2022-01-27T02:55:05
 # Schema: nmdc_schema
 #
 # id: https://microbiomedata/schema
@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.types import Double, Float, String
 from linkml_runtime.utils.metamodelcore import ElementIdentifier
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs

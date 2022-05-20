@@ -19,6 +19,7 @@ None &#8594;  <sub>1..1</sub> [String](String.md)
 
 ## Used by
 
+ * [CodeSystem](CodeSystem.md)
  * [Company](Company.md)
  * [Concept](Concept.md)
  * [DiagnosisConcept](DiagnosisConcept.md)

@@ -187,15 +187,15 @@
       "from_schema": "https://w3id.org/linkml/annotations",
       "is_a": "extensions",
       "domain": "Annotatable",
-      "range": "Annotation",
       "slot_uri": "https://w3id.org/linkml/annotations",
       "multivalued": true,
-      "inlined": true,
       "owner": "Annotation",
       "domain_of": [
         "Annotatable",
         "Annotation"
       ],
+      "range": "Annotation",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -205,15 +205,15 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
       "domain": "Extensible",
-      "range": "Extension",
       "slot_uri": "https://w3id.org/linkml/extensions",
       "multivalued": true,
-      "inlined": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
+      "range": "Extension",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -223,14 +223,15 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
       "domain": "Extension",
-      "range": "uriorcurie",
       "slot_uri": "https://w3id.org/linkml/tag",
-      "required": true,
+      "key": true,
       "alias": "tag",
       "owner": "Extension",
       "domain_of": [
         "Extension"
       ],
+      "range": "uriorcurie",
+      "required": true,
       "@type": "SlotDefinition"
     },
     {
@@ -240,14 +241,14 @@
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
       "domain": "Extension",
-      "range": "string",
       "slot_uri": "https://w3id.org/linkml/value",
-      "required": true,
       "alias": "value",
       "owner": "Extension",
       "domain_of": [
         "Extension"
       ],
+      "range": "string",
+      "required": true,
       "@type": "SlotDefinition"
     }
   ],
@@ -316,9 +317,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "annotations.yaml",
-  "source_file_date": "Sun Jun  6 23:07:12 2021",
+  "source_file_date": "2022-05-09T21:10:26",
   "source_file_size": 833,
-  "generation_date": "2021-06-06 23:07",
+  "generation_date": "2022-05-09T21:11:07",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

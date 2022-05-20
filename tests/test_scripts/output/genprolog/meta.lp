@@ -6,11 +6,23 @@ slot(alias).
 domain(alias, slot_definition).
 range(alias, string).
 has_uri(alias, 'http://w3id.org/biolink/vocab/alias').
+slot(predicate).
+domain(predicate, structured_alias).
+range(predicate, alias_predicate_enum).
+has_uri(predicate, 'http://w3id.org/biolink/vocab/predicate').
 slot(aliases).
 domain(aliases, element).
 range(aliases, string).
 has_uri(aliases, 'http://w3id.org/biolink/vocab/aliases').
 multivalued(aliases).
+slot(all_members).
+range(all_members, slot_definition).
+has_uri(all_members, 'http://w3id.org/biolink/vocab/all_members').
+multivalued(all_members).
+slot(all_of).
+range(all_of, expression).
+has_uri(all_of, 'http://w3id.org/biolink/vocab/all_of').
+multivalued(all_of).
 slot(source).
 domain(source, alt_description).
 range(source, string).
@@ -31,11 +43,19 @@ domain(annotations, annotatable).
 range(annotations, annotation).
 has_uri(annotations, 'http://w3id.org/biolink/vocab/annotations').
 multivalued(annotations).
+slot(any_of).
+range(any_of, expression).
+has_uri(any_of, 'http://w3id.org/biolink/vocab/any_of').
+multivalued(any_of).
 slot(apply_to).
 domain(apply_to, definition).
 range(apply_to, definition).
 has_uri(apply_to, 'http://w3id.org/biolink/vocab/apply_to').
 multivalued(apply_to).
+slot(asymmetric).
+domain(asymmetric, slot_definition).
+range(asymmetric, boolean).
+has_uri(asymmetric, 'http://w3id.org/biolink/vocab/asymmetric').
 slot(attributes).
 domain(attributes, class_definition).
 range(attributes, slot_definition).
@@ -45,15 +65,35 @@ slot(base).
 domain(base, type_definition).
 range(base, string).
 has_uri(base, 'http://w3id.org/biolink/vocab/base').
+slot(bidirectional).
+range(bidirectional, boolean).
+has_uri(bidirectional, 'http://w3id.org/biolink/vocab/bidirectional').
+slot(boolean_slot).
+range(boolean_slot, expression).
+has_uri(boolean_slot, 'http://w3id.org/biolink/vocab/boolean_slot').
+multivalued(boolean_slot).
 slot(broad_mappings).
 range(broad_mappings, uriorcurie).
 has_uri(broad_mappings, 'http://w3id.org/biolink/vocab/broad_mappings').
 multivalued(broad_mappings).
+slot(categories).
+range(categories, uriorcurie).
+has_uri(categories, 'http://w3id.org/biolink/vocab/categories').
+multivalued(categories).
+slot(children_are_mutually_disjoint).
+domain(children_are_mutually_disjoint, definition).
+range(children_are_mutually_disjoint, boolean).
+has_uri(children_are_mutually_disjoint, 'http://w3id.org/biolink/vocab/children_are_mutually_disjoint').
 slot(apply_to).
 domain(apply_to, class_definition).
 range(apply_to, class_definition).
 has_uri(apply_to, 'http://w3id.org/biolink/vocab/apply_to').
 multivalued(apply_to).
+slot(disjoint_with).
+domain(disjoint_with, class_definition).
+range(disjoint_with, class_definition).
+has_uri(disjoint_with, 'http://w3id.org/biolink/vocab/disjoint_with').
+multivalued(disjoint_with).
 slot(is_a).
 domain(is_a, class_definition).
 range(is_a, class_definition).
@@ -63,6 +103,31 @@ domain(mixins, class_definition).
 range(mixins, class_definition).
 has_uri(mixins, 'http://w3id.org/biolink/vocab/mixins').
 multivalued(mixins).
+slot(rules).
+domain(rules, class_definition).
+range(rules, class_rule).
+has_uri(rules, 'http://w3id.org/biolink/vocab/rules').
+multivalued(rules).
+slot(all_of).
+domain(all_of, class_expression).
+range(all_of, anonymous_class_expression).
+has_uri(all_of, 'http://w3id.org/biolink/vocab/all_of').
+multivalued(all_of).
+slot(any_of).
+domain(any_of, class_expression).
+range(any_of, anonymous_class_expression).
+has_uri(any_of, 'http://w3id.org/biolink/vocab/any_of').
+multivalued(any_of).
+slot(exactly_one_of).
+domain(exactly_one_of, class_expression).
+range(exactly_one_of, anonymous_class_expression).
+has_uri(exactly_one_of, 'http://w3id.org/biolink/vocab/exactly_one_of').
+multivalued(exactly_one_of).
+slot(none_of).
+domain(none_of, class_expression).
+range(none_of, anonymous_class_expression).
+has_uri(none_of, 'http://w3id.org/biolink/vocab/none_of').
+multivalued(none_of).
 slot(class_uri).
 domain(class_uri, class_definition).
 range(class_uri, uriorcurie).
@@ -72,6 +137,11 @@ domain(classes, schema_definition).
 range(classes, class_definition).
 has_uri(classes, 'http://w3id.org/biolink/vocab/classes').
 multivalued(classes).
+slot(classification_rules).
+domain(classification_rules, class_definition).
+range(classification_rules, anonymous_class_expression).
+has_uri(classification_rules, 'http://w3id.org/biolink/vocab/classification_rules').
+multivalued(classification_rules).
 slot(close_mappings).
 range(close_mappings, uriorcurie).
 has_uri(close_mappings, 'http://w3id.org/biolink/vocab/close_mappings').
@@ -93,6 +163,10 @@ domain(comments, element).
 range(comments, string).
 has_uri(comments, 'http://w3id.org/biolink/vocab/comments').
 multivalued(comments).
+slot(conforms_to).
+domain(conforms_to, element).
+range(conforms_to, string).
+has_uri(conforms_to, 'http://w3id.org/biolink/vocab/conforms_to').
 slot(created_by).
 domain(created_by, element).
 range(created_by, uriorcurie).
@@ -101,6 +175,9 @@ slot(created_on).
 domain(created_on, element).
 range(created_on, datetime).
 has_uri(created_on, 'http://w3id.org/biolink/vocab/created_on').
+slot(deactivated).
+range(deactivated, boolean).
+has_uri(deactivated, 'http://w3id.org/biolink/vocab/deactivated').
 slot(default_curi_maps).
 domain(default_curi_maps, schema_definition).
 range(default_curi_maps, string).
@@ -141,6 +218,11 @@ slot(designates_type).
 domain(designates_type, slot_definition).
 range(designates_type, boolean).
 has_uri(designates_type, 'http://w3id.org/biolink/vocab/designates_type').
+slot(disjoint_with).
+domain(disjoint_with, definition).
+range(disjoint_with, definition).
+has_uri(disjoint_with, 'http://w3id.org/biolink/vocab/disjoint_with').
+multivalued(disjoint_with).
 slot(domain).
 domain(domain, slot_definition).
 range(domain, class_definition).
@@ -150,6 +232,9 @@ domain(domain_of, slot_definition).
 range(domain_of, class_definition).
 has_uri(domain_of, 'http://w3id.org/biolink/vocab/domain_of').
 multivalued(domain_of).
+slot(elseconditions).
+range(elseconditions, anonymous_class_expression).
+has_uri(elseconditions, 'http://w3id.org/biolink/vocab/elseconditions').
 slot(emit_prefixes).
 domain(emit_prefixes, schema_definition).
 range(emit_prefixes, ncname).
@@ -160,10 +245,31 @@ domain(enums, schema_definition).
 range(enums, enum_definition).
 has_uri(enums, 'http://w3id.org/biolink/vocab/enums').
 multivalued(enums).
+slot(equals_expression).
+range(equals_expression, string).
+has_uri(equals_expression, 'http://w3id.org/biolink/vocab/equals_expression').
+slot(equals_number).
+range(equals_number, integer).
+has_uri(equals_number, 'http://w3id.org/biolink/vocab/equals_number').
+slot(equals_number_in).
+range(equals_number_in, integer).
+has_uri(equals_number_in, 'http://w3id.org/biolink/vocab/equals_number_in').
+multivalued(equals_number_in).
+slot(equals_string).
+range(equals_string, string).
+has_uri(equals_string, 'http://w3id.org/biolink/vocab/equals_string').
+slot(equals_string_in).
+range(equals_string_in, string).
+has_uri(equals_string_in, 'http://w3id.org/biolink/vocab/equals_string_in').
+multivalued(equals_string_in).
 slot(exact_mappings).
 range(exact_mappings, uriorcurie).
 has_uri(exact_mappings, 'http://w3id.org/biolink/vocab/exact_mappings').
 multivalued(exact_mappings).
+slot(exactly_one_of).
+range(exactly_one_of, expression).
+has_uri(exactly_one_of, 'http://w3id.org/biolink/vocab/exactly_one_of').
+multivalued(exactly_one_of).
 slot(examples).
 domain(examples, element).
 range(examples, example).
@@ -184,6 +290,9 @@ domain(extensions, extensible).
 range(extensions, extension).
 has_uri(extensions, 'http://w3id.org/biolink/vocab/extensions').
 multivalued(extensions).
+slot(followed_by).
+range(followed_by, expression).
+has_uri(followed_by, 'http://w3id.org/biolink/vocab/followed_by').
 slot(from_schema).
 domain(from_schema, element).
 range(from_schema, uri).
@@ -192,6 +301,9 @@ slot(generation_date).
 domain(generation_date, schema_definition).
 range(generation_date, datetime).
 has_uri(generation_date, 'http://w3id.org/biolink/vocab/generation_date').
+slot(has_member).
+range(has_member, anonymous_slot_expression).
+has_uri(has_member, 'http://w3id.org/biolink/vocab/has_member').
 slot(id).
 domain(id, schema_definition).
 range(id, uri).
@@ -210,6 +322,20 @@ slot(ifabsent).
 domain(ifabsent, slot_definition).
 range(ifabsent, string).
 has_uri(ifabsent, 'http://w3id.org/biolink/vocab/ifabsent').
+slot(import_as).
+domain(import_as, import_expression).
+range(import_as, ncname).
+has_uri(import_as, 'http://w3id.org/biolink/vocab/import_as').
+slot(import_from).
+domain(import_from, import_expression).
+range(import_from, uriorcurie).
+has_uri(import_from, 'http://w3id.org/biolink/vocab/import_from').
+required(import_from).
+slot(import_map).
+domain(import_map, import_expression).
+range(import_map, setting).
+has_uri(import_map, 'http://w3id.org/biolink/vocab/import_map').
+multivalued(import_map).
 slot(imported_from).
 domain(imported_from, element).
 range(imported_from, string).
@@ -219,11 +345,18 @@ domain(imports, schema_definition).
 range(imports, uriorcurie).
 has_uri(imports, 'http://w3id.org/biolink/vocab/imports').
 multivalued(imports).
+slot(in_language).
+range(in_language, string).
+has_uri(in_language, 'http://w3id.org/biolink/vocab/in_language').
 slot(in_subset).
 domain(in_subset, element).
 range(in_subset, subset_definition).
 has_uri(in_subset, 'http://w3id.org/biolink/vocab/in_subset').
 multivalued(in_subset).
+slot(inapplicable).
+domain(inapplicable, slot_definition).
+range(inapplicable, boolean).
+has_uri(inapplicable, 'http://w3id.org/biolink/vocab/inapplicable').
 slot(inherited).
 domain(inherited, slot_definition).
 range(inherited, boolean).
@@ -236,10 +369,18 @@ slot(inlined_as_list).
 domain(inlined_as_list, slot_definition).
 range(inlined_as_list, boolean).
 has_uri(inlined_as_list, 'http://w3id.org/biolink/vocab/inlined_as_list').
+slot(interpolated).
+domain(interpolated, pattern_expression).
+range(interpolated, boolean).
+has_uri(interpolated, 'http://w3id.org/biolink/vocab/interpolated').
 slot(inverse).
 domain(inverse, slot_definition).
 range(inverse, slot_definition).
 has_uri(inverse, 'http://w3id.org/biolink/vocab/inverse').
+slot(irreflexive).
+domain(irreflexive, slot_definition).
+range(irreflexive, boolean).
+has_uri(irreflexive, 'http://w3id.org/biolink/vocab/irreflexive').
 slot(is_a).
 domain(is_a, definition).
 range(is_a, definition).
@@ -248,6 +389,10 @@ slot(is_class_field).
 domain(is_class_field, slot_definition).
 range(is_class_field, boolean).
 has_uri(is_class_field, 'http://w3id.org/biolink/vocab/is_class_field').
+slot(is_grouping_slot).
+domain(is_grouping_slot, slot_definition).
+range(is_grouping_slot, boolean).
+has_uri(is_grouping_slot, 'http://w3id.org/biolink/vocab/is_grouping_slot').
 slot(is_usage_slot).
 domain(is_usage_slot, slot_definition).
 range(is_usage_slot, boolean).
@@ -256,6 +401,11 @@ slot(key).
 domain(key, slot_definition).
 range(key, boolean).
 has_uri(key, 'http://w3id.org/biolink/vocab/key').
+slot(keywords).
+domain(keywords, element).
+range(keywords, string).
+has_uri(keywords, 'http://w3id.org/biolink/vocab/keywords').
+multivalued(keywords).
 slot(last_updated_on).
 domain(last_updated_on, element).
 range(last_updated_on, datetime).
@@ -264,6 +414,22 @@ slot(license).
 domain(license, schema_definition).
 range(license, string).
 has_uri(license, 'http://w3id.org/biolink/vocab/license').
+slot(list_elements_ordered).
+domain(list_elements_ordered, slot_definition).
+range(list_elements_ordered, boolean).
+has_uri(list_elements_ordered, 'http://w3id.org/biolink/vocab/list_elements_ordered').
+slot(list_elements_unique).
+domain(list_elements_unique, slot_definition).
+range(list_elements_unique, boolean).
+has_uri(list_elements_unique, 'http://w3id.org/biolink/vocab/list_elements_unique').
+slot(list_value_specification_constant).
+range(list_value_specification_constant, string).
+has_uri(list_value_specification_constant, 'http://w3id.org/biolink/vocab/list_value_specification_constant').
+slot(literal_form).
+domain(literal_form, structured_alias).
+range(literal_form, string).
+has_uri(literal_form, 'http://w3id.org/biolink/vocab/literal_form').
+required(literal_form).
 slot(local_name_source).
 domain(local_name_source, local_name).
 range(local_name_source, ncname).
@@ -279,10 +445,17 @@ domain(local_names, element).
 range(local_names, local_name).
 has_uri(local_names, 'http://w3id.org/biolink/vocab/local_names').
 multivalued(local_names).
+slot(locally_reflexive).
+domain(locally_reflexive, slot_definition).
+range(locally_reflexive, boolean).
+has_uri(locally_reflexive, 'http://w3id.org/biolink/vocab/locally_reflexive').
 slot(mappings).
 range(mappings, uriorcurie).
 has_uri(mappings, 'http://w3id.org/biolink/vocab/mappings').
 multivalued(mappings).
+slot(maximum_cardinality).
+range(maximum_cardinality, integer).
+has_uri(maximum_cardinality, 'http://w3id.org/biolink/vocab/maximum_cardinality').
 slot(maximum_value).
 domain(maximum_value, slot_definition).
 range(maximum_value, integer).
@@ -295,6 +468,9 @@ slot(metamodel_version).
 domain(metamodel_version, schema_definition).
 range(metamodel_version, string).
 has_uri(metamodel_version, 'http://w3id.org/biolink/vocab/metamodel_version').
+slot(minimum_cardinality).
+range(minimum_cardinality, integer).
+has_uri(minimum_cardinality, 'http://w3id.org/biolink/vocab/minimum_cardinality').
 slot(minimum_value).
 domain(minimum_value, slot_definition).
 range(minimum_value, integer).
@@ -325,15 +501,58 @@ slot(narrow_mappings).
 range(narrow_mappings, uriorcurie).
 has_uri(narrow_mappings, 'http://w3id.org/biolink/vocab/narrow_mappings').
 multivalued(narrow_mappings).
+slot(none_of).
+range(none_of, expression).
+has_uri(none_of, 'http://w3id.org/biolink/vocab/none_of').
+multivalued(none_of).
 slot(notes).
 domain(notes, element).
 range(notes, string).
 has_uri(notes, 'http://w3id.org/biolink/vocab/notes').
 multivalued(notes).
+slot(open_world).
+range(open_world, boolean).
+has_uri(open_world, 'http://w3id.org/biolink/vocab/open_world').
+slot(owned_by).
+domain(owned_by, element).
+range(owned_by, uriorcurie).
+has_uri(owned_by, 'http://w3id.org/biolink/vocab/owned_by').
 slot(owner).
 domain(owner, slot_definition).
 range(owner, definition).
 has_uri(owner, 'http://w3id.org/biolink/vocab/owner').
+slot(partial_match).
+domain(partial_match, pattern_expression).
+range(partial_match, boolean).
+has_uri(partial_match, 'http://w3id.org/biolink/vocab/partial_match').
+slot(all_of).
+domain(all_of, path_expression).
+range(all_of, path_expression).
+has_uri(all_of, 'http://w3id.org/biolink/vocab/all_of').
+multivalued(all_of).
+slot(any_of).
+domain(any_of, path_expression).
+range(any_of, path_expression).
+has_uri(any_of, 'http://w3id.org/biolink/vocab/any_of').
+multivalued(any_of).
+slot(exactly_one_of).
+domain(exactly_one_of, path_expression).
+range(exactly_one_of, path_expression).
+has_uri(exactly_one_of, 'http://w3id.org/biolink/vocab/exactly_one_of').
+multivalued(exactly_one_of).
+slot(followed_by).
+domain(followed_by, path_expression).
+range(followed_by, path_expression).
+has_uri(followed_by, 'http://w3id.org/biolink/vocab/followed_by').
+slot(none_of).
+domain(none_of, path_expression).
+range(none_of, path_expression).
+has_uri(none_of, 'http://w3id.org/biolink/vocab/none_of').
+multivalued(none_of).
+slot(path_rule).
+domain(path_rule, slot_definition).
+range(path_rule, path_expression).
+has_uri(path_rule, 'http://w3id.org/biolink/vocab/path_rule').
 slot(pattern).
 domain(pattern, definition).
 range(pattern, string).
@@ -352,6 +571,12 @@ domain(permissible_values, enum_definition).
 range(permissible_values, permissible_value).
 has_uri(permissible_values, 'http://w3id.org/biolink/vocab/permissible_values').
 multivalued(permissible_values).
+slot(postconditions).
+range(postconditions, anonymous_class_expression).
+has_uri(postconditions, 'http://w3id.org/biolink/vocab/postconditions').
+slot(preconditions).
+range(preconditions, anonymous_class_expression).
+has_uri(preconditions, 'http://w3id.org/biolink/vocab/preconditions').
 slot(prefix_prefix).
 domain(prefix_prefix, prefix).
 range(prefix_prefix, ncname).
@@ -375,6 +600,13 @@ slot(range).
 domain(range, slot_definition).
 range(range, element).
 has_uri(range, 'http://w3id.org/biolink/vocab/range').
+slot(range_expression).
+domain(range_expression, slot_expression).
+range(range_expression, anonymous_class_expression).
+has_uri(range_expression, 'http://w3id.org/biolink/vocab/range_expression').
+slot(rank).
+range(rank, integer).
+has_uri(rank, 'http://w3id.org/biolink/vocab/rank').
 slot(readonly).
 domain(readonly, slot_definition).
 range(readonly, string).
@@ -383,22 +615,49 @@ slot(recommended).
 domain(recommended, slot_definition).
 range(recommended, boolean).
 has_uri(recommended, 'http://w3id.org/biolink/vocab/recommended').
+slot(reflexive).
+domain(reflexive, slot_definition).
+range(reflexive, boolean).
+has_uri(reflexive, 'http://w3id.org/biolink/vocab/reflexive').
+slot(reflexive_transitive_form_of).
+range(reflexive_transitive_form_of, slot_definition).
+has_uri(reflexive_transitive_form_of, 'http://w3id.org/biolink/vocab/reflexive_transitive_form_of').
 slot(related_mappings).
 range(related_mappings, uriorcurie).
 has_uri(related_mappings, 'http://w3id.org/biolink/vocab/related_mappings').
 multivalued(related_mappings).
+slot(relational_logical_characteristic).
+domain(relational_logical_characteristic, slot_definition).
+range(relational_logical_characteristic, boolean).
+has_uri(relational_logical_characteristic, 'http://w3id.org/biolink/vocab/relational_logical_characteristic').
+slot(relational_role).
+domain(relational_role, slot_definition).
+range(relational_role, relational_role_enum).
+has_uri(relational_role, 'http://w3id.org/biolink/vocab/relational_role').
 slot(repr).
 domain(repr, type_definition).
 range(repr, string).
 has_uri(repr, 'http://w3id.org/biolink/vocab/repr').
+slot(represents_relationship).
+domain(represents_relationship, class_definition).
+range(represents_relationship, boolean).
+has_uri(represents_relationship, 'http://w3id.org/biolink/vocab/represents_relationship').
 slot(required).
 domain(required, slot_definition).
 range(required, boolean).
 has_uri(required, 'http://w3id.org/biolink/vocab/required').
+slot(reversed).
+range(reversed, boolean).
+has_uri(reversed, 'http://w3id.org/biolink/vocab/reversed').
 slot(role).
 domain(role, slot_definition).
 range(role, string).
 has_uri(role, 'http://w3id.org/biolink/vocab/role').
+slot(rules).
+domain(rules, class_definition).
+range(rules, class_rule).
+has_uri(rules, 'http://w3id.org/biolink/vocab/rules').
+multivalued(rules).
 slot(name).
 domain(name, schema_definition).
 range(name, ncname).
@@ -409,15 +668,43 @@ domain(see_also, element).
 range(see_also, uriorcurie).
 has_uri(see_also, 'http://w3id.org/biolink/vocab/see_also').
 multivalued(see_also).
+slot(setting_key).
+domain(setting_key, setting).
+range(setting_key, ncname).
+has_uri(setting_key, 'http://w3id.org/biolink/vocab/setting_key').
+required(setting_key).
+slot(setting_value).
+domain(setting_value, setting).
+range(setting_value, string).
+has_uri(setting_value, 'http://w3id.org/biolink/vocab/setting_value').
+required(setting_value).
+slot(settings).
+domain(settings, schema_definition).
+range(settings, setting).
+has_uri(settings, 'http://w3id.org/biolink/vocab/settings').
+multivalued(settings).
+slot(shared).
+domain(shared, slot_definition).
+range(shared, boolean).
+has_uri(shared, 'http://w3id.org/biolink/vocab/shared').
 slot(singular_name).
 domain(singular_name, slot_definition).
 range(singular_name, string).
 has_uri(singular_name, 'http://w3id.org/biolink/vocab/singular_name').
+slot(slot_conditions).
+range(slot_conditions, slot_definition).
+has_uri(slot_conditions, 'http://w3id.org/biolink/vocab/slot_conditions').
+multivalued(slot_conditions).
 slot(apply_to).
 domain(apply_to, slot_definition).
 range(apply_to, slot_definition).
 has_uri(apply_to, 'http://w3id.org/biolink/vocab/apply_to').
 multivalued(apply_to).
+slot(disjoint_with).
+domain(disjoint_with, slot_definition).
+range(disjoint_with, slot_definition).
+has_uri(disjoint_with, 'http://w3id.org/biolink/vocab/disjoint_with').
+multivalued(disjoint_with).
 slot(is_a).
 domain(is_a, slot_definition).
 range(is_a, slot_definition).
@@ -432,6 +719,34 @@ domain(slots, schema_definition).
 range(slots, slot_definition).
 has_uri(slots, 'http://w3id.org/biolink/vocab/slots').
 multivalued(slots).
+slot(all_of).
+domain(all_of, slot_expression).
+range(all_of, anonymous_slot_expression).
+has_uri(all_of, 'http://w3id.org/biolink/vocab/all_of').
+multivalued(all_of).
+slot(any_of).
+domain(any_of, slot_expression).
+range(any_of, anonymous_slot_expression).
+has_uri(any_of, 'http://w3id.org/biolink/vocab/any_of').
+multivalued(any_of).
+slot(exactly_one_of).
+domain(exactly_one_of, slot_expression).
+range(exactly_one_of, anonymous_slot_expression).
+has_uri(exactly_one_of, 'http://w3id.org/biolink/vocab/exactly_one_of').
+multivalued(exactly_one_of).
+slot(none_of).
+domain(none_of, slot_expression).
+range(none_of, anonymous_slot_expression).
+has_uri(none_of, 'http://w3id.org/biolink/vocab/none_of').
+multivalued(none_of).
+slot(slot_group).
+domain(slot_group, slot_definition).
+range(slot_group, slot_definition).
+has_uri(slot_group, 'http://w3id.org/biolink/vocab/slot_group').
+slot(slot_names_unique).
+domain(slot_names_unique, definition).
+range(slot_names_unique, boolean).
+has_uri(slot_names_unique, 'http://w3id.org/biolink/vocab/slot_names_unique').
 slot(slot_uri).
 domain(slot_uri, slot_definition).
 range(slot_uri, uriorcurie).
@@ -446,6 +761,10 @@ domain(slots, class_definition).
 range(slots, slot_definition).
 has_uri(slots, 'http://w3id.org/biolink/vocab/slots').
 multivalued(slots).
+slot(source).
+domain(source, element).
+range(source, uriorcurie).
+has_uri(source, 'http://w3id.org/biolink/vocab/source').
 slot(source_file).
 domain(source_file, schema_definition).
 range(source_file, string).
@@ -466,6 +785,24 @@ slot(string_serialization).
 domain(string_serialization, definition).
 range(string_serialization, string).
 has_uri(string_serialization, 'http://w3id.org/biolink/vocab/string_serialization').
+slot(categories).
+domain(categories, structured_alias).
+range(categories, uriorcurie).
+has_uri(categories, 'http://w3id.org/biolink/vocab/categories').
+multivalued(categories).
+slot(structured_aliases).
+range(structured_aliases, structured_alias).
+has_uri(structured_aliases, 'http://w3id.org/biolink/vocab/structured_aliases').
+multivalued(structured_aliases).
+slot(structured_imports).
+domain(structured_imports, schema_definition).
+range(structured_imports, import_expression).
+has_uri(structured_imports, 'http://w3id.org/biolink/vocab/structured_imports').
+multivalued(structured_imports).
+slot(structured_pattern).
+domain(structured_pattern, definition).
+range(structured_pattern, pattern_expression).
+has_uri(structured_pattern, 'http://w3id.org/biolink/vocab/structured_pattern').
 slot(subclass_of).
 domain(subclass_of, class_definition).
 range(subclass_of, uriorcurie).
@@ -483,6 +820,10 @@ slot(symmetric).
 domain(symmetric, slot_definition).
 range(symmetric, boolean).
 has_uri(symmetric, 'http://w3id.org/biolink/vocab/symmetric').
+slot(syntax).
+domain(syntax, pattern_expression).
+range(syntax, string).
+has_uri(syntax, 'http://w3id.org/biolink/vocab/syntax').
 slot(text).
 domain(text, permissible_value).
 range(text, string).
@@ -497,10 +838,40 @@ domain(todos, element).
 range(todos, string).
 has_uri(todos, 'http://w3id.org/biolink/vocab/todos').
 multivalued(todos).
+slot(transitive).
+domain(transitive, slot_definition).
+range(transitive, boolean).
+has_uri(transitive, 'http://w3id.org/biolink/vocab/transitive').
+slot(transitive_form_of).
+range(transitive_form_of, slot_definition).
+has_uri(transitive_form_of, 'http://w3id.org/biolink/vocab/transitive_form_of').
+slot(traverse).
+range(traverse, slot_definition).
+has_uri(traverse, 'http://w3id.org/biolink/vocab/traverse').
 slot(tree_root).
 domain(tree_root, class_definition).
 range(tree_root, boolean).
 has_uri(tree_root, 'http://w3id.org/biolink/vocab/tree_root').
+slot(all_of).
+domain(all_of, type_expression).
+range(all_of, anonymous_type_expression).
+has_uri(all_of, 'http://w3id.org/biolink/vocab/all_of').
+multivalued(all_of).
+slot(any_of).
+domain(any_of, type_expression).
+range(any_of, anonymous_type_expression).
+has_uri(any_of, 'http://w3id.org/biolink/vocab/any_of').
+multivalued(any_of).
+slot(exactly_one_of).
+domain(exactly_one_of, type_expression).
+range(exactly_one_of, anonymous_type_expression).
+has_uri(exactly_one_of, 'http://w3id.org/biolink/vocab/exactly_one_of').
+multivalued(exactly_one_of).
+slot(none_of).
+domain(none_of, type_expression).
+range(none_of, anonymous_type_expression).
+has_uri(none_of, 'http://w3id.org/biolink/vocab/none_of').
+multivalued(none_of).
 slot(uri).
 domain(uri, type_definition).
 range(uri, uriorcurie).
@@ -519,6 +890,11 @@ domain(union_of, class_definition).
 range(union_of, class_definition).
 has_uri(union_of, 'http://w3id.org/biolink/vocab/union_of').
 multivalued(union_of).
+slot(unique_key_name).
+domain(unique_key_name, unique_key).
+range(unique_key_name, string).
+has_uri(unique_key_name, 'http://w3id.org/biolink/vocab/unique_key_name').
+required(unique_key_name).
 slot(unique_key_slots).
 domain(unique_key_slots, unique_key).
 range(unique_key_slots, slot_definition).
@@ -542,6 +918,13 @@ slot(description).
 domain(description, example).
 range(description, string).
 has_uri(description, 'http://w3id.org/biolink/vocab/description').
+slot(value_presence).
+domain(value_presence, slot_definition).
+range(value_presence, presence_enum).
+has_uri(value_presence, 'http://w3id.org/biolink/vocab/value_presence').
+slot(value_specification_constant).
+range(value_specification_constant, string).
+has_uri(value_specification_constant, 'http://w3id.org/biolink/vocab/value_specification_constant').
 slot(values_from).
 domain(values_from, definition).
 range(values_from, uriorcurie).
@@ -594,7 +977,432 @@ required(annotations).
 slotrange(annotation).
 multivalued_in(annotations, annotation).
 range_in(annotations, annotation, annotation).
+class(anonymous_class_expression).
+mixin(anonymous_class_expression, class_expression).
+is_a(anonymous_class_expression, anonymous_expression).
+has_uri(anonymous_class_expression, 'http://w3id.org/biolink/vocab/AnonymousClassExpression').
+class_slot(anonymous_class_expression, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, anonymous_class_expression).
+range_in(extensions, extension, anonymous_class_expression).
+class_slot(anonymous_class_expression, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, anonymous_class_expression).
+range_in(annotations, annotation, anonymous_class_expression).
+class_slot(anonymous_class_expression, description).
+required(description).
+slotrange(string).
+range_in(description, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, anonymous_class_expression).
+range_in(alt_descriptions, alt_description, anonymous_class_expression).
+class_slot(anonymous_class_expression, title).
+required(title).
+slotrange(string).
+range_in(title, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, anonymous_class_expression).
+range_in(todos, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, anonymous_class_expression).
+range_in(notes, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, anonymous_class_expression).
+range_in(comments, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, anonymous_class_expression).
+range_in(examples, example, anonymous_class_expression).
+class_slot(anonymous_class_expression, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, anonymous_class_expression).
+range_in(in_subset, subset_definition, anonymous_class_expression).
+class_slot(anonymous_class_expression, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, anonymous_class_expression).
+class_slot(anonymous_class_expression, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, anonymous_class_expression).
+class_slot(anonymous_class_expression, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, anonymous_class_expression).
+class_slot(anonymous_class_expression, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, anonymous_class_expression).
+range_in(see_also, uriorcurie, anonymous_class_expression).
+class_slot(anonymous_class_expression, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, anonymous_class_expression).
+class_slot(anonymous_class_expression, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, anonymous_class_expression).
+class_slot(anonymous_class_expression, is_a).
+required(is_a).
+slotrange(definition).
+range_in(is_a, definition, anonymous_class_expression).
+class_slot(anonymous_class_expression, any_of).
+required(any_of).
+slotrange(anonymous_class_expression).
+multivalued_in(any_of, anonymous_class_expression).
+range_in(any_of, anonymous_class_expression, anonymous_class_expression).
+class_slot(anonymous_class_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_class_expression).
+multivalued_in(exactly_one_of, anonymous_class_expression).
+range_in(exactly_one_of, anonymous_class_expression, anonymous_class_expression).
+class_slot(anonymous_class_expression, none_of).
+required(none_of).
+slotrange(anonymous_class_expression).
+multivalued_in(none_of, anonymous_class_expression).
+range_in(none_of, anonymous_class_expression, anonymous_class_expression).
+class_slot(anonymous_class_expression, all_of).
+required(all_of).
+slotrange(anonymous_class_expression).
+multivalued_in(all_of, anonymous_class_expression).
+range_in(all_of, anonymous_class_expression, anonymous_class_expression).
+class_slot(anonymous_class_expression, slot_conditions).
+required(slot_conditions).
+slotrange(slot_definition).
+multivalued_in(slot_conditions, anonymous_class_expression).
+range_in(slot_conditions, slot_definition, anonymous_class_expression).
+class(anonymous_expression).
+mixin(anonymous_expression, expression).
+mixin(anonymous_expression, extensible).
+mixin(anonymous_expression, annotatable).
+mixin(anonymous_expression, common_metadata).
+has_uri(anonymous_expression, 'http://w3id.org/biolink/vocab/AnonymousExpression').
+class_slot(anonymous_expression, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, anonymous_expression).
+range_in(extensions, extension, anonymous_expression).
+class_slot(anonymous_expression, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, anonymous_expression).
+range_in(annotations, annotation, anonymous_expression).
+class_slot(anonymous_expression, description).
+required(description).
+slotrange(string).
+range_in(description, string, anonymous_expression).
+class_slot(anonymous_expression, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, anonymous_expression).
+range_in(alt_descriptions, alt_description, anonymous_expression).
+class_slot(anonymous_expression, title).
+required(title).
+slotrange(string).
+range_in(title, string, anonymous_expression).
+class_slot(anonymous_expression, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, anonymous_expression).
+class_slot(anonymous_expression, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, anonymous_expression).
+range_in(todos, string, anonymous_expression).
+class_slot(anonymous_expression, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, anonymous_expression).
+range_in(notes, string, anonymous_expression).
+class_slot(anonymous_expression, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, anonymous_expression).
+range_in(comments, string, anonymous_expression).
+class_slot(anonymous_expression, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, anonymous_expression).
+range_in(examples, example, anonymous_expression).
+class_slot(anonymous_expression, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, anonymous_expression).
+range_in(in_subset, subset_definition, anonymous_expression).
+class_slot(anonymous_expression, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, anonymous_expression).
+class_slot(anonymous_expression, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, anonymous_expression).
+class_slot(anonymous_expression, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, anonymous_expression).
+class_slot(anonymous_expression, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, anonymous_expression).
+class_slot(anonymous_expression, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, anonymous_expression).
+range_in(see_also, uriorcurie, anonymous_expression).
+class_slot(anonymous_expression, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, anonymous_expression).
+class_slot(anonymous_expression, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, anonymous_expression).
+class(anonymous_slot_expression).
+mixin(anonymous_slot_expression, slot_expression).
+is_a(anonymous_slot_expression, anonymous_expression).
+has_uri(anonymous_slot_expression, 'http://w3id.org/biolink/vocab/AnonymousSlotExpression').
+class_slot(anonymous_slot_expression, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, anonymous_slot_expression).
+range_in(extensions, extension, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, anonymous_slot_expression).
+range_in(annotations, annotation, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, description).
+required(description).
+slotrange(string).
+range_in(description, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, anonymous_slot_expression).
+range_in(alt_descriptions, alt_description, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, title).
+required(title).
+slotrange(string).
+range_in(title, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, anonymous_slot_expression).
+range_in(todos, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, anonymous_slot_expression).
+range_in(notes, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, anonymous_slot_expression).
+range_in(comments, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, anonymous_slot_expression).
+range_in(examples, example, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, anonymous_slot_expression).
+range_in(in_subset, subset_definition, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, anonymous_slot_expression).
+range_in(see_also, uriorcurie, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, range).
+required(range).
+slotrange(element).
+range_in(range, element, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, range_expression).
+required(range_expression).
+slotrange(anonymous_class_expression).
+range_in(range_expression, anonymous_class_expression, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, required).
+required(required).
+slotrange(boolean).
+range_in(required, boolean, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, recommended).
+required(recommended).
+slotrange(boolean).
+range_in(recommended, boolean, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, minimum_value).
+required(minimum_value).
+slotrange(integer).
+range_in(minimum_value, integer, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, maximum_value).
+required(maximum_value).
+slotrange(integer).
+range_in(maximum_value, integer, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, pattern).
+required(pattern).
+slotrange(string).
+range_in(pattern, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, structured_pattern).
+required(structured_pattern).
+slotrange(pattern_expression).
+range_in(structured_pattern, pattern_expression, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, equals_string).
+required(equals_string).
+slotrange(string).
+range_in(equals_string, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, equals_string_in).
+required(equals_string_in).
+slotrange(string).
+multivalued_in(equals_string_in, anonymous_slot_expression).
+range_in(equals_string_in, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, equals_number).
+required(equals_number).
+slotrange(integer).
+range_in(equals_number, integer, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, equals_expression).
+required(equals_expression).
+slotrange(string).
+range_in(equals_expression, string, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, minimum_cardinality).
+required(minimum_cardinality).
+slotrange(integer).
+range_in(minimum_cardinality, integer, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, maximum_cardinality).
+required(maximum_cardinality).
+slotrange(integer).
+range_in(maximum_cardinality, integer, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, has_member).
+required(has_member).
+slotrange(anonymous_slot_expression).
+range_in(has_member, anonymous_slot_expression, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, all_members).
+required(all_members).
+slotrange(slot_definition).
+multivalued_in(all_members, anonymous_slot_expression).
+range_in(all_members, slot_definition, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, none_of).
+required(none_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(none_of, anonymous_slot_expression).
+range_in(none_of, anonymous_slot_expression, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(exactly_one_of, anonymous_slot_expression).
+range_in(exactly_one_of, anonymous_slot_expression, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, any_of).
+required(any_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(any_of, anonymous_slot_expression).
+range_in(any_of, anonymous_slot_expression, anonymous_slot_expression).
+class_slot(anonymous_slot_expression, all_of).
+required(all_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(all_of, anonymous_slot_expression).
+range_in(all_of, anonymous_slot_expression, anonymous_slot_expression).
+class(anonymous_type_expression).
+mixin(anonymous_type_expression, type_expression).
+has_uri(anonymous_type_expression, 'http://w3id.org/biolink/vocab/AnonymousTypeExpression').
+class_slot(anonymous_type_expression, pattern).
+required(pattern).
+slotrange(string).
+range_in(pattern, string, anonymous_type_expression).
+class_slot(anonymous_type_expression, structured_pattern).
+required(structured_pattern).
+slotrange(pattern_expression).
+range_in(structured_pattern, pattern_expression, anonymous_type_expression).
+class_slot(anonymous_type_expression, equals_string).
+required(equals_string).
+slotrange(string).
+range_in(equals_string, string, anonymous_type_expression).
+class_slot(anonymous_type_expression, equals_string_in).
+required(equals_string_in).
+slotrange(string).
+multivalued_in(equals_string_in, anonymous_type_expression).
+range_in(equals_string_in, string, anonymous_type_expression).
+class_slot(anonymous_type_expression, equals_number).
+required(equals_number).
+slotrange(integer).
+range_in(equals_number, integer, anonymous_type_expression).
+class_slot(anonymous_type_expression, minimum_value).
+required(minimum_value).
+slotrange(integer).
+range_in(minimum_value, integer, anonymous_type_expression).
+class_slot(anonymous_type_expression, maximum_value).
+required(maximum_value).
+slotrange(integer).
+range_in(maximum_value, integer, anonymous_type_expression).
+class_slot(anonymous_type_expression, none_of).
+required(none_of).
+slotrange(anonymous_type_expression).
+multivalued_in(none_of, anonymous_type_expression).
+range_in(none_of, anonymous_type_expression, anonymous_type_expression).
+class_slot(anonymous_type_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_type_expression).
+multivalued_in(exactly_one_of, anonymous_type_expression).
+range_in(exactly_one_of, anonymous_type_expression, anonymous_type_expression).
+class_slot(anonymous_type_expression, any_of).
+required(any_of).
+slotrange(anonymous_type_expression).
+multivalued_in(any_of, anonymous_type_expression).
+range_in(any_of, anonymous_type_expression, anonymous_type_expression).
+class_slot(anonymous_type_expression, all_of).
+required(all_of).
+slotrange(anonymous_type_expression).
+multivalued_in(all_of, anonymous_type_expression).
+range_in(all_of, anonymous_type_expression, anonymous_type_expression).
 class(class_definition).
+mixin(class_definition, class_expression).
 is_a(class_definition, definition).
 has_uri(class_definition, 'http://w3id.org/biolink/vocab/ClassDefinition').
 class_slot(class_definition, name).
@@ -602,10 +1410,6 @@ required(name).
 slotrange(string).
 required_in(name, class_definition).
 range_in(name, string, class_definition).
-class_slot(class_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, class_definition).
 class_slot(class_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -620,11 +1424,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, class_definition).
 range_in(aliases, string, class_definition).
+class_slot(class_definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, class_definition).
+range_in(structured_aliases, structured_alias, class_definition).
 class_slot(class_definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, class_definition).
 range_in(local_names, local_name, class_definition).
+class_slot(class_definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, class_definition).
 class_slot(class_definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -655,6 +1468,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, class_definition).
 range_in(broad_mappings, uriorcurie, class_definition).
+class_slot(class_definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, class_definition).
 class_slot(class_definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -674,6 +1491,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, class_definition).
 range_in(alt_descriptions, alt_description, class_definition).
+class_slot(class_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, class_definition).
 class_slot(class_definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -711,6 +1532,14 @@ class_slot(class_definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, class_definition).
+class_slot(class_definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, class_definition).
+class_slot(class_definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, class_definition).
 class_slot(class_definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -798,6 +1627,38 @@ class_slot(class_definition, tree_root).
 required(tree_root).
 slotrange(boolean).
 range_in(tree_root, boolean, class_definition).
+class_slot(class_definition, unique_keys).
+required(unique_keys).
+slotrange(unique_key).
+multivalued_in(unique_keys, class_definition).
+range_in(unique_keys, unique_key, class_definition).
+class_slot(class_definition, rules).
+required(rules).
+slotrange(class_rule).
+multivalued_in(rules, class_definition).
+range_in(rules, class_rule, class_definition).
+class_slot(class_definition, classification_rules).
+required(classification_rules).
+slotrange(anonymous_class_expression).
+multivalued_in(classification_rules, class_definition).
+range_in(classification_rules, anonymous_class_expression, class_definition).
+class_slot(class_definition, slot_names_unique).
+required(slot_names_unique).
+slotrange(boolean).
+range_in(slot_names_unique, boolean, class_definition).
+class_slot(class_definition, represents_relationship).
+required(represents_relationship).
+slotrange(boolean).
+range_in(represents_relationship, boolean, class_definition).
+class_slot(class_definition, disjoint_with).
+required(disjoint_with).
+slotrange(class_definition).
+multivalued_in(disjoint_with, class_definition).
+range_in(disjoint_with, class_definition, class_definition).
+class_slot(class_definition, children_are_mutually_disjoint).
+required(children_are_mutually_disjoint).
+slotrange(boolean).
+range_in(children_are_mutually_disjoint, boolean, class_definition).
 class_slot(class_definition, is_a).
 required(is_a).
 slotrange(class_definition).
@@ -812,6 +1673,175 @@ required(apply_to).
 slotrange(class_definition).
 multivalued_in(apply_to, class_definition).
 range_in(apply_to, class_definition, class_definition).
+class_slot(class_definition, any_of).
+required(any_of).
+slotrange(anonymous_class_expression).
+multivalued_in(any_of, class_definition).
+range_in(any_of, anonymous_class_expression, class_definition).
+class_slot(class_definition, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_class_expression).
+multivalued_in(exactly_one_of, class_definition).
+range_in(exactly_one_of, anonymous_class_expression, class_definition).
+class_slot(class_definition, none_of).
+required(none_of).
+slotrange(anonymous_class_expression).
+multivalued_in(none_of, class_definition).
+range_in(none_of, anonymous_class_expression, class_definition).
+class_slot(class_definition, all_of).
+required(all_of).
+slotrange(anonymous_class_expression).
+multivalued_in(all_of, class_definition).
+range_in(all_of, anonymous_class_expression, class_definition).
+class_slot(class_definition, slot_conditions).
+required(slot_conditions).
+slotrange(slot_definition).
+multivalued_in(slot_conditions, class_definition).
+range_in(slot_conditions, slot_definition, class_definition).
+class(class_expression).
+has_uri(class_expression, 'http://w3id.org/biolink/vocab/ClassExpression').
+class_slot(class_expression, any_of).
+required(any_of).
+slotrange(anonymous_class_expression).
+multivalued_in(any_of, class_expression).
+range_in(any_of, anonymous_class_expression, class_expression).
+class_slot(class_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_class_expression).
+multivalued_in(exactly_one_of, class_expression).
+range_in(exactly_one_of, anonymous_class_expression, class_expression).
+class_slot(class_expression, none_of).
+required(none_of).
+slotrange(anonymous_class_expression).
+multivalued_in(none_of, class_expression).
+range_in(none_of, anonymous_class_expression, class_expression).
+class_slot(class_expression, all_of).
+required(all_of).
+slotrange(anonymous_class_expression).
+multivalued_in(all_of, class_expression).
+range_in(all_of, anonymous_class_expression, class_expression).
+class_slot(class_expression, slot_conditions).
+required(slot_conditions).
+slotrange(slot_definition).
+multivalued_in(slot_conditions, class_expression).
+range_in(slot_conditions, slot_definition, class_expression).
+class(class_level_rule).
+has_uri(class_level_rule, 'http://w3id.org/biolink/vocab/ClassLevelRule').
+class(class_rule).
+mixin(class_rule, extensible).
+mixin(class_rule, annotatable).
+mixin(class_rule, common_metadata).
+is_a(class_rule, class_level_rule).
+has_uri(class_rule, 'http://w3id.org/biolink/vocab/ClassRule').
+class_slot(class_rule, preconditions).
+required(preconditions).
+slotrange(anonymous_class_expression).
+range_in(preconditions, anonymous_class_expression, class_rule).
+class_slot(class_rule, postconditions).
+required(postconditions).
+slotrange(anonymous_class_expression).
+range_in(postconditions, anonymous_class_expression, class_rule).
+class_slot(class_rule, elseconditions).
+required(elseconditions).
+slotrange(anonymous_class_expression).
+range_in(elseconditions, anonymous_class_expression, class_rule).
+class_slot(class_rule, bidirectional).
+required(bidirectional).
+slotrange(boolean).
+range_in(bidirectional, boolean, class_rule).
+class_slot(class_rule, open_world).
+required(open_world).
+slotrange(boolean).
+range_in(open_world, boolean, class_rule).
+class_slot(class_rule, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, class_rule).
+class_slot(class_rule, deactivated).
+required(deactivated).
+slotrange(boolean).
+range_in(deactivated, boolean, class_rule).
+class_slot(class_rule, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, class_rule).
+range_in(extensions, extension, class_rule).
+class_slot(class_rule, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, class_rule).
+range_in(annotations, annotation, class_rule).
+class_slot(class_rule, description).
+required(description).
+slotrange(string).
+range_in(description, string, class_rule).
+class_slot(class_rule, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, class_rule).
+range_in(alt_descriptions, alt_description, class_rule).
+class_slot(class_rule, title).
+required(title).
+slotrange(string).
+range_in(title, string, class_rule).
+class_slot(class_rule, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, class_rule).
+class_slot(class_rule, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, class_rule).
+range_in(todos, string, class_rule).
+class_slot(class_rule, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, class_rule).
+range_in(notes, string, class_rule).
+class_slot(class_rule, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, class_rule).
+range_in(comments, string, class_rule).
+class_slot(class_rule, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, class_rule).
+range_in(examples, example, class_rule).
+class_slot(class_rule, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, class_rule).
+range_in(in_subset, subset_definition, class_rule).
+class_slot(class_rule, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, class_rule).
+class_slot(class_rule, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, class_rule).
+class_slot(class_rule, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, class_rule).
+class_slot(class_rule, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, class_rule).
+class_slot(class_rule, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, class_rule).
+range_in(see_also, uriorcurie, class_rule).
+class_slot(class_rule, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, class_rule).
+class_slot(class_rule, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, class_rule).
 class(common_metadata).
 has_uri(common_metadata, 'http://w3id.org/biolink/vocab/CommonMetadata').
 class_slot(common_metadata, description).
@@ -823,6 +1853,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, common_metadata).
 range_in(alt_descriptions, alt_description, common_metadata).
+class_slot(common_metadata, title).
+required(title).
+slotrange(string).
+range_in(title, string, common_metadata).
 class_slot(common_metadata, deprecated).
 required(deprecated).
 slotrange(string).
@@ -860,6 +1894,14 @@ class_slot(common_metadata, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, common_metadata).
+class_slot(common_metadata, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, common_metadata).
+class_slot(common_metadata, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, common_metadata).
 class_slot(common_metadata, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -881,10 +1923,6 @@ required(name).
 slotrange(string).
 required_in(name, definition).
 range_in(name, string, definition).
-class_slot(definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, definition).
 class_slot(definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -899,11 +1937,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, definition).
 range_in(aliases, string, definition).
+class_slot(definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, definition).
+range_in(structured_aliases, structured_alias, definition).
 class_slot(definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, definition).
 range_in(local_names, local_name, definition).
+class_slot(definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, definition).
 class_slot(definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -934,6 +1981,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, definition).
 range_in(broad_mappings, uriorcurie, definition).
+class_slot(definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, definition).
 class_slot(definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -953,6 +2004,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, definition).
 range_in(alt_descriptions, alt_description, definition).
+class_slot(definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, definition).
 class_slot(definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -990,6 +2045,14 @@ class_slot(definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, definition).
+class_slot(definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, definition).
+class_slot(definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, definition).
 class_slot(definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -1064,10 +2127,6 @@ required(name).
 slotrange(string).
 required_in(name, element).
 range_in(name, string, element).
-class_slot(element, title).
-required(title).
-slotrange(string).
-range_in(title, string, element).
 class_slot(element, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1082,11 +2141,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, element).
 range_in(aliases, string, element).
+class_slot(element, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, element).
+range_in(structured_aliases, structured_alias, element).
 class_slot(element, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, element).
 range_in(local_names, local_name, element).
+class_slot(element, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, element).
 class_slot(element, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -1117,6 +2185,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, element).
 range_in(broad_mappings, uriorcurie, element).
+class_slot(element, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, element).
 class_slot(element, extensions).
 required(extensions).
 slotrange(extension).
@@ -1136,6 +2208,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, element).
 range_in(alt_descriptions, alt_description, element).
+class_slot(element, title).
+required(title).
+slotrange(string).
+range_in(title, string, element).
 class_slot(element, deprecated).
 required(deprecated).
 slotrange(string).
@@ -1173,6 +2249,14 @@ class_slot(element, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, element).
+class_slot(element, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, element).
+class_slot(element, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, element).
 class_slot(element, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -1194,10 +2278,6 @@ required(name).
 slotrange(string).
 required_in(name, enum_definition).
 range_in(name, string, enum_definition).
-class_slot(enum_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, enum_definition).
 class_slot(enum_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1212,11 +2292,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, enum_definition).
 range_in(aliases, string, enum_definition).
+class_slot(enum_definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, enum_definition).
+range_in(structured_aliases, structured_alias, enum_definition).
 class_slot(enum_definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, enum_definition).
 range_in(local_names, local_name, enum_definition).
+class_slot(enum_definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, enum_definition).
 class_slot(enum_definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -1247,6 +2336,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, enum_definition).
 range_in(broad_mappings, uriorcurie, enum_definition).
+class_slot(enum_definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, enum_definition).
 class_slot(enum_definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -1266,6 +2359,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, enum_definition).
 range_in(alt_descriptions, alt_description, enum_definition).
+class_slot(enum_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, enum_definition).
 class_slot(enum_definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -1303,6 +2400,14 @@ class_slot(enum_definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, enum_definition).
+class_slot(enum_definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, enum_definition).
+class_slot(enum_definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, enum_definition).
 class_slot(enum_definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -1347,6 +2452,8 @@ class_slot(example, description).
 required(description).
 slotrange(string).
 range_in(description, string, example).
+class(expression).
+has_uri(expression, 'http://w3id.org/biolink/vocab/Expression').
 class(extensible).
 has_uri(extensible, 'http://w3id.org/biolink/vocab/Extensible').
 class_slot(extensible, extensions).
@@ -1371,6 +2478,106 @@ required(extensions).
 slotrange(extension).
 multivalued_in(extensions, extension).
 range_in(extensions, extension, extension).
+class(import_expression).
+mixin(import_expression, extensible).
+mixin(import_expression, annotatable).
+mixin(import_expression, common_metadata).
+has_uri(import_expression, 'http://w3id.org/biolink/vocab/ImportExpression').
+class_slot(import_expression, import_from).
+required(import_from).
+slotrange(uriorcurie).
+required_in(import_from, import_expression).
+range_in(import_from, uriorcurie, import_expression).
+class_slot(import_expression, import_as).
+required(import_as).
+slotrange(ncname).
+range_in(import_as, ncname, import_expression).
+class_slot(import_expression, import_map).
+required(import_map).
+slotrange(setting).
+multivalued_in(import_map, import_expression).
+range_in(import_map, setting, import_expression).
+class_slot(import_expression, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, import_expression).
+range_in(extensions, extension, import_expression).
+class_slot(import_expression, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, import_expression).
+range_in(annotations, annotation, import_expression).
+class_slot(import_expression, description).
+required(description).
+slotrange(string).
+range_in(description, string, import_expression).
+class_slot(import_expression, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, import_expression).
+range_in(alt_descriptions, alt_description, import_expression).
+class_slot(import_expression, title).
+required(title).
+slotrange(string).
+range_in(title, string, import_expression).
+class_slot(import_expression, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, import_expression).
+class_slot(import_expression, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, import_expression).
+range_in(todos, string, import_expression).
+class_slot(import_expression, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, import_expression).
+range_in(notes, string, import_expression).
+class_slot(import_expression, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, import_expression).
+range_in(comments, string, import_expression).
+class_slot(import_expression, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, import_expression).
+range_in(examples, example, import_expression).
+class_slot(import_expression, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, import_expression).
+range_in(in_subset, subset_definition, import_expression).
+class_slot(import_expression, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, import_expression).
+class_slot(import_expression, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, import_expression).
+class_slot(import_expression, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, import_expression).
+class_slot(import_expression, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, import_expression).
+class_slot(import_expression, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, import_expression).
+range_in(see_also, uriorcurie, import_expression).
+class_slot(import_expression, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, import_expression).
+class_slot(import_expression, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, import_expression).
 class(local_name).
 has_uri(local_name, 'http://w3id.org/biolink/vocab/LocalName').
 class_slot(local_name, local_name_source).
@@ -1383,6 +2590,227 @@ required(local_name_value).
 slotrange(string).
 required_in(local_name_value, local_name).
 range_in(local_name_value, string, local_name).
+class(path_expression).
+mixin(path_expression, expression).
+mixin(path_expression, extensible).
+mixin(path_expression, annotatable).
+mixin(path_expression, common_metadata).
+has_uri(path_expression, 'http://w3id.org/biolink/vocab/PathExpression').
+class_slot(path_expression, followed_by).
+required(followed_by).
+slotrange(path_expression).
+range_in(followed_by, path_expression, path_expression).
+class_slot(path_expression, none_of).
+required(none_of).
+slotrange(path_expression).
+multivalued_in(none_of, path_expression).
+range_in(none_of, path_expression, path_expression).
+class_slot(path_expression, any_of).
+required(any_of).
+slotrange(path_expression).
+multivalued_in(any_of, path_expression).
+range_in(any_of, path_expression, path_expression).
+class_slot(path_expression, all_of).
+required(all_of).
+slotrange(path_expression).
+multivalued_in(all_of, path_expression).
+range_in(all_of, path_expression, path_expression).
+class_slot(path_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(path_expression).
+multivalued_in(exactly_one_of, path_expression).
+range_in(exactly_one_of, path_expression, path_expression).
+class_slot(path_expression, reversed).
+required(reversed).
+slotrange(boolean).
+range_in(reversed, boolean, path_expression).
+class_slot(path_expression, traverse).
+required(traverse).
+slotrange(slot_definition).
+range_in(traverse, slot_definition, path_expression).
+class_slot(path_expression, range_expression).
+required(range_expression).
+slotrange(anonymous_class_expression).
+range_in(range_expression, anonymous_class_expression, path_expression).
+class_slot(path_expression, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, path_expression).
+range_in(extensions, extension, path_expression).
+class_slot(path_expression, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, path_expression).
+range_in(annotations, annotation, path_expression).
+class_slot(path_expression, description).
+required(description).
+slotrange(string).
+range_in(description, string, path_expression).
+class_slot(path_expression, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, path_expression).
+range_in(alt_descriptions, alt_description, path_expression).
+class_slot(path_expression, title).
+required(title).
+slotrange(string).
+range_in(title, string, path_expression).
+class_slot(path_expression, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, path_expression).
+class_slot(path_expression, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, path_expression).
+range_in(todos, string, path_expression).
+class_slot(path_expression, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, path_expression).
+range_in(notes, string, path_expression).
+class_slot(path_expression, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, path_expression).
+range_in(comments, string, path_expression).
+class_slot(path_expression, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, path_expression).
+range_in(examples, example, path_expression).
+class_slot(path_expression, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, path_expression).
+range_in(in_subset, subset_definition, path_expression).
+class_slot(path_expression, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, path_expression).
+class_slot(path_expression, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, path_expression).
+class_slot(path_expression, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, path_expression).
+class_slot(path_expression, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, path_expression).
+class_slot(path_expression, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, path_expression).
+range_in(see_also, uriorcurie, path_expression).
+class_slot(path_expression, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, path_expression).
+class_slot(path_expression, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, path_expression).
+class(pattern_expression).
+mixin(pattern_expression, extensible).
+mixin(pattern_expression, annotatable).
+mixin(pattern_expression, common_metadata).
+has_uri(pattern_expression, 'http://w3id.org/biolink/vocab/PatternExpression').
+class_slot(pattern_expression, syntax).
+required(syntax).
+slotrange(string).
+range_in(syntax, string, pattern_expression).
+class_slot(pattern_expression, interpolated).
+required(interpolated).
+slotrange(boolean).
+range_in(interpolated, boolean, pattern_expression).
+class_slot(pattern_expression, partial_match).
+required(partial_match).
+slotrange(boolean).
+range_in(partial_match, boolean, pattern_expression).
+class_slot(pattern_expression, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, pattern_expression).
+range_in(extensions, extension, pattern_expression).
+class_slot(pattern_expression, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, pattern_expression).
+range_in(annotations, annotation, pattern_expression).
+class_slot(pattern_expression, description).
+required(description).
+slotrange(string).
+range_in(description, string, pattern_expression).
+class_slot(pattern_expression, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, pattern_expression).
+range_in(alt_descriptions, alt_description, pattern_expression).
+class_slot(pattern_expression, title).
+required(title).
+slotrange(string).
+range_in(title, string, pattern_expression).
+class_slot(pattern_expression, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, pattern_expression).
+class_slot(pattern_expression, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, pattern_expression).
+range_in(todos, string, pattern_expression).
+class_slot(pattern_expression, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, pattern_expression).
+range_in(notes, string, pattern_expression).
+class_slot(pattern_expression, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, pattern_expression).
+range_in(comments, string, pattern_expression).
+class_slot(pattern_expression, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, pattern_expression).
+range_in(examples, example, pattern_expression).
+class_slot(pattern_expression, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, pattern_expression).
+range_in(in_subset, subset_definition, pattern_expression).
+class_slot(pattern_expression, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, pattern_expression).
+class_slot(pattern_expression, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, pattern_expression).
+class_slot(pattern_expression, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, pattern_expression).
+class_slot(pattern_expression, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, pattern_expression).
+class_slot(pattern_expression, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, pattern_expression).
+range_in(see_also, uriorcurie, pattern_expression).
+class_slot(pattern_expression, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, pattern_expression).
+class_slot(pattern_expression, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, pattern_expression).
 class(permissible_value).
 mixin(permissible_value, extensible).
 mixin(permissible_value, annotatable).
@@ -1425,6 +2853,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, permissible_value).
 range_in(alt_descriptions, alt_description, permissible_value).
+class_slot(permissible_value, title).
+required(title).
+slotrange(string).
+range_in(title, string, permissible_value).
 class_slot(permissible_value, deprecated).
 required(deprecated).
 slotrange(string).
@@ -1462,6 +2894,14 @@ class_slot(permissible_value, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, permissible_value).
+class_slot(permissible_value, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, permissible_value).
+class_slot(permissible_value, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, permissible_value).
 class_slot(permissible_value, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -1490,10 +2930,6 @@ range_in(prefix_reference, uri, prefix).
 class(schema_definition).
 is_a(schema_definition, element).
 has_uri(schema_definition, 'http://w3id.org/biolink/vocab/SchemaDefinition').
-class_slot(schema_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, schema_definition).
 class_slot(schema_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1508,11 +2944,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, schema_definition).
 range_in(aliases, string, schema_definition).
+class_slot(schema_definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, schema_definition).
+range_in(structured_aliases, structured_alias, schema_definition).
 class_slot(schema_definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, schema_definition).
 range_in(local_names, local_name, schema_definition).
+class_slot(schema_definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, schema_definition).
 class_slot(schema_definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -1543,6 +2988,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, schema_definition).
 range_in(broad_mappings, uriorcurie, schema_definition).
+class_slot(schema_definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, schema_definition).
 class_slot(schema_definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -1562,6 +3011,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, schema_definition).
 range_in(alt_descriptions, alt_description, schema_definition).
+class_slot(schema_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, schema_definition).
 class_slot(schema_definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -1599,6 +3052,14 @@ class_slot(schema_definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, schema_definition).
+class_slot(schema_definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, schema_definition).
+class_slot(schema_definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, schema_definition).
 class_slot(schema_definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -1698,12 +3159,44 @@ class_slot(schema_definition, generation_date).
 required(generation_date).
 slotrange(datetime).
 range_in(generation_date, datetime, schema_definition).
+class_slot(schema_definition, slot_names_unique).
+required(slot_names_unique).
+slotrange(boolean).
+range_in(slot_names_unique, boolean, schema_definition).
+class_slot(schema_definition, settings).
+required(settings).
+slotrange(setting).
+multivalued_in(settings, schema_definition).
+range_in(settings, setting, schema_definition).
+class_slot(schema_definition, categories).
+required(categories).
+slotrange(uriorcurie).
+multivalued_in(categories, schema_definition).
+range_in(categories, uriorcurie, schema_definition).
+class_slot(schema_definition, keywords).
+required(keywords).
+slotrange(string).
+multivalued_in(keywords, schema_definition).
+range_in(keywords, string, schema_definition).
 class_slot(schema_definition, name).
 required(name).
 slotrange(ncname).
 required_in(name, schema_definition).
 range_in(name, ncname, schema_definition).
+class(setting).
+has_uri(setting, 'http://w3id.org/biolink/vocab/Setting').
+class_slot(setting, setting_key).
+required(setting_key).
+slotrange(ncname).
+required_in(setting_key, setting).
+range_in(setting_key, ncname, setting).
+class_slot(setting, setting_value).
+required(setting_value).
+slotrange(string).
+required_in(setting_value, setting).
+range_in(setting_value, string, setting).
 class(slot_definition).
+mixin(slot_definition, slot_expression).
 is_a(slot_definition, definition).
 has_uri(slot_definition, 'http://w3id.org/biolink/vocab/SlotDefinition').
 class_slot(slot_definition, name).
@@ -1711,10 +3204,6 @@ required(name).
 slotrange(string).
 required_in(name, slot_definition).
 range_in(name, string, slot_definition).
-class_slot(slot_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, slot_definition).
 class_slot(slot_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -1729,11 +3218,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, slot_definition).
 range_in(aliases, string, slot_definition).
+class_slot(slot_definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, slot_definition).
+range_in(structured_aliases, structured_alias, slot_definition).
 class_slot(slot_definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, slot_definition).
 range_in(local_names, local_name, slot_definition).
+class_slot(slot_definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, slot_definition).
 class_slot(slot_definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -1764,6 +3262,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, slot_definition).
 range_in(broad_mappings, uriorcurie, slot_definition).
+class_slot(slot_definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, slot_definition).
 class_slot(slot_definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -1783,6 +3285,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, slot_definition).
 range_in(alt_descriptions, alt_description, slot_definition).
+class_slot(slot_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, slot_definition).
 class_slot(slot_definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -1820,6 +3326,14 @@ class_slot(slot_definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, slot_definition).
+class_slot(slot_definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, slot_definition).
+class_slot(slot_definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, slot_definition).
 class_slot(slot_definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -1878,10 +3392,6 @@ class_slot(slot_definition, domain).
 required(domain).
 slotrange(class_definition).
 range_in(domain, class_definition, slot_definition).
-class_slot(slot_definition, range).
-required(range).
-slotrange(element).
-range_in(range, element, slot_definition).
 class_slot(slot_definition, slot_uri).
 required(slot_uri).
 slotrange(uriorcurie).
@@ -1902,14 +3412,6 @@ class_slot(slot_definition, ifabsent).
 required(ifabsent).
 slotrange(string).
 range_in(ifabsent, string, slot_definition).
-class_slot(slot_definition, required).
-required(required).
-slotrange(boolean).
-range_in(required, boolean, slot_definition).
-class_slot(slot_definition, recommended).
-required(recommended).
-slotrange(boolean).
-range_in(recommended, boolean, slot_definition).
 class_slot(slot_definition, inlined).
 required(inlined).
 slotrange(boolean).
@@ -1918,6 +3420,18 @@ class_slot(slot_definition, inlined_as_list).
 required(inlined_as_list).
 slotrange(boolean).
 range_in(inlined_as_list, boolean, slot_definition).
+class_slot(slot_definition, list_elements_unique).
+required(list_elements_unique).
+slotrange(boolean).
+range_in(list_elements_unique, boolean, slot_definition).
+class_slot(slot_definition, list_elements_ordered).
+required(list_elements_ordered).
+slotrange(boolean).
+range_in(list_elements_ordered, boolean, slot_definition).
+class_slot(slot_definition, shared).
+required(shared).
+slotrange(boolean).
+range_in(shared, boolean, slot_definition).
 class_slot(slot_definition, key).
 required(key).
 slotrange(boolean).
@@ -1951,6 +3465,26 @@ class_slot(slot_definition, symmetric).
 required(symmetric).
 slotrange(boolean).
 range_in(symmetric, boolean, slot_definition).
+class_slot(slot_definition, reflexive).
+required(reflexive).
+slotrange(boolean).
+range_in(reflexive, boolean, slot_definition).
+class_slot(slot_definition, locally_reflexive).
+required(locally_reflexive).
+slotrange(boolean).
+range_in(locally_reflexive, boolean, slot_definition).
+class_slot(slot_definition, irreflexive).
+required(irreflexive).
+slotrange(boolean).
+range_in(irreflexive, boolean, slot_definition).
+class_slot(slot_definition, asymmetric).
+required(asymmetric).
+slotrange(boolean).
+range_in(asymmetric, boolean, slot_definition).
+class_slot(slot_definition, transitive).
+required(transitive).
+slotrange(boolean).
+range_in(transitive, boolean, slot_definition).
 class_slot(slot_definition, inverse).
 required(inverse).
 slotrange(slot_definition).
@@ -1959,6 +3493,14 @@ class_slot(slot_definition, is_class_field).
 required(is_class_field).
 slotrange(boolean).
 range_in(is_class_field, boolean, slot_definition).
+class_slot(slot_definition, transitive_form_of).
+required(transitive_form_of).
+slotrange(slot_definition).
+range_in(transitive_form_of, slot_definition, slot_definition).
+class_slot(slot_definition, reflexive_transitive_form_of).
+required(reflexive_transitive_form_of).
+slotrange(slot_definition).
+range_in(reflexive_transitive_form_of, slot_definition, slot_definition).
 class_slot(slot_definition, role).
 required(role).
 slotrange(string).
@@ -1971,18 +3513,31 @@ class_slot(slot_definition, usage_slot_name).
 required(usage_slot_name).
 slotrange(string).
 range_in(usage_slot_name, string, slot_definition).
-class_slot(slot_definition, minimum_value).
-required(minimum_value).
-slotrange(integer).
-range_in(minimum_value, integer, slot_definition).
-class_slot(slot_definition, maximum_value).
-required(maximum_value).
-slotrange(integer).
-range_in(maximum_value, integer, slot_definition).
-class_slot(slot_definition, pattern).
-required(pattern).
-slotrange(string).
-range_in(pattern, string, slot_definition).
+class_slot(slot_definition, relational_role).
+required(relational_role).
+slotrange(relational_role_enum).
+range_in(relational_role, relational_role_enum, slot_definition).
+class_slot(slot_definition, slot_group).
+required(slot_group).
+slotrange(slot_definition).
+range_in(slot_group, slot_definition, slot_definition).
+class_slot(slot_definition, is_grouping_slot).
+required(is_grouping_slot).
+slotrange(boolean).
+range_in(is_grouping_slot, boolean, slot_definition).
+class_slot(slot_definition, path_rule).
+required(path_rule).
+slotrange(path_expression).
+range_in(path_rule, path_expression, slot_definition).
+class_slot(slot_definition, disjoint_with).
+required(disjoint_with).
+slotrange(slot_definition).
+multivalued_in(disjoint_with, slot_definition).
+range_in(disjoint_with, slot_definition, slot_definition).
+class_slot(slot_definition, children_are_mutually_disjoint).
+required(children_are_mutually_disjoint).
+slotrange(boolean).
+range_in(children_are_mutually_disjoint, boolean, slot_definition).
 class_slot(slot_definition, is_a).
 required(is_a).
 slotrange(slot_definition).
@@ -1997,6 +3552,282 @@ required(apply_to).
 slotrange(slot_definition).
 multivalued_in(apply_to, slot_definition).
 range_in(apply_to, slot_definition, slot_definition).
+class_slot(slot_definition, range).
+required(range).
+slotrange(element).
+range_in(range, element, slot_definition).
+class_slot(slot_definition, range_expression).
+required(range_expression).
+slotrange(anonymous_class_expression).
+range_in(range_expression, anonymous_class_expression, slot_definition).
+class_slot(slot_definition, required).
+required(required).
+slotrange(boolean).
+range_in(required, boolean, slot_definition).
+class_slot(slot_definition, recommended).
+required(recommended).
+slotrange(boolean).
+range_in(recommended, boolean, slot_definition).
+class_slot(slot_definition, minimum_value).
+required(minimum_value).
+slotrange(integer).
+range_in(minimum_value, integer, slot_definition).
+class_slot(slot_definition, maximum_value).
+required(maximum_value).
+slotrange(integer).
+range_in(maximum_value, integer, slot_definition).
+class_slot(slot_definition, pattern).
+required(pattern).
+slotrange(string).
+range_in(pattern, string, slot_definition).
+class_slot(slot_definition, structured_pattern).
+required(structured_pattern).
+slotrange(pattern_expression).
+range_in(structured_pattern, pattern_expression, slot_definition).
+class_slot(slot_definition, equals_string).
+required(equals_string).
+slotrange(string).
+range_in(equals_string, string, slot_definition).
+class_slot(slot_definition, equals_string_in).
+required(equals_string_in).
+slotrange(string).
+multivalued_in(equals_string_in, slot_definition).
+range_in(equals_string_in, string, slot_definition).
+class_slot(slot_definition, equals_number).
+required(equals_number).
+slotrange(integer).
+range_in(equals_number, integer, slot_definition).
+class_slot(slot_definition, equals_expression).
+required(equals_expression).
+slotrange(string).
+range_in(equals_expression, string, slot_definition).
+class_slot(slot_definition, minimum_cardinality).
+required(minimum_cardinality).
+slotrange(integer).
+range_in(minimum_cardinality, integer, slot_definition).
+class_slot(slot_definition, maximum_cardinality).
+required(maximum_cardinality).
+slotrange(integer).
+range_in(maximum_cardinality, integer, slot_definition).
+class_slot(slot_definition, has_member).
+required(has_member).
+slotrange(anonymous_slot_expression).
+range_in(has_member, anonymous_slot_expression, slot_definition).
+class_slot(slot_definition, all_members).
+required(all_members).
+slotrange(slot_definition).
+multivalued_in(all_members, slot_definition).
+range_in(all_members, slot_definition, slot_definition).
+class_slot(slot_definition, none_of).
+required(none_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(none_of, slot_definition).
+range_in(none_of, anonymous_slot_expression, slot_definition).
+class_slot(slot_definition, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(exactly_one_of, slot_definition).
+range_in(exactly_one_of, anonymous_slot_expression, slot_definition).
+class_slot(slot_definition, any_of).
+required(any_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(any_of, slot_definition).
+range_in(any_of, anonymous_slot_expression, slot_definition).
+class_slot(slot_definition, all_of).
+required(all_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(all_of, slot_definition).
+range_in(all_of, anonymous_slot_expression, slot_definition).
+class(slot_expression).
+is_a(slot_expression, expression).
+has_uri(slot_expression, 'http://w3id.org/biolink/vocab/SlotExpression').
+class_slot(slot_expression, range).
+required(range).
+slotrange(element).
+range_in(range, element, slot_expression).
+class_slot(slot_expression, range_expression).
+required(range_expression).
+slotrange(anonymous_class_expression).
+range_in(range_expression, anonymous_class_expression, slot_expression).
+class_slot(slot_expression, required).
+required(required).
+slotrange(boolean).
+range_in(required, boolean, slot_expression).
+class_slot(slot_expression, recommended).
+required(recommended).
+slotrange(boolean).
+range_in(recommended, boolean, slot_expression).
+class_slot(slot_expression, minimum_value).
+required(minimum_value).
+slotrange(integer).
+range_in(minimum_value, integer, slot_expression).
+class_slot(slot_expression, maximum_value).
+required(maximum_value).
+slotrange(integer).
+range_in(maximum_value, integer, slot_expression).
+class_slot(slot_expression, pattern).
+required(pattern).
+slotrange(string).
+range_in(pattern, string, slot_expression).
+class_slot(slot_expression, structured_pattern).
+required(structured_pattern).
+slotrange(pattern_expression).
+range_in(structured_pattern, pattern_expression, slot_expression).
+class_slot(slot_expression, equals_string).
+required(equals_string).
+slotrange(string).
+range_in(equals_string, string, slot_expression).
+class_slot(slot_expression, equals_string_in).
+required(equals_string_in).
+slotrange(string).
+multivalued_in(equals_string_in, slot_expression).
+range_in(equals_string_in, string, slot_expression).
+class_slot(slot_expression, equals_number).
+required(equals_number).
+slotrange(integer).
+range_in(equals_number, integer, slot_expression).
+class_slot(slot_expression, equals_expression).
+required(equals_expression).
+slotrange(string).
+range_in(equals_expression, string, slot_expression).
+class_slot(slot_expression, minimum_cardinality).
+required(minimum_cardinality).
+slotrange(integer).
+range_in(minimum_cardinality, integer, slot_expression).
+class_slot(slot_expression, maximum_cardinality).
+required(maximum_cardinality).
+slotrange(integer).
+range_in(maximum_cardinality, integer, slot_expression).
+class_slot(slot_expression, has_member).
+required(has_member).
+slotrange(anonymous_slot_expression).
+range_in(has_member, anonymous_slot_expression, slot_expression).
+class_slot(slot_expression, all_members).
+required(all_members).
+slotrange(slot_definition).
+multivalued_in(all_members, slot_expression).
+range_in(all_members, slot_definition, slot_expression).
+class_slot(slot_expression, none_of).
+required(none_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(none_of, slot_expression).
+range_in(none_of, anonymous_slot_expression, slot_expression).
+class_slot(slot_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(exactly_one_of, slot_expression).
+range_in(exactly_one_of, anonymous_slot_expression, slot_expression).
+class_slot(slot_expression, any_of).
+required(any_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(any_of, slot_expression).
+range_in(any_of, anonymous_slot_expression, slot_expression).
+class_slot(slot_expression, all_of).
+required(all_of).
+slotrange(anonymous_slot_expression).
+multivalued_in(all_of, slot_expression).
+range_in(all_of, anonymous_slot_expression, slot_expression).
+class(structured_alias).
+mixin(structured_alias, expression).
+mixin(structured_alias, extensible).
+mixin(structured_alias, annotatable).
+mixin(structured_alias, common_metadata).
+has_uri(structured_alias, 'http://w3id.org/biolink/vocab/StructuredAlias').
+class_slot(structured_alias, literal_form).
+required(literal_form).
+slotrange(string).
+required_in(literal_form, structured_alias).
+range_in(literal_form, string, structured_alias).
+class_slot(structured_alias, predicate).
+required(predicate).
+slotrange(alias_predicate_enum).
+range_in(predicate, alias_predicate_enum, structured_alias).
+class_slot(structured_alias, categories).
+required(categories).
+slotrange(uriorcurie).
+multivalued_in(categories, structured_alias).
+range_in(categories, uriorcurie, structured_alias).
+class_slot(structured_alias, extensions).
+required(extensions).
+slotrange(extension).
+multivalued_in(extensions, structured_alias).
+range_in(extensions, extension, structured_alias).
+class_slot(structured_alias, annotations).
+required(annotations).
+slotrange(annotation).
+multivalued_in(annotations, structured_alias).
+range_in(annotations, annotation, structured_alias).
+class_slot(structured_alias, description).
+required(description).
+slotrange(string).
+range_in(description, string, structured_alias).
+class_slot(structured_alias, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, structured_alias).
+range_in(alt_descriptions, alt_description, structured_alias).
+class_slot(structured_alias, title).
+required(title).
+slotrange(string).
+range_in(title, string, structured_alias).
+class_slot(structured_alias, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, structured_alias).
+class_slot(structured_alias, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, structured_alias).
+range_in(todos, string, structured_alias).
+class_slot(structured_alias, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, structured_alias).
+range_in(notes, string, structured_alias).
+class_slot(structured_alias, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, structured_alias).
+range_in(comments, string, structured_alias).
+class_slot(structured_alias, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, structured_alias).
+range_in(examples, example, structured_alias).
+class_slot(structured_alias, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, structured_alias).
+range_in(in_subset, subset_definition, structured_alias).
+class_slot(structured_alias, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, structured_alias).
+class_slot(structured_alias, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, structured_alias).
+class_slot(structured_alias, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, structured_alias).
+class_slot(structured_alias, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, structured_alias).
+class_slot(structured_alias, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, structured_alias).
+range_in(see_also, uriorcurie, structured_alias).
+class_slot(structured_alias, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, structured_alias).
+class_slot(structured_alias, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, structured_alias).
 class(subset_definition).
 is_a(subset_definition, element).
 has_uri(subset_definition, 'http://w3id.org/biolink/vocab/SubsetDefinition').
@@ -2005,10 +3836,6 @@ required(name).
 slotrange(string).
 required_in(name, subset_definition).
 range_in(name, string, subset_definition).
-class_slot(subset_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, subset_definition).
 class_slot(subset_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -2023,11 +3850,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, subset_definition).
 range_in(aliases, string, subset_definition).
+class_slot(subset_definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, subset_definition).
+range_in(structured_aliases, structured_alias, subset_definition).
 class_slot(subset_definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, subset_definition).
 range_in(local_names, local_name, subset_definition).
+class_slot(subset_definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, subset_definition).
 class_slot(subset_definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -2058,6 +3894,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, subset_definition).
 range_in(broad_mappings, uriorcurie, subset_definition).
+class_slot(subset_definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, subset_definition).
 class_slot(subset_definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -2077,6 +3917,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, subset_definition).
 range_in(alt_descriptions, alt_description, subset_definition).
+class_slot(subset_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, subset_definition).
 class_slot(subset_definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -2114,6 +3958,14 @@ class_slot(subset_definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, subset_definition).
+class_slot(subset_definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, subset_definition).
+class_slot(subset_definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, subset_definition).
 class_slot(subset_definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -2128,6 +3980,7 @@ required(deprecated_element_has_possible_replacement).
 slotrange(uriorcurie).
 range_in(deprecated_element_has_possible_replacement, uriorcurie, subset_definition).
 class(type_definition).
+mixin(type_definition, type_expression).
 is_a(type_definition, element).
 has_uri(type_definition, 'http://w3id.org/biolink/vocab/TypeDefinition').
 class_slot(type_definition, name).
@@ -2135,10 +3988,6 @@ required(name).
 slotrange(string).
 required_in(name, type_definition).
 range_in(name, string, type_definition).
-class_slot(type_definition, title).
-required(title).
-slotrange(string).
-range_in(title, string, type_definition).
 class_slot(type_definition, id_prefixes).
 required(id_prefixes).
 slotrange(ncname).
@@ -2153,11 +4002,20 @@ required(aliases).
 slotrange(string).
 multivalued_in(aliases, type_definition).
 range_in(aliases, string, type_definition).
+class_slot(type_definition, structured_aliases).
+required(structured_aliases).
+slotrange(structured_alias).
+multivalued_in(structured_aliases, type_definition).
+range_in(structured_aliases, structured_alias, type_definition).
 class_slot(type_definition, local_names).
 required(local_names).
 slotrange(local_name).
 multivalued_in(local_names, type_definition).
 range_in(local_names, local_name, type_definition).
+class_slot(type_definition, conforms_to).
+required(conforms_to).
+slotrange(string).
+range_in(conforms_to, string, type_definition).
 class_slot(type_definition, mappings).
 required(mappings).
 slotrange(uriorcurie).
@@ -2188,6 +4046,10 @@ required(broad_mappings).
 slotrange(uriorcurie).
 multivalued_in(broad_mappings, type_definition).
 range_in(broad_mappings, uriorcurie, type_definition).
+class_slot(type_definition, rank).
+required(rank).
+slotrange(integer).
+range_in(rank, integer, type_definition).
 class_slot(type_definition, extensions).
 required(extensions).
 slotrange(extension).
@@ -2207,6 +4069,10 @@ required(alt_descriptions).
 slotrange(alt_description).
 multivalued_in(alt_descriptions, type_definition).
 range_in(alt_descriptions, alt_description, type_definition).
+class_slot(type_definition, title).
+required(title).
+slotrange(string).
+range_in(title, string, type_definition).
 class_slot(type_definition, deprecated).
 required(deprecated).
 slotrange(string).
@@ -2244,6 +4110,14 @@ class_slot(type_definition, imported_from).
 required(imported_from).
 slotrange(string).
 range_in(imported_from, string, type_definition).
+class_slot(type_definition, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, type_definition).
+class_slot(type_definition, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, type_definition).
 class_slot(type_definition, see_also).
 required(see_also).
 slotrange(uriorcurie).
@@ -2277,10 +4151,113 @@ class_slot(type_definition, pattern).
 required(pattern).
 slotrange(string).
 range_in(pattern, string, type_definition).
+class_slot(type_definition, structured_pattern).
+required(structured_pattern).
+slotrange(pattern_expression).
+range_in(structured_pattern, pattern_expression, type_definition).
+class_slot(type_definition, equals_string).
+required(equals_string).
+slotrange(string).
+range_in(equals_string, string, type_definition).
+class_slot(type_definition, equals_string_in).
+required(equals_string_in).
+slotrange(string).
+multivalued_in(equals_string_in, type_definition).
+range_in(equals_string_in, string, type_definition).
+class_slot(type_definition, equals_number).
+required(equals_number).
+slotrange(integer).
+range_in(equals_number, integer, type_definition).
+class_slot(type_definition, minimum_value).
+required(minimum_value).
+slotrange(integer).
+range_in(minimum_value, integer, type_definition).
+class_slot(type_definition, maximum_value).
+required(maximum_value).
+slotrange(integer).
+range_in(maximum_value, integer, type_definition).
+class_slot(type_definition, none_of).
+required(none_of).
+slotrange(anonymous_type_expression).
+multivalued_in(none_of, type_definition).
+range_in(none_of, anonymous_type_expression, type_definition).
+class_slot(type_definition, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_type_expression).
+multivalued_in(exactly_one_of, type_definition).
+range_in(exactly_one_of, anonymous_type_expression, type_definition).
+class_slot(type_definition, any_of).
+required(any_of).
+slotrange(anonymous_type_expression).
+multivalued_in(any_of, type_definition).
+range_in(any_of, anonymous_type_expression, type_definition).
+class_slot(type_definition, all_of).
+required(all_of).
+slotrange(anonymous_type_expression).
+multivalued_in(all_of, type_definition).
+range_in(all_of, anonymous_type_expression, type_definition).
+class(type_expression).
+is_a(type_expression, expression).
+has_uri(type_expression, 'http://w3id.org/biolink/vocab/TypeExpression').
+class_slot(type_expression, pattern).
+required(pattern).
+slotrange(string).
+range_in(pattern, string, type_expression).
+class_slot(type_expression, structured_pattern).
+required(structured_pattern).
+slotrange(pattern_expression).
+range_in(structured_pattern, pattern_expression, type_expression).
+class_slot(type_expression, equals_string).
+required(equals_string).
+slotrange(string).
+range_in(equals_string, string, type_expression).
+class_slot(type_expression, equals_string_in).
+required(equals_string_in).
+slotrange(string).
+multivalued_in(equals_string_in, type_expression).
+range_in(equals_string_in, string, type_expression).
+class_slot(type_expression, equals_number).
+required(equals_number).
+slotrange(integer).
+range_in(equals_number, integer, type_expression).
+class_slot(type_expression, minimum_value).
+required(minimum_value).
+slotrange(integer).
+range_in(minimum_value, integer, type_expression).
+class_slot(type_expression, maximum_value).
+required(maximum_value).
+slotrange(integer).
+range_in(maximum_value, integer, type_expression).
+class_slot(type_expression, none_of).
+required(none_of).
+slotrange(anonymous_type_expression).
+multivalued_in(none_of, type_expression).
+range_in(none_of, anonymous_type_expression, type_expression).
+class_slot(type_expression, exactly_one_of).
+required(exactly_one_of).
+slotrange(anonymous_type_expression).
+multivalued_in(exactly_one_of, type_expression).
+range_in(exactly_one_of, anonymous_type_expression, type_expression).
+class_slot(type_expression, any_of).
+required(any_of).
+slotrange(anonymous_type_expression).
+multivalued_in(any_of, type_expression).
+range_in(any_of, anonymous_type_expression, type_expression).
+class_slot(type_expression, all_of).
+required(all_of).
+slotrange(anonymous_type_expression).
+multivalued_in(all_of, type_expression).
+range_in(all_of, anonymous_type_expression, type_expression).
 class(unique_key).
 mixin(unique_key, extensible).
 mixin(unique_key, annotatable).
+mixin(unique_key, common_metadata).
 has_uri(unique_key, 'http://w3id.org/biolink/vocab/UniqueKey').
+class_slot(unique_key, unique_key_name).
+required(unique_key_name).
+slotrange(string).
+required_in(unique_key_name, unique_key).
+range_in(unique_key_name, string, unique_key).
 class_slot(unique_key, unique_key_slots).
 required(unique_key_slots).
 slotrange(slot_definition).
@@ -2297,4 +4274,75 @@ required(annotations).
 slotrange(annotation).
 multivalued_in(annotations, unique_key).
 range_in(annotations, annotation, unique_key).
+class_slot(unique_key, description).
+required(description).
+slotrange(string).
+range_in(description, string, unique_key).
+class_slot(unique_key, alt_descriptions).
+required(alt_descriptions).
+slotrange(alt_description).
+multivalued_in(alt_descriptions, unique_key).
+range_in(alt_descriptions, alt_description, unique_key).
+class_slot(unique_key, title).
+required(title).
+slotrange(string).
+range_in(title, string, unique_key).
+class_slot(unique_key, deprecated).
+required(deprecated).
+slotrange(string).
+range_in(deprecated, string, unique_key).
+class_slot(unique_key, todos).
+required(todos).
+slotrange(string).
+multivalued_in(todos, unique_key).
+range_in(todos, string, unique_key).
+class_slot(unique_key, notes).
+required(notes).
+slotrange(string).
+multivalued_in(notes, unique_key).
+range_in(notes, string, unique_key).
+class_slot(unique_key, comments).
+required(comments).
+slotrange(string).
+multivalued_in(comments, unique_key).
+range_in(comments, string, unique_key).
+class_slot(unique_key, examples).
+required(examples).
+slotrange(example).
+multivalued_in(examples, unique_key).
+range_in(examples, example, unique_key).
+class_slot(unique_key, in_subset).
+required(in_subset).
+slotrange(subset_definition).
+multivalued_in(in_subset, unique_key).
+range_in(in_subset, subset_definition, unique_key).
+class_slot(unique_key, from_schema).
+required(from_schema).
+slotrange(uri).
+range_in(from_schema, uri, unique_key).
+class_slot(unique_key, imported_from).
+required(imported_from).
+slotrange(string).
+range_in(imported_from, string, unique_key).
+class_slot(unique_key, source).
+required(source).
+slotrange(uriorcurie).
+range_in(source, uriorcurie, unique_key).
+class_slot(unique_key, in_language).
+required(in_language).
+slotrange(string).
+range_in(in_language, string, unique_key).
+class_slot(unique_key, see_also).
+required(see_also).
+slotrange(uriorcurie).
+multivalued_in(see_also, unique_key).
+range_in(see_also, uriorcurie, unique_key).
+class_slot(unique_key, deprecated_element_has_exact_replacement).
+required(deprecated_element_has_exact_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_exact_replacement, uriorcurie, unique_key).
+class_slot(unique_key, deprecated_element_has_possible_replacement).
+required(deprecated_element_has_possible_replacement).
+slotrange(uriorcurie).
+range_in(deprecated_element_has_possible_replacement, uriorcurie, unique_key).
 

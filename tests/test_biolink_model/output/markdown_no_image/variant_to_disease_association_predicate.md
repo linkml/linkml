@@ -22,3 +22,14 @@ URI: [biolink:variant_to_disease_association_predicate](https://w3id.org/biolink
 
  * [VariantAsAModelOfDiseaseAssociation](VariantAsAModelOfDiseaseAssociation.md)
  * [VariantToDiseaseAssociation](VariantToDiseaseAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | annotation predicate (ga4gh) |
+|  | | predicate (translator) |
+| **Mappings:** | | rdf:predicate |
+| **Exact Mappings:** | | owl:annotatedProperty |
+|  | | OBAN:association_has_predicate |
+

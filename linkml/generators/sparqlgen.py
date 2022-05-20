@@ -7,17 +7,10 @@ import logging
 import click
 from jinja2 import Template
 from linkml_runtime.utils.schemaview import SchemaView
-from rdflib import Graph, URIRef, RDF, OWL, Literal, BNode
-from rdflib.collection import Collection
-from rdflib.namespace import RDFS, SKOS
-from rdflib.plugin import plugins as rdflib_plugins, Parser as rdflib_Parser
-
-from linkml import LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE_NAME, METAMODEL_NAMESPACE, METAMODEL_YAML_URI, META_BASE_URI
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SchemaDefinition, ClassDefinition, SlotDefinitionName, \
     TypeDefinitionName, SlotDefinition, TypeDefinition, Element, EnumDefinitionName, Prefix
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.schemaloader import SchemaLoader
 
 template="""
 {% for pfxn, pfx in schema.prefixes.items() -%}
@@ -107,7 +100,7 @@ x="""
 def materialize_schema(schemaview: SchemaView):
     schema = schemaview.schema
     if 'rdf' not in schema.prefixes:
-        schema.prefixes['rdf'] = Prefix('rdf', str(RDF.uri))
+        schema.prefixes['rdf'] = Prefix('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
     for scn in schemaview.imports_closure():
         for pfxn, pfx in schemaview.schema_map[scn].prefixes.items():
             if pfxn not in schema:
@@ -126,6 +119,9 @@ def materialize_schema(schemaview: SchemaView):
             s.slot_uri = schemaview.get_uri(s)
 
 class SparqlGenerator(Generator):
+    """
+    Generates SPARQL queries that can be used for delayed validation
+    """
     generatorname = os.path.basename(__file__)
     valid_formats = ['sparql']
     visit_all_class_slots = False
@@ -150,7 +146,7 @@ class SparqlGenerator(Generator):
         extra = ""
         if named_graphs is not None:
             extra += f'FILTER( ?graph in ( {",".join(named_graphs)} ))'
-        print(f'NGS = {named_graphs} // extra={extra}')
+        logging.info(f'Named Graphs = {named_graphs} // extra={extra}')
         if limit is not None and isinstance(limit, int):
             limit = f'LIMIT {limit}'
         else:
@@ -165,7 +161,7 @@ class SparqlGenerator(Generator):
             Path(directory).mkdir(parents=True, exist_ok=True)
             for qn, q in self.queries.items():
                 qpath = os.path.join(directory, f'{qn}.rq')
-                with open(qpath, 'w') as stream:
+                with open(qpath, 'w', encoding='UTF-8') as stream:
                     stream.write(q)
         return self.sparql
 
@@ -187,9 +183,21 @@ class SparqlGenerator(Generator):
 
 @shared_arguments(SparqlGenerator)
 @click.command()
-@click.option("--dir", "-d", help="Output directory")
+@click.option("--dir", "-d", help="Directory in which queries will be deposited")
 def cli(yamlfile, dir, **kwargs):
-    """ Generate SPARQL queries for validation """
+    """ Generate SPARQL queries for validation
+
+    This will generate a directory of queries that cann be used for QC over a triplestore that
+    is conformant to the same LinkML schema.
+
+    Each query in the directory will be of the form
+
+        CHECK_<ConstraintType>_<SchemaElement>.rq
+
+    Example:
+
+        gen-sparql -d ./sparql/ personinfo.yaml
+    """
     SparqlGenerator(yamlfile, **kwargs).serialize(directory=dir)
 
 

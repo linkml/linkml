@@ -23,12 +23,17 @@ package {{ doc.package }};
 import java.util.List;
 import lombok.*;
 
-/**
+
+{% if metamodel_version %}/* metamodel_version: {{metamodel_version}} */{% endif %}
+{% if model_version %}/* version: {{model_version}} */{% endif %}
+
+
+{% if cls.source_class.description %}/**
   {{ cls.source_class.description }}
-**/
+**/{% endif %}
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
+public {% if cls.abstract -%}abstract {%- endif %}class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
 {% for f in cls.fields %}
   private {{f.range}} {{ f.name }};
 {%- endfor %}
@@ -37,12 +42,15 @@ public class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif 
 
 TYPEMAP = {
     "str": "String",
-    "int": "Integer",
-    "float": "Float",
-    "Bool": "Boolean",
+    "int": "int",
+    "float": "float",
+    "Bool": "boolean",
     "XSDDate": "String",
-    "URIorCURIE": "String"
+    "URIorCURIE": "String",
+    "decimal": "decimal",
+
 }
+
 
 class JavaGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
@@ -62,9 +70,9 @@ class JavaGenerator(OOCodeGenerator):
         self.template_file = template_file
 
     def map_type(self, t: TypeDefinition) -> str:
-        return TYPEMAP.get(t.base, t.base)
+        return TYPEMAP.get(t.name, t.name)
 
-    def serialize(self, directory: str) -> None:
+    def serialize(self, directory: str, **kwargs) -> None:
         sv = self.schemaview
 
         if self.template_file is not None:
@@ -77,23 +85,25 @@ class JavaGenerator(OOCodeGenerator):
         self.directory = directory
         for oodoc in oodocs:
             cls = oodoc.classes[0]
-            code = template_obj.render(doc=oodoc, cls=cls)
+            code = template_obj.render(doc=oodoc, cls=cls, metamodel_version=self.schema.metamodel_version, model_version=self.schema.version)
 
             os.makedirs(directory, exist_ok=True)
             filename = f'{oodoc.name}.java'
             path = os.path.join(directory, filename)
-            with open(path, 'w') as stream:
+            with open(path, 'w', encoding='UTF-8') as stream:
                 stream.write(code)
 
 
 @shared_arguments(JavaGenerator)
-@click.option("--output_directory", default="output", help="Output directory for individually generated class files")
+@click.option("--output_directory", default="output", show_default=True, help="Output directory for individually generated class files")
 @click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template_file", help="Optional jinja2 template to use for class generation")
 @click.command()
-def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False, genmeta=False, classvars=True, slots=True, **args):
+def cli(yamlfile, output_directory=None, package=None, template_file=None, head=True, emit_metadata=False,
+        genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
-    JavaGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta, gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory)
+    JavaGenerator(yamlfile, package=package, template_file=template_file, emit_metadata=head, genmeta=genmeta,
+                  gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory, **args)
 
 
 if __name__ == '__main__':

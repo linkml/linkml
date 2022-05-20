@@ -1,0 +1,51 @@
+{
+   "_comments": "Auto generated from linkml_issue_384.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-05-10T00:33:20\n    Schema: personinfo\n    metamodel version: 1.7.0\n    model version: None\n    \n    id: https://w3id.org/linkml/examples/personinfo\n    description: \n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "linkml": "https://w3id.org/linkml/",
+      "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+      "sdo": "http://schema.org/",
+      "@vocab": "https://w3id.org/linkml/examples/personinfo/",
+      "full_name": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/full_name"
+      },
+      "unit": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/unit"
+      },
+      "value": {
+         "@type": "xsd:float",
+         "@id": "https://w3id.org/linkml/examples/personinfo/value"
+      },
+      "age": {
+         "@type": "xsd:integer",
+         "@id": "https://w3id.org/linkml/examples/personinfo/age"
+      },
+      "aliases": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/aliases"
+      },
+      "id": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/id"
+      },
+      "parent": {
+         "@type": "@id",
+         "@id": "https://w3id.org/linkml/examples/personinfo/parent"
+      },
+      "phone": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/phone"
+      },
+      "GeoAge": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/GeoAge"
+      },
+      "GeoObject": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/GeoObject"
+      },
+      "Organization": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/Organization"
+      },
+      "Person": {
+         "@id": "sdo:Person"
+      },
+      "Thing": {
+         "@id": "https://w3id.org/linkml/examples/personinfo/Thing"
+      }
+   }
+}

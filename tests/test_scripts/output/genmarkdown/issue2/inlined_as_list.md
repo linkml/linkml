@@ -19,7 +19,9 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 
 ## Used by
 
+ * anonymous_slot_expression
  * slot_definition
+ * slot_expression
 
 ## Other properties
 
@@ -30,4 +32,5 @@ representation and output. |
 |  | | A keyed or identified class with one additional slot can be input in a third form, a dictionary whose key
 is the key or identifier and whose value is the one additional element.  This form is still stored according
 to the inlined_as_list setting. |
+| **In Subsets:** | | basic |
 

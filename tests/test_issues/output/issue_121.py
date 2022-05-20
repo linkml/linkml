@@ -1,5 +1,5 @@
 # Auto generated from issue_121.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-07-09 16:24
+# Generation date: 2022-01-27T02:54:46
 # Schema: schema
 #
 # id: https://microbiomedata/schema
@@ -25,6 +25,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.linkml_model.types import String
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -77,5 +78,5 @@ class slots:
 slots.depth = Slot(uri=DEFAULT_['mixs/depth'], name="depth", curie=DEFAULT_.curie('mixs/depth'),
                    model_uri=DEFAULT_.depth, domain=None, range=Optional[str])
 
-slots.biosample_depth = Slot(uri=DEFAULT_.depth, name="biosample_depth", curie=DEFAULT_.curie('depth'),
+slots.biosample_depth = Slot(uri=DEFAULT_['mixs/depth'], name="biosample_depth", curie=DEFAULT_.curie('mixs/depth'),
                    model_uri=DEFAULT_.biosample_depth, domain=Biosample, range=Optional[str])

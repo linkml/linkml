@@ -51,6 +51,12 @@ class GolrSchemaGenerator(Generator):
         self.dirname: str = directory
         self.class_obj: Optional[GOLRClass] = None
 
+    def generate_header(self):
+        headers = [f"# metamodel_version: {self.schema.metamodel_version}"]
+        if self.schema.version:
+            headers.append(f"# version: {self.schema.version}")
+        return headers
+
     def visit_schema(self, directory: str, **_) -> None:
         self.dirname = directory
         if directory:
@@ -72,7 +78,8 @@ class GolrSchemaGenerator(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         fn = os.path.join(self.dirname, underscore(cls.name + '-config.yaml'))
         if len(self.class_obj.fields) > 1:
-            with open(fn, 'w') as f:
+            with open(fn, 'w', encoding='UTF-8') as f:
+                f.write(''.join(self.generate_header()))
                 f.write(as_yaml(self.class_obj))
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
@@ -84,7 +91,7 @@ class GolrSchemaGenerator(Generator):
 
 @shared_arguments(GolrSchemaGenerator)
 @click.command()
-@click.option("--dir", "-d", default='golr-views', help="Output directory")
+@click.option("--dir", "-d", default='golr-views', show_default=True, help="Output directory")
 def cli(yamlfile, dir=None, **args):
     """ Generate GOLR representation of a LinkML model """
     print(GolrSchemaGenerator(yamlfile, directory=dir, **args).serialize(directory=dir, **args))

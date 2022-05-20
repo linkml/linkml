@@ -1,5 +1,5 @@
 # Auto generated from kitchen_sink.yaml by pythongen.py version: 0.9.0
-# Generation date: 2021-09-30 01:42
+# Generation date: 2022-05-10T00:32:01
 # Schema: kitchen_sink
 #
 # id: https://w3id.org/linkml/tests/kitchen_sink
@@ -28,6 +28,7 @@ from linkml_runtime.linkml_model.types import Boolean, Date, Integer, String
 from linkml_runtime.utils.metamodelcore import Bool, XSDDate
 
 metamodel_version = "1.7.0"
+version = None
 
 # Overwrite dataclasses _init_fn to add **kwargs in __init__
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
@@ -40,6 +41,7 @@ P = CurieNamespace('P', 'http://example.org/person/')
 RO = CurieNamespace('RO', 'http://purl.obolibrary.org/obo/RO_')
 ROR = CurieNamespace('ROR', 'http://example.org/ror/')
 BIOLINK = CurieNamespace('biolink', 'https://w3id.org/biolink/')
+BIZCODES = CurieNamespace('bizcodes', 'https://example.org/bizcodes/')
 CORE = CurieNamespace('core', 'https://w3id.org/linkml/tests/core/')
 DCE = CurieNamespace('dce', 'http://purl.org/dc/elements/1.1/')
 KS = CurieNamespace('ks', 'https://w3id.org/linkml/tests/kitchen_sink/')
@@ -47,10 +49,26 @@ LEGO = CurieNamespace('lego', 'http://geneontology.org/lego/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = KS
 
 
 # Types
+class PhoneNumberType(str):
+    type_class_uri = XSD.string
+    type_class_curie = "xsd:string"
+    type_name = "phone number type"
+    type_model_uri = KS.PhoneNumberType
+
+
+class AgeInYearsType(int):
+    type_class_uri = XSD.integer
+    type_class_curie = "xsd:integer"
+    type_name = "age in years type"
+    type_model_uri = KS.AgeInYearsType
+
 
 # Class references
 class PersonId(extended_str):
@@ -78,6 +96,10 @@ class ProcedureConceptId(ConceptId):
 
 
 class CompanyId(OrganizationId):
+    pass
+
+
+class CodeSystemId(extended_str):
     pass
 
 
@@ -109,7 +131,28 @@ class HasAliases(YAMLRoot):
 
 
 @dataclass
+class Friend(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.Friend
+    class_class_curie: ClassVar[str] = "ks:Friend"
+    class_name: ClassVar[str] = "Friend"
+    class_model_uri: ClassVar[URIRef] = KS.Friend
+
+    name: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.name is not None and not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Person(YAMLRoot):
+    """
+    A person, living or dead
+    """
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS.Person
@@ -140,7 +183,9 @@ class Person(YAMLRoot):
             self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
         self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
 
-        self._normalize_inlined_as_list(slot_name="has_familial_relationships", slot_type=FamilialRelationship, key_name="type", keyed=False)
+        if not isinstance(self.has_familial_relationships, list):
+            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
@@ -254,6 +299,7 @@ class Concept(YAMLRoot):
 
     id: Union[str, ConceptId] = None
     name: Optional[str] = None
+    in_code_system: Optional[Union[str, CodeSystemId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -263,6 +309,9 @@ class Concept(YAMLRoot):
 
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
+
+        if self.in_code_system is not None and not isinstance(self.in_code_system, CodeSystemId):
+            self.in_code_system = CodeSystemId(self.in_code_system)
 
         super().__post_init__(**kwargs)
 
@@ -319,6 +368,7 @@ class Event(YAMLRoot):
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
     is_current: Optional[Union[bool, Bool]] = None
+    metadata: Optional[Union[dict, "AnyObject"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
@@ -417,10 +467,14 @@ class EmploymentEvent(Event):
     class_model_uri: ClassVar[URIRef] = KS.EmploymentEvent
 
     employed_at: Optional[Union[str, CompanyId]] = None
+    type: Optional[Union[str, "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.employed_at is not None and not isinstance(self.employed_at, CompanyId):
             self.employed_at = CompanyId(self.employed_at)
+
+        if self.type is not None and not isinstance(self.type, EmploymentEventType):
+            self.type = EmploymentEventType(self.type)
 
         super().__post_init__(**kwargs)
 
@@ -516,6 +570,30 @@ class Company(Organization):
 
 
 @dataclass
+class CodeSystem(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.CodeSystem
+    class_class_curie: ClassVar[str] = "ks:CodeSystem"
+    class_name: ClassVar[str] = "CodeSystem"
+    class_model_uri: ClassVar[URIRef] = KS.CodeSystem
+
+    id: Union[str, CodeSystemId] = None
+    name: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, CodeSystemId):
+            self.id = CodeSystemId(self.id)
+
+        if self.name is not None and not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Dataset(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -527,6 +605,7 @@ class Dataset(YAMLRoot):
     persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
     companies: Optional[Union[Dict[Union[str, CompanyId], Union[dict, Company]], List[Union[dict, Company]]]] = empty_dict()
     activities: Optional[Union[Dict[Union[str, ActivityId], Union[dict, "Activity"]], List[Union[dict, "Activity"]]]] = empty_dict()
+    code_systems: Optional[Union[Dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], List[Union[dict, CodeSystem]]]] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
@@ -535,8 +614,66 @@ class Dataset(YAMLRoot):
 
         self._normalize_inlined_as_list(slot_name="activities", slot_type=Activity, key_name="id", keyed=True)
 
+        self._normalize_inlined_as_dict(slot_name="code_systems", slot_type=CodeSystem, key_name="id", keyed=True)
+
         super().__post_init__(**kwargs)
 
+
+@dataclass
+class FakeClass(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.FakeClass
+    class_class_curie: ClassVar[str] = "ks:FakeClass"
+    class_name: ClassVar[str] = "FakeClass"
+    class_model_uri: ClassVar[URIRef] = KS.FakeClass
+
+    test_attribute: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.test_attribute is not None and not isinstance(self.test_attribute, str):
+            self.test_attribute = str(self.test_attribute)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class ClassWithSpaces(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.ClassWithSpaces
+    class_class_curie: ClassVar[str] = "ks:ClassWithSpaces"
+    class_name: ClassVar[str] = "class with spaces"
+    class_model_uri: ClassVar[URIRef] = KS.ClassWithSpaces
+
+    slot_with_space_1: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.slot_with_space_1 is not None and not isinstance(self.slot_with_space_1, str):
+            self.slot_with_space_1 = str(self.slot_with_space_1)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class SubclassTest(ClassWithSpaces):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = KS.SubclassTest
+    class_class_curie: ClassVar[str] = "ks:SubclassTest"
+    class_name: ClassVar[str] = "subclass test"
+    class_model_uri: ClassVar[URIRef] = KS.SubclassTest
+
+    slot_with_space_2: Optional[Union[dict, ClassWithSpaces]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.slot_with_space_2 is not None and not isinstance(self.slot_with_space_2, ClassWithSpaces):
+            self.slot_with_space_2 = ClassWithSpaces(**as_dict(self.slot_with_space_2))
+
+        super().__post_init__(**kwargs)
+
+
+AnyObject = Any
 
 @dataclass
 class Activity(YAMLRoot):
@@ -629,9 +766,43 @@ class FamilialRelationshipType(EnumDefinitionImpl):
 
 class DiagnosisType(EnumDefinitionImpl):
 
+    TODO = PermissibleValue(text="TODO")
+
     _defn = EnumDefinition(
         name="DiagnosisType",
     )
+
+class EmploymentEventType(EnumDefinitionImpl):
+    """
+    codes for different kinds of employment/HR related events
+    """
+    HIRE = PermissibleValue(text="HIRE",
+                               description="event for a new employee",
+                               meaning=BIZCODES["001"])
+    FIRE = PermissibleValue(text="FIRE",
+                               meaning=BIZCODES["002"])
+    PROMOTION = PermissibleValue(text="PROMOTION",
+                                         description="promotion event",
+                                         meaning=BIZCODES["003"])
+    TRANSFER = PermissibleValue(text="TRANSFER",
+                                       description="transfer internally",
+                                       meaning=BIZCODES["004"])
+
+    _defn = EnumDefinition(
+        name="EmploymentEventType",
+        description="codes for different kinds of employment/HR related events",
+    )
+
+class OtherCodes(EnumDefinitionImpl):
+
+    _defn = EnumDefinition(
+        name="OtherCodes",
+    )
+
+    @classmethod
+    def _addvals(cls):
+        setattr(cls, "a b",
+                PermissibleValue(text="a b") )
 
 # Slots
 class slots:
@@ -688,6 +859,12 @@ slots.city = Slot(uri=KS.city, name="city", curie=KS.curie('city'),
 slots.has_birth_event = Slot(uri=KS.has_birth_event, name="has birth event", curie=KS.curie('has_birth_event'),
                    model_uri=KS.has_birth_event, domain=None, range=Optional[Union[dict, BirthEvent]])
 
+slots.in_code_system = Slot(uri=KS.in_code_system, name="in code system", curie=KS.curie('in_code_system'),
+                   model_uri=KS.in_code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
+
+slots.metadata = Slot(uri=KS.metadata, name="metadata", curie=KS.curie('metadata'),
+                   model_uri=KS.metadata, domain=None, range=Optional[Union[dict, AnyObject]])
+
 slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
                    model_uri=KS.id, domain=None, range=URIRef)
 
@@ -724,10 +901,10 @@ slots.activity_set = Slot(uri=CORE.activity_set, name="activity set", curie=CORE
 slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('agent_set'),
                    model_uri=KS.agent_set, domain=None, range=Optional[Union[Dict[Union[str, AgentId], Union[dict, Agent]], List[Union[dict, Agent]]]])
 
-slots.hasAliases__aliases = Slot(uri=KS.aliases, name="hasAliases__aliases", curie=KS.curie('aliases'),
+slots.hasAliases__aliases = Slot(uri=SKOS.altLabel, name="hasAliases__aliases", curie=SKOS.curie('altLabel'),
                    model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
 
-slots.company__ceo = Slot(uri=KS.ceo, name="company__ceo", curie=KS.curie('ceo'),
+slots.company__ceo = Slot(uri=SCHEMA.ceo, name="company__ceo", curie=SCHEMA.curie('ceo'),
                    model_uri=KS.company__ceo, domain=None, range=Optional[Union[str, PersonId]])
 
 slots.dataset__persons = Slot(uri=KS.persons, name="dataset__persons", curie=KS.curie('persons'),
@@ -739,7 +916,19 @@ slots.dataset__companies = Slot(uri=KS.companies, name="dataset__companies", cur
 slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", curie=KS.curie('activities'),
                    model_uri=KS.dataset__activities, domain=None, range=Optional[Union[Dict[Union[str, ActivityId], Union[dict, Activity]], List[Union[dict, Activity]]]])
 
-slots.Person_name = Slot(uri=KS.name, name="Person_name", curie=KS.curie('name'),
+slots.dataset__code_systems = Slot(uri=KS.code_systems, name="dataset__code_systems", curie=KS.curie('code_systems'),
+                   model_uri=KS.dataset__code_systems, domain=None, range=Optional[Union[Dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], List[Union[dict, CodeSystem]]]])
+
+slots.fakeClass__test_attribute = Slot(uri=KS.test_attribute, name="fakeClass__test_attribute", curie=KS.curie('test_attribute'),
+                   model_uri=KS.fakeClass__test_attribute, domain=None, range=Optional[str])
+
+slots.classWithSpaces__slot_with_space_1 = Slot(uri=KS.slot_with_space_1, name="classWithSpaces__slot_with_space_1", curie=KS.curie('slot_with_space_1'),
+                   model_uri=KS.classWithSpaces__slot_with_space_1, domain=None, range=Optional[str])
+
+slots.subclassTest__slot_with_space_2 = Slot(uri=KS.slot_with_space_2, name="subclassTest__slot_with_space_2", curie=KS.curie('slot_with_space_2'),
+                   model_uri=KS.subclassTest__slot_with_space_2, domain=None, range=Optional[Union[dict, ClassWithSpaces]])
+
+slots.Person_name = Slot(uri=CORE.name, name="Person_name", curie=CORE.curie('name'),
                    model_uri=KS.Person_name, domain=Person, range=Optional[str],
                    pattern=re.compile(r'^\S+ \S+'))
 
@@ -748,3 +937,6 @@ slots.FamilialRelationship_type = Slot(uri=KS.type, name="FamilialRelationship_t
 
 slots.FamilialRelationship_related_to = Slot(uri=KS.related_to, name="FamilialRelationship_related to", curie=KS.curie('related_to'),
                    model_uri=KS.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
+
+slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
+                   model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[Union[str, "EmploymentEventType"]])

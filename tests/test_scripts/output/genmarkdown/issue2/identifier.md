@@ -33,5 +33,8 @@ slot_definition &#8594;  <sub>0..1</sub> boolean
 |  | | a key slot is automatically required.  Identifiers cannot be optional |
 |  | | a given domain can have at most one identifier |
 |  | | identifiers and keys are mutually exclusive.  A given domain cannot have both |
-| **See also:** | | https://en.wikipedia.org/wiki/Identifier |
+| **In Subsets:** | | minimal |
+|  | | basic |
+|  | | relational_model |
+| **See also:** | | [https://en.wikipedia.org/wiki/Identifier](https://en.wikipedia.org/wiki/Identifier) |
 

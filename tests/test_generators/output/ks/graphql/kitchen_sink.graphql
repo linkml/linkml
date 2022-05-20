@@ -22,12 +22,28 @@ type Agent
     wasInformedBy: Activity
   }
 
+type AnyObject
+  {
+  }
+
 type BirthEvent
   {
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     inLocation: Place
+  }
+
+type ClassWithSpaces
+  {
+    slotWithSpace1: String
+  }
+
+type CodeSystem
+  {
+    id: String!
+    name: String
   }
 
 type Company
@@ -42,6 +58,7 @@ type Concept
   {
     id: String!
     name: String
+    inCodeSystem: CodeSystem
   }
 
 type Dataset
@@ -49,12 +66,14 @@ type Dataset
     persons: [Person]
     companies: [Company]
     activities: [Activity]
+    codeSystems: [CodeSystem]
   }
 
 type DiagnosisConcept
   {
     id: String!
     name: String
+    inCodeSystem: CodeSystem
   }
 
 type EmploymentEvent
@@ -62,7 +81,9 @@ type EmploymentEvent
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     employedAt: Company
+    type: EmploymentEventType
   }
 
 type Event
@@ -70,6 +91,12 @@ type Event
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
+  }
+
+type FakeClass
+  {
+    testAttribute: String
   }
 
 type FamilialRelationship
@@ -78,6 +105,11 @@ type FamilialRelationship
     endedAtTime: Date
     type: FamilialRelationshipType!
     relatedTo: Person!
+  }
+
+interface Friend
+  {
+    name: String
   }
 
 interface HasAliases
@@ -90,6 +122,7 @@ type MarriageEvent implements WithLocation
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     marriedTo: Person
     inLocation: Place
   }
@@ -99,6 +132,7 @@ type MedicalEvent
     startedAtTime: Date
     endedAtTime: Date
     isCurrent: Boolean
+    metadata: AnyObject
     inLocation: Place
     diagnosis: DiagnosisConcept
     procedure: ProcedureConcept
@@ -135,6 +169,7 @@ type ProcedureConcept
   {
     id: String!
     name: String
+    inCodeSystem: CodeSystem
   }
 
 type Relationship
@@ -143,6 +178,12 @@ type Relationship
     endedAtTime: Date
     relatedTo: String
     type: String
+  }
+
+type SubclassTest
+  {
+    slotWithSpace1: String
+    slotWithSpace2: ClassWithSpaces
   }
 
 interface WithLocation

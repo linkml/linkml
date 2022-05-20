@@ -19,11 +19,14 @@ URI: [linkml:inlined](https://w3id.org/linkml/inlined)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
 | **Comments:** | | classes without keys or identifiers are necessarily inlined as lists |
+| **In Subsets:** | | basic |
 

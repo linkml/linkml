@@ -26,5 +26,10 @@ URI: [biolink:variant_to_population_association_object](https://w3id.org/biolink
 
 |  |  |  |
 | --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
 | **Examples:** | | Example(value='HANCESTRO:0010', description='African') |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
 

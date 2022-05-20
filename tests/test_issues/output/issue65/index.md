@@ -1,5 +1,10 @@
 
-# test65 schema
+# test65
+
+
+**metamodel version:** 1.7.0
+
+**version:** None
 
 
 

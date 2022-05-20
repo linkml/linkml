@@ -1,0 +1,27 @@
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix ns1: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/linkml/examples/test> a owl:Ontology ;
+    rdfs:label "test" ;
+    ns1:IAO_0000700 <https://w3id.org/linkml/examples/test/C1> ;
+    linkml:generation_date "2021-10-02 02:02" ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:source_file "linkml_issue_387.yaml" ;
+    linkml:source_file_date "Sat Oct  2 01:57:27 2021" ;
+    linkml:source_file_size 242 .
+
+<https://w3id.org/linkml/examples/test/C1> a owl:Class ;
+    rdfs:label "C1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onDataRange xsd:string ;
+            owl:onProperty <https://w3id.org/linkml/examples/test/a> ] .
+
+<https://w3id.org/linkml/examples/test/a> a owl:DatatypeProperty ;
+    rdfs:label "a" ;
+    rdfs:range xsd:string .
+
+

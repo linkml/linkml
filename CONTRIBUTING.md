@@ -1,6 +1,1 @@
-All contributions welcome!
-
-You can make suggestions on the github issue tracker, or via pull requests.
-
-
-
+For information about contributing to this project, please visit our [contribution guidelines page](https://linkml.io/linkml/contributing/contributing.html).

@@ -1,4 +1,4 @@
-id: slot_definition
+# metamodel_version: 1.7.0# version: 2.0.0id: slot_definition
 schema_generating: true
 description: the definition of a property or a slot
 display_name: slot_definition
@@ -10,9 +10,6 @@ fields:
     is combined with the default prefix to form the globally unique subject of the
     target class.
   display_name: name
-- id: title
-  description: the official title of the element
-  display_name: title
 - id: id_prefixes
   description: the identifier of this class or slot must begin with the URIs referenced
     by this prefix
@@ -21,11 +18,84 @@ fields:
 - id: definition_uri
   description: the "native" URI of the element
   display_name: definition_uri
+- id: local_names
+  display_name: local_names
+  cardinality: multi
+- id: conforms_to
+  description: An established standard to which the element conforms.
+  display_name: conforms_to
+- id: extensions
+  description: a tag/text tuple attached to an arbitrary element
+  display_name: extensions
+  cardinality: multi
+- id: annotations
+  description: a collection of tag/text tuples with the semantics of OWL Annotation
+  display_name: annotations
+  cardinality: multi
+- id: description
+  description: a description of the element's purpose and use
+  display_name: description
+- id: alt_descriptions
+  display_name: alt_descriptions
+  cardinality: multi
+- id: title
+  description: the official title of the element
+  display_name: title
+- id: deprecated
+  description: Description of why and when this element will no longer be used
+  display_name: deprecated
+- id: todos
+  description: Outstanding issue that needs resolution
+  display_name: todos
+  cardinality: multi
+- id: notes
+  description: editorial notes about an element intended for internal consumption
+  display_name: notes
+  cardinality: multi
+- id: comments
+  description: notes and comments about an element intended for external consumption
+  display_name: comments
+  cardinality: multi
+- id: examples
+  description: example usages of an element
+  display_name: examples
+  cardinality: multi
+- id: in_subset
+  description: used to indicate membership of a term in a defined subset of terms
+    used for a particular domain or application (e.g. the translator_minimal subset
+    holding the minimal set of predicates used in a translator knowledge graph)
+  display_name: in_subset
+  cardinality: multi
+- id: from_schema
+  description: id of the schema that defined the element
+  display_name: from_schema
+- id: imported_from
+  description: the imports entry that this element was derived from.  Empty means
+    primary source
+  display_name: imported_from
+- id: source
+  description: A related resource from which the element is derived.
+  display_name: source
+- id: in_language
+  display_name: in_language
+- id: see_also
+  description: a reference
+  display_name: see_also
+  cardinality: multi
+- id: deprecated_element_has_exact_replacement
+  description: When an element is deprecated, it can be automatically replaced by
+    this uri or curie
+  display_name: deprecated element has exact replacement
+- id: deprecated_element_has_possible_replacement
+  description: When an element is deprecated, it can be potentially replaced by this
+    uri or curie
+  display_name: deprecated element has possible replacement
 - id: aliases
   display_name: aliases
   cardinality: multi
-- id: local_names
-  display_name: local_names
+- id: structured_aliases
+  description: A list of structured_alias objects.
+  display_name: structured_aliases
   cardinality: multi
 - id: mappings
   description: A list of terms from different schemas or terminology systems that
@@ -59,64 +129,10 @@ fields:
     have broader meaning.
   display_name: broad mappings
   cardinality: multi
-- id: extensions
-  description: a tag/text tuple attached to an arbitrary element
-  display_name: extensions
-  cardinality: multi
-- id: annotations
-  description: a collection of tag/text tuples with the semantics of OWL Annotation
-  display_name: annotations
-  cardinality: multi
-- id: description
-  description: a description of the element's purpose and use
-  display_name: description
-- id: alt_descriptions
-  display_name: alt_descriptions
-  cardinality: multi
-- id: deprecated
-  description: Description of why and when this element will no longer be used
-  display_name: deprecated
-- id: todos
-  description: Outstanding issue that needs resolution
-  display_name: todos
-  cardinality: multi
-- id: notes
-  description: editorial notes about an element intended for internal consumption
-  display_name: notes
-  cardinality: multi
-- id: comments
-  description: notes and comments about an element intended for external consumption
-  display_name: comments
-  cardinality: multi
-- id: examples
-  description: example usages of an element
-  display_name: examples
-  cardinality: multi
-- id: in_subset
-  description: used to indicate membership of a term in a defined subset of terms
-    used for a particular domain or application (e.g. the translator_minimal subset
-    holding the minimal set of predicates used in a translator knowledge graph)
-  display_name: in_subset
-  cardinality: multi
-- id: from_schema
-  description: id of the schema that defined the element
-  display_name: from_schema
-- id: imported_from
-  description: the imports entry that this element was derived from.  Empty means
-    primary source
-  display_name: imported_from
-- id: see_also
-  description: a reference
-  display_name: see_also
-  cardinality: multi
-- id: deprecated_element_has_exact_replacement
-  description: When an element is deprecated, it can be automatically replaced by
-    this uri or curie
-  display_name: deprecated element has exact replacement
-- id: deprecated_element_has_possible_replacement
-  description: When an element is deprecated, it can be potentially replaced by this
-    uri or curie
-  display_name: deprecated element has possible replacement
+- id: rank
+  description: the relative order in which the element occurs, lower values are given
+    precedence
+  display_name: rank
 - id: abstract
   description: an abstract class is a high level class or slot that is typically used
     to group common slots together and cannot be directly instantiated.
@@ -169,11 +185,6 @@ fields:
     \ slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n\
     \    S1: Y\n\nimplicitly asserts that X is an instance of C1\n"
   display_name: domain
-- id: range
-  description: "defines the type of the object of the slot.  Given the following slot\
-    \ definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n \
-    \   S1: Y\n\nimplicitly asserts Y is an instance of C2\n"
-  display_name: range
 - id: slot_uri
   description: predicate of this slot for semantic web application
   display_name: slot_uri
@@ -188,30 +199,25 @@ fields:
   display_name: readonly
 - id: ifabsent
   description: "function that provides a default value for the slot.  Possible values\
-    \ for this slot are defined in biolink.utils.ifabsent_functions.default_library:\n\
+    \ for this slot are defined in\nlinkml_runtime.utils.ifabsent_functions.default_library:\n\
     \  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) --\
     \ integer value\n  * str(value) -- string value\n  * default_range -- schema default\
     \ range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n\
     \  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the\
     \ containing class"
   display_name: ifabsent
-- id: required
-  description: true means that the slot must be present in the loaded definition
-  display_name: required
-- id: recommended
-  description: true means that the slot should be present in the loaded definition,
-    but this is not required
-  display_name: recommended
-- id: inlined
-  description: True means that keyed or identified slot appears in an outer structure
-    by value.  False means that only the key or identifier for the slot appears within
-    the domain, referencing a structure that appears elsewhere.
-  display_name: inlined
-- id: inlined_as_list
-  description: True means that an inlined slot is represented as a list of range instances.  False
-    means that an inlined slot is represented as a dictionary, whose key is the slot
-    key or identifier and whose value is the range instance.
-  display_name: inlined_as_list
+- id: list_elements_unique
+  description: If True, then there must be no duplicates in the elements of a multivalued
+    slot
+  display_name: list_elements_unique
+- id: list_elements_ordered
+  description: If True, then the order of elements of a multivalued slot is guaranteed
+    to be preserved. If False, the order may still be preserved but this is not guaranteed
+  display_name: list_elements_ordered
+- id: shared
+  description: If True, then the relationship between the slot domain and range is
+    many to one or many to many
+  display_name: shared
 - id: key
   description: True means that the key slot(s) uniquely identify the container.
   display_name: key
@@ -240,9 +246,25 @@ fields:
   description: Ontology property which this slot is a subproperty of
   display_name: subproperty_of
 - id: symmetric
-  description: True means that any instance of  d s r implies that there is also an
-    instance of r s d
+  description: If s is symmetric, and i.s=v, then v.s=i
   display_name: symmetric
+- id: reflexive
+  description: If s is reflexive, then i.s=i for all instances i
+  display_name: reflexive
+- id: locally_reflexive
+  description: If s is locally_reflexive, then i.s=i for all instances i where s if
+    a class slot for the type of i
+  display_name: locally_reflexive
+- id: irreflexive
+  description: If s is irreflexive, then there exists no i such i.s=i
+  display_name: irreflexive
+- id: asymmetric
+  description: If s is antisymmetric, and i.s=v where i is different from v, v.s cannot
+    have value i
+  display_name: asymmetric
+- id: transitive
+  description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
+  display_name: transitive
 - id: inverse
   description: indicates that any instance of d s r implies that there is also an
     instance of r s' d
@@ -251,6 +273,14 @@ fields:
   description: indicates that any instance, i,  the domain of this slot will include
     an assert of i s range
   display_name: is_class_field
+- id: transitive_form_of
+  description: If s transitive_form_of d, then (1) s holds whenever d holds (2) s
+    is transitive (3) d holds whenever s holds and there are no intermediates, and
+    s is not reflexive
+  display_name: transitive_form_of
+- id: reflexive_transitive_form_of
+  description: transitive_form_of including the reflexive case
+  display_name: reflexive_transitive_form_of
 - id: role
   description: the role played by the slot range
   display_name: role
@@ -260,6 +290,79 @@ fields:
 - id: usage_slot_name
   description: The name of the slot referenced in the slot_usage
   display_name: usage_slot_name
+- id: relational_role
+  description: the role a slot on a relationship class plays, for example, the subject,
+    object or predicate roles
+  display_name: relational_role
+- id: slot_group
+  description: allows for grouping of related slots into a grouping slot that serves
+    the role of a group
+  display_name: slot_group
+- id: is_grouping_slot
+  description: true if this slot is a grouping slot
+  display_name: is_grouping_slot
+- id: path_rule
+  description: a rule for inferring a slot assignment based on evaluating a path through
+    a sequence of slot assignemnts
+  display_name: path_rule
+- id: disjoint_with
+  description: Two classes are disjoint if they have no instances in common, two slots
+    are disjoint if they can never hold between the same two instances
+  display_name: slot_definition_disjoint_with
+  cardinality: multi
+- id: children_are_mutually_disjoint
+  description: If true then all direct is_a children are mutually disjoint and share
+    no instances in common
+  display_name: children_are_mutually_disjoint
+- id: is_a
+  description: specifies single-inheritance between classes or slots. While multiple
+    inheritance is not allowed, mixins can be provided effectively providing the same
+    thing. The semantics are the same when translated to formalisms that allow MI
+    (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python
+    classes) then is a is used. When translating a framework without polymorphism
+    (e.g. json-schema, solr document schema) then is a and mixins are recursively
+    unfolded
+  display_name: slot_definition_is_a
+- id: mixins
+  description: List of definitions to be mixed in. Targets may be any definition of
+    the same type
+  display_name: slot_definition_mixins
+  cardinality: multi
+- id: apply_to
+  description: Used to extend class or slot definitions. For example, if we have a
+    core schema where a gene has two slots for identifier and symbol, and we have
+    a specialized schema for my_organism where we wish to add a slot systematic_name,
+    we can avoid subclassing by defining a class gene_my_organism, adding the slot
+    to this class, and then adding an apply_to pointing to the gene class. The new
+    slot will be 'injected into' the gene class.
+  display_name: slot_definition_apply_to
+  cardinality: multi
+- id: range
+  description: "defines the type of the object of the slot.  Given the following slot\
+    \ definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n \
+    \   S1: Y\n\nimplicitly asserts Y is an instance of C2\n"
+  display_name: range
+- id: range_expression
+  description: A range that is described as a boolean expression combining existing
+    ranges
+  display_name: range_expression
+- id: required
+  description: true means that the slot must be present in the loaded definition
+  display_name: required
+- id: recommended
+  description: true means that the slot should be present in the loaded definition,
+    but this is not required
+  display_name: recommended
+- id: inlined
+  description: True means that keyed or identified slot appears in an outer structure
+    by value.  False means that only the key or identifier for the slot appears within
+    the domain, referencing a structure that appears elsewhere.
+  display_name: inlined
+- id: inlined_as_list
+  description: True means that an inlined slot is represented as a list of range instances.  False
+    means that an inlined slot is represented as a dictionary, whose key is the slot
+    key or identifier and whose value is the range instance.
+  display_name: inlined_as_list
 - id: minimum_value
   description: for slots with ranges of type number, the value must be equal to or
     higher than this
@@ -270,12 +373,59 @@ fields:
   display_name: maximum_value
 - id: pattern
   description: the string value of the slot must conform to this regular expression
+    expressed in the string
   display_name: pattern
-- id: is_a
-  display_name: slot_definition_is_a
-- id: mixins
-  display_name: slot_definition_mixins
+- id: structured_pattern
+  description: the string value of the slot must conform to the regular expression
+    in the pattern expression
+  display_name: structured_pattern
+- id: equals_string
+  description: the slot must have range string and the value of the slot must equal
+    the specified value
+  display_name: equals_string
+- id: equals_string_in
+  description: the slot must have range string and the value of the slot must equal
+    one of the specified values
+  display_name: equals_string_in
   cardinality: multi
-- id: apply_to
-  display_name: slot_definition_apply_to
+- id: equals_number
+  description: the slot must have range of a number and the value of the slot must
+    equal the specified value
+  display_name: equals_number
+- id: equals_expression
+  description: the value of the slot must equal the value of the evaluated expression
+  display_name: equals_expression
+- id: minimum_cardinality
+  description: the minimum number of entries for a multivalued slot
+  display_name: minimum_cardinality
+- id: maximum_cardinality
+  description: the maximum number of entries for a multivalued slot
+  display_name: maximum_cardinality
+- id: has_member
+  description: the values of the slot is multivalued with at least one member satisfying
+    the condition
+  display_name: has_member
+- id: all_members
+  description: "the value of the multiavlued slot is a list where all elements conform\
+    \ to the specified values.\nthis defines a dynamic class with named slots according\
+    \ to matching constraints\n\nE.g to state that all members of a list are between\
+    \ 1 and 10\n```\nall_members:\n  x:\n    range: integer\n    minimum_value: 10\n\
+    \    maximum_value: 10\n```"
+  display_name: all_members
+  cardinality: multi
+- id: none_of
+  description: holds if none of the expressions hold
+  display_name: slot_expression_none_of
+  cardinality: multi
+- id: exactly_one_of
+  description: holds if only one of the expressions hold
+  display_name: slot_expression_exactly_one_of
+  cardinality: multi
+- id: any_of
+  description: holds if at least one of the expressions hold
+  display_name: slot_expression_any_of
+  cardinality: multi
+- id: all_of
+  description: holds if all of the expressions hold
+  display_name: slot_expression_all_of
   cardinality: multi

@@ -21,6 +21,14 @@ class ProtoGenerator(Generator):
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.relative_slot_num = 0
+        self.generate_header()
+
+    def generate_header(self):
+        print(f' syntax="proto3";')
+        print(f' package')
+        print(f"// metamodel_version: {self.schema.metamodel_version}")
+        if self.schema.version:
+            print(f"// version: {self.schema.version}")
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         if cls.mixin or cls.abstract or not cls.slots:
@@ -37,11 +45,14 @@ class ProtoGenerator(Generator):
         print(" }")
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        qual = 'repeated ' if slot.multivalued else 'optional ' if not slot.required or slot.key else ''
+        qual = 'repeated ' if slot.multivalued else ''
         slotname = lcamelcase(aliased_slot_name)
         slot_range = camelcase(slot.range)
-        self.relative_slot_num += 1
-        print(f"  {qual}{slotname} {slot_range} = {self.relative_slot_num}")
+        if slot.rank is None:
+            # numbering of slots is important in the proto implementation
+            # and should be determined by the rank param. 
+            slot.rank = 0
+        print(f" {qual} {lcamelcase(slot_range)} {(slotname)} = {slot.rank}")
 
 
 @shared_arguments(ProtoGenerator)

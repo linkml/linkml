@@ -1,0 +1,127 @@
+# Class: {{ gen.name(element) }}
+
+{%- if header -%}
+{{header}}
+{%- endif -%}
+
+
+
+{% if element.description %}
+_{{ element.description }}_
+{% endif %}
+
+{% if element.abstract %}
+* __NOTE__: this is an abstract class and should not be instantiated directly
+{% endif %}
+{% if element.mixin %}
+* __NOTE__: this is a mixin class intended to be used in combination with other classes, and not used directly
+{% endif %}
+
+URI: {{ gen.uri_link(element) }}
+
+
+
+{% if schemaview.class_parents(element.name) %}
+```mermaid
+ classDiagram
+      {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
+        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
+
+```
+{% elif schemaview.class_children(element.name)  %}
+```mermaid
+ classDiagram
+      {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
+```
+{% else %}
+```mermaid
+ classDiagram
+    class {{ gen.name(element) }}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
+
+{% endif %}
+
+
+{% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
+
+## Inheritance
+{{ gen.inheritance_tree(element, mixins=True) }}
+{% else %}
+<!-- no inheritance hierarchy -->
+{% endif %}
+
+## Slots
+
+| Name | Range | Cardinality | Description  | Info |
+| ---  | --- | --- | --- | --- |
+{% for s in schemaview.class_induced_slots(element.name) -%}
+| {{gen.link(s)}} | {{gen.link(s.range)}} | {{ gen.cardinality(s) }} | {{s.description}}  | . |
+{% endfor %}
+
+## Usages
+
+{% if schemaview.usage_index().get(element.name) %}
+| used by | used in | type | used |
+| ---  | --- | --- | --- |
+{% for usage in schemaview.usage_index().get(element.name) -%}
+| {{gen.link(usage.used_by)}} | {{gen.link(usage.slot)}} | {{usage.metaslot}} | {{usage.used }} |
+{% endfor %}
+{% endif %}
+
+{% include "common_metadata.md.jinja2" %}
+
+
+{% if element.rules or element.classification_rules %}
+
+## Rules
+
+{% endif %}
+
+{% if schemaview.get_mappings(element.name).items() -%}
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+{% for m, mt in schemaview.get_mappings(element.name).items() -%}
+{% if mt|length > 0 -%}
+| {{ m }} | {{ mt }} |
+{% endif -%}
+{% endfor %}
+
+{% endif -%}
+
+
+## LinkML Specification
+
+<!-- TODO: investigate https://stackoverflow.com/questions/37606292/how-to-create-tabbed-code-blocks-in-mkdocs-or-sphinx -->
+
+### Direct
+
+<details>
+```yaml
+{{gen.yaml(element)}}
+```
+</details>
+
+### Induced
+
+<details>
+```yaml
+{{gen.yaml(element, inferred=True)}}
+```
+</details>
+
+{%- if footer -%}
+{{footer}}
+{%- endif -%}

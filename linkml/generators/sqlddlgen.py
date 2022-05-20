@@ -5,6 +5,7 @@ import click
 import logging
 from contextlib import redirect_stdout
 
+from deprecated.classic import deprecated
 from sqlalchemy import *
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, SchemaDefinition, ClassDefinitionName, SlotDefinitionName
 from linkml_runtime.utils.formatutils import underscore, camelcase
@@ -119,11 +120,12 @@ class SQLSchema(DDLEntity):
             c.table = t
 
 
-# TODO: allow configuration between camelcase and snake case for table names
-
+@deprecated("Use SQLTableGenerator instead")
 class SQLDDLGenerator(Generator):
     """
     A `Generator` for creating SQL DDL
+
+    DEPRECATED: Use SQLTableGenerator instead
 
     The basic algorithm for mapping a linkml schema S is as follows:
 
@@ -177,7 +179,7 @@ class SQLDDLGenerator(Generator):
     """
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
-    valid_formats = ['proto']
+    valid_formats = ['sql']
     visit_all_class_slots: bool = True
     use_inherits: bool = False  ## postgresql supports inheritance
     dialect: str
@@ -196,9 +198,10 @@ class SQLDDLGenerator(Generator):
         self.rename_foreign_keys = rename_foreign_keys
         self.direct_mapping = direct_mapping
         self.sqlschema = SQLSchema()
+        self.generate_header()
 
     def _is_hidden(self, cls: ClassDefinition) -> bool:
-        if cls.mixin or cls.abstract:
+        if cls.mixin or cls.abstract or self.is_class_unconstrained(cls):
             return True
 
     def _class_name_to_table(self, cn: ClassDefinitionName) -> str:
@@ -206,6 +209,11 @@ class SQLDDLGenerator(Generator):
         https://stackoverflow.com/questions/1881123/table-naming-underscore-vs-camelcase-namespaces-singular-vs-plural
         """
         return underscore(cn)
+
+    def generate_header(self):
+        print(f"/* metamodel_version: {self.schema.metamodel_version} */")
+        if self.schema.version:
+            print(f"/* version: {self.schema.version} */")
 
     def end_schema(self, **kwargs) -> None:
         self._transform_sqlschema()
@@ -299,7 +307,7 @@ class SQLDDLGenerator(Generator):
                     if ref_pk is not None:
                         sqlcol.foreign_key=ref_pk
                     else:
-                        logging.error(f'No PK for {ref.name}')
+                        logging.info(f'No PK for {ref.name}')
         for t in sqlschema.tables.values():
             pk = t.get_singular_primary_key()
             if pk is None:
@@ -406,7 +414,7 @@ from {model_path} import *
         for sqltable in self.sqlschema.tables.values():
             cols = sqltable.columns.values()
             if len(cols) == 0:
-                logging.warning(f'No columns for {t.name}')
+                logging.warning(f'No columns for {sqltable.name}')
                 continue
 
             var = sqltable.as_var()
@@ -447,7 +455,7 @@ from {model_path} import *
 
 @shared_arguments(SQLDDLGenerator)
 @click.command()
-@click.option("--dialect", default='sqlite', help="""
+@click.option("--dialect", default='sqlite', show_default=True, help="""
 SQL-Alchemy dialect, e.g. sqlite, mysql+odbc
 """)
 @click.option("--sqla-file",  help="""
@@ -456,18 +464,19 @@ Path to sqlalchemy generated python
 @click.option("--python-import",  help="""
 Python import header for generated sql-alchemy code
 """)
-@click.option("--direct-mapping/--no-direct-mapping", default=False, help="""
+@click.option("--direct-mapping/--no-direct-mapping", default=False, show_default=True, help="""
 Map classes directly to 
 """)
-@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, help="Emit FK declarations")
+@click.option("--use-foreign-keys/--no-use-foreign-keys", default=True, show_default=True, help="Emit FK declarations")
 def cli(yamlfile, sqla_file:str = None, python_import: str = None, **args):
     """ Generate SQL DDL representation """
+    logging.warning("DEPRECATED: use sqltablegen instead")
     gen = SQLDDLGenerator(yamlfile, **args)
     print(gen.serialize(**args))
     if sqla_file is not None:
         if python_import is None:
             python_import = gen.schema.name
-        with open(sqla_file, "w") as stream:
+        with open(sqla_file, "w", encoding='UTF-8') as stream:
             with redirect_stdout(stream):
                 gen.write_sqla_python_imperative(python_import)
 

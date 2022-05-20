@@ -21,3 +21,14 @@ URI: [biolink:drug_to_gene_association_object](https://w3id.org/biolink/vocab/dr
 ## Used by
 
  * [DrugToGeneAssociation](DrugToGeneAssociation.md)
+
+## Other properties
+
+|  |  |  |
+| --- | --- | --- |
+| **Local names:** | | descriptor (ga4gh) |
+|  | | node with incoming relationship (neo4j) |
+| **Mappings:** | | rdf:object |
+| **Exact Mappings:** | | owl:annotatedTarget |
+|  | | OBAN:association_has_object |
+

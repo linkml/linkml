@@ -30,5 +30,5 @@ definition &#8594;  <sub>0..1</sub> [String](types/String.md)
 
 |  |  |  |
 | --- | --- | --- |
-| **See also:** | | https://github.com/linkml/issues/128 |
+| **See also:** | | [https://github.com/linkml/issues/128](https://github.com/linkml/issues/128) |
 

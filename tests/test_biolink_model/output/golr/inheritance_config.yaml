@@ -1,4 +1,4 @@
-id: inheritance
+# metamodel_version: 1.7.0# version: 1.8.2id: inheritance
 schema_generating: true
 description: The pattern or 'mode' in which a particular genetic trait or disorder
   is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive,

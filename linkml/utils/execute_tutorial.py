@@ -55,7 +55,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
         logging.info(f'# Block: {block.category} {block.title}')
         if block.is_file_block():
             path = PurePath(directory, block.title)
-            with open(path, 'w') as stream:
+            with open(path, 'w', encoding='UTF-8') as stream:
                 stream.write(block.content)
         elif block.is_bash():
             if 'no_execute' in block.annotations:
@@ -76,7 +76,7 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
             r = subprocess.run(cmd, cwd=directory, capture_output=True)
             block.output = r.stdout.decode("utf-8")
             if outpath:
-                with open(outpath, 'w') as stream:
+                with open(outpath, 'w', encoding='UTF-8') as stream:
                     logging.info(f'WRITING {len(block.output)} TO = {outpath}')
                     stream.write(block.output)
             block.error = r.stderr.decode("utf-8")
@@ -96,12 +96,17 @@ def execute_blocks(directory: str, blocks: List[Block]) -> List[str]:
                 else:
                     logging.info(f'Success!')
         elif block.is_stdout():
-            if last_block.output.strip() != block.content.strip():
-                err(f'Mismatch: {str(last_block.output)} != {block.content}')
+            if 'compare_rdf' in block.annotations:
+                logging.warning('SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427')
+            elif last_block.output:
+                if last_block.output.strip() != block.content.strip():
+                    err(f'Mismatch: {str(last_block.output)} != {block.content}')
+                else:
+                    logging.info(f'Hurray! Contents match!')
             else:
-                logging.info(f'Hurray! Contents match!')
+                logging.info('No comparison performed')
         else:
-            logging.error(f'Ignoring block: {block}')
+            logging.warning(f'Ignoring block: {block}')
         last_block = block
     return errs
 
@@ -187,10 +192,16 @@ def cli(inputs, directory):
         print(f'## {len(blocks)} Blocks')
         localdir = Path(input).stem
         subdir = PurePath(directory, localdir)
-        errs += execute_blocks(str(subdir), blocks)
+        input_errs = execute_blocks(str(subdir), blocks)
+        if len(input_errs) > 0:
+            logging.error(f'TUTORIAL {input} FAILURES: {len(input_errs)}')
+        errs += input_errs
     logging.info(f'Errors = {len(errs)}')
     if len(errs) > 0:
-        raise Exception(f'ERRORS')
+        logging.error(f'Encountered {len(errs)} Errors')
+        for err in errs:
+            logging.error(f'Error: {err}')
+        sys.exit(1)
 
 
 

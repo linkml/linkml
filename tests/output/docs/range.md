@@ -27,11 +27,18 @@ URI: [linkml:range](https://w3id.org/linkml/range)
 
 ## Used by
 
+ * [AnonymousSlotExpression](AnonymousSlotExpression.md)
  * [SlotDefinition](SlotDefinition.md)
+ * [SlotExpression](SlotExpression.md)
 
 ## Other properties
 
 |  |  |  |
 | --- | --- | --- |
+| **Aliases:** | | value domain |
 | **Comments:** | | range is underspecified, as not all elements can appear as the range of a slot. |
+| **In Subsets:** | | minimal |
+|  | | basic |
+|  | | relational_model |
+|  | | object_oriented |
 
