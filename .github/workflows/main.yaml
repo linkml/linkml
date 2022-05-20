@@ -70,12 +70,6 @@ jobs:
         run: poetry install --no-interaction
 
       #----------------------------------------------
-      #              run test suite
-      #----------------------------------------------
-      - name: Run tests
-        run: poetry run python -m unittest discover
-
-      #----------------------------------------------
       #              coverage report
       #----------------------------------------------
       - name: Generate coverage results
