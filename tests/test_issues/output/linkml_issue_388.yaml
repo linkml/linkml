@@ -48,17 +48,17 @@ slots:
     range: my_int
   c3__a:
     name: c3__a
-    mappings:
-    - other:a
     description: other-a in the context of C3
     from_schema: https://w3id.org/linkml/examples/personinfo
+    mappings:
+    - other:a
     slot_uri: other:a
-    inlined: true
     alias: a
     owner: C3
     domain_of:
     - C3
     range: C1
+    inlined: true
 classes:
   C1:
     name: C1
@@ -99,6 +99,6 @@ classes:
     class_uri: this:C3
 metamodel_version: 1.7.0
 source_file: linkml_issue_388.yaml
-source_file_date: '2022-04-14T01:40:23'
+source_file_date: '2022-05-10T00:26:24'
 source_file_size: 648
-generation_date: '2022-04-14T01:46:54'
+generation_date: '2022-05-10T00:33:22'

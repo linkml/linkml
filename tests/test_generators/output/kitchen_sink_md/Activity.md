@@ -57,10 +57,10 @@ URI: [core:Activity](https://w3id.org/linkml/tests/core/Activity)
 <details>
 ```yaml
 name: activity
-mappings:
-- prov:Activity
 description: a provence-generating activity
 from_schema: https://w3id.org/linkml/tests/core
+mappings:
+- prov:Activity
 slots:
 - id
 - started at time
@@ -78,10 +78,10 @@ slots:
 <details>
 ```yaml
 name: activity
-mappings:
-- prov:Activity
 description: a provence-generating activity
 from_schema: https://w3id.org/linkml/tests/core
+mappings:
+- prov:Activity
 attributes:
   id:
     name: id
@@ -114,10 +114,10 @@ attributes:
     name: was associated with
     from_schema: https://w3id.org/linkml/tests/core
     slot_uri: prov:wasAssociatedWith
-    inlined: false
     alias: was_associated_with
     owner: activity
     range: agent
+    inlined: false
   used:
     name: used
     from_schema: https://w3id.org/linkml/tests/core

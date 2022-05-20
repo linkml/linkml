@@ -5,6 +5,8 @@ from typing import List
 
 import click
 from linkml_runtime.linkml_model import Prefix
+from linkml_runtime.utils import inference_utils
+from linkml_runtime.utils.inference_utils import infer_all_slot_values
 
 from linkml.utils import validation, datautils
 from linkml_runtime.utils.compile_python import compile_python
@@ -43,6 +45,10 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
               default=True,
               show_default=True,
               help="Validate against the schema")
+@click.option("--infer/--no-infer",
+              default=False,
+              show_default=True,
+              help="Infer missing slot values")
 @click.option("--context", "-c",
               multiple=True,
               help="path to JSON-LD context file. Required for RDF input/output")
@@ -50,7 +56,7 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
 def cli(input, module, target_class, context=None, output=None, input_format=None, output_format=None,
         prefix: List = [],
         target_class_from_path=None,
-        schema=None, validate=None, index_slot=None) -> None:
+        schema=None, validate=None, infer=None, index_slot=None) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
 
@@ -103,6 +109,9 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
         inargs['index_slot'] = index_slot
         inargs['schema'] = schema
     obj = loader.load(source=input,  target_class=py_target_class, **inargs)
+    if infer:
+        infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
+        infer_all_slot_values(obj, schemaview=sv, config=infer_config)
     if validate:
         if schema is None:
             raise Exception('--schema must be passed in order to validate. Suppress with --no-validate')

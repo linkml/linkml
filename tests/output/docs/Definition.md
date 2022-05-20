@@ -94,40 +94,12 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
  * [definition_uri](definition_uri.md)  <sub>0..1</sub>
      * Description: the "native" URI of the element
      * Range: [Uriorcurie](types/Uriorcurie.md)
- * [aliases](aliases.md)  <sub>0..\*</sub>
-     * Range: [String](types/String.md)
-     * in subsets: (basic)
- * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
-     * Description: A list of structured_alias objects.
-     * Range: [StructuredAlias](StructuredAlias.md)
  * [local_names](local_names.md)  <sub>0..\*</sub>
      * Range: [LocalName](LocalName.md)
  * [conforms_to](conforms_to.md)  <sub>0..1</sub>
      * Description: An established standard to which the element conforms.
      * Range: [String](types/String.md)
      * in subsets: (owl,basic)
- * [mappings](mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [close mappings](close_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have close meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [related mappings](related_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have related meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
-     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
-     * Range: [Uriorcurie](types/Uriorcurie.md)
- * [rank](rank.md)  <sub>0..1</sub>
-     * Description: the relative order in which the element occurs, lower values are given precedence
-     * Range: [Integer](types/Integer.md)
-     * in subsets: (basic)
 
 ## Other properties
 

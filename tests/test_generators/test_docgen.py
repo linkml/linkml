@@ -32,8 +32,48 @@ class DocGeneratorTestCase(unittest.TestCase):
         """ Tests basic document generator functionality  """
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True)
         md = gen.serialize(directory=MD_DIR)
+        # test class docs
         assert_mdfile_contains('Organization.md', 'Organization', after='Inheritance')
-        # TODO: add more tests
+        assert_mdfile_contains('Organization.md', '[aliases](aliases.md)', after='Slots')
+        assert_mdfile_contains('Organization.md',
+                               'URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)',
+                               after='Class: Organization')
+        assert_mdfile_contains('Organization.md',
+                               'from_schema: https://w3id.org/linkml/tests/kitchen_sink',
+                               after='Class: Organization')
+        assert_mdfile_contains('Organization.md',
+                               'slot_uri: skos:altLabel',
+                               after='Induced')
+        # test type docs
+        assert_mdfile_contains('PhoneNumberType.md',
+                               'URI: http://www.w3.org/2001/XMLSchema#string',
+                               after='PhoneNumberType')
+        # test enum docs
+        assert_mdfile_contains('EmploymentEventType.md',
+                               'codes for different kinds of employment/HR related events',
+                               after='EmploymentEventType')
+        assert_mdfile_contains('EmploymentEventType.md',
+                               'PROMOTION | bizcodes:003 | promotion event',
+                               after='Permissible Values')
+        # test slot docs
+        assert_mdfile_contains('aliases.md',
+                               'http://www.w3.org/2004/02/skos/core#altLabel',
+                               after='aliases')
+        # test index docs
+        assert_mdfile_contains('index.md',
+                               '[EmploymentEventType](EmploymentEventType.md)',
+                               after='Enumerations')
+        assert_mdfile_contains('index.md',
+                               'a provence-generating activity',
+                               after='Classes')
+        # test internal links
+        assert_mdfile_contains('ceo.md',
+                               'Range: [Person](Person.md)',
+                               after='Properties')
+        # TODO: external links
+
+
+
 
     def test_custom_directory(self):
         """

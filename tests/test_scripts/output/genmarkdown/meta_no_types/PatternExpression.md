@@ -7,7 +7,7 @@ a regular expression pattern used to evaluate conformance of a string
 URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])](https://yuml.me/diagram/nofunky;dir:TB/class/[SubsetDefinition],[StructuredAlias],[TypeExpression]++-%20structured_pattern%200..1>[PatternExpression&#124;syntax:string%20%3F;interpolated:boolean%20%3F;partial_match:boolean%20%3F;description:string%20%3F;title:string%20%3F;deprecated:string%20%3F;todos:string%20*;notes:string%20*;comments:string%20*;from_schema:uri%20%3F;imported_from:string%20%3F;source:uriorcurie%20%3F;in_language:string%20%3F;see_also:uriorcurie%20*;deprecated_element_has_exact_replacement:uriorcurie%20%3F;deprecated_element_has_possible_replacement:uriorcurie%20%3F;aliases:string%20*;mappings:uriorcurie%20*;exact_mappings:uriorcurie%20*;close_mappings:uriorcurie%20*;related_mappings:uriorcurie%20*;narrow_mappings:uriorcurie%20*;broad_mappings:uriorcurie%20*;rank:integer%20%3F],[SlotExpression]++-%20structured_pattern%200..1>[PatternExpression],[PatternExpression]uses%20-.->[Extensible],[PatternExpression]uses%20-.->[Annotatable],[PatternExpression]uses%20-.->[CommonMetadata],[TypeExpression],[SlotExpression],[Extension],[Extensible],[Example],[Definition],[CommonMetadata],[Annotation],[Annotatable],[AltDescription])
 
 ## Uses Mixin
 
@@ -150,3 +150,58 @@ URI: [linkml:PatternExpression](https://w3id.org/linkml/PatternExpression)
  * [deprecated element has possible replacement](deprecated_element_has_possible_replacement.md)  <sub>0..1</sub>
      * Description: When an element is deprecated, it can be potentially replaced by this uri or curie
      * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [aliases](aliases.md)  <sub>0..\*</sub>
+     * Range: [String](String.md)
+     * in subsets: (basic)
+
+### Mixed in from common_metadata:
+
+ * [structured_aliases](structured_aliases.md)  <sub>0..\*</sub>
+     * Description: A list of structured_alias objects.
+     * Range: [StructuredAlias](StructuredAlias.md)
+
+### Mixed in from common_metadata:
+
+ * [mappings](mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.
+     * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [exact mappings](exact_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have identical meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [close mappings](close_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have close meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [related mappings](related_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have related meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [narrow mappings](narrow_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have narrower meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [broad mappings](broad_mappings.md)  <sub>0..\*</sub>
+     * Description: A list of terms from different schemas or terminology systems that have broader meaning.
+     * Range: [Uriorcurie](Uriorcurie.md)
+
+### Mixed in from common_metadata:
+
+ * [rank](rank.md)  <sub>0..1</sub>
+     * Description: the relative order in which the element occurs, lower values are given precedence
+     * Range: [Integer](Integer.md)
+     * in subsets: (basic)

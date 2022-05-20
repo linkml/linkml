@@ -307,7 +307,7 @@ class SQLDDLGenerator(Generator):
                     if ref_pk is not None:
                         sqlcol.foreign_key=ref_pk
                     else:
-                        logging.error(f'No PK for {ref.name}')
+                        logging.info(f'No PK for {ref.name}')
         for t in sqlschema.tables.values():
             pk = t.get_singular_primary_key()
             if pk is None:

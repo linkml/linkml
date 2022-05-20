@@ -206,13 +206,13 @@
       "domain": "Extensible",
       "slot_uri": "https://w3id.org/linkml/extensions",
       "multivalued": true,
-      "inlined": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
       "range": "Extension",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -253,10 +253,10 @@
     {
       "name": "state",
       "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots/state",
+      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots",
       "mappings": [
         "http://samples.r.us/foo#state"
       ],
-      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_slots",
       "slot_uri": "http://samples.r.us/foo#state",
       "owner": "Model",
       "domain_of": [
@@ -270,13 +270,13 @@
     {
       "name": "Model",
       "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/Model",
+      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
       "mappings": [
         "foo:model"
       ],
       "exact_mappings": [
         "bar:whaoo"
       ],
-      "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
       "slots": [
         "state"
       ],
@@ -316,9 +316,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "simple_uri_test.yaml",
-  "source_file_date": "2022-04-14T01:40:23",
+  "source_file_date": "2022-05-10T00:26:24",
   "source_file_size": 480,
-  "generation_date": "2022-04-14T01:47:19",
+  "generation_date": "2022-05-10T00:33:56",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/extensions.context.jsonld",

@@ -485,6 +485,69 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
@@ -561,6 +624,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/recommended",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inlined",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inlined_as_list",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
                         "max": 1
@@ -1343,6 +1420,62 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
                      }
                   ]
                },
@@ -1480,6 +1613,69 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
                      }
@@ -1697,20 +1893,6 @@
                      },
                      {
                         "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
-                        "valueExpr": "https://w3id.org/linkml/String",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
-                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/local_names",
                         "valueExpr": "https://w3id.org/linkml/LocalName",
                         "min": 0,
@@ -1720,55 +1902,6 @@
                         "type": "TripleConstraint",
                         "predicate": "http://purl.org/dc/terms/conformsTo",
                         "valueExpr": "https://w3id.org/linkml/String",
-                        "min": 0,
-                        "max": 1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
-                        "min": 0,
-                        "max": -1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/shacl/order",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
                      },
@@ -1895,6 +2028,69 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
                      }
@@ -2341,6 +2537,69 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
@@ -2639,6 +2898,69 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
@@ -2849,6 +3171,69 @@
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
                         "min": 0,
                         "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
@@ -3050,6 +3435,69 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
                      }
@@ -3437,20 +3885,6 @@
                      },
                      {
                         "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/linkml/inlined",
-                        "valueExpr": "https://w3id.org/linkml/Boolean",
-                        "min": 0,
-                        "max": 1
-                     },
-                     {
-                        "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/linkml/inlined_as_list",
-                        "valueExpr": "https://w3id.org/linkml/Boolean",
-                        "min": 0,
-                        "max": 1
-                     },
-                     {
-                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/list_elements_unique",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
@@ -3696,6 +4130,20 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inlined",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inlined_as_list",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/minimum_value",
                         "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
@@ -3869,6 +4317,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/recommended",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inlined",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/inlined_as_list",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
                         "max": 1
@@ -4204,6 +4666,69 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
                      }
@@ -4718,6 +5243,69 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/deprecated_element_has_possible_replacement",
                         "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2008/05/skos-xl#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/StructuredAlias",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#mappingRelation",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#exactMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#closeMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#relatedMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#narrowMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#broadMatch",
+                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/shacl/order",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
                         "min": 0,
                         "max": 1
                      }

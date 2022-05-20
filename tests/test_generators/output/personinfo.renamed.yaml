@@ -108,24 +108,24 @@ slots:
   has_employment_history_slot:
     name: has_employment_history_slot
     multivalued: true
-    inlined_as_list: true
     range: EMPLOYMENTEVENT
+    inlined_as_list: true
   has_medical_history_slot:
     name: has_medical_history_slot
     multivalued: true
-    inlined_as_list: true
     range: MEDICALEVENT
+    inlined_as_list: true
   has_familial_relationships_slot:
     name: has_familial_relationships_slot
     multivalued: true
-    inlined_as_list: true
     range: FAMILIALRELATIONSHIP
+    inlined_as_list: true
   children_slot:
     name: children_slot
     singular_name: child
     multivalued: true
-    inlined_as_list: true
     range: PERSON
+    inlined_as_list: true
   in_location_slot:
     name: in_location_slot
     range: PLACE
@@ -165,12 +165,12 @@ slots:
     range: float
   diagnosis_slot:
     name: diagnosis_slot
-    inlined: true
     range: DIAGNOSISCONCEPT
+    inlined: true
   procedure_slot:
     name: procedure_slot
-    inlined: true
     range: PROCEDURECONCEPT
+    inlined: true
   ended_at_time_slot:
     name: ended_at_time_slot
     slot_uri: prov:endedAtTime
@@ -178,21 +178,21 @@ slots:
   persons_slot:
     name: persons_slot
     multivalued: true
+    range: PERSON
     inlined: true
     inlined_as_list: true
-    range: PERSON
   organizations_slot:
     name: organizations_slot
     multivalued: true
+    range: ORGANIZATION
     inlined: true
     inlined_as_list: true
-    range: ORGANIZATION
 classes:
   NAMEDTHING:
     name: NAMEDTHING
+    description: A generic grouping for any identifiable entity
     close_mappings:
     - schema:Thing
-    description: A generic grouping for any identifiable entity
     slots:
     - id_slot
     - name_slot
