@@ -76,18 +76,20 @@ generators framework. This may take a little bit of Python coding and some Jinja
 Consult some of the existing generators to see how this is done. Be
 sure to use the newer style SchemaView generators.
 
+for example: https://github.com/linkml/linkml/blob/main/linkml/generators/javagen.py
+
 Definitely make an issue on our repo so you can coordinate with others interested in support for the target language!
 
 When writing the bootstrap generators there are a number of design decisions:
 
-- Should the generate code be standalone, or should there be runtime dependencies?
+- Should the generated code be standalone, or should there be runtime dependencies?
 - If there are runtime dependencies, are these on 3rd party libraries or something you will generate?
 - What are the appropriate constructs to map to in the target language?
 - How do you intend to handle serialization and parsing to/from JSON?
 - What is your strategy for validation within the target language?
 - How should imports be handled in a way that comports well with the target lnaguage
 
-There is no right or wrong answers here. A good strategy is to start with the simplest thing that could work and build out from there.
+There are no right or wrong answers here. A good strategy is to start with the simplest thing that could work and build out from there.
 
 By way of comparison here are some rough descriptions of existing generators and their decisions:
 
@@ -273,6 +275,8 @@ By this stage you can load and dump schema objects in a type-safe way. It may be
 
 However, you will also want to implement the core logic of LinkML as defined in the LinkML specification, under "Derived Schemas". You can do this simply by implementing the spec in your target language,
 but a more pragmatic approach is to port the python class SchemaView
+
+SchemaView is a class in linkml-runtime here: https://github.com/linkml/linkml-runtime
 
 Note that you may only need to implement this for a simple profile of linkml before moving to the next step. As an example, see the SchemaView.js class in linkml-runtime.js
 

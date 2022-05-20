@@ -33,6 +33,9 @@ in a text editor or IDE (Integrated Development Environment).
 
 We recommend using an IDE that has support for YAML format.
 
+The meta model, here: https://w3id.org/linkml/meta.schema.json can be incorporated into pycharm for model development
+syntax validation.  For more details on pycharm specifically: https://www.jetbrains.com/help/pycharm/json.html#ws_json_schema_add_custom
+
 See the section below on "Are there tools for editing my data?" for
 suggestions (note that your schema *is* data - schemas instantiate the
 schema class in the metamodel)
