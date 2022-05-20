@@ -42,11 +42,13 @@ public {% if cls.abstract -%}abstract {%- endif %}class {{ cls.name }} {% if cls
 
 TYPEMAP = {
     "str": "String",
-    "int": "Integer",
-    "float": "Float",
-    "Bool": "Boolean",
+    "int": "int",
+    "float": "float",
+    "Bool": "boolean",
     "XSDDate": "String",
-    "URIorCURIE": "String"
+    "URIorCURIE": "String",
+    "decimal": "decimal",
+
 }
 
 
@@ -68,7 +70,7 @@ class JavaGenerator(OOCodeGenerator):
         self.template_file = template_file
 
     def map_type(self, t: TypeDefinition) -> str:
-        return TYPEMAP.get(t.base, t.base)
+        return TYPEMAP.get(t.name, t.name)
 
     def serialize(self, directory: str, **kwargs) -> None:
         sv = self.schemaview
