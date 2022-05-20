@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1](https://w3id
 
 ## Properties
 
- * Range: None
+ * Range: NONE
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/core/agent_set](https://w3id.org/linkml/test
 
 ## Properties
 
- * Range: agent
+ * Range: [Agent](Agent.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/core
 
 
 

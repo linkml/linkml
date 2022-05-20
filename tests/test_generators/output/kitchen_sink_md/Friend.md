@@ -9,8 +9,18 @@ URI: [ks:Friend](https://w3id.org/linkml/tests/kitchen_sink/Friend)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class Friend
+      Friend : name
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -32,6 +42,23 @@ URI: [ks:Friend](https://w3id.org/linkml/tests/kitchen_sink/Friend)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Friend'] |
+| native | ['ks:Friend'] |
 
 
 ## LinkML Specification

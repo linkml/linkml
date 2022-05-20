@@ -9,7 +9,7 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/in_location](https://w3id.org/l
 
 ## Properties
 
- * Range: Place
+ * Range: [Place](Place.md)
 
 
 
@@ -23,6 +23,16 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/in_location](https://w3id.org/l
 
 | property | value |
 | --- | --- |
+| _if_missing |  |
 | biolink:opposite | location_of |
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
 
 

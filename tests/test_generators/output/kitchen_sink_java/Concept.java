@@ -13,8 +13,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class Concept  {
 
-  private String id;
-  private String name;
+  private string id;
+  private string name;
   private CodeSystem inCodeSystem;
 
 }

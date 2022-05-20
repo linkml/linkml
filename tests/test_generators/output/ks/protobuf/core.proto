@@ -1,18 +1,18 @@
 // a provence-generating activity
 message Activity
  {
-  id String = 1
-  optional startedAtTime Date = 2
-  optional endedAtTime Date = 3
-  optional wasInformedBy Activity = 4
-  optional wasAssociatedWith Agent = 5
-  optional used String = 6
-  optional description String = 7
+  string id = 0
+  date startedAtTime = 0
+  date endedAtTime = 0
+  activity wasInformedBy = 0
+  agent wasAssociatedWith = 0
+  string used = 0
+  string description = 0
  }
 // a provence-generating agent
 message Agent
  {
-  id String = 1
-  optional actedOnBehalfOf Agent = 2
-  optional wasInformedBy Activity = 3
+  string id = 0
+  agent actedOnBehalfOf = 0
+  activity wasInformedBy = 0
  }

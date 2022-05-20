@@ -8,11 +8,24 @@ URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureC
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Concept <|-- ProcedureConcept
+      
+      ProcedureConcept : id
+      ProcedureConcept : in_code_system
+      ProcedureConcept : name
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [Concept](Concept.md)
     * **ProcedureConcept**
-
 
 
 
@@ -42,6 +55,23 @@ URI: [ks:ProcedureConcept](https://w3id.org/linkml/tests/kitchen_sink/ProcedureC
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:ProcedureConcept'] |
+| native | ['ks:ProcedureConcept'] |
 
 
 ## LinkML Specification

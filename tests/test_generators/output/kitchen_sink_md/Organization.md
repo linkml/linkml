@@ -8,11 +8,24 @@ URI: [ks:Organization](https://w3id.org/linkml/tests/kitchen_sink/Organization)
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      HasAliases <|-- Organization
+      
+      Organization : aliases
+      Organization : id
+      Organization : name
+      
 
+```
+
+
+
+
+
+## Inheritance
 * **Organization** [ HasAliases]
     * [Company](Company.md)
-
 
 
 
@@ -45,6 +58,23 @@ Instances of this class *should* have identifiers with one of the following pref
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Organization'] |
+| native | ['ks:Organization'] |
 
 
 ## LinkML Specification

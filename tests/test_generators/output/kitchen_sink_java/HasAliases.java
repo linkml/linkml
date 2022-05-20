@@ -13,6 +13,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class HasAliases  {
 
-  private List<String> aliases;
+  private List<string> aliases;
 
 }

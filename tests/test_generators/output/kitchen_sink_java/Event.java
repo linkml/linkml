@@ -13,9 +13,9 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class Event  {
 
-  private String startedAtTime;
-  private String endedAtTime;
-  private Boolean isCurrent;
+  private date startedAtTime;
+  private date endedAtTime;
+  private boolean isCurrent;
   private AnyObject metadata;
 
 }

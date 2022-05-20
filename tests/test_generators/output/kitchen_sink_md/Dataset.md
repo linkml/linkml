@@ -7,8 +7,21 @@ URI: [ks:Dataset](https://w3id.org/linkml/tests/kitchen_sink/Dataset)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class Dataset
+      Dataset : activities
+      Dataset : code_systems
+      Dataset : companies
+      Dataset : persons
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -33,6 +46,23 @@ URI: [ks:Dataset](https://w3id.org/linkml/tests/kitchen_sink/Dataset)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Dataset'] |
+| native | ['ks:Dataset'] |
 
 
 ## LinkML Specification

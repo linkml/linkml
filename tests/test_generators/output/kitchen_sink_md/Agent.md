@@ -9,8 +9,20 @@ URI: [prov:Agent](http://www.w3.org/ns/prov#Agent)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class Agent
+      Agent : acted_on_behalf_of
+      Agent : id
+      Agent : was_informed_by
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -40,6 +52,23 @@ URI: [prov:Agent](http://www.w3.org/ns/prov#Agent)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/core
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['prov:Agent'] |
+| native | ['core:Agent'] |
 
 
 ## LinkML Specification

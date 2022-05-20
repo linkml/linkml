@@ -9,8 +9,24 @@ URI: [core:Activity](https://w3id.org/linkml/tests/core/Activity)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class Activity
+      Activity : description
+      Activity : ended_at_time
+      Activity : id
+      Activity : started_at_time
+      Activity : used
+      Activity : was_associated_with
+      Activity : was_informed_by
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -18,8 +34,8 @@ URI: [core:Activity](https://w3id.org/linkml/tests/core/Activity)
 | Name | Range | Cardinality | Description  | Info |
 | ---  | --- | --- | --- | --- |
 | [id](id.md) | NONE | 0..1 | None  | . |
-| [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
+| [started_at_time](started_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [ended_at_time](ended_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
 | [was_informed_by](was_informed_by.md) | [Activity](Activity.md) | 0..1 | None  | . |
 | [was_associated_with](was_associated_with.md) | [Agent](Agent.md) | 0..1 | None  | . |
 | [used](used.md) | NONE | 0..1 | None  | . |
@@ -46,6 +62,24 @@ URI: [core:Activity](https://w3id.org/linkml/tests/core/Activity)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/core
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['core:Activity'] |
+| native | ['core:Activity'] |
+| undefined | ['prov:Activity'] |
 
 
 ## LinkML Specification

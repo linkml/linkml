@@ -8,11 +8,23 @@ URI: [ks:SubclassTest](https://w3id.org/linkml/tests/kitchen_sink/SubclassTest)
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      ClassWithSpaces <|-- SubclassTest
+      
+      SubclassTest : slot_with_space_1
+      SubclassTest : slot_with_space_2
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [ClassWithSpaces](ClassWithSpaces.md)
     * **SubclassTest**
-
 
 
 
@@ -36,6 +48,23 @@ URI: [ks:SubclassTest](https://w3id.org/linkml/tests/kitchen_sink/SubclassTest)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:SubclassTest'] |
+| native | ['ks:SubclassTest'] |
 
 
 ## LinkML Specification

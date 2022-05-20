@@ -10,10 +10,29 @@ URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
 
 
 
+```mermaid
+ classDiagram
+      HasAliases <|-- Person
+      
+      Person : addresses
+      Person : age_in_years
+      Person : aliases
+      Person : has_birth_event
+      Person : has_employment_history
+      Person : has_familial_relationships
+      Person : has_medical_history
+      Person : id
+      Person : name
+      
+
+```
+
+
+
+
+
 ## Inheritance
-
 * **Person** [ HasAliases]
-
 
 
 
@@ -26,7 +45,7 @@ URI: [ks:Person](https://w3id.org/linkml/tests/kitchen_sink/Person)
 | [has_employment_history](has_employment_history.md) | [EmploymentEvent](EmploymentEvent.md) | 0..* | None  | . |
 | [has_familial_relationships](has_familial_relationships.md) | [FamilialRelationship](FamilialRelationship.md) | 0..* | None  | . |
 | [has_medical_history](has_medical_history.md) | [MedicalEvent](MedicalEvent.md) | 0..* | None  | . |
-| [age_in_years](age_in_years.md) | [integer](integer.md) | 0..1 | number of years since birth  | . |
+| [age_in_years](age_in_years.md) | [xsd:integer](http://www.w3.org/2001/XMLSchema#integer) | 0..1 | number of years since birth  | . |
 | [addresses](addresses.md) | [Address](Address.md) | 0..* | None  | . |
 | [has_birth_event](has_birth_event.md) | [BirthEvent](BirthEvent.md) | 0..1 | None  | . |
 | [aliases](aliases.md) | NONE | 0..* | None  | . |
@@ -60,6 +79,24 @@ Instances of this class *should* have identifiers with one of the following pref
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Person'] |
+| native | ['ks:Person'] |
+| exact | ['schema:Person'] |
 
 
 ## LinkML Specification

@@ -7,8 +7,19 @@ URI: [ks:Address](https://w3id.org/linkml/tests/kitchen_sink/Address)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class Address
+      Address : city
+      Address : street
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -36,6 +47,23 @@ URI: [ks:Address](https://w3id.org/linkml/tests/kitchen_sink/Address)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Address'] |
+| native | ['ks:Address'] |
 
 
 ## LinkML Specification

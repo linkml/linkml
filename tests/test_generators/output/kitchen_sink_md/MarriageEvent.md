@@ -8,11 +8,28 @@ URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      WithLocation <|-- MarriageEvent
+      Event <|-- MarriageEvent
+      
+      MarriageEvent : ended_at_time
+      MarriageEvent : in_location
+      MarriageEvent : is_current
+      MarriageEvent : married_to
+      MarriageEvent : metadata
+      MarriageEvent : started_at_time
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [Event](Event.md)
     * **MarriageEvent** [ WithLocation]
-
 
 
 
@@ -22,9 +39,9 @@ URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
 | ---  | --- | --- | --- | --- |
 | [married_to](married_to.md) | [Person](Person.md) | 0..1 | None  | . |
 | [in_location](in_location.md) | [Place](Place.md) | 0..1 | None  | . |
-| [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [is_current](is_current.md) | [boolean](boolean.md) | 0..1 | None  | . |
+| [started_at_time](started_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [ended_at_time](ended_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [is_current](is_current.md) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) | 0..1 | None  | . |
 | [metadata](metadata.md) | [AnyObject](AnyObject.md) | 0..1 | Example of a slot that has an unconstrained range  | . |
 
 
@@ -40,6 +57,23 @@ URI: [ks:MarriageEvent](https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:MarriageEvent'] |
+| native | ['ks:MarriageEvent'] |
 
 
 ## LinkML Specification

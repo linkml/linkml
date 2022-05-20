@@ -13,6 +13,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class FakeClass  {
 
-  private String testAttribute;
+  private string testAttribute;
 
 }

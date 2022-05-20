@@ -8,11 +8,21 @@ URI: [ks:ClassWithSpaces](https://w3id.org/linkml/tests/kitchen_sink/ClassWithSp
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      ClassWithSpaces <|-- SubclassTest
+      
+      ClassWithSpaces : slot_with_space_1
+      
+```
 
+
+
+
+
+## Inheritance
 * **ClassWithSpaces**
     * [SubclassTest](SubclassTest.md)
-
 
 
 
@@ -40,6 +50,23 @@ URI: [ks:ClassWithSpaces](https://w3id.org/linkml/tests/kitchen_sink/ClassWithSp
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:ClassWithSpaces'] |
+| native | ['ks:ClassWithSpaces'] |
 
 
 ## LinkML Specification

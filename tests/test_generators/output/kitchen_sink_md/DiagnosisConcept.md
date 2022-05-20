@@ -8,11 +8,24 @@ URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisC
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Concept <|-- DiagnosisConcept
+      
+      DiagnosisConcept : id
+      DiagnosisConcept : in_code_system
+      DiagnosisConcept : name
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [Concept](Concept.md)
     * **DiagnosisConcept**
-
 
 
 
@@ -42,6 +55,24 @@ URI: [ks:DiagnosisConcept](https://w3id.org/linkml/tests/kitchen_sink/DiagnosisC
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:DiagnosisConcept'] |
+| native | ['ks:DiagnosisConcept'] |
+| close | ['biolink:Disease'] |
 
 
 ## LinkML Specification

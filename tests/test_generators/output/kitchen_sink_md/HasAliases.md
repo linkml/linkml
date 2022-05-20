@@ -9,8 +9,21 @@ URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+      HasAliases <|-- Person
+      HasAliases <|-- Organization
+      HasAliases <|-- Place
+      
+      HasAliases : aliases
+      
+```
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -32,6 +45,23 @@ URI: [ks:HasAliases](https://w3id.org/linkml/tests/kitchen_sink/HasAliases)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:HasAliases'] |
+| native | ['ks:HasAliases'] |
 
 
 ## LinkML Specification

@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/married_to](https://w3id.org/li
 
 ## Properties
 
- * Range: Person
+ * Range: [Person](Person.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

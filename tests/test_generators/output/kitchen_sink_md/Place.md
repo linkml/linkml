@@ -8,10 +8,23 @@ URI: [ks:Place](https://w3id.org/linkml/tests/kitchen_sink/Place)
 
 
 
+```mermaid
+ classDiagram
+      HasAliases <|-- Place
+      
+      Place : aliases
+      Place : id
+      Place : name
+      
+
+```
+
+
+
+
+
 ## Inheritance
-
 * **Place** [ HasAliases]
-
 
 
 
@@ -44,6 +57,23 @@ URI: [ks:Place](https://w3id.org/linkml/tests/kitchen_sink/Place)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Place'] |
+| native | ['ks:Place'] |
 
 
 ## LinkML Specification

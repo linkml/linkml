@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/has_marriage_history](https://w
 
 ## Properties
 
- * Range: MarriageEvent
+ * Range: [MarriageEvent](MarriageEvent.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

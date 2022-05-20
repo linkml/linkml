@@ -335,4 +335,4 @@ classes:
     - persons_slot
     - organizations_slot
     tree_root: true
-source_file: /home/runner/work/linkml/linkml/tests/test_generators/input/personinfo.yaml
+source_file: /Users/SMoxon/Documents/src/linkml/tests/test_generators/input/personinfo.yaml

@@ -13,9 +13,9 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class Relationship  {
 
-  private String startedAtTime;
-  private String endedAtTime;
-  private String relatedTo;
-  private String type;
+  private date startedAtTime;
+  private date endedAtTime;
+  private string relatedTo;
+  private string type;
 
 }

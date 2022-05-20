@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/test_attribute](https://w3id.or
 
 ## Properties
 
- * Range: None
+ * Range: NONE
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

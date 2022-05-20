@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships](htt
 
 ## Properties
 
- * Range: FamilialRelationship
+ * Range: [FamilialRelationship](FamilialRelationship.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

@@ -17,3 +17,12 @@ URI: DiagnosisType
 
 
 
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+

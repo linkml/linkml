@@ -8,11 +8,25 @@ URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/Famili
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Relationship <|-- FamilialRelationship
+      
+      FamilialRelationship : ended_at_time
+      FamilialRelationship : related_to
+      FamilialRelationship : started_at_time
+      FamilialRelationship : type
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [Relationship](Relationship.md)
     * **FamilialRelationship**
-
 
 
 
@@ -20,8 +34,8 @@ URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/Famili
 
 | Name | Range | Cardinality | Description  | Info |
 | ---  | --- | --- | --- | --- |
-| [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
+| [started_at_time](started_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [ended_at_time](ended_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
 | [related_to](related_to.md) | [Person](Person.md) | 1..1 | None  | . |
 | [type](type.md) | [FamilialRelationshipType](FamilialRelationshipType.md) | 1..1 | None  | . |
 
@@ -43,6 +57,23 @@ URI: [ks:FamilialRelationship](https://w3id.org/linkml/tests/kitchen_sink/Famili
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:FamilialRelationship'] |
+| native | ['ks:FamilialRelationship'] |
 
 
 ## LinkML Specification

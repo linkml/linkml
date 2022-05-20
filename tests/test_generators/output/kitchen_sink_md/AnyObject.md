@@ -9,8 +9,17 @@ URI: [linkml:Any](https://w3id.org/linkml/Any)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class AnyObject
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -40,6 +49,23 @@ URI: [linkml:Any](https://w3id.org/linkml/Any)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['linkml:Any'] |
+| native | ['ks:AnyObject'] |
 
 
 ## LinkML Specification

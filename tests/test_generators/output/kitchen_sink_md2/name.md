@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/core/name](https://w3id.org/linkml/tests/cor
 
 ## Properties
 
- * Range: None
+ * Range: NONE
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/core
 
 
 

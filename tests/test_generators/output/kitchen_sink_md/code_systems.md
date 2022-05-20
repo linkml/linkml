@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/code_systems](https://w3id.org/
 
 ## Properties
 
- * Range: CodeSystem
+ * Range: [CodeSystem](CodeSystem.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

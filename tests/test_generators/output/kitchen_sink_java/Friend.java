@@ -13,6 +13,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public abstractclass Friend  {
 
-  private String name;
+  private string name;
 
 }

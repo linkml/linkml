@@ -9,8 +9,19 @@ URI: [ks:WithLocation](https://w3id.org/linkml/tests/kitchen_sink/WithLocation)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+      WithLocation <|-- MarriageEvent
+      
+      WithLocation : in_location
+      
+```
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -32,6 +43,23 @@ URI: [ks:WithLocation](https://w3id.org/linkml/tests/kitchen_sink/WithLocation)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:WithLocation'] |
+| native | ['ks:WithLocation'] |
 
 
 ## LinkML Specification

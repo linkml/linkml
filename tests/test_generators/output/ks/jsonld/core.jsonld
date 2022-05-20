@@ -418,12 +418,12 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "core.yaml",
-  "source_file_date": "2022-05-10T00:26:24",
+  "source_file_date": "2021-12-22T08:38:47",
   "source_file_size": 1902,
-  "generation_date": "2022-05-10T00:31:55",
+  "generation_date": "2022-05-20T09:37:08",
   "@type": "SchemaDefinition",
   "@context": [
-    "file:///home/runner/work/linkml/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",
+    "file:///Users/SMoxon/Documents/src/linkml/tests/test_generators/output/ks/jsonld/core.context.jsonld",
     "https://w3id.org/linkml/types.context.jsonld",
     {
       "@base": "https://w3id.org/linkml/tests/core/"

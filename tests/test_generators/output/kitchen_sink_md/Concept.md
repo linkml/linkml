@@ -8,12 +8,25 @@ URI: [ks:Concept](https://w3id.org/linkml/tests/kitchen_sink/Concept)
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Concept <|-- DiagnosisConcept
+      Concept <|-- ProcedureConcept
+      
+      Concept : id
+      Concept : in_code_system
+      Concept : name
+      
+```
 
+
+
+
+
+## Inheritance
 * **Concept**
     * [DiagnosisConcept](DiagnosisConcept.md)
     * [ProcedureConcept](ProcedureConcept.md)
-
 
 
 
@@ -46,6 +59,23 @@ Instances of this class *should* have identifiers with one of the following pref
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Concept'] |
+| native | ['ks:Concept'] |
 
 
 ## LinkML Specification

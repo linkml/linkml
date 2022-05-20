@@ -13,8 +13,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class Place  {
 
-  private String id;
-  private String name;
-  private List<String> aliases;
+  private string id;
+  private string name;
+  private List<string> aliases;
 
 }

@@ -9,13 +9,22 @@ URI: [http://www.w3.org/2004/02/skos/core#altLabel](http://www.w3.org/2004/02/sk
 
 ## Properties
 
- * Range: None
+ * Range: NONE
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

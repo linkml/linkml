@@ -8,8 +8,25 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Event <|-- BirthEvent
+      Event <|-- EmploymentEvent
+      Event <|-- MedicalEvent
+      Event <|-- MarriageEvent
+      
+      Event : ended_at_time
+      Event : is_current
+      Event : metadata
+      Event : started_at_time
+      
+```
 
+
+
+
+
+## Inheritance
 * **Event**
     * [BirthEvent](BirthEvent.md)
     * [EmploymentEvent](EmploymentEvent.md)
@@ -18,14 +35,13 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
 
 
-
 ## Slots
 
 | Name | Range | Cardinality | Description  | Info |
 | ---  | --- | --- | --- | --- |
-| [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [is_current](is_current.md) | [boolean](boolean.md) | 0..1 | None  | . |
+| [started_at_time](started_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [ended_at_time](ended_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [is_current](is_current.md) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) | 0..1 | None  | . |
 | [metadata](metadata.md) | [AnyObject](AnyObject.md) | 0..1 | Example of a slot that has an unconstrained range  | . |
 
 
@@ -41,6 +57,23 @@ URI: [ks:Event](https://w3id.org/linkml/tests/kitchen_sink/Event)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Event'] |
+| native | ['ks:Event'] |
 
 
 ## LinkML Specification

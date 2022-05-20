@@ -8,11 +8,24 @@ URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Relationship <|-- FamilialRelationship
+      
+      Relationship : ended_at_time
+      Relationship : related_to
+      Relationship : started_at_time
+      Relationship : type
+      
+```
 
+
+
+
+
+## Inheritance
 * **Relationship**
     * [FamilialRelationship](FamilialRelationship.md)
-
 
 
 
@@ -20,8 +33,8 @@ URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
 
 | Name | Range | Cardinality | Description  | Info |
 | ---  | --- | --- | --- | --- |
-| [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
+| [started_at_time](started_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [ended_at_time](ended_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
 | [related_to](related_to.md) | NONE | 0..1 | None  | . |
 | [type](type.md) | NONE | 0..1 | None  | . |
 
@@ -38,6 +51,23 @@ URI: [ks:Relationship](https://w3id.org/linkml/tests/kitchen_sink/Relationship)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Relationship'] |
+| native | ['ks:Relationship'] |
 
 
 ## LinkML Specification

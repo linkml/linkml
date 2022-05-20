@@ -8,11 +8,27 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Event <|-- EmploymentEvent
+      
+      EmploymentEvent : employed_at
+      EmploymentEvent : ended_at_time
+      EmploymentEvent : is_current
+      EmploymentEvent : metadata
+      EmploymentEvent : started_at_time
+      EmploymentEvent : type
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [Event](Event.md)
     * **EmploymentEvent**
-
 
 
 
@@ -22,9 +38,9 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
 | ---  | --- | --- | --- | --- |
 | [employed_at](employed_at.md) | [Company](Company.md) | 0..1 | None  | . |
 | [type](type.md) | [EmploymentEventType](EmploymentEventType.md) | 0..1 | None  | . |
-| [started_at_time](started_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [ended_at_time](ended_at_time.md) | [date](date.md) | 0..1 | None  | . |
-| [is_current](is_current.md) | [boolean](boolean.md) | 0..1 | None  | . |
+| [started_at_time](started_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [ended_at_time](ended_at_time.md) | [xsd:date](http://www.w3.org/2001/XMLSchema#date) | 0..1 | None  | . |
+| [is_current](is_current.md) | [xsd:boolean](http://www.w3.org/2001/XMLSchema#boolean) | 0..1 | None  | . |
 | [metadata](metadata.md) | [AnyObject](AnyObject.md) | 0..1 | Example of a slot that has an unconstrained range  | . |
 
 
@@ -45,6 +61,23 @@ URI: [ks:EmploymentEvent](https://w3id.org/linkml/tests/kitchen_sink/EmploymentE
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:EmploymentEvent'] |
+| native | ['ks:EmploymentEvent'] |
 
 
 ## LinkML Specification

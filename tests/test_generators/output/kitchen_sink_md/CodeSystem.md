@@ -7,8 +7,19 @@ URI: [ks:CodeSystem](https://w3id.org/linkml/tests/kitchen_sink/CodeSystem)
 
 
 
-<!-- no inheritance hierarchy -->
 
+```mermaid
+ classDiagram
+    class CodeSystem
+      CodeSystem : id
+      CodeSystem : name
+      
+
+
+
+
+
+<!-- no inheritance hierarchy -->
 
 
 ## Slots
@@ -39,6 +50,23 @@ URI: [ks:CodeSystem](https://w3id.org/linkml/tests/kitchen_sink/CodeSystem)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:CodeSystem'] |
+| native | ['ks:CodeSystem'] |
 
 
 ## LinkML Specification

@@ -11,13 +11,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/metadata](https://w3id.org/link
 
 ## Properties
 
- * Range: AnyObject
+ * Range: [AnyObject](AnyObject.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

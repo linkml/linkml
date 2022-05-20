@@ -8,11 +8,25 @@ URI: [ks:Company](https://w3id.org/linkml/tests/kitchen_sink/Company)
 
 
 
-## Inheritance
+```mermaid
+ classDiagram
+      Organization <|-- Company
+      
+      Company : aliases
+      Company : ceo
+      Company : id
+      Company : name
+      
 
+```
+
+
+
+
+
+## Inheritance
 * [Organization](Organization.md) [ HasAliases]
     * **Company**
-
 
 
 
@@ -44,6 +58,23 @@ URI: [ks:Company](https://w3id.org/linkml/tests/kitchen_sink/Company)
 
 
 
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
+
+
+
+
+
+
+
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+| self | ['ks:Company'] |
+| native | ['ks:Company'] |
 
 
 ## LinkML Specification

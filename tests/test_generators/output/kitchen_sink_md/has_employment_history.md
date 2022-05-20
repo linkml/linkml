@@ -9,13 +9,22 @@ URI: [https://w3id.org/linkml/tests/kitchen_sink/has_employment_history](https:/
 
 ## Properties
 
- * Range: EmploymentEvent
+ * Range: [EmploymentEvent](EmploymentEvent.md)
 
 
 
 ## Identifier and Mapping Information
 
 
+
+
+
+
+
+### Schema Source
+
+
+* from schema: https://w3id.org/linkml/tests/kitchen_sink
 
 
 

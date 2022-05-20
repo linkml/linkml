@@ -13,6 +13,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper=false)
 public class ClassWithSpaces  {
 
-  private String slotWithSpace1;
+  private string slotWithSpace1;
 
 }
