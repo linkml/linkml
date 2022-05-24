@@ -7,16 +7,16 @@ URI: {{ schema.id }}
 ## Classes
 
 | Class | Description |
-{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
 | --- | --- |
+{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
 | {{gen.link(c)}} | {{c.description}} |
 {% endfor %}
 
 ## Slots
 
 | Slot | Description |
-{% for s in schemaview.all_slots().values()|sort(attribute='name') -%}
 | --- | --- |
+{% for s in schemaview.all_slots().values()|sort(attribute='name') -%}
 | {{gen.link(s)}} | {{s.description}} |
 {% endfor %}
 
