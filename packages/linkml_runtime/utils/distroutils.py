@@ -55,13 +55,13 @@ def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PureP
     suffix = file_type
     data = None
     for path in get_default_paths(file_type) + rel_paths:
-        # try:
-        full_path = path / f'{package_name}.{suffix}'
-        data = pkgutil.get_data(package, str(full_path))
-        if data:
-            break
-        # except FileNotFoundError:
-        #     logging.debug(f'candidate {path} not found')
+        try:
+            full_path = path / f'{package_name}.{suffix}'
+            data = pkgutil.get_data(package, str(full_path))
+            if data:
+                break
+        except FileNotFoundError:
+            logging.debug(f'candidate {path} not found')
     if not data:
         raise FileNotFoundError(f'package: {package} file: {file_type}')
     return data.decode(encoding)
