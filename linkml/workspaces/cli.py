@@ -26,6 +26,7 @@ import requests
 VERSION_STR = str
 TEMPLATE_SUFFIX = ".jinja"
 ABOUT_FILE = 'about.yaml'
+SKIP_FILES = ["poetry.lock"]
 PROJECT_TEMPLATE_API_URL = 'https://api.github.com/repos/linkml/linkml-project-template/releases/latest'
 
 
@@ -235,6 +236,9 @@ def new(
         for f in files:
             source_path = os.path.join(root, f)
             target_path = os.path.join(target_directory, f)
+            if f in SKIP_FILES:
+                logging.info(f'Skipping {source_path}')
+                continue
             if Path(source_path + TEMPLATE_SUFFIX).exists():
                 logging.info(f'Skipping {source_path}, will be written from {TEMPLATE_SUFFIX}')
                 continue
