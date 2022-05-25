@@ -4,6 +4,7 @@
 import os
 import logging
 import shutil
+import subprocess
 import sys
 import tarfile
 import tempfile
@@ -25,6 +26,7 @@ import requests
 VERSION_STR = str
 TEMPLATE_SUFFIX = ".jinja"
 ABOUT_FILE = 'about.yaml'
+SKIP_FILES = ["poetry.lock"]
 PROJECT_TEMPLATE_API_URL = 'https://api.github.com/repos/linkml/linkml-project-template/releases/latest'
 
 
@@ -90,6 +92,20 @@ def _rename_project(new_name: str):
     project.source_schema_path = str(new_source_schema_path)
     save_project_info(project,)
 
+def _get_default_author_name():
+    """Use git config to make an educated guess for the default author string"""
+    try:
+        user_name = subprocess.run(["git", "config", "user.name"], capture_output=True, text=True)
+        user_email = subprocess.run(["git", "config", "user.email"], capture_output=True, text=True)
+        return f"{user_name.stdout.strip()} <{user_email.stdout.strip()}>"
+    except subprocess.CalledProcessError:
+        return ""
+
+def _validate_author(ctx, param, value):
+    match = re.fullmatch("[^<]+ <[^@]+@[^>]+>", value)
+    if match == None:
+        raise click.BadParameter("format must be \"name <email>\"")
+    return value
 
 # Click input options common across commands
 input_argument = click.argument("input", required=True, type=click.Path())
@@ -155,6 +171,11 @@ def main(verbose: int, quiet: bool):
               default=False,
               show_default=True,
               help="overwrite project dir if exists already")
+@click.option("-A", "--author",
+              default=_get_default_author_name(),
+              show_default="determined by git config",
+              help="Author of the schema in the form \"name <email>\"",
+              callback=_validate_author)
 @click.argument("name")
 def new(
         name,
@@ -163,7 +184,8 @@ def new(
         directory,
         template_directory,
         template_version,
-        force: bool
+        force: bool,
+        author: str,
 ):
     """
     Create a new project
@@ -203,7 +225,8 @@ def new(
                   namespace=underscore(organization),
                   underscore_name=project_name_as_underscore(name),
                   description=description,
-                  template_version=template_version)
+                  template_version=template_version,
+                  author=author)
     for root, dirs, files in os.walk(template_directory, topdown=True):
         logging.info(f'Dirs: {dirs} {files}')
         dirs[:] = [d for d in dirs if d not in ['.git', 'project']]
@@ -213,6 +236,9 @@ def new(
         for f in files:
             source_path = os.path.join(root, f)
             target_path = os.path.join(target_directory, f)
+            if f in SKIP_FILES:
+                logging.info(f'Skipping {source_path}')
+                continue
             if Path(source_path + TEMPLATE_SUFFIX).exists():
                 logging.info(f'Skipping {source_path}, will be written from {TEMPLATE_SUFFIX}')
                 continue
