@@ -80,7 +80,6 @@ class JavaGenerator(OOCodeGenerator):
         sv = self.schemaview
 
         if self.generate_records:
-            print(f"serialize {self.generate_records}")
             javagen_folder = pkg_resources.resource_filename(__name__, 'javagen')
             loader = FileSystemLoader(javagen_folder)
             env = Environment(loader=loader)
@@ -113,7 +112,6 @@ class JavaGenerator(OOCodeGenerator):
 def cli(yamlfile, output_directory=None, package=None, template_file=None, generate_records=False, head=True, emit_metadata=False,
         genmeta=False, classvars=True, slots=True, **args):
     """Generate java classes to represent a LinkML model"""
-    print(f"cli {generate_records}")
     JavaGenerator(yamlfile, package=package, template_file=template_file, generate_records=generate_records, emit_metadata=head, genmeta=genmeta,
                   gen_classvars=classvars, gen_slots=slots,  **args).serialize(output_directory, **args)
 
