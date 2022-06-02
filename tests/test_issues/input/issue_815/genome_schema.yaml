@@ -1,0 +1,23 @@
+name: Genomes
+id: http://example.com/genomes
+default_prefix: genomes
+default_range: string
+imports: linkml:types
+prefixes:
+  genomes: http://example.com/genomes/
+  linkml: https://w3id.org/linkml/
+slots:
+  gene_seq:
+  gene_name:
+  genes:
+    range: Gene
+    multivalued: true
+    inlined_as_list: true
+classes:
+  Gene:
+    slots:
+      - gene_name
+      - gene_seq
+  Genome:
+    slots:
+      - genes
