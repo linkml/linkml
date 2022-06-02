@@ -161,7 +161,9 @@ class YAMLRoot(JsonObj):
         if isinstance(raw_slot, list):
             # We have a list of entries
             for list_entry in raw_slot:
-                if isinstance(list_entry, (dict, JsonObj)):
+                if isinstance(list_entry, slot_type):
+                    order_up(list_entry[key_name], list_entry)
+                elif isinstance(list_entry, (dict, JsonObj)):
                     # list_entry is either a key:dict, key_name:value or **kwargs
                     if len(list_entry) == 1:
                         # key:dict or key_name:key
@@ -196,7 +198,9 @@ class YAMLRoot(JsonObj):
                 for k, v in items(raw_slot):
                     if v is None:
                         v = dict()
-                    if isinstance(v, (dict, JsonObj)):
+                    if isinstance(v, slot_type):
+                        order_up(k, v)
+                    elif isinstance(v, (dict, JsonObj)):
                         form_1({k: v})
                     elif not isinstance(v, list):
                         order_up(k, slot_type(*[k, v]))
