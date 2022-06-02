@@ -34,7 +34,7 @@ classes:
       - persons_as_dict
       - single_person_inlined
       - noidobj_as_list
-      - noidobj_as_dict
+#      - noidobj_as_dict
       - single_noidobj_inlined
 
 slots:
@@ -57,18 +57,19 @@ slots:
     range: Person
 
   noidobj_as_list:
-    range: Person
+    range: PersonNoId
     inlined: true
     inlined_as_list: true
     multivalued: true
-  noidobj_as_dict:
-    range: Person
-    inlined: true
-    inlined_as_list: false
-    multivalued: true
+# impossible to inline-as-dict if no id/key
+#  noidobj_as_dict:
+#    range: PersonNoId
+#    inlined: true
+#    inlined_as_list: false
+#    multivalued: true
   single_noidobj_inlined:
     inlined: true
-    range: Person
+    range: PersonNoId
 
   vital_status:
     range: VitalStatusEnum
