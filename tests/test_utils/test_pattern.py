@@ -14,26 +14,16 @@ class PatternTestCase(unittest.TestCase):
         """Test method that consolidate composite patterns."""
 
         sv = SchemaView(env.input_path("pattern-example.yaml"))
-        materialize_patterns(sv)
 
-        # create tempfile where the materializes YAML 
-        # file should be saved
-        new_file, filename = tempfile.mkstemp()
+        # actual result returned from call to materialize_patterns()
+        actual_dict = materialize_patterns(sv)
 
-        path_to_yaml = filename + ".yaml"
+        expected_dict = {
+            "{float} {unit.length}": "\\d+[\\.\\d+] (centimeter|meter|inch)",
+            "{float} {unit.weight}": "\\d+[\\.\\d+] (kg|g|lbs|stone)",
+        }
 
-        yaml_dumper.dump(sv.schema, path_to_yaml)
-
-        sv = SchemaView(path_to_yaml)
-
-        slot_patterns = []  # patterns associated with all slots
-        for _, slot_defn in sv.all_slots().items():
-            slot_patterns.append(slot_defn.pattern)
-
-        # check that the expected patterns are associated with
-        # at least one of the slots in the SchemaView
-        self.assertIn("\\d+[\\.\\d+] (centimeter|meter|inch)", slot_patterns)
-        self.assertIn("\\d+[\\.\\d+] (kg|g|lbs|stone)", slot_patterns)
+        self.assertDictEqual(actual_dict, expected_dict)
 
 
 if __name__ == "__main__":
