@@ -1,0 +1,32 @@
+name: Meals
+id: http://example.com/meals
+default_prefix: meals
+default_range: string
+imports: linkml:types
+prefixes:
+  meals: http://example.com/meals/
+  linkml: https://w3id.org/linkml/
+slots:
+  companion:
+  meal_name:
+  entree:
+    range: entree_enum
+  meals:
+    range: Meal
+    multivalued: true
+    inlined_as_list: true
+classes:
+  Meal:
+    slots:
+      - meal_name
+      - companion
+      - entree
+  MealLog:
+    slots:
+      - meals
+enums:
+  entree_enum:
+    permissible_values:
+      granola: { }
+      sandwich: { }
+      pizza: { }

@@ -1,0 +1,7 @@
+meals:
+  - meal_name: breakfast
+    companion: Abraham
+  - meal_name: lunch
+    companion: Milhouse
+  - meal_name: dinner
+    companion: Seymour
