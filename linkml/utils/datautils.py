@@ -93,7 +93,7 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
     # throw Exception if unambiguous root cannot be inferred
     if len(candidates) > 1:
         raise RuntimeError(f"Multiple potential target classes found: {candidates}. "
-                           "Please specify a target using --target_class or by adding "
+                           "Please specify a target using --target-class or by adding "
                            "tree_root: true to the relevant class in the schema.")
 
     if len(candidates) == 1:
