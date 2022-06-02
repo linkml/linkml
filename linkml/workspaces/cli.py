@@ -201,7 +201,6 @@ def new(
         raise ValueError(f'Name cannot contain slashes')
     template_version = None
     tmpdir = tempfile.TemporaryDirectory()
-    readme = "README.md"
     if template_directory is None:
         template_version = download_template_directory(tmpdir)
         entries = list(os.listdir(tmpdir.name))
@@ -226,7 +225,6 @@ def new(
                   namespace=underscore(organization),
                   underscore_name=project_name_as_underscore(name),
                   description=description,
-                  readme=readme,
                   template_version=template_version,
                   author=author)
     for root, dirs, files in os.walk(template_directory, topdown=True):

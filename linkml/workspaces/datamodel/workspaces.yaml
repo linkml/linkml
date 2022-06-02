@@ -5,6 +5,7 @@ description: >-
   A datamodel for Workspaces.
 
   A workspace is a local on-disk collection of projects managed by a single user or agent
+readme: README.md
 license: https://creativecommons.org/publicdomain/zero/1.0/
 
 prefixes:
