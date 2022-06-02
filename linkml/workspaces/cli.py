@@ -139,7 +139,7 @@ output_directory_option = click.option(
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
 def main(verbose: int, quiet: bool):
-    """Run the SSSOM CLI."""
+    """Run the linkML CLI."""
     if verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
     elif verbose == 1:
