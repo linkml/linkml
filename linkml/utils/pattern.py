@@ -32,6 +32,10 @@ def materialize_patterns(schema_view: SchemaView) -> Dict[str, str]:
     # expanded, or materialized patterns as values
     materialized_patterns = {}
 
+    # regular expression capturing the various use cases
+    # for the optionally dot separated, curly braces bound, pattern syntax
+    var_name = re.compile("{([a-z0-9_-]+([\.-_ ][a-z0-9]+)*)}", re.IGNORECASE)
+
     for _, slot_defn in schema_view.all_slots().items():
         if slot_defn.structured_pattern:
             struct_pat = slot_defn.structured_pattern
@@ -41,9 +45,6 @@ def materialize_patterns(schema_view: SchemaView) -> Dict[str, str]:
             # compute pattern from structured patterns
             # and format_spec dictionary
 
-            # regular expression capturing the various use cases
-            # for the optionally dot separated, curly braces bound, pattern syntax
-            var_name = re.compile("{([a-z0-9_-]+([\.-_ ][a-z0-9]+)*)}", re.IGNORECASE)
 
             # apply the regex to the pattern and look for matches
             matches = var_name.finditer(pattern)
