@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -108,7 +109,7 @@
            <div itemprop="articleBody">
              
   <section id="models">
-<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline"></a></h1>
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this heading"></a></h1>
 <p>A LinkML model describes the structure of your data. Your data can be
 expressed as JSON or YAML files (the default form for LinkML), or as
 CSVs, or as a relational database, or even a triplestore or graph
@@ -149,7 +150,7 @@ database.</p>
 </div>
 <p>To illustrate we will use an example schema for modeling people and attributes about people. The full schema can be found in this repo at <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">examples/PersonSchema</a></p>
 <section id="model-metadata-and-directives">
-<h2>Model metadata and directives<a class="headerlink" href="#model-metadata-and-directives" title="Permalink to this headline"></a></h2>
+<h2>Model metadata and directives<a class="headerlink" href="#model-metadata-and-directives" title="Permalink to this heading"></a></h2>
 <p>A LinkML model/schema may have various pieces of metadata associated with it, for example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
 <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span><span class="w"></span>
@@ -201,7 +202,7 @@ database.</p>
 <p>See also <a class="reference internal" href="uris-and-mappings.html"><span class="doc std std-doc">uris-and-mappings</span></a></p>
 </section>
 <section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
 <p>Classes provide templates for organizing data. Data objects should
 instantiate classes in the schema. Each class has a set of <em>slots</em>
 (aka fields, attributes) that are applicable to it.</p>
@@ -242,7 +243,7 @@ ClassDefinitions.</p>
 <p>This is a little meta at first but you get used to it!</p>
 </section>
 <section id="slots">
-<h2>Slots<a class="headerlink" href="#slots" title="Permalink to this headline"></a></h2>
+<h2>Slots<a class="headerlink" href="#slots" title="Permalink to this heading"></a></h2>
 <p>Slots (aka attributes, fields, columns, properties) can be associated
 with classes to specify what fields instances of that class can have</p>
 <p>For example, in the schema above, instances of Person classes can have
@@ -288,7 +289,7 @@ NamedThing, then <code class="docutils literal notranslate"><span class="pre">na
 re-declare</p>
 <p>See <a class="reference external" href="https://w3id.org/linkml/SlotDefinition">SlotDefinition</a> for a full list of which metamodel slots can be applied to slots.</p>
 <section id="the-attribute-slot">
-<h3>The Attribute slot<a class="headerlink" href="#the-attribute-slot" title="Permalink to this headline"></a></h3>
+<h3>The Attribute slot<a class="headerlink" href="#the-attribute-slot" title="Permalink to this heading"></a></h3>
 <p>As a convenience feature, you can specify slot definitions directly within a class using the <code class="docutils literal notranslate"><span class="pre">attributes</span></code> slot:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
@@ -315,7 +316,7 @@ re-declare</p>
 </section>
 </section>
 <section id="types">
-<h2>Types<a class="headerlink" href="#types" title="Permalink to this headline"></a></h2>
+<h2>Types<a class="headerlink" href="#types" title="Permalink to this heading"></a></h2>
 <p>See <a class="reference external" href="https://w3id.org/linkml/TypeDefinition">TypeDefinition</a> in the metamodel.</p>
 <p>Types in LinkML are scalar data values such as strings, integers, floats, and so on. LinkML comes with its own set of types, and these can be extended.</p>
 <p>For example, you may represent chemical formulae as strings in your model, but if you provide an explicit type that maps to string, it makes the intended meaning clearer, and different applications can operate on these differently:</p>
@@ -327,7 +328,7 @@ re-declare</p>
 </div>
 </section>
 <section id="enums">
-<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline"></a></h2>
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this heading"></a></h2>
 <p>The core enumeration model is the same as for familiar systems, where there is a set of allowed string values:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">FamilialRelationshipType</span><span class="p">:</span><span class="w"></span>
@@ -373,11 +374,11 @@ re-declare</p>
 </div>
 </section>
 <section id="subsets">
-<h2>Subsets<a class="headerlink" href="#subsets" title="Permalink to this headline"></a></h2>
+<h2>Subsets<a class="headerlink" href="#subsets" title="Permalink to this heading"></a></h2>
 <p>Elements of a schema can be partitioned into named <a class="reference external" href="https://w3id.org/linkml/SubsetDefinition">subsets</a>. These have no semantic meaning, but they can be useful for tagging parts of a schema for different purposes.</p>
 </section>
 <section id="metamodel">
-<h2>Metamodel<a class="headerlink" href="#metamodel" title="Permalink to this headline"></a></h2>
+<h2>Metamodel<a class="headerlink" href="#metamodel" title="Permalink to this heading"></a></h2>
 <p>The LinkML <em>metamodel</em> describes LinkML itself. All LinkML schemas
 instantiate the <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">subsets</a>
 class in the metamodel, and all elements of a schema instantiate other

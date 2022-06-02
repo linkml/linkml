@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -102,13 +103,13 @@
            <div itemprop="articleBody">
              
   <section id="protobuf">
-<h1>ProtoBuf<a class="headerlink" href="#protobuf" title="Permalink to this headline"></a></h1>
+<h1>ProtoBuf<a class="headerlink" href="#protobuf" title="Permalink to this heading"></a></h1>
 <section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/protobuf/personinfo.proto">personinfo.schema.proto</a></p>
 </section>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a>
 is a protocol for seriaizing data developed by Google.</p>
 <p>Protobuf can be generated from a LinkML schema.</p>
@@ -117,7 +118,7 @@ is a protocol for seriaizing data developed by Google.</p>
 </pre></div>
 </div>
 <section id="inheritance">
-<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h3>
+<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this heading"></a></h3>
 <p>Because Protobuf does not support inheritance hierarchy, slots are
 “rolled down” from parent.</p>
 <p>For example, in the personinfo schema, slots such as <cite>id</cite> and <cite>name</cite>
@@ -176,11 +177,11 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 </section>
 </section>
 <section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading"></a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h3>
 <section id="gen-proto">
-<h4>gen-proto<a class="headerlink" href="#gen-proto" title="Permalink to this headline"></a></h4>
+<h4>gen-proto<a class="headerlink" href="#gen-proto" title="Permalink to this heading"></a></h4>
 <p>Generate proto representation of LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-proto <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
@@ -264,10 +265,10 @@ are inherited from NamedThing, and <cite>aliases</cite> are inherited from a mix
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.protogen.ProtoGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.protogen.</span></span><span class="sig-name descname"><span class="pre">ProtoGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/protogen.html#ProtoGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.protogen.ProtoGenerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.protogen.</span></span><span class="sig-name descname"><span class="pre">ProtoGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/protogen.html#ProtoGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.protogen.ProtoGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>A <cite>Generator</cite> for creating Protobuf schemas from a linkml schema.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.protogen.ProtoGenerator.serialize">

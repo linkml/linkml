@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -100,9 +101,9 @@
            <div itemprop="articleBody">
              
   <section id="part-7-slots-and-inheritance">
-<h1>Part 7: Slots and inheritance<a class="headerlink" href="#part-7-slots-and-inheritance" title="Permalink to this headline"></a></h1>
+<h1>Part 7: Slots and inheritance<a class="headerlink" href="#part-7-slots-and-inheritance" title="Permalink to this heading"></a></h1>
 <section id="slots-and-attributes">
-<h2>Slots and attributes<a class="headerlink" href="#slots-and-attributes" title="Permalink to this headline"></a></h2>
+<h2>Slots and attributes<a class="headerlink" href="#slots-and-attributes" title="Permalink to this heading"></a></h2>
 <p>Previously we have seen examples of schemas that declare fields/slots using an <code class="docutils literal notranslate"><span class="pre">attributes</span></code> slot under the relevant class.</p>
 <p>In LinkML, “slots” (aka fields) are first-class entities that can be
 declared outside of classes. The attribute syntax is just a convenient
@@ -171,11 +172,11 @@ for reuse.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml personinfo.yaml
 </pre></div>
 </div>
-<p><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BContainer%5D++-%20persons%200..*%3E%5BPerson%7Cid:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F%5D,%5BContainer%5D" /></p>
+<p><img alt="img" src="https://yuml.me/diagram/nofunky%3Bdir:TB/class/%5BContainer%5D++-%20persons%200..*%3E%5BPerson%7Cid:string;full_name:string%3Baliases:string%20*%3Bphone:string%20%3F%3Bage:integer%20%3F%5D,%5BContainer%5D" /></p>
 <p>See <a class="reference internal" href="../faq/modeling.html#when-should-i-use-attributes-vs-slots"><span class="std std-ref">FAQ: attributes vs slots</span></a></p>
 </section>
 <section id="inheritance">
-<h2>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h2>
+<h2>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this heading"></a></h2>
 <p>Now let’s say we want to extend the schema, and we want to include
 another class <code class="docutils literal notranslate"><span class="pre">Organization</span></code>. Organizations may have different
 properties from people, but they may also share slots in common - for
@@ -281,7 +282,7 @@ example, having a unique identifier and a name</p>
 </pre></div>
 </div>
 <p>Renders as:</p>
-<p><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BNamedThing%7Cid:string;full_name:string%5D%5E-%5BPerson%7Cphone:string%20%3F;age:integer%20%3F;aliases:string%20*;id(i):string;full_name(i):string%5D,%5BNamedThing%5D%5E-%5BOrganization%7Cmission_statement:string%20%3F;aliases:string%20*;id(i):string;full_name(i):string%5D,%5BContainer%5D++-%20persons%200..*%3E%5BPerson%5D,%5BPerson%5Duses%20-.-%3E%5BHasAliases%7Caliases:string%20*%5D,%5BContainer%5D++-%20organizations%200..*%3E%5BOrganization%5D,%5BOrganization%5Duses%20-.-%3E%5BHasAliases%5D,%5BPerson%5Duses%20-.-%3E%5BHasAliases%5D,%5BOrganization%5Duses%20-.-%3E%5BHasAliases%5D,%5BContainer%5D" /></p>
+<p><img alt="img" src="https://yuml.me/diagram/nofunky%3Bdir:TB/class/%5BNamedThing%7Cid:string;full_name:string%5D%5E-%5BPerson%7Cphone:string%20%3F%3Bage:integer%20%3F%3Baliases:string%20*%3Bid(i):string%3Bfull_name(i):string%5D,%5BNamedThing%5D%5E-%5BOrganization%7Cmission_statement:string%20%3F%3Baliases:string%20*%3Bid(i):string%3Bfull_name(i):string%5D,%5BContainer%5D++-%20persons%200..*%3E%5BPerson%5D,%5BPerson%5Duses%20-.-%3E%5BHasAliases%7Caliases:string%20*%5D,%5BContainer%5D++-%20organizations%200..*%3E%5BOrganization%5D,%5BOrganization%5Duses%20-.-%3E%5BHasAliases%5D,%5BPerson%5Duses%20-.-%3E%5BHasAliases%5D,%5BOrganization%5Duses%20-.-%3E%5BHasAliases%5D,%5BContainer%5D" /></p>
 <p>Let’s take a look at the JSON schema:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo-with-inheritance.yaml &gt; personinfo-with-inheritance.schema.json
 </pre></div>
@@ -325,7 +326,7 @@ example, having a unique identifier and a name</p>
 </div>
 </section>
 <section id="customizing-slots-in-the-context-of-classes-slot-usage">
-<h2>Customizing slots in the context of classes: Slot Usage<a class="headerlink" href="#customizing-slots-in-the-context-of-classes-slot-usage" title="Permalink to this headline"></a></h2>
+<h2>Customizing slots in the context of classes: Slot Usage<a class="headerlink" href="#customizing-slots-in-the-context-of-classes-slot-usage" title="Permalink to this heading"></a></h2>
 <p>LinkML gives you the ability to reuse or inherit slots while customizing them for use in a particular class, using <code class="docutils literal notranslate"><span class="pre">slot_usage</span></code></p>
 <p>First let’s create a schema where we introduce a new general class <code class="docutils literal notranslate"><span class="pre">Relationship</span></code></p>
 <p>slot-usage-example.yaml:</p>
@@ -418,7 +419,7 @@ example, having a unique identifier and a name</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-yuml slot-usage-example.yaml
 </pre></div>
 </div>
-<p><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BNamedThing%7Cid:string;full_name:string%20%3F%5D%3Crelated_to%200..1-%20%5BRelationship%7Cduration:integer%20%3F;relationship_type:string%20%3F%5D,%5BRelationship%5D%5E-%5BOrganizationalRelationship%7Crelationship_type:OrganizationalRelationshipType%20%3F;duration(i):integer%20%3F%5D,%5BRelationship%5D%5E-%5BFamilialRelationship%7Crelationship_type:FamilialRelationshipType%20%3F;duration(i):integer%20%3F%5D,%5BOrganization%7Cid(i):string;full_name(i):string%20%3F%5D%3Crelated_to%201..1-%20%5BOrganizationalRelationship%5D,%5BPerson%7Cid(i):string;full_name(i):string%20%3F%5D++-%20has_organizational_relationships%200..*%3E%5BOrganizationalRelationship%5D,%5BFamilialRelationship%5D%3Chas_familial_relationships%200..*-++%5BPerson%5D,%5BFamilialRelationship%5D-%20related_to%201..1%3E%5BPerson%5D,%5BContainer%5D++-%20persons%200..*%3E%5BPerson%5D,%5BNamedThing%5D%5E-%5BPerson%5D,%5BOrganizationalRelationship%5D-%20related_to%201..1%3E%5BOrganization%5D,%5BContainer%5D++-%20organizations%200..*%3E%5BOrganization%5D,%5BNamedThing%5D%5E-%5BOrganization%5D,%5BRelationship%5D-%20related_to%200..1%3E%5BNamedThing%5D,%5BNamedThing%5D%5E-%5BPerson%5D,%5BNamedThing%5D%5E-%5BOrganization%5D,%5BPerson%5D++-%20has_familial_relationships%200..*%3E%5BFamilialRelationship%5D,%5BContainer%5D" /></p>
+<p><img alt="img" src="https://yuml.me/diagram/nofunky%3Bdir:TB/class/%5BNamedThing%7Cid:string;full_name:string%20%3F%5D%3Crelated_to%200..1-%20%5BRelationship%7Cduration:integer%20%3F%3Brelationship_type:string%20%3F%5D,%5BRelationship%5D%5E-%5BOrganizationalRelationship%7Crelationship_type:OrganizationalRelationshipType%20%3F%3Bduration(i):integer%20%3F%5D,%5BRelationship%5D%5E-%5BFamilialRelationship%7Crelationship_type:FamilialRelationshipType%20%3F%3Bduration(i):integer%20%3F%5D,%5BOrganization%7Cid(i):string%3Bfull_name(i):string%20%3F%5D%3Crelated_to%201..1-%20%5BOrganizationalRelationship%5D,%5BPerson%7Cid(i):string%3Bfull_name(i):string%20%3F%5D++-%20has_organizational_relationships%200..*%3E%5BOrganizationalRelationship%5D,%5BFamilialRelationship%5D%3Chas_familial_relationships%200..*-++%5BPerson%5D,%5BFamilialRelationship%5D-%20related_to%201..1%3E%5BPerson%5D,%5BContainer%5D++-%20persons%200..*%3E%5BPerson%5D,%5BNamedThing%5D%5E-%5BPerson%5D,%5BOrganizationalRelationship%5D-%20related_to%201..1%3E%5BOrganization%5D,%5BContainer%5D++-%20organizations%200..*%3E%5BOrganization%5D,%5BNamedThing%5D%5E-%5BOrganization%5D,%5BRelationship%5D-%20related_to%200..1%3E%5BNamedThing%5D,%5BNamedThing%5D%5E-%5BPerson%5D,%5BNamedThing%5D%5E-%5BOrganization%5D,%5BPerson%5D++-%20has_familial_relationships%200..*%3E%5BFamilialRelationship%5D,%5BContainer%5D" /></p>
 <p>Here we have a fairly generic class <code class="docutils literal notranslate"><span class="pre">Relationship</span></code> that holds a relationship a person can hold to another entity such as another person or an organization.</p>
 <p>there are two subclasses, or for personal relationships (e.g. siblings) and other for person-to-organization relationships. these use the same generic slots (duration, relationship)type, and related_to). However, the latter two are constrained in a class-specific way.</p>
 <p>data.yaml:</p>

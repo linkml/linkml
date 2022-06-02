@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -104,7 +105,7 @@
            <div itemprop="articleBody">
              
   <section id="tool-implementor-guide">
-<h1>Tool Implementor Guide<a class="headerlink" href="#tool-implementor-guide" title="Permalink to this headline"></a></h1>
+<h1>Tool Implementor Guide<a class="headerlink" href="#tool-implementor-guide" title="Permalink to this heading"></a></h1>
 <p>This guide is for developers of <em>generic</em> LinkML tools that operate
 over the linkml metamodel, for example:</p>
 <ul class="simple">
@@ -135,7 +136,7 @@ is based on the same idea.</p>
 <p>Another example is <a class="reference external" href="https://github.com/cidgoh/DataHarmonizer">DataHarmonizer</a> which provides a
 spreadsheet-like data entry interface for any “flat” LinkML schema.</p>
 <section id="general-considerations">
-<h2>General Considerations<a class="headerlink" href="#general-considerations" title="Permalink to this headline"></a></h2>
+<h2>General Considerations<a class="headerlink" href="#general-considerations" title="Permalink to this heading"></a></h2>
 <p>Any generic LinkML application will be driven by a LinkML <em>model</em>
 (schema), which itself conforms to the <a class="reference external" href="https://w3id.org/linkml">LinkML metamodel</a>. It follows that these applications will
 itself need to conform to that model.</p>
@@ -165,7 +166,7 @@ can author in LinkML and compile to these other frameworks. But there
 are trade-offs here. See the section on Other Frameworks.</p>
 </section>
 <section id="schema-conformance-levels">
-<h2>Schema Conformance Levels<a class="headerlink" href="#schema-conformance-levels" title="Permalink to this headline"></a></h2>
+<h2>Schema Conformance Levels<a class="headerlink" href="#schema-conformance-levels" title="Permalink to this heading"></a></h2>
 <p>LinkML is a rich language supporting extensible types, inheritance,
 use of Linked Data IRIs, ontological enums, imports, rules, boolean
 constructs. It can be daunting to consider building a tool that
@@ -222,7 +223,7 @@ sufficient for certain kinds of applications.</p>
 <p>See the YAML Generator for one such tool.</p>
 </section>
 <section id="other-languages">
-<h2>Other Languages<a class="headerlink" href="#other-languages" title="Permalink to this headline"></a></h2>
+<h2>Other Languages<a class="headerlink" href="#other-languages" title="Permalink to this heading"></a></h2>
 <p>LinkML is programming language neutral. However, currently much of the
 stack for introspecting schemas is written in Python.</p>
 <p>For example, in Python, if you want a list of slots for that class you can use <span class="xref std std-ref">class_slots</span>. But
@@ -248,7 +249,7 @@ Java classes for any LinkML model. The LinkML metamodel is in LinkML,
 so this can be used to make a Java object model for LinkML itself,
 which can help bootstrap efforts to make domain logical libraries.</p>
 <section id="materializing-imports-and-inferences">
-<h3>Materializing imports and inferences<a class="headerlink" href="#materializing-imports-and-inferences" title="Permalink to this headline"></a></h3>
+<h3>Materializing imports and inferences<a class="headerlink" href="#materializing-imports-and-inferences" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="../generators/linkml.html">linkml generator</a> can be used to
 materialize imports closure and to materialize inferred/induced slots
 as attributes. This frees the client logic from needing to implement
@@ -256,7 +257,7 @@ this logic locally.</p>
 </section>
 </section>
 <section id="general-guidelines-for-applications">
-<h2>General Guidelines for applications<a class="headerlink" href="#general-guidelines-for-applications" title="Permalink to this headline"></a></h2>
+<h2>General Guidelines for applications<a class="headerlink" href="#general-guidelines-for-applications" title="Permalink to this heading"></a></h2>
 <p>These guidelines apply to how applications should use elements of the
 LinkML metamodel.</p>
 <ul class="simple">
@@ -305,7 +306,7 @@ hints:</p>
 </ul>
 </section>
 <section id="customizing-and-application-hints">
-<h2>Customizing and application hints<a class="headerlink" href="#customizing-and-application-hints" title="Permalink to this headline"></a></h2>
+<h2>Customizing and application hints<a class="headerlink" href="#customizing-and-application-hints" title="Permalink to this heading"></a></h2>
 <p>One challenge with generic applications is that they often look and
 feel… generic. This can have some advantages, e.g. consistent look
 and feel. But in general UX can be improved by customizing things.</p>
@@ -489,7 +490,7 @@ into structured form</p></li>
 </div></blockquote>
 </section>
 <section id="using-other-frameworks">
-<h2>Using other frameworks<a class="headerlink" href="#using-other-frameworks" title="Permalink to this headline"></a></h2>
+<h2>Using other frameworks<a class="headerlink" href="#using-other-frameworks" title="Permalink to this heading"></a></h2>
 <p>You should also feel free to build applications that use other
 frameworks. You can compile to these from LinkML, but be aware that
 you will be restricted to the expressivity of that language–e.g. a

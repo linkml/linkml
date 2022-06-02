@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -101,11 +102,11 @@
            <div itemprop="articleBody">
              
   <section id="imports">
-<h1>Imports<a class="headerlink" href="#imports" title="Permalink to this headline"></a></h1>
+<h1>Imports<a class="headerlink" href="#imports" title="Permalink to this heading"></a></h1>
 <p>LinkML encourages modular schema development. You can split you schema into modules, and even reuse other peoples modules on the web</p>
 <p>A schema can have a list of <a class="reference external" href="https://w3id.org/linkml/imports">imports</a> associated with it. These are specified as <span class="xref myst">CURIEs</span> or local imports.</p>
 <section id="importing-external-schemas">
-<h2>Importing external schemas<a class="headerlink" href="#importing-external-schemas" title="Permalink to this headline"></a></h2>
+<h2>Importing external schemas<a class="headerlink" href="#importing-external-schemas" title="Permalink to this heading"></a></h2>
 <p>Most schemas will have at least an imports to the linkml types schema, which defines core types:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
@@ -121,7 +122,7 @@ import is exanded to <code class="docutils literal notranslate"><span class="pre
 file type suffix is added, yielding <a class="reference external" href="https://w3id.org/linkml/types.yaml">https://w3id.org/linkml/types.yaml</a></p>
 </section>
 <section id="local-imports">
-<h2>Local imports<a class="headerlink" href="#local-imports" title="Permalink to this headline"></a></h2>
+<h2>Local imports<a class="headerlink" href="#local-imports" title="Permalink to this heading"></a></h2>
 <p>You can also specify relative paths, e.g</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">imports</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">core</span><span class="w"></span>
@@ -134,7 +135,7 @@ sure that the imported modules are accessible and follow the same
 paths</p>
 </section>
 <section id="making-merged-files-for-distribution">
-<h2>Making merged files for distribution<a class="headerlink" href="#making-merged-files-for-distribution" title="Permalink to this headline"></a></h2>
+<h2>Making merged files for distribution<a class="headerlink" href="#making-merged-files-for-distribution" title="Permalink to this heading"></a></h2>
 <p>Sometimes it can be convenient to <em>merge imports</em> prior to
 distribution. This makes it easier for programs that want to make use
 of a linkml schema, as they only have to work with one file, rather

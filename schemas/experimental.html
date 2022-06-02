@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -103,10 +104,10 @@
            <div itemprop="articleBody">
              
   <section id="experimental-features">
-<h1>Experimental features<a class="headerlink" href="#experimental-features" title="Permalink to this headline"></a></h1>
+<h1>Experimental features<a class="headerlink" href="#experimental-features" title="Permalink to this heading"></a></h1>
 <p>The following language features are experimental, behavior is not guaranteed to stay consistent</p>
 <section id="linkml-any-type">
-<h2>LinkML Any type<a class="headerlink" href="#linkml-any-type" title="Permalink to this headline"></a></h2>
+<h2>LinkML Any type<a class="headerlink" href="#linkml-any-type" title="Permalink to this heading"></a></h2>
 <p>LinkML is currently best suited to ‘strict’ schemas, and doesn’t have full support for being able to model arbitrary dictionaries/objects. Each slot must have a defined range, the range must be exactly one of a Class, Type, or Enum. It is currently impossible to define unions of these core ranges.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml:Any</span></code> type is an experimental feature for allowing arbitrary objects</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
@@ -126,7 +127,7 @@
 </div>
 </section>
 <section id="unions-as-ranges">
-<h2>Unions as ranges<a class="headerlink" href="#unions-as-ranges" title="Permalink to this headline"></a></h2>
+<h2>Unions as ranges<a class="headerlink" href="#unions-as-ranges" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://w3id.org/linkml/any_of">any_of</a> can be used to express that a range must satisfy any of a set of ranges.</p>
 <p>One way this can be used is to compose enums together, for example if we have a <code class="docutils literal notranslate"><span class="pre">vital_status</span></code> enum that can take on any a set of enums from VitalStatus OR a missing value with the type of missing value defined by an enum:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
@@ -158,7 +159,7 @@
 </ul>
 </section>
 <section id="rules">
-<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this headline"></a></h2>
+<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this heading"></a></h2>
 <p>Any class can have a <a class="reference external" href="https://w3id.org/linkml/rules">rules</a> block, consisting of (optional) <a class="reference external" href="https://w3id.org/linkml/preconditions">preconditions</a> and <a class="reference external" href="https://w3id.org/linkml/postconditions">postconditions</a>. This can express basic if-then logic:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">classes</span><span class="p">:</span>
   <span class="n">Address</span><span class="p">:</span>
@@ -184,7 +185,7 @@
 <p>See above for implementation status</p>
 </section>
 <section id="defining-slots">
-<h2>Defining slots<a class="headerlink" href="#defining-slots" title="Permalink to this headline"></a></h2>
+<h2>Defining slots<a class="headerlink" href="#defining-slots" title="Permalink to this heading"></a></h2>
 <p>A subset of slots for a class can be declared as <a class="reference external" href="https://w3id.org/linkml/">defining
 slots</a>, indicating that membership of the
 class can be inferred based on ranges of those slots</p>
@@ -216,7 +217,7 @@ class can be inferred based on ranges of those slots</p>
 <p>This feature is experimental, and may be replaced by a more general rules mechanism in future.</p>
 </section>
 <section id="equals-expression">
-<h2>equals_expression<a class="headerlink" href="#equals-expression" title="Permalink to this headline"></a></h2>
+<h2>equals_expression<a class="headerlink" href="#equals-expression" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://w3id.org/linkml/equals_expression">equals_expression</a> can be used
 to specify that the value of a slot should be equal to an evaluable expression,
 where that expression can contain other slot values as terms.</p>

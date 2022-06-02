@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -81,7 +82,7 @@
            <div itemprop="articleBody">
              
   <section id="using-yq-for-querying-and-manipulating-schemas">
-<h1>Using yq for querying and manipulating schemas<a class="headerlink" href="#using-yq-for-querying-and-manipulating-schemas" title="Permalink to this headline"></a></h1>
+<h1>Using yq for querying and manipulating schemas<a class="headerlink" href="#using-yq-for-querying-and-manipulating-schemas" title="Permalink to this heading"></a></h1>
 <p><strong>STATUS: DRAFT</strong></p>
 <p><a class="reference external" href="https://mikefarah.gitbook.io/yq/">yq</a> is a command-line YAML processor, similar to jq.</p>
 <p>As all LinkML schemas have a canonical form as YAML, you can use yq to process these.</p>
@@ -103,7 +104,7 @@ perform operations that don’t fit a template here, then you will need
 to consult the (excellent) yq docs, and also have some awareness of
 how LinkML schemas are rendered as YAML.</p>
 <section id="top-level-lookups">
-<h2>top level lookups<a class="headerlink" href="#top-level-lookups" title="Permalink to this headline"></a></h2>
+<h2>top level lookups<a class="headerlink" href="#top-level-lookups" title="Permalink to this heading"></a></h2>
 <p>Fetch the schema identifier:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.id&#39;</span> personinfo.yaml
 https://w3id.org/linkml/examples/personinfo
@@ -111,7 +112,7 @@ https://w3id.org/linkml/examples/personinfo
 </div>
 </section>
 <section id="all-class-names">
-<h2>all class names<a class="headerlink" href="#all-class-names" title="Permalink to this headline"></a></h2>
+<h2>all class names<a class="headerlink" href="#all-class-names" title="Permalink to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes | keys&#39;</span> personinfo.yaml
 - NamedThing
 - Person
@@ -134,14 +135,14 @@ https://w3id.org/linkml/examples/personinfo
 </div>
 </section>
 <section id="classes-with-their-is-a-parents">
-<h2>classes with their is-a parents<a class="headerlink" href="#classes-with-their-is-a-parents" title="Permalink to this headline"></a></h2>
+<h2>classes with their is-a parents<a class="headerlink" href="#classes-with-their-is-a-parents" title="Permalink to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.classes | to_entries | {.[].key: .[].value.is_a}&#39;</span> personinfo.yaml
 </pre></div>
 </div>
 <p>TODO</p>
 </section>
 <section id="setting-top-level-slots">
-<h2>setting top level slots<a class="headerlink" href="#setting-top-level-slots" title="Permalink to this headline"></a></h2>
+<h2>setting top level slots<a class="headerlink" href="#setting-top-level-slots" title="Permalink to this heading"></a></h2>
 <p>Set the schema name:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ yq e &#39;.name = &quot;NEW NAME&quot;&#39; personinfo.yaml
 id: https://w3id.org/linkml/examples/personinfo
@@ -153,7 +154,7 @@ description: |-
 </div>
 </section>
 <section id="lookup-a-class-by-name">
-<h2>lookup a class by name<a class="headerlink" href="#lookup-a-class-by-name" title="Permalink to this headline"></a></h2>
+<h2>lookup a class by name<a class="headerlink" href="#lookup-a-class-by-name" title="Permalink to this heading"></a></h2>
 <p>Lookup the class Person:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>✗ yq e <span class="s1">&#39;.classes.Person&#39;</span> personinfo.yaml
 is_a: NamedThing
@@ -183,14 +184,14 @@ NamedThing
 </div>
 </section>
 <section id="setting-the-is-a-value-of-a-class">
-<h2>Setting the is_a value of a class:<a class="headerlink" href="#setting-the-is-a-value-of-a-class" title="Permalink to this headline"></a></h2>
+<h2>Setting the is_a value of a class:<a class="headerlink" href="#setting-the-is-a-value-of-a-class" title="Permalink to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">yq</span> <span class="n">e</span> <span class="s1">&#39;.classes.Person.is_a=&quot;Agent&quot;&#39;</span> <span class="n">personinfo</span><span class="o">.</span><span class="n">yaml</span>
 </pre></div>
 </div>
 <p>Note that in LinkML schemas, classes, slots, etc are <code class="docutils literal notranslate"><span class="pre">inlined_as_dict</span></code>, meaning you can’t access these by array indices</p>
 </section>
 <section id="prefixes">
-<h2>prefixes<a class="headerlink" href="#prefixes" title="Permalink to this headline"></a></h2>
+<h2>prefixes<a class="headerlink" href="#prefixes" title="Permalink to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>✗ yq e &#39;.prefixes&#39; personinfo.yaml
 personinfo: https://w3id.org/linkml/examples/personinfo/
 linkml: https://w3id.org/linkml/

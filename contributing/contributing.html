@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -90,9 +91,9 @@
            <div itemprop="articleBody">
              
   <section id="contribution-guidelines">
-<h1>Contribution Guidelines<a class="headerlink" href="#contribution-guidelines" title="Permalink to this headline"></a></h1>
+<h1>Contribution Guidelines<a class="headerlink" href="#contribution-guidelines" title="Permalink to this heading"></a></h1>
 <section id="how-to-author-a-unit-test-for-an-issue">
-<h2>How to Author a Unit Test for an Issue<a class="headerlink" href="#how-to-author-a-unit-test-for-an-issue" title="Permalink to this headline"></a></h2>
+<h2>How to Author a Unit Test for an Issue<a class="headerlink" href="#how-to-author-a-unit-test-for-an-issue" title="Permalink to this heading"></a></h2>
 <p>The following section has instructions on how to write a unit test specific to an issue that you are encountering.</p>
 <ul class="simple">
 <li><p>There are a number of repos under the linkml <a class="reference external" href="https://github.com/linkml">organization</a> banner. Such as the main <a class="reference external" href="https://github.com/linkml/linkml">linkml</a> library, <a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a>, <a class="reference external" href="https://github.com/linkml/linkml-owl">linkml-owl</a>, etc. Make sure you are creating the test in the appropriate repo. For ex., if there is a bug that you have noticed with respect to one of the generators, then you want to be creating the test in the main linkml library repo.</p></li>
@@ -116,12 +117,12 @@
 </ul>
 </section>
 <section id="how-to-author-a-unit-test-for-new-functionality">
-<h2>How to Author a Unit Test for New Functionality<a class="headerlink" href="#how-to-author-a-unit-test-for-new-functionality" title="Permalink to this headline"></a></h2>
+<h2>How to Author a Unit Test for New Functionality<a class="headerlink" href="#how-to-author-a-unit-test-for-new-functionality" title="Permalink to this heading"></a></h2>
 <p>The following section has instructions on how to write a unit test for new functionality that you are requesting.</p>
 <p>Follow the same procedure as above, but add this test to the appropriate folder. For example, if you are requesting a new LinkML generator, then the test must be added to this location: <a class="reference external" href="https://github.com/linkml/linkml/tree/main/tests/test_generators">tests/test_generators</a>.</p>
 </section>
 <section id="general-tips">
-<h2>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this headline"></a></h2>
+<h2>General Tips<a class="headerlink" href="#general-tips" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>Always make sure to use <code class="docutils literal notranslate"><span class="pre">assert</span></code> statements to compare the expected value with the actual value, rather than simply printing or logging the expected and actual values.</p></li>
 <li><p>Avoid using <code class="docutils literal notranslate"><span class="pre">print</span></code> statements for logging purposes. Use the <code class="docutils literal notranslate"><span class="pre">logging</span></code> module natively provided by Python approporiately with it’s various logging levels like <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code>, <code class="docutils literal notranslate"><span class="pre">INFO</span></code>, <code class="docutils literal notranslate"><span class="pre">ERROR</span></code>, etc.</p></li>
@@ -137,7 +138,7 @@
 </ul>
 </section>
 <section id="running-tests-locally">
-<h2>Running Tests Locally<a class="headerlink" href="#running-tests-locally" title="Permalink to this headline"></a></h2>
+<h2>Running Tests Locally<a class="headerlink" href="#running-tests-locally" title="Permalink to this heading"></a></h2>
 <p>PyCharm, IntelliJ:</p>
 <p>To run a single test:</p>
 <ul class="simple">
@@ -161,7 +162,7 @@
 </ul>
 </section>
 <section id="release-to-pypi">
-<h2>Release to PyPI<a class="headerlink" href="#release-to-pypi" title="Permalink to this headline"></a></h2>
+<h2>Release to PyPI<a class="headerlink" href="#release-to-pypi" title="Permalink to this heading"></a></h2>
 <p>A Github action is set up to automatically release the package to PyPI. When it is ready for a new release, create a <a class="reference external" href="https://github.com/linkml/releases">Github release</a>. The version should be in the vX.X.X format following <a class="reference external" href="https://semver.org/">the semantic versioning specification</a>.</p>
 <p>Release notes should always be autogenerated (just click the “generate release notes” button) - these can be tweaked but the emphasis should be on making sure PR titles and githu issue titles are clear and concise. Note we don’t keep a separate CHANGELOG file, it all goes in the release notes.</p>
 <p>After the release is created, the GitHub action will be triggered to publish to PyPI. The release version will be used to create the PyPI package.</p>

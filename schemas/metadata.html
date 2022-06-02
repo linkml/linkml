@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -102,14 +103,14 @@
            <div itemprop="articleBody">
              
   <section id="schema-element-metadata">
-<h1>Schema Element Metadata<a class="headerlink" href="#schema-element-metadata" title="Permalink to this headline"></a></h1>
+<h1>Schema Element Metadata<a class="headerlink" href="#schema-element-metadata" title="Permalink to this heading"></a></h1>
 <p>There are various slots that can be used to provide metadata about
 either a schema or elements of a schema. These typically don’t affect
 the semantics of the model, but rather act as annotations that can be
 used to provide more information to people, or that can guide the
 behavior of some tools.</p>
 <section id="description">
-<h2>description<a class="headerlink" href="#description" title="Permalink to this headline"></a></h2>
+<h2>description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/description">description</a> slot can be used to provide a human-readable description of any schema element</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
@@ -132,7 +133,7 @@ behavior of some tools.</p>
 <p>This <a class="reference external" href="https://yaml-multiline.info/">guide to yaml formatting</a> may be helpful</p>
 </section>
 <section id="aliases">
-<h2>aliases<a class="headerlink" href="#aliases" title="Permalink to this headline"></a></h2>
+<h2>aliases<a class="headerlink" href="#aliases" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/aliases">aliases</a> slot can be used to define a list of aliases for a class or slot. This is useful for adding synonymous names to your class (or slot), that serve either as hints for human users, or to enhance search and findability over your model</p>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
@@ -146,7 +147,7 @@ Downstream tooling could use these aliases to help users query the model for exa
 aliases and element names interchangeable.</p>
 </section>
 <section id="deprecation">
-<h2>deprecation<a class="headerlink" href="#deprecation" title="Permalink to this headline"></a></h2>
+<h2>deprecation<a class="headerlink" href="#deprecation" title="Permalink to this heading"></a></h2>
 <p>Any schema element can be deprecated, with a reason provided; optionally, a replacement can be provided</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">Agent</span><span class="p">:</span><span class="w"></span>
@@ -156,7 +157,7 @@ aliases and element names interchangeable.</p>
 </div>
 </section>
 <section id="others-slots">
-<h2>others slots<a class="headerlink" href="#others-slots" title="Permalink to this headline"></a></h2>
+<h2>others slots<a class="headerlink" href="#others-slots" title="Permalink to this heading"></a></h2>
 <p>See <a class="reference external" href="https://w3id.org/linkml/CommonMetadata">CommonMetadata</a> for other slots</p>
 </section>
 </section>

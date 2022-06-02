@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -100,28 +101,28 @@
            <div itemprop="articleBody">
              
   <section id="csvs-and-tabular-data">
-<h1>CSVs and Tabular Data<a class="headerlink" href="#csvs-and-tabular-data" title="Permalink to this headline"></a></h1>
+<h1>CSVs and Tabular Data<a class="headerlink" href="#csvs-and-tabular-data" title="Permalink to this heading"></a></h1>
 <p>LinkML can support both complex interlinked normalized relational data as well as flat/denormalized data as typically found in spreadsheets and in CSVs used by data scientists.</p>
 <p>Our philosophy is “always have a schema” even when working with simple tabular data</p>
 <section id="conversion">
-<h2>Conversion<a class="headerlink" href="#conversion" title="Permalink to this headline"></a></h2>
+<h2>Conversion<a class="headerlink" href="#conversion" title="Permalink to this heading"></a></h2>
 <p>the <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> script can be used to convert between CSVs/TSVs and other formats like JSON/RDF. The same tooling for <a class="reference internal" href="validating-data.html"><span class="doc std std-doc">validating-data</span></a> operate in the same way.</p>
 <section id="conventions-for-working-with-tabular-data">
-<h3>Conventions for working with tabular data<a class="headerlink" href="#conventions-for-working-with-tabular-data" title="Permalink to this headline"></a></h3>
+<h3>Conventions for working with tabular data<a class="headerlink" href="#conventions-for-working-with-tabular-data" title="Permalink to this heading"></a></h3>
 <p>LinkML allows you to create schemas with complex nested data - these
 don’t necessarily have a simple unified mapping to
 tables/TSVs. However, you can still work with tabular representations
 if your schema has a certain “shape” and you provide sufficient hints.</p>
 </section>
 <section id="container-objects">
-<h3>Container objects<a class="headerlink" href="#container-objects" title="Permalink to this headline"></a></h3>
+<h3>Container objects<a class="headerlink" href="#container-objects" title="Permalink to this heading"></a></h3>
 <p>See <span class="xref myst">part 2 of the tutorial</span> for more on container objects.</p>
 <p>To serialize your data objects as TSVs, it’s assumed that you have a
 class in your schema that serves the role of <em>container</em>. It can be
 called whatever you like. You can also annotate this with
 <a class="reference external" href="https://w3id.org/linkml/tree_root">tree_root</a> set to true. This class will have a multivalued slot pointing at the list of things you want to serialize in the TSV. This slot is known as the <em>index slot</em></p>
 <p>For example, in the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema">PersonSchema</a> schema, the Container class has two possible index slots:</p>
-<p><a class="reference external" href="https://yuml.me/diagram/nofunky;dir:TB/class/%5BPerson%5D,%5BOrganization%5D,%5BOrganization%5D%3Corganizations%200..*-++%5BContainer%5D,%5BPerson%5D%3Cpersons%200..*-++%5BContainer%5D"><img alt="img" src="https://yuml.me/diagram/nofunky;dir:TB/class/%5BPerson%5D,%5BOrganization%5D,%5BOrganization%5D%3Corganizations%200..*-++%5BContainer%5D,%5BPerson%5D%3Cpersons%200..*-++%5BContainer%5D" /></a></p>
+<p><a class="reference external" href="https://yuml.me/diagram/nofunky%3Bdir:TB/class/%5BPerson%5D,%5BOrganization%5D,%5BOrganization%5D%3Corganizations%200..*-++%5BContainer%5D,%5BPerson%5D%3Cpersons%200..*-++%5BContainer%5D"><img alt="img" src="https://yuml.me/diagram/nofunky%3Bdir:TB/class/%5BPerson%5D,%5BOrganization%5D,%5BOrganization%5D%3Corganizations%200..*-++%5BContainer%5D,%5BPerson%5D%3Cpersons%200..*-++%5BContainer%5D" /></a></p>
 <ul class="simple">
 <li><p>persons: points at a list of Person objects</p></li>
 <li><p>organizations: points at a list of Organization objects</p></li>
@@ -145,7 +146,7 @@ arguments:</p>
 <p>Note that currently serializing the person objects won’t work, as the Person class is too nested to be serialized as TSV</p>
 </section>
 <section id="on-the-fly-denormalization">
-<h3>On the fly denormalization<a class="headerlink" href="#on-the-fly-denormalization" title="Permalink to this headline"></a></h3>
+<h3>On the fly denormalization<a class="headerlink" href="#on-the-fly-denormalization" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://github.com/cmungall/json-flattener/">json-flattener/</a> library is used to do on-the-fly denormalizations. For example:</p>
 <ul class="simple">
 <li><p>multivalued slots are serialized using a <code class="docutils literal notranslate"><span class="pre">|</span></code> separator</p></li>
@@ -154,7 +155,7 @@ arguments:</p>
 </section>
 </section>
 <section id="inference-of-schemas-from-tabular-data">
-<h2>Inference of schemas from tabular data<a class="headerlink" href="#inference-of-schemas-from-tabular-data" title="Permalink to this headline"></a></h2>
+<h2>Inference of schemas from tabular data<a class="headerlink" href="#inference-of-schemas-from-tabular-data" title="Permalink to this heading"></a></h2>
 <p>Use <code class="docutils literal notranslate"><span class="pre">tsvs2linkml</span></code> in the <a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">enrichment toolkit</a></p>
 </section>
 </section>

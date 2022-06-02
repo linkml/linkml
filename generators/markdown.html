@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -103,9 +104,9 @@
            <div itemprop="articleBody">
              
   <section id="markdown">
-<h1>Markdown<a class="headerlink" href="#markdown" title="Permalink to this headline"></a></h1>
+<h1>Markdown<a class="headerlink" href="#markdown" title="Permalink to this heading"></a></h1>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>Markdown is a simple format for authoring documentation. Static site
 generation frameworks such as mkdocs use markdown to simply the
 creation of websites.</p>
@@ -125,7 +126,7 @@ GitHub in minutes thanks to the markdown generator</p>
 document.</p>
 </section>
 <section id="use-with-mkdocs">
-<h2>Use with mkdocs<a class="headerlink" href="#use-with-mkdocs" title="Permalink to this headline"></a></h2>
+<h2>Use with mkdocs<a class="headerlink" href="#use-with-mkdocs" title="Permalink to this heading"></a></h2>
 <p>The markdown files can be ported across many frameworks. Currently,
 most projects that use linkml use <a class="reference external" href="https://www.mkdocs.org/">mkdocs</a>
 for site generation.</p>
@@ -146,12 +147,12 @@ minutes. To get started:</p>
 </div>
 </section>
 <section id="uml-class-diagrams">
-<h2>UML Class Diagrams<a class="headerlink" href="#uml-class-diagrams" title="Permalink to this headline"></a></h2>
+<h2>UML Class Diagrams<a class="headerlink" href="#uml-class-diagrams" title="Permalink to this heading"></a></h2>
 <p>The markdown generator makes use of the yUML generator to place a UML
 diagram of the class locality at the head of each document.</p>
 </section>
 <section id="alternatives">
-<h2>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this headline"></a></h2>
+<h2>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading"></a></h2>
 <p>A separate command is provided that uses a Jinja2 template based
 approach:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-docs -d docs personinfo.yaml
@@ -161,11 +162,11 @@ approach:</p>
 advantage is that it allows you to customize the templates used.</p>
 </section>
 <section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading"></a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h3>
 <section id="gen-markdown">
-<h4>gen-markdown<a class="headerlink" href="#gen-markdown" title="Permalink to this headline"></a></h4>
+<h4>gen-markdown<a class="headerlink" href="#gen-markdown" title="Permalink to this heading"></a></h4>
 <p>Generate markdown documentation of a LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-markdown <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
@@ -303,10 +304,10 @@ advantage is that it allows you to customize the templates used.</p>
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.markdowngen.MarkdownGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.markdowngen.</span></span><span class="sig-name descname"><span class="pre">MarkdownGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noyuml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_on_exist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/markdowngen.html#MarkdownGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.markdowngen.</span></span><span class="sig-name descname"><span class="pre">MarkdownGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noyuml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_on_exist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/markdowngen.html#MarkdownGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.markdowngen.MarkdownGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Generates markdown documentation for a LinkML schema</p>
 <p>Each schema element (class, slot, type, enum) is translated into its own markdown file;
 additionally, an index.md is generated that links everything together.</p>

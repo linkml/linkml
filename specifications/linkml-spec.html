@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -114,14 +115,14 @@
            <div itemprop="articleBody">
              
   <section id="linkml-specification">
-<h1>LinkML specification<a class="headerlink" href="#linkml-specification" title="Permalink to this headline"></a></h1>
+<h1>LinkML specification<a class="headerlink" href="#linkml-specification" title="Permalink to this heading"></a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
 <p>This document specifies the LinkML language. LinkML is a modeling language that allows the construction of a <em>model</em> (aka schema) which specifies a set of constraints over a object <em>graph</em>.</p>
 <p>A LinkML model is typically expressed as a YAML structure, and instance trees are also typically specified as JSON or YAML structures. However, the specification is independent of any particular serialization.</p>
 </section>
 <section id="linkml-models">
-<h2>LinkML Models<a class="headerlink" href="#linkml-models" title="Permalink to this headline"></a></h2>
+<h2>LinkML Models<a class="headerlink" href="#linkml-models" title="Permalink to this heading"></a></h2>
 <p>A LinkML <strong>model</strong> <code class="docutils literal notranslate"><span class="pre">M</span></code> consists of the following model elements/definitions:</p>
 <ul class="simple">
 <li><p>classes <code class="docutils literal notranslate"><span class="pre">MC</span> <span class="pre">=</span> <span class="pre">{c1,...}</span></code>, which group <em>objects</em></p></li>
@@ -157,7 +158,7 @@
 </ul>
 </section>
 <section id="linkml-objects">
-<h2>LinkML Objects<a class="headerlink" href="#linkml-objects" title="Permalink to this headline"></a></h2>
+<h2>LinkML Objects<a class="headerlink" href="#linkml-objects" title="Permalink to this heading"></a></h2>
 <p>A LinkML <strong>object</strong> <code class="docutils literal notranslate"><span class="pre">o</span></code> ranges over a <em>Domain of Discourse</em> <code class="docutils literal notranslate"><span class="pre">O</span></code>, i.e. <code class="docutils literal notranslate"><span class="pre">o</span> <span class="pre">∈</span> <span class="pre">O</span></code>. Each object <em>directly instantiates</em> exactly one of the following:</p>
 <ul class="simple">
 <li><p>A class in <code class="docutils literal notranslate"><span class="pre">MC</span></code></p></li>
@@ -196,7 +197,7 @@
 <p>A <em>resolved object graph</em> is an object graph in which every (resolvable) instance of a reference in <code class="docutils literal notranslate"><span class="pre">MR</span></code> is replaced by the corresponding instance of a class in <code class="docutils literal notranslate"><span class="pre">MC</span></code>. For example, in the example above, the node for <em>Acme</em> and <em>Ref(Acme)</em> would be merged. Unlike the native object graph this need not form a tree structure.</p>
 </section>
 <section id="linkml-metamodel">
-<h2>LinkML Metamodel<a class="headerlink" href="#linkml-metamodel" title="Permalink to this headline"></a></h2>
+<h2>LinkML Metamodel<a class="headerlink" href="#linkml-metamodel" title="Permalink to this heading"></a></h2>
 <p>Every LinkML Model is itself an object, instantiating the <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">SchemaDefinition</a> class in the LinkML <em>metamodel</em>. The object tree rooted in the model is formed of objects that instantiate metamodel classes.</p>
 <p>Each of these model objects, including the model itself, can have a set of slot-value assignments, where the slots are drawn from the LinkML metamodel.</p>
 <p>The complete LinkML metamodel is spelled out in the metamodel documentation; see <a class="reference external" href="https://w3id.org/linkml/SchemaDefinition">SchemaDefinition</a></p>
@@ -231,11 +232,11 @@
 </table>
 </section>
 <section id="induced-models">
-<h2>Induced Models<a class="headerlink" href="#induced-models" title="Permalink to this headline"></a></h2>
+<h2>Induced Models<a class="headerlink" href="#induced-models" title="Permalink to this heading"></a></h2>
 <p>Instance graphs are validated against <em>induced models</em>. An induced model is derived from an <em>asserted model</em>. We describe this process in terms of copy operations but it is up to individual implementations how to handle this - the induced model could be a virtual view over the asserted model.</p>
 <p>First the asserted model is copied to create the induced model seed, then the following rules are applied. The rules are applied recursively, in any order. Then post-processing steps are applied.</p>
 <section id="rule-model-import-copying">
-<h3>Rule: Model Import Copying<a class="headerlink" href="#rule-model-import-copying" title="Permalink to this headline"></a></h3>
+<h3>Rule: Model Import Copying<a class="headerlink" href="#rule-model-import-copying" title="Permalink to this heading"></a></h3>
 <p>Each model imports zero to many imports, indicated by the <a class="reference external" href="https://w3id.org/linkml/imports">imports</a> metaslot on the model.</p>
 <p>When calculating the induced model, all elements from the imported model are copied to the importing model. this is applied recursively, such that if <code class="docutils literal notranslate"><span class="pre">m1</span></code> imports <code class="docutils literal notranslate"><span class="pre">m2</span></code>, and <code class="docutils literal notranslate"><span class="pre">m2</span></code> imports <code class="docutils literal notranslate"><span class="pre">m3</span></code>, all elements of <code class="docutils literal notranslate"><span class="pre">m3</span></code> will be copied to <code class="docutils literal notranslate"><span class="pre">m1</span></code>.</p>
 <p><strong>Note</strong>: If two or more models import the same target (e.g. <code class="docutils literal notranslate"><span class="pre">m1</span></code> imports <code class="docutils literal notranslate"><span class="pre">m2</span></code> and <code class="docutils literal notranslate"><span class="pre">m3</span></code> and <code class="docutils literal notranslate"><span class="pre">m2</span></code> imports <code class="docutils literal notranslate"><span class="pre">m3</span></code>), <code class="docutils literal notranslate"><span class="pre">m3</span></code> will be only be resolved once.</p>
@@ -243,14 +244,14 @@
 have the same <code class="docutils literal notranslate"><span class="pre">id</span></code>.  If <code class="docutils literal notranslate"><span class="pre">m2</span></code> and <code class="docutils literal notranslate"><span class="pre">m3</span></code> both have <code class="docutils literal notranslate"><span class="pre">id:</span> <span class="pre">http://models-r.us/modelA</span></code>, it is assumed that, despite the different location, they represent the same thing.  LinkML <em>will</em> check the model <code class="docutils literal notranslate"><span class="pre">version</span></code> field and will raise an error if <code class="docutils literal notranslate"><span class="pre">m2</span></code> has <code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">1.0.0</span></code> and <code class="docutils literal notranslate"><span class="pre">m3</span></code> has <code class="docutils literal notranslate"><span class="pre">version:</span> <span class="pre">1.0.1</span></code></p>
 </section>
 <section id="rule-induced-class-slots">
-<h3>Rule: Induced Class-Slots<a class="headerlink" href="#rule-induced-class-slots" title="Permalink to this headline"></a></h3>
+<h3>Rule: Induced Class-Slots<a class="headerlink" href="#rule-induced-class-slots" title="Permalink to this heading"></a></h3>
 <p>Each class <code class="docutils literal notranslate"><span class="pre">c</span></code> can have zero to many slots declared using the <code class="docutils literal notranslate"><span class="pre">slots</span></code> metaslot.</p>
 <p>If a slot <code class="docutils literal notranslate"><span class="pre">s</span></code> is used in a class <code class="docutils literal notranslate"><span class="pre">c</span></code> via <code class="docutils literal notranslate"><span class="pre">slots</span></code> declarations on that class, then an induced slot <code class="docutils literal notranslate"><span class="pre">c!s</span></code> is created.</p>
 <p>When an induced slot <code class="docutils literal notranslate"><span class="pre">c!s</span></code> is created, then all metaslots from <code class="docutils literal notranslate"><span class="pre">c</span></code> are copied to <code class="docutils literal notranslate"><span class="pre">c!s</span></code>.</p>
 <p>A class <code class="docutils literal notranslate"><span class="pre">c</span></code> can declare any number of <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a>s, which will allow assignment of metaslots in <code class="docutils literal notranslate"><span class="pre">c!s</span></code>. All metaslots from the slot_usage object is copied to the induced slot.</p>
 </section>
 <section id="rule-inheritance">
-<h3>Rule: Inheritance<a class="headerlink" href="#rule-inheritance" title="Permalink to this headline"></a></h3>
+<h3>Rule: Inheritance<a class="headerlink" href="#rule-inheritance" title="Permalink to this heading"></a></h3>
 <p>Each class has zero or one <em>is_a</em> parent, and zero to many <em>mixin</em> parents.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Parents(c)</span> <span class="pre">=</span> <span class="pre">{</span> <span class="pre">c.is_a</span> <span class="pre">}</span> <span class="pre">∪</span> <span class="pre">c.mixins</span> </code></p>
 <p>All metaslots of the parent are copied to the child, if the metaslot is declared inheritable.</p>
@@ -311,7 +312,7 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </section>
 </section>
 <section id="structural-conformance-of-object-trees">
-<h2>Structural conformance of object trees<a class="headerlink" href="#structural-conformance-of-object-trees" title="Permalink to this headline"></a></h2>
+<h2>Structural conformance of object trees<a class="headerlink" href="#structural-conformance-of-object-trees" title="Permalink to this heading"></a></h2>
 <p>Any object <code class="docutils literal notranslate"><span class="pre">o</span></code> can be evaluated for structural conformance to an induced model <code class="docutils literal notranslate"><span class="pre">M</span></code></p>
 <ul class="simple">
 <li><p>For each <code class="docutils literal notranslate"><span class="pre">o</span> <span class="pre">∈</span> <span class="pre">O</span></code>, where <code class="docutils literal notranslate"><span class="pre">o</span></code> directly instantiates <code class="docutils literal notranslate"><span class="pre">C</span></code>:</p>
@@ -326,21 +327,21 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </li>
 </ul>
 <section id="multivalued-check">
-<h3>Multivalued check<a class="headerlink" href="#multivalued-check" title="Permalink to this headline"></a></h3>
+<h3>Multivalued check<a class="headerlink" href="#multivalued-check" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>if <code class="docutils literal notranslate"><span class="pre">c!s.multivalued</span></code> is True, then <code class="docutils literal notranslate"><span class="pre">V</span></code> must be a list</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">c!s.multivalued</span></code> is False, then <code class="docutils literal notranslate"><span class="pre">V</span></code> must be a single value</p></li>
 </ul>
 </section>
 <section id="minimum-and-maximum-values-checks">
-<h3>Minimum and Maximum Values checks<a class="headerlink" href="#minimum-and-maximum-values-checks" title="Permalink to this headline"></a></h3>
+<h3>Minimum and Maximum Values checks<a class="headerlink" href="#minimum-and-maximum-values-checks" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>if <code class="docutils literal notranslate"><span class="pre">c!s.maximum_value</span></code> is assigned, then <code class="docutils literal notranslate"><span class="pre">V</span></code> must be a singular integer and must be less that or equal to the maximum value</p></li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">c!s.minimum_value</span></code> is assigned, then <code class="docutils literal notranslate"><span class="pre">V</span></code> must be a singular integer and must be greater that or equal to the minimum value</p></li>
 </ul>
 </section>
 <section id="range-checks">
-<h3>Range checks<a class="headerlink" href="#range-checks" title="Permalink to this headline"></a></h3>
+<h3>Range checks<a class="headerlink" href="#range-checks" title="Permalink to this heading"></a></h3>
 <p>Depending on the range of <code class="docutils literal notranslate"><span class="pre">c!s</span></code> a particular check is applied on each <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">∈</span> <span class="pre">V</span></code> (if V is multivalued) or <code class="docutils literal notranslate"><span class="pre">v=V</span></code></p>
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -361,7 +362,7 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </tbody>
 </table>
 <section id="range-class-instantiation-check">
-<h4>Range class instantiation check<a class="headerlink" href="#range-class-instantiation-check" title="Permalink to this headline"></a></h4>
+<h4>Range class instantiation check<a class="headerlink" href="#range-class-instantiation-check" title="Permalink to this heading"></a></h4>
 <p>if <code class="docutils literal notranslate"><span class="pre">s.range</span> <span class="pre">∈</span> <span class="pre">MC</span></code>: <code class="docutils literal notranslate"><span class="pre">v</span></code> must be either:</p>
 <ul class="simple">
 <li><p>an object that instantiates a class <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">∈</span> <span class="pre">DESC*(s.range)</span></code></p></li>
@@ -380,22 +381,22 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </ul>
 </section>
 <section id="range-type-check">
-<h4>Range type check<a class="headerlink" href="#range-type-check" title="Permalink to this headline"></a></h4>
+<h4>Range type check<a class="headerlink" href="#range-type-check" title="Permalink to this heading"></a></h4>
 <p>if <code class="docutils literal notranslate"><span class="pre">s.range</span> <span class="pre">∈</span> <span class="pre">MT</span></code>: <code class="docutils literal notranslate"><span class="pre">v</span></code> must be a literal of type <code class="docutils literal notranslate"><span class="pre">MT</span></code></p>
 </section>
 <section id="range-enum-check">
-<h4>Range enum check<a class="headerlink" href="#range-enum-check" title="Permalink to this headline"></a></h4>
+<h4>Range enum check<a class="headerlink" href="#range-enum-check" title="Permalink to this heading"></a></h4>
 <p>if <code class="docutils literal notranslate"><span class="pre">s.range</span> <span class="pre">∈</span> <span class="pre">MO</span></code>: <code class="docutils literal notranslate"><span class="pre">v</span></code> must be a member of the permissible value in <code class="docutils literal notranslate"><span class="pre">MO</span></code></p>
 <p>TODO: other enum types</p>
 </section>
 </section>
 <section id="abstract-classes-and-slots">
-<h3>abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this headline"></a></h3>
+<h3>abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this heading"></a></h3>
 <p>a class instance SHOULD not instantiate a class that is declared abstract.</p>
 <p>an assignment s,V SHOULD not have s declared abstract.</p>
 </section>
 <section id="required-value-checks">
-<h3>Required value checks<a class="headerlink" href="#required-value-checks" title="Permalink to this headline"></a></h3>
+<h3>Required value checks<a class="headerlink" href="#required-value-checks" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>For each <code class="docutils literal notranslate"><span class="pre">o</span> <span class="pre">∈</span> <span class="pre">O</span></code>, where <code class="docutils literal notranslate"><span class="pre">o</span></code> directly instantiates <code class="docutils literal notranslate"><span class="pre">C</span></code>:</p>
 <ul>
@@ -410,7 +411,7 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </ul>
 </section>
 <section id="constraints-on-instantiation-of-classes">
-<h3>Constraints on instantiation of classes<a class="headerlink" href="#constraints-on-instantiation-of-classes" title="Permalink to this headline"></a></h3>
+<h3>Constraints on instantiation of classes<a class="headerlink" href="#constraints-on-instantiation-of-classes" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>For each <code class="docutils literal notranslate"><span class="pre">o</span> <span class="pre">∈</span> <span class="pre">O</span></code>, where <code class="docutils literal notranslate"><span class="pre">o</span></code> directly instantiates <code class="docutils literal notranslate"><span class="pre">C</span></code>:</p>
 <ul>
@@ -423,9 +424,9 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </section>
 </section>
 <section id="constraints-on-models">
-<h2>constraints on models<a class="headerlink" href="#constraints-on-models" title="Permalink to this headline"></a></h2>
+<h2>constraints on models<a class="headerlink" href="#constraints-on-models" title="Permalink to this heading"></a></h2>
 <section id="stratification-of-isa-and-mixin-hierarchies">
-<h3>stratification of isa and mixin hierarchies<a class="headerlink" href="#stratification-of-isa-and-mixin-hierarchies" title="Permalink to this headline"></a></h3>
+<h3>stratification of isa and mixin hierarchies<a class="headerlink" href="#stratification-of-isa-and-mixin-hierarchies" title="Permalink to this heading"></a></h3>
 <p>is_a and mixin hierarchies SHOULD be stratified:</p>
 <ul class="simple">
 <li><p>if <code class="docutils literal notranslate"><span class="pre">c.mixin</span> <span class="pre">=</span> <span class="pre">True</span></code> then all parents p of c SHOULD have <code class="docutils literal notranslate"><span class="pre">p.mixin</span> <span class="pre">=</span> <span class="pre">True</span></code></p></li>
@@ -435,7 +436,7 @@ have the same <code class="docutils literal notranslate"><span class="pre">id</s
 </section>
 </section>
 <section id="glossary-of-terms-information">
-<h2>Glossary of terms (Information)<a class="headerlink" href="#glossary-of-terms-information" title="Permalink to this headline"></a></h2>
+<h2>Glossary of terms (Information)<a class="headerlink" href="#glossary-of-terms-information" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>assignment</p></li>
 <li><p>class</p></li>

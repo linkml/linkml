@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -97,15 +98,15 @@
            <div itemprop="articleBody">
              
   <section id="working-with-rdf-and-linkml">
-<h1>Working with RDF and LinkML<a class="headerlink" href="#working-with-rdf-and-linkml" title="Permalink to this headline"></a></h1>
+<h1>Working with RDF and LinkML<a class="headerlink" href="#working-with-rdf-and-linkml" title="Permalink to this heading"></a></h1>
 <p>LinkML can be used to structure data housed as RDF triples, and to convert data between RDF and other forms.</p>
 <p>Our philosophy is to allow reuse of semantic web and linked data tooling without forcing a commitment to the full RDF stack, which many developers find <a class="reference external" href="https://us2ts.org/2019/posts/program-session-x.html">daunting or off-putting</a></p>
 <section id="converting-and-validating-rdf">
-<h2>Converting and validating RDF<a class="headerlink" href="#converting-and-validating-rdf" title="Permalink to this headline"></a></h2>
+<h2>Converting and validating RDF<a class="headerlink" href="#converting-and-validating-rdf" title="Permalink to this heading"></a></h2>
 <p>Both <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> and <code class="docutils literal notranslate"><span class="pre">linkml-validate</span></code> (see previous section) will work with RDF data. Any RDF serialization format that is supported by RDFLib can be used.</p>
 </section>
 <section id="json-ld">
-<h2>JSON-LD<a class="headerlink" href="#json-ld" title="Permalink to this headline"></a></h2>
+<h2>JSON-LD<a class="headerlink" href="#json-ld" title="Permalink to this heading"></a></h2>
 <p>JSON-LD contexts can be generated from any LinkML schema. These are
 compatible with the JSON objects that conform to the same schema. This
 allows model developers to control both the shape of the JSON and how
@@ -120,7 +121,7 @@ disconnected.</p>
 <p>These should be addressed in future LinkML releases</p>
 </section>
 <section id="shex-and-shacl">
-<h2>ShEx and SHACL<a class="headerlink" href="#shex-and-shacl" title="Permalink to this headline"></a></h2>
+<h2>ShEx and SHACL<a class="headerlink" href="#shex-and-shacl" title="Permalink to this heading"></a></h2>
 <p>A ShEx or SHACL shapefile can be generated from any LinkML schema</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://linkml.io/linkml/generators/shex.html">ShEx generator</a></p></li>
@@ -128,7 +129,7 @@ disconnected.</p>
 </ul>
 </section>
 <section id="owl">
-<h2>OWL<a class="headerlink" href="#owl" title="Permalink to this headline"></a></h2>
+<h2>OWL<a class="headerlink" href="#owl" title="Permalink to this heading"></a></h2>
 <p>OWL can be generated from an LinkML schema. Note that OWL has open
 world-semantics which makes it less suitable for data structure
 validation. However, generation of OWL can be useful for leveraging OWL tooling.</p>

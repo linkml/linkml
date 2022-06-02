@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -104,7 +105,7 @@
            <div itemprop="articleBody">
              
   <section id="part-1-creating-your-first-linkml-schema">
-<h1>Part 1: Creating your first LinkML schema<a class="headerlink" href="#part-1-creating-your-first-linkml-schema" title="Permalink to this headline"></a></h1>
+<h1>Part 1: Creating your first LinkML schema<a class="headerlink" href="#part-1-creating-your-first-linkml-schema" title="Permalink to this heading"></a></h1>
 <p>We assume that you already have LinkML <a class="reference internal" href="install.html"><span class="doc std std-doc">installed</span></a></p>
 <p>For the purposes of this tutorial, the simplest setup is to use a virtual environment, and then install linkml:</p>
 <!-- NO_EXECUTE -->
@@ -121,7 +122,7 @@ pip install linkml
 </div>
 <p>As always, you can consult the <a class="reference internal" href="../faq/index.html"><span class="doc std std-doc">FAQ</span></a> if you have issues.</p>
 <section id="your-first-schema">
-<h2>Your first schema<a class="headerlink" href="#your-first-schema" title="Permalink to this headline"></a></h2>
+<h2>Your first schema<a class="headerlink" href="#your-first-schema" title="Permalink to this heading"></a></h2>
 <p>Our first schema consists of a single <em>class</em> <code class="docutils literal notranslate"><span class="pre">Person</span></code>, with a number of <em>slots</em>:</p>
 <p>First create a file</p>
 <p>personinfo.yaml:</p>
@@ -146,7 +147,7 @@ pip install linkml
 <p>(note that all files are available in the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/tutorial">examples/tutorial</a> folder of this repository)</p>
 </section>
 <section id="converting-to-json-schema">
-<h2>Converting to JSON-Schema<a class="headerlink" href="#converting-to-json-schema" title="Permalink to this headline"></a></h2>
+<h2>Converting to JSON-Schema<a class="headerlink" href="#converting-to-json-schema" title="Permalink to this heading"></a></h2>
 <p>Now run the following command on the file you just created:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-schema personinfo.yaml 
 </pre></div>
@@ -194,7 +195,7 @@ pip install linkml
 <p>Don’t worry if you don’t know much about JSON-Schema. This is just an illustration that LinkML can be used in combination with a number of frameworks.</p>
 </section>
 <section id="creating-and-validating-data">
-<h2>Creating and validating data<a class="headerlink" href="#creating-and-validating-data" title="Permalink to this headline"></a></h2>
+<h2>Creating and validating data<a class="headerlink" href="#creating-and-validating-data" title="Permalink to this heading"></a></h2>
 <p>Let’s create an example data file. The file will contain an <em>instance</em> of the class we defined in our <code class="docutils literal notranslate"><span class="pre">personinfo.yaml</span></code> schema:</p>
 <p>data.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span><span class="w"></span>
@@ -224,7 +225,7 @@ pip install linkml
 <p>This should report an error to the effect that <code class="docutils literal notranslate"><span class="pre">made_up_field</span></code> is not known.</p>
 </section>
 <section id="working-with-json">
-<h2>Working with JSON<a class="headerlink" href="#working-with-json" title="Permalink to this headline"></a></h2>
+<h2>Working with JSON<a class="headerlink" href="#working-with-json" title="Permalink to this heading"></a></h2>
 <p>One of the advantages of LinkML is the same datamodel can be used for multiple expressions of the same data, for example:</p>
 <ul class="simple">
 <li><p>YAML/JSON</p></li>
@@ -248,7 +249,7 @@ pip install linkml
 </div>
 </section>
 <section id="converting-to-rdf">
-<h2>Converting to RDF<a class="headerlink" href="#converting-to-rdf" title="Permalink to this headline"></a></h2>
+<h2>Converting to RDF<a class="headerlink" href="#converting-to-rdf" title="Permalink to this heading"></a></h2>
 <p>You can use the linkml convert tool to convert your data to other formats, including RDF:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert -s personinfo.yaml data.yaml -o data.ttl
 </pre></div>
@@ -271,15 +272,15 @@ is that we are not reusing standard URIs for our properties and
 classes. Don’t worry! We will get to this later.</p>
 </section>
 <section id="exercises">
-<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h2>
-<ol class="arabic simple">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading"></a></h2>
+<ol class="simple">
 <li><p>Extend the example schema to include fields for <code class="docutils literal notranslate"><span class="pre">occupation</span></code> and <code class="docutils literal notranslate"><span class="pre">employed_by</span></code></p></li>
 <li><p>Create a test data instance to indicate Clark Kent has an occupation of reporter and is employed by the Daily Planet</p></li>
 <li><p>Validate the data</p></li>
 </ol>
 </section>
 <section id="collections-of-data">
-<h2>Collections of data<a class="headerlink" href="#collections-of-data" title="Permalink to this headline"></a></h2>
+<h2>Collections of data<a class="headerlink" href="#collections-of-data" title="Permalink to this heading"></a></h2>
 <p>Our toy example so far has a single person instance. Next we’ll see how to exchange lists of records.</p>
 </section>
 </section>

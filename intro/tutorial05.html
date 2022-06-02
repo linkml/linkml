@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -102,14 +103,14 @@
            <div itemprop="articleBody">
              
   <section id="part-5-using-python-dataclasses">
-<h1>Part 5: Using Python dataclasses<a class="headerlink" href="#part-5-using-python-dataclasses" title="Permalink to this headline"></a></h1>
+<h1>Part 5: Using Python dataclasses<a class="headerlink" href="#part-5-using-python-dataclasses" title="Permalink to this heading"></a></h1>
 <p>If you are not a developer, you can skip this section.</p>
 <p>If you are a developer and favor a language other than python, you may
 still be interested in this section. The use of generated code is an
 optional but convenient part of LinkML. We are actively adding support
 for other languages.</p>
 <section id="generating-a-python-datamodel">
-<h2>Generating a Python datamodel<a class="headerlink" href="#generating-a-python-datamodel" title="Permalink to this headline"></a></h2>
+<h2>Generating a Python datamodel<a class="headerlink" href="#generating-a-python-datamodel" title="Permalink to this heading"></a></h2>
 <p>For illustration, we will take the schema we developed in the last section:</p>
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
@@ -190,7 +191,7 @@ for other languages.</p>
 <p>This is not very impressive in itself, but as your models get larger it can be very handy to have a python data model</p>
 </section>
 <section id="linkml-runtime">
-<h2>LinkML runtime<a class="headerlink" href="#linkml-runtime" title="Permalink to this headline"></a></h2>
+<h2>LinkML runtime<a class="headerlink" href="#linkml-runtime" title="Permalink to this heading"></a></h2>
 <p>The LinkML runtime is a separate python library that provides methods needed by your generated datamodel classes, and utilities for converting your python objects into YAML, JSON, RDF, and TSV:</p>
 <p>test_runtime.py:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
@@ -218,7 +219,7 @@ for other languages.</p>
 </div>
 </section>
 <section id="alternatives">
-<h2>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this headline"></a></h2>
+<h2>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>LinkML also includes a more lightweight Python object model maker for <a class="reference external" href="https://linkml.io/linkml/generators/pydantic.html">generating Pydantic datamodels</a></p></li>
 <li><p>We also provide a generator for <a class="reference external" href="https://linkml.io/linkml/generators/sqlalchemy.html">creating SQL Alchemy models</a></p></li>
@@ -232,7 +233,7 @@ for other languages.</p>
 </ul>
 </section>
 <section id="further-reading">
-<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline"></a></h2>
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a></p>
 <ul>
@@ -248,7 +249,7 @@ for other languages.</p>
 </ul>
 </section>
 <section id="next">
-<h2>Next<a class="headerlink" href="#next" title="Permalink to this headline"></a></h2>
+<h2>Next<a class="headerlink" href="#next" title="Permalink to this heading"></a></h2>
 <p>Next we will look at the <em>enumerations</em> feature of LinkML</p>
 </section>
 </section>

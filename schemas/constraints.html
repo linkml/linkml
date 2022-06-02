@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -102,15 +103,15 @@
            <div itemprop="articleBody">
              
   <section id="adding-constraints-and-rules">
-<h1>Adding constraints and rules<a class="headerlink" href="#adding-constraints-and-rules" title="Permalink to this headline"></a></h1>
+<h1>Adding constraints and rules<a class="headerlink" href="#adding-constraints-and-rules" title="Permalink to this heading"></a></h1>
 <p>In addition to the basic <a class="reference internal" href="slots.html"><span class="doc std std-doc">cardinality</span></a> constraints for slots, additional constraints can be specified</p>
 <section id="unique-key">
-<h2>Unique Key<a class="headerlink" href="#unique-key" title="Permalink to this headline"></a></h2>
+<h2>Unique Key<a class="headerlink" href="#unique-key" title="Permalink to this heading"></a></h2>
 <p>A class can declare <a class="reference external" href="https://w3id.org/linkml/unique_keys">unique_keys</a>, a set of slots that are unique for members of that class.</p>
 <p><a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>s are special cases of unique keys.</p>
 </section>
 <section id="patterns">
-<h2>Patterns<a class="headerlink" href="#patterns" title="Permalink to this headline"></a></h2>
+<h2>Patterns<a class="headerlink" href="#patterns" title="Permalink to this heading"></a></h2>
 <p>The value of a slot can be constrained to conform to a particular string pattern using the <a class="reference external" href="https://w3id.org/linkml/pattern">pattern</a> metaslot</p>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
@@ -120,12 +121,12 @@
 </div>
 </section>
 <section id="string-serialization">
-<h2>String serialization<a class="headerlink" href="#string-serialization" title="Permalink to this headline"></a></h2>
+<h2>String serialization<a class="headerlink" href="#string-serialization" title="Permalink to this heading"></a></h2>
 <p>A rule for generating the string value of a slot can be specified as a <a class="reference external" href="https://w3id.org/linkml/string_serializationpattern">string_serializationpattern</a></p>
 <p>Note: this may not yet be implemented in all frameworks</p>
 </section>
 <section id="minimum-and-maximum-values">
-<h2>Minimum and Maximum values<a class="headerlink" href="#minimum-and-maximum-values" title="Permalink to this headline"></a></h2>
+<h2>Minimum and Maximum values<a class="headerlink" href="#minimum-and-maximum-values" title="Permalink to this heading"></a></h2>
 <p>Any numeric value can have minimum and maximum values specified</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://w3id.org/linkml/minimum_value">minimum_value</a></p></li>

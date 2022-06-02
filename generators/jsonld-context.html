@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -104,7 +105,7 @@
            <div itemprop="articleBody">
              
   <section id="json-ld-contexts">
-<h1>JSON-LD Contexts<a class="headerlink" href="#json-ld-contexts" title="Permalink to this headline"></a></h1>
+<h1>JSON-LD Contexts<a class="headerlink" href="#json-ld-contexts" title="Permalink to this heading"></a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The JSON-LD context generator does not yet include <code class="docutils literal notranslate"><span class="pre">&#64;embed</span></code>
@@ -116,7 +117,7 @@ directives necessary for conversion <em>from</em> RDF.</p>
 directives except at the top level.</p>
 </div>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://www.w3.org/TR/json-ld/#the-context">JSON-LD context</a>
 provides mapping from JSON to RDF.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context personinfo.yaml &gt; personinfo.context.jsonld
@@ -130,7 +131,7 @@ declarations and
 converted to RDF using this context.</p>
 </section>
 <section id="treatment-of-obo-prefixes">
-<h2>Treatment of OBO prefixes<a class="headerlink" href="#treatment-of-obo-prefixes" title="Permalink to this headline"></a></h2>
+<h2>Treatment of OBO prefixes<a class="headerlink" href="#treatment-of-obo-prefixes" title="Permalink to this heading"></a></h2>
 <p>All OBO ontologies use prefixes that end in underscores (for example
 <code class="docutils literal notranslate"><span class="pre">http://purl.obolibrary.org/obo/PATO_</span></code>). Note that the JSON-LD 1.1
 spec doesn’t allow trailing underscores on simple “flat” prefix maps,
@@ -161,11 +162,11 @@ to gen-prefix-map:</p>
 </div>
 </section>
 <section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading"></a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h3>
 <section id="gen-jsonld-context">
-<h4>gen-jsonld-context<a class="headerlink" href="#gen-jsonld-context" title="Permalink to this headline"></a></h4>
+<h4>gen-jsonld-context<a class="headerlink" href="#gen-jsonld-context" title="Permalink to this heading"></a></h4>
 <p>Generate jsonld &#64;context definition from LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
@@ -288,10 +289,10 @@ to gen-prefix-map:</p>
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.jsonldcontextgen.ContextGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.jsonldcontextgen.</span></span><span class="sig-name descname"><span class="pre">ContextGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonldcontextgen.ContextGenerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.jsonldcontextgen.</span></span><span class="sig-name descname"><span class="pre">ContextGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/jsonldcontextgen.html#ContextGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.jsonldcontextgen.ContextGenerator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.jsonldcontextgen.ContextGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#linkml.generators.jsonldcontextgen.ContextGenerator.serialize" title="Permalink to this definition"></a></dt>

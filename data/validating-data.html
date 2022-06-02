@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -97,7 +98,7 @@
            <div itemprop="articleBody">
              
   <section id="data-validation">
-<h1>Data Validation<a class="headerlink" href="#data-validation" title="Permalink to this headline"></a></h1>
+<h1>Data Validation<a class="headerlink" href="#data-validation" title="Permalink to this heading"></a></h1>
 <p>LinkML is designed to allow for a variety of strategies for data
 validation. The overall philosophy is to provide maximum expressivity
 in the language to allow model designers to state all constraints in a
@@ -112,7 +113,7 @@ allow the user to balance concerns such as expressivity vs efficiency.</p>
 </ul>
 <p>However, others will be supported in future.</p>
 <section id="validation-of-json-documents">
-<h2>Validation of JSON documents<a class="headerlink" href="#validation-of-json-documents" title="Permalink to this headline"></a></h2>
+<h2>Validation of JSON documents<a class="headerlink" href="#validation-of-json-documents" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> command will automatically perform data validation.</p>
 <p>Currently it performs two level validation:</p>
 <ul class="simple">
@@ -122,7 +123,7 @@ allow the user to balance concerns such as expressivity vs efficiency.</p>
 <p>Note that you can easily generate JSON-Schema and use your validator of choice, see <a class="reference internal" href="../generators/json-schema.html"><span class="doc std std-doc">JSON Schema Generation</span></a></p>
 </section>
 <section id="validation-of-rdf-triplestores-using-generated-sparql">
-<h2>Validation of RDF triplestores using generated SPARQL<a class="headerlink" href="#validation-of-rdf-triplestores-using-generated-sparql" title="Permalink to this headline"></a></h2>
+<h2>Validation of RDF triplestores using generated SPARQL<a class="headerlink" href="#validation-of-rdf-triplestores-using-generated-sparql" title="Permalink to this heading"></a></h2>
 <p>The LinkML framework can also be used to validate RDF, either in a file, or a triplestore. There are two steps:</p>
 <ul class="simple">
 <li><p>generation of SPARQL constraint-style queries (see <a class="reference internal" href="../generators/sparql.html"><span class="doc std std-doc">sparqlgen</span></a> )</p></li>
@@ -159,9 +160,9 @@ Options:
 </div>
 </section>
 <section id="validation-via-shape-languages">
-<h2>Validation via shape languages<a class="headerlink" href="#validation-via-shape-languages" title="Permalink to this headline"></a></h2>
+<h2>Validation via shape languages<a class="headerlink" href="#validation-via-shape-languages" title="Permalink to this heading"></a></h2>
 <p>Currently the linkml framework does not provide builtin support for validating using a shape language, but the following strategy can be used:</p>
-<ol class="arabic simple">
+<ol class="simple">
 <li><p>Convert data to RDF using <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code></p></li>
 <li><p>Convert schema to a shape language using <code class="docutils literal notranslate"><span class="pre">gen-shex</span></code> or <code class="docutils literal notranslate"><span class="pre">gen-shacl</span></code></p></li>
 <li><p>Use a ShEx or SHACL validator</p></li>
@@ -169,7 +170,7 @@ Options:
 <p>See next section for more details.</p>
 </section>
 <section id="future-plans">
-<h2>Future plans<a class="headerlink" href="#future-plans" title="Permalink to this headline"></a></h2>
+<h2>Future plans<a class="headerlink" href="#future-plans" title="Permalink to this heading"></a></h2>
 <p>Future versions of LinkML will employ a powerful constraint and inference language.</p>
 <p>One of the use cases here is being able to specify that the <code class="docutils literal notranslate"><span class="pre">length</span></code> field is equal to <code class="docutils literal notranslate"><span class="pre">end</span> <span class="pre">-</span> <span class="pre">start</span></code>. This declarative knowledge can then be used to either (1) infer the value of <code class="docutils literal notranslate"><span class="pre">length</span></code> if unspecified (2) infer either <code class="docutils literal notranslate"><span class="pre">start</span></code> or <code class="docutils literal notranslate"><span class="pre">end</span></code> if only one of these is specified alongside <code class="docutils literal notranslate"><span class="pre">length</span></code> (3) check consistency if all three are specified.</p>
 <p>These constraints can then be executed over large databases via a variety of strategies including:</p>

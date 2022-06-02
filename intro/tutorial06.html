@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -100,7 +101,7 @@
            <div itemprop="articleBody">
              
   <section id="part-6-enumerations">
-<h1>Part 6: Enumerations<a class="headerlink" href="#part-6-enumerations" title="Permalink to this headline"></a></h1>
+<h1>Part 6: Enumerations<a class="headerlink" href="#part-6-enumerations" title="Permalink to this heading"></a></h1>
 <p>Now we will extend our schema with a new slot <code class="docutils literal notranslate"><span class="pre">status</span></code> which records the vital status of a person, i.e whether they are living or dead.</p>
 <p>We could do this by making the range of <code class="docutils literal notranslate"><span class="pre">status</span></code> a string, and
 allowing the data provider to fill this with any value. However, this
@@ -202,7 +203,7 @@ will result in messy data that will need to cleaned up before any analysis is pe
 </pre></div>
 </div>
 <section id="mapping-enums-to-vocabularies">
-<h2>Mapping Enums to vocabularies<a class="headerlink" href="#mapping-enums-to-vocabularies" title="Permalink to this headline"></a></h2>
+<h2>Mapping Enums to vocabularies<a class="headerlink" href="#mapping-enums-to-vocabularies" title="Permalink to this heading"></a></h2>
 <p>We will now enhance our enums and map the different values to terms
 from vocabularies or ontologies. This doesn’t affect the basic
 behavior of tools that use the schema - however, it does provide a
@@ -298,7 +299,7 @@ generated RDF.</p>
 <!-- TODO: RDF docs -->
 </section>
 <section id="use-in-python">
-<h2>Use in Python<a class="headerlink" href="#use-in-python" title="Permalink to this headline"></a></h2>
+<h2>Use in Python<a class="headerlink" href="#use-in-python" title="Permalink to this heading"></a></h2>
 <p>(you can skip this section if you are not concerned with interacting with data instances via Python)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-python personinfo-mapped.yaml &gt; personinfo.py
 </pre></div>
@@ -323,7 +324,7 @@ MEANING=http://purl.obolibrary.org/obo/PATO_0001422
 <p>Next we will explore more aspects of the modeling language</p>
 </section>
 <section id="further-reading">
-<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this headline"></a></h2>
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../schemas/models.html#enums"><span class="std std-ref">LinkML Schemas: Enums</span></a></p></li>
 <li><p>Metamodel Specification</p>

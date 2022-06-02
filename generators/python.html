@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -105,17 +106,17 @@
            <div itemprop="articleBody">
              
   <section id="python">
-<h1>Python<a class="headerlink" href="#python" title="Permalink to this headline"></a></h1>
+<h1>Python<a class="headerlink" href="#python" title="Permalink to this heading"></a></h1>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../data/python.html"><span class="doc">Using Python</span></a></p>
 </div>
 <section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo/personinfo.py">personinfo.py</a></p>
 </section>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>The Python generator will generate a Python object model from a LinkML schema</p>
 <p>To run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-python personinfo.yaml &gt; personinfo.py
@@ -132,13 +133,13 @@ objects. For example:</p>
 <p>The linkml-runtime framework can be used to serialize these objects to
 JSON, YAML, RDF, and TSV, as well as to load them</p>
 <section id="dataclasses">
-<h3>Dataclasses<a class="headerlink" href="#dataclasses" title="Permalink to this headline"></a></h3>
+<h3>Dataclasses<a class="headerlink" href="#dataclasses" title="Permalink to this heading"></a></h3>
 <p>We use the standard <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">Python dataclasses framework</a></p>
 <p>Note that there is an alternative generator for using
 Pydantic, see <a class="reference internal" href="pydantic.html"><span class="doc">Pydantic Generator</span></a></p>
 </section>
 <section id="inheritance">
-<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h3>
+<h3>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this heading"></a></h3>
 <p>The linkml is_a slot is mapped to superclasses in the generated
 classes. Note that mixins are not currently handled in the same way -
 we avoid multiple inheritance. Instead, mixins are “rolled down” to
@@ -147,7 +148,7 @@ their implementing classes.</p>
 linkml-runtime.</p>
 </section>
 <section id="object-creation">
-<h3>Object Creation<a class="headerlink" href="#object-creation" title="Permalink to this headline"></a></h3>
+<h3>Object Creation<a class="headerlink" href="#object-creation" title="Permalink to this heading"></a></h3>
 <p>Generated class include specific initialization code in <code class="docutils literal notranslate"><span class="pre">post_init</span></code>
 that is permissive in how objects are created. For example, when
 adding inlined objects any of the following can be used:</p>
@@ -164,7 +165,7 @@ adding inlined objects any of the following can be used:</p>
 </div>
 </section>
 <section id="non-inlined-references">
-<h3>Non-inlined references<a class="headerlink" href="#non-inlined-references" title="Permalink to this headline"></a></h3>
+<h3>Non-inlined references<a class="headerlink" href="#non-inlined-references" title="Permalink to this heading"></a></h3>
 <p>In LinkML schemas, references to other objects can be declared as
 <span class="xref std std-doc">inlined</span>. If a reference is <em>not</em> inlined,
 and the referenced object has an identifier, then the value of the
@@ -185,7 +186,7 @@ code is generated:</p>
 </div>
 </section>
 <section id="types">
-<h3>Types<a class="headerlink" href="#types" title="Permalink to this headline"></a></h3>
+<h3>Types<a class="headerlink" href="#types" title="Permalink to this heading"></a></h3>
 <p>In LinkML types represent terminal scalar values and are mapped to
 built in Python objects such integers.</p>
 <p>For user-defined types, a class is created which inherits from that
@@ -193,11 +194,11 @@ Python base type.</p>
 </section>
 </section>
 <section id="code-docs">
-<h2>Code Docs<a class="headerlink" href="#code-docs" title="Permalink to this headline"></a></h2>
+<h2>Code Docs<a class="headerlink" href="#code-docs" title="Permalink to this heading"></a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h3>
 <section id="gen-python">
-<h4>gen-python<a class="headerlink" href="#gen-python" title="Permalink to this headline"></a></h4>
+<h4>gen-python<a class="headerlink" href="#gen-python" title="Permalink to this heading"></a></h4>
 <p>Generate python classes to represent a LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-python <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
@@ -325,10 +326,10 @@ Python base type.</p>
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pythongen.</span></span><span class="sig-name descname"><span class="pre">PythonGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'py'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pythongen.html#PythonGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pythongen.</span></span><span class="sig-name descname"><span class="pre">PythonGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'py'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pythongen.html#PythonGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pythongen.PythonGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Generates Python dataclasses from a LinkML model</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pythongen.PythonGenerator.serialize">
@@ -349,10 +350,10 @@ Python base type.</p>
 </section>
 </section>
 <section id="additional-notes">
-<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Permalink to this headline"></a></h2>
+<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Permalink to this heading"></a></h2>
 </section>
 <section id="code-generation-for-linkml-slots">
-<h2>Code generation for LinkML slots<a class="headerlink" href="#code-generation-for-linkml-slots" title="Permalink to this headline"></a></h2>
+<h2>Code generation for LinkML slots<a class="headerlink" href="#code-generation-for-linkml-slots" title="Permalink to this heading"></a></h2>
 <p>The generation of slot entries in class definitions is split into two
 parts:</p>
 <ul class="simple">
@@ -659,7 +660,7 @@ class representing the element and the <code class="docutils literal notranslate
 </pre></div>
 </div>
 <section id="python-generation-for-an-inherited-type">
-<h3>3) Python generation for an inherited Type<a class="headerlink" href="#python-generation-for-an-inherited-type" title="Permalink to this headline"></a></h3>
+<h3>3) Python generation for an inherited Type<a class="headerlink" href="#python-generation-for-an-inherited-type" title="Permalink to this heading"></a></h3>
 <p>The following YAML shows three inherited types - one that inherits from
 a builtin type, a second from a metamodelcore type and a third from a
 the inherited type.</p>
@@ -741,7 +742,7 @@ basic (e.g. <code class="docutils literal notranslate"><span class="pre">int</s
 (e.g. <code class="docutils literal notranslate"><span class="pre">uriorcurie</span></code>) or from another type are identical to those
 generated above for <code class="docutils literal notranslate"><span class="pre">XSDDate</span></code></p>
 <section id="slot-range-is-a-linkml-class-definition">
-<h4>2) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> definition<a class="headerlink" href="#slot-range-is-a-linkml-class-definition" title="Permalink to this headline"></a></h4>
+<h4>2) Slot range is a LinkML <code class="docutils literal notranslate"><span class="pre">class</span></code> definition<a class="headerlink" href="#slot-range-is-a-linkml-class-definition" title="Permalink to this heading"></a></h4>
 <p>The previous section described the Python that was generated for slot
 ranges that reference LinkML <strong>Type</strong> definitions. This section
 addresses the second use case, where the slot range references another
@@ -765,7 +766,7 @@ attribute * The slot <code class="docutils literal notranslate"><span class="pre
 </section>
 </section>
 <section id="non-keyed-non-identified-classes">
-<h3>1) Non-keyed, non-identified classes<a class="headerlink" href="#non-keyed-non-identified-classes" title="Permalink to this headline"></a></h3>
+<h3>1) Non-keyed, non-identified classes<a class="headerlink" href="#non-keyed-non-identified-classes" title="Permalink to this heading"></a></h3>
 <p>Classes without keys or identifiers cannot only be realized inline. The
 following code shows examples of various permutations of this type of
 class:</p>
@@ -903,7 +904,7 @@ are: 1) The <code class="docutils literal notranslate"><span class="pre">v1</spa
 as an error rather than converted to an empty list 3) An empty list is
 flagged as an error.</p>
 <section id="keyed-or-identified-classes">
-<h4>Keyed or Identified Classes<a class="headerlink" href="#keyed-or-identified-classes" title="Permalink to this headline"></a></h4>
+<h4>Keyed or Identified Classes<a class="headerlink" href="#keyed-or-identified-classes" title="Permalink to this heading"></a></h4>
 <p>When the range of a slot is a LinkML class that has a <code class="docutils literal notranslate"><span class="pre">key</span></code> or an
 <code class="docutils literal notranslate"><span class="pre">identifier</span></code>, additional options present themselves: 1) Should
 elements be represented inline or as references? 2) If inline, should
@@ -913,7 +914,7 @@ the <code class="docutils literal notranslate"><span class="pre">key</span></cod
 </section>
 </section>
 <section id="key-or-identified-class-references">
-<h3>Key or identified class <em>references</em><a class="headerlink" href="#key-or-identified-class-references" title="Permalink to this headline"></a></h3>
+<h3>Key or identified class <em>references</em><a class="headerlink" href="#key-or-identified-class-references" title="Permalink to this heading"></a></h3>
 <p>Using the following classes as building blocks</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KeyedThreeElementClass</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A keyed class with an additional integer and date</span><span class="w"></span>
@@ -1126,7 +1127,7 @@ is no difference between keyed and identified class representation.</p>
 </pre></div>
 </div>
 <section id="python-generation-options-for-single-value-non-list-slots">
-<h4>Python generation options for single-value (non-list) slots<a class="headerlink" href="#python-generation-options-for-single-value-non-list-slots" title="Permalink to this headline"></a></h4>
+<h4>Python generation options for single-value (non-list) slots<a class="headerlink" href="#python-generation-options-for-single-value-non-list-slots" title="Permalink to this heading"></a></h4>
 <p>The table below describes the various python generation options for
 single-valued slots (<code class="docutils literal notranslate"><span class="pre">&quot;multivalued&quot;:</span> <span class="pre">false</span></code>)</p>
 <table class="docutils align-default">
@@ -1460,7 +1461,7 @@ of the class is the range of the <code class="docutils literal notranslate"><spa
 </div>
 </section>
 <section id="python-generation-options-for-multivalued-slots">
-<h4>Python generation options for multivalued slots<a class="headerlink" href="#python-generation-options-for-multivalued-slots" title="Permalink to this headline"></a></h4>
+<h4>Python generation options for multivalued slots<a class="headerlink" href="#python-generation-options-for-multivalued-slots" title="Permalink to this heading"></a></h4>
 <p>The python generated for multivalued slots is a more interesting
 situation.</p>
 <table class="docutils align-default">
@@ -1753,7 +1754,7 @@ can either be in the form of a dictionary or a list.</p>
 </section>
 </section>
 <section id="input-in-the-form-of-a-dictionary">
-<h3>Input in the form of a dictionary<a class="headerlink" href="#input-in-the-form-of-a-dictionary" title="Permalink to this headline"></a></h3>
+<h3>Input in the form of a dictionary<a class="headerlink" href="#input-in-the-form-of-a-dictionary" title="Permalink to this heading"></a></h3>
 <p>If the input is in the form of a dictionary, its signature is
 “<code class="docutils literal notranslate"><span class="pre">Dict[Union[str,</span> <span class="pre">IdentifiedThreeElementClassName],</span> <span class="pre">Union[dict,</span> <span class="pre">IdentifiedThreeElementClass]]</span></code>”,
 that is a dictionary whose <em>keys</em> are valid
@@ -1818,7 +1819,7 @@ checking for potential link mismatches. The following code snippet:</p>
 expects a <code class="docutils literal notranslate"><span class="pre">KeyedThreeElementClassKey</span></code></p>
 </section>
 <section id="input-in-the-form-of-a-list">
-<h3>Input in the form of a list<a class="headerlink" href="#input-in-the-form-of-a-list" title="Permalink to this headline"></a></h3>
+<h3>Input in the form of a list<a class="headerlink" href="#input-in-the-form-of-a-list" title="Permalink to this heading"></a></h3>
 <p>Starting with the skeleton we visited earlier, Moving inwards,
 <code class="docutils literal notranslate"><span class="pre">Union[Dict[...],</span> <span class="pre">List[...]]</span></code> the second option,
 <code class="docutils literal notranslate"><span class="pre">List[Union[dict,</span> <span class="pre">IdentifiedThreeElementClass]]</span></code> indicates that the
@@ -1940,7 +1941,7 @@ while the internal storage structure is different, the initialization
 code is exactly the same – YAML emitted from a list structure can be
 loaded as a dictionary and visa-versa.</p>
 <section id="slots">
-<h4>Slots<a class="headerlink" href="#slots" title="Permalink to this headline"></a></h4>
+<h4>Slots<a class="headerlink" href="#slots" title="Permalink to this heading"></a></h4>
 <p>One bit that we haven’t touched on here is the <code class="docutils literal notranslate"><span class="pre">slots</span></code> section of the
 emitted Python.</p>
 <p>At the moment, the following code is emitted:</p>

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -109,7 +110,7 @@
            <div itemprop="articleBody">
              
   <section id="slots">
-<h1>Slots<a class="headerlink" href="#slots" title="Permalink to this headline"></a></h1>
+<h1>Slots<a class="headerlink" href="#slots" title="Permalink to this heading"></a></h1>
 <p>Slots operate the same way as “fields” in traditional object languages and the same ways as “columns” in spreadsheets and relational databases.</p>
 <p>If you have a JSON object that is conformant to a LinkML schema, then
 the keys for that object must correspond to slots in the schema, that
@@ -148,7 +149,7 @@ are applicable to that class.</p>
 </table>
 <p>then the same constraints hold.</p>
 <section id="ranges">
-<h2>ranges<a class="headerlink" href="#ranges" title="Permalink to this headline"></a></h2>
+<h2>ranges<a class="headerlink" href="#ranges" title="Permalink to this heading"></a></h2>
 <p>Each slot must have a <a class="reference external" href="https://w3id.org/linkml/range">range</a> - if this is not declared explicitly, then <a class="reference external" href="https://w3id.org/linkml/default_range">default_range</a> is used.</p>
 <p>The range must be one of:</p>
 <ul class="simple">
@@ -173,7 +174,7 @@ are applicable to that class.</p>
 </div>
 </section>
 <section id="slot-usage">
-<h2>slot_usage<a class="headerlink" href="#slot-usage" title="Permalink to this headline"></a></h2>
+<h2>slot_usage<a class="headerlink" href="#slot-usage" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/slot_usage">slot_usage</a> slot can be used to refine the meaning of a slot in the context of a particular class.</p>
 <p>For example, imagine a schema with a generic “Relationship” class:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">Relationship</span><span class="p">:</span><span class="w"></span>
@@ -199,7 +200,7 @@ are applicable to that class.</p>
 </div>
 </section>
 <section id="identifiers">
-<h2>Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this headline"></a></h2>
+<h2>Identifiers<a class="headerlink" href="#identifiers" title="Permalink to this heading"></a></h2>
 <p>If a slot is declared as an <a class="reference external" href="https://w3id.org/linkml/">identifier</a>
 then it serves as a unique key for members of that class. It can also
 be used for <a class="reference internal" href="inlining.html"><span class="doc std std-doc">inlining</span></a> as a dict in JSON serializations.</p>
@@ -211,9 +212,9 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 <p>the range of an identifier can be any type, but it is a good idea to have these be of type <a class="reference external" href="https://w3id.org/linkml/uriorcurie">uriorcurie</a></p>
 </section>
 <section id="slot-cardinality">
-<h2>Slot cardinality<a class="headerlink" href="#slot-cardinality" title="Permalink to this headline"></a></h2>
+<h2>Slot cardinality<a class="headerlink" href="#slot-cardinality" title="Permalink to this heading"></a></h2>
 <section id="multivalued">
-<h3>multivalued<a class="headerlink" href="#multivalued" title="Permalink to this headline"></a></h3>
+<h3>multivalued<a class="headerlink" href="#multivalued" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://w3id.org/linkml/multivalued">multivalued</a> indicates that the range of the slot is a list</p>
 <p>Example:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
@@ -225,18 +226,18 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 </div>
 </section>
 <section id="required">
-<h3>required<a class="headerlink" href="#required" title="Permalink to this headline"></a></h3>
+<h3>required<a class="headerlink" href="#required" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://w3id.org/linkml/required">required</a> slot can be used to define whether a slot is required.</p>
 <p>When a slot is declared as required, any class that uses that slot must have a value for that slot.</p>
 </section>
 <section id="recommended">
-<h3>recommended<a class="headerlink" href="#recommended" title="Permalink to this headline"></a></h3>
+<h3>recommended<a class="headerlink" href="#recommended" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://w3id.org/linkml/recommended">recommended</a> slot can be used to define whether a slot is recommended.</p>
 <p>If data is missing a recommended slot, it is still considered valid. However, validators may choose to issue warnings.</p>
 </section>
 </section>
 <section id="inverse">
-<h2>inverse<a class="headerlink" href="#inverse" title="Permalink to this headline"></a></h2>
+<h2>inverse<a class="headerlink" href="#inverse" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">inverse</span></code> slot can be used to specify the inverse predicate of a given predicate slot relationship.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">parent_of</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">famlially_related_to</span><span class="w"></span>
@@ -245,7 +246,7 @@ be used for <a class="reference internal" href="inlining.html"><span class="doc 
 </div>
 </section>
 <section id="logical-characteristics">
-<h2>logical characteristics<a class="headerlink" href="#logical-characteristics" title="Permalink to this headline"></a></h2>
+<h2>logical characteristics<a class="headerlink" href="#logical-characteristics" title="Permalink to this heading"></a></h2>
 <p>Additional logical characteristics can be specified for a slot; these are all boolean:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://w3id.org/linkml/transitive">transitive</a></p></li>

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -102,7 +103,7 @@
            <div itemprop="articleBody">
              
   <section id="part-4-working-with-rdf">
-<h1>Part 4: Working with RDF<a class="headerlink" href="#part-4-working-with-rdf" title="Permalink to this headline"></a></h1>
+<h1>Part 4: Working with RDF<a class="headerlink" href="#part-4-working-with-rdf" title="Permalink to this heading"></a></h1>
 <p>Previously we saw how to do basic validation of data using JSON-Schema.</p>
 <p>This section demonstrates how to work with LinkML in conjunction with
 <a class="reference external" href="https://www.w3.org/standards/semanticweb/data">Linked Data/ RDF</a>. If this is not of interest you can skip to the next
@@ -114,7 +115,7 @@ developers are familiar with.</p>
 schema elements can help make your data FAIR, and in particular can
 serve as hooks to interoperate data!</p>
 <section id="example-schema">
-<h2>Example schema<a class="headerlink" href="#example-schema" title="Permalink to this headline"></a></h2>
+<h2>Example schema<a class="headerlink" href="#example-schema" title="Permalink to this heading"></a></h2>
 <p>Let’s start with the schema we developed in the previous section, with some minor modifications:</p>
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
@@ -201,7 +202,7 @@ start, but it is not ideal - there are existing vocabularies such as
 <a class="reference external" href="http://schema.org">schema.org</a> we could be reusing here.</p>
 </section>
 <section id="adding-uris-to-our-schema">
-<h2>Adding URIs to our schema<a class="headerlink" href="#adding-uris-to-our-schema" title="Permalink to this headline"></a></h2>
+<h2>Adding URIs to our schema<a class="headerlink" href="#adding-uris-to-our-schema" title="Permalink to this heading"></a></h2>
 <p>Let’s enhance our schema, using two schema slots:</p>
 <ul class="simple">
 <li><p>class_uri: to declare a URI/IRI for a class</p></li>
@@ -284,7 +285,7 @@ start, but it is not ideal - there are existing vocabularies such as
 <p><img alt="rdf-visualization" src="https://www.ldf.fi/service/rdf-grapher?rdf=%40prefix+ns1%3A+%3Chttp%3A%2F%2Fschema.org%2F%3E+.%0D%0A%40prefix+ns2%3A+%3Chttps%3A%2F%2Fw3id.org%2Flinkml%2Fexamples%2Fpersoninfo%2F%3E+.%0D%0A%40prefix+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+.%0D%0A%0D%0A%3Chttps%3A%2F%2Forcid.org%2F1234%3E+a+ns1%3APerson+%3B%0D%0A++++ns1%3Aname+%22Clark+Kent%22+%3B%0D%0A++++ns1%3Atelephone+%22555-555-5555%22+%3B%0D%0A++++ns2%3Aage+33+.%0D%0A%0D%0A%3Chttps%3A%2F%2Forcid.org%2F4567%3E+a+ns1%3APerson+%3B%0D%0A++++ns1%3Aname+%22Lois+Lane%22+%3B%0D%0A++++ns2%3Aage+34+.%0D%0A%0D%0A%5B%5D+a+ns2%3AContainer+%3B%0D%0A++++ns2%3Apersons+%3Chttps%3A%2F%2Forcid.org%2F1234%3E%2C%0D%0A++++++++%3Chttps%3A%2F%2Forcid.org%2F4567%3E+.%0D%0A&amp;from=ttl&amp;to=png" /></p>
 </section>
 <section id="json-ld-contexts">
-<h2>JSON-LD contexts<a class="headerlink" href="#json-ld-contexts" title="Permalink to this headline"></a></h2>
+<h2>JSON-LD contexts<a class="headerlink" href="#json-ld-contexts" title="Permalink to this heading"></a></h2>
 <p>You can also generate JSON-LD context files that can be used to add semantics to JSON documents:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-jsonld-context --no-metadata personinfo-semantic.yaml
 </pre></div>
@@ -320,7 +321,7 @@ start, but it is not ideal - there are existing vocabularies such as
 <p>NOTE: currently you need to declare your own type object and map this to <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> for typing information to be shown</p>
 </section>
 <section id="using-shape-languages">
-<h2>Using Shape Languages<a class="headerlink" href="#using-shape-languages" title="Permalink to this headline"></a></h2>
+<h2>Using Shape Languages<a class="headerlink" href="#using-shape-languages" title="Permalink to this heading"></a></h2>
 <p>In the previous section we saw how to use JSON-Schema validators. LinkML also allows the use of ShEx (future versions will allow SPARQL)</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-shex --no-metadata personinfo-semantic.yaml
 </pre></div>
@@ -427,7 +428,7 @@ start, but it is not ideal - there are existing vocabularies such as
 <!-- TODO: SPARQL -->
 </section>
 <section id="more-info">
-<h2>More Info<a class="headerlink" href="#more-info" title="Permalink to this headline"></a></h2>
+<h2>More Info<a class="headerlink" href="#more-info" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../data/rdf.html"><span class="doc std std-doc">Working with RDF Data</span></a></p></li>
 <li><p>FAQ:</p>

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -81,15 +82,15 @@
            <div itemprop="articleBody">
              
   <section id="working-with-data-in-sql-databases">
-<h1>Working with data in SQL Databases<a class="headerlink" href="#working-with-data-in-sql-databases" title="Permalink to this headline"></a></h1>
+<h1>Working with data in SQL Databases<a class="headerlink" href="#working-with-data-in-sql-databases" title="Permalink to this heading"></a></h1>
 <p><strong>NOTE</strong>: Currently SQL Database support is incomplete</p>
 <p>See <span class="xref myst">part 9 of the tutorial</span> for an introduction.</p>
 <section id="storing-and-retrieving-data-in-sqlite3">
-<h2>Storing and retrieving data in SQLite3<a class="headerlink" href="#storing-and-retrieving-data-in-sqlite3" title="Permalink to this headline"></a></h2>
+<h2>Storing and retrieving data in SQLite3<a class="headerlink" href="#storing-and-retrieving-data-in-sqlite3" title="Permalink to this heading"></a></h2>
 <p>See <span class="xref myst">Using SQL DBs</span> in the Developers Guide</p>
 </section>
 <section id="mapping-from-a-linkml-model-to-sql-schemas">
-<h2>Mapping from a LinkML model to SQL Schemas<a class="headerlink" href="#mapping-from-a-linkml-model-to-sql-schemas" title="Permalink to this headline"></a></h2>
+<h2>Mapping from a LinkML model to SQL Schemas<a class="headerlink" href="#mapping-from-a-linkml-model-to-sql-schemas" title="Permalink to this heading"></a></h2>
 <p>The <span class="xref myst">SQL DDL Generator</span> can be used to generate SQL DDL (<code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> statements) from a schema.</p>
 <p>There are many <em>possible</em> ways of mapping a LinkML schema to SQL DDL.
 The existing generator makes a specific set of decisions, in future it may be possible to customize this more to your needs.</p>
@@ -128,7 +129,7 @@ The existing generator makes a specific set of decisions, in future it may be po
 <p>Mapping is done via SQL Alchemy, which takes care of difference in SQL <em>dialects</em>.</p>
 </section>
 <section id="creation-of-an-object-relation-mapping-layer">
-<h2>Creation of an Object-Relation Mapping layer<a class="headerlink" href="#creation-of-an-object-relation-mapping-layer" title="Permalink to this headline"></a></h2>
+<h2>Creation of an Object-Relation Mapping layer<a class="headerlink" href="#creation-of-an-object-relation-mapping-layer" title="Permalink to this heading"></a></h2>
 <p>The <span class="xref myst">SQLAlchemy Generator</span> will generate a Python ORM.</p>
 <p>Currently there is no support for ORM generation in other languages.</p>
 <p>Given that ORM layers need to tuned to specific use cases, you may wish to provide your own mapping.

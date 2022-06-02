@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -81,7 +82,7 @@
            <div itemprop="articleBody">
              
   <section id="instructions-for-building-linkml-documentation">
-<h1>Instructions for building LinkML documentation<a class="headerlink" href="#instructions-for-building-linkml-documentation" title="Permalink to this headline"></a></h1>
+<h1>Instructions for building LinkML documentation<a class="headerlink" href="#instructions-for-building-linkml-documentation" title="Permalink to this heading"></a></h1>
 <p>These instructions are for the core developers of the LinkML framework.</p>
 <p>Documentation source:</p>
 <ul class="simple">
@@ -90,7 +91,7 @@
 </ul>
 <p>We use the sphinx framework.</p>
 <section id="instructions">
-<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline"></a></h2>
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading"></a></h2>
 <p>To build the doc locally:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run make html
 </pre></div>
@@ -106,7 +107,7 @@
 <p>Currently we do not do these steps by github actions. It is recommended you commit changes to docs in a separate PR. The PRs can be more easily evaluated if they are only the source change, and conflicts are easier to resolve.</p>
 </section>
 <section id="important">
-<h2>IMPORTANT<a class="headerlink" href="#important" title="Permalink to this headline"></a></h2>
+<h2>IMPORTANT<a class="headerlink" href="#important" title="Permalink to this heading"></a></h2>
 <p><strong>never</strong> run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> directly</p>
 <p><strong>always</strong> run this from inside the pipenv shell or via:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run make html

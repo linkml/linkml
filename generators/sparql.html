@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -103,14 +104,14 @@
            <div itemprop="articleBody">
              
   <section id="sparql">
-<h1>SPARQL<a class="headerlink" href="#sparql" title="Permalink to this headline"></a></h1>
+<h1>SPARQL<a class="headerlink" href="#sparql" title="Permalink to this heading"></a></h1>
 <p>This generator allows you to generate a bank of sparql queries from a
 schema. These queries can then be used for validation.</p>
 <p>Note this approach is redundant with more complete RDF shape based
 strategies – however, it can be convenient to generate individual
 SPARQL queries as these can be applied on an ad-hoc basis.</p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>To run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-sparql -d /path/to/sparql-queries/ personinfo.yaml
 </pre></div>
@@ -154,11 +155,11 @@ specifically permitted properties are used when the domain is Person.</p>
 </div>
 </section>
 <section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading"></a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h3>
 <section id="gen-sparql">
-<h4>gen-sparql<a class="headerlink" href="#gen-sparql" title="Permalink to this headline"></a></h4>
+<h4>gen-sparql<a class="headerlink" href="#gen-sparql" title="Permalink to this heading"></a></h4>
 <p>Generate SPARQL queries for validation</p>
 <p>This will generate a directory of queries that cann be used for QC over a triplestore that
 is conformant to the same LinkML schema.</p>
@@ -258,10 +259,10 @@ is conformant to the same LinkML schema.</p>
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.sparqlgen.SparqlGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sparqlgen.</span></span><span class="sig-name descname"><span class="pre">SparqlGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sparql'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_graphs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/sparqlgen.html#SparqlGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sparqlgen.SparqlGenerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sparqlgen.</span></span><span class="sig-name descname"><span class="pre">SparqlGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sparql'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">named_graphs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/sparqlgen.html#SparqlGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sparqlgen.SparqlGenerator" title="Permalink to this definition"></a></dt>
 <dd><p>Generates SPARQL queries that can be used for delayed validation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.sparqlgen.SparqlGenerator.serialize">

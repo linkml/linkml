@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -105,17 +106,17 @@
            <div itemprop="articleBody">
              
   <section id="pydantic">
-<h1>Pydantic<a class="headerlink" href="#pydantic" title="Permalink to this headline"></a></h1>
+<h1>Pydantic<a class="headerlink" href="#pydantic" title="Permalink to this heading"></a></h1>
 <section id="example-output">
-<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this headline"></a></h2>
+<h2>Example Output<a class="headerlink" href="#example-output" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo_pydantic.py">personinfo_pydantic.py</a></p>
 </section>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>The Pydantic Generator produces Pydantic flavored python dataclasses from a linkml model,
 with optional support for user-supplied jinja2 templates to generate alternate classes.</p>
 <section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
 <p>Given a definition of a Person class:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NamedThing</span><span class="w"></span>
@@ -160,11 +161,11 @@ parent classes)</p>
 </section>
 </section>
 <section id="docs">
-<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this headline"></a></h2>
+<h2>Docs<a class="headerlink" href="#docs" title="Permalink to this heading"></a></h2>
 <section id="command-line">
-<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline"></a></h3>
+<h3>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h3>
 <section id="gen-pydantic">
-<h4>gen-pydantic<a class="headerlink" href="#gen-pydantic" title="Permalink to this headline"></a></h4>
+<h4>gen-pydantic<a class="headerlink" href="#gen-pydantic" title="Permalink to this heading"></a></h4>
 <p>Generate pydantic classes to represent a LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-pydantic <span class="o">[</span>OPTIONS<span class="o">]</span> YAMLFILE
 </pre></div>
@@ -254,10 +255,10 @@ parent classes)</p>
 </section>
 </section>
 <section id="code">
-<h3>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h3>
+<h3>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pydanticgen.</span></span><span class="sig-name descname"><span class="pre">PydanticGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">linkml_runtime.linkml_model.meta.SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pydantic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_mixin_inheritance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen.html#PydanticGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.pydanticgen.</span></span><span class="sig-name descname"><span class="pre">PydanticGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TextIO</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pydantic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_mixin_inheritance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen.html#PydanticGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator" title="Permalink to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.pydanticgen.PydanticGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/linkml/generators/pydanticgen.html#PydanticGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.pydanticgen.PydanticGenerator.serialize" title="Permalink to this definition"></a></dt>
@@ -277,13 +278,13 @@ parent classes)</p>
 </section>
 </section>
 <section id="additional-notes">
-<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Permalink to this headline"></a></h2>
+<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Permalink to this heading"></a></h2>
 <p>LinkML contains two Python generators. The Pydantic dataclass generator is specifically
 useful for FastAPI, but is newer and less full featured than the standard
 <span class="xref std std-doc">Python generator</span>.</p>
 </section>
 <section id="biolink-example">
-<h2>Biolink Example<a class="headerlink" href="#biolink-example" title="Permalink to this headline"></a></h2>
+<h2>Biolink Example<a class="headerlink" href="#biolink-example" title="Permalink to this heading"></a></h2>
 <p>Begin by downloading the Biolink Model YAML and adding a virtual environment and installing linkml.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl -OJ https://raw.githubusercontent.com/biolink/biolink-model/master/biolink-model.yaml
 python3 -m venv venv

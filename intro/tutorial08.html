@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -105,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="part-8-generating-projects">
-<h1>Part 8: Generating Projects<a class="headerlink" href="#part-8-generating-projects" title="Permalink to this headline"></a></h1>
+<h1>Part 8: Generating Projects<a class="headerlink" href="#part-8-generating-projects" title="Permalink to this heading"></a></h1>
 <p>In previous parts of this tutorial, we have covered</p>
 <ul class="simple">
 <li><p>how to generate JSON-Schema, for use in JSON validation</p></li>
@@ -117,7 +118,7 @@
 it can be useful to regularly generate these whenever you change your
 schema. The <code class="docutils literal notranslate"><span class="pre">gen-project</span></code> script will do this for you.</p>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading"></a></h2>
 <p>Given a schema:</p>
 <p>personinfo.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span><span class="w"></span>
@@ -198,9 +199,9 @@ sqlschema
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
 <section id="github-guides">
-<h3>GitHub Guides<a class="headerlink" href="#github-guides" title="Permalink to this headline"></a></h3>
+<h3>GitHub Guides<a class="headerlink" href="#github-guides" title="Permalink to this heading"></a></h3>
 <p>We recommend maintaing your source for your schema, plus all generated products in GitHub</p>
 <p>Some resources to help you:</p>
 <ul class="simple">
@@ -209,17 +210,17 @@ sqlschema
 </ul>
 </section>
 <section id="projectgen-docs">
-<h3>ProjectGen docs<a class="headerlink" href="#projectgen-docs" title="Permalink to this headline"></a></h3>
+<h3>ProjectGen docs<a class="headerlink" href="#projectgen-docs" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p><span class="xref myst">project-generator</span></p></li>
 </ul>
 </section>
 <section id="linkml-model-template">
-<h3>linkml-model-template<a class="headerlink" href="#linkml-model-template" title="Permalink to this headline"></a></h3>
+<h3>linkml-model-template<a class="headerlink" href="#linkml-model-template" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://github.com/linkml/linkml-model-template">linkml/linkml-model-template</a> utility will allow you to set up a whole GitHub repository, with a Makefile that can be used to regenerate all downstream products. However, note that this uses an older version of the templates.</p>
 </section>
 <section id="registering-your-schema">
-<h3>Registering your schema<a class="headerlink" href="#registering-your-schema" title="Permalink to this headline"></a></h3>
+<h3>Registering your schema<a class="headerlink" href="#registering-your-schema" title="Permalink to this heading"></a></h3>
 <p>Once you have authored a schema, generated a full project, and are
 managing everything in GitHub, you may want to consider registering
 your schema. To do this, make a GitHub Pull Request (PR) on the main

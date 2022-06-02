@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -102,9 +103,9 @@
            <div itemprop="articleBody">
              
   <section id="inheritance">
-<h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline"></a></h1>
+<h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this heading"></a></h1>
 <section id="linking-classes-and-slots-with-is-a">
-<h2>Linking classes and slots with <code class="docutils literal notranslate"><span class="pre">is_a</span></code><a class="headerlink" href="#linking-classes-and-slots-with-is-a" title="Permalink to this headline"></a></h2>
+<h2>Linking classes and slots with <code class="docutils literal notranslate"><span class="pre">is_a</span></code><a class="headerlink" href="#linking-classes-and-slots-with-is-a" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference external" href="https://w3id.org/linkml/is_a">is_a</a> metamodel slot can be used to define a backbone hierarchy for your class. All inheritable metamodel slots are propagated down the is_a hierarchy.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">NamedThing</span><span class="p">:</span><span class="w"></span>
@@ -133,7 +134,7 @@
 <p><strong>Note</strong>: Slots can also be organized in hierarchies using <code class="docutils literal notranslate"><span class="pre">is_a</span></code>.</p>
 </section>
 <section id="abstract-classes-and-slots">
-<h2>Abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this headline"></a></h2>
+<h2>Abstract classes and slots<a class="headerlink" href="#abstract-classes-and-slots" title="Permalink to this heading"></a></h2>
 <p>A model class (or slot) may be tagged with its <a class="reference external" href="https://w3id.org/linkml/abstract">abstract</a> slot set to the boolean value <code class="docutils literal notranslate"><span class="pre">true</span></code>, to define whether it is abstract. This has comparable meaning to that in the computing science Object Oriented Paradigm: another class (or slot) can use the abstract class (or slot) as part of its inheritance hierarchy, but the abstract class itself <em>cannot</em> be directly instantiated.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">NamedThing</span><span class="p">:</span><span class="w"></span>
@@ -151,7 +152,7 @@
 <p>See also the <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_type">wikipedia page on Abstract Types</a></p>
 </section>
 <section id="mixin-classes-and-slots">
-<h2>Mixin classes and slots<a class="headerlink" href="#mixin-classes-and-slots" title="Permalink to this headline"></a></h2>
+<h2>Mixin classes and slots<a class="headerlink" href="#mixin-classes-and-slots" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/mixin">mixin</a> boolean slot to declare a class as a mixin</p></li>
 <li><p>The <a class="reference external" href="https://w3id.org/linkml/mixins">mixins</a> multiavlued slot which specifies a range of mixin parents.</p></li>
@@ -193,7 +194,7 @@ of multiple inheritance noted in the <a class="reference external" href="https:/
 <p>See also the <a class="reference external" href="https://en.wikipedia.org/wiki/Mixin">Wikipedia page on mixins</a></p>
 </section>
 <section id="materializing-inherited-slots">
-<h2>Materializing inherited slots<a class="headerlink" href="#materializing-inherited-slots" title="Permalink to this headline"></a></h2>
+<h2>Materializing inherited slots<a class="headerlink" href="#materializing-inherited-slots" title="Permalink to this heading"></a></h2>
 <p>the <span class="xref myst">linkml generator</span> can be used with the
 <code class="docutils literal notranslate"><span class="pre">--materialize-attributes</span></code> option to <em>materialize</em> all induced slots
 as attributes. This is useful if you want to make a version of your
