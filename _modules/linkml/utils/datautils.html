@@ -176,7 +176,7 @@
     <span class="c1"># throw Exception if unambiguous root cannot be inferred</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multiple potential target classes found: </span><span class="si">{</span><span class="n">candidates</span><span class="si">}</span><span class="s2">. &quot;</span>
-                           <span class="s2">&quot;Please specify a target using --target_class or by adding &quot;</span>
+                           <span class="s2">&quot;Please specify a target using --target-class or by adding &quot;</span>
                            <span class="s2">&quot;tree_root: true to the relevant class in the schema.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
