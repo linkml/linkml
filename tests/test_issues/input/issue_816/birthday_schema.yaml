@@ -1,0 +1,25 @@
+name: Birthdays
+id: http://example.com/birthdays
+default_prefix: birthdays
+default_range: string
+imports: linkml:types
+prefixes:
+  birthdays: http://example.com/birthdays/
+  linkml: https://w3id.org/linkml/
+slots:
+  birthdate:
+    range: datetime
+  person_name:
+  people:
+    range: Person
+    multivalued: true
+    inlined_as_list: true
+classes:
+  Person:
+    slots:
+      - person_name
+      - birthdate
+  Contacts:
+    slots:
+      - people
+
