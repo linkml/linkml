@@ -29,12 +29,20 @@ def _remove_names(obj: Any, parent: Optional[str]) -> Any:
 
     Also compacts representation of prefixes
 
+    It also takes care of the edge case:
+
+    .. code-block:: yaml
+
+        slots:
+          name:
+            ...
+
     :param obj: dictionary object to recursively transform
     :param parent: key for parent dict
     :return:
     """
     if isinstance(obj, dict):
-        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None}
+        return {k: _remove_names(v, k) for k, v in obj.items() if k != 'name' or parent is None or parent == 'slots'}
     elif isinstance(obj, list):
         return [_remove_names(x, parent) for x in obj]
     else:

@@ -218,8 +218,9 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        assert "HasAliases" == ordered_c[0]
-        assert "agent" == ordered_c[-1]
+        self.assertEqual("HasAliases", ordered_c[0])
+        self.assertEqual("EmptyClass", ordered_c[-1])
+        self.assertEqual("agent", ordered_c[-2])
 
     def test_all_slots_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)

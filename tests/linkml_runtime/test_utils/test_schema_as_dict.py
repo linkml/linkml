@@ -24,6 +24,8 @@ class SchemaAsDictTestCase(unittest.TestCase):
         tests schema_as_dict, see https://github.com/linkml/linkml/issues/100
         """
         view = SchemaView(SCHEMA_NO_IMPORTS)
+        all_slots = view.all_slots()
+        self.assertIn('name', all_slots)
         logging.debug(view.schema.id)
         ystr = schema_as_yaml_dump(view.schema)
         with open(CLEAN_SCHEMA, 'w') as stream:
@@ -41,6 +43,7 @@ class SchemaAsDictTestCase(unittest.TestCase):
                 for e in elt_dict.values():
                     for pv in e.get('permissible_values', {}).values():
                         assert 'text' not in pv
+        self.assertIn('name', obj['slots'])
 
 if __name__ == '__main__':
     unittest.main()
