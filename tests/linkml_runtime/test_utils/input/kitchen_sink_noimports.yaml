@@ -215,6 +215,8 @@ classes:
     class_uri: prov:Agent
     rank: 1
 
+  EmptyClass:
+
 slots:
   employed at:
     range: Company
@@ -344,3 +346,7 @@ enums:
       PARENT_OF:
       CHILD_OF:
   DiagnosisType:
+  OtherEnum:
+    permissible_values:
+      a:
+      b:
