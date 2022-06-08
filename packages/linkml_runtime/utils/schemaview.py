@@ -676,6 +676,16 @@ class SchemaView(object):
                 for c in self.all_slots(imports=imports)
                 if self.slot_children(c, mixins=mixins, imports=imports) == []]
 
+    @lru_cache()
+    def get_multivalued_slots(self, imports=True) -> List[SlotDefinitionName]:
+        """
+        All slotes that are multivalued
+        :param imports:
+        :return:
+        """
+        return [c
+                for c in self.all_slots(imports=imports)
+                if self.get_slot(c).multivalued]
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
         """
