@@ -63,6 +63,10 @@ class SchemaViewTestCase(unittest.TestCase):
         category_mapping = view.get_element_by_mapping("GO:0005198")
         assert category_mapping == ['activity']
 
+        multivalued_slots = view.get_multivalued_slots()
+        assert 'aliases' in multivalued_slots
+        assert 'id' not in multivalued_slots
+
         for tn, t in view.all_types().items():
             logging.info(f'TN = {tn}')
             print(f'{tn} {t.from_schema}')
