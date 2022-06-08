@@ -92,9 +92,10 @@
 
 <span class="kn">import</span> <span class="nn">click</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span>
 <span class="kn">import</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="k">as</span> <span class="nn">metamodel</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.introspection</span> <span class="kn">import</span> <span class="n">package_schemaview</span>
@@ -265,6 +266,10 @@
                 <span class="k">return</span> <span class="n">nu_obj</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1">#elif isinstance(obj, PermissibleValue):</span>
+        <span class="c1">#    return str(obj.text)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">EnumDefinitionImpl</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">):</span>
             <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="n">inst_args</span> <span class="o">=</span> <span class="p">{}</span>
@@ -319,7 +324,9 @@
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="p">):</span>
                 <span class="c1"># TODO: make more efficient</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+                    <span class="c1">#print(f&#39;CREATING {nu_typ} FROM {inst_args}&#39;)</span>
                     <span class="n">nu_obj</span> <span class="o">=</span> <span class="n">nu_typ</span><span class="p">(</span><span class="o">**</span><span class="n">inst_args</span><span class="p">)</span>
+                    <span class="c1">#print(f&#39;CREATED {nu_obj}&#39;)</span>
                     <span class="k">return</span> <span class="n">nu_obj</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
