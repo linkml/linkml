@@ -58,7 +58,8 @@ def get_packaged_file_as_str(package: str, file_type: str, rel_paths: List[PureP
         try:
             full_path = path / f'{package_name}.{suffix}'
             data = pkgutil.get_data(package, str(full_path))
-            break
+            if data:
+                break
         except FileNotFoundError:
             logging.debug(f'candidate {path} not found')
     if not data:

@@ -4,7 +4,9 @@ import logging
 from copy import copy
 from typing import List
 
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinitionName, SlotDefinition, \
+    ClassDefinitionName
 from linkml_runtime.loaders.yaml_loader import YAMLLoader
 from linkml_runtime.utils.introspection import package_schemaview, object_class_definition
 from linkml_runtime.utils.schemaview import SchemaView, SchemaUsage, OrderedBy
@@ -61,26 +63,29 @@ class SchemaViewTestCase(unittest.TestCase):
         category_mapping = view.get_element_by_mapping("GO:0005198")
         assert category_mapping == ['activity']
 
-        if True:
-            for sn, s in view.all_slots().items():
-                logging.info(f'SN = {sn} RANGE={s.range}')
-            # this section is mostly for debugging
-            for cn in all_cls.keys():
-                logging.debug(f'{cn} FROM SCHEMA = {view.get_class(cn).from_schema}')
-                logging.debug(f'{cn} PARENTS = {view.class_parents(cn)}')
-                logging.debug(f'{cn} ANCS = {view.class_ancestors(cn)}')
-                logging.debug(f'{cn} CHILDREN = {view.class_children(cn)}')
-                logging.debug(f'{cn} DESCS = {view.class_descendants(cn)}')
-                logging.debug(f'{cn} SCHEMA = {view.in_schema(cn)}')
-                logging.debug(f'  SLOTS = {view.class_slots(cn)}')
-                for sn in view.class_slots(cn):
-                    slot = view.get_slot(sn)
-                    if slot is None:
-                        logging.debug(f'NO SLOT: {sn}')
-                    else:
-                        logging.debug(f'  SLOT {sn} R: {slot.range} U: {view.get_uri(sn)} ANCS: {view.slot_ancestors(sn)}')
-                    induced_slot = view.induced_slot(sn, cn)
-                    logging.debug(f'    INDUCED {sn}={induced_slot}')
+        for tn, t in view.all_types().items():
+            logging.info(f'TN = {tn}')
+            print(f'{tn} {t.from_schema}')
+            self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', t.from_schema)
+        for sn, s in view.all_slots().items():
+            logging.info(f'SN = {sn} RANGE={s.range}')
+            self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
+        # this section is mostly for debugging
+        for cn in all_cls.keys():
+            c = view.get_class(cn)
+            self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', c.from_schema)
+            logging.debug(f'{cn} PARENTS = {view.class_parents(cn)}')
+            logging.debug(f'{cn} ANCS = {view.class_ancestors(cn)}')
+            logging.debug(f'{cn} CHILDREN = {view.class_children(cn)}')
+            logging.debug(f'{cn} DESCS = {view.class_descendants(cn)}')
+            logging.debug(f'{cn} SCHEMA = {view.in_schema(cn)}')
+            logging.debug(f'  SLOTS = {view.class_slots(cn)}')
+            for sn in view.class_slots(cn):
+                slot = view.get_slot(sn)
+                self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', slot.from_schema)
+                logging.debug(f'  SLOT {sn} R: {slot.range} U: {view.get_uri(sn)} ANCS: {view.slot_ancestors(sn)}')
+                induced_slot = view.induced_slot(sn, cn)
+                logging.debug(f'    INDUCED {sn}={induced_slot}')
 
         logging.debug(f'ALL = {view.all_elements().keys()}')
 
@@ -213,8 +218,9 @@ class SchemaViewTestCase(unittest.TestCase):
         ordered_c = []
         for c in classes.values():
             ordered_c.append(c.name)
-        assert "HasAliases" == ordered_c[0]
-        assert "agent" == ordered_c[-1]
+        self.assertEqual("HasAliases", ordered_c[0])
+        self.assertEqual("EmptyClass", ordered_c[-1])
+        self.assertEqual("agent", ordered_c[-2])
 
     def test_all_slots_ordered_lexical(self):
         view = SchemaView(SCHEMA_NO_IMPORTS)
@@ -305,13 +311,58 @@ class SchemaViewTestCase(unittest.TestCase):
         self.assertCountEqual(['kitchen_sink', 'core', 'linkml:types'], view.imports_closure())
         for t in view.all_types().keys():
             logging.debug(f'T={t} in={view.in_schema(t)}')
-        assert view.in_schema('Person') == 'kitchen_sink'
-        assert view.in_schema('id') == 'core'
-        assert view.in_schema('name') == 'core'
-        assert view.in_schema('activity') == 'core'
-        assert view.in_schema('string') == 'types'
+        assert view.in_schema(ClassDefinitionName('Person')) == 'kitchen_sink'
+        assert view.in_schema(SlotDefinitionName('id')) == 'core'
+        assert view.in_schema(SlotDefinitionName('name')) == 'core'
+        assert view.in_schema(SlotDefinitionName('activity')) == 'core'
+        assert view.in_schema(SlotDefinitionName('string')) == 'types'
         assert 'activity' in view.all_classes()
         assert 'activity' not in view.all_classes(imports=False)
+        assert 'string' in view.all_types()
+        assert 'string' not in view.all_types(imports=False)
+        self.assertCountEqual(['SymbolString', 'string'], view.type_ancestors('SymbolString'))
+
+        for tn, t in view.all_types().items():
+            self.assertEqual(tn, t.name)
+            induced_t = view.induced_type(tn)
+            self.assertIsNotNone(induced_t.uri)
+            #self.assertIsNotNone(induced_t.repr)
+            self.assertIsNotNone(induced_t.base)
+            if t in view.all_types(imports=False).values():
+                self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', t.from_schema)
+            else:
+                self.assertIn(t.from_schema, ['https://w3id.org/linkml/tests/core', 'https://w3id.org/linkml/types'])
+        for en, e in view.all_enums().items():
+            self.assertEqual(en, e.name)
+            if e in view.all_enums(imports=False).values():
+                self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', e.from_schema)
+            else:
+                self.assertEqual('https://w3id.org/linkml/tests/core', e.from_schema)
+            #for pv in e.permissible_values.values():
+            #    print(f'{pv.text}: {pv.from_schema} : {view.slot_permissible_value_ancestors(pv)}')
+        for sn, s in view.all_slots().items():
+            self.assertEqual(sn, s.name)
+            s_induced = view.induced_slot(sn)
+            self.assertIsNotNone(s_induced.range)
+            #self.assertIsNotNone(s_induced.slot_uri)
+            if s in view.all_slots(imports=False).values():
+                self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
+            else:
+                self.assertEqual('https://w3id.org/linkml/tests/core', s.from_schema)
+        for cn, c in view.all_classes().items():
+            self.assertEqual(cn, c.name)
+            #self.assertIsNotNone(c.class_uri)
+            if c in view.all_classes(imports=False).values():
+                self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', c.from_schema)
+            else:
+                self.assertEqual('https://w3id.org/linkml/tests/core', c.from_schema)
+            for s in view.class_induced_slots(cn):
+                if s in view.all_classes(imports=False).values():
+                    self.assertIsNotNone(s.slot_uri)
+                    self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
+                #else:
+                #    self.assertEqual('https://w3id.org/linkml/tests/core', s.from_schema)
+
 
         for c in ['Company', 'Person', 'Organization', 'Thing']:
             assert view.induced_slot('id', c).identifier is True

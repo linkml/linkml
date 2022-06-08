@@ -244,7 +244,7 @@ class Namespaces(CaseInsensitiveDict):
                 if is_ncname(k):
                     self[k] = v
                 else:
-                    logging.getLogger('Namespaces').info(f"biocontext map {map_name} has illegal prefix: {k}")
+                    # logging.getLogger('Namespaces').info(f"biocontext map {map_name} has illegal prefix: {k}")
                     pass
 
 
