@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-02-21T16:17:22
+# Generation date: 2022-06-01T12:12:50
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -33,6 +33,8 @@ dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
 GSSO = CurieNamespace('GSSO', 'http://purl.obolibrary.org/obo/GSSO_')
+ONT = CurieNamespace('ONT', 'http://example.org/ont/')
+X = CurieNamespace('X', 'http://example.org/data/')
 FAMREL = CurieNamespace('famrel', 'https://example.org/FamilialRelations#')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
@@ -40,7 +42,7 @@ PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-SKOS = CurieNamespace('skos', 'http://example.org/UNKNOWN/skos/')
+SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = PERSONINFO
 
@@ -73,6 +75,10 @@ class DiagnosisConceptId(ConceptId):
 
 
 class ProcedureConceptId(ConceptId):
+    pass
+
+
+class BiologicalSpecimenId(NamedThingId):
     pass
 
 
@@ -426,7 +432,7 @@ class Relationship(YAMLRoot):
     started_at_time: Optional[Union[str, XSDDate]] = None
     ended_at_time: Optional[Union[str, XSDDate]] = None
     related_to: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[Union[str, "FamilialRelationshipType"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
@@ -438,8 +444,8 @@ class Relationship(YAMLRoot):
         if self.related_to is not None and not isinstance(self.related_to, str):
             self.related_to = str(self.related_to)
 
-        if self.type is not None and not isinstance(self.type, str):
-            self.type = str(self.type)
+        if self.type is not None and not isinstance(self.type, FamilialRelationshipType):
+            self.type = FamilialRelationshipType(self.type)
 
         super().__post_init__(**kwargs)
 
@@ -551,6 +557,26 @@ class WithLocation(YAMLRoot):
 
 
 @dataclass
+class BiologicalSpecimen(NamedThing):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = PERSONINFO.BiologicalSpecimen
+    class_class_curie: ClassVar[str] = "personinfo:BiologicalSpecimen"
+    class_name: ClassVar[str] = "biological specimen"
+    class_model_uri: ClassVar[URIRef] = PERSONINFO.BiologicalSpecimen
+
+    id: Union[str, BiologicalSpecimenId] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self._is_empty(self.id):
+            self.MissingRequiredField("id")
+        if not isinstance(self.id, BiologicalSpecimenId):
+            self.id = BiologicalSpecimenId(self.id)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Container(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -593,30 +619,22 @@ class FamilialRelationshipType(EnumDefinitionImpl):
 
 class GenderType(EnumDefinitionImpl):
 
+    nonbinary_man = PermissibleValue(text="nonbinary_man",
+                                                 meaning=GSSO["009254"])
+    nonbinary_woman = PermissibleValue(text="nonbinary_woman",
+                                                     meaning=GSSO["009253"])
+    transgender_woman = PermissibleValue(text="transgender_woman",
+                                                         meaning=GSSO["000384"])
+    transgender_man = PermissibleValue(text="transgender_man",
+                                                     meaning=GSSO["000372"])
+    cisgender_man = PermissibleValue(text="cisgender_man",
+                                                 meaning=GSSO["000371"])
+    cisgender_woman = PermissibleValue(text="cisgender_woman",
+                                                     meaning=GSSO["000385"])
+
     _defn = EnumDefinition(
         name="GenderType",
     )
-
-    @classmethod
-    def _addvals(cls):
-        setattr(cls, "nonbinary man",
-                PermissibleValue(text="nonbinary man",
-                                 meaning=GSSO["009254"]) )
-        setattr(cls, "nonbinary woman",
-                PermissibleValue(text="nonbinary woman",
-                                 meaning=GSSO["009253"]) )
-        setattr(cls, "transgender woman",
-                PermissibleValue(text="transgender woman",
-                                 meaning=GSSO["000384"]) )
-        setattr(cls, "transgender man",
-                PermissibleValue(text="transgender man",
-                                 meaning=GSSO["000372"]) )
-        setattr(cls, "cisgender man",
-                PermissibleValue(text="cisgender man",
-                                 meaning=GSSO["000371"]) )
-        setattr(cls, "cisgender woman",
-                PermissibleValue(text="cisgender woman",
-                                 meaning=GSSO["000385"]) )
 
 class DiagnosisType(EnumDefinitionImpl):
 
@@ -680,7 +698,7 @@ slots.related_to = Slot(uri=PERSONINFO.related_to, name="related_to", curie=PERS
                    model_uri=PERSONINFO.related_to, domain=None, range=Optional[str])
 
 slots.type = Slot(uri=PERSONINFO.type, name="type", curie=PERSONINFO.curie('type'),
-                   model_uri=PERSONINFO.type, domain=None, range=Optional[str])
+                   model_uri=PERSONINFO.type, domain=None, range=Optional[Union[str, "FamilialRelationshipType"]])
 
 slots.street = Slot(uri=PERSONINFO.street, name="street", curie=PERSONINFO.curie('street'),
                    model_uri=PERSONINFO.street, domain=None, range=Optional[str])
