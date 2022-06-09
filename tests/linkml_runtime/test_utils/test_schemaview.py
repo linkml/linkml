@@ -497,8 +497,16 @@ class SchemaViewTestCase(unittest.TestCase):
                 #print(f'  {cn}: {s.name} {s.alias} {s.slot_uri} // {exp_slot_uri}')
                 self.assertIsNotNone(exp_slot_uri)
 
+    def test_materialize_patterns(self):
+        sv = SchemaView(os.path.join(INPUT_DIR, "pattern-example.yaml"))
 
+        sv.materialize_patterns()
 
+        height_slot = sv.get_slot("height")
+        weight_slot = sv.get_slot("weight")
+
+        self.assertEqual(height_slot.pattern, "\d+[\.\d+] (centimeter|meter|inch)")
+        self.assertEqual(weight_slot.pattern, "\d+[\.\d+] (kg|g|lbs|stone)")
 
 
 if __name__ == '__main__':
