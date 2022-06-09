@@ -9,6 +9,7 @@ from typing import Mapping, Tuple, Type
 from linkml_runtime.utils.namespaces import Namespaces
 from deprecated.classic import deprecated
 from linkml_runtime.utils.context_utils import parse_import_map, map_import
+from linkml_runtime.utils.pattern import generate_patterns
 from linkml_runtime.linkml_model.meta import *
 from enum import Enum
 logger = logging.getLogger(__name__)
@@ -1423,8 +1424,20 @@ class SchemaView(object):
             s2.name = new_name
         return s2
 
-
-
-
     def set_modified(self) -> None:
         self.modifications += 1
+
+    def materialize_patterns(self) -> None:
+        """Materialize schema by expanding structured patterns 
+        into regular expressions based on composite patterns 
+        provided in the settings dictionary.
+        """
+        patterns_dict = generate_patterns(self)
+
+        for _, slot_defn in self.all_slots().items():
+            if slot_defn.structured_pattern:
+
+                pattern = slot_defn.structured_pattern.syntax
+
+                if pattern in patterns_dict:
+                    slot_defn.pattern = patterns_dict[pattern]
