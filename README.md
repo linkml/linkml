@@ -16,4 +16,4 @@ This repo holds the tools for generating and working with LinkML. For the LinkML
 
 The complete documentation for LinkML can be found here:
 
- - [linkml.io/linkml](https://linkml.io/linkml)
+ - [linkml.io/linkml](https://linkml.io/linkml) 
