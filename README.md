@@ -5,7 +5,7 @@
 [![DOI](https://zenodo.org/badge/13996/linkml/linkml.svg)](https://zenodo.org/badge/latestdoi/13996/linkml/linkml)
 [![PyPIDownloadsTotal](https://pepy.tech/badge/linkml)](https://pepy.tech/project/linkml)
 [![PyPIDownloadsMonth](https://img.shields.io/pypi/dm/linkml?logo=PyPI&color=blue)](https://pypi.org/project/linkml)
-[![codecov](https://codecov.io/gh/linkml/linkml/branch/spatil/codecov-integration/graph/badge.svg?token=WNQNG986UN)](https://codecov.io/gh/linkml/linkml)
+[![codecov](https://codecov.io/gh/linkml/linkml/branch/main/graph/badge.svg?token=WNQNG986UN)](https://codecov.io/gh/linkml/linkml)
 
 
 # LinkML - Linked Data Modeling Language
