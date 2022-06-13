@@ -19,9 +19,7 @@ class RdfLibPrefixTestCase(unittest.TestCase):
     personinfo = Namespace('https://w3id.org/linkml/examples/personinfo/')
     SDO = Namespace('http://schema.org/')
 
-    def __init__(self, *args, **kwargs):
-        super(RdfLibPrefixTestCase, self).__init__(*args, **kwargs)
-        # Sets up environment for the test
+    def setUp(self):
         self.g = self.create_rdf_output()
 
     def create_rdf_output(self):
