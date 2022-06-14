@@ -1,6 +1,9 @@
+import logging
 import os
 import unittest
 from contextlib import redirect_stdout
+from copy import copy
+from typing import List
 
 from linkml.generators.docgen import DocGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
@@ -11,19 +14,35 @@ MD_DIR = env.expected_path('kitchen_sink_md')
 MD_DIR2 = env.expected_path('kitchen_sink_md2')
 HTML_DIR = env.expected_path('kitchen_sink_html')
 
-def assert_mdfile_contains(filename, text, after=None, description=None, outdir=MD_DIR) -> None:
+def assert_mdfile_contains(filename, text, after:str =None, followed_by: List[str]=None,
+                           outdir=MD_DIR) -> None:
     found = False
     is_after = False  ## have we reached the after mark?
     with open(os.path.join(outdir, filename)) as stream:
-        for line in stream.readlines():
+        lines = stream.readlines()
+        for i in range(0, len(lines)):
+            line = lines[i]
             if text in line:
                 if after is None:
                     found = True
                 else:
                     if is_after:
                         found = True
+                if found and followed_by:
+                    todo = copy(followed_by)
+                    for j in range(i+1, len(lines)):
+                        subsequent_line = lines[j]
+                        if len(todo) > 0 and todo[0] in subsequent_line:
+                            todo = todo[1:]
+                    if len(todo) > 0:
+                        logging.error(f'Did not find: {todo}')
+                        assert False
+                    else:
+                        return
             if after is not None and after in line:
                 is_after = True
+    if not found:
+        logging.error(f'Failed to find {text} in {filename}')
     assert found
 
 class DocGeneratorTestCase(unittest.TestCase):
@@ -44,6 +63,35 @@ class DocGeneratorTestCase(unittest.TestCase):
         assert_mdfile_contains('Organization.md',
                                'slot_uri: skos:altLabel',
                                after='Induced')
+        # test mermaid
+        assert_mdfile_contains('Organization.md',
+                               '```mermaid',
+                               after='# Class',
+                               followed_by=['```', '## Inheritance', '## Slots'])
+        assert_mdfile_contains('Organization.md',
+                               'HasAliases <|-- Organization',
+                               after='```mermaid',
+                               followed_by=['Organization : name', '```'])
+
+        # test yaml
+        assert_mdfile_contains('Organization.md',
+                               '<details>',
+                               after='### Direct',
+                               followed_by=['```yaml',
+                                            'name: Organization',
+                                            'mixins:',
+                                            '- HasAliases',
+                                            '```', '</details>', '### Induced'])
+        assert_mdfile_contains('Organization.md',
+                               '<details>',
+                               after='### Induced',
+                               followed_by=['```yaml',
+                                            'name: Organization',
+                                            'attributes:',
+                                            'aliases:',
+                                            'multivalued: true',
+                                            '```', '</details>'])
+
         # test type docs
         assert_mdfile_contains('PhoneNumberType.md',
                                'URI: http://www.w3.org/2001/XMLSchema#string',
@@ -61,6 +109,9 @@ class DocGeneratorTestCase(unittest.TestCase):
                                after='aliases')
         # test index docs
         assert_mdfile_contains('index.md',
+                               '# Kitchen Sink Schema',
+                               followed_by=['URI:', 'Name:', '## Classes', '## Slots', '## Enumerations'])
+        assert_mdfile_contains('index.md',
                                '[EmploymentEventType](EmploymentEventType.md)',
                                after='Enumerations')
         assert_mdfile_contains('index.md',
@@ -72,7 +123,18 @@ class DocGeneratorTestCase(unittest.TestCase):
                                after='Properties')
         # TODO: external links
 
+    def test_myst_dialect(self):
+        """
+        Tests mermaid in myst.
 
+        See <https://github.com/linkml/linkml/issues/835>_
+        """
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, dialect='myst')
+        md = gen.serialize(directory=MD_DIR)
+        assert_mdfile_contains('Organization.md',
+                               '```{mermaid}',
+                               after='# Class',
+                               followed_by=['```', '## Inheritance', '## Slots'])
 
 
     def test_custom_directory(self):
