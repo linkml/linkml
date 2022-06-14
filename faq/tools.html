@@ -69,6 +69,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#are-there-tools-for-editing-my-data">Are there tools for editing my data?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#are-there-guides-for-developing-linkml-compliant-tools">Are there guides for developing LinkML compliant tools?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-generate-a-website-from-a-linkml-schema">Can I generate a website from a LinkML schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-include-uml-class-diagrams">How do I include UML class diagrams?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-include-generated-documentation-in-a-sphinx-site">Can I include generated documentation in a Sphinx site?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-customize-the-markdown-generation-for-my-schema-site">Can I customize the Markdown generation for my schema site?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-does-if-missing-mean-in-my-json-output">What does _if_missing mean in my JSON output?</a></li>
@@ -273,6 +275,37 @@ LinkML as a schema language.</p>
 </pre></div>
 </div>
 <p>It will place all the markdown documents you need to run a <a class="reference external" href="https://www.mkdocs.org/">mkdocs</a> site</p>
+</section>
+<section id="how-do-i-include-uml-class-diagrams">
+<h2>How do I include UML class diagrams?<a class="headerlink" href="#how-do-i-include-uml-class-diagrams" title="Permalink to this heading"></a></h2>
+<p>The docgen framework uses <a class="reference external" href="https://mermaid-js.github.io/mermaid/#/">Mermaid</a> to generate class diagrams
+from your schema. This is included as a default when you use the docgen framework.</p>
+</section>
+<section id="can-i-include-generated-documentation-in-a-sphinx-site">
+<h2>Can I include generated documentation in a Sphinx site?<a class="headerlink" href="#can-i-include-generated-documentation-in-a-sphinx-site" title="Permalink to this heading"></a></h2>
+<p>The default documentation framework for LinkML is <a class="reference external" href="https://www.mkdocs.org/">mkdocs</a>.</p>
+<p>However, you can also include generated markdown in your sphinx site. This may be desirable
+if you are incorporating LinkML into a software project that uses <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a>.</p>
+<p>You should make sure your sphinx configuration includes:</p>
+<ol class="simple">
+<li><p>The <a class="reference external" href="https://myst-parser.readthedocs.io/">MyST</a> extension, for parsing markdown</p></li>
+<li><p>The <a class="reference external" href="https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/">Mermaid</a> extension, for Mermaid class diagrams</p></li>
+</ol>
+<p>Your <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> should include:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span>
+    <span class="s1">&#39;myst_parser&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sphinxcontrib.mermaid&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Consult the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/configuration.html">sphinx configuration docs</a> for more details.</p>
+<p>Note that in order for mermaid to render properly, you will need to tell <code class="docutils literal notranslate"><span class="pre">gen-docs</span></code> to use
+<a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/syntax.html">MyST flavored Markdown</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gen</span><span class="o">-</span><span class="n">doc</span> <span class="o">--</span><span class="n">dialect</span> <span class="n">myst</span> <span class="o">...</span>
+</pre></div>
+</div>
 </section>
 <section id="can-i-customize-the-markdown-generation-for-my-schema-site">
 <h2>Can I customize the Markdown generation for my schema site?<a class="headerlink" href="#can-i-customize-the-markdown-generation-for-my-schema-site" title="Permalink to this heading"></a></h2>
