@@ -1,8 +1,9 @@
-# {{ schema.name }}
+# {% if schema.title %}{{ schema.title }}{% else %}{{ schema.name }}{% endif %}
 
 {{ schema.description }}
 
 URI: {{ schema.id }}
+Name: {{ schema.name }}
 
 ## Classes
 

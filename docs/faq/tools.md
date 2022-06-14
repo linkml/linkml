@@ -182,6 +182,42 @@ gen-markdown -d docs personinfo.yaml
 
 It will place all the markdown documents you need to run a [mkdocs](https://www.mkdocs.org/) site
 
+## How do I include UML class diagrams?
+
+The docgen framework uses [Mermaid](https://mermaid-js.github.io/mermaid/#/) to generate class diagrams
+from your schema. This is included as a default when you use the docgen framework.
+
+## Can I include generated documentation in a Sphinx site?
+
+The default documentation framework for LinkML is [mkdocs](https://www.mkdocs.org/).
+
+However, you can also include generated markdown in your sphinx site. This may be desirable
+if you are incorporating LinkML into a software project that uses [Sphinx](https://www.sphinx-doc.org/).
+
+You should make sure your sphinx configuration includes:
+
+1. The [MyST](https://myst-parser.readthedocs.io/) extension, for parsing markdown
+2. The [Mermaid](https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/) extension, for Mermaid class diagrams
+
+Your `conf.py` should include:
+
+```python
+extensions = [
+    ...
+    'myst_parser',
+    'sphinxcontrib.mermaid',
+    ...
+]
+```
+
+Consult the [sphinx configuration docs](https://www.sphinx-doc.org/en/master/usage/configuration.html) for more details.
+
+Note that in order for mermaid to render properly, you will need to tell `gen-docs` to use
+[MyST flavored Markdown](https://myst-parser.readthedocs.io/en/latest/syntax/syntax.html)
+
+```python
+gen-doc --dialect myst ...
+```
 
 ## Can I customize the Markdown generation for my schema site?
 

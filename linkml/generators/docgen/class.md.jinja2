@@ -22,7 +22,7 @@ URI: {{ gen.uri_link(element) }}
 
 
 {% if schemaview.class_parents(element.name) %}
-```mermaid
+```{{ gen.mermaid_directive() }}
  classDiagram
       {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
         {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
@@ -33,7 +33,7 @@ URI: {{ gen.uri_link(element) }}
 
 ```
 {% elif schemaview.class_children(element.name)  %}
-```mermaid
+```{{ gen.mermaid_directive() }}
  classDiagram
       {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
@@ -43,13 +43,13 @@ URI: {{ gen.uri_link(element) }}
       {% endfor %}
 ```
 {% else %}
-```mermaid
+```{{ gen.mermaid_directive() }}
  classDiagram
     class {{ gen.name(element) }}
       {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
         {{ gen.name(element) }} : {{gen.name(s)}}
       {% endfor %}
-
+```
 {% endif %}
 
 

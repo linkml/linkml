@@ -1,5 +1,6 @@
 import os
 import logging
+from enum import Enum
 from pathlib import Path
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 from copy import deepcopy
@@ -16,6 +17,14 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, C
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml.utils.generator import shared_arguments, Generator
+
+class MarkdownDialect(Enum):
+    python = "python"  ## https://python-markdown.github.io/ -- used by mkdocs
+    myst = "myst"      ## https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
+
+
+# In future this may become a Union statement, but for now we only have dialects for markdown
+DIALECT = MarkdownDialect
 
 
 class DocGenerator(Generator):
@@ -53,6 +62,7 @@ class DocGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = '0.0.1'
     valid_formats = ['markdown', 'rst', 'html', 'latex']
+    dialect: DIALECT = None
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory = None
@@ -64,6 +74,7 @@ class DocGenerator(Generator):
                  template_directory: str = None,
                  use_slot_uris: bool = False,
                  format: str = valid_formats[0],
+                 dialect: Optional[Union[DIALECT, str]] = None,
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         """
         Creates a generator object that can write documents to a directory from a schema
@@ -72,6 +83,7 @@ class DocGenerator(Generator):
         :param directory: directory in which to write documents
         :param template_directory: directory for custom templates
         :param format: only markdown is supported by default
+        :param dialect: markdown dialect (e.g MyST, Python)
         :param genmeta:
         :param gen_classvars:
         :param gen_slots:
@@ -85,6 +97,17 @@ class DocGenerator(Generator):
         self.template_directory = template_directory
         self.use_slot_uris = use_slot_uris
         self.genmeta = genmeta
+        if dialect is not None:
+            if isinstance(dialect, str):
+                if dialect == MarkdownDialect.myst.value:
+                    dialect = MarkdownDialect.myst
+                elif dialect == MarkdownDialect.python.value:
+                    dialect = MarkdownDialect.python
+                else:
+                    raise NotImplemented(f'{dialect} not supported')
+            self.dialect = dialect
+
+
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -398,6 +421,21 @@ class DocGenerator(Generator):
             info = ''
         return f'{min}..{max}{info}'
 
+    def mermaid_directive(self) -> str:
+        """
+        Writes a mermaid directive. See <https://mermaid-js.github.io/mermaid/#/>_
+
+        This comes after the triple-backtick.
+
+        Note that the directive varies depending on whether the dialect is
+        the default python markdown (used by mkdocs) or MyST (used if you
+        have a sphinx site)
+        """
+        if self.dialect is not None and self.dialect == MarkdownDialect.myst:
+            return '{mermaid}'
+        else:
+            return 'mermaid'
+
     def yaml(self, element: Element, inferred=False) -> str:
         """
         Render element as YAML
@@ -423,10 +461,11 @@ class DocGenerator(Generator):
 
 @shared_arguments(DocGenerator)
 @click.option("--directory", "-d", required=True, help="Folder to which document files are written")
+@click.option("--dialect",  help="Dialect or 'flavor' of Markdown used.")
 @click.option("--template-directory", help="Folder in which custom templates are kept")
 @click.option("--use-slot-uris/--no-use-slot-uris", default=False, help="Use IDs from slot_uri instead of names")
 @click.command()
-def cli(yamlfile, directory, template_directory, use_slot_uris, **args):
+def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
@@ -434,7 +473,7 @@ def cli(yamlfile, directory, template_directory, use_slot_uris, **args):
     If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
     each type of entity inside
     """
-    gen = DocGenerator(yamlfile, directory=directory, template_directory=template_directory, use_slot_uris=use_slot_uris, **args)
+    gen = DocGenerator(yamlfile, directory=directory, dialect=dialect, template_directory=template_directory, use_slot_uris=use_slot_uris, **args)
     print(gen.serialize())
 
 
