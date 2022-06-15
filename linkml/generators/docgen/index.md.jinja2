@@ -1,30 +1,38 @@
-# {{ schema.name }}
+# {% if schema.title %}{{ schema.title }}{% else %}{{ schema.name }}{% endif %}
 
 {{ schema.description }}
 
 URI: {{ schema.id }}
+Name: {{ schema.name }}
 
 ## Classes
 
 | Class | Description |
 | --- | --- |
-{% for c in schemaview.all_classes().values() -%}
-| {{gen.link(c)}} | {{c.description}} | 
+{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
+| {{gen.link(c)}} | {{c.description}} |
 {% endfor %}
 
 ## Slots
 
 | Slot | Description |
 | --- | --- |
-{% for s in schemaview.all_slots().values() -%}
-| {{gen.link(s)}} | {{s.description}} | 
+{% for s in schemaview.all_slots().values()|sort(attribute='name') -%}
+| {{gen.link(s)}} | {{s.description}} |
 {% endfor %}
 
-## Enums
+## Enumerations
 
-| Enums | Description |
+| Enumeration | Description |
 | --- | --- |
-{% for e in schemaview.all_enums().values() -%}
-| {{gen.link(e)}} | {{e.description}} | 
+{% for e in schemaview.all_enums().values()|sort(attribute='name') -%}
+| {{gen.link(e)}} | {{e.description}} |
 {% endfor %}
 
+## Subsets
+
+| Subset | Description |
+| --- | --- |
+{% for ss in schemaview.all_subsets().values()|sort(attribute='name') -%}
+| {{gen.link(ss)}} | {{ss.description}} |
+{% endfor %}

@@ -1,5 +1,5 @@
 # Auto generated from core.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-04-14T01:45:42
+# Generation date: 2022-05-10T00:32:01
 # Schema: core
 #
 # id: https://w3id.org/linkml/tests/core

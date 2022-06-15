@@ -345,13 +345,6 @@ slots:
   name:
     name: name
     definition_uri: https://w3id.org/linkml/name
-    aliases:
-    - short name
-    - unique name
-    mappings:
-    - rdfs:label
-    exact_mappings:
-    - schema:name
     description: the unique name of the element within the context of the schema.  Name
       is combined with the default prefix to form the globally unique subject of the
       target class.
@@ -364,6 +357,13 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Data_element_name
+    aliases:
+    - short name
+    - unique name
+    mappings:
+    - rdfs:label
+    exact_mappings:
+    - schema:name
     domain: element
     slot_uri: rdfs:label
     identifier: true
@@ -375,15 +375,15 @@ slots:
   title:
     name: title
     definition_uri: https://w3id.org/linkml/title
-    aliases:
-    - long name
-    mappings:
-    - dcterms:title
     description: the official title of the element
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - long name
+    mappings:
+    - dcterms:title
     domain: element
     slot_uri: dcterms:title
     owner: title
@@ -393,13 +393,13 @@ slots:
   conforms_to:
     name: conforms_to
     definition_uri: https://w3id.org/linkml/conforms_to
-    mappings:
-    - dcterms:conformsTo
     description: An established standard to which the element conforms.
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - dcterms:conformsTo
     domain: element
     slot_uri: dcterms:conformsTo
     owner: element
@@ -409,12 +409,12 @@ slots:
   categories:
     name: categories
     definition_uri: https://w3id.org/linkml/categories
-    mappings:
-    - dcterms:subject
     description: controlled terms used to categorize an element
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - dcterms:subject
     singular_name: category
     slot_uri: dcterms:subject
     multivalued: true
@@ -426,12 +426,12 @@ slots:
   keywords:
     name: keywords
     definition_uri: https://w3id.org/linkml/keywords
-    mappings:
-    - schema:keywords
     description: Keywords or tags used to describe the element
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - schema:keywords
     singular_name: keyword
     domain: element
     slot_uri: schema:keywords
@@ -481,6 +481,10 @@ slots:
   description:
     name: description
     definition_uri: https://w3id.org/linkml/description
+    description: a description of the element's purpose and use
+    in_subset:
+    - basic
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - definition
     mappings:
@@ -488,10 +492,6 @@ slots:
     exact_mappings:
     - dcterms:description
     - schema:description
-    description: a description of the element's purpose and use
-    in_subset:
-    - basic
-    from_schema: https://w3id.org/linkml/meta
     domain: element
     slot_uri: skos:definition
     owner: description
@@ -503,20 +503,23 @@ slots:
   structured_aliases:
     name: structured_aliases
     definition_uri: https://w3id.org/linkml/structured_aliases
-    mappings:
-    - skosxl:altLabel
     description: A list of structured_alias objects.
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skosxl:altLabel
     slot_uri: skosxl:altLabel
     multivalued: true
-    inlined: true
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: structured_alias
+    inlined: true
   aliases:
     name: aliases
     definition_uri: https://w3id.org/linkml/aliases
+    in_subset:
+    - basic
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - synonyms
     - alternate names
@@ -526,25 +529,22 @@ slots:
     - skos:altLabel
     exact_mappings:
     - schema:alternateName
-    in_subset:
-    - basic
-    from_schema: https://w3id.org/linkml/meta
     domain: element
     slot_uri: skos:altLabel
     multivalued: true
-    owner: element
+    owner: aliases
     domain_of:
-    - element
+    - common_metadata
     range: string
   deprecated:
     name: deprecated
     definition_uri: https://w3id.org/linkml/deprecated
-    close_mappings:
-    - owl:deprecated
     description: Description of why and when this element will no longer be used
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - owl:deprecated
     domain: element
     slot_uri: linkml:deprecated
     owner: deprecated
@@ -568,13 +568,13 @@ slots:
   notes:
     name: notes
     definition_uri: https://w3id.org/linkml/notes
-    mappings:
-    - skos:editorialNote
     description: editorial notes about an element intended for internal consumption
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:editorialNote
     domain: element
     slot_uri: skos:editorialNote
     multivalued: true
@@ -585,15 +585,15 @@ slots:
   comments:
     name: comments
     definition_uri: https://w3id.org/linkml/comments
-    mappings:
-    - skos:note
-    exact_mappings:
-    - rdfs:comment
     description: notes and comments about an element intended for external consumption
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:note
+    exact_mappings:
+    - rdfs:comment
     domain: element
     slot_uri: skos:note
     multivalued: true
@@ -604,14 +604,14 @@ slots:
   in_subset:
     name: in_subset
     definition_uri: https://w3id.org/linkml/in_subset
-    mappings:
-    - OIO:inSubset
     description: used to indicate membership of a term in a defined subset of terms
       used for a particular domain or application (e.g. the translator_minimal subset
       holding the minimal set of predicates used in a translator knowledge graph)
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - OIO:inSubset
     domain: element
     slot_uri: OIO:inSubset
     multivalued: true
@@ -622,13 +622,13 @@ slots:
   from_schema:
     name: from_schema
     definition_uri: https://w3id.org/linkml/from_schema
-    mappings:
-    - skos:inScheme
     description: id of the schema that defined the element
     notes:
     - A stronger model would be range schema_definition, but this doesn't address
       the import model
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:inScheme
     domain: element
     slot_uri: skos:inScheme
     readonly: supplied by the schema loader
@@ -652,13 +652,13 @@ slots:
   see_also:
     name: see_also
     definition_uri: https://w3id.org/linkml/see_also
-    mappings:
-    - rdfs:seeAlso
     description: a reference
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - rdfs:seeAlso
     domain: element
     slot_uri: rdfs:seeAlso
     multivalued: true
@@ -669,15 +669,15 @@ slots:
   owned_by:
     name: owned_by
     definition_uri: https://w3id.org/linkml/owned_by
+    description: agent that owns or is the steward of the element
+    in_subset:
+    - basic
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - steward
     - owner
     close_mappings:
     - rdfs:isDefinedBy
-    description: agent that owns or is the steward of the element
-    in_subset:
-    - basic
-    from_schema: https://w3id.org/linkml/meta
     domain: element
     slot_uri: linkml:owned_by
     owner: owned_by
@@ -685,12 +685,12 @@ slots:
   created_by:
     name: created_by
     definition_uri: https://w3id.org/linkml/created_by
-    mappings:
-    - pav:createdBy
     description: agent that created the element
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - pav:createdBy
     domain: element
     slot_uri: pav:createdBy
     owner: created_by
@@ -700,12 +700,12 @@ slots:
   created_on:
     name: created_on
     definition_uri: https://w3id.org/linkml/created_on
-    mappings:
-    - pav:createdOn
     description: time at which the element was created
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - pav:createdOn
     domain: element
     slot_uri: pav:createdOn
     owner: created_on
@@ -715,12 +715,12 @@ slots:
   last_updated_on:
     name: last_updated_on
     definition_uri: https://w3id.org/linkml/last_updated_on
-    mappings:
-    - pav:lastUpdatedOn
     description: time at which the element was last updated
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - pav:lastUpdatedOn
     domain: element
     slot_uri: pav:lastUpdatedOn
     owner: last_updated_on
@@ -730,12 +730,12 @@ slots:
   modified_by:
     name: modified_by
     definition_uri: https://w3id.org/linkml/modified_by
-    mappings:
-    - oslc:modifiedBy
     description: agent that modified the element
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - oslc:modifiedBy
     domain: element
     slot_uri: oslc:modifiedBy
     owner: modified_by
@@ -745,10 +745,6 @@ slots:
   status:
     name: status
     definition_uri: https://w3id.org/linkml/status
-    aliases:
-    - workflow status
-    mappings:
-    - bibo:status
     description: status of the element
     examples:
     - value: bibo:draft
@@ -758,6 +754,10 @@ slots:
     see_also:
     - https://www.hl7.org/fhir/valueset-publication-status.html
     - https://www.hl7.org/fhir/versions.html#std-process
+    aliases:
+    - workflow status
+    mappings:
+    - bibo:status
     domain: element
     slot_uri: bibo:status
     owner: status
@@ -767,13 +767,13 @@ slots:
   literal_form:
     name: literal_form
     definition_uri: https://w3id.org/linkml/literal_form
+    description: The literal lexical form of a structured alias
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - alias_name
     - string_value
     mappings:
     - skosxl:literalForm
-    description: The literal lexical form of a structured alias
-    from_schema: https://w3id.org/linkml/meta
     domain: structured_alias
     slot_uri: skosxl:literalForm
     owner: structured_alias
@@ -784,10 +784,10 @@ slots:
   alias_predicate:
     name: alias_predicate
     definition_uri: https://w3id.org/linkml/alias_predicate
-    mappings:
-    - rdf:predicate
     description: 'The relationship between an element and its alias '
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - rdf:predicate
     domain: structured_alias
     slot_uri: rdf:predicate
     alias: predicate
@@ -799,11 +799,11 @@ slots:
   in_language:
     name: in_language
     definition_uri: https://w3id.org/linkml/in_language
-    mappings:
-    - schema:inLanguage
     notes:
     - Use a string from IETF BCP 47
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - schema:inLanguage
     slot_uri: schema:inLanguage
     owner: common_metadata
     domain_of:
@@ -812,6 +812,13 @@ slots:
   source:
     name: source
     definition_uri: https://w3id.org/linkml/source
+    description: A related resource from which the element is derived.
+    comments:
+    - The described resource may be derived from the related resource in whole or
+      in part
+    in_subset:
+    - basic
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - origin
     - derived from
@@ -820,13 +827,6 @@ slots:
     close_mappings:
     - prov:wasDerivedFrom
     - schema:isBasedOn
-    description: A related resource from which the element is derived.
-    comments:
-    - The described resource may be derived from the related resource in whole or
-      in part
-    in_subset:
-    - basic
-    from_schema: https://w3id.org/linkml/meta
     domain: element
     slot_uri: dcterms:source
     owner: source
@@ -873,8 +873,6 @@ slots:
   mixin:
     name: mixin
     definition_uri: https://w3id.org/linkml/mixin
-    aliases:
-    - trait
     description: this slot or class can only be used as a mixin.
     in_subset:
     - basic
@@ -882,6 +880,8 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Mixin
+    aliases:
+    - trait
     domain: definition
     slot_uri: linkml:mixin
     owner: definition
@@ -891,8 +891,6 @@ slots:
   mixins:
     name: mixins
     definition_uri: https://w3id.org/linkml/mixins
-    aliases:
-    - traits
     description: List of definitions to be mixed in. Targets may be any definition
       of the same type
     comments:
@@ -904,6 +902,8 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Mixin
+    aliases:
+    - traits
     domain: definition
     slot_uri: linkml:mixins
     multivalued: true
@@ -1014,19 +1014,19 @@ slots:
     domain: enum_definition
     slot_uri: linkml:permissible_values
     multivalued: true
-    inlined: true
     owner: enum_definition
     domain_of:
     - enum_definition
     range: permissible_value
+    inlined: true
   text:
     name: text
     definition_uri: https://w3id.org/linkml/text
-    aliases:
-    - value
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - value
     domain: permissible_value
     slot_uri: linkml:text
     identifier: true
@@ -1038,8 +1038,6 @@ slots:
   meaning:
     name: meaning
     definition_uri: https://w3id.org/linkml/meaning
-    aliases:
-    - PV meaning
     description: the value meaning of a permissible value
     notes:
     - we may want to change the range of this (and other) elements in the model to
@@ -1049,6 +1047,8 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/ISO/IEC_11179
+    aliases:
+    - PV meaning
     domain: permissible_value
     slot_uri: linkml:meaning
     owner: permissible_value
@@ -1087,15 +1087,15 @@ slots:
   version:
     name: version
     definition_uri: https://w3id.org/linkml/version
-    mappings:
-    - pav:version
-    exact_mappings:
-    - schema:schemaVersion
     description: particular version of schema
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - pav:version
+    exact_mappings:
+    - schema:schemaVersion
     domain: schema_definition
     slot_uri: pav:version
     owner: schema_definition
@@ -1124,19 +1124,19 @@ slots:
     domain: schema_definition
     slot_uri: linkml:structured_imports
     multivalued: true
-    inlined: true
     owner: structured_imports
     range: import_expression
+    inlined: true
   license:
     name: license
     definition_uri: https://w3id.org/linkml/license
-    mappings:
-    - dcterms:license
     description: license for the schema
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - dcterms:license
     domain: schema_definition
     slot_uri: dcterms:license
     owner: schema_definition
@@ -1193,20 +1193,20 @@ slots:
   subsets:
     name: subsets
     definition_uri: https://w3id.org/linkml/subsets
-    exact_mappings:
-    - OIO:hasSubset
     description: list of subsets referenced in this model
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - OIO:hasSubset
     domain: schema_definition
     slot_uri: linkml:subsets
     multivalued: true
-    inlined: true
     owner: schema_definition
     domain_of:
     - schema_definition
     range: subset_definition
+    inlined: true
   types:
     name: types
     definition_uri: https://w3id.org/linkml/types
@@ -1218,11 +1218,11 @@ slots:
     domain: schema_definition
     slot_uri: linkml:types
     multivalued: true
-    inlined: true
     owner: schema_definition
     domain_of:
     - schema_definition
     range: type_definition
+    inlined: true
   enums:
     name: enums
     definition_uri: https://w3id.org/linkml/enums
@@ -1234,11 +1234,11 @@ slots:
     domain: schema_definition
     slot_uri: linkml:enums
     multivalued: true
-    inlined: true
     owner: schema_definition
     domain_of:
     - schema_definition
     range: enum_definition
+    inlined: true
   slot_definitions:
     name: slot_definitions
     definition_uri: https://w3id.org/linkml/slot_definitions
@@ -1249,12 +1249,12 @@ slots:
     domain: schema_definition
     slot_uri: linkml:slots
     multivalued: true
-    inlined: true
     alias: slots
     owner: schema_definition
     domain_of:
     - schema_definition
     range: slot_definition
+    inlined: true
   classes:
     name: classes
     definition_uri: https://w3id.org/linkml/classes
@@ -1268,11 +1268,11 @@ slots:
     domain: schema_definition
     slot_uri: linkml:classes
     multivalued: true
-    inlined: true
     owner: schema_definition
     domain_of:
     - schema_definition
     range: class_definition
+    inlined: true
   metamodel_version:
     name: metamodel_version
     definition_uri: https://w3id.org/linkml/metamodel_version
@@ -1383,11 +1383,11 @@ slots:
     domain: class_definition
     slot_uri: linkml:slot_usage
     multivalued: true
-    inlined: true
     owner: class_definition
     domain_of:
     - class_definition
     range: slot_definition
+    inlined: true
   range_expression:
     name: range_expression
     definition_uri: https://w3id.org/linkml/range_expression
@@ -1399,12 +1399,12 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     domain: slot_expression
     slot_uri: linkml:range_expression
-    inlined: true
     owner: slot_expression
     domain_of:
     - path_expression
     - slot_expression
     range: anonymous_class_expression
+    inlined: true
   boolean_slot:
     name: boolean_slot
     definition_uri: https://w3id.org/linkml/boolean_slot
@@ -1414,19 +1414,18 @@ slots:
     abstract: true
     slot_uri: linkml:boolean_slot
     multivalued: true
-    inlined: true
     range: expression
+    inlined: true
   any_of:
     name: any_of
     definition_uri: https://w3id.org/linkml/any_of
-    exact_mappings:
-    - sh:or
     description: holds if at least one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:or
     is_a: boolean_slot
     slot_uri: linkml:any_of
     multivalued: true
-    inlined: true
     owner: class_expression
     domain_of:
     - type_expression
@@ -1434,17 +1433,17 @@ slots:
     - slot_expression
     - class_expression
     range: expression
+    inlined: true
   exactly_one_of:
     name: exactly_one_of
     definition_uri: https://w3id.org/linkml/exactly_one_of
-    exact_mappings:
-    - sh:xone
     description: holds if only one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:xone
     is_a: boolean_slot
     slot_uri: linkml:exactly_one_of
     multivalued: true
-    inlined: true
     owner: class_expression
     domain_of:
     - type_expression
@@ -1452,17 +1451,17 @@ slots:
     - slot_expression
     - class_expression
     range: expression
+    inlined: true
   none_of:
     name: none_of
     definition_uri: https://w3id.org/linkml/none_of
-    exact_mappings:
-    - sh:not
     description: holds if none of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:not
     is_a: boolean_slot
     slot_uri: linkml:none_of
     multivalued: true
-    inlined: true
     owner: class_expression
     domain_of:
     - type_expression
@@ -1470,17 +1469,17 @@ slots:
     - slot_expression
     - class_expression
     range: expression
+    inlined: true
   all_of:
     name: all_of
     definition_uri: https://w3id.org/linkml/all_of
-    exact_mappings:
-    - sh:and
     description: holds if all of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:and
     is_a: boolean_slot
     slot_uri: linkml:all_of
     multivalued: true
-    inlined: true
     owner: class_expression
     domain_of:
     - type_expression
@@ -1488,9 +1487,13 @@ slots:
     - slot_expression
     - class_expression
     range: expression
+    inlined: true
   preconditions:
     name: preconditions
     definition_uri: https://w3id.org/linkml/preconditions
+    description: an expression that must hold in order for the rule to be applicable
+      to an instance
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - if
     - body
@@ -1499,56 +1502,53 @@ slots:
     - sh:condition
     close_mappings:
     - swrl:body
-    description: an expression that must hold in order for the rule to be applicable
-      to an instance
-    from_schema: https://w3id.org/linkml/meta
     slot_uri: sh:condition
-    inlined: true
     owner: class_rule
     domain_of:
     - class_rule
     range: anonymous_class_expression
+    inlined: true
   postconditions:
     name: postconditions
     definition_uri: https://w3id.org/linkml/postconditions
+    description: an expression that must hold for an instance of the class, if the
+      preconditions hold
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - then
     - head
     - consequents
     close_mappings:
     - swrl:body
-    description: an expression that must hold for an instance of the class, if the
-      preconditions hold
-    from_schema: https://w3id.org/linkml/meta
     slot_uri: linkml:postconditions
-    inlined: true
     owner: class_rule
     domain_of:
     - class_rule
     range: anonymous_class_expression
+    inlined: true
   elseconditions:
     name: elseconditions
     definition_uri: https://w3id.org/linkml/elseconditions
-    aliases:
-    - else
     description: an expression that must hold for an instance of the class, if the
       preconditions no not hold
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - else
     slot_uri: linkml:elseconditions
-    inlined: true
     owner: class_rule
     domain_of:
     - class_rule
     range: anonymous_class_expression
+    inlined: true
   bidirectional:
     name: bidirectional
     definition_uri: https://w3id.org/linkml/bidirectional
-    aliases:
-    - iff
-    - if and only if
     description: in addition to preconditions entailing postconditions, the postconditions
       entail the preconditions
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - iff
+    - if and only if
     slot_uri: linkml:bidirectional
     owner: class_rule
     domain_of:
@@ -1568,12 +1568,6 @@ slots:
   rank:
     name: rank
     definition_uri: https://w3id.org/linkml/rank
-    aliases:
-    - order
-    - precedence
-    - display order
-    mappings:
-    - sh:order
     description: the relative order in which the element occurs, lower values are
       given precedence
     comments:
@@ -1581,19 +1575,25 @@ slots:
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - order
+    - precedence
+    - display order
+    mappings:
+    - sh:order
     slot_uri: sh:order
     owner: class_rule
     domain_of:
-    - element
+    - common_metadata
     - class_rule
     range: integer
   deactivated:
     name: deactivated
     definition_uri: https://w3id.org/linkml/deactivated
-    mappings:
-    - sh:deactivated
     description: a deactivated rule is not executed by the rules engine
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - sh:deactivated
     slot_uri: sh:deactivated
     owner: class_rule
     domain_of:
@@ -1602,18 +1602,18 @@ slots:
   rules:
     name: rules
     definition_uri: https://w3id.org/linkml/rules
-    mappings:
-    - sh:rule
     description: the collection of rules that apply to all members of this class
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - sh:rule
     domain: class_definition
     slot_uri: sh:rule
     multivalued: true
-    inlined: true
     owner: class_definition
     domain_of:
     - class_definition
     range: class_rule
+    inlined: true
   classification_rules:
     name: classification_rules
     definition_uri: https://w3id.org/linkml/classification_rules
@@ -1623,11 +1623,11 @@ slots:
     domain: class_definition
     slot_uri: linkml:classification_rules
     multivalued: true
-    inlined: true
     owner: class_definition
     domain_of:
     - class_definition
     range: anonymous_class_expression
+    inlined: true
   slot_conditions:
     name: slot_conditions
     definition_uri: https://w3id.org/linkml/slot_conditions
@@ -1636,11 +1636,11 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     slot_uri: linkml:slot_conditions
     multivalued: true
-    inlined: true
     owner: class_expression
     domain_of:
     - class_expression
     range: slot_definition
+    inlined: true
   attributes:
     name: attributes
     definition_uri: https://w3id.org/linkml/attributes
@@ -1658,20 +1658,20 @@ slots:
     domain: class_definition
     slot_uri: linkml:attributes
     multivalued: true
-    inlined: true
     owner: class_definition
     domain_of:
     - class_definition
     range: slot_definition
+    inlined: true
   class_uri:
     name: class_uri
     definition_uri: https://w3id.org/linkml/class_uri
-    aliases:
-    - public ID
     description: URI of the class in an RDF environment
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - public ID
     domain: class_definition
     slot_uri: linkml:class_uri
     ifabsent: class_curie
@@ -1682,11 +1682,11 @@ slots:
   subclass_of:
     name: subclass_of
     definition_uri: https://w3id.org/linkml/subclass_of
-    mappings:
-    - rdfs:subClassOf
     description: rdfs:subClassOf to be emitted in OWL generation
     deprecated: Use is_a instead
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - rdfs:subClassOf
     domain: class_definition
     slot_uri: rdfs:subClassOf
     owner: class_definition
@@ -1741,21 +1741,21 @@ slots:
   unique_keys:
     name: unique_keys
     definition_uri: https://w3id.org/linkml/unique_keys
-    exact_mappings:
-    - owl:hasKey
     description: Set of unique keys for this slot
     in_subset:
     - basic
     - relational_model
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - owl:hasKey
     domain: class_definition
     slot_uri: linkml:unique_keys
     multivalued: true
-    inlined: true
     owner: class_definition
     domain_of:
     - class_definition
     range: unique_key
+    inlined: true
   unique_key_name:
     name: unique_key_name
     definition_uri: https://w3id.org/linkml/unique_key_name
@@ -1818,8 +1818,6 @@ slots:
   range:
     name: range
     definition_uri: https://w3id.org/linkml/range
-    aliases:
-    - value domain
     description: "defines the type of the object of the slot.  Given the following\
       \ slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n\
       \  X:\n    S1: Y\n\nimplicitly asserts Y is an instance of C2\n"
@@ -1831,6 +1829,8 @@ slots:
     - relational_model
     - object_oriented
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - value domain
     domain: slot_definition
     slot_uri: linkml:range
     inherited: true
@@ -1842,12 +1842,12 @@ slots:
   slot_uri:
     name: slot_uri
     definition_uri: https://w3id.org/linkml/slot_uri
-    aliases:
-    - public ID
     description: predicate of this slot for semantic web application
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - public ID
     domain: slot_definition
     slot_uri: linkml:slot_uri
     ifabsent: slot_curie
@@ -1900,16 +1900,16 @@ slots:
   ifabsent:
     name: ifabsent
     definition_uri: https://w3id.org/linkml/ifabsent
-    close_mappings:
-    - sh:defaultValue
     description: "function that provides a default value for the slot.  Possible values\
-      \ for this slot are defined in\nlinkml.utils.ifabsent_functions.default_library:\n\
+      \ for this slot are defined in\nlinkml_runtime.utils.ifabsent_functions.default_library:\n\
       \  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value)\
       \ -- integer value\n  * str(value) -- string value\n  * default_range -- schema\
       \ default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for\
       \ the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri\
       \ -- URI for the containing class"
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - sh:defaultValue
     domain: slot_definition
     slot_uri: linkml:ifabsent
     inherited: true
@@ -2065,11 +2065,11 @@ slots:
     is_a: list_value_specification_constant
     status: testing
     slot_uri: linkml:has_member
-    inlined: true
     owner: slot_expression
     domain_of:
     - slot_expression
     range: anonymous_slot_expression
+    inlined: true
   all_members:
     name: all_members
     definition_uri: https://w3id.org/linkml/all_members
@@ -2083,20 +2083,20 @@ slots:
     status: testing
     slot_uri: linkml:all_members
     multivalued: true
-    inlined: true
     owner: slot_expression
     domain_of:
     - slot_expression
     range: slot_definition
+    inlined: true
   singular_name:
     name: singular_name
     definition_uri: https://w3id.org/linkml/singular_name
-    mappings:
-    - skos:altLabel
     description: a name that is used in the singular form
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:altLabel
     domain: slot_definition
     slot_uri: skos:altLabel
     owner: slot_definition
@@ -2169,9 +2169,9 @@ slots:
     domain: slot_definition
     slot_uri: linkml:inlined
     inherited: true
-    owner: slot_definition
+    owner: inlined
     domain_of:
-    - slot_definition
+    - slot_expression
     range: boolean
   inlined_as_list:
     name: inlined_as_list
@@ -2197,9 +2197,9 @@ slots:
     domain: slot_definition
     slot_uri: linkml:inlined_as_list
     inherited: true
-    owner: slot_definition
+    owner: inlined_as_list
     domain_of:
-    - slot_definition
+    - slot_expression
     range: boolean
   list_elements_ordered:
     name: list_elements_ordered
@@ -2235,12 +2235,12 @@ slots:
   shared:
     name: shared
     definition_uri: https://w3id.org/linkml/shared
-    aliases:
-    - inverse functional
-    - many to one or many
     description: If True, then the relationship between the slot domain and range
       is many to one or many to many
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - inverse functional
+    - many to one or many
     domain: slot_definition
     slot_uri: linkml:shared
     inherited: true
@@ -2273,11 +2273,6 @@ slots:
   identifier:
     name: identifier
     definition_uri: https://w3id.org/linkml/identifier
-    aliases:
-    - primary key
-    - ID
-    - UID
-    - code
     description: True means that the key slot(s) uniquely identify the container.
       There can be at most one identifier or key per container
     comments:
@@ -2292,6 +2287,11 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Identifier
+    aliases:
+    - primary key
+    - ID
+    - UID
+    - code
     domain: slot_definition
     slot_uri: linkml:identifier
     inherited: true
@@ -2302,11 +2302,11 @@ slots:
   designates_type:
     name: designates_type
     definition_uri: https://w3id.org/linkml/designates_type
-    aliases:
-    - type designator
     description: True means that the key slot(s) is used to determine the instantiation
       (types) relation between objects and a ClassDefinition
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - type designator
     domain: slot_definition
     slot_uri: linkml:designates_type
     inherited: true
@@ -2317,11 +2317,11 @@ slots:
   alias:
     name: alias
     definition_uri: https://w3id.org/linkml/alias
-    mappings:
-    - skos:prefLabel
     description: the name used for a slot in the context of its owning class.  If
       present, this is used instead of the actual slot name.
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:prefLabel
     domain: slot_definition
     slot_uri: skos:prefLabel
     owner: slot_definition
@@ -2384,10 +2384,10 @@ slots:
   subproperty_of:
     name: subproperty_of
     definition_uri: https://w3id.org/linkml/subproperty_of
-    mappings:
-    - rdfs:subPropertyOf
     description: Ontology property which this slot is a subproperty of
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - rdfs:subPropertyOf
     domain: slot_definition
     slot_uri: rdfs:subPropertyOf
     owner: slot_definition
@@ -2434,10 +2434,10 @@ slots:
   symmetric:
     name: symmetric
     definition_uri: https://w3id.org/linkml/symmetric
-    close_mappings:
-    - owl:SymmetricProperty
     description: If s is symmetric, and i.s=v, then v.s=i
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - owl:SymmetricProperty
     is_a: relational_logical_characteristic
     domain: slot_definition
     slot_uri: linkml:symmetric
@@ -2448,13 +2448,13 @@ slots:
   asymmetric:
     name: asymmetric
     definition_uri: https://w3id.org/linkml/asymmetric
-    close_mappings:
-    - owl:AsymmetricProperty
     description: If s is antisymmetric, and i.s=v where i is different from v, v.s
       cannot have value i
     comments:
     - asymmetry is the combination of antisymmetry and irreflexivity
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - owl:AsymmetricProperty
     is_a: relational_logical_characteristic
     domain: slot_definition
     slot_uri: linkml:asymmetric
@@ -2465,13 +2465,13 @@ slots:
   reflexive:
     name: reflexive
     definition_uri: https://w3id.org/linkml/reflexive
-    close_mappings:
-    - owl:ReflexiveProperty
     description: If s is reflexive, then i.s=i for all instances i
     comments:
     - it is rare for a property to be reflexive, this characteristic is added for
       completeness, consider instead locally_reflexive
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - owl:ReflexiveProperty
     is_a: relational_logical_characteristic
     domain: slot_definition
     slot_uri: linkml:reflexive
@@ -2482,10 +2482,10 @@ slots:
   irreflexive:
     name: irreflexive
     definition_uri: https://w3id.org/linkml/irreflexive
-    close_mappings:
-    - owl:IrreflexiveProperty
     description: If s is irreflexive, then there exists no i such i.s=i
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - owl:IrreflexiveProperty
     is_a: relational_logical_characteristic
     domain: slot_definition
     slot_uri: linkml:irreflexive
@@ -2509,10 +2509,10 @@ slots:
   transitive:
     name: transitive
     definition_uri: https://w3id.org/linkml/transitive
-    close_mappings:
-    - owl:TransitiveProperty
     description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - owl:TransitiveProperty
     is_a: relational_logical_characteristic
     domain: slot_definition
     slot_uri: linkml:transitive
@@ -2548,11 +2548,11 @@ slots:
   inverse:
     name: inverse
     definition_uri: https://w3id.org/linkml/inverse
-    mappings:
-    - owl:inverseOf
     description: indicates that any instance of d s r implies that there is also an
       instance of r s' d
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - owl:inverseOf
     domain: slot_definition
     slot_uri: owl:inverseOf
     owner: slot_definition
@@ -2586,13 +2586,13 @@ slots:
   minimum_value:
     name: minimum_value
     definition_uri: https://w3id.org/linkml/minimum_value
-    aliases:
-    - low value
     description: for slots with ranges of type number, the value must be equal to
       or higher than this
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - low value
     domain: slot_definition
     slot_uri: linkml:minimum_value
     inherited: true
@@ -2604,13 +2604,13 @@ slots:
   maximum_value:
     name: maximum_value
     definition_uri: https://w3id.org/linkml/maximum_value
-    aliases:
-    - high value
     description: for slots with ranges of type number, the value must be equal to
       or lowe than this
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - high value
     domain: slot_definition
     slot_uri: linkml:maximum_value
     inherited: true
@@ -2680,12 +2680,12 @@ slots:
     domain: definition
     slot_uri: linkml:structured_pattern
     inherited: true
-    inlined: true
     owner: structured_pattern
     domain_of:
     - type_expression
     - slot_expression
     range: pattern_expression
+    inlined: true
   string_serialization:
     name: string_serialization
     definition_uri: https://w3id.org/linkml/string_serialization
@@ -2818,28 +2818,28 @@ slots:
   alt_descriptions:
     name: alt_descriptions
     definition_uri: https://w3id.org/linkml/alt_descriptions
-    aliases:
-    - alternate definitions
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - alternate definitions
     domain: element
     slot_uri: linkml:alt_descriptions
     multivalued: true
-    inlined: true
     owner: alt_descriptions
     domain_of:
     - common_metadata
     range: alt_description
+    inlined: true
   value:
     name: value
     definition_uri: https://w3id.org/linkml/value
-    mappings:
-    - skos:example
     description: example value
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:example
     domain: example
     slot_uri: skos:example
     owner: example
@@ -2863,22 +2863,22 @@ slots:
   examples:
     name: examples
     definition_uri: https://w3id.org/linkml/examples
-    close_mappings:
-    - vann:example
     description: example usages of an element
     in_subset:
     - owl
     - basic
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - vann:example
     singular_name: example
     domain: element
     slot_uri: linkml:examples
     multivalued: true
-    inlined: true
     owner: examples
     domain_of:
     - common_metadata
     range: example
+    inlined: true
   prefix_prefix:
     name: prefix_prefix
     definition_uri: https://w3id.org/linkml/prefix_prefix
@@ -2919,11 +2919,11 @@ slots:
     domain: schema_definition
     slot_uri: linkml:prefixes
     multivalued: true
-    inlined: true
     owner: schema_definition
     domain_of:
     - schema_definition
     range: prefix
+    inlined: true
   setting_key:
     name: setting_key
     definition_uri: https://w3id.org/linkml/setting_key
@@ -2959,11 +2959,11 @@ slots:
     domain: schema_definition
     slot_uri: linkml:settings
     multivalued: true
-    inlined: true
     owner: schema_definition
     domain_of:
     - schema_definition
     range: setting
+    inlined: true
   import_from:
     name: import_from
     definition_uri: https://w3id.org/linkml/import_from
@@ -2992,11 +2992,11 @@ slots:
     domain: import_expression
     slot_uri: linkml:import_map
     multivalued: true
-    inlined: true
     owner: import_expression
     domain_of:
     - import_expression
     range: setting
+    inlined: true
   local_name_source:
     name: local_name_source
     definition_uri: https://w3id.org/linkml/local_name_source
@@ -3013,10 +3013,10 @@ slots:
   local_name_value:
     name: local_name_value
     definition_uri: https://w3id.org/linkml/local_name_value
-    mappings:
-    - skos:altLabel
     description: a name assigned to an element in a given ontology
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skos:altLabel
     domain: local_name
     slot_uri: skos:altLabel
     owner: local_name
@@ -3031,21 +3031,21 @@ slots:
     domain: element
     slot_uri: linkml:local_names
     multivalued: true
-    inlined: true
     owner: element
     domain_of:
     - element
     range: local_name
+    inlined: true
   slot_group:
     name: slot_group
     definition_uri: https://w3id.org/linkml/slot_group
-    mappings:
-    - sh:group
     description: allows for grouping of related slots into a grouping slot that serves
       the role of a group
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - sh:group
     domain: slot_definition
     slot_uri: sh:group
     owner: slot_definition
@@ -3060,12 +3060,12 @@ slots:
   is_grouping_slot:
     name: is_grouping_slot
     definition_uri: https://w3id.org/linkml/is_grouping_slot
-    close_mappings:
-    - sh:PropertyGroup
     description: true if this slot is a grouping slot
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - sh:PropertyGroup
     domain: slot_definition
     slot_uri: linkml:is_grouping_slot
     owner: slot_definition
@@ -3078,11 +3078,11 @@ slots:
     description: in a sequential list, this indicates the next member
     from_schema: https://w3id.org/linkml/meta
     slot_uri: linkml:followed_by
-    inlined: true
     owner: path_expression
     domain_of:
     - path_expression
     range: expression
+    inlined: true
   reversed:
     name: reversed
     definition_uri: https://w3id.org/linkml/reversed
@@ -3111,16 +3111,14 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     domain: slot_definition
     slot_uri: linkml:path_rule
-    inlined: true
     owner: slot_definition
     domain_of:
     - slot_definition
     range: path_expression
+    inlined: true
   represents_relationship:
     name: represents_relationship
     definition_uri: https://w3id.org/linkml/represents_relationship
-    aliases:
-    - is_reified
     description: true if this class represents a relationship rather than an entity
     comments:
     - in the context of Entity-Relationship (ER) modeling, this is used to state that
@@ -3132,6 +3130,8 @@ slots:
     see_also:
     - rdf:Statement
     - https://patterns.dataincubator.org/book/qualified-relation.html
+    aliases:
+    - is_reified
     status: testing
     domain: class_definition
     slot_uri: linkml:represents_relationship
@@ -3143,8 +3143,6 @@ slots:
   relational_role:
     name: relational_role
     definition_uri: https://w3id.org/linkml/relational_role
-    aliases:
-    - reification_role
     description: the role a slot on a relationship class plays, for example, the subject,
       object or predicate roles
     comments:
@@ -3155,6 +3153,8 @@ slots:
     - in the context of property graphs, this should be used on edge classes to indicate
       which slots represent the input and output nodes
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - reification_role
     status: testing
     domain: slot_definition
     slot_uri: linkml:relational_role
@@ -3166,6 +3166,12 @@ slots:
   mappings:
     name: mappings
     definition_uri: https://w3id.org/linkml/mappings
+    description: A list of terms from different schemas or terminology systems that
+      have comparable meaning. These may include terms that are precisely equivalent,
+      broader or narrower in meaning, or otherwise semantically related but not equivalent
+      from a strict ontological perspective.
+    from_schema: https://w3id.org/linkml/mappings
+    imported_from: linkml:mappings
     aliases:
     - xrefs
     - identifiers
@@ -3173,112 +3179,106 @@ slots:
     - alternate ids
     mappings:
     - skos:mappingRelation
-    description: A list of terms from different schemas or terminology systems that
-      have comparable meaning. These may include terms that are precisely equivalent,
-      broader or narrower in meaning, or otherwise semantically related but not equivalent
-      from a strict ontological perspective.
-    from_schema: https://w3id.org/linkml/mappings
-    imported_from: linkml:mappings
     slot_uri: skos:mappingRelation
     multivalued: true
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: uriorcurie
   exact mappings:
     name: exact mappings
     definition_uri: https://w3id.org/linkml/exact_mappings
-    mappings:
-    - skos:exactMatch
     description: A list of terms from different schemas or terminology systems that
       have identical meaning.
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - skos:exactMatch
     is_a: mappings
     slot_uri: skos:exactMatch
     multivalued: true
     inherited: false
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: uriorcurie
   close mappings:
     name: close mappings
     definition_uri: https://w3id.org/linkml/close_mappings
-    mappings:
-    - skos:closeMatch
     description: A list of terms from different schemas or terminology systems that
       have close meaning.
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - skos:closeMatch
     is_a: mappings
     slot_uri: skos:closeMatch
     multivalued: true
     inherited: false
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: uriorcurie
   related mappings:
     name: related mappings
     definition_uri: https://w3id.org/linkml/related_mappings
-    mappings:
-    - skos:relatedMatch
     description: A list of terms from different schemas or terminology systems that
       have related meaning.
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - skos:relatedMatch
     is_a: mappings
     slot_uri: skos:relatedMatch
     multivalued: true
     inherited: false
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: uriorcurie
   narrow mappings:
     name: narrow mappings
     definition_uri: https://w3id.org/linkml/narrow_mappings
-    mappings:
-    - skos:narrowMatch
     description: A list of terms from different schemas or terminology systems that
       have narrower meaning.
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - skos:narrowMatch
     is_a: mappings
     slot_uri: skos:narrowMatch
     multivalued: true
     inherited: false
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: uriorcurie
   broad mappings:
     name: broad mappings
     definition_uri: https://w3id.org/linkml/broad_mappings
-    mappings:
-    - skos:broadMatch
     description: A list of terms from different schemas or terminology systems that
       have broader meaning.
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - skos:broadMatch
     is_a: mappings
     slot_uri: skos:broadMatch
     multivalued: true
     inherited: false
-    owner: element
+    owner: common_metadata
     domain_of:
-    - element
+    - common_metadata
     range: uriorcurie
   deprecated element has exact replacement:
     name: deprecated element has exact replacement
     definition_uri: https://w3id.org/linkml/deprecated_element_has_exact_replacement
-    mappings:
-    - IAO:0100001
     description: When an element is deprecated, it can be automatically replaced by
       this uri or curie
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - IAO:0100001
     slot_uri: linkml:deprecated_element_has_exact_replacement
     owner: common_metadata
     domain_of:
@@ -3287,12 +3287,12 @@ slots:
   deprecated element has possible replacement:
     name: deprecated element has possible replacement
     definition_uri: https://w3id.org/linkml/deprecated_element_has_possible_replacement
-    mappings:
-    - OIO:consider
     description: When an element is deprecated, it can be potentially replaced by
       this uri or curie
     from_schema: https://w3id.org/linkml/mappings
     imported_from: linkml:mappings
+    mappings:
+    - OIO:consider
     slot_uri: linkml:deprecated_element_has_possible_replacement
     owner: common_metadata
     domain_of:
@@ -3307,12 +3307,12 @@ slots:
     domain: extensible
     slot_uri: linkml:extensions
     multivalued: true
-    inlined: true
     owner: extensible
     domain_of:
     - extension
     - extensible
     range: extension
+    inlined: true
   extension_tag:
     name: extension_tag
     definition_uri: https://w3id.org/linkml/extension_tag
@@ -3352,22 +3352,15 @@ slots:
     domain: annotatable
     slot_uri: linkml:annotations
     multivalued: true
-    inlined: true
     owner: annotation
     domain_of:
     - annotatable
     - annotation
     range: annotation
+    inlined: true
   schema_definition_name:
     name: schema_definition_name
     definition_uri: https://w3id.org/linkml/name
-    aliases:
-    - short name
-    - unique name
-    mappings:
-    - rdfs:label
-    exact_mappings:
-    - schema:name
     description: the unique name of the element within the context of the schema.  Name
       is combined with the default prefix to form the globally unique subject of the
       target class.
@@ -3380,6 +3373,13 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Data_element_name
+    aliases:
+    - short name
+    - unique name
+    mappings:
+    - rdfs:label
+    exact_mappings:
+    - schema:name
     is_a: name
     domain: schema_definition
     slot_uri: rdfs:label
@@ -3395,15 +3395,14 @@ slots:
   type_expression_any_of:
     name: type_expression_any_of
     definition_uri: https://w3id.org/linkml/any_of
-    exact_mappings:
-    - sh:or
     description: holds if at least one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:or
     is_a: any_of
     domain: type_expression
     slot_uri: linkml:any_of
     multivalued: true
-    inlined: true
     alias: any_of
     owner: type_expression
     domain_of:
@@ -3411,18 +3410,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: any_of
     range: anonymous_type_expression
+    inlined: true
   type_expression_all_of:
     name: type_expression_all_of
     definition_uri: https://w3id.org/linkml/all_of
-    exact_mappings:
-    - sh:and
     description: holds if all of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:and
     is_a: all_of
     domain: type_expression
     slot_uri: linkml:all_of
     multivalued: true
-    inlined: true
     alias: all_of
     owner: type_expression
     domain_of:
@@ -3430,18 +3429,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: all_of
     range: anonymous_type_expression
+    inlined: true
   type_expression_exactly_one_of:
     name: type_expression_exactly_one_of
     definition_uri: https://w3id.org/linkml/exactly_one_of
-    exact_mappings:
-    - sh:xone
     description: holds if only one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:xone
     is_a: exactly_one_of
     domain: type_expression
     slot_uri: linkml:exactly_one_of
     multivalued: true
-    inlined: true
     alias: exactly_one_of
     owner: type_expression
     domain_of:
@@ -3449,18 +3448,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: exactly_one_of
     range: anonymous_type_expression
+    inlined: true
   type_expression_none_of:
     name: type_expression_none_of
     definition_uri: https://w3id.org/linkml/none_of
-    exact_mappings:
-    - sh:not
     description: holds if none of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:not
     is_a: none_of
     domain: type_expression
     slot_uri: linkml:none_of
     multivalued: true
-    inlined: true
     alias: none_of
     owner: type_expression
     domain_of:
@@ -3468,11 +3467,10 @@ slots:
     is_usage_slot: true
     usage_slot_name: none_of
     range: anonymous_type_expression
+    inlined: true
   structured_alias_categories:
     name: structured_alias_categories
     definition_uri: https://w3id.org/linkml/categories
-    mappings:
-    - dcterms:subject
     description: The category or categories of an alias. This can be drawn from any
       relevant vocabulary
     examples:
@@ -3481,6 +3479,8 @@ slots:
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - dcterms:subject
     is_a: categories
     singular_name: category
     domain: structured_alias
@@ -3501,7 +3501,6 @@ slots:
     is_a: followed_by
     domain: path_expression
     slot_uri: linkml:followed_by
-    inlined: true
     alias: followed_by
     owner: path_expression
     domain_of:
@@ -3509,18 +3508,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: followed_by
     range: path_expression
+    inlined: true
   path_expression_any_of:
     name: path_expression_any_of
     definition_uri: https://w3id.org/linkml/any_of
-    exact_mappings:
-    - sh:or
     description: holds if at least one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:or
     is_a: any_of
     domain: path_expression
     slot_uri: linkml:any_of
     multivalued: true
-    inlined: true
     alias: any_of
     owner: path_expression
     domain_of:
@@ -3528,18 +3527,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: any_of
     range: path_expression
+    inlined: true
   path_expression_exactly_one_of:
     name: path_expression_exactly_one_of
     definition_uri: https://w3id.org/linkml/exactly_one_of
-    exact_mappings:
-    - sh:xone
     description: holds if only one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:xone
     is_a: exactly_one_of
     domain: path_expression
     slot_uri: linkml:exactly_one_of
     multivalued: true
-    inlined: true
     alias: exactly_one_of
     owner: path_expression
     domain_of:
@@ -3547,18 +3546,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: exactly_one_of
     range: path_expression
+    inlined: true
   path_expression_none_of:
     name: path_expression_none_of
     definition_uri: https://w3id.org/linkml/none_of
-    exact_mappings:
-    - sh:not
     description: holds if none of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:not
     is_a: none_of
     domain: path_expression
     slot_uri: linkml:none_of
     multivalued: true
-    inlined: true
     alias: none_of
     owner: path_expression
     domain_of:
@@ -3566,18 +3565,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: none_of
     range: path_expression
+    inlined: true
   path_expression_all_of:
     name: path_expression_all_of
     definition_uri: https://w3id.org/linkml/all_of
-    exact_mappings:
-    - sh:and
     description: holds if all of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:and
     is_a: all_of
     domain: path_expression
     slot_uri: linkml:all_of
     multivalued: true
-    inlined: true
     alias: all_of
     owner: path_expression
     domain_of:
@@ -3585,18 +3584,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: all_of
     range: path_expression
+    inlined: true
   slot_expression_any_of:
     name: slot_expression_any_of
     definition_uri: https://w3id.org/linkml/any_of
-    exact_mappings:
-    - sh:or
     description: holds if at least one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:or
     is_a: any_of
     domain: slot_expression
     slot_uri: linkml:any_of
     multivalued: true
-    inlined: true
     alias: any_of
     owner: slot_expression
     domain_of:
@@ -3604,18 +3603,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: any_of
     range: anonymous_slot_expression
+    inlined: true
   slot_expression_all_of:
     name: slot_expression_all_of
     definition_uri: https://w3id.org/linkml/all_of
-    exact_mappings:
-    - sh:and
     description: holds if all of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:and
     is_a: all_of
     domain: slot_expression
     slot_uri: linkml:all_of
     multivalued: true
-    inlined: true
     alias: all_of
     owner: slot_expression
     domain_of:
@@ -3623,18 +3622,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: all_of
     range: anonymous_slot_expression
+    inlined: true
   slot_expression_exactly_one_of:
     name: slot_expression_exactly_one_of
     definition_uri: https://w3id.org/linkml/exactly_one_of
-    exact_mappings:
-    - sh:xone
     description: holds if only one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:xone
     is_a: exactly_one_of
     domain: slot_expression
     slot_uri: linkml:exactly_one_of
     multivalued: true
-    inlined: true
     alias: exactly_one_of
     owner: slot_expression
     domain_of:
@@ -3642,18 +3641,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: exactly_one_of
     range: anonymous_slot_expression
+    inlined: true
   slot_expression_none_of:
     name: slot_expression_none_of
     definition_uri: https://w3id.org/linkml/none_of
-    exact_mappings:
-    - sh:not
     description: holds if none of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:not
     is_a: none_of
     domain: slot_expression
     slot_uri: linkml:none_of
     multivalued: true
-    inlined: true
     alias: none_of
     owner: slot_expression
     domain_of:
@@ -3661,6 +3660,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: none_of
     range: anonymous_slot_expression
+    inlined: true
   slot_definition_is_a:
     name: slot_definition_is_a
     definition_uri: https://w3id.org/linkml/is_a
@@ -3689,8 +3689,6 @@ slots:
   slot_definition_mixins:
     name: slot_definition_mixins
     definition_uri: https://w3id.org/linkml/mixins
-    aliases:
-    - traits
     description: List of definitions to be mixed in. Targets may be any definition
       of the same type
     comments:
@@ -3702,6 +3700,8 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Mixin
+    aliases:
+    - traits
     is_a: mixins
     domain: slot_definition
     slot_uri: linkml:mixins
@@ -3754,15 +3754,14 @@ slots:
   class_expression_any_of:
     name: class_expression_any_of
     definition_uri: https://w3id.org/linkml/any_of
-    exact_mappings:
-    - sh:or
     description: holds if at least one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:or
     is_a: any_of
     domain: class_expression
     slot_uri: linkml:any_of
     multivalued: true
-    inlined: true
     alias: any_of
     owner: class_expression
     domain_of:
@@ -3770,18 +3769,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: any_of
     range: anonymous_class_expression
+    inlined: true
   class_expression_all_of:
     name: class_expression_all_of
     definition_uri: https://w3id.org/linkml/all_of
-    exact_mappings:
-    - sh:and
     description: holds if all of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:and
     is_a: all_of
     domain: class_expression
     slot_uri: linkml:all_of
     multivalued: true
-    inlined: true
     alias: all_of
     owner: class_expression
     domain_of:
@@ -3789,18 +3788,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: all_of
     range: anonymous_class_expression
+    inlined: true
   class_expression_exactly_one_of:
     name: class_expression_exactly_one_of
     definition_uri: https://w3id.org/linkml/exactly_one_of
-    exact_mappings:
-    - sh:xone
     description: holds if only one of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:xone
     is_a: exactly_one_of
     domain: class_expression
     slot_uri: linkml:exactly_one_of
     multivalued: true
-    inlined: true
     alias: exactly_one_of
     owner: class_expression
     domain_of:
@@ -3808,18 +3807,18 @@ slots:
     is_usage_slot: true
     usage_slot_name: exactly_one_of
     range: anonymous_class_expression
+    inlined: true
   class_expression_none_of:
     name: class_expression_none_of
     definition_uri: https://w3id.org/linkml/none_of
-    exact_mappings:
-    - sh:not
     description: holds if none of the expressions hold
     from_schema: https://w3id.org/linkml/meta
+    exact_mappings:
+    - sh:not
     is_a: none_of
     domain: class_expression
     slot_uri: linkml:none_of
     multivalued: true
-    inlined: true
     alias: none_of
     owner: class_expression
     domain_of:
@@ -3827,6 +3826,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: none_of
     range: anonymous_class_expression
+    inlined: true
   class_definition_is_a:
     name: class_definition_is_a
     definition_uri: https://w3id.org/linkml/is_a
@@ -3855,8 +3855,6 @@ slots:
   class_definition_mixins:
     name: class_definition_mixins
     definition_uri: https://w3id.org/linkml/mixins
-    aliases:
-    - traits
     description: List of definitions to be mixed in. Targets may be any definition
       of the same type
     comments:
@@ -3868,6 +3866,8 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Mixin
+    aliases:
+    - traits
     is_a: mixins
     domain: class_definition
     slot_uri: linkml:mixins
@@ -3903,15 +3903,14 @@ slots:
   class_definition_rules:
     name: class_definition_rules
     definition_uri: https://w3id.org/linkml/rules
-    mappings:
-    - sh:rule
     description: the collection of rules that apply to all members of this class
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - sh:rule
     is_a: rules
     domain: class_definition
     slot_uri: sh:rule
     multivalued: true
-    inlined: true
     alias: rules
     owner: class_definition
     domain_of:
@@ -3919,6 +3918,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: rules
     range: class_rule
+    inlined: true
   class_definition_disjoint_with:
     name: class_definition_disjoint_with
     definition_uri: https://w3id.org/linkml/disjoint_with
@@ -3964,8 +3964,6 @@ slots:
   permissible_value_mixins:
     name: permissible_value_mixins
     definition_uri: https://w3id.org/linkml/mixins
-    aliases:
-    - traits
     description: List of definitions to be mixed in. Targets may be any definition
       of the same type
     comments:
@@ -3977,6 +3975,8 @@ slots:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Mixin
+    aliases:
+    - traits
     is_a: mixins
     domain: permissible_value
     slot_uri: linkml:mixins
@@ -4014,19 +4014,28 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:CommonMetadata
   element:
     name: element
     definition_uri: https://w3id.org/linkml/Element
-    aliases:
-    - data element
-    - object
     description: a named element in the model
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Data_element
+    aliases:
+    - data element
+    - object
     abstract: true
     mixins:
     - extensible
@@ -4036,17 +4045,8 @@ classes:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4065,12 +4065,19 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:Element
   schema_definition:
     name: schema_definition
     definition_uri: https://w3id.org/linkml/SchemaDefinition
-    aliases:
-    - data dictionary
     description: a collection of subset, type, slot and class definitions
     in_subset:
     - minimal
@@ -4080,21 +4087,14 @@ classes:
     from_schema: https://w3id.org/linkml/meta
     see_also:
     - https://en.wikipedia.org/wiki/Data_dictionary
+    aliases:
+    - data dictionary
     is_a: element
     slots:
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4113,6 +4113,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - id
     - version
     - imports
@@ -4208,17 +4217,8 @@ classes:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4237,6 +4237,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - typeof
     - base
     - type_uri
@@ -4265,17 +4274,8 @@ classes:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4294,6 +4294,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:SubsetDefinition
   definition:
     name: definition
@@ -4310,17 +4319,8 @@ classes:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4339,6 +4339,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - is_a
     - abstract
     - mixin
@@ -4355,30 +4364,21 @@ classes:
   enum_definition:
     name: enum_definition
     definition_uri: https://w3id.org/linkml/EnumDefinition
-    close_mappings:
-    - qb:HierarchicalCodeList
     description: List of values that constrain the range of a slot
     in_subset:
     - basic
     - relational_model
     - object_oriented
     from_schema: https://w3id.org/linkml/meta
+    close_mappings:
+    - qb:HierarchicalCodeList
     is_a: element
     slots:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4397,6 +4397,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - code_set
     - code_set_tag
     - code_set_version
@@ -4406,11 +4415,11 @@ classes:
   structured_alias:
     name: structured_alias
     definition_uri: https://w3id.org/linkml/StructuredAlias
-    mappings:
-    - skosxl:Label
     description: object that contains meta data about a synonym or alias including
       where it came from (source) and its scope (narrow, broad, etc.)
     from_schema: https://w3id.org/linkml/meta
+    mappings:
+    - skosxl:Label
     mixins:
     - expression
     - extensible
@@ -4438,6 +4447,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     slot_usage:
       categories:
         name: categories
@@ -4486,6 +4504,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:AnonymousExpression
   path_expression:
     name: path_expression
@@ -4526,6 +4553,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     slot_usage:
       followed_by:
         name: followed_by
@@ -4556,6 +4592,8 @@ classes:
     - range_expression
     - required
     - recommended
+    - inlined
+    - inlined_as_list
     - minimum_value
     - maximum_value
     - pattern
@@ -4613,10 +4651,21 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - range
     - range_expression
     - required
     - recommended
+    - inlined
+    - inlined_as_list
     - minimum_value
     - maximum_value
     - pattern
@@ -4637,6 +4686,10 @@ classes:
   slot_definition:
     name: slot_definition
     definition_uri: https://w3id.org/linkml/SlotDefinition
+    description: the definition of a property or a slot
+    in_subset:
+    - basic
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - slot
     - field
@@ -4646,10 +4699,6 @@ classes:
     - variable
     close_mappings:
     - rdf:Property
-    description: the definition of a property or a slot
-    in_subset:
-    - basic
-    from_schema: https://w3id.org/linkml/meta
     is_a: definition
     mixins:
     - slot_expression
@@ -4657,17 +4706,8 @@ classes:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4686,6 +4726,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - abstract
     - mixin
     - values_from
@@ -4702,8 +4751,6 @@ classes:
     - inherited
     - readonly
     - ifabsent
-    - inlined
-    - inlined_as_list
     - list_elements_unique
     - list_elements_ordered
     - shared
@@ -4740,6 +4787,8 @@ classes:
     - range_expression
     - required
     - recommended
+    - inlined
+    - inlined_as_list
     - minimum_value
     - maximum_value
     - pattern
@@ -4825,6 +4874,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - is_a
     - class_expression_any_of
     - class_expression_exactly_one_of
@@ -4835,6 +4893,13 @@ classes:
   class_definition:
     name: class_definition
     definition_uri: https://w3id.org/linkml/ClassDefinition
+    description: the definition of a class or interface
+    in_subset:
+    - minimal
+    - basic
+    - relational_model
+    - object_oriented
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - table
     - record
@@ -4843,13 +4908,6 @@ classes:
     - observation
     close_mappings:
     - owl:Class
-    description: the definition of a class or interface
-    in_subset:
-    - minimal
-    - basic
-    - relational_model
-    - object_oriented
-    from_schema: https://w3id.org/linkml/meta
     is_a: definition
     mixins:
     - class_expression
@@ -4857,17 +4915,8 @@ classes:
     - name
     - id_prefixes
     - definition_uri
-    - aliases
-    - structured_aliases
     - local_names
     - conforms_to
-    - mappings
-    - exact mappings
-    - close mappings
-    - related mappings
-    - narrow mappings
-    - broad mappings
-    - rank
     - extensions
     - annotations
     - description
@@ -4886,6 +4935,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     - abstract
     - mixin
     - values_from
@@ -4946,13 +5004,13 @@ classes:
   class_rule:
     name: class_rule
     definition_uri: https://w3id.org/linkml/ClassRule
+    description: A rule that applies to instances of a class
+    from_schema: https://w3id.org/linkml/meta
     aliases:
     - if rule
     close_mappings:
     - sh:TripleRule
     - swrl:Imp
-    description: A rule that applies to instances of a class
-    from_schema: https://w3id.org/linkml/meta
     is_a: class_level_rule
     mixins:
     - extensible
@@ -4985,6 +5043,14 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
     class_uri: linkml:ClassRule
   pattern_expression:
     name: pattern_expression
@@ -5017,6 +5083,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:PatternExpression
   import_expression:
     name: import_expression
@@ -5050,6 +5125,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:ImportExpression
   setting:
     name: setting
@@ -5105,13 +5189,13 @@ classes:
   permissible_value:
     name: permissible_value
     definition_uri: https://w3id.org/linkml/PermissibleValue
-    aliases:
-    - PV
     description: a permissible value, accompanied by intended text and an optional
       mapping to a concept URI
     in_subset:
     - basic
     from_schema: https://w3id.org/linkml/meta
+    aliases:
+    - PV
     mixins:
     - extensible
     - annotatable
@@ -5139,6 +5223,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     slot_usage:
       is_a:
         name: is_a
@@ -5181,6 +5274,15 @@ classes:
     - see_also
     - deprecated element has exact replacement
     - deprecated element has possible replacement
+    - aliases
+    - structured_aliases
+    - mappings
+    - exact mappings
+    - close mappings
+    - related mappings
+    - narrow mappings
+    - broad mappings
+    - rank
     class_uri: linkml:UniqueKey
   extension:
     name: extension
@@ -5230,7 +5332,7 @@ classes:
     class_uri: linkml:Annotation
 metamodel_version: 1.7.0
 source_file: meta.yaml
-source_file_date: '2022-03-08T16:56:57'
-source_file_size: 65186
-generation_date: '2022-03-08T17:02:28'
+source_file_date: '2022-05-09T21:10:26'
+source_file_size: 65194
+generation_date: '2022-05-09T21:17:03'
 

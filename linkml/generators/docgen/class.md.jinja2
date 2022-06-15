@@ -20,15 +20,46 @@ _{{ element.description }}_
 URI: {{ gen.uri_link(element) }}
 
 
+
+{% if schemaview.class_parents(element.name) %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+      {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
+        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
+
+```
+{% elif schemaview.class_children(element.name)  %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+      {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
+```
+{% else %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+    class {{ gen.name(element) }}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{gen.name(s)}}
+      {% endfor %}
+```
+{% endif %}
+
+
 {% if schemaview.class_parents(element.name) or schemaview.class_children(element.name, mixins=False) %}
 
 ## Inheritance
-
 {{ gen.inheritance_tree(element, mixins=True) }}
 {% else %}
 <!-- no inheritance hierarchy -->
 {% endif %}
-
 
 ## Slots
 
@@ -56,6 +87,20 @@ URI: {{ gen.uri_link(element) }}
 ## Rules
 
 {% endif %}
+
+{% if schemaview.get_mappings(element.name).items() -%}
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+{% for m, mt in schemaview.get_mappings(element.name).items() -%}
+{% if mt|length > 0 -%}
+| {{ m }} | {{ mt }} |
+{% endif -%}
+{% endfor %}
+
+{% endif -%}
+
 
 ## LinkML Specification
 

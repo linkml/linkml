@@ -9,9 +9,10 @@ import inspect
 
 import click
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.linkml_model import SchemaDefinition, PermissibleValue
 import linkml_runtime.linkml_model.meta as metamodel
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from linkml_runtime.utils.introspection import package_schemaview
@@ -182,6 +183,10 @@ class SQLStore:
                 return nu_obj
             else:
                 return None
+        #elif isinstance(obj, PermissibleValue):
+        #    return str(obj.text)
+        elif isinstance(obj, EnumDefinitionImpl):
+            return str(obj)
         elif isinstance(obj, YAMLRoot):
             typ = type(obj)
             inst_args = {}
@@ -236,7 +241,9 @@ class SQLStore:
             for n, nu_typ in inspect.getmembers(self.native_module):
                 # TODO: make more efficient
                 if n == typ.__name__:
+                    #print(f'CREATING {nu_typ} FROM {inst_args}')
                     nu_obj = nu_typ(**inst_args)
+                    #print(f'CREATED {nu_obj}')
                     return nu_obj
             raise ValueError(f'Cannot find {typ.__name__} in {self.native_module}')
         else:

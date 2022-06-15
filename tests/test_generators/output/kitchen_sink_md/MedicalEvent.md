@@ -88,17 +88,17 @@ attributes:
   diagnosis:
     name: diagnosis
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
-    inlined: true
     alias: diagnosis
     owner: MedicalEvent
     range: DiagnosisConcept
+    inlined: true
   procedure:
     name: procedure
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
-    inlined: true
     alias: procedure
     owner: MedicalEvent
     range: ProcedureConcept
+    inlined: true
   started at time:
     name: started at time
     from_schema: https://w3id.org/linkml/tests/core

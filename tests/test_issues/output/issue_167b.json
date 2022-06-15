@@ -196,13 +196,13 @@
       "domain": "Annotatable",
       "slot_uri": "https://w3id.org/linkml/annotations",
       "multivalued": true,
-      "inlined": true,
       "owner": "Annotation",
       "domain_of": [
         "Annotatable",
         "Annotation"
       ],
       "range": "Annotation",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -214,13 +214,13 @@
       "domain": "Extensible",
       "slot_uri": "https://w3id.org/linkml/extensions",
       "multivalued": true,
-      "inlined": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
       "range": "Extension",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -370,9 +370,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "issue_167b.yaml",
-  "source_file_date": "2022-01-05T01:06:03",
+  "source_file_date": "2022-05-09T21:08:42",
   "source_file_size": 818,
-  "generation_date": "2022-01-05T01:11:07",
+  "generation_date": "2022-05-09T21:14:46",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/meta.context.jsonld",

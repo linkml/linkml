@@ -232,6 +232,7 @@ slots:
     maximum_value: 999
   related_to:
   type:
+    range: FamilialRelationshipType
   street:
   city:
   mission_statement:
@@ -283,17 +284,17 @@ enums:
         meaning: famrel:01
   GenderType:
     permissible_values:
-      nonbinary man:
+      nonbinary_man:
         meaning: GSSO:009254
-      nonbinary woman:
+      nonbinary_woman:
         meaning: GSSO:009253
-      transgender woman:
+      transgender_woman:
         meaning: GSSO:000384
-      transgender man:
+      transgender_man:
         meaning: GSSO:000372
-      cisgender man:
+      cisgender_man:
         meaning: GSSO:000371
-      cisgender woman:
+      cisgender_woman:
         meaning: GSSO:000385
   DiagnosisType:
 

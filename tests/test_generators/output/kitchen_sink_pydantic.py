@@ -51,7 +51,7 @@ class OtherCodes(str, Enum):
 @dataclass(config=PydanticConfig)
 class HasAliases:
     
-    aliases: Optional[List[str]] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
@@ -63,7 +63,7 @@ class Friend:
 
 
 @dataclass(config=PydanticConfig)
-class Person:
+class Person(HasAliases):
     """
     A person, living or dead
     """
@@ -73,27 +73,27 @@ class Person:
     has_familial_relationships: Optional[List[FamilialRelationship]] = Field(None)
     has_medical_history: Optional[List[MedicalEvent]] = Field(None)
     age_in_years: Optional[int] = Field(None, description="""number of years since birth""", ge=0, le=999)
-    addresses: Optional[List[Address]] = Field(None)
+    addresses: Optional[List[Address]] = Field(default_factory=list)
     has_birth_event: Optional[BirthEvent] = Field(None)
-    aliases: Optional[List[str]] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
 @dataclass(config=PydanticConfig)
-class Organization:
+class Organization(HasAliases):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
-    aliases: Optional[List[str]] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
 @dataclass(config=PydanticConfig)
-class Place:
+class Place(HasAliases):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
-    aliases: Optional[List[str]] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
@@ -206,7 +206,7 @@ class WithLocation:
 
 
 @dataclass(config=PydanticConfig)
-class MarriageEvent(Event):
+class MarriageEvent(WithLocation, Event):
     
     married_to: Optional[str] = Field(None)
     in_location: Optional[str] = Field(None)
@@ -223,7 +223,7 @@ class Company(Organization):
     ceo: Optional[str] = Field(None)
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
-    aliases: Optional[List[str]] = Field(None)
+    aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
@@ -238,9 +238,9 @@ class CodeSystem:
 @dataclass(config=PydanticConfig)
 class Dataset:
     
-    persons: Optional[List[Person]] = Field(None)
-    companies: Optional[List[Company]] = Field(None)
-    activities: Optional[List[Activity]] = Field(None)
+    persons: Optional[List[Person]] = Field(default_factory=list)
+    companies: Optional[List[Company]] = Field(default_factory=list)
+    activities: Optional[List[Activity]] = Field(default_factory=list)
     code_systems: Optional[List[CodeSystem]] = Field(None)
     
 

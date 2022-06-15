@@ -1,5 +1,6 @@
 import os
 import logging
+from enum import Enum
 from pathlib import Path
 from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
 from copy import deepcopy
@@ -16,6 +17,14 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, C
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml.utils.generator import shared_arguments, Generator
+
+class MarkdownDialect(Enum):
+    python = "python"  ## https://python-markdown.github.io/ -- used by mkdocs
+    myst = "myst"      ## https://myst-parser.readthedocs.io/en/latest/ -- used by sphinx
+
+
+# In future this may become a Union statement, but for now we only have dialects for markdown
+DIALECT = MarkdownDialect
 
 
 class DocGenerator(Generator):
@@ -53,15 +62,19 @@ class DocGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = '0.0.1'
     valid_formats = ['markdown', 'rst', 'html', 'latex']
+    dialect: DIALECT = None
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory = None
     template_directory = None
+    genmeta = False
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition],
                  directory: str = None,
                  template_directory: str = None,
+                 use_slot_uris: bool = False,
                  format: str = valid_formats[0],
+                 dialect: Optional[Union[DIALECT, str]] = None,
                  genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         """
         Creates a generator object that can write documents to a directory from a schema
@@ -70,6 +83,7 @@ class DocGenerator(Generator):
         :param directory: directory in which to write documents
         :param template_directory: directory for custom templates
         :param format: only markdown is supported by default
+        :param dialect: markdown dialect (e.g MyST, Python)
         :param genmeta:
         :param gen_classvars:
         :param gen_slots:
@@ -81,6 +95,19 @@ class DocGenerator(Generator):
         self.format = format
         self.directory = directory
         self.template_directory = template_directory
+        self.use_slot_uris = use_slot_uris
+        self.genmeta = genmeta
+        if dialect is not None:
+            if isinstance(dialect, str):
+                if dialect == MarkdownDialect.myst.value:
+                    dialect = MarkdownDialect.myst
+                elif dialect == MarkdownDialect.python.value:
+                    dialect = MarkdownDialect.python
+                else:
+                    raise NotImplemented(f'{dialect} not supported')
+            self.dialect = dialect
+
+
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -108,6 +135,8 @@ class DocGenerator(Generator):
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template('class')
         for cn, c in sv.all_classes().items():
+            if self._is_external(c):
+                continue
             n = self.name(c)
             out_str = template.render(gen=self,
                                       element=c,
@@ -115,13 +144,18 @@ class DocGenerator(Generator):
             self._write(out_str, directory, n)
         template = self._get_template('slot')
         for sn, s in sv.all_slots().items():
+            if self._is_external(s):
+                continue
             n = self.name(s)
+            s = sv.induced_slot(sn)
             out_str = template.render(gen=self,
                                       element=s,
                                       schemaview=sv)
             self._write(out_str, directory, n)
         template = self._get_template('enum')
         for en, e in sv.all_enums().items():
+            if self._is_external(e):
+                continue
             n = self.name(e)
             out_str = template.render(gen=self,
                                       element=e,
@@ -129,7 +163,10 @@ class DocGenerator(Generator):
             self._write(out_str, directory, n)
         template = self._get_template('type')
         for tn, t in sv.all_types().items():
+            if self._is_external(t):
+                continue
             n = self.name(t)
+            t = sv.induced_type(tn)
             out_str = template.render(gen=self,
                                       element=t,
                                       schemaview=sv)
@@ -192,16 +229,22 @@ class DocGenerator(Generator):
             env = Environment(loader=loader)
             return env.get_template(base_file_name)
 
-
-
     def name(self, element: Element) -> str:
         """
         Returns the name of the element in its canonical form
 
-        :param element:
-        :return:
+        :param element: SchemaView element definition
+        :return: slot name or numeric portion of CURIE prefixed 
+        slot_uri
         """
         if type(element).class_name == 'slot_definition':
+
+            if self.use_slot_uris:
+                if element.slot_uri is not None:
+                    return element.slot_uri.split(":")[1]
+                else:
+                    return underscore(element.name)
+
             return underscore(element.name)
         else:
             return camelcase(element.name)
@@ -230,7 +273,6 @@ class DocGenerator(Generator):
         sc = element.from_schema
         return f'[{curie}]({uri})'
 
-
     def link(self, e: Union[Definition, DefinitionName]) -> str:
         """
         Render an element as a hyperlink
@@ -242,16 +284,29 @@ class DocGenerator(Generator):
             return 'NONE'
         if not isinstance(e, Definition):
             e = self.schemaview.get_element(e)
-        if isinstance(e, ClassDefinition):
+        if self._is_external(e):
+            return self.uri_link(e)
+        elif isinstance(e, ClassDefinition):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(camelcase(e.name))
         elif isinstance(e, SlotDefinition):
+            if self.use_slot_uris:
+                if e.slot_uri is not None:
+                    return self._markdown_link(e.slot_uri.split(":")[1])
+
             return self._markdown_link(underscore(e.name))
         elif isinstance(e, TypeDefinition):
             return self._markdown_link(underscore(e.name))
         else:
             return e.name
+
+    def _is_external(self, element: Element) -> bool:
+        # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
+        if element.from_schema == 'https://w3id.org/linkml/types' and not self.genmeta:
+            return True
+        else:
+            return False
 
     def _markdown_link(self, n: str, subfolder: str = None) -> str:
         if subfolder:
@@ -366,6 +421,21 @@ class DocGenerator(Generator):
             info = ''
         return f'{min}..{max}{info}'
 
+    def mermaid_directive(self) -> str:
+        """
+        Writes a mermaid directive. See <https://mermaid-js.github.io/mermaid/#/>_
+
+        This comes after the triple-backtick.
+
+        Note that the directive varies depending on whether the dialect is
+        the default python markdown (used by mkdocs) or MyST (used if you
+        have a sphinx site)
+        """
+        if self.dialect is not None and self.dialect == MarkdownDialect.myst:
+            return '{mermaid}'
+        else:
+            return 'mermaid'
+
     def yaml(self, element: Element, inferred=False) -> str:
         """
         Render element as YAML
@@ -391,9 +461,11 @@ class DocGenerator(Generator):
 
 @shared_arguments(DocGenerator)
 @click.option("--directory", "-d", required=True, help="Folder to which document files are written")
+@click.option("--dialect",  help="Dialect or 'flavor' of Markdown used.")
 @click.option("--template-directory", help="Folder in which custom templates are kept")
+@click.option("--use-slot-uris/--no-use-slot-uris", default=False, help="Use IDs from slot_uri instead of names")
 @click.command()
-def cli(yamlfile, directory, template_directory, **args):
+def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args):
     """Generate documentation folder from a LinkML YAML schema
 
     Currently a default set of templates for markdown is provided (see the folder linkml/generators/docgen/)
@@ -401,7 +473,7 @@ def cli(yamlfile, directory, template_directory, **args):
     If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
     each type of entity inside
     """
-    gen = DocGenerator(yamlfile, directory=directory, template_directory=template_directory, **args)
+    gen = DocGenerator(yamlfile, directory=directory, dialect=dialect, template_directory=template_directory, use_slot_uris=use_slot_uris, **args)
     print(gen.serialize())
 
 

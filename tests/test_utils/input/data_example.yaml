@@ -1,0 +1,9 @@
+persons:
+  P:1:
+    first_name: first1
+    last_name: last1
+    age_in_years: 10
+  P:2:
+    first_name: first2
+    last_name: last2
+    age_in_months: 240

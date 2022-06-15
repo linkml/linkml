@@ -168,8 +168,8 @@ slots:
     from_schema: https://w3id.org/linkml/examples/personinfo
     slot_uri: https://w3id.org/linkml/examples/personinfo/parent
     multivalued: true
-    inlined: true
     range: Thing
+    inlined: true
   person__aliases:
     name: person__aliases
     from_schema: https://w3id.org/linkml/examples/personinfo
@@ -219,12 +219,12 @@ slots:
       that is local to person
     from_schema: https://w3id.org/linkml/examples/personinfo
     slot_uri: https://w3id.org/linkml/examples/personinfo/age
-    inlined: true
     alias: age
     owner: GeoObject
     domain_of:
     - GeoObject
     range: GeoAge
+    inlined: true
   geoAge__unit:
     name: geoAge__unit
     from_schema: https://w3id.org/linkml/examples/personinfo
@@ -251,7 +251,6 @@ slots:
     domain: Person
     slot_uri: https://w3id.org/linkml/examples/personinfo/parent
     multivalued: true
-    inlined: true
     alias: parent
     owner: Person
     domain_of:
@@ -259,6 +258,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: parent
     range: Person
+    inlined: true
   Organization_full_name:
     name: Organization_full_name
     definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
@@ -283,7 +283,6 @@ slots:
     domain: Organization
     slot_uri: https://w3id.org/linkml/examples/personinfo/parent
     multivalued: true
-    inlined: true
     alias: parent
     owner: Organization
     domain_of:
@@ -291,6 +290,7 @@ slots:
     is_usage_slot: true
     usage_slot_name: parent
     range: Organization
+    inlined: true
 classes:
   Thing:
     name: Thing
@@ -303,9 +303,9 @@ classes:
   Person:
     name: Person
     definition_uri: https://w3id.org/linkml/examples/personinfo/Person
+    from_schema: https://w3id.org/linkml/examples/personinfo
     mappings:
     - sdo:Person
-    from_schema: https://w3id.org/linkml/examples/personinfo
     is_a: Thing
     slots:
     - id
@@ -386,6 +386,6 @@ classes:
     class_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
 metamodel_version: 1.7.0
 source_file: linkml_issue_384.yaml
-source_file_date: '2022-04-14T01:40:23'
+source_file_date: '2022-05-10T00:26:24'
 source_file_size: 1220
-generation_date: '2022-04-14T01:46:51'
+generation_date: '2022-05-10T00:33:20'

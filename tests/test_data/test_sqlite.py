@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.sqlutils import SQLStore
 
-from tests.test_data.model.personinfo import Container, Person
+from tests.test_data.model.personinfo import Container, Person, FamilialRelationship, GenderType, FamilialRelationshipType
 import tests.test_data.model.personinfo
 from tests.test_data.environment import env
 from tests.utils.dict_comparator import compare_yaml, compare_objs
@@ -32,6 +32,17 @@ class SQLiteStoreTest(unittest.TestCase):
     - :meth:`SQLStore.dump`
     - :meth:`SQLStore.load`
     """
+
+    def test_enums(self):
+        """
+        Tests that enum objects can be constructed inlined.
+
+        See https://github.com/linkml/linkml/issues/817
+        """
+        r = FamilialRelationship(type='SIBLING_OF', related_to='x')
+        p = Person(id='x', gender=GenderType(GenderType.cisgender_man))
+        self.assertEqual(type(p.gender), GenderType)
+        c = Container(persons=[p])
 
     def test_sqlite_store(self):
         """
@@ -54,6 +65,14 @@ class SQLiteStoreTest(unittest.TestCase):
         q = session.query(endpoint.module.Person)
         all_objs = q.all()
         self.assertEqual(2, len(all_objs))
+        for p in all_objs:
+            print(p)
+            for rel in p.has_familial_relationships:
+                print(rel)
+                print(rel.type)
+        q = session.query(endpoint.module.FamilialRelationship)
+        for r in q.all():
+            print(r)
         # step 4: test loading from SQLStore
         # 4a: first test load_all, diff to original data should be empty
         x = endpoint.load_all(target_class=Container)
@@ -80,8 +99,8 @@ class SQLiteStoreTest(unittest.TestCase):
         endpoint.compile()
         # step 2: load data from file and store in SQLStore
         container: SchemaDefinition = yaml_loader.load(SCHEMA, target_class=SchemaDefinition)
-        endpoint.dump(container)
-
+        schema_instance = SchemaDefinition(id='test', name='test')
+        endpoint.dump(schema_instance)
 
     def test_mixin(self):
         b = SchemaBuilder()

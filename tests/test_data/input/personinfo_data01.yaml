@@ -28,6 +28,7 @@ persons:
           name: prescribe cough medicine
   - id: X:P2
     name: person2
+    gender: cisgender_man
     aliases:
       - p2a1
       - p2a2

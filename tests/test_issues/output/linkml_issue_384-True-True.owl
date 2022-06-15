@@ -18,10 +18,10 @@ linkml:TypeDefinition a owl:Class ;
     ns1:IAO_0000700 <https://w3id.org/linkml/examples/personinfo/GeoAge>,
         <https://w3id.org/linkml/examples/personinfo/Thing> ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    linkml:generation_date "2022-03-08T17:01:04" ;
+    linkml:generation_date "2022-04-18T22:40:15" ;
     linkml:metamodel_version "1.7.0" ;
     linkml:source_file "linkml_issue_384.yaml" ;
-    linkml:source_file_date "2022-03-08T16:55:16" ;
+    linkml:source_file_date "2022-04-18T22:33:43" ;
     linkml:source_file_size 1220 .
 
 <https://w3id.org/linkml/examples/personinfo/GeoObject> a owl:Class,
@@ -29,12 +29,12 @@ linkml:TypeDefinition a owl:Class ;
     rdfs:label "GeoObject" ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
-            owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
-        [ a owl:Restriction ;
-            owl:maxQualifiedCardinality 1 ;
             owl:onClass <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
+        [ a owl:Restriction ;
+            owl:maxQualifiedCardinality 1 ;
+            owl:onClass linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> .
 
 linkml:topValue a owl:DatatypeProperty ;
@@ -44,31 +44,31 @@ linkml:topValue a owl:DatatypeProperty ;
         linkml:ClassDefinition ;
     rdfs:label "Organization" ;
     rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Organization> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
+        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/full_name> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Organization> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> .
 
 <https://w3id.org/linkml/examples/personinfo/Person> a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "Person" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Person> ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:Integer ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/age> ],
         [ a owl:Restriction ;
+            owl:allValuesFrom <https://w3id.org/linkml/examples/personinfo/Person> ;
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/parent> ],
+        [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
             owl:onProperty <https://w3id.org/linkml/examples/personinfo/phone> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/aliases> ],
         <https://w3id.org/linkml/examples/personinfo/Thing> ;
     skos:exactMatch sdo:Person .
 
@@ -111,10 +111,18 @@ linkml:topValue a owl:DatatypeProperty ;
         linkml:SlotDefinition .
 
 <https://w3id.org/linkml/examples/personinfo/full_name> a owl:ObjectProperty,
-        linkml:SlotDefinition .
+        linkml:SlotDefinition ;
+    rdfs:label "full_name" ;
+    dcterms:title "full name" ;
+    rdfs:range linkml:String .
 
 <https://w3id.org/linkml/examples/personinfo/parent> a owl:ObjectProperty,
-        linkml:SlotDefinition .
+        linkml:SlotDefinition ;
+    rdfs:label "parent" ;
+    rdfs:range <https://w3id.org/linkml/examples/personinfo/Thing> .
+
+linkml:ClassDefinition a owl:Class ;
+    rdfs:label "class_definition" .
 
 <https://w3id.org/linkml/examples/personinfo/Thing> a owl:Class,
         linkml:ClassDefinition ;
@@ -122,14 +130,11 @@ linkml:topValue a owl:DatatypeProperty ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/id> ],
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/full_name> ],
         [ a owl:Restriction ;
             owl:maxQualifiedCardinality 1 ;
             owl:onClass linkml:String ;
-            owl:onProperty <https://w3id.org/linkml/examples/personinfo/full_name> ] .
-
-linkml:ClassDefinition a owl:Class ;
-    rdfs:label "class_definition" .
+            owl:onProperty <https://w3id.org/linkml/examples/personinfo/id> ] .
 
 linkml:SlotDefinition a owl:Class ;
     rdfs:label "slot_definition" .

@@ -103,7 +103,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <AnonymousExpression> ] ?
     )
@@ -118,6 +127,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <range_expression> @<AnonymousClassExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
@@ -242,7 +253,15 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> *
        ) ;
        rdf:type [ <ClassRule> ] ?
     )
@@ -264,7 +283,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <CommonMetadata> ] ?
     )
@@ -306,17 +334,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           rdf:type [ <CommonMetadata> ] ? ;
           <id_prefixes> @<Ncname> * ;
           <definition_uri> @<Uriorcurie> ? ;
-          <aliases> @<String> * ;
-          <structured_aliases> @<StructuredAlias> * ;
           <local_names> @<LocalName> * ;
           <conforms_to> @<String> ? ;
-          <mappings> @<Uriorcurie> * ;
-          <exact_mappings> @<Uriorcurie> * ;
-          <close_mappings> @<Uriorcurie> * ;
-          <related_mappings> @<Uriorcurie> * ;
-          <narrow_mappings> @<Uriorcurie> * ;
-          <broad_mappings> @<Uriorcurie> * ;
-          <rank> @<Integer> ? ;
           <extensions> @<Extension> * ;
           <annotations> @<Annotation> * ;
           <description> @<String> ? ;
@@ -334,7 +353,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <Element> ]
     )
@@ -415,7 +443,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <ImportExpression> ] ?
     )
@@ -463,7 +500,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <PathExpression> ] ?
     )
@@ -496,7 +542,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <PatternExpression> ] ?
     )
@@ -528,7 +583,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <PermissibleValue> ]
     )
@@ -593,8 +657,6 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <inherited> @<Boolean> ? ;
           <readonly> @<String> ? ;
           <ifabsent> @<String> ? ;
-          <inlined> @<Boolean> ? ;
-          <inlined_as_list> @<Boolean> ? ;
           <list_elements_unique> @<Boolean> ? ;
           <list_elements_ordered> @<Boolean> ? ;
           <shared> @<Boolean> ? ;
@@ -630,6 +692,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <range_expression> @<AnonymousClassExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
@@ -658,6 +722,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <range_expression> @<AnonymousClassExpression> ? ;
           <required> @<Boolean> ? ;
           <recommended> @<Boolean> ? ;
+          <inlined> @<Boolean> ? ;
+          <inlined_as_list> @<Boolean> ? ;
           <minimum_value> @<Integer> ? ;
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
@@ -708,7 +774,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <StructuredAlias> ] ?
     )
@@ -792,7 +867,16 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
           <in_language> @<String> ? ;
           <see_also> @<Uriorcurie> * ;
           <deprecated_element_has_exact_replacement> @<Uriorcurie> ? ;
-          <deprecated_element_has_possible_replacement> @<Uriorcurie> ?
+          <deprecated_element_has_possible_replacement> @<Uriorcurie> ? ;
+          <aliases> @<String> * ;
+          <structured_aliases> @<StructuredAlias> * ;
+          <mappings> @<Uriorcurie> * ;
+          <exact_mappings> @<Uriorcurie> * ;
+          <close_mappings> @<Uriorcurie> * ;
+          <related_mappings> @<Uriorcurie> * ;
+          <narrow_mappings> @<Uriorcurie> * ;
+          <broad_mappings> @<Uriorcurie> * ;
+          <rank> @<Integer> ?
        ) ;
        rdf:type [ <UniqueKey> ]
     )

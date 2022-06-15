@@ -24,7 +24,6 @@ from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
 from pydantic import BaseModel, Field
-from pydantic.dataclasses import dataclass
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
@@ -47,8 +46,9 @@ class {{ e.name }}(str, Enum):
 
 {%- for c in schema.classes.values() %}
 class {{ c.name }} 
-                   {%- if c.is_a %}({{c.is_a}}){% else %}(BaseModel){% endif -%}
-                   {#- {%- for p in c.mixins %}, "{{p}}" {% endfor -%} -#} 
+                   {%- if class_isa_plus_mixins[c.name] %}({{class_isa_plus_mixins[c.name]|join(', ')}})
+                   {%- else -%}(BaseModel)
+                   {%- endif -%}
                   :
     {% if c.description -%}
     \"\"\"
@@ -71,7 +71,7 @@ class {{ c.name }}
     {% for attr in c.attributes.values() if c.attributes -%}
     {{attr.name}}: {{ attr.annotations['python_range'].value }} = Field(
     {%- if predefined_slot_values[c.name][attr.name] -%} 
-        [\"{{ predefined_slot_values[c.name][attr.name] }}\"]
+        {{ predefined_slot_values[c.name][attr.name] }}
     {%- else -%}
         None
     {%- endif -%}    
@@ -119,24 +119,26 @@ class PydanticGenerator(OOCodeGenerator):
                  template_file: str = None,
                  allow_extra = False,
                  format: str = valid_formats[0],
-                 genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
+                 genmeta: bool=False,
+                 gen_classvars: bool=True,
+                 gen_slots: bool=True,
+                 gen_mixin_inheritance: bool = True,
+                 **kwargs) -> None:
+        self.sorted_class_names = None
         self.sourcefile = schema
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
         self.template_file = template_file
         self.allow_extra = allow_extra
+        self.gen_mixin_inheritance = gen_mixin_inheritance
 
-    def map_type(self, t: TypeDefinition) -> str:
-        return TYPEMAP.get(t.base, t.base)
 
     def generate_enums(self, all_enums: Dict[EnumDefinitionName, EnumDefinition]) -> Dict[str, dict]:
         # TODO: make an explicit class to represent how an enum is passed to the template
         enums = {}
         for enum_name, enum_orignal in all_enums.items():
-            enum = {}
-            enum['name'] = camelcase(enum_name)
+            enum = {'name': camelcase(enum_name), 'values': {}}
 
-            enum['values'] = {}
             for pv in enum_orignal.permissible_values.values():
                 label = self.generate_enum_label(pv.text)
                 enum['values'][label] = pv.text
@@ -191,8 +193,74 @@ class PydanticGenerator(OOCodeGenerator):
             for slot_name in sv.class_slots(class_def.name):
                 slot = sv.induced_slot(slot_name, class_def.name)
                 if slot.designates_type:
-                    slot_values[camelcase(class_def.name)][slot.name] = f"{default_prefix}:{camelcase(class_def.name)}"
+                    slot_values[camelcase(class_def.name)][slot.name] = f"\"{default_prefix}:{camelcase(class_def.name)}\""
+                    if slot.multivalued:
+                        slot_values[camelcase(class_def.name)][slot.name] = "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
+                # Have a default factory of list for multivalued fields that don't
+                # get any other sort of predefined value above this point
+                elif slot.multivalued:
+                    slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
         return slot_values
+
+    def get_class_isa_plus_mixins(self) -> Dict[str, List[str]]:
+        """
+        Generate the inheritance list for each class from is_a plus mixins
+        :return:
+        """
+        sv = self.schemaview
+        parents = {}
+        for class_def in sv.all_classes().values():
+            class_parents = []
+            if class_def.is_a:
+                class_parents.append(camelcase(class_def.is_a))
+            if self.gen_mixin_inheritance and class_def.mixins:
+                class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
+            if len(class_parents) > 0:
+                # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
+                class_parents.sort(key=lambda x: self.sorted_class_names.index(x))
+                class_parents.reverse()
+                parents[camelcase(class_def.name)] = class_parents
+        return parents
+
+    def get_mixin_identifier_range(self, mixin) -> str:
+        sv = self.schemaview
+        id_ranges = list({_get_pyrange(sv.get_type(sv.get_identifier_slot(c).range), sv)
+                          for c in sv.class_descendants(mixin.name, mixins=True)
+                          if sv.get_identifier_slot(c) is not None})
+        if len(id_ranges) == 0:
+            return None
+        elif len(id_ranges) == 1:
+            return id_ranges[0]
+        else:
+            return f"Union[{'.'.join(id_ranges)}]"
+
+    def get_class_slot_range(self, slot):
+        sv = self.schemaview
+        range_cls = sv.get_class(slot.range)
+
+        # Hardcoded handling for Any
+        if range_cls.class_uri == "linkml:Any":
+            return 'Any'
+
+        # Inline the class itself only if the class is defined as inline, or if the class has no
+        # identifier slot and also isn't a mixin.
+        if slot.inlined or \
+                (sv.get_identifier_slot(range_cls.name) is None and not sv.is_mixin(range_cls.name)):
+            return f'{camelcase(slot.range)}'
+
+        # For the more difficult cases, set string as the default and attempt to improve it
+        range_cls_identifier_slot_range = 'str'
+
+        # For mixins, try to use the identifier slot of descendant classes
+        if self.gen_mixin_inheritance and sv.is_mixin(range_cls.name) and sv.get_identifier_slot(range_cls.name):
+            range_cls_identifier_slot_range = self.get_mixin_identifier_range(range_cls)
+
+        # If the class itself has an identifier slot, it can be allowed to overwrite a value from mixin above
+        if sv.get_identifier_slot(range_cls.name) is not None \
+                and sv.get_identifier_slot(range_cls.name).range is not None:
+            range_cls_identifier_slot_range = _get_pyrange(sv.get_type(sv.get_identifier_slot(range_cls.name).range), sv)
+
+        return range_cls_identifier_slot_range
 
     def serialize(self) -> str:
         sv = self.schemaview
@@ -211,6 +279,7 @@ class PydanticGenerator(OOCodeGenerator):
         enums = self.generate_enums(sv.all_enums())
 
         sorted_classes = self.sort_classes(list(sv.all_classes().values()))
+        self.sorted_class_names = [camelcase(c.name) for c in sorted_classes]
 
         # Don't want to generate classes when class_uri is linkml:Any, will
         # just swap in typing.Any instead down below
@@ -239,17 +308,7 @@ class PydanticGenerator(OOCodeGenerator):
                 class_def.attributes[s.name] = s
                 collection_key = None
                 if s.range in sv.all_classes():
-                    range_cls = sv.get_class(s.range)
-                    #pyrange = f'"{camelcase(s.range)}"'
-                    if range_cls.class_uri == "linkml:Any":
-                        pyrange = 'Any'
-                    elif s.inlined or sv.get_identifier_slot(range_cls.name) is None:
-                        pyrange = f'{camelcase(s.range)}'
-                        if sv.get_identifier_slot(range_cls.name) is not None and not s.inlined_as_list:
-                            #collection_type = sv.get_identifier_slot(range_cls.name).range
-                            collection_type = 'str'
-                    else:
-                        pyrange = 'str'
+                    pyrange = self.get_class_slot_range(s)
                 elif s.range in sv.all_enums():
                     pyrange = f'{camelcase(s.range)}'
                 elif s.range in sv.all_types():
@@ -271,7 +330,10 @@ class PydanticGenerator(OOCodeGenerator):
                     pyrange = f'Optional[{pyrange}]'
                 ann = Annotation('python_range', pyrange)
                 s.annotations[ann.tag] = ann
-        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums, predefined_slot_values=self.get_predefined_slot_values(), allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version, version=self.schema.version)
+        code = template_obj.render(schema=pyschema, underscore=underscore, enums=enums,
+                                   predefined_slot_values=self.get_predefined_slot_values(),
+                                   allow_extra=self.allow_extra, metamodel_version=self.schema.metamodel_version,
+                                   version=self.schema.version, class_isa_plus_mixins=self.get_class_isa_plus_mixins())
         return code
 
 

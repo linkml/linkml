@@ -20,3 +20,14 @@ Instances of this class *should* have identifiers with one of the following pref
 | {{a}} | {{ element.annotations[a].value }} |
 {% endfor %}
 {% endif %}
+
+{% if element.from_schema or element.imported_from %}
+### Schema Source
+
+{% if element.from_schema %}
+* from schema: {{ element.from_schema }}
+{% endif %}
+{% if element.imported_from %}
+* imported from: {{ element.imported_from }}
+{% endif %}
+{% endif %}

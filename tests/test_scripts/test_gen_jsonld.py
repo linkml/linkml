@@ -3,6 +3,7 @@ import re
 import unittest
 # This has to occur post ClickTestCase
 from functools import reduce
+from pathlib import PurePath
 from typing import List, Tuple
 
 import click
@@ -62,7 +63,7 @@ class GenJSONLDTestCase(ClickTestCase):
         env.generate_single_file(env.expected_path(self.testdir, 'simple_uri_test.context.jsonld'),
                                  lambda: ContextGenerator(env.input_path('simple_uri_test.yaml'), emit_metadata=False).serialize(),
                                  value_is_returned=True)
-        self.do_test(env.input_path('simple_uri_test.yaml'), 'simple_uri_test.jsonld', add_yaml=False)
+        self.do_test(PurePath(env.input_path('simple_uri_test.yaml')).as_posix(), 'simple_uri_test.jsonld', add_yaml=False)
 
     def check_size(self, g: Graph, g2: Graph, root: URIRef, expected_classes: int, expected_slots: int,
                    expected_types: int, expected_subsets: int, expected_enums: int, model: str) -> None:

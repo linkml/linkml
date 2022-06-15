@@ -52,28 +52,28 @@
 <text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-591.3'>name(i):string</text>
 <text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-576.3'>id_prefixes(i):ncname *</text>
 <text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-561.3'>definition_uri(i):uriorcurie ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-546.3'>aliases(i):string *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-531.3'>conforms_to(i):string ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-516.3'>mappings(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-501.3'>exact_mappings(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-486.3'>close_mappings(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-471.3'>related_mappings(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-456.3'>narrow_mappings(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-441.3'>broad_mappings(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-426.3'>rank(i):integer ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-411.3'>description(i):string ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-396.3'>title(i):string ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-381.3'>deprecated(i):string ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-366.3'>todos(i):string *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-351.3'>notes(i):string *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-336.3'>comments(i):string *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-321.3'>from_schema(i):uri ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-306.3'>imported_from(i):string ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-291.3'>source(i):uriorcurie ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-276.3'>in_language(i):string ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-261.3'>see_also(i):uriorcurie *</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-246.3'>deprecated_element_has_exact_replacement(i):uriorcurie ?</text>
-<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-231.3'>deprecated_element_has_possible_replacement(i):uriorcurie ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-546.3'>conforms_to(i):string ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-531.3'>description(i):string ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-516.3'>title(i):string ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-501.3'>deprecated(i):string ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-486.3'>todos(i):string *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-471.3'>notes(i):string *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-456.3'>comments(i):string *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-441.3'>from_schema(i):uri ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-426.3'>imported_from(i):string ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-411.3'>source(i):uriorcurie ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-396.3'>in_language(i):string ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-381.3'>see_also(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-366.3'>deprecated_element_has_exact_replacement(i):uriorcurie ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-351.3'>deprecated_element_has_possible_replacement(i):uriorcurie ?</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-336.3'>aliases(i):string *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-321.3'>mappings(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-306.3'>exact_mappings(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-291.3'>close_mappings(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-276.3'>related_mappings(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-261.3'>narrow_mappings(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-246.3'>broad_mappings(i):uriorcurie *</text>
+<text style='font-size:10px; font-family:Verdana;' text-anchor='middle' transform='translate(0,0)' x='287' y='-231.3'>rank(i):integer ?</text>
 </g><g class='edge' id='edge4'><title>SlotDefinition-&gt;Definition</title>
 <path d='M281.74,-992.965C276.794,-957.885 274.075,-873.335 273.582,-783.851' fill='none' stroke='black'/>
 <polygon fill='black' points='273.536,-773.77 278.082,-783.749 273.559,-778.77 273.582,-783.769 273.582,-783.769 273.582,-783.769 273.559,-778.77 269.082,-783.79 273.536,-773.77 273.536,-773.77' stroke='black'/>

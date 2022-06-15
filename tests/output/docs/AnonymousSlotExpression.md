@@ -66,6 +66,20 @@ implicitly asserts Y is an instance of C2
 
 ### Mixed in from slot_expression:
 
+ * [inlined](inlined.md)  <sub>0..1</sub>
+     * Description: True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
+ * [inlined_as_list](inlined_as_list.md)  <sub>0..1</sub>
+     * Description: True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
+     * Range: [Boolean](types/Boolean.md)
+     * in subsets: (basic)
+
+### Mixed in from slot_expression:
+
  * [minimum_value](minimum_value.md)  <sub>0..1</sub>
      * Description: for slots with ranges of type number, the value must be equal to or higher than this
      * Range: [Integer](types/Integer.md)

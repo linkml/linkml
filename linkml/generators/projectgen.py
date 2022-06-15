@@ -23,6 +23,8 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlddlgen import SQLDDLGenerator
+from linkml.generators.excelgen import ExcelGenerator
+from linkml.generators.javagen import JavaGenerator
 
 PATH_FSTRING = str
 GENERATOR_NAME = str
@@ -46,8 +48,10 @@ GEN_MAP = {
     'shex': (ShExGenerator, 'shex/{name}.shex', {}),
     'shacl': (ShaclGenerator, 'shacl/{name}.shacl.ttl', {}),
     'sqlddl': (SQLDDLGenerator, 'sqlschema/{name}.sql', {}),
-    'java': (SQLDDLGenerator, 'java/{name}.sql', {}),
-    'excel': (SQLDDLGenerator, 'excel/{name}.xlsx', {}),
+    # # linkml/generators/javagen.py uses different architecture from most of the other generators
+    # # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path
+    # 'java': (JavaGenerator, 'java/{name}.java', {'directory': '{parent}'}),
+    'excel': (ExcelGenerator, 'excel/{name}.xlsx', {'output': '{parent}/{name}.xlsx'}),
 }
 
 @lru_cache()
@@ -109,7 +113,14 @@ class ProjectGenerator:
                 gen_path_full = '/'.join(parts)
                 all_gen_args = {**default_gen_args, **config.generator_args.get(gen_name, {})}
                 gen: Generator
+                
+                # special check for output key because ExcelGenerator and
+                # SSSOMGenerator read in output file name during initialization
+                if "output" in all_gen_args:
+                    all_gen_args["output"] = all_gen_args["output"].format(name=name, parent=parent_dir)
+
                 gen = gen_cls(local_path, **all_gen_args)
+
                 serialize_args = {'mergeimports': config.mergeimports}
                 for k, v in all_gen_args.items():
                     # all ARG_DICT values are interpolatable
@@ -118,11 +129,19 @@ class ProjectGenerator:
                     serialize_args[k] = v
                 logging.info(f' {gen_name} ARGS: {serialize_args}')
                 gen_dump = gen.serialize(**serialize_args)
-                if parts[-1] != '':
-                    # markdowngen does not write to a file
-                    logging.info(f'  WRITING TO: {gen_path_full}')
-                    with open(gen_path_full, 'w', encoding='UTF-8') as stream:
-                        stream.write(gen_dump)
+
+                if gen_name != "excel":
+                    if parts[-1] != '':
+                        # markdowngen does not write to a file
+                        logging.info(f'  WRITING TO: {gen_path_full}')
+                        with open(gen_path_full, 'w', encoding='UTF-8') as stream:
+                            stream.write(gen_dump)
+                else:
+                    # special handling for excel generator
+                    # we do not need to route the output
+                    # into a file like the other generators
+                    gen.serialize(**serialize_args)
+                
 
 @click.command()
 @click.option("--dir", "-d",
@@ -199,8 +218,4 @@ def cli(yamlfile, dir, exclude: List[str], include: List[str], config_file, merg
 
 if __name__ == '__main__':
     cli()
-
-
-
-
 
