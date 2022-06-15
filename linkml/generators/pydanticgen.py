@@ -24,20 +24,9 @@ from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
 from pydantic import BaseModel, Field
-from pydantic.dataclasses import dataclass
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
-
-# Pydantic config and validators
-class PydanticConfig:
-    \"\"\" Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ \"\"\"
-
-    validate_assignment = True
-    validate_all = True
-    underscore_attrs_are_private = True
-    extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}
-    arbitrary_types_allowed = True  # TODO re-evaluate this
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
@@ -55,9 +44,10 @@ class {{ e.name }}(str, Enum):
 {% endfor %}
 
 {%- for c in schema.classes.values() %}
-@dataclass(config=PydanticConfig)
 class {{ c.name }} 
-                   {%- if class_isa_plus_mixins[c.name] %}({{class_isa_plus_mixins[c.name]|join(', ')}}){% endif -%}                   
+                   {%- if class_isa_plus_mixins[c.name] %}({{class_isa_plus_mixins[c.name]|join(', ')}})
+                   {%- else -%}(BaseModel, validate_assignment = True, validate_all = True, underscore_attrs_are_private = True, extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}, arbitrary_types_allowed = True)
+                   {%- endif -%}                   
                   :
     {% if c.description -%}
     \"\"\"
@@ -85,7 +75,7 @@ class {{ c.name }}
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
 {% for c in schema.classes.values() -%} 
-{{ c.name }}.__pydantic_model__.update_forward_refs()
+{{ c.name }}.update_forward_refs()
 {% endfor %}
 """
 
