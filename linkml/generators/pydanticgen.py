@@ -23,10 +23,14 @@ from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel as PydanticBaseModel, Field
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
+
+# https://github.com/samuelcolvin/pydantic/discussions/2857#discussioncomment-802379
+class BaseModel(PydanticBaseModel):
+    __slots__ = '__weakref__',
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
