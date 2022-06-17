@@ -1,0 +1,86 @@
+id: https://w3id.org/linkml/examples/pattern
+title: Pattern Example
+name: pattern-example
+description: This demonstrates the use of patterns
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/patterns/
+  sh: https://w3id.org/shacl/
+
+default_prefix: ex
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+# constant/parameter settings
+settings:
+  float: "\\d+[\\.\\d+]"
+  unit: "\\S+"
+  unit.length: "(centimeter|meter|inch)"
+  unit.weight: "(kg|g|lbs|stone)"
+  email: "\\S+@\\S+{\\.\\w}+"
+  
+#==================================
+# Classes                         #
+#==================================
+
+classes:
+  PersonInfo:
+    slots:
+      - id
+      - name
+      - height
+      - email
+
+#==================================
+# Slots                           #
+#==================================
+
+slots:
+  id:
+    identifier: true
+    range: string
+    pattern: "^P\\d{7}"    ## simple pattern. Note {}s are NOT interpolated
+  name:
+    range: string
+  email:
+    range: EmailString
+  height:
+    range: string
+    structured_pattern:
+      syntax: "{float} {unit.length}"
+      interpolated: true   ## all {...}s are replaced using settings
+      partial_match: false
+  weight:
+    range: string
+    structured_pattern:
+      syntax: "{float} {unit.weight}"
+      interpolated: true
+      partial_match: false  ## implicit ^...$
+
+#==================================
+# Types
+#==================================
+
+types:
+  EmailString:
+    typeof: string
+    structured_pattern:
+      syntax: "{email}"
+      interpolated: true
+      partial_match: false  ## implicit ^...$
+    
+      
