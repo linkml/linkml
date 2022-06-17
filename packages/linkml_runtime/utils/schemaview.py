@@ -741,7 +741,6 @@ class SchemaView(object):
         :return boolean: true if slot is multivalued, false if slot is single valued
         """
         induced_slot = self.induced_slot(slot_name)
-        print(induced_slot)
         return True if induced_slot.multivalued else False
 
 
