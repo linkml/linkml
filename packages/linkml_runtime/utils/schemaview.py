@@ -736,9 +736,9 @@ class SchemaView(object):
     @lru_cache()
     def is_multivalued(self, slot_name: SlotDefinition) -> bool:
         """
-        All slotes that are multivalued
+        returns True if slot is multivalued, else returns False
         :param slot_name: slot to test for multivalued
-        :return boolean: true if slot is multivalued, false if slot is single valued
+        :return boolean: 
         """
         induced_slot = self.induced_slot(slot_name)
         return True if induced_slot.multivalued else False
