@@ -67,8 +67,10 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.is_multivalued('id') is False
         assert view.is_multivalued('dog addresses') is True
 
-        assert view.slot_has_quality('aliases', 'multivalued') is True
-        assert view.slot_has_quality('id', 'identifier') is True
+        assert view.slot_is_true_for('aliases', 'multivalued') is True
+        assert view.slot_is_true_for('id', 'identifier') is True
+        with self.assertRaises(ValueError):
+            view.slot_is_true_for('aliases', 'aliases')
 
         for tn, t in view.all_types().items():
             logging.info(f'TN = {tn}')

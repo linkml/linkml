@@ -37,6 +37,11 @@ class OrderedBy(Enum):
     PRESERVE = "preserve"
 
 
+class Quality(Enum): # boolean slot attributes
+    IDENTIFIER = "identifier"
+    MULTIVALUED = "multivalued"
+
+
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
     if reflexive:
         rv = [x]
@@ -744,15 +749,19 @@ class SchemaView(object):
         return True if induced_slot.multivalued else False
 
     @lru_cache()
-    def slot_has_quality(self, slot_name: SlotDefinition, quality_to_check) -> bool:
+    def slot_is_true_for(self, slot_name: SlotDefinition, property: str) -> bool:
         """
-        returns True if slot has quality, else returns False
+        returns True if slot has specified property, where the property is a boolean type like
+        'multivalued', 'identifier', etc... else returns False
         :param slot_name: slot to test for multivalued
+        :param property: controlled vocabulary for boolean attribtues
         :return boolean:
         """
         induced_slot = self.induced_slot(slot_name)
-        return True if getattr(induced_slot, quality_to_check) else False
-
+        if type(getattr(induced_slot, property)) == bool:
+            return True if getattr(induced_slot, property) else False
+        else:
+            raise ValueError(f'property to introspect must be of type "boolean"')
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
         """
