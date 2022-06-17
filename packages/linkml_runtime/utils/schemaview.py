@@ -737,12 +737,13 @@ class SchemaView(object):
     def is_multivalued(self, slot_name: SlotDefinition) -> bool:
         """
         All slotes that are multivalued
-        :param imports:
-        :return:
+        :param slot_name: slot to test for multivalued
+        :return boolean: true if slot is multivalued, false if slot is single valued
         """
-        induced_slot = self.induced_slot(slot_name.name)
-        return induced_slot.multivalued
-
+        induced_slot = self.induced_slot(slot_name)
+        print(induced_slot)
+        return True if induced_slot.multivalued else False
+    
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
         """
