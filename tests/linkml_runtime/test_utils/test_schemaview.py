@@ -65,7 +65,6 @@ class SchemaViewTestCase(unittest.TestCase):
 
         assert view.is_multivalued('aliases') is True
         assert view.is_multivalued('id') is False
-        assert view.is_multivalued('outlets') is True
         assert view.is_multivalued('dog addresses') is True
 
         for tn, t in view.all_types().items():
