@@ -246,6 +246,7 @@ slots:
   employment history of:
     inverse: has employment history
     domain: EmploymentEvent
+
   has marriage history:
     range: MarriageEvent
     multivalued: true
@@ -271,6 +272,8 @@ slots:
   addresses:
     range: Address
     multivalued: True
+  dog addresses:
+    is_a: addresses
   age in years:
     range: integer
     minimum_value: 0

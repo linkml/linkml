@@ -63,9 +63,10 @@ class SchemaViewTestCase(unittest.TestCase):
         category_mapping = view.get_element_by_mapping("GO:0005198")
         assert category_mapping == ['activity']
 
-        multivalued_slots = view.get_multivalued_slots()
-        assert 'aliases' in multivalued_slots
-        assert 'id' not in multivalued_slots
+        assert view.is_multivalued('aliases') is True
+        assert view.is_multivalued('id') is False
+        assert view.is_multivalued('outlets') is True
+        assert view.is_multivalued('dog addresses') is True
 
         for tn, t in view.all_types().items():
             logging.info(f'TN = {tn}')
