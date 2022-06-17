@@ -749,17 +749,19 @@ class SchemaView(object):
         return True if induced_slot.multivalued else False
 
     @lru_cache()
-    def slot_is_true_for(self, slot_name: SlotDefinition, property: str) -> bool:
+    def slot_is_true_for_metadata_property(self, slot_name: SlotDefinition, metadata_property: str) -> bool:
         """
-        returns True if slot has specified property, where the property is a boolean type like
+        Returns true if the value of the provided "metadata_property" is True.  For example,
+        sv.slot_is_true_for_metadata_property('id','identifier)
+        will return True if the slot id has the identifier property set to True.
         'multivalued', 'identifier', etc... else returns False
         :param slot_name: slot to test for multivalued
-        :param property: controlled vocabulary for boolean attribtues
+        :param metadata_property: controlled vocabulary for boolean attribtues
         :return boolean:
         """
         induced_slot = self.induced_slot(slot_name)
-        if type(getattr(induced_slot, property)) == bool:
-            return True if getattr(induced_slot, property) else False
+        if type(getattr(induced_slot, metadata_property)) == bool:
+            return True if getattr(induced_slot, metadata_property) else False
         else:
             raise ValueError(f'property to introspect must be of type "boolean"')
 
