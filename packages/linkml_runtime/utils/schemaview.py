@@ -738,10 +738,20 @@ class SchemaView(object):
         """
         returns True if slot is multivalued, else returns False
         :param slot_name: slot to test for multivalued
-        :return boolean: 
+        :return boolean:
         """
         induced_slot = self.induced_slot(slot_name)
         return True if induced_slot.multivalued else False
+
+    @lru_cache()
+    def slot_has_quality(self, slot_name: SlotDefinition, quality_to_check) -> bool:
+        """
+        returns True if slot has quality, else returns False
+        :param slot_name: slot to test for multivalued
+        :return boolean:
+        """
+        induced_slot = self.induced_slot(slot_name)
+        return True if getattr(induced_slot, quality_to_check) else False
 
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
