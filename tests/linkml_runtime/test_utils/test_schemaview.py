@@ -24,7 +24,6 @@ class SchemaViewTestCase(unittest.TestCase):
     def test_schemaview(self):
         # no import schema
         view = SchemaView(SCHEMA_NO_IMPORTS)
-        print(view.class_induced_slots())
         logging.debug(view.imports_closure())
         assert len(view.imports_closure()) == 1
         all_cls = view.all_classes()

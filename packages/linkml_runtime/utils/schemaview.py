@@ -734,14 +734,14 @@ class SchemaView(object):
                 if self.slot_children(c, mixins=mixins, imports=imports) == []]
 
     @lru_cache()
-    def is_multivalued(self, imports=True) -> List[SlotDefinitionName]:
+    def is_multivalued(self, slot_name: SlotDefinition) -> bool:
         """
         All slotes that are multivalued
         :param imports:
         :return:
         """
-        class_induced_slots = self.class_induced_slots()
-
+        induced_slot = self.induced_slot(slot_name.name)
+        return induced_slot.multivalued
 
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
