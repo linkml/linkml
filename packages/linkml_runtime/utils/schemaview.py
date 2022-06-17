@@ -747,7 +747,7 @@ class SchemaView(object):
     def slot_is_true_for_metadata_property(self, slot_name: SlotDefinition, metadata_property: str) -> bool:
         """
         Returns true if the value of the provided "metadata_property" is True.  For example,
-        sv.slot_is_true_for_metadata_property('id','identifier)
+        sv.slot_is_true_for_metadata_property('id','identifier')
         will return True if the slot id has the identifier property set to True.
 
         :param slot_name: slot to test for multivalued
