@@ -749,10 +749,10 @@ class SchemaView(object):
         Returns true if the value of the provided "metadata_property" is True.  For example,
         sv.slot_is_true_for_metadata_property('id','identifier)
         will return True if the slot id has the identifier property set to True.
-        'multivalued', 'identifier', etc... else returns False
+
         :param slot_name: slot to test for multivalued
         :param metadata_property: controlled vocabulary for boolean attribtues
-        :return boolean:
+        :return:
         """
         induced_slot = self.induced_slot(slot_name)
         if type(getattr(induced_slot, metadata_property)) == bool:
