@@ -37,11 +37,6 @@ class OrderedBy(Enum):
     PRESERVE = "preserve"
 
 
-class Quality(Enum): # boolean slot attributes
-    IDENTIFIER = "identifier"
-    MULTIVALUED = "multivalued"
-
-
 def _closure(f, x, reflexive=True, depth_first=True, **kwargs):
     if reflexive:
         rv = [x]
