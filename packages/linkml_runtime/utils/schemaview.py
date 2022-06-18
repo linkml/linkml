@@ -752,8 +752,9 @@ class SchemaView(object):
 
         :param slot_name: slot to test for multivalued
         :param metadata_property: controlled vocabulary for boolean attribtues
-        :return:
+        :return: boolean
         """
+
         induced_slot = self.induced_slot(slot_name)
         if type(getattr(induced_slot, metadata_property)) == bool:
             return True if getattr(induced_slot, metadata_property) else False
