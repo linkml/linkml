@@ -236,6 +236,8 @@ classes:
     attributes:
       slot with space 2:
         range: class with spaces
+  sub subclass test:
+    is_a: subclass test
 
 
   AnyObject:
