@@ -45,10 +45,10 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
 
         new_file, filename = tempfile.mkstemp()
         temp_py_filepath = filename + ".py"
-        
+
         with open(temp_py_filepath, 'w') as stream:
             stream.write(code)
-        
+
         py_file_list = []
         with open(temp_py_filepath) as file:
             lines = file.readlines()
@@ -59,7 +59,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
             res = re.search(r"Table\('(.*?)',", item)
             if res:
                 tbl_list.append(res.group(1))
-                
+
         self.assertTrue(all(x in tbl_list for x in ["NamedThing",
                                                     "Person",
                                                     "Organization",
@@ -89,10 +89,10 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
 
         new_file, filename = tempfile.mkstemp()
         temp_py_filepath = filename + ".py"
-        
+
         with open(temp_py_filepath, 'w') as stream:
             stream.write(code)
-        
+
         py_file_list = []
         with open(temp_py_filepath) as file:
             lines = file.readlines()
@@ -226,6 +226,7 @@ class SQLAlchemyGeneratorTestCase(unittest.TestCase):
         session.close()
         engine.dispose()
 
+    @unittest.skip("Mixing sqla imperative and pydantic classes that extend from BaseModel may not play well together")
     def test_sqla_imperative_pydantic_exec(self):
         """
         https://github.com/tiangolo/fastapi/issues/214

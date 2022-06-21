@@ -28,9 +28,16 @@ from pydantic import BaseModel as PydanticBaseModel, Field
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
 
-# https://github.com/samuelcolvin/pydantic/discussions/2857#discussioncomment-802379
-class BaseModel(PydanticBaseModel):
-    __slots__ = '__weakref__',
+class IntermediateBaseModel(PydanticBaseModel):
+   __slots__ = '__weakref__'
+    
+class BaseModel(PydanticBaseModel,
+                validate_assignment = True, 
+                validate_all = True, 
+                underscore_attrs_are_private = True, 
+                extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}, 
+                arbitrary_types_allowed = True):
+    pass                    
 
 {% for e in enums.values() %}
 class {{ e.name }}(str, Enum):
@@ -49,11 +56,13 @@ class {{ e.name }}(str, Enum):
 
 {%- for c in schema.classes.values() %}
 class {{ c.name }} 
-                   {%- if class_isa_plus_mixins[c.name] %}({{class_isa_plus_mixins[c.name]|join(', ')}})
-                   {%- else -%}(BaseModel, validate_assignment = True, validate_all = True, underscore_attrs_are_private = True, extra = {% if allow_extra %}'allow'{% else %}'forbid'{% endif %}, arbitrary_types_allowed = True)
-                   {%- endif -%}                   
+    {%- if class_isa_plus_mixins[c.name] -%}
+        ({{class_isa_plus_mixins[c.name]|join(', ')}})
+    {%- else -%}
+        (BaseModel)
+    {%- endif -%}                   
                   :
-    {% if c.description -%}
+    {% if c.description -%}    
     \"\"\"
     {{ c.description }}
     \"\"\"
