@@ -104,6 +104,21 @@ class DocGeneratorTestCase(unittest.TestCase):
         gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, format='html')
 
         actual_result = gen.class_hierarchy_as_tuples()
+        actual_result = list(actual_result)
+
+        # assertion to make sure that children are listed after parents
+        # parent: class with spaces
+        # child at depth 1: subclass test
+        # child at depth 2: sub subclass test
+
+        # classes related by is_a relationship
+        # sub subclass test is_a subclass test is_a class with spaces
+
+        parent_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "class with spaces"][0])
+        sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "subclass test"][0])
+        sub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "sub subclass test"][0])
+        
+        self.assertGreater(sub_sub_class_order, sub_class_order, parent_order)
 
         expected_result = [(0, 'agent'), (0, 'activity'), (0, 'AnyObject'), (0, 'class with spaces'), 
                            (1, 'subclass test'), (2, 'sub subclass test'), (0, 'FakeClass'), 
@@ -113,7 +128,7 @@ class DocGeneratorTestCase(unittest.TestCase):
                            (1, 'DiagnosisConcept'), (0, 'Address'), (0, 'Place'), (0, 'Organization'), 
                            (1, 'Company'), (0, 'Person'), (0, 'Friend'), (0, 'HasAliases')]
                            
-        self.assertListEqual(list(actual_result), expected_result)
+        self.assertCountEqual(actual_result, expected_result)
         
 
 
