@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{ {{gen.latex(gen.schema_title())}} }
+
+\begin{document}
+
+{{ schema.description }}
+
+URI: {{ gen.latex(schema.id) }}
+Name: {{ gen.latex(schema.name) }}
+
+\subsection{Classes}\label{classes}
+
+\begin{tabular}{ |c|c| }
+ \hline
+ Class & Description \\\\
+ \hline
+
+{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
+{{ gen.latex(c.name) }} & {{ gen.latex(c.description) }} \\\\
+{% endfor %}
+ \hline
+\end{tabular}
+
+\end{document}

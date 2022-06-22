@@ -10,6 +10,7 @@ from linkml.generators.markdowngen import MarkdownGenerator
 from tests.test_generators.environment import env
 
 SCHEMA = env.input_path('kitchen_sink.yaml')
+LATEX_DIR = env.expected_path('kitchen_sink_tex')
 MD_DIR = env.expected_path('kitchen_sink_md')
 MD_DIR2 = env.expected_path('kitchen_sink_md2')
 HTML_DIR = env.expected_path('kitchen_sink_html')
@@ -46,6 +47,11 @@ def assert_mdfile_contains(filename, text, after:str =None, followed_by: List[st
     assert found
 
 class DocGeneratorTestCase(unittest.TestCase):
+
+    def test_latex_generation(self):
+        """ Tests minimal latex generation  """
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, format='latex')
+        md = gen.serialize(directory=LATEX_DIR)
 
     def test_docgen(self):
         """ Tests basic document generator functionality  """
