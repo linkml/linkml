@@ -472,10 +472,16 @@ class DocGenerator(Generator):
 
         Simply iterate through all tuples, drawing each in the appropriate way
 
+        Note: By default all classes are ordered alphabetically
+
         :return: tuples (depth: int, cls: ClassDefinitionName)
         """
         sv = self.schemaview
         roots = sv.class_roots(mixins=False)
+
+        # by default the classes are sorted alphabetically
+        roots = sorted(roots, key=str.casefold, reverse=True)
+
         # the stack holds tuples of depth-class that have still to be processed.
         # we seed this with all root classes (which have depth 0)
         # note the stack is processed from the last element first, ie. LIFO
