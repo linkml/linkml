@@ -182,13 +182,13 @@ class DocGeneratorTestCase(unittest.TestCase):
         
         self.assertGreater(sub_sub_class_order, sub_class_order, parent_order)
 
-        expected_result = [(0, 'agent'), (0, 'activity'), (0, 'AnyObject'), (0, 'class with spaces'), 
-                           (1, 'subclass test'), (2, 'sub subclass test'), (0, 'FakeClass'), 
-                           (0, 'Dataset'), (0, 'CodeSystem'), (0, 'WithLocation'), (0, 'Relationship'), 
-                           (1, 'FamilialRelationship'), (0, 'Event'), (1, 'MarriageEvent'), (1, 'MedicalEvent'), 
-                           (1, 'EmploymentEvent'), (1, 'BirthEvent'), (0, 'Concept'), (1, 'ProcedureConcept'), 
-                           (1, 'DiagnosisConcept'), (0, 'Address'), (0, 'Place'), (0, 'Organization'), 
-                           (1, 'Company'), (0, 'Person'), (0, 'Friend'), (0, 'HasAliases')]
+        expected_result = [(0, 'activity'), (0, 'Address'), (0, 'agent'), (0, 'AnyObject'), 
+                           (0, 'class with spaces'), (1, 'subclass test'), (2, 'sub subclass test'), 
+                           (0, 'CodeSystem'), (0, 'Concept'), (1, 'ProcedureConcept'), (1, 'DiagnosisConcept'), 
+                           (0, 'Dataset'), (0, 'Event'), (1, 'MarriageEvent'), (1, 'MedicalEvent'), 
+                           (1, 'EmploymentEvent'), (1, 'BirthEvent'), (0, 'FakeClass'), (0, 'Friend'), (0, 'HasAliases'), 
+                           (0, 'Organization'), (1, 'Company'), (0, 'Person'), (0, 'Place'), (0, 'Relationship'), 
+                           (1, 'FamilialRelationship'), (0, 'WithLocation')]
                            
         self.assertCountEqual(actual_result, expected_result)
         
