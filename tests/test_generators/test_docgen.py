@@ -185,7 +185,9 @@ class DocGeneratorTestCase(unittest.TestCase):
         sub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "Sub sub class 2"][0])
         tub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "tub sub class 1"][0])
         
-        self.assertGreater(tub_sub_class_order, sub_sub_class_order, sub_class_order, parent_order)
+        self.assertGreater(tub_sub_class_order, sub_sub_class_order)
+        self.assertGreater(sub_sub_class_order, sub_class_order)
+        self.assertGreater(sub_class_order, parent_order)
 
         expected_result = [(0, 'activity'), (0, 'Address'), (0, 'agent'), (0, 'AnyObject'), 
                            (0, 'class with spaces'), (1, 'subclass test'), (2, 'Sub sub class 2'), (2, 'tub sub class 1'),
