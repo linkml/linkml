@@ -237,7 +237,13 @@ classes:
     attributes:
       slot with space 2:
         range: class with spaces
-  sub subclass test:
+  # these below two sub classes at the same depth have
+  # been added to check if class hierarchy methods
+  # follow lexigraphic sorting
+  Sub sub class 2:
+    is_a: subclass test
+  tub sub class 1:
+    description: Same depth as Sub sub class 1
     is_a: subclass test
 
 
