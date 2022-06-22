@@ -13,7 +13,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation, Element, \
-    SlotDefinition, SlotDefinitionName, Definition, DefinitionName, EnumDefinition
+    SlotDefinition, SlotDefinitionName, Definition, DefinitionName, EnumDefinition, ClassDefinitionName
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml.utils.generator import shared_arguments, Generator
@@ -457,6 +457,36 @@ class DocGenerator(Generator):
             c.slots = []
             return yaml_dumper.dumps(c)
 
+
+    def class_hierarchy_as_tuples(self) -> Iterator[Tuple[int, ClassDefinitionName]]:
+        """
+        Generate a hierarchical representation of all classes in the schema
+
+        This is represented as a list of tuples (depth: int, cls: ClassDefinitionName),
+        where the order is pre-order depth first traversal
+
+        This can then be used to draw a hierarchy within jinja in a number of ways; e.g
+
+        - markdown (by using indentation of " " * depth on a list)
+        - tables (by placing fake indentation e.g using underscores)
+
+        Simply iterate through all tuples, drawing each in the appropriate way
+
+        :return: tuples (depth: int, cls: ClassDefinitionName)
+        """
+        sv = self.schemaview
+        roots = sv.class_roots(mixins=False)
+        # the stack holds tuples of depth-class that have still to be processed.
+        # we seed this with all root classes (which have depth 0)
+        # note the stack is processed from the last element first, ie. LIFO
+        stack = [(0, root) for root in roots]
+        # use iterative depth first traversal
+        while len(stack) > 0:
+            depth, class_name = stack.pop()
+            yield depth, class_name
+            for child in sv.class_children(class_name=class_name, mixins=False):
+                # depth first - place at end of stack (to be processed next)
+                stack.append((depth+1, child))
 
 
 @shared_arguments(DocGenerator)
