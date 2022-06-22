@@ -169,21 +169,26 @@ class DocGeneratorTestCase(unittest.TestCase):
         actual_result = list(actual_result)
 
         # assertion to make sure that children are listed after parents
+        # and that siblings, i.e., classes at the same depth are sorted
+        # alphabetically
         # parent: class with spaces
         # child at depth 1: subclass test
-        # child at depth 2: sub subclass test
+        # child at depth 2: Sub sub class 2
+        # child at depth 2: tub sub class 1
 
         # classes related by is_a relationship
-        # sub subclass test is_a subclass test is_a class with spaces
+        # Sub sub class 2 is_a subclass test is_a class with spaces
+        # tub sub class 1 is_a subclass test is_a class with spaces
 
         parent_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "class with spaces"][0])
         sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "subclass test"][0])
-        sub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "sub subclass test"][0])
+        sub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "Sub sub class 2"][0])
+        tub_sub_class_order = actual_result.index([(dep, cls) for dep, cls in actual_result if cls == "tub sub class 1"][0])
         
-        self.assertGreater(sub_sub_class_order, sub_class_order, parent_order)
+        self.assertGreater(tub_sub_class_order, sub_sub_class_order, sub_class_order, parent_order)
 
         expected_result = [(0, 'activity'), (0, 'Address'), (0, 'agent'), (0, 'AnyObject'), 
-                           (0, 'class with spaces'), (1, 'subclass test'), (2, 'sub subclass test'), 
+                           (0, 'class with spaces'), (1, 'subclass test'), (2, 'Sub sub class 2'), (2, 'tub sub class 1'),
                            (0, 'CodeSystem'), (0, 'Concept'), (1, 'ProcedureConcept'), (1, 'DiagnosisConcept'), 
                            (0, 'Dataset'), (0, 'Event'), (1, 'MarriageEvent'), (1, 'MedicalEvent'), 
                            (1, 'EmploymentEvent'), (1, 'BirthEvent'), (0, 'FakeClass'), (0, 'Friend'), (0, 'HasAliases'), 

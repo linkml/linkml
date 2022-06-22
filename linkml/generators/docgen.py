@@ -490,7 +490,8 @@ class DocGenerator(Generator):
         while len(stack) > 0:
             depth, class_name = stack.pop()
             yield depth, class_name
-            for child in sv.class_children(class_name=class_name, mixins=False):
+            children = sorted(sv.class_children(class_name=class_name, mixins=False), key=str.casefold, reverse=True)
+            for child in children:
                 # depth first - place at end of stack (to be processed next)
                 stack.append((depth+1, child))
 
