@@ -456,7 +456,7 @@ class DocGenerator(Generator):
         else:
             return 'mermaid'
 
-    def latex(self, text: str) -> str:
+    def latex(self, text: Optional[str]) -> str:
         """
         Makes text safe for latex
 
@@ -465,6 +465,8 @@ class DocGenerator(Generator):
         :param text:
         :return:
         """
+        if text is None:
+            text = ''
         return text.replace('_', '\\_')
 
     def yaml(self, element: Element, inferred=False) -> str:
