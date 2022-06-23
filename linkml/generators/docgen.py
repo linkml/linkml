@@ -126,6 +126,9 @@ class DocGenerator(Generator):
                                   schema=sv.schema,
                                   schemaview=sv)
         self._write(out_str, directory, 'index')  ## TODO: make configurable
+        if self._is_single_file_format(self.format):
+            logging.info(f'{self.format} is a single-page format, skipping non-index elements')
+            return
         template = self._get_template('schema')
         for schema_name in sv.imports_closure():
             imported_schema = sv.schema_map.get(schema_name)
@@ -196,6 +199,8 @@ class DocGenerator(Generator):
         """
         if self.format == 'markdown':
             return 'md'
+        elif self.format == 'latex':
+            return 'tex'
         else:
             return self.format
 
@@ -228,6 +233,21 @@ class DocGenerator(Generator):
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
             return env.get_template(base_file_name)
+
+    def schema_title(self) -> str:
+        """
+        Returns the title of the schema.
+
+        Uses title field if present, otherwise name
+
+        :return:
+        """
+        s = self.schemaview.schema
+        if s.title:
+            return s.title
+        else:
+            return s.name
+
 
     def name(self, element: Element) -> str:
         """
@@ -436,6 +456,19 @@ class DocGenerator(Generator):
         else:
             return 'mermaid'
 
+    def latex(self, text: Optional[str]) -> str:
+        """
+        Makes text safe for latex
+
+        NOTE: may be incomplete!
+
+        :param text:
+        :return:
+        """
+        if text is None:
+            text = ''
+        return text.replace('_', '\\_')
+
     def yaml(self, element: Element, inferred=False) -> str:
         """
         Render element as YAML
@@ -494,6 +527,12 @@ class DocGenerator(Generator):
             for child in children:
                 # depth first - place at end of stack (to be processed next)
                 stack.append((depth+1, child))
+
+    def _is_single_file_format(self, format: str):
+        if format == 'latex':
+            return True
+        else:
+            return False
 
 
 @shared_arguments(DocGenerator)
