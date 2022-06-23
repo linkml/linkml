@@ -116,13 +116,23 @@ class DocGeneratorTestCase(unittest.TestCase):
         # test index docs
         assert_mdfile_contains('index.md',
                                '# Kitchen Sink Schema',
-                               followed_by=['URI:', 'Name:', '## Classes', '## Slots', '## Enumerations'])
+                               followed_by=['URI:', 'Name:', '## Classes', '## Slots', '## Enumerations', '## Subsets'])
         assert_mdfile_contains('index.md',
                                '[EmploymentEventType](EmploymentEventType.md)',
                                after='Enumerations')
         assert_mdfile_contains('index.md',
                                'a provence-generating activity',
                                after='Classes')
+
+        # test subset docs
+        assert_mdfile_contains('SubsetA.md',
+                               'test subset A',
+                               after='SubsetA')
+
+        assert_mdfile_contains('SubsetA.md',
+                               'SubsetA',
+                               followed_by=['## Identifier and Mapping Information', '### Schema Source'])
+
         # test internal links
         assert_mdfile_contains('ceo.md',
                                'Range: [Person](Person.md)',
