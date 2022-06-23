@@ -13,7 +13,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, TypeDefinition, ClassDefinition, Annotation, Element, \
-    SlotDefinition, SlotDefinitionName, Definition, DefinitionName, EnumDefinition, ClassDefinitionName
+    SlotDefinition, SlotDefinitionName, Definition, DefinitionName, EnumDefinition, ClassDefinitionName, SubsetDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml.utils.generator import shared_arguments, Generator
@@ -174,6 +174,16 @@ class DocGenerator(Generator):
                                       element=t,
                                       schemaview=sv)
             self._write(out_str, directory, n)
+        template = self._get_template('subset')
+        for _, s in sv.all_subsets().items():
+            if self._is_external(c):
+                continue
+            n = self.name(s)
+            out_str = template.render(gen=self,
+                                      element=s,
+                                      schemaview=sv)
+            self._write(out_str, directory, n)
+
 
     def _write(self, out_str: str, directory: str, name: str) -> None:
         """
@@ -224,7 +234,7 @@ class DocGenerator(Generator):
             folder = None
             if self.template_directory:
                 p = Path(self.template_directory) / base_file_name
-                if (Path(self.template_directory) / base_file_name).is_file():
+                if p.is_file():
                     folder = self.template_directory
                 else:
                     logging.warning(f'Could not find {base_file_name} in {self.template_directory} - falling back to default')
@@ -276,8 +286,8 @@ class DocGenerator(Generator):
         :param element:
         :return:
         """
-        if isinstance(element, EnumDefinition):
-            # TODO: fix schema view to handle URIs for enums
+        if isinstance(element, (EnumDefinition, SubsetDefinition)):
+            # TODO: fix schema view to handle URIs for enums and subsets
             return self.name(element)
         return self.schemaview.get_uri(element, expand=expand)
 
@@ -318,6 +328,8 @@ class DocGenerator(Generator):
             return self._markdown_link(underscore(e.name))
         elif isinstance(e, TypeDefinition):
             return self._markdown_link(underscore(e.name))
+        elif isinstance(e, SubsetDefinition):
+            return self._markdown_link(camelcase(e.name))
         else:
             return e.name
 
