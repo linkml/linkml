@@ -63,6 +63,15 @@ class SchemaViewTestCase(unittest.TestCase):
         category_mapping = view.get_element_by_mapping("GO:0005198")
         assert category_mapping == ['activity']
 
+        assert view.is_multivalued('aliases') is True
+        assert view.is_multivalued('id') is False
+        assert view.is_multivalued('dog addresses') is True
+
+        assert view.slot_is_true_for_metadata_property('aliases', 'multivalued') is True
+        assert view.slot_is_true_for_metadata_property('id', 'identifier') is True
+        with self.assertRaises(ValueError):
+            view.slot_is_true_for_metadata_property('aliases', 'aliases')
+
         for tn, t in view.all_types().items():
             logging.info(f'TN = {tn}')
             print(f'{tn} {t.from_schema}')

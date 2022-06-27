@@ -733,6 +733,33 @@ class SchemaView(object):
                 for c in self.all_slots(imports=imports)
                 if self.slot_children(c, mixins=mixins, imports=imports) == []]
 
+    @lru_cache()
+    def is_multivalued(self, slot_name: SlotDefinition) -> bool:
+        """
+        returns True if slot is multivalued, else returns False
+        :param slot_name: slot to test for multivalued
+        :return boolean:
+        """
+        induced_slot = self.induced_slot(slot_name)
+        return True if induced_slot.multivalued else False
+
+    @lru_cache()
+    def slot_is_true_for_metadata_property(self, slot_name: SlotDefinition, metadata_property: str) -> bool:
+        """
+        Returns true if the value of the provided "metadata_property" is True.  For example,
+        sv.slot_is_true_for_metadata_property('id','identifier')
+        will return True if the slot id has the identifier property set to True.
+
+        :param slot_name: slot to test for multivalued
+        :param metadata_property: controlled vocabulary for boolean attribtues
+        :return: boolean
+        """
+
+        induced_slot = self.induced_slot(slot_name)
+        if type(getattr(induced_slot, metadata_property)) == bool:
+            return True if getattr(induced_slot, metadata_property) else False
+        else:
+            raise ValueError(f'property to introspect must be of type "boolean"')
 
     def get_element(self, element: Union[ElementName, Element], imports=True) -> Element:
         """
