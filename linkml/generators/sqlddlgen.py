@@ -369,7 +369,9 @@ class SQLDDLGenerator(Generator):
                     args = []
                     if sqlcol.foreign_key:
                         args = [ForeignKey(sqlcol.foreign_key.as_ddlstr())]
-                    col = Column(sqlcol.name, sqlcol.base_type, *args, primary_key=sqlcol.is_primary_key(), nullable=slot is None or not slot.required)
+                    col = Column(sqlcol.name, sqlcol.base_type, *args, primary_key=sqlcol.is_primary_key(),
+                                 nullable=slot is None or not slot.required
+                                 or not sqlcol.is_primary_key())
 
                     cols.append(col)
                 alchemy_tbl = Table(t.name, schema_metadata, *cols)
