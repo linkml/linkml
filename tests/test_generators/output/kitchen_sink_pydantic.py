@@ -2,15 +2,15 @@ from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel as PydanticBaseModel, Field
+from pydantic import BaseModel as BaseModel, Field
 
 metamodel_version = "None"
 version = "None"
 
-# class IntermediateBaseModel(PydanticBaseModel):
-#    __slots__ = '__weakref__'
+class WeakRefShimBaseModel(BaseModel):
+   __slots__ = '__weakref__'
     
-class BaseModel(PydanticBaseModel,
+class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_assignment = True, 
                 validate_all = True, 
                 underscore_attrs_are_private = True, 
@@ -48,16 +48,14 @@ class OtherCodes(str, Enum):
     
     
 
-class HasAliases(BaseModel):
+class HasAliases(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
-class Friend(BaseModel):
+class Friend(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     name: Optional[str] = Field(None)
     
 
@@ -66,7 +64,6 @@ class Person(HasAliases):
     """
     A person, living or dead
     """
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     has_employment_history: Optional[List[EmploymentEvent]] = Field(None)
@@ -81,7 +78,6 @@ class Person(HasAliases):
 
 class Organization(HasAliases):
     
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
@@ -90,24 +86,21 @@ class Organization(HasAliases):
 
 class Place(HasAliases):
     
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
-class Address(BaseModel):
+class Address(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     street: Optional[str] = Field(None)
     city: Optional[str] = Field(None)
     
 
 
-class Concept(BaseModel):
+class Concept(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
@@ -116,7 +109,6 @@ class Concept(BaseModel):
 
 class DiagnosisConcept(Concept):
     
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
@@ -125,16 +117,14 @@ class DiagnosisConcept(Concept):
 
 class ProcedureConcept(Concept):
     
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     in_code_system: Optional[str] = Field(None)
     
 
 
-class Event(BaseModel):
+class Event(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
@@ -142,9 +132,8 @@ class Event(BaseModel):
     
 
 
-class Relationship(BaseModel):
+class Relationship(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     related_to: Optional[str] = Field(None)
@@ -154,7 +143,6 @@ class Relationship(BaseModel):
 
 class FamilialRelationship(Relationship):
     
-    __slots__ = '__weakref__'
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     related_to: str = Field(None)
@@ -164,7 +152,6 @@ class FamilialRelationship(Relationship):
 
 class BirthEvent(Event):
     
-    __slots__ = '__weakref__'
     in_location: Optional[str] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
@@ -175,7 +162,6 @@ class BirthEvent(Event):
 
 class EmploymentEvent(Event):
     
-    __slots__ = '__weakref__'
     employed_at: Optional[str] = Field(None)
     type: Optional[EmploymentEventType] = Field(None)
     started_at_time: Optional[date] = Field(None)
@@ -187,7 +173,6 @@ class EmploymentEvent(Event):
 
 class MedicalEvent(Event):
     
-    __slots__ = '__weakref__'
     in_location: Optional[str] = Field(None)
     diagnosis: Optional[DiagnosisConcept] = Field(None)
     procedure: Optional[ProcedureConcept] = Field(None)
@@ -198,16 +183,14 @@ class MedicalEvent(Event):
     
 
 
-class WithLocation(BaseModel):
+class WithLocation(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     in_location: Optional[str] = Field(None)
     
 
 
 class MarriageEvent(WithLocation, Event):
     
-    __slots__ = '__weakref__'
     married_to: Optional[str] = Field(None)
     in_location: Optional[str] = Field(None)
     started_at_time: Optional[date] = Field(None)
@@ -219,7 +202,6 @@ class MarriageEvent(WithLocation, Event):
 
 class Company(Organization):
     
-    __slots__ = '__weakref__'
     ceo: Optional[str] = Field(None)
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
@@ -227,17 +209,15 @@ class Company(Organization):
     
 
 
-class CodeSystem(BaseModel):
+class CodeSystem(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     
 
 
-class Dataset(BaseModel):
+class Dataset(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     persons: Optional[List[Person]] = Field(default_factory=list)
     companies: Optional[List[Company]] = Field(default_factory=list)
     activities: Optional[List[Activity]] = Field(default_factory=list)
@@ -245,33 +225,29 @@ class Dataset(BaseModel):
     
 
 
-class FakeClass(BaseModel):
+class FakeClass(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     test_attribute: Optional[str] = Field(None)
     
 
 
-class ClassWithSpaces(BaseModel):
+class ClassWithSpaces(ConfiguredBaseModel):
     
-    __slots__ = '__weakref__'
     slot_with_space_1: Optional[str] = Field(None)
     
 
 
 class SubclassTest(ClassWithSpaces):
     
-    __slots__ = '__weakref__'
     slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
     slot_with_space_1: Optional[str] = Field(None)
     
 
 
-class Activity(BaseModel):
+class Activity(ConfiguredBaseModel):
     """
     a provence-generating activity
     """
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
@@ -282,11 +258,10 @@ class Activity(BaseModel):
     
 
 
-class Agent(BaseModel):
+class Agent(ConfiguredBaseModel):
     """
     a provence-generating agent
     """
-    __slots__ = '__weakref__'
     id: Optional[str] = Field(None)
     acted_on_behalf_of: Optional[str] = Field(None)
     was_informed_by: Optional[str] = Field(None)

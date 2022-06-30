@@ -23,15 +23,15 @@ from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel as PydanticBaseModel, Field
+from pydantic import BaseModel as BaseModel, Field
 
 metamodel_version = "{{metamodel_version}}"
 version = "{{version if version else None}}"
 
-class IntermediateBaseModel(PydanticBaseModel):
+class WeakRefShimBaseModel(BaseModel):
    __slots__ = '__weakref__'
     
-class BaseModel(PydanticBaseModel,
+class ConfiguredBaseModel(WeakRefShimBaseModel,
                 validate_assignment = True, 
                 validate_all = True, 
                 underscore_attrs_are_private = True, 
@@ -59,7 +59,7 @@ class {{ c.name }}
     {%- if class_isa_plus_mixins[c.name] -%}
         ({{class_isa_plus_mixins[c.name]|join(', ')}})
     {%- else -%}
-        (BaseModel)
+        (ConfiguredBaseModel)
     {%- endif -%}                   
                   :
     {% if c.description -%}    
