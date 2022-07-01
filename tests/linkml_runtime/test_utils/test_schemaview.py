@@ -79,6 +79,9 @@ class SchemaViewTestCase(unittest.TestCase):
         for sn, s in view.all_slots().items():
             logging.info(f'SN = {sn} RANGE={s.range}')
             self.assertEqual('https://w3id.org/linkml/tests/kitchen_sink', s.from_schema)
+            # range should always be populated: See https://github.com/linkml/linkml/issues/733
+            rng = view.induced_slot(sn).range
+            self.assertIsNotNone(rng)
         # this section is mostly for debugging
         for cn in all_cls.keys():
             c = view.get_class(cn)
@@ -95,6 +98,9 @@ class SchemaViewTestCase(unittest.TestCase):
                 logging.debug(f'  SLOT {sn} R: {slot.range} U: {view.get_uri(sn)} ANCS: {view.slot_ancestors(sn)}')
                 induced_slot = view.induced_slot(sn, cn)
                 logging.debug(f'    INDUCED {sn}={induced_slot}')
+                # range should always be populated: See https://github.com/linkml/linkml/issues/733
+                self.assertIsNotNone(induced_slot.range)
+
 
         logging.debug(f'ALL = {view.all_elements().keys()}')
 
