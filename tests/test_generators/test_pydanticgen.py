@@ -52,7 +52,7 @@ class PydanticGeneratorTestCase(unittest.TestCase):
         mod = compile_python(code, PACKAGE)
         p = mod.Person(id='P:1')
         assert p.id == 'P:1'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValidationError):
             mod.Person(no_such_field='x')
         with self.assertRaises(ValidationError):
             mod.Person(age_in_years='x')

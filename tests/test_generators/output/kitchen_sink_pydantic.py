@@ -2,21 +2,21 @@ from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel, Field
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel as BaseModel, Field
 
 metamodel_version = "None"
 version = "None"
 
-# Pydantic config and validators
-class PydanticConfig:
-    """ Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ """
-
-    validate_assignment = True
-    validate_all = True
-    underscore_attrs_are_private = True
-    extra = 'forbid'
-    arbitrary_types_allowed = True  # TODO re-evaluate this
+class WeakRefShimBaseModel(BaseModel):
+   __slots__ = '__weakref__'
+    
+class ConfiguredBaseModel(WeakRefShimBaseModel,
+                validate_assignment = True, 
+                validate_all = True, 
+                underscore_attrs_are_private = True, 
+                extra = 'forbid', 
+                arbitrary_types_allowed = True):
+    pass                    
 
 
 class FamilialRelationshipType(str, Enum):
@@ -48,21 +48,18 @@ class OtherCodes(str, Enum):
     
     
 
-@dataclass(config=PydanticConfig)
-class HasAliases:
+class HasAliases(ConfiguredBaseModel):
     
     aliases: Optional[List[str]] = Field(default_factory=list)
     
 
 
-@dataclass(config=PydanticConfig)
-class Friend:
+class Friend(ConfiguredBaseModel):
     
     name: Optional[str] = Field(None)
     
 
 
-@dataclass(config=PydanticConfig)
 class Person(HasAliases):
     """
     A person, living or dead
@@ -79,7 +76,6 @@ class Person(HasAliases):
     
 
 
-@dataclass(config=PydanticConfig)
 class Organization(HasAliases):
     
     id: Optional[str] = Field(None)
@@ -88,7 +84,6 @@ class Organization(HasAliases):
     
 
 
-@dataclass(config=PydanticConfig)
 class Place(HasAliases):
     
     id: Optional[str] = Field(None)
@@ -97,16 +92,14 @@ class Place(HasAliases):
     
 
 
-@dataclass(config=PydanticConfig)
-class Address:
+class Address(ConfiguredBaseModel):
     
     street: Optional[str] = Field(None)
     city: Optional[str] = Field(None)
     
 
 
-@dataclass(config=PydanticConfig)
-class Concept:
+class Concept(ConfiguredBaseModel):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
@@ -114,7 +107,6 @@ class Concept:
     
 
 
-@dataclass(config=PydanticConfig)
 class DiagnosisConcept(Concept):
     
     id: Optional[str] = Field(None)
@@ -123,7 +115,6 @@ class DiagnosisConcept(Concept):
     
 
 
-@dataclass(config=PydanticConfig)
 class ProcedureConcept(Concept):
     
     id: Optional[str] = Field(None)
@@ -132,8 +123,7 @@ class ProcedureConcept(Concept):
     
 
 
-@dataclass(config=PydanticConfig)
-class Event:
+class Event(ConfiguredBaseModel):
     
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
@@ -142,8 +132,7 @@ class Event:
     
 
 
-@dataclass(config=PydanticConfig)
-class Relationship:
+class Relationship(ConfiguredBaseModel):
     
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
@@ -152,7 +141,6 @@ class Relationship:
     
 
 
-@dataclass(config=PydanticConfig)
 class FamilialRelationship(Relationship):
     
     started_at_time: Optional[date] = Field(None)
@@ -162,7 +150,6 @@ class FamilialRelationship(Relationship):
     
 
 
-@dataclass(config=PydanticConfig)
 class BirthEvent(Event):
     
     in_location: Optional[str] = Field(None)
@@ -173,7 +160,6 @@ class BirthEvent(Event):
     
 
 
-@dataclass(config=PydanticConfig)
 class EmploymentEvent(Event):
     
     employed_at: Optional[str] = Field(None)
@@ -185,7 +171,6 @@ class EmploymentEvent(Event):
     
 
 
-@dataclass(config=PydanticConfig)
 class MedicalEvent(Event):
     
     in_location: Optional[str] = Field(None)
@@ -198,14 +183,12 @@ class MedicalEvent(Event):
     
 
 
-@dataclass(config=PydanticConfig)
-class WithLocation:
+class WithLocation(ConfiguredBaseModel):
     
     in_location: Optional[str] = Field(None)
     
 
 
-@dataclass(config=PydanticConfig)
 class MarriageEvent(WithLocation, Event):
     
     married_to: Optional[str] = Field(None)
@@ -217,7 +200,6 @@ class MarriageEvent(WithLocation, Event):
     
 
 
-@dataclass(config=PydanticConfig)
 class Company(Organization):
     
     ceo: Optional[str] = Field(None)
@@ -227,16 +209,14 @@ class Company(Organization):
     
 
 
-@dataclass(config=PydanticConfig)
-class CodeSystem:
+class CodeSystem(ConfiguredBaseModel):
     
     id: Optional[str] = Field(None)
     name: Optional[str] = Field(None)
     
 
 
-@dataclass(config=PydanticConfig)
-class Dataset:
+class Dataset(ConfiguredBaseModel):
     
     persons: Optional[List[Person]] = Field(default_factory=list)
     companies: Optional[List[Company]] = Field(default_factory=list)
@@ -245,21 +225,18 @@ class Dataset:
     
 
 
-@dataclass(config=PydanticConfig)
-class FakeClass:
+class FakeClass(ConfiguredBaseModel):
     
     test_attribute: Optional[str] = Field(None)
     
 
 
-@dataclass(config=PydanticConfig)
-class ClassWithSpaces:
+class ClassWithSpaces(ConfiguredBaseModel):
     
     slot_with_space_1: Optional[str] = Field(None)
     
 
 
-@dataclass(config=PydanticConfig)
 class SubclassTest(ClassWithSpaces):
     
     slot_with_space_2: Optional[ClassWithSpaces] = Field(None)
@@ -267,8 +244,7 @@ class SubclassTest(ClassWithSpaces):
     
 
 
-@dataclass(config=PydanticConfig)
-class Activity:
+class Activity(ConfiguredBaseModel):
     """
     a provence-generating activity
     """
@@ -282,8 +258,7 @@ class Activity:
     
 
 
-@dataclass(config=PydanticConfig)
-class Agent:
+class Agent(ConfiguredBaseModel):
     """
     a provence-generating agent
     """
@@ -296,28 +271,28 @@ class Agent:
 
 # Update forward refs
 # see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/
-HasAliases.__pydantic_model__.update_forward_refs()
-Friend.__pydantic_model__.update_forward_refs()
-Person.__pydantic_model__.update_forward_refs()
-Organization.__pydantic_model__.update_forward_refs()
-Place.__pydantic_model__.update_forward_refs()
-Address.__pydantic_model__.update_forward_refs()
-Concept.__pydantic_model__.update_forward_refs()
-DiagnosisConcept.__pydantic_model__.update_forward_refs()
-ProcedureConcept.__pydantic_model__.update_forward_refs()
-Event.__pydantic_model__.update_forward_refs()
-Relationship.__pydantic_model__.update_forward_refs()
-FamilialRelationship.__pydantic_model__.update_forward_refs()
-BirthEvent.__pydantic_model__.update_forward_refs()
-EmploymentEvent.__pydantic_model__.update_forward_refs()
-MedicalEvent.__pydantic_model__.update_forward_refs()
-WithLocation.__pydantic_model__.update_forward_refs()
-MarriageEvent.__pydantic_model__.update_forward_refs()
-Company.__pydantic_model__.update_forward_refs()
-CodeSystem.__pydantic_model__.update_forward_refs()
-Dataset.__pydantic_model__.update_forward_refs()
-FakeClass.__pydantic_model__.update_forward_refs()
-ClassWithSpaces.__pydantic_model__.update_forward_refs()
-SubclassTest.__pydantic_model__.update_forward_refs()
-Activity.__pydantic_model__.update_forward_refs()
-Agent.__pydantic_model__.update_forward_refs()
+HasAliases.update_forward_refs()
+Friend.update_forward_refs()
+Person.update_forward_refs()
+Organization.update_forward_refs()
+Place.update_forward_refs()
+Address.update_forward_refs()
+Concept.update_forward_refs()
+DiagnosisConcept.update_forward_refs()
+ProcedureConcept.update_forward_refs()
+Event.update_forward_refs()
+Relationship.update_forward_refs()
+FamilialRelationship.update_forward_refs()
+BirthEvent.update_forward_refs()
+EmploymentEvent.update_forward_refs()
+MedicalEvent.update_forward_refs()
+WithLocation.update_forward_refs()
+MarriageEvent.update_forward_refs()
+Company.update_forward_refs()
+CodeSystem.update_forward_refs()
+Dataset.update_forward_refs()
+FakeClass.update_forward_refs()
+ClassWithSpaces.update_forward_refs()
+SubclassTest.update_forward_refs()
+Activity.update_forward_refs()
+Agent.update_forward_refs()
