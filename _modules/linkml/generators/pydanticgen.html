@@ -106,21 +106,21 @@
 <span class="s2">from datetime import datetime, date</span>
 <span class="s2">from enum import Enum</span>
 <span class="s2">from typing import List, Dict, Optional, Any</span>
-<span class="s2">from pydantic import BaseModel, Field</span>
-<span class="s2">from pydantic.dataclasses import dataclass</span>
+<span class="s2">from pydantic import BaseModel as BaseModel, Field</span>
 
 <span class="s2">metamodel_version = &quot;{{metamodel_version}}&quot;</span>
 <span class="s2">version = &quot;{{version if version else None}}&quot;</span>
 
-<span class="s2"># Pydantic config and validators</span>
-<span class="s2">class PydanticConfig:</span>
-<span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2"> Pydantic config https://pydantic-docs.helpmanual.io/usage/model_config/ </span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2"></span>
-
-<span class="s2">    validate_assignment = True</span>
-<span class="s2">    validate_all = True</span>
-<span class="s2">    underscore_attrs_are_private = True</span>
-<span class="s2">    extra = {</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %}</span>
-<span class="s2">    arbitrary_types_allowed = True  # TODO re-evaluate this</span>
+<span class="s2">class WeakRefShimBaseModel(BaseModel):</span>
+<span class="s2">   __slots__ = &#39;__weakref__&#39;</span>
+<span class="s2">    </span>
+<span class="s2">class ConfiguredBaseModel(WeakRefShimBaseModel,</span>
+<span class="s2">                validate_assignment = True, </span>
+<span class="s2">                validate_all = True, </span>
+<span class="s2">                underscore_attrs_are_private = True, </span>
+<span class="s2">                extra = {</span><span class="si">% i</span><span class="s2">f allow_extra %}&#39;allow&#39;{</span><span class="si">% e</span><span class="s2">lse %}&#39;forbid&#39;{</span><span class="si">% e</span><span class="s2">ndif %}, </span>
+<span class="s2">                arbitrary_types_allowed = True):</span>
+<span class="s2">    pass                    </span>
 
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or e in enums.values() %}</span>
 <span class="s2">class {{ e.name }}(str, Enum):</span>
@@ -138,11 +138,14 @@
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 
 <span class="s2">{</span><span class="si">%- f</span><span class="s2">or c in schema.classes.values() %}</span>
-<span class="s2">@dataclass(config=PydanticConfig)</span>
 <span class="s2">class {{ c.name }} </span>
-<span class="s2">                   {</span><span class="si">%- i</span><span class="s2">f class_isa_plus_mixins[c.name] %}({{class_isa_plus_mixins[c.name]|join(&#39;, &#39;)}}){</span><span class="si">% e</span><span class="s2">ndif -%}                   </span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f class_isa_plus_mixins[c.name] -%}</span>
+<span class="s2">        ({{class_isa_plus_mixins[c.name]|join(&#39;, &#39;)}})</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">lse -%}</span>
+<span class="s2">        (ConfiguredBaseModel)</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif -%}                   </span>
 <span class="s2">                  :</span>
-<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.description -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.description -%}    </span>
 <span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2"></span>
 <span class="s2">    {{ c.description }}</span>
 <span class="s2">    </span><span class="se">\&quot;\&quot;\&quot;</span><span class="s2"></span>
@@ -168,7 +171,7 @@
 <span class="s2"># Update forward refs</span>
 <span class="s2"># see https://pydantic-docs.helpmanual.io/usage/postponed_annotations/</span>
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or c in schema.classes.values() -%} </span>
-<span class="s2">{{ c.name }}.__pydantic_model__.update_forward_refs()</span>
+<span class="s2">{{ c.name }}.update_forward_refs()</span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
