@@ -1,5 +1,5 @@
 # Auto generated from inference-example.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-01-24T10:55:25
+# Generation date: 2022-07-01T19:52:59
 # Schema: inference
 #
 # id: https://w3id.org/linkml/examples/inference
@@ -47,6 +47,33 @@ DEFAULT_ = EX
 
 
 @dataclass
+class Term(YAMLRoot):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = EX.Term
+    class_class_curie: ClassVar[str] = "ex:Term"
+    class_name: ClassVar[str] = "Term"
+    class_model_uri: ClassVar[URIRef] = EX.Term
+
+    id: Optional[str] = None
+    name: Optional[str] = None
+    synonyms: Optional[Union[str, List[str]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.id is not None and not isinstance(self.id, str):
+            self.id = str(self.id)
+
+        if self.name is not None and not isinstance(self.name, str):
+            self.name = str(self.name)
+
+        if not isinstance(self.synonyms, list):
+            self.synonyms = [self.synonyms] if self.synonyms is not None else []
+        self.synonyms = [v if isinstance(v, str) else str(v) for v in self.synonyms]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
 class Person(YAMLRoot):
     _inherited_slots: ClassVar[List[str]] = []
 
@@ -65,6 +92,9 @@ class Person(YAMLRoot):
     description: Optional[str] = None
     is_juvenile: Optional[Union[bool, Bool]] = None
     age_category: Optional[Union[str, "AgeEnum"]] = None
+    slot_with_spaces: Optional[str] = None
+    derived_slot_with_spaces: Optional[str] = None
+    derived_expression_from_spaces: Optional[str] = None
     summary: Optional[str] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
@@ -97,6 +127,15 @@ class Person(YAMLRoot):
 
         if self.age_category is not None and not isinstance(self.age_category, AgeEnum):
             self.age_category = AgeEnum(self.age_category)
+
+        if self.slot_with_spaces is not None and not isinstance(self.slot_with_spaces, str):
+            self.slot_with_spaces = str(self.slot_with_spaces)
+
+        if self.derived_slot_with_spaces is not None and not isinstance(self.derived_slot_with_spaces, str):
+            self.derived_slot_with_spaces = str(self.derived_slot_with_spaces)
+
+        if self.derived_expression_from_spaces is not None and not isinstance(self.derived_expression_from_spaces, str):
+            self.derived_expression_from_spaces = str(self.derived_expression_from_spaces)
 
         if self.summary is not None and not isinstance(self.summary, str):
             self.summary = str(self.summary)
@@ -215,6 +254,12 @@ class slots:
 slots.id = Slot(uri=EX.id, name="id", curie=EX.curie('id'),
                    model_uri=EX.id, domain=None, range=Optional[str])
 
+slots.name = Slot(uri=EX.name, name="name", curie=EX.curie('name'),
+                   model_uri=EX.name, domain=None, range=Optional[str])
+
+slots.synonyms = Slot(uri=EX.synonyms, name="synonyms", curie=EX.curie('synonyms'),
+                   model_uri=EX.synonyms, domain=None, range=Optional[Union[str, List[str]]])
+
 slots.full_name = Slot(uri=EX.full_name, name="full_name", curie=EX.curie('full_name'),
                    model_uri=EX.full_name, domain=None, range=Optional[str])
 
@@ -256,6 +301,15 @@ slots.description = Slot(uri=EX.description, name="description", curie=EX.curie(
 
 slots.summary = Slot(uri=EX.summary, name="summary", curie=EX.curie('summary'),
                    model_uri=EX.summary, domain=None, range=Optional[str])
+
+slots.slot_with_spaces = Slot(uri=EX.slot_with_spaces, name="slot with spaces", curie=EX.curie('slot_with_spaces'),
+                   model_uri=EX.slot_with_spaces, domain=None, range=Optional[str])
+
+slots.derived_slot_with_spaces = Slot(uri=EX.derived_slot_with_spaces, name="derived slot with spaces", curie=EX.curie('derived_slot_with_spaces'),
+                   model_uri=EX.derived_slot_with_spaces, domain=None, range=Optional[str])
+
+slots.derived_expression_from_spaces = Slot(uri=EX.derived_expression_from_spaces, name="derived expression from spaces", curie=EX.curie('derived_expression_from_spaces'),
+                   model_uri=EX.derived_expression_from_spaces, domain=None, range=Optional[str])
 
 slots.relationship__person1 = Slot(uri=EX.person1, name="relationship__person1", curie=EX.curie('person1'),
                    model_uri=EX.relationship__person1, domain=None, range=Optional[Union[dict, Person]])

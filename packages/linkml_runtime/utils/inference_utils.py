@@ -66,6 +66,8 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
     :return: inferred value, or None if not inference performed
     """
     cls_name = type(obj).class_name
+    mapped_slot = schemaview.slot_name_mappings()[slot_name]
+    slot_name = mapped_slot.name
     slot = schemaview.induced_slot(slot_name, cls_name)
     logging.debug(f'   CONF={config}')
     if config.use_string_serialization:
