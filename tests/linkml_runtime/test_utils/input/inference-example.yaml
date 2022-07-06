@@ -58,8 +58,14 @@ slots:
     range: Address
   description:
   summary:
+  slot with spaces:
+  derived slot with spaces:
+    string_serialization: "{slot_with_spaces}"
+  derived expression from spaces:
+    equals_expression: "{slot_with_spaces}"
 
-    
+
+
 #==================================
 # Classes                         #
 #==================================
@@ -83,6 +89,9 @@ classes:
       - description
       - is_juvenile
       - age_category
+      - slot with spaces
+      - derived slot with spaces
+      - derived expression from spaces
     slot_usage:
       description:
         string_serialization: |-

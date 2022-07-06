@@ -56,7 +56,10 @@ class InferenceUtilsTestCase(unittest.TestCase):
         c = Container(persons=[Person(first_name=FIRST, last_name=LAST)])
         infer_all_slot_values(c, schemaview=sv)
         self.assertEqual(c.persons[0].full_name, FULL)
-
+        # test slots with spaces
+        p = Person(slot_with_spaces="test")
+        infer_all_slot_values(p, schemaview=sv)
+        self.assertEqual(p.derived_slot_with_spaces, "test")
 
     def test_infer_expressions(self):
         """
@@ -105,6 +108,10 @@ class InferenceUtilsTestCase(unittest.TestCase):
         #e2 = AgeEnum.juvenile
         #print(f'e1={e1} c={e1.code} t={type(e1)}')
         #print(f'e2={e2} {type(e2)}')
+        # test slots with spaces
+        p = Person(slot_with_spaces="test")
+        infer_all_slot_values(p, schemaview=sv, config=config)
+        self.assertEqual(p.derived_expression_from_spaces, "test")
 
     def test_if_then(self):
         sv = SchemaView(SCHEMA)
