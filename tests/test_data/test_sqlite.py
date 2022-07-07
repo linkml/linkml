@@ -1,14 +1,17 @@
+import _csv
+import csv
 import os
 import unittest
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.loaders import yaml_loader
+from linkml_runtime.loaders import yaml_loader, csv_loader
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition
 from sqlalchemy.orm import sessionmaker
 
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
 
 from tests.test_data.model.personinfo import Container, Person, FamilialRelationship, GenderType, FamilialRelationshipType
@@ -22,6 +25,7 @@ DATA = env.input_path('personinfo_data01.yaml')
 DATA_RECAP = env.expected_path('personinfo_data01.recap.yaml')
 DB = env.expected_path('personinfo.db')
 TMP_DB = env.expected_path('tmp.db')
+TMP_TSV = env.expected_path('tmp.tsv')
 METAMODEL_DB = env.expected_path('meta.db')
 
 
@@ -121,6 +125,41 @@ class SQLiteStoreTest(unittest.TestCase):
         #print(yaml_dumper.dumps(i2_recap))
         diff = compare_objs(i2, i2_recap)
         self.assertEqual(diff, "")
+
+    def test_csv_limit(self):
+        """
+        Tests https://github.com/linkml/linkml/issues/815
+        """
+        b = SchemaBuilder()
+        b.add_class('Person', ['name']).add_defaults()
+        schema = b.schema
+        sf = SchemaFixer()
+        sf.add_container(schema)
+        for size in [20, 200000]:
+            csv.field_size_limit(size)
+            for diff in [1, -1]:
+                name = "N" * (size + diff)
+                endpoint = SQLStore(schema, database_path=TMP_DB)
+                endpoint.db_exists(force=True)
+                mod = endpoint.compile_native()
+                with open(TMP_TSV, "w", encoding="UTF-8") as file:
+                    file.write("name\n")
+                    file.write(name)
+                    file.write("\n")
+                if diff == -1:
+                    obj = csv_loader.load(TMP_TSV, target_class=mod.Container, index_slot='Person_index', schema=schema)
+                    endpoint.dump(obj)
+                    obj2 = endpoint.load(target_class=mod.Container)
+                    person = getattr(obj2, 'Person_index')[0]
+                    name2 = getattr(person, 'name')
+                    self.assertEqual(name, name2)
+                else:
+                    with self.assertRaises(Exception):
+                        csv_loader.load(TMP_TSV, target_class=mod.Container, index_slot='Person_index', schema=schema)
+
+
+
+
 
 
 if __name__ == '__main__':
