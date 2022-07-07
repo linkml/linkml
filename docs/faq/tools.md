@@ -252,3 +252,21 @@ See:
 
  - [working with data - python](https://linkml.io/linkml/data/python.html)
  - [loaders and dumpers, code docs](https://linkml.io/linkml/developers/loaders-and-dumpers.html)
+
+## What does _csv.Error: field larger than field limit (131072) mean?
+
+The Python CSV module has a built-in default limit on the size of the data
+that can fit into any one column value. This is usually enough for most purposes,
+but there may be scenarios where you have a CSV with large data values, e.g
+
+- storing DNA sequence data
+- storing image data in base64 or similar
+
+In these cases you should pass in `--csv-field-size-limit NUMBER`
+
+E.g.
+
+```bash
+linkml-sqldb --csv-field-size-limit 250000 dump  -s my-schema.yaml my-data.tsv -D my.db
+
+```

@@ -14,7 +14,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
 
-from tests.test_data.model.personinfo import Container, Person, FamilialRelationship, GenderType, FamilialRelationshipType
+from tests.test_data.model.personinfo import Container, Person, FamilialRelationship, GenderType
 import tests.test_data.model.personinfo
 from tests.test_data.environment import env
 from tests.utils.dict_comparator import compare_yaml, compare_objs
