@@ -1003,6 +1003,14 @@ in the model. An element is a mixin if one of its properties is “is_mixin:true
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.is_multivalued">
+<span class="sig-name descname"><span class="pre">is_multivalued</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.is_multivalued"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.is_multivalued" title="Permalink to this definition"></a></dt>
+<dd><p>returns True if slot is multivalued, else returns False
+:param slot_name: slot to test for multivalued
+:return boolean:</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.is_relationship">
 <span class="sig-name descname"><span class="pre">is_relationship</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ClassDefinitionName</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.is_relationship"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.is_relationship" title="Permalink to this definition"></a></dt>
 <dd><p>Tests if a class represents a relationship or reified statement</p>
@@ -1017,6 +1025,14 @@ in the model. An element is a mixin if one of its properties is “is_mixin:true
 <dd class="field-even"><p>true if the class represents a relationship</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">
+<span class="sig-name descname"><span class="pre">materialize_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.materialize_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns" title="Permalink to this definition"></a></dt>
+<dd><p>Materialize schema by expanding structured patterns 
+into regular expressions based on composite patterns 
+provided in the settings dictionary.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1109,6 +1125,25 @@ but a proposed feature in LinkML 1.2 is range expressions, where ranges can be d
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>descendants slot names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property">
+<span class="sig-name descname"><span class="pre">slot_is_true_for_metadata_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_property</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.slot_is_true_for_metadata_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if the value of the provided “metadata_property” is True.  For example,
+sv.slot_is_true_for_metadata_property(‘id’,’identifier’)
+will return True if the slot id has the identifier property set to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>slot_name</strong> – slot to test for multivalued</p></li>
+<li><p><strong>metadata_property</strong> – controlled vocabulary for boolean attribtues</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boolean</p>
 </dd>
 </dl>
 </dd></dl>

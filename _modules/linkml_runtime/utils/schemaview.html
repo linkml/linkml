@@ -92,6 +92,7 @@
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.namespaces</span> <span class="kn">import</span> <span class="n">Namespaces</span>
 <span class="kn">from</span> <span class="nn">deprecated.classic</span> <span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.context_utils</span> <span class="kn">import</span> <span class="n">parse_import_map</span><span class="p">,</span> <span class="n">map_import</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.pattern</span> <span class="kn">import</span> <span class="n">generate_patterns</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -815,6 +816,33 @@
                 <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_children</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="n">mixins</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]]</span></div>
 
+<div class="viewcode-block" id="SchemaView.is_multivalued"><a class="viewcode-back" href="../../../developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.is_multivalued">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">is_multivalued</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns True if slot is multivalued, else returns False</span>
+<span class="sd">        :param slot_name: slot to test for multivalued</span>
+<span class="sd">        :return boolean:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">induced_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="SchemaView.slot_is_true_for_metadata_property"><a class="viewcode-back" href="../../../developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.slot_is_true_for_metadata_property">[docs]</a>    <span class="nd">@lru_cache</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">slot_is_true_for_metadata_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">metadata_property</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if the value of the provided &quot;metadata_property&quot; is True.  For example,</span>
+<span class="sd">        sv.slot_is_true_for_metadata_property(&#39;id&#39;,&#39;identifier&#39;)</span>
+<span class="sd">        will return True if the slot id has the identifier property set to True.</span>
+
+<span class="sd">        :param slot_name: slot to test for multivalued</span>
+<span class="sd">        :param metadata_property: controlled vocabulary for boolean attribtues</span>
+<span class="sd">        :return: boolean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">induced_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metadata_property</span><span class="p">))</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metadata_property</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;property to introspect must be of type &quot;boolean&quot;&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaView.get_element"><a class="viewcode-back" href="../../../developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.get_element">[docs]</a>    <span class="k">def</span> <span class="nf">get_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">],</span> <span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1506,11 +1534,23 @@
             <span class="n">s2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_name</span>
         <span class="k">return</span> <span class="n">s2</span>
 
-
-
-
     <span class="k">def</span> <span class="nf">set_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">modifications</span> <span class="o">+=</span> <span class="mi">1</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modifications</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="SchemaView.materialize_patterns"><a class="viewcode-back" href="../../../developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.materialize_patterns">[docs]</a>    <span class="k">def</span> <span class="nf">materialize_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Materialize schema by expanding structured patterns </span>
+<span class="sd">        into regular expressions based on composite patterns </span>
+<span class="sd">        provided in the settings dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">patterns_dict</span> <span class="o">=</span> <span class="n">generate_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">slot_defn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">slot_defn</span><span class="o">.</span><span class="n">structured_pattern</span><span class="p">:</span>
+
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">slot_defn</span><span class="o">.</span><span class="n">structured_pattern</span><span class="o">.</span><span class="n">syntax</span>
+
+                <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns_dict</span><span class="p">:</span>
+                    <span class="n">slot_defn</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">patterns_dict</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span></div></div>
 </pre></div>
 
            </div>
