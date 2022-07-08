@@ -1,17 +1,19 @@
 import os
 import unittest
+from datetime import datetime
 
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import yaml_dumper, rdflib_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition
+from linkml_runtime.utils.schemaview import SchemaView, SchemaDefinition, XSDDateTime
+from rdflib import Literal, XSD
 from sqlalchemy.orm import sessionmaker
 
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.sqlutils import SQLStore
 
-from tests.test_data.model.personinfo import Container, Person, FamilialRelationship, GenderType, FamilialRelationshipType
+from tests.test_data.model.personinfo import Container, Person, FamilialRelationship, GenderType, Organization
 import tests.test_data.model.personinfo
 from tests.test_data.environment import env
 from tests.utils.dict_comparator import compare_yaml, compare_objs
@@ -43,6 +45,27 @@ class SQLiteStoreTest(unittest.TestCase):
         p = Person(id='x', gender=GenderType(GenderType.cisgender_man))
         self.assertEqual(type(p.gender), GenderType)
         c = Container(persons=[p])
+
+    def test_datetime(self):
+        """
+        Tests that date objects can be loaded and dumper
+
+        See https://github.com/linkml/linkml/issues/816
+        """
+        date_str = "2022-01-13T20:03:48"
+        value = datetime.fromisoformat(date_str)
+        org = Organization(id="ROR:1",
+                           name="Acme",
+                           founding_date=date_str)
+        container = Container(organizations=[org])
+        rdf_str = rdflib_dumper.dumps(org, prefix_map={'ROR': 'http://x.org/ror/'},
+                                      schemaview=SchemaView(SCHEMA))
+        endpoint = SQLStore(SCHEMA, database_path=TMP_DB)
+        endpoint.native_module = tests.test_data.model.personinfo
+        endpoint.db_exists(force=True)
+        endpoint.compile()
+        endpoint.dump(container)
+
 
     def test_sqlite_store(self):
         """

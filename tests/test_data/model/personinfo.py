@@ -1,5 +1,5 @@
 # Auto generated from personinfo.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-06-01T12:12:50
+# Generation date: 2022-07-07T17:19:46
 # Schema: personinfo
 #
 # id: https://w3id.org/linkml/examples/personinfo
@@ -22,8 +22,8 @@ from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String
-from linkml_runtime.utils.metamodelcore import Bool, XSDDate
+from linkml_runtime.linkml_model.types import Boolean, Date, Datetime, Float, Integer, String
+from linkml_runtime.utils.metamodelcore import Bool, XSDDate, XSDDateTime
 
 metamodel_version = "1.7.0"
 version = None
@@ -240,7 +240,7 @@ class Organization(NamedThing):
 
     id: Union[str, OrganizationId] = None
     mission_statement: Optional[str] = None
-    founding_date: Optional[str] = None
+    founding_date: Optional[Union[str, XSDDateTime]] = None
     founding_location: Optional[Union[str, PlaceId]] = None
     current_address: Optional[Union[dict, "Address"]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
@@ -255,8 +255,8 @@ class Organization(NamedThing):
         if self.mission_statement is not None and not isinstance(self.mission_statement, str):
             self.mission_statement = str(self.mission_statement)
 
-        if self.founding_date is not None and not isinstance(self.founding_date, str):
-            self.founding_date = str(self.founding_date)
+        if self.founding_date is not None and not isinstance(self.founding_date, XSDDateTime):
+            self.founding_date = XSDDateTime(self.founding_date)
 
         if self.founding_location is not None and not isinstance(self.founding_location, PlaceId):
             self.founding_location = PlaceId(self.founding_location)
@@ -710,7 +710,7 @@ slots.mission_statement = Slot(uri=PERSONINFO.mission_statement, name="mission_s
                    model_uri=PERSONINFO.mission_statement, domain=None, range=Optional[str])
 
 slots.founding_date = Slot(uri=PERSONINFO.founding_date, name="founding_date", curie=PERSONINFO.curie('founding_date'),
-                   model_uri=PERSONINFO.founding_date, domain=None, range=Optional[str])
+                   model_uri=PERSONINFO.founding_date, domain=None, range=Optional[Union[str, XSDDateTime]])
 
 slots.founding_location = Slot(uri=PERSONINFO.founding_location, name="founding_location", curie=PERSONINFO.curie('founding_location'),
                    model_uri=PERSONINFO.founding_location, domain=None, range=Optional[Union[str, PlaceId]])

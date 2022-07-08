@@ -237,6 +237,7 @@ slots:
   city:
   mission_statement:
   founding_date:
+    range: datetime
   founding_location:
     range: Place
   postal_code:
