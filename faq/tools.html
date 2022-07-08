@@ -74,6 +74,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#can-i-customize-the-markdown-generation-for-my-schema-site">Can I customize the Markdown generation for my schema site?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#can-i-use-my-schema-to-do-reasoning-over-my-data">Can I use my schema to do reasoning over my data?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-does-if-missing-mean-in-my-json-output">What does _if_missing mean in my JSON output?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-does-csv-error-field-larger-than-field-limit-131072-mean">What does _csv.Error: field larger than field limit (131072) mean?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="getting-help.html">FAQ: Getting Help</a></li>
@@ -338,6 +339,21 @@ if you are incorporating LinkML into a software project that uses <a class="refe
 <li><p><a class="reference external" href="https://linkml.io/linkml/data/python.html">working with data - python</a></p></li>
 <li><p><a class="reference external" href="https://linkml.io/linkml/developers/loaders-and-dumpers.html">loaders and dumpers, code docs</a></p></li>
 </ul>
+</section>
+<section id="what-does-csv-error-field-larger-than-field-limit-131072-mean">
+<h2>What does _csv.Error: field larger than field limit (131072) mean?<a class="headerlink" href="#what-does-csv-error-field-larger-than-field-limit-131072-mean" title="Permalink to this heading"></a></h2>
+<p>The Python CSV module has a built-in default limit on the size of the data
+that can fit into any one column value. This is usually enough for most purposes,
+but there may be scenarios where you have a CSV with large data values, e.g</p>
+<ul class="simple">
+<li><p>storing DNA sequence data</p></li>
+<li><p>storing image data in base64 or similar</p></li>
+</ul>
+<p>In these cases you should pass in <code class="docutils literal notranslate"><span class="pre">--csv-field-size-limit</span> <span class="pre">NUMBER</span></code></p>
+<p>E.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-sqldb --csv-field-size-limit <span class="m">250000</span> dump  -s my-schema.yaml my-data.tsv -D my.db
+</pre></div>
+</div>
 </section>
 </section>
 
