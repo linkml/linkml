@@ -1,3 +1,4 @@
+import csv
 import logging
 import os
 import sqlite3
@@ -253,7 +254,12 @@ class SQLStore:
 @click.group()
 @click.option("-v", "--verbose", count=True)
 @click.option("-q", "--quiet")
-def main(verbose: int, quiet: bool):
+@click.option("--csv-field-size-limit",
+              type=int,
+              help="""
+              Increase the default limit for maximum field size.
+              See https://docs.python.org/3/library/csv.html#csv.field_size_limit""")
+def main(verbose: int, quiet: bool, csv_field_size_limit: int):
     """Run the LinkML SQL CLI."""
     if verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
@@ -263,6 +269,8 @@ def main(verbose: int, quiet: bool):
         logging.basicConfig(level=logging.WARNING)
     if quiet:
         logging.basicConfig(level=logging.ERROR)
+    if csv_field_size_limit:
+        csv.field_size_limit(csv_field_size_limit)
 
 
 @main.command()
@@ -287,6 +295,7 @@ def main(verbose: int, quiet: bool):
               default=True,
               show_default=True,
               help="Force creation of a database if it does not exist")
+
 @click.argument("input")
 def dump(input, module, db, target_class, input_format=None,
         schema=None, validate=None, force: bool = None, index_slot=None) -> None:
