@@ -576,7 +576,7 @@ linkml-runtime = ">=1.1.6"
 
 [[package]]
 name = "linkml-runtime"
-version = "1.2.21"
+version = "1.3.0rc3"
 description = "Runtime environment for LinkML, the Linked open data modeling language"
 category = "main"
 optional = false
@@ -1420,7 +1420,7 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.6"
-content-hash = "b617a1768844a4079848cb648db485f8316a1b652176ab914f62c852d25d7701"
+content-hash = "f58bd7e7260e3c32e0bc7fc688b10d8b980849471fee5f5055ff46206ce8f906"
 
 [metadata.files]
 alabaster = [
