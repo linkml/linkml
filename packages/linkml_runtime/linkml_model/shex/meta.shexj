@@ -672,6 +672,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/implicit_prefix",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_string",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -4172,6 +4179,13 @@
                      },
                      {
                         "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/implicit_prefix",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/equals_string",
                         "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
@@ -4360,6 +4374,13 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/structured_pattern",
                         "valueExpr": "https://w3id.org/linkml/PatternExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/implicit_prefix",
+                        "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
                      },

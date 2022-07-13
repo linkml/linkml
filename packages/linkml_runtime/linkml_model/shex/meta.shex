@@ -144,6 +144,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -709,6 +710,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;
@@ -739,6 +741,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <maximum_value> @<Integer> ? ;
           <pattern> @<String> ? ;
           <structured_pattern> @<PatternExpression> ? ;
+          <implicit_prefix> @<String> ? ;
           <equals_string> @<String> ? ;
           <equals_string_in> @<String> * ;
           <equals_number> @<Integer> ? ;

@@ -11,6 +11,7 @@ description: |-
   * [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
   * [ClassDefinition](https://w3id.org/linkml/ClassDefinition)
   * [SlotDefinition](https://w3id.org/linkml/SlotDefinition)
+  * [TypeDefinition](https://w3id.org/linkml/TypeDefinition)
 
   Every LinkML model instantiates SchemaDefinition, all classes in
   the model instantiate ClassDefinition, and so on
@@ -32,6 +33,7 @@ prefixes:
   skos: http://www.w3.org/2004/02/skos/core#
   skosxl: http://www.w3.org/2008/05/skos-xl#
   OIO: http://www.geneontology.org/formats/oboInOwl#
+  NCIT: http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#
   pav: http://purl.org/pav/
   oslc: http://open-services.net/ns/core#
   schema: http://schema.org/
@@ -42,6 +44,7 @@ prefixes:
   qb: http://purl.org/linked-data/cube#
   prov: http://www.w3.org/ns/prov#
   vann: https://vocab.org/vann/
+  qudt: http://qudt.org/schema/qudt/
 
 default_prefix: linkml
 default_range: string
@@ -65,7 +68,9 @@ imports:
   - linkml:mappings
   - linkml:extensions
   - linkml:annotations
-
+  - linkml:validation
+  - units
+  
 subsets:
   owl:
     description: Set of slots that appear in the OWL representation of a model
@@ -450,13 +455,18 @@ slots:
     multivalued: true
     range: uriorcurie
     description: >-
-      the identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot
+      The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot.
+      Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term
+      while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration
+      in that in an enumeration, the values of the enumeration are listed directly in the model itself.
+      Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an
+      enumerated list of possible values in every serialization of the model.
 
   # -----------------------------------
   # Enum definition slots
   # -----------------------------------
   code_set:
-    domain: enum_definition
+    domain: enum_expression
     range: uriorcurie
     description: >-
       the identifier of an enumeration code set.
@@ -466,7 +476,7 @@ slots:
       - basic
 
   code_set_version:
-    domain: enum_definition
+    domain: enum_expression
     range: string
     description: >-
       the version identifier of the enumeration code set
@@ -476,17 +486,17 @@ slots:
       - basic
 
   code_set_tag:
-    domain: enum_definition
+    domain: enum_expression
     range: string
     description: >-
       the version tag of the enumeration code set
     comments:
-      - enum_definition cannot have both a code_set_tag and a code_set_version
+      - enum_expression cannot have both a code_set_tag and a code_set_version
     in_subset:
       - basic
 
   pv_formula:
-    domain: enum_definition
+    domain: enum_expression
     range: pv_formula_options
     description: >-
       Defines the specific formula to be used to generate the permissible values.
@@ -497,7 +507,7 @@ slots:
       - basic
 
   permissible_values:
-    domain: enum_definition
+    domain: enum_expression
     range: permissible_value
     multivalued: true
     inlined: true
@@ -505,6 +515,100 @@ slots:
       A list of possible values for a slot range
     in_subset:
       - basic
+
+  enum_uri:
+    aliases:
+      - public ID
+    domain: enum_definition
+    range: uriorcurie
+    description: URI of the enum in an RDF environment
+    ifabsent: class_curie
+    in_subset:
+      - basic
+      
+  include:
+    description: An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set
+    domain: enum_expression
+    range: anonymous_enum_expression
+    multivalued: true
+
+  minus:
+    description: An enum expression that yields a list of permissible values that are to be subtracted from the enum
+    domain: enum_expression
+    range: anonymous_enum_expression
+    multivalued: true
+
+  inherits:
+    description: An enum definition that is used as the basis to create a new enum
+    comments:
+      - All permissible values for all inherited enums are copied to form the initial seed set
+    domain: enum_expression
+    range: enum_definition
+    multivalued: true
+
+  matches:
+    description: Specifies a match query that is used to calculate the list of permissible values
+    domain: enum_expression
+    range: match_query
+
+  identifier_pattern:
+    description: A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
+    domain: match_query
+    range: string
+    
+  concepts:
+    description: A list of identifiers that are used to construct a set of permissible values
+    domain: enum_expression
+    range: uriorcurie
+    multivalued: true
+    
+  reachable_from:
+    description: Specifies a query for obtaining a list of permissible values based on graph reachability
+    domain: enum_expression
+    range: reachability_query
+
+  source_ontology:
+    aliases:
+      - terminology
+      - vocabulary
+    description: An ontology or vocabulary or terminology that is used in a query to obtain a set of permissible values
+    range: uriorcurie
+    
+  is_direct:
+    aliases:
+      - non-transitive
+    description: True if the reachability query should only include directly related nodes, if False then include also transitively connected
+    domain: reachability_query
+    range: boolean
+
+  traverse_up:
+    aliases:
+      - ancestors
+    description: True if the direction of the reachability query is reversed and ancestors are retrieved
+    domain: reachability_query
+    range: boolean
+
+  include_self:
+    aliases:
+      - reflexive
+    description: True if the query is reflexive
+    domain: reachability_query
+    range: boolean
+
+  relationship_types:
+    description: A list of relationship types (properties) that are used in a reachability query
+    aliases:
+      - predicates
+      - properties
+    domain: reachability_query
+    range: uriorcurie
+    multivalued: true
+
+  source_nodes:
+    description: A list of nodes that are used in the reachability query
+    domain: reachability_query
+    range: uriorcurie
+    multivalued: true
 
   # -----------------------------------
   # Slots for permissible_value
@@ -739,6 +843,10 @@ slots:
     in_subset:
       - basic
 
+  enum_range:
+    range: enum_expression
+    description: An inlined enumeration
+
   range_expression:
     domain: slot_expression
     range: anonymous_class_expression
@@ -829,6 +937,8 @@ slots:
     range: integer
     in_subset:
       - basic
+    exact_mappings:
+      - qudt:order
   deactivated:
     description: a deactivated rule is not executed by the rules engine
     slot_uri: sh:deactivated
@@ -850,10 +960,11 @@ slots:
     description: the collection of classification rules that apply to all members of this class
 
   slot_conditions:
+    domain: class_expression
     multivalued: true
     range: slot_definition
     inlined: true
-    description: the redefinition of a slot in the context of the containing class definition.
+    description: expresses constraints on a group of slots for a class expression
     
   attributes:
     domain: class_definition
@@ -898,10 +1009,10 @@ slots:
       necessary and sufficient conditions that can be transformed into an OWL equivalence axiom
 
   union_of:
-    domain: class_definition
-    range: class_definition
+    domain: element
+    range: element
     multivalued: true
-    description: indicates that the domain class consists exactly of the members of the classes in the range
+    description: indicates that the domain element consists exactly of the members of the element in the range.
     notes:
       - this only applies in the OWL generation
 
@@ -1047,6 +1158,12 @@ slots:
         * class_uri -- URI for the containing class
     close_mappings:
       - sh:defaultValue
+
+  implicit_prefix:
+    domain: slot_expression
+    range: string
+    description: >-
+      Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
 
   value_specification_constant:
     abstract: true
@@ -1338,7 +1455,18 @@ slots:
   subproperty_of:
     domain: slot_definition
     range: slot_definition
-    description: Ontology property which this slot is a subproperty of
+    description: >-
+      Ontology property which this slot is a subproperty of.  Note: setting this property on a slot
+      does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values
+      in every serialization of the model.
+    examples:
+      - value: RO:HOM0000001
+        description: >-
+          this is the RO term for "in homology relationship with", and used as a value of subproperty of this means
+          that any ontological child (related to RO:HOM0000001 via an is_a relationship), is a valid value for the slot
+          that declares this with the subproperty_of tag.  This differs from the 'values_from' meta model component
+          in that 'values_from' requires the id of a value set (said another way, if an entire ontology had a curie/identifier
+          that was the identifier for the entire ontology, then that identifier would be used in 'values_from.')
     slot_uri: rdfs:subPropertyOf
 
   disjoint_with:
@@ -1761,7 +1889,8 @@ slots:
       - this should only be used on slots that are applicable to class that represent relationships
       - in the context of RDF, this should be used for slots that can be modeled using the RDF reification vocabulary
       - in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes
-    
+
+      
 #==================================
 # Classes                         #
 #==================================
@@ -1869,7 +1998,9 @@ classes:
     mixin: true
     slots:
       - pattern
-      - structured_pattern      
+      - structured_pattern
+      - unit
+      - implicit_prefix
       - equals_string
       - equals_string_in
       - equals_number
@@ -1903,9 +2034,12 @@ classes:
       - base
       - type_uri
       - repr
+      - union_of
+    slot_usage:
+      union_of:
+        range: type_definition
     in_subset:
       - basic
-
 
   subset_definition:
     description: the name and description of a subset
@@ -1935,22 +2069,65 @@ classes:
     in_subset:
       - basic
 
-  enum_definition:
-    description: List of values that constrain the range of a slot
-    is_a: element
+  enum_expression:
+    description: An expression that constrains the range of a slot
+    is_a: expression
     slots:
       - code_set
       - code_set_tag
       - code_set_version
       - pv_formula
       - permissible_values
+      - include
+      - minus
+      - inherits
+      - reachable_from
+      - matches
+      - concepts
+
+  anonymous_enum_expression:
+    description: An enum_expression that is not named
+    mixins:
+      - enum_expression
+        
+  enum_definition:
+    aliases:
+      - enum
+      - value set
+      - term set
+      - Terminology Value Set
+    description: List of values that constrain the range of a slot
+    is_a: definition
+    mixins:
+      - enum_expression
+    exact_mappings:
+      - NCIT:C113497
     close_mappings:
       - qb:HierarchicalCodeList
     in_subset:
       - basic
       - relational_model
       - object_oriented
+    slots:
+      - enum_uri
 
+  match_query:
+    description: A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts
+    slots:
+      - identifier_pattern
+      - source_ontology
+      
+  reachability_query:
+    description: A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types
+    slots:
+      - source_ontology
+      - source_nodes
+      - relationship_types
+      - is_direct
+      - include_self
+      - traverse_up
+      
+      
   structured_alias:
     description: >-
       object that contains meta data about a synonym or alias including where it came from (source)
@@ -2026,6 +2203,7 @@ classes:
     slots:
       - range
       - range_expression
+      - enum_range
       - required
       - recommended
       - inlined
@@ -2033,7 +2211,9 @@ classes:
       - minimum_value
       - maximum_value
       - pattern
-      - structured_pattern      
+      - structured_pattern
+      - unit
+      - implicit_prefix
       - equals_string
       - equals_string_in
       - equals_number
@@ -2114,6 +2294,7 @@ classes:
       - path_rule
       - disjoint_with
       - children_are_mutually_disjoint
+      - union_of
     slot_usage:
       is_a:
         range: slot_definition
@@ -2123,6 +2304,8 @@ classes:
         range: slot_definition
       disjoint_with:
         range: slot_definition
+      union_of:
+        range: type_definition
     in_subset:
       - basic
 
@@ -2191,6 +2374,8 @@ classes:
       rules:
         range: class_rule
       disjoint_with:
+        range: class_definition
+      union_of:
         range: class_definition
     close_mappings:
       - owl:Class
@@ -2303,6 +2488,7 @@ classes:
       - text
       - description
       - meaning
+      - unit
     in_subset:
       - basic
 
@@ -2318,7 +2504,6 @@ classes:
     in_subset:
       - basic
       - relational_model
-
 
 #==================================
 # Enumerations                    #
@@ -2364,7 +2549,6 @@ enums:
         description: a slot with this role connects a symmetric relationship to a node that represents either subject or object node
       OTHER_ROLE:
         description: a slot with this role connects a relationship to a node that is not subject/object/predicate
-
 
   alias_predicate_enum:
     permissible_values:

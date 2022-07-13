@@ -56,6 +56,21 @@ type AnonymousClassExpression implements ClassExpression
     slotConditions: [SlotDefinition]
   }
 
+type AnonymousEnumExpression implements EnumExpression
+  {
+    codeSet: Uriorcurie
+    codeSetTag: String
+    codeSetVersion: String
+    pvFormula: PvFormulaOptions
+    permissibleValues: [PermissibleValue]
+    include: [AnonymousEnumExpression]
+    minus: [AnonymousEnumExpression]
+    inherits: [EnumDefinition]
+    reachableFrom: ReachabilityQuery
+    matches: MatchQuery
+    concepts: [Uriorcurie]
+  }
+
 type AnonymousExpression implements Expression, Extensible, Annotatable, CommonMetadata
   {
     extensions: [Extension]
@@ -118,6 +133,7 @@ type AnonymousSlotExpression implements SlotExpression
     rank: Integer
     range: Element
     rangeExpression: AnonymousClassExpression
+    enumRange: EnumExpression
     required: Boolean
     recommended: Boolean
     inlined: Boolean
@@ -126,6 +142,8 @@ type AnonymousSlotExpression implements SlotExpression
     maximumValue: Integer
     pattern: String
     structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -144,6 +162,8 @@ type AnonymousTypeExpression implements TypeExpression
   {
     pattern: String
     structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -386,7 +406,7 @@ type Element implements Extensible, Annotatable, CommonMetadata
     rank: Integer
   }
 
-type EnumDefinition
+type EnumDefinition implements EnumExpression
   {
     name: String!
     idPrefixes: [Ncname]
@@ -420,11 +440,45 @@ type EnumDefinition
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     rank: Integer
+    isA: Definition
+    abstract: Boolean
+    mixin: Boolean
+    mixins: [Definition]
+    applyTo: [Definition]
+    valuesFrom: [Uriorcurie]
+    createdBy: Uriorcurie
+    createdOn: Datetime
+    lastUpdatedOn: Datetime
+    modifiedBy: Uriorcurie
+    status: Uriorcurie
+    stringSerialization: String
+    enumUri: Uriorcurie
     codeSet: Uriorcurie
     codeSetTag: String
     codeSetVersion: String
     pvFormula: PvFormulaOptions
     permissibleValues: [PermissibleValue]
+    include: [AnonymousEnumExpression]
+    minus: [AnonymousEnumExpression]
+    inherits: [EnumDefinition]
+    reachableFrom: ReachabilityQuery
+    matches: MatchQuery
+    concepts: [Uriorcurie]
+  }
+
+type EnumExpression
+  {
+    codeSet: Uriorcurie
+    codeSetTag: String
+    codeSetVersion: String
+    pvFormula: PvFormulaOptions
+    permissibleValues: [PermissibleValue]
+    include: [AnonymousEnumExpression]
+    minus: [AnonymousEnumExpression]
+    inherits: [EnumDefinition]
+    reachableFrom: ReachabilityQuery
+    matches: MatchQuery
+    concepts: [Uriorcurie]
   }
 
 type Example
@@ -487,6 +541,12 @@ type LocalName
   {
     localNameSource: Ncname!
     localNameValue: String!
+  }
+
+type MatchQuery
+  {
+    identifierPattern: String
+    sourceOntology: Uriorcurie
   }
 
 type PathExpression implements Expression, Extensible, Annotatable, CommonMetadata
@@ -567,6 +627,7 @@ type PermissibleValue implements Extensible, Annotatable, CommonMetadata
     text: String!
     description: String
     meaning: Uriorcurie
+    unit: UnitOfMeasure
     isA: PermissibleValue
     mixins: [PermissibleValue]
     extensions: [Extension]
@@ -601,6 +662,16 @@ type Prefix
   {
     prefixPrefix: Ncname!
     prefixReference: Uri!
+  }
+
+type ReachabilityQuery
+  {
+    sourceOntology: Uriorcurie
+    sourceNodes: [Uriorcurie]
+    relationshipTypes: [Uriorcurie]
+    isDirect: Boolean
+    includeSelf: Boolean
+    traverseUp: Boolean
   }
 
 type SchemaDefinition
@@ -747,11 +818,13 @@ type SlotDefinition implements SlotExpression
     pathRule: PathExpression
     disjointWith: [SlotDefinition]
     childrenAreMutuallyDisjoint: Boolean
+    unionOf: [TypeDefinition]
     isA: SlotDefinition
     mixins: [SlotDefinition]
     applyTo: [SlotDefinition]
     range: Element
     rangeExpression: AnonymousClassExpression
+    enumRange: EnumExpression
     required: Boolean
     recommended: Boolean
     inlined: Boolean
@@ -760,6 +833,8 @@ type SlotDefinition implements SlotExpression
     maximumValue: Integer
     pattern: String
     structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -778,6 +853,7 @@ interface SlotExpression
   {
     range: Element
     rangeExpression: AnonymousClassExpression
+    enumRange: EnumExpression
     required: Boolean
     recommended: Boolean
     inlined: Boolean
@@ -786,6 +862,8 @@ interface SlotExpression
     maximumValue: Integer
     pattern: String
     structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -908,8 +986,11 @@ type TypeDefinition implements TypeExpression
     base: String
     uri: Uriorcurie
     repr: String
+    unionOf: [TypeDefinition]
     pattern: String
     structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -925,6 +1006,8 @@ interface TypeExpression
   {
     pattern: String
     structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
     equalsNumber: Integer
@@ -967,6 +1050,34 @@ type UniqueKey implements Extensible, Annotatable, CommonMetadata
     narrowMappings: [Uriorcurie]
     broadMappings: [Uriorcurie]
     rank: Integer
+  }
+
+type UnitOfMeasure
+  {
+    symbol: String
+    exactMappings: [Uriorcurie]
+    ucumCode: String
+    derivation: String
+    hasQuantityKind: Uriorcurie
+    iec61360code: String
+  }
+
+type ValidationReport
+  {
+    results: [ValidationResult]
+  }
+
+type ValidationResult
+  {
+    type: Nodeidentifier
+    severity: SeverityOptions
+    subject: Nodeidentifier
+    instantiates: Nodeidentifier
+    predicate: Nodeidentifier
+    object: Nodeidentifier
+    objectStr: String
+    nodeSource: Nodeidentifier
+    info: String
   }
 
 

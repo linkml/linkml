@@ -284,7 +284,7 @@
                "additionalProperties": {
                   "$ref": "#/$defs/SlotDefinition__identifier_optional"
                },
-               "description": "the redefinition of a slot in the context of the containing class definition."
+               "description": "expresses constraints on a group of slots for a class expression"
             },
             "source": {
                "description": "A related resource from which the element is derived.",
@@ -391,6 +391,10 @@
                "description": "a description of the element's purpose and use",
                "type": "string"
             },
+            "enum_range": {
+               "$ref": "#/$defs/EnumExpression",
+               "description": "An inlined enumeration"
+            },
             "equals_expression": {
                "description": "the value of the slot must equal the value of the evaluated expression",
                "type": "string"
@@ -444,6 +448,10 @@
             "has_member": {
                "$ref": "#/$defs/AnonymousSlotExpression",
                "description": "the values of the slot is multivalued with at least one member satisfying the condition"
+            },
+            "implicit_prefix": {
+               "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
+               "type": "string"
             },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
@@ -574,6 +582,10 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "unit": {
+               "$ref": "#/$defs/UnitOfMeasure",
+               "description": "an encoding of a unit"
             }
          },
          "required": [],
@@ -620,6 +632,10 @@
                },
                "type": "array"
             },
+            "implicit_prefix": {
+               "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
+               "type": "string"
+            },
             "maximum_value": {
                "description": "for slots with ranges of type number, the value must be equal to or lowe than this",
                "type": "integer"
@@ -642,6 +658,10 @@
             "structured_pattern": {
                "$ref": "#/$defs/PatternExpression",
                "description": "the string value of the slot must conform to the regular expression in the pattern expression"
+            },
+            "unit": {
+               "$ref": "#/$defs/UnitOfMeasure",
+               "description": "an encoding of a unit"
             }
          },
          "required": [],
@@ -929,7 +949,7 @@
                "additionalProperties": {
                   "$ref": "#/$defs/SlotDefinition__identifier_optional"
                },
-               "description": "the redefinition of a slot in the context of the containing class definition."
+               "description": "expresses constraints on a group of slots for a class expression"
             },
             "slot_names_unique": {
                "description": "if true then induced/mangled slot names are not created for class_usage and attributes",
@@ -987,7 +1007,7 @@
                "type": "boolean"
             },
             "union_of": {
-               "description": "indicates that the domain class consists exactly of the members of the classes in the range",
+               "description": "indicates that the domain element consists exactly of the members of the element in the range.",
                "items": {
                   "type": "string"
                },
@@ -1000,7 +1020,7 @@
                "description": "Set of unique keys for this slot"
             },
             "values_from": {
-               "description": "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot",
+               "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "items": {
                   "type": "string"
                },
@@ -1294,7 +1314,7 @@
                "additionalProperties": {
                   "$ref": "#/$defs/SlotDefinition__identifier_optional"
                },
-               "description": "the redefinition of a slot in the context of the containing class definition."
+               "description": "expresses constraints on a group of slots for a class expression"
             },
             "slot_names_unique": {
                "description": "if true then induced/mangled slot names are not created for class_usage and attributes",
@@ -1352,7 +1372,7 @@
                "type": "boolean"
             },
             "union_of": {
-               "description": "indicates that the domain class consists exactly of the members of the classes in the range",
+               "description": "indicates that the domain element consists exactly of the members of the element in the range.",
                "items": {
                   "type": "string"
                },
@@ -1365,7 +1385,7 @@
                "description": "Set of unique keys for this slot"
             },
             "values_from": {
-               "description": "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot",
+               "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "items": {
                   "type": "string"
                },
@@ -1566,6 +1586,10 @@
          "additionalProperties": false,
          "description": "List of values that constrain the range of a slot",
          "properties": {
+            "abstract": {
+               "description": "an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.",
+               "type": "boolean"
+            },
             "aliases": {
                "items": {
                   "type": "string"
@@ -1582,6 +1606,13 @@
                   "$ref": "#/$defs/Annotation__identifier_optional"
                },
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "apply_to": {
+               "description": "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
@@ -1618,6 +1649,15 @@
             },
             "conforms_to": {
                "description": "An established standard to which the element conforms.",
+               "type": "string"
+            },
+            "created_by": {
+               "description": "agent that created the element",
+               "type": "string"
+            },
+            "created_on": {
+               "description": "time at which the element was created",
+               "format": "date-time",
                "type": "string"
             },
             "definition_uri": {
@@ -1685,6 +1725,15 @@
                },
                "type": "array"
             },
+            "is_a": {
+               "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
+               "type": "string"
+            },
+            "last_updated_on": {
+               "description": "time at which the element was last updated",
+               "format": "date-time",
+               "type": "string"
+            },
             "local_names": {
                "additionalProperties": {
                   "$ref": "#/$defs/LocalName__identifier_optional"
@@ -1696,6 +1745,21 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "mixin": {
+               "description": "this slot or class can only be used as a mixin.",
+               "type": "boolean"
+            },
+            "mixins": {
+               "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "modified_by": {
+               "description": "agent that modified the element",
+               "type": "string"
             },
             "name": {
                "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
@@ -1747,6 +1811,14 @@
                "description": "A related resource from which the element is derived.",
                "type": "string"
             },
+            "status": {
+               "description": "status of the element",
+               "type": "string"
+            },
+            "string_serialization": {
+               "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
+               "type": "string"
+            },
             "structured_aliases": {
                "description": "A list of structured_alias objects.",
                "items": {
@@ -1760,6 +1832,13 @@
             },
             "todos": {
                "description": "Outstanding issue that needs resolution",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "values_from": {
+               "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "items": {
                   "type": "string"
                },
@@ -1776,6 +1855,10 @@
          "additionalProperties": false,
          "description": "List of values that constrain the range of a slot",
          "properties": {
+            "abstract": {
+               "description": "an abstract class is a high level class or slot that is typically used to group common slots together and cannot be directly instantiated.",
+               "type": "boolean"
+            },
             "aliases": {
                "items": {
                   "type": "string"
@@ -1792,6 +1875,13 @@
                   "$ref": "#/$defs/Annotation__identifier_optional"
                },
                "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "apply_to": {
+               "description": "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
             },
             "broad_mappings": {
                "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
@@ -1828,6 +1918,15 @@
             },
             "conforms_to": {
                "description": "An established standard to which the element conforms.",
+               "type": "string"
+            },
+            "created_by": {
+               "description": "agent that created the element",
+               "type": "string"
+            },
+            "created_on": {
+               "description": "time at which the element was created",
+               "format": "date-time",
                "type": "string"
             },
             "definition_uri": {
@@ -1895,6 +1994,15 @@
                },
                "type": "array"
             },
+            "is_a": {
+               "description": "specifies single-inheritance between classes or slots. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
+               "type": "string"
+            },
+            "last_updated_on": {
+               "description": "time at which the element was last updated",
+               "format": "date-time",
+               "type": "string"
+            },
             "local_names": {
                "additionalProperties": {
                   "$ref": "#/$defs/LocalName__identifier_optional"
@@ -1906,6 +2014,21 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "mixin": {
+               "description": "this slot or class can only be used as a mixin.",
+               "type": "boolean"
+            },
+            "mixins": {
+               "description": "List of definitions to be mixed in. Targets may be any definition of the same type",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "modified_by": {
+               "description": "agent that modified the element",
+               "type": "string"
             },
             "name": {
                "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
@@ -1957,6 +2080,14 @@
                "description": "A related resource from which the element is derived.",
                "type": "string"
             },
+            "status": {
+               "description": "status of the element",
+               "type": "string"
+            },
+            "string_serialization": {
+               "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
+               "type": "string"
+            },
             "structured_aliases": {
                "description": "A list of structured_alias objects.",
                "items": {
@@ -1974,10 +2105,48 @@
                   "type": "string"
                },
                "type": "array"
+            },
+            "values_from": {
+               "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
             }
          },
          "required": [],
          "title": "EnumDefinition",
+         "type": "object"
+      },
+      "EnumExpression": {
+         "additionalProperties": false,
+         "description": "",
+         "properties": {
+            "code_set": {
+               "description": "the identifier of an enumeration code set.",
+               "type": "string"
+            },
+            "code_set_tag": {
+               "description": "the version tag of the enumeration code set",
+               "type": "string"
+            },
+            "code_set_version": {
+               "description": "the version identifier of the enumeration code set",
+               "type": "string"
+            },
+            "permissible_values": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/PermissibleValue__identifier_optional"
+               },
+               "description": "A list of possible values for a slot range"
+            },
+            "pv_formula": {
+               "$ref": "#/$defs/PvFormulaOptions",
+               "description": "Defines the specific formula to be used to generate the permissible values."
+            }
+         },
+         "required": [],
+         "title": "EnumExpression",
          "type": "object"
       },
       "Example": {
@@ -3053,6 +3222,19 @@
          "title": "PresenceEnum",
          "type": "string"
       },
+      "ProblemType": {
+         "description": "",
+         "enum": [
+            "undeclared_slot",
+            "inapplicable_slot",
+            "missing_slot_value",
+            "slot_range_violation",
+            "max_count_violation",
+            "parsing_error"
+         ],
+         "title": "ProblemType",
+         "type": "string"
+      },
       "PvFormulaOptions": {
          "description": "The formula used to generate the set of permissible values from the code_set values",
          "enum": [
@@ -3427,6 +3609,17 @@
          "title": "Setting",
          "type": "object"
       },
+      "SeverityOptions": {
+         "description": "",
+         "enum": [
+            "FATAL",
+            "ERROR",
+            "WARNING",
+            "INFO"
+         ],
+         "title": "SeverityOptions",
+         "type": "string"
+      },
       "SlotDefinition": {
          "additionalProperties": false,
          "description": "the definition of a property or a slot",
@@ -3567,6 +3760,10 @@
                },
                "type": "array"
             },
+            "enum_range": {
+               "$ref": "#/$defs/EnumExpression",
+               "description": "An inlined enumeration"
+            },
             "equals_expression": {
                "description": "the value of the slot must equal the value of the evaluated expression",
                "type": "string"
@@ -3634,6 +3831,10 @@
             },
             "ifabsent": {
                "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml_runtime.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) -- integer value\n  * str(value) -- string value\n  * default_range -- schema default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class",
+               "type": "string"
+            },
+            "implicit_prefix": {
+               "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
                "type": "string"
             },
             "imported_from": {
@@ -3885,7 +4086,7 @@
                "description": "the string value of the slot must conform to the regular expression in the pattern expression"
             },
             "subproperty_of": {
-               "description": "Ontology property which this slot is a subproperty of",
+               "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "type": "string"
             },
             "symmetric": {
@@ -3911,12 +4112,23 @@
                "description": "If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive",
                "type": "string"
             },
+            "union_of": {
+               "description": "indicates that the domain element consists exactly of the members of the element in the range.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "unit": {
+               "$ref": "#/$defs/UnitOfMeasure",
+               "description": "an encoding of a unit"
+            },
             "usage_slot_name": {
                "description": "The name of the slot referenced in the slot_usage",
                "type": "string"
             },
             "values_from": {
-               "description": "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot",
+               "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "items": {
                   "type": "string"
                },
@@ -4069,6 +4281,10 @@
                },
                "type": "array"
             },
+            "enum_range": {
+               "$ref": "#/$defs/EnumExpression",
+               "description": "An inlined enumeration"
+            },
             "equals_expression": {
                "description": "the value of the slot must equal the value of the evaluated expression",
                "type": "string"
@@ -4136,6 +4352,10 @@
             },
             "ifabsent": {
                "description": "function that provides a default value for the slot.  Possible values for this slot are defined in\nlinkml_runtime.utils.ifabsent_functions.default_library:\n  * [Tt]rue -- boolean True\n  * [Ff]alse -- boolean False\n  * int(value) -- integer value\n  * str(value) -- string value\n  * default_range -- schema default range\n  * bnode -- blank node identifier\n  * slot_uri -- URI for the slot\n  * class_curie -- CURIE for the containing class\n  * class_uri -- URI for the containing class",
+               "type": "string"
+            },
+            "implicit_prefix": {
+               "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
                "type": "string"
             },
             "imported_from": {
@@ -4387,7 +4607,7 @@
                "description": "the string value of the slot must conform to the regular expression in the pattern expression"
             },
             "subproperty_of": {
-               "description": "Ontology property which this slot is a subproperty of",
+               "description": "Ontology property which this slot is a subproperty of.  Note: setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "type": "string"
             },
             "symmetric": {
@@ -4413,12 +4633,23 @@
                "description": "If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive",
                "type": "string"
             },
+            "union_of": {
+               "description": "indicates that the domain element consists exactly of the members of the element in the range.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "unit": {
+               "$ref": "#/$defs/UnitOfMeasure",
+               "description": "an encoding of a unit"
+            },
             "usage_slot_name": {
                "description": "The name of the slot referenced in the slot_usage",
                "type": "string"
             },
             "values_from": {
-               "description": "the identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot",
+               "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hiearchy into an enumerated list of possible values in every serialization of the model.",
                "items": {
                   "type": "string"
                },
@@ -5119,6 +5350,10 @@
                },
                "type": "array"
             },
+            "implicit_prefix": {
+               "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
+               "type": "string"
+            },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
                "type": "string"
@@ -5233,6 +5468,17 @@
             "typeof": {
                "description": "Names a parent type",
                "type": "string"
+            },
+            "union_of": {
+               "description": "indicates that the domain element consists exactly of the members of the element in the range.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "unit": {
+               "$ref": "#/$defs/UnitOfMeasure",
+               "description": "an encoding of a unit"
             },
             "uri": {
                "description": "The uri that defines the possible values for the type definition",
@@ -5382,6 +5628,10 @@
                },
                "type": "array"
             },
+            "implicit_prefix": {
+               "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
+               "type": "string"
+            },
             "imported_from": {
                "description": "the imports entry that this element was derived from.  Empty means primary source",
                "type": "string"
@@ -5496,6 +5746,17 @@
             "typeof": {
                "description": "Names a parent type",
                "type": "string"
+            },
+            "union_of": {
+               "description": "indicates that the domain element consists exactly of the members of the element in the range.",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "unit": {
+               "$ref": "#/$defs/UnitOfMeasure",
+               "description": "an encoding of a unit"
             },
             "uri": {
                "description": "The uri that defines the possible values for the type definition",
@@ -5855,6 +6116,92 @@
             "unique_key_slots"
          ],
          "title": "UniqueKey",
+         "type": "object"
+      },
+      "UnitOfMeasure": {
+         "additionalProperties": false,
+         "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
+         "properties": {
+            "derivation": {
+               "description": "Expression for deriving this unit from other units",
+               "type": "string"
+            },
+            "exact_mappings": {
+               "description": "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT",
+               "items": {
+                  "type": "string"
+               },
+               "type": "array"
+            },
+            "has_quantity_kind": {
+               "description": "Concept in a vocabulary or ontology that denotes the kind of quanity being measured, e.g. length",
+               "type": "string"
+            },
+            "iec61360code": {
+               "type": "string"
+            },
+            "symbol": {
+               "description": "name of the unit encoded as a symbol",
+               "type": "string"
+            },
+            "ucum_code": {
+               "description": "associates a QUDT unit with its UCUM code (case-sensitive).",
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "UnitOfMeasure",
+         "type": "object"
+      },
+      "ValidationReport": {
+         "additionalProperties": false,
+         "description": "A report object",
+         "properties": {
+            "results": {
+               "items": {
+                  "$ref": "#/$defs/ValidationResult"
+               },
+               "type": "array"
+            }
+         },
+         "required": [],
+         "title": "ValidationReport",
+         "type": "object"
+      },
+      "ValidationResult": {
+         "additionalProperties": false,
+         "description": "An individual result arising from validation of a data instance using a particular rule",
+         "properties": {
+            "info": {
+               "type": "string"
+            },
+            "instantiates": {
+               "type": "string"
+            },
+            "node_source": {
+               "type": "string"
+            },
+            "object": {
+               "type": "string"
+            },
+            "object_str": {
+               "type": "string"
+            },
+            "predicate": {
+               "type": "string"
+            },
+            "severity": {
+               "$ref": "#/$defs/SeverityOptions"
+            },
+            "subject": {
+               "type": "string"
+            },
+            "type": {
+               "type": "string"
+            }
+         },
+         "required": [],
+         "title": "ValidationResult",
          "type": "object"
       }
    },
