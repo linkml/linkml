@@ -69,7 +69,7 @@ imports:
   - linkml:extensions
   - linkml:annotations
   - linkml:validation
-  - units
+  - linkml:units
   
 subsets:
   owl:
