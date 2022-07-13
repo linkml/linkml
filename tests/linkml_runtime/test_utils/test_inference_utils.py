@@ -22,6 +22,14 @@ class InferenceUtilsTestCase(unittest.TestCase):
     Tests for inkml_runtime.utils.inference_utils
     """
 
+    def test_rstring_serialization(self):
+        """
+        Tests serialization of strings via linkml:string_serialization
+        """
+        sv = SchemaView(SCHEMA)
+        p = Person(first_name=FIRST, last_name=LAST)
+        v = generate_slot_value(p, 'full_name', sv)
+
     def test_string_serialization(self):
         """
         Tests serialization of strings via linkml:string_serialization
