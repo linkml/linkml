@@ -504,7 +504,7 @@ class SchemaViewTestCase(unittest.TestCase):
             uri = view.get_uri(cn, expand=True)
             #print(f'{cn}: {c.class_uri} // {uri}')
             self.assertIsNotNone(uri)
-            if cn != 'structured_alias' and cn != 'unit':
+            if cn != 'structured_alias' and cn != 'UnitOfMeasure':
                 self.assertIn('https://w3id.org/linkml/', uri)
             induced_slots = view.class_induced_slots(cn)
             for s in induced_slots:
