@@ -1,22 +1,8 @@
-import os
 import unittest
 
-from jsonasobj2 import as_dict
-from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
-from linkml_runtime.utils.compile_python import compile_python
-from rdflib import URIRef, Graph
-from rdflib.namespace import OWL, RDFS, RDF
-
-from linkml import METAMODEL_CONTEXT_URI
-from linkml.generators.jsonldcontextgen import ContextGenerator
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.generators.rdfgen import RDFGenerator
-from linkml.generators.yamlgen import YAMLGenerator
-from tests.utils.compare_rdf import compare_rdf
 from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 
