@@ -39,6 +39,17 @@ For complete release notes tied to patch releases, see the release notes on GitH
 - https://github.com/linkml/linkml-runtime/releases
 - https://github.com/linkml/linkml/releases
 
+### LinkML-Model 1.3
+
+Highlights:
+
+- dynamic enums: restrict slots to ontology terms based on queries
+- unit support: annotate slots or types with unit information
+- structured patterns: reuse common elements in regular expression pattern constraints
+- structured aliases: include provenance of naming information
+
+Complete changelog: https://github.com/linkml/linkml-model/compare/v1.2.0...v1.3.0
+
 ### LinkML-Model 1.2
 
 Highlights:
@@ -69,7 +80,7 @@ Selected Changelog:
 - structured_alias: https://github.com/linkml/linkml-model/pull/66
 - align to skosxl: https://github.com/linkml/linkml-model/pull/86
 
-Complete changelog: https://github.com/linkml/linkml-model/compare/v1.0.0...v1.0.8
+Complete changelog: https://github.com/linkml/linkml-model/compare/v1.0.0...v1.2.0
 
 Corresponding framework change highlights, from 1.1 (linkml and linkml-runtime):
 
