@@ -42,14 +42,16 @@ public {% if cls.abstract -%}abstract {%- endif %}class {{ cls.name }} {% if cls
 }"""
 
 TYPEMAP = {
-    "string": "String",
-    "int": "int",
-    "float": "float",
-    "Bool": "boolean",
-    "XSDDate": "String",
-    "URIorCURIE": "String",
-    "decimal": "decimal",
-
+    "xsd:string": "String",
+    "xsd:integer": "Integer",
+    "xsd:float": "Float",
+    "xsd:double": "Double",
+    "xsd:boolean": "Boolean",
+    "xds:dateTime": "ZonedDateTime",
+    "xds:date": "LocalDateTime",
+    "xds:time": "Instant",
+    "xsd:anyURI": "String",
+    "xsd:decimal": "BigDecimal",
 }
 
 
@@ -74,7 +76,12 @@ class JavaGenerator(OOCodeGenerator):
         self.generate_records = generate_records
 
     def map_type(self, t: TypeDefinition) -> str:
-        return TYPEMAP.get(t.name, t.name)
+        if t.uri:
+            return TYPEMAP.get(t.uri)
+        elif t.typeof:
+            return self.map_type(self.schemaview.get_type(t.typeof))
+        else:
+            raise ValueError(f"{t} cannot be mapped to a type")
 
     def serialize(self, directory: str, **kwargs) -> None:
         sv = self.schemaview
