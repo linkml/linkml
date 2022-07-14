@@ -120,6 +120,17 @@
       "@type": "TypeDefinition"
     },
     {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "from_schema": "https://w3id.org/linkml/types",
+      "imported_from": "linkml:types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
       "name": "uriorcurie",
       "definition_uri": "https://w3id.org/linkml/Uriorcurie",
       "description": "a URI or a CURIE",
@@ -187,13 +198,13 @@
       "domain": "Extensible",
       "slot_uri": "https://w3id.org/linkml/extensions",
       "multivalued": true,
-      "inlined": true,
       "owner": "Extensible",
       "domain_of": [
         "Extension",
         "Extensible"
       ],
       "range": "Extension",
+      "inlined": true,
       "@type": "SlotDefinition"
     },
     {
@@ -261,9 +272,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "extensions.yaml",
-  "source_file_date": "2022-04-30T01:12:23",
+  "source_file_date": "2022-07-13T02:58:15",
   "source_file_size": 1057,
-  "generation_date": "2022-04-30T01:14:40",
+  "generation_date": "2022-07-13T02:59:23",
   "@type": "SchemaDefinition",
   "@context": [
     "https://w3id.org/linkml/types.context.jsonld",

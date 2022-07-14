@@ -35,6 +35,7 @@ class Config:
     - slot.equals_expression
     """
     use_string_serialization: bool = field(default_factory=lambda: True)
+    parse_string_serialization: bool = field(default_factory=lambda: False)
     use_rules: bool = field(default_factory=lambda: False)
     use_expressions: bool = field(default_factory=lambda: False)
     resolve_function: RESOLVE_FUNC = None
@@ -74,6 +75,8 @@ def generate_slot_value(obj: YAMLRoot, slot_name: Union[str, SlotDefinitionName]
         if slot.string_serialization:
             if isinstance(obj, JsonObj):
                 return slot.string_serialization.format(**obj_as_dict_nonrecursive(obj, config.resolve_function))
+    if config.parse_string_serialization:
+        raise NotImplementedError
     if config.use_expressions:
         if slot.equals_expression:
             if isinstance(obj, JsonObj):

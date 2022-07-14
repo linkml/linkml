@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-04-30T01:16:48
+# Generation date: 2022-07-13T17:59:08
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -7,7 +7,8 @@
 #              information on LinkML, see [linkml.io](https://linkml.io) Core metaclasses: *
 #              [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition) *
 #              [ClassDefinition](https://w3id.org/linkml/ClassDefinition) *
-#              [SlotDefinition](https://w3id.org/linkml/SlotDefinition) Every LinkML model instantiates
+#              [SlotDefinition](https://w3id.org/linkml/SlotDefinition) *
+#              [TypeDefinition](https://w3id.org/linkml/TypeDefinition) Every LinkML model instantiates
 #              SchemaDefinition, all classes in the model instantiate ClassDefinition, and so on Note that the
 #              LinkML metamodel instantiates itself. For a non-normative introduction to LinkML schemas, see the
 #              tutorial and schema guide on [linkml.io/linkml]. For canonical reference documentation on any
@@ -33,6 +34,7 @@ from linkml_runtime.utils.curienamespace import CurieNamespace
 from .annotations import Annotation, AnnotationTag
 from .extensions import Extension, ExtensionTag
 from .types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
+from .units import UnitOfMeasure
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
@@ -42,6 +44,7 @@ version = "2.0.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
+NCIT = CurieNamespace('NCIT', 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#')
 OIO = CurieNamespace('OIO', 'http://www.geneontology.org/formats/oboInOwl#')
 BIBO = CurieNamespace('bibo', 'http://purl.org/ontology/bibo/')
 DCTERMS = CurieNamespace('dcterms', 'http://purl.org/dc/terms/')
@@ -51,6 +54,7 @@ OWL = CurieNamespace('owl', 'http://www.w3.org/2002/07/owl#')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
 QB = CurieNamespace('qb', 'http://purl.org/linked-data/cube#')
+QUDT = CurieNamespace('qudt', 'http://qudt.org/schema/qudt/')
 RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
@@ -86,7 +90,7 @@ class DefinitionName(ElementName):
     pass
 
 
-class EnumDefinitionName(ElementName):
+class EnumDefinitionName(DefinitionName):
     pass
 
 
@@ -534,6 +538,8 @@ class AnonymousTypeExpression(YAMLRoot):
 
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
+    implicit_prefix: Optional[str] = None
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
@@ -550,6 +556,12 @@ class AnonymousTypeExpression(YAMLRoot):
 
         if self.structured_pattern is not None and not isinstance(self.structured_pattern, PatternExpression):
             self.structured_pattern = PatternExpression(**as_dict(self.structured_pattern))
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
+
+        if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
+            self.implicit_prefix = str(self.implicit_prefix)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
@@ -603,8 +615,11 @@ class TypeDefinition(Element):
     base: Optional[str] = None
     uri: Optional[Union[str, URIorCURIE]] = None
     repr: Optional[str] = None
+    union_of: Optional[Union[Union[str, TypeDefinitionName], List[Union[str, TypeDefinitionName]]]] = empty_list()
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
+    implicit_prefix: Optional[str] = None
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
@@ -633,11 +648,21 @@ class TypeDefinition(Element):
         if self.repr is not None and not isinstance(self.repr, str):
             self.repr = str(self.repr)
 
+        if not isinstance(self.union_of, list):
+            self.union_of = [self.union_of] if self.union_of is not None else []
+        self.union_of = [v if isinstance(v, TypeDefinitionName) else TypeDefinitionName(v) for v in self.union_of]
+
         if self.pattern is not None and not isinstance(self.pattern, str):
             self.pattern = str(self.pattern)
 
         if self.structured_pattern is not None and not isinstance(self.structured_pattern, PatternExpression):
             self.structured_pattern = PatternExpression(**as_dict(self.structured_pattern))
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
+
+        if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
+            self.implicit_prefix = str(self.implicit_prefix)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
@@ -767,7 +792,71 @@ class Definition(Element):
 
 
 @dataclass
-class EnumDefinition(Element):
+class AnonymousEnumExpression(YAMLRoot):
+    """
+    An enum_expression that is not named
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.AnonymousEnumExpression
+    class_class_curie: ClassVar[str] = "linkml:AnonymousEnumExpression"
+    class_name: ClassVar[str] = "anonymous_enum_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.AnonymousEnumExpression
+
+    code_set: Optional[Union[str, URIorCURIE]] = None
+    code_set_tag: Optional[str] = None
+    code_set_version: Optional[str] = None
+    pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
+    permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]], List[Union[dict, "PermissibleValue"]]]] = empty_dict()
+    include: Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]] = empty_list()
+    minus: Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]] = empty_list()
+    inherits: Optional[Union[Union[str, EnumDefinitionName], List[Union[str, EnumDefinitionName]]]] = empty_list()
+    reachable_from: Optional[Union[dict, "ReachabilityQuery"]] = None
+    matches: Optional[Union[dict, "MatchQuery"]] = None
+    concepts: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.code_set is not None and not isinstance(self.code_set, URIorCURIE):
+            self.code_set = URIorCURIE(self.code_set)
+
+        if self.code_set_tag is not None and not isinstance(self.code_set_tag, str):
+            self.code_set_tag = str(self.code_set_tag)
+
+        if self.code_set_version is not None and not isinstance(self.code_set_version, str):
+            self.code_set_version = str(self.code_set_version)
+
+        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
+            self.pv_formula = PvFormulaOptions(self.pv_formula)
+
+        self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
+
+        if not isinstance(self.include, list):
+            self.include = [self.include] if self.include is not None else []
+        self.include = [v if isinstance(v, AnonymousEnumExpression) else AnonymousEnumExpression(**as_dict(v)) for v in self.include]
+
+        if not isinstance(self.minus, list):
+            self.minus = [self.minus] if self.minus is not None else []
+        self.minus = [v if isinstance(v, AnonymousEnumExpression) else AnonymousEnumExpression(**as_dict(v)) for v in self.minus]
+
+        if not isinstance(self.inherits, list):
+            self.inherits = [self.inherits] if self.inherits is not None else []
+        self.inherits = [v if isinstance(v, EnumDefinitionName) else EnumDefinitionName(v) for v in self.inherits]
+
+        if self.reachable_from is not None and not isinstance(self.reachable_from, ReachabilityQuery):
+            self.reachable_from = ReachabilityQuery(**as_dict(self.reachable_from))
+
+        if self.matches is not None and not isinstance(self.matches, MatchQuery):
+            self.matches = MatchQuery(**as_dict(self.matches))
+
+        if not isinstance(self.concepts, list):
+            self.concepts = [self.concepts] if self.concepts is not None else []
+        self.concepts = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.concepts]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class EnumDefinition(Definition):
     """
     List of values that constrain the range of a slot
     """
@@ -779,17 +868,27 @@ class EnumDefinition(Element):
     class_model_uri: ClassVar[URIRef] = LINKML.EnumDefinition
 
     name: Union[str, EnumDefinitionName] = None
+    enum_uri: Optional[Union[str, URIorCURIE]] = None
     code_set: Optional[Union[str, URIorCURIE]] = None
     code_set_tag: Optional[str] = None
     code_set_version: Optional[str] = None
     pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
     permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]], List[Union[dict, "PermissibleValue"]]]] = empty_dict()
+    include: Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]] = empty_list()
+    minus: Optional[Union[Union[dict, AnonymousEnumExpression], List[Union[dict, AnonymousEnumExpression]]]] = empty_list()
+    inherits: Optional[Union[Union[str, EnumDefinitionName], List[Union[str, EnumDefinitionName]]]] = empty_list()
+    reachable_from: Optional[Union[dict, "ReachabilityQuery"]] = None
+    matches: Optional[Union[dict, "MatchQuery"]] = None
+    concepts: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, EnumDefinitionName):
             self.name = EnumDefinitionName(self.name)
+
+        if self.enum_uri is not None and not isinstance(self.enum_uri, URIorCURIE):
+            self.enum_uri = URIorCURIE(self.enum_uri)
 
         if self.code_set is not None and not isinstance(self.code_set, URIorCURIE):
             self.code_set = URIorCURIE(self.code_set)
@@ -804,6 +903,98 @@ class EnumDefinition(Element):
             self.pv_formula = PvFormulaOptions(self.pv_formula)
 
         self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
+
+        if not isinstance(self.include, list):
+            self.include = [self.include] if self.include is not None else []
+        self.include = [v if isinstance(v, AnonymousEnumExpression) else AnonymousEnumExpression(**as_dict(v)) for v in self.include]
+
+        if not isinstance(self.minus, list):
+            self.minus = [self.minus] if self.minus is not None else []
+        self.minus = [v if isinstance(v, AnonymousEnumExpression) else AnonymousEnumExpression(**as_dict(v)) for v in self.minus]
+
+        if not isinstance(self.inherits, list):
+            self.inherits = [self.inherits] if self.inherits is not None else []
+        self.inherits = [v if isinstance(v, EnumDefinitionName) else EnumDefinitionName(v) for v in self.inherits]
+
+        if self.reachable_from is not None and not isinstance(self.reachable_from, ReachabilityQuery):
+            self.reachable_from = ReachabilityQuery(**as_dict(self.reachable_from))
+
+        if self.matches is not None and not isinstance(self.matches, MatchQuery):
+            self.matches = MatchQuery(**as_dict(self.matches))
+
+        if not isinstance(self.concepts, list):
+            self.concepts = [self.concepts] if self.concepts is not None else []
+        self.concepts = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.concepts]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class MatchQuery(YAMLRoot):
+    """
+    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
+    matches on properties of the external concepts
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.MatchQuery
+    class_class_curie: ClassVar[str] = "linkml:MatchQuery"
+    class_name: ClassVar[str] = "match_query"
+    class_model_uri: ClassVar[URIRef] = LINKML.MatchQuery
+
+    identifier_pattern: Optional[str] = None
+    source_ontology: Optional[Union[str, URIorCURIE]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.identifier_pattern is not None and not isinstance(self.identifier_pattern, str):
+            self.identifier_pattern = str(self.identifier_pattern)
+
+        if self.source_ontology is not None and not isinstance(self.source_ontology, URIorCURIE):
+            self.source_ontology = URIorCURIE(self.source_ontology)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class ReachabilityQuery(YAMLRoot):
+    """
+    A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
+    set of source nodes to a set of descendants or ancestors over a set of relationship types
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.ReachabilityQuery
+    class_class_curie: ClassVar[str] = "linkml:ReachabilityQuery"
+    class_name: ClassVar[str] = "reachability_query"
+    class_model_uri: ClassVar[URIRef] = LINKML.ReachabilityQuery
+
+    source_ontology: Optional[Union[str, URIorCURIE]] = None
+    source_nodes: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    relationship_types: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+    is_direct: Optional[Union[bool, Bool]] = None
+    include_self: Optional[Union[bool, Bool]] = None
+    traverse_up: Optional[Union[bool, Bool]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.source_ontology is not None and not isinstance(self.source_ontology, URIorCURIE):
+            self.source_ontology = URIorCURIE(self.source_ontology)
+
+        if not isinstance(self.source_nodes, list):
+            self.source_nodes = [self.source_nodes] if self.source_nodes is not None else []
+        self.source_nodes = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.source_nodes]
+
+        if not isinstance(self.relationship_types, list):
+            self.relationship_types = [self.relationship_types] if self.relationship_types is not None else []
+        self.relationship_types = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.relationship_types]
+
+        if self.is_direct is not None and not isinstance(self.is_direct, Bool):
+            self.is_direct = Bool(self.is_direct)
+
+        if self.include_self is not None and not isinstance(self.include_self, Bool):
+            self.include_self = Bool(self.include_self)
+
+        if self.traverse_up is not None and not isinstance(self.traverse_up, Bool):
+            self.traverse_up = Bool(self.traverse_up)
 
         super().__post_init__(**kwargs)
 
@@ -981,6 +1172,8 @@ class TypeExpression(Expression):
 
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
+    implicit_prefix: Optional[str] = None
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
@@ -997,6 +1190,12 @@ class TypeExpression(Expression):
 
         if self.structured_pattern is not None and not isinstance(self.structured_pattern, PatternExpression):
             self.structured_pattern = PatternExpression(**as_dict(self.structured_pattern))
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
+
+        if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
+            self.implicit_prefix = str(self.implicit_prefix)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
@@ -1029,6 +1228,70 @@ class TypeExpression(Expression):
         if not isinstance(self.all_of, list):
             self.all_of = [self.all_of] if self.all_of is not None else []
         self.all_of = [v if isinstance(v, AnonymousTypeExpression) else AnonymousTypeExpression(**as_dict(v)) for v in self.all_of]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class EnumExpression(Expression):
+    """
+    An expression that constrains the range of a slot
+    """
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML.EnumExpression
+    class_class_curie: ClassVar[str] = "linkml:EnumExpression"
+    class_name: ClassVar[str] = "enum_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.EnumExpression
+
+    code_set: Optional[Union[str, URIorCURIE]] = None
+    code_set_tag: Optional[str] = None
+    code_set_version: Optional[str] = None
+    pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
+    permissible_values: Optional[Union[Dict[Union[str, PermissibleValueText], Union[dict, "PermissibleValue"]], List[Union[dict, "PermissibleValue"]]]] = empty_dict()
+    include: Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]] = empty_list()
+    minus: Optional[Union[Union[dict, "AnonymousEnumExpression"], List[Union[dict, "AnonymousEnumExpression"]]]] = empty_list()
+    inherits: Optional[Union[Union[str, EnumDefinitionName], List[Union[str, EnumDefinitionName]]]] = empty_list()
+    reachable_from: Optional[Union[dict, "ReachabilityQuery"]] = None
+    matches: Optional[Union[dict, "MatchQuery"]] = None
+    concepts: Optional[Union[Union[str, URIorCURIE], List[Union[str, URIorCURIE]]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.code_set is not None and not isinstance(self.code_set, URIorCURIE):
+            self.code_set = URIorCURIE(self.code_set)
+
+        if self.code_set_tag is not None and not isinstance(self.code_set_tag, str):
+            self.code_set_tag = str(self.code_set_tag)
+
+        if self.code_set_version is not None and not isinstance(self.code_set_version, str):
+            self.code_set_version = str(self.code_set_version)
+
+        if self.pv_formula is not None and not isinstance(self.pv_formula, PvFormulaOptions):
+            self.pv_formula = PvFormulaOptions(self.pv_formula)
+
+        self._normalize_inlined_as_dict(slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True)
+
+        if not isinstance(self.include, list):
+            self.include = [self.include] if self.include is not None else []
+        self.include = [v if isinstance(v, AnonymousEnumExpression) else AnonymousEnumExpression(**as_dict(v)) for v in self.include]
+
+        if not isinstance(self.minus, list):
+            self.minus = [self.minus] if self.minus is not None else []
+        self.minus = [v if isinstance(v, AnonymousEnumExpression) else AnonymousEnumExpression(**as_dict(v)) for v in self.minus]
+
+        if not isinstance(self.inherits, list):
+            self.inherits = [self.inherits] if self.inherits is not None else []
+        self.inherits = [v if isinstance(v, EnumDefinitionName) else EnumDefinitionName(v) for v in self.inherits]
+
+        if self.reachable_from is not None and not isinstance(self.reachable_from, ReachabilityQuery):
+            self.reachable_from = ReachabilityQuery(**as_dict(self.reachable_from))
+
+        if self.matches is not None and not isinstance(self.matches, MatchQuery):
+            self.matches = MatchQuery(**as_dict(self.matches))
+
+        if not isinstance(self.concepts, list):
+            self.concepts = [self.concepts] if self.concepts is not None else []
+        self.concepts = [v if isinstance(v, URIorCURIE) else URIorCURIE(v) for v in self.concepts]
 
         super().__post_init__(**kwargs)
 
@@ -1348,6 +1611,7 @@ class SlotExpression(Expression):
 
     range: Optional[Union[str, ElementName]] = None
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
+    enum_range: Optional[Union[dict, EnumExpression]] = None
     required: Optional[Union[bool, Bool]] = None
     recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
@@ -1356,6 +1620,8 @@ class SlotExpression(Expression):
     maximum_value: Optional[int] = None
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
+    implicit_prefix: Optional[str] = None
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
@@ -1375,6 +1641,9 @@ class SlotExpression(Expression):
 
         if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
             self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+
+        if self.enum_range is not None and not isinstance(self.enum_range, EnumExpression):
+            self.enum_range = EnumExpression(**as_dict(self.enum_range))
 
         if self.required is not None and not isinstance(self.required, Bool):
             self.required = Bool(self.required)
@@ -1399,6 +1668,12 @@ class SlotExpression(Expression):
 
         if self.structured_pattern is not None and not isinstance(self.structured_pattern, PatternExpression):
             self.structured_pattern = PatternExpression(**as_dict(self.structured_pattern))
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
+
+        if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
+            self.implicit_prefix = str(self.implicit_prefix)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
@@ -1454,6 +1729,7 @@ class AnonymousSlotExpression(AnonymousExpression):
 
     range: Optional[Union[str, ElementName]] = None
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
+    enum_range: Optional[Union[dict, EnumExpression]] = None
     required: Optional[Union[bool, Bool]] = None
     recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
@@ -1462,6 +1738,8 @@ class AnonymousSlotExpression(AnonymousExpression):
     maximum_value: Optional[int] = None
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
+    implicit_prefix: Optional[str] = None
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
@@ -1481,6 +1759,9 @@ class AnonymousSlotExpression(AnonymousExpression):
 
         if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
             self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+
+        if self.enum_range is not None and not isinstance(self.enum_range, EnumExpression):
+            self.enum_range = EnumExpression(**as_dict(self.enum_range))
 
         if self.required is not None and not isinstance(self.required, Bool):
             self.required = Bool(self.required)
@@ -1505,6 +1786,12 @@ class AnonymousSlotExpression(AnonymousExpression):
 
         if self.structured_pattern is not None and not isinstance(self.structured_pattern, PatternExpression):
             self.structured_pattern = PatternExpression(**as_dict(self.structured_pattern))
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
+
+        if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
+            self.implicit_prefix = str(self.implicit_prefix)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
@@ -1598,11 +1885,13 @@ class SlotDefinition(Definition):
     path_rule: Optional[Union[dict, PathExpression]] = None
     disjoint_with: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
     children_are_mutually_disjoint: Optional[Union[bool, Bool]] = None
+    union_of: Optional[Union[Union[str, TypeDefinitionName], List[Union[str, TypeDefinitionName]]]] = empty_list()
     is_a: Optional[Union[str, SlotDefinitionName]] = None
     mixins: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
     apply_to: Optional[Union[Union[str, SlotDefinitionName], List[Union[str, SlotDefinitionName]]]] = empty_list()
     range: Optional[Union[str, ElementName]] = None
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
+    enum_range: Optional[Union[dict, EnumExpression]] = None
     required: Optional[Union[bool, Bool]] = None
     recommended: Optional[Union[bool, Bool]] = None
     inlined: Optional[Union[bool, Bool]] = None
@@ -1611,6 +1900,8 @@ class SlotDefinition(Definition):
     maximum_value: Optional[int] = None
     pattern: Optional[str] = None
     structured_pattern: Optional[Union[dict, "PatternExpression"]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
+    implicit_prefix: Optional[str] = None
     equals_string: Optional[str] = None
     equals_string_in: Optional[Union[str, List[str]]] = empty_list()
     equals_number: Optional[int] = None
@@ -1740,6 +2031,10 @@ class SlotDefinition(Definition):
         if self.children_are_mutually_disjoint is not None and not isinstance(self.children_are_mutually_disjoint, Bool):
             self.children_are_mutually_disjoint = Bool(self.children_are_mutually_disjoint)
 
+        if not isinstance(self.union_of, list):
+            self.union_of = [self.union_of] if self.union_of is not None else []
+        self.union_of = [v if isinstance(v, TypeDefinitionName) else TypeDefinitionName(v) for v in self.union_of]
+
         if self.is_a is not None and not isinstance(self.is_a, SlotDefinitionName):
             self.is_a = SlotDefinitionName(self.is_a)
 
@@ -1756,6 +2051,9 @@ class SlotDefinition(Definition):
 
         if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
             self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+
+        if self.enum_range is not None and not isinstance(self.enum_range, EnumExpression):
+            self.enum_range = EnumExpression(**as_dict(self.enum_range))
 
         if self.required is not None and not isinstance(self.required, Bool):
             self.required = Bool(self.required)
@@ -1780,6 +2078,12 @@ class SlotDefinition(Definition):
 
         if self.structured_pattern is not None and not isinstance(self.structured_pattern, PatternExpression):
             self.structured_pattern = PatternExpression(**as_dict(self.structured_pattern))
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
+
+        if self.implicit_prefix is not None and not isinstance(self.implicit_prefix, str):
+            self.implicit_prefix = str(self.implicit_prefix)
 
         if self.equals_string is not None and not isinstance(self.equals_string, str):
             self.equals_string = str(self.equals_string)
@@ -2647,6 +2951,7 @@ class PermissibleValue(YAMLRoot):
     text: Union[str, PermissibleValueText] = None
     description: Optional[str] = None
     meaning: Optional[Union[str, URIorCURIE]] = None
+    unit: Optional[Union[dict, UnitOfMeasure]] = None
     is_a: Optional[Union[str, PermissibleValueText]] = None
     mixins: Optional[Union[Union[str, PermissibleValueText], List[Union[str, PermissibleValueText]]]] = empty_list()
     extensions: Optional[Union[Dict[Union[str, ExtensionTag], Union[dict, Extension]], List[Union[dict, Extension]]]] = empty_dict()
@@ -2687,6 +2992,9 @@ class PermissibleValue(YAMLRoot):
 
         if self.meaning is not None and not isinstance(self.meaning, URIorCURIE):
             self.meaning = URIorCURIE(self.meaning)
+
+        if self.unit is not None and not isinstance(self.unit, UnitOfMeasure):
+            self.unit = UnitOfMeasure(**as_dict(self.unit))
 
         if self.is_a is not None and not isinstance(self.is_a, PermissibleValueText):
             self.is_a = PermissibleValueText(self.is_a)

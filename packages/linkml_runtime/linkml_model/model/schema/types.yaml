@@ -79,6 +79,15 @@ types:
     base: XSDDateTime
     description: The combination of a date and time
 
+  date_or_datetime:
+    uri: linkml:DateOrDatetime
+    repr: str
+    base: str
+    description: Either a date or a datetime
+#    union_of:
+#      - date
+#      - datetime
+
   uriorcurie:
     uri: xsd:anyURI
     base: URIorCURIE

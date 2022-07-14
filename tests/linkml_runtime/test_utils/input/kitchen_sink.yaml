@@ -231,6 +231,10 @@ slots:
   city:
   has birth event:
     range: BirthEvent
+  height_in_m:
+    range: float
+    unit:
+      ucum_code: m
 
 
 
@@ -249,3 +253,19 @@ enums:
         meaning: tax:02
       HUMAN:
         is_a: MAMMAL
+  HCAExample:
+    see_also:
+      - https://github.com/linkml/linkml/issues/274
+    include:
+      - reachable_from:
+          source_ontology: bioregistry:go
+          source_nodes:
+            - GO:0007049
+            - GO:0022403
+          include_self: false
+          relationship_types:
+            - rdfs:subClassOf
+    minus:
+      concepts:
+        - LOINC:5932-9
+

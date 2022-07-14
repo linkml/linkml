@@ -114,6 +114,16 @@
       "@type": "TypeDefinition"
     },
     {
+      "name": "date_or_datetime",
+      "definition_uri": "https://w3id.org/linkml/DateOrDatetime",
+      "description": "Either a date or a datetime",
+      "from_schema": "https://w3id.org/linkml/types",
+      "base": "str",
+      "uri": "https://w3id.org/linkml/DateOrDatetime",
+      "repr": "str",
+      "@type": "TypeDefinition"
+    },
+    {
       "name": "uriorcurie",
       "definition_uri": "https://w3id.org/linkml/Uriorcurie",
       "description": "a URI or a CURIE",
@@ -169,9 +179,9 @@
   ],
   "metamodel_version": "1.7.0",
   "source_file": "types.yaml",
-  "source_file_date": "2022-04-30T01:12:23",
-  "source_file_size": 2676,
-  "generation_date": "2022-04-30T01:14:36",
+  "source_file_date": "2022-07-13T02:58:15",
+  "source_file_size": 2848,
+  "generation_date": "2022-07-13T02:59:18",
   "@type": "SchemaDefinition",
   "@context": [
     {

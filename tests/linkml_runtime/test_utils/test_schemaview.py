@@ -404,6 +404,16 @@ class SchemaViewTestCase(unittest.TestCase):
 
         assert view.get_uri('string') == 'xsd:string'
 
+        # dynamic enums
+        e = view.get_enum('HCAExample')
+        self.assertCountEqual(['GO:0007049',
+                               'GO:0022403'],
+                              e.include[0].reachable_from.source_nodes)
+
+        # units
+        height = view.get_slot('height_in_m')
+        self.assertEqual("m", height.unit.ucum_code)
+
     def test_merge_imports(self):
         """
         ensure merging and merging imports closure works
@@ -504,7 +514,8 @@ class SchemaViewTestCase(unittest.TestCase):
             uri = view.get_uri(cn, expand=True)
             #print(f'{cn}: {c.class_uri} // {uri}')
             self.assertIsNotNone(uri)
-            if cn != 'structured_alias':
+            if cn != 'structured_alias' and cn != 'UnitOfMeasure' and cn != 'ValidationReport' and \
+                cn != 'ValidationResult':
                 self.assertIn('https://w3id.org/linkml/', uri)
             induced_slots = view.class_induced_slots(cn)
             for s in induced_slots:
