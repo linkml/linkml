@@ -404,6 +404,16 @@ class SchemaViewTestCase(unittest.TestCase):
 
         assert view.get_uri('string') == 'xsd:string'
 
+        # dynamic enums
+        e = view.get_enum('HCAExample')
+        self.assertCountEqual(['GO:0007049',
+                               'GO:0022403'],
+                              e.include[0].reachable_from.source_nodes)
+
+        # units
+        height = view.get_slot('height_in_m')
+        self.assertEqual("m", height.unit.ucum_code)
+
     def test_merge_imports(self):
         """
         ensure merging and merging imports closure works
