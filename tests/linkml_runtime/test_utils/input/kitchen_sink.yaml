@@ -231,6 +231,10 @@ slots:
   city:
   has birth event:
     range: BirthEvent
+  height_in_m:
+    range: float
+    unit:
+      ucum_code: m
 
 
 
