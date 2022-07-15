@@ -83,15 +83,155 @@
              
   <section id="semantic-enumerations">
 <h1>Semantic Enumerations<a class="headerlink" href="#semantic-enumerations" title="Permalink to this heading"></a></h1>
-<section id="using-enums-with-ontologies">
-<h2>Using Enums with Ontologies<a class="headerlink" href="#using-enums-with-ontologies" title="Permalink to this heading"></a></h2>
-<p><img alt="enums" src="enums-and-ontologies" /></p>
+<p>Enumerations are common features in modeling frameworks. These can be
+thought of as a “drop-down” of permissible values for a
+field/slot. For example, a “vital status” slot may have an enumeration
+with permissible values <code class="docutils literal notranslate"><span class="pre">LIVING</span></code> or <code class="docutils literal notranslate"><span class="pre">DEAD</span></code>.</p>
+<p>LinkML supports enumerations, and goes beyond what is possible in frameworks like JSON-Schema</p>
+<ul class="simple">
+<li><p>Permissible Values can be mapped to <em>ontology terms</em>, enhancing interoperability and FAIRness</p></li>
+<li><p>Enumerations can be <em>static</em> or <em>dynamic</em>, where dynamic enums are defined by a set of constraints (e.g. a branch of an ontology)</p></li>
+</ul>
+<section id="basic-enums">
+<h2>Basic Enums<a class="headerlink" href="#basic-enums" title="Permalink to this heading"></a></h2>
+<p>The core enumeration model is the same as for familiar systems, where there is a set of allowed string values:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">FamilialRelationshipType</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">SIBLING_OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">PARENT_OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">CHILD_OF</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can also make your enums into a richer controlled vocabulary, with definitions built in:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">FamilialRelationshipType</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">SIBLING OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A family relationship where the two members have a parent on common</span><span class="w"></span>
+<span class="w">      </span><span class="nt">PARENT OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A family relationship between offspring and their parent</span><span class="w"></span>
+<span class="w">      </span><span class="nt">CHILD OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inverse of the PARENT_OF relationship</span><span class="w"></span>
+</pre></div>
+</div>
 </section>
-<section id="examples-jupyter-notebooks">
-<h2>Examples (Jupyter Notebooks)<a class="headerlink" href="#examples-jupyter-notebooks" title="Permalink to this heading"></a></h2>
+<section id="mapping-permissible-values-to-ontologies">
+<h2>Mapping Permissible Values to Ontologies<a class="headerlink" href="#mapping-permissible-values-to-ontologies" title="Permalink to this heading"></a></h2>
+<p>As an example, we will map the Permissible Values above to terms from the GA4GH <a class="reference external" href="https://github.com/GA4GH-Pedigree-Standard/">pedigree standard</a> kinship ontology.</p>
+<p>We will first add a base prefix declaration (KIN concepts have PURLs of the form http://purl.org/ga4gh/kin.owl#KIN_007</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">kin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.org/ga4gh/kin.owl#</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Then further down we can annotate our enums using <a class="reference external" href="https://w3id.org/linkml/meaning">meaning</a> slots:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">FamilialRelationshipType</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">SIBLING OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A family relationship where the two members have a parent on common</span><span class="w"></span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kin:KIN_007</span><span class="w"></span>
+<span class="w">      </span><span class="nt">PARENT OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A family relationship between offspring and their parent</span><span class="w"></span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kin:KIN_003</span><span class="w"></span>
+<span class="w">      </span><span class="nt">CHILD OF</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inverse of the PARENT_OF relationship</span><span class="w"></span>
+<span class="w">        </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kin:KIN_002</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-enums-in-python">
+<h2>Working with Enums in Python<a class="headerlink" href="#working-with-enums-in-python" title="Permalink to this heading"></a></h2>
+<p>Enumerations are mapped directly to Python enums. See</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/linkml/linkml/blob/main/notebooks/enumerations.ipynb">enumerations notebook</a></p></li>
 </ul>
+<p>For examples</p>
+</section>
+<section id="dynamic-enums">
+<h2>Dynamic Enums<a class="headerlink" href="#dynamic-enums" title="Permalink to this heading"></a></h2>
+<p>Starting with LinkML 1.3, enums do not have to be a static hardcoded list; instead they can be <em>dynamic</em>, populated by a query.</p>
+<p>This allows the enum to be synced with some upstream source, and avoids hardcoding very long lists where there are a lot of possibilities.</p>
+<p>The following example defines an enumeration that selects any subtype of “neuron” from the OBO cell type ontology:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">BodyPartEnum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">reachable_from</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">obo:cl</span><span class="w"></span>
+<span class="w">      </span><span class="nt">source_nodes</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CL:0000540</span><span class="w"> </span><span class="c1">## neuron</span><span class="w"></span>
+<span class="w">      </span><span class="nt">include_self</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="w">      </span><span class="nt">relationship_types</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Arbitrarily nested boolean expressions can be used, combined with the <a class="reference external" href="https://w3id.org/linkml/minus">minus</a> operator to subtract from sets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">LoincExample</span><span class="p">:</span>
+    <span class="n">enum_uri</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">hl7</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">fhir</span><span class="o">/</span><span class="n">ValueSet</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">intensional</span>
+    <span class="n">see_also</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">build</span><span class="o">.</span><span class="n">fhir</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">valueset</span><span class="o">-</span><span class="n">example</span><span class="o">-</span><span class="n">intensional</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">html</span>
+    <span class="n">include</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">reachable_from</span><span class="p">:</span>
+          <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">loinc</span>
+          <span class="n">source_nodes</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">LOINC</span><span class="p">:</span><span class="n">LP43571</span><span class="o">-</span><span class="mi">6</span>
+          <span class="n">is_direct</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">minus</span><span class="p">:</span>
+      <span class="n">concepts</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">LOINC</span><span class="p">:</span><span class="mi">5932</span><span class="o">-</span><span class="mi">9</span>
+</pre></div>
+</div>
+<p>Enums can extend other enums using <a class="reference external" href="https://w3id.org/linkml/inherits">inherits</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">enums</span><span class="p">:</span>
+  <span class="n">Disease</span><span class="p">:</span>
+    <span class="n">reachable_from</span><span class="p">:</span>
+      <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">mondo</span>
+      <span class="n">source_nodes</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">0000001</span> <span class="c1">## disease or disorder</span>
+      <span class="n">is_direct</span><span class="p">:</span> <span class="n">false</span>
+      <span class="n">relationship_types</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span>
+    <span class="n">minus</span><span class="p">:</span>
+      <span class="n">permissible_values</span><span class="p">:</span>
+        <span class="n">root_node</span><span class="p">:</span>
+          <span class="n">meaning</span><span class="p">:</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">0000001</span> <span class="c1">## disease or disorder</span>
+
+  <span class="n">HumanDisease</span><span class="p">:</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Extends</span> <span class="n">the</span> <span class="n">Disease</span> <span class="n">value</span> <span class="nb">set</span><span class="p">,</span> <span class="n">including</span> <span class="n">NCIT</span> <span class="n">neoplasms</span><span class="p">,</span> <span class="n">excluding</span> <span class="n">non</span><span class="o">-</span><span class="n">human</span> <span class="n">diseases</span>
+    <span class="n">inherits</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">Disease</span>
+    <span class="n">include</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">reachable_from</span><span class="p">:</span>
+          <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">ncit</span>
+          <span class="n">source_nodes</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">NCIT</span><span class="p">:</span><span class="n">C3262</span>
+    <span class="n">minus</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">reachable_from</span><span class="p">:</span>
+          <span class="n">source_ontology</span><span class="p">:</span> <span class="n">bioregistry</span><span class="p">:</span><span class="n">mondo</span>
+          <span class="n">source_nodes</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">0005583</span> <span class="c1">## non-human animal disease</span>
+          <span class="n">relationship_types</span><span class="p">:</span>
+            <span class="o">-</span> <span class="n">rdfs</span><span class="p">:</span><span class="n">subClassOf</span>
+      <span class="o">-</span> <span class="n">permissible_values</span><span class="p">:</span>
+          <span class="n">NOT_THIS_ONE</span><span class="p">:</span>
+            <span class="n">meaning</span><span class="p">:</span> <span class="n">MONDO</span><span class="p">:</span><span class="mi">9999</span>
+            <span class="n">description</span><span class="p">:</span> <span class="n">Example</span> <span class="n">of</span> <span class="n">excluding</span> <span class="n">a</span> <span class="n">single</span> <span class="n">node</span>
+</pre></div>
+</div>
+</section>
+<section id="tooling-to-support-dynamic-enums">
+<h2>Tooling to support dynamic enums<a class="headerlink" href="#tooling-to-support-dynamic-enums" title="Permalink to this heading"></a></h2>
+<p>Different tool chains may choose to implement dynamic enums differently.</p>
+<p>For example, if you have a stack that uses JSON-Schema for validation,
+then tools may choose to <em>materialize</em> a dynamic query into a static
+list of terms at the time of schema compilation.</p>
+<p>Other tools may choose to perform the query at runtime. For example, a
+data entry tool may choose to use an advanced autocomplete API to
+restrict autocomplete to defined values.</p>
+<p>At this time, tooling support for dynamic enums is maturing, but you
+can still go ahead and use them in your schemas. The default behavior
+will be too permissive – however, you still gain additional clarity
+in your schema documentation.</p>
 </section>
 </section>
 

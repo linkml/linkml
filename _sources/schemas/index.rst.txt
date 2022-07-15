@@ -19,6 +19,6 @@ create a schema to model your data
    inlining
    constraints
    imports
-   experimental
+   advanced
 
 .. seealso:: `Programmatic example in a Jupyter Notebook <https://github.com/linkml/linkml/blob/main/notebooks/examples.ipynb>`_

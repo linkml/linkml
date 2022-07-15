@@ -247,7 +247,7 @@ enums:
       CHILD_OF:
 ```
 
-You can also make your enums into a ticher controlled vocabulary, with definitions built in:
+You can also make your enums into a richer controlled vocabulary, with definitions built in:
 
 ```yaml
 enums:

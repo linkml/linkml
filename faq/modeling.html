@@ -61,13 +61,20 @@
 <li class="toctree-l3"><a class="reference internal" href="#what-are-induced-slots">What are induced slots?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-need-to-define-my-own-types">Why would I need to define my own types?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-would-i-want-to-use-enums-over-strings">Why would I want to use enums over strings?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-a-range-to-a-certain-ontology">How do I constrain a range to a certain ontology</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology">How do I constrain a range of a slot to a certain branch of an ontology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary">How do I constrain the value of a slot using an ontology or vocabulary?</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms">How do I constrain a slot to a fixed set of ontology terms?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">How do I constrain a slot to a branch of an ontology or a whole ontology?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#can-i-combine-dynamic-enums-using-boolean-expressions">Can I combine dynamic enums using boolean expressions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-use-regular-expressions-to-constrain-values">Can I use regular expressions to constrain values?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#can-i-reuse-regular-expression-patterns">Can I reuse regular expression patterns?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-do-i-do-the-equivalent-of-json-schema-composition">How do I do the equivalent of JSON-Schema composition?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#why-are-my-class-names-translated-to-camelcase">Why are my class names translated to CamelCase?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-two-data-classes-are-linked-by-a-slot-in-one-class-definition-how-is-the-reciprocal-association-expressed-in-linkml">When two data classes are linked by a slot in one class definition, how is the reciprocal association expressed in LinkML?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#what-are-id-prefixes-used-for-and-why-do-we-want-them">What are id_prefixes used for and why do we want them?</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#when-is-it-important-to-have-mappings">When is it important to have mappings?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-i-represent-relationships-in-linkml">How do I represent relationships in LinkML?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tools.html">FAQ: Tools</a></li>
@@ -174,61 +181,90 @@ text.</p>
 <section id="why-would-i-want-to-use-enums-over-strings">
 <h2>Why would I want to use enums over strings?<a class="headerlink" href="#why-would-i-want-to-use-enums-over-strings" title="Permalink to this heading"></a></h2>
 <p>Enums provide a more controlled vocabulary than strings. You can validate categorical fields using enums, whereas with basic strings you don’t have a built in way of validating if a string is valid.</p>
-<p>Enums also give you hooks into ontologies and vocabulaies.</p>
+<p>Enums also give you hooks into ontologies and vocabularies.</p>
 <p>More on enums:</p>
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 </section>
-<section id="how-do-i-constrain-a-range-to-a-certain-ontology">
-<h2>How do I constrain a range to a certain ontology<a class="headerlink" href="#how-do-i-constrain-a-range-to-a-certain-ontology" title="Permalink to this heading"></a></h2>
-<p>LinkML team is working actively on solutions to this commonly asked question:
-https://github.com/linkml/linkml/issues/274</p>
-<p>At the moment, LinkML has several ways to restrict the value of a field:</p>
-<ul class="simple">
-<li><p>use a regular expression</p></li>
-<li><p>constrain using values from an enumeration</p></li>
-<li><p>define a vocabulary or term class and constrain the range to that class</p></li>
-<li><p>declare id_prefixes for a class that represent a particular ontology</p></li>
-</ul>
-<p>use a regular expression:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
+<section id="how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary">
+<h2>How do I constrain the value of a slot using an ontology or vocabulary?<a class="headerlink" href="#how-do-i-constrain-the-value-of-a-slot-using-an-ontology-or-vocabulary" title="Permalink to this heading"></a></h2>
+<p>There are a variety of ways of tackling this in LinkML.</p>
+<p>The fundamental question is whether you want to either:</p>
+<ol class="arabic simple">
+<li><p>define a fixed set of terms in the schema in advance</p></li>
+<li><p>specify the set of terms via a query (e.g. a particular ontology brannch)</p></li>
+</ol>
+<p>See the two questions below for answers to each</p>
+<section id="how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms">
+<h3>How do I constrain a slot to a fixed set of ontology terms?<a class="headerlink" href="#how-do-i-constrain-a-slot-to-a-fixed-set-of-ontology-terms" title="Permalink to this heading"></a></h3>
+<p>You can do this using an <a class="reference external" href="https://w3id.org/linkml/enum">enum</a>.</p>
+<p>For example, if we wanted to model a DNA sequence variant type as being a fixed set of terms from SO:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">SO</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/SO_</span><span class="w"></span>
 
 <span class="nt">classes</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
 <span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
-
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^SO:\d+$&#39;</span><span class="w"></span>
-</pre></div>
-</div>
-<p>constrain using values from an enumeration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
-
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^SO:\d+$&#39;</span><span class="w"></span>
 <span class="w">        </span>
 <span class="nt">slots</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span><span class="w"></span>
+<span class="w">  </span><span class="nt">...</span><span class="p">:</span><span class="w"></span>
 
 <span class="nt">enums</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
 <span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span><span class="w"></span>
 <span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:deletion</span><span class="p p-Indicator">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">deletion</span><span class="p">:</span><span class="w"></span>
 <span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:insertion</span><span class="p p-Indicator">:</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">insertion</span><span class="p">:</span><span class="w"> </span>
 <span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span><span class="w"></span>
 </pre></div>
 </div>
-<p>define a vocabulary or term class</p>
+<p>Note that we are mapping each permissible value to an ontology term</p>
+</section>
+<section id="how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology">
+<h3>How do I constrain a slot to a branch of an ontology or a whole ontology?<a class="headerlink" href="#how-do-i-constrain-a-slot-to-a-branch-of-an-ontology-or-a-whole-ontology" title="Permalink to this heading"></a></h3>
+<p>LinkML basic enums allow you to restrict a value to a fixed set of terms. This works well, if</p>
+<ol class="arabic simple">
+<li><p>the vocabulary is known in advance</p></li>
+<li><p>it is a relatively small number of terms</p></li>
+</ol>
+<p>However, this does not work so well if you want to constrain something
+to a very large vocabulary - for example, any job code from an
+occupation ontology, any body part from an anatomical ontology.</p>
+<p>In this case, you can use <em>dynamic enums</em>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cell_type</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CellTypeEnum</span><span class="w"></span>
+
+<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">CellTypeEnum</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">reachable_from</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">source_ontology</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">obo:cl</span><span class="w"></span>
+<span class="w">      </span><span class="nt">source_nodes</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CL:0000000</span><span class="w"></span>
+<span class="w">      </span><span class="nt">include_self</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<span class="w">      </span><span class="nt">relationship_types</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdfs:subClassOf</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This restricts to any subclass (transitive, non-self) of the term <a class="reference external" href="http://purl.obolibrary.org/obo/CL_0000000">cell</a> in the cell ontology.</p>
+<p>An alternative pattern is to use a regular expression:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">types</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">CellTypeId</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">typeof</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^CL:\d+$&#39;</span><span class="w"></span>
+
+<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">cell_type</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CellTypeId</span><span class="w"></span>
+</pre></div>
+</div>
+<p>However, this has a number of limitations</p>
+<p>You can also model ontology terms directly, e.g</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
 
 <span class="nt">classes</span><span class="p">:</span><span class="w"></span>
@@ -286,34 +322,34 @@ https://github.com/linkml/linkml/issues/274</p>
 </pre></div>
 </div>
 </section>
-<section id="how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology">
-<h2>How do I constrain a range of a slot to a certain branch of an ontology<a class="headerlink" href="#how-do-i-constrain-a-range-of-a-slot-to-a-certain-branch-of-an-ontology" title="Permalink to this heading"></a></h2>
-<p>A solution to this question is in active development, in the short term, the best way to constrain
-a slot by a certain branch of an ontology is by extracting the terms in the ontology that form the constraint
-into an enumeration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_schema</span><span class="w"></span>
-
-<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant type</span><span class="w"></span>
-<span class="w">    </span><span class="nt">slot_usage</span><span class="p">:</span><span class="w"></span>
-<span class="w">       </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;^SO:\d+$&#39;</span><span class="w"></span>
-<span class="w">        </span>
-<span class="nt">slots</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant type</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variant_type_enum</span><span class="w"></span>
-
-<span class="nt">enums</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">variant_type_enum</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">permissible_values</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="nt">point_mutation</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:12345</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:deletion</span><span class="p p-Indicator">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:24681</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">SO:insertion</span><span class="p p-Indicator">:</span><span class="w"> </span>
-<span class="w">          </span><span class="nt">meaning</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SO:36912</span><span class="w"></span>
+<section id="can-i-combine-dynamic-enums-using-boolean-expressions">
+<h3>Can I combine dynamic enums using boolean expressions<a class="headerlink" href="#can-i-combine-dynamic-enums-using-boolean-expressions" title="Permalink to this heading"></a></h3>
+<p>Yes, this is possible.</p>
+<p>See <a class="reference internal" href="../schemas/enums.html"><span class="doc std std-doc">enum</span></a> documentation</p>
+</section>
+</section>
+<section id="can-i-use-regular-expressions-to-constrain-values">
+<h2>Can I use regular expressions to constrain values?<a class="headerlink" href="#can-i-use-regular-expressions-to-constrain-values" title="Permalink to this heading"></a></h2>
+<p>Yes, regular expressions can be used either on slots, or on types.</p>
+<p>This is done using the <a class="reference external" href="https://w3id.org/linkml/">pattern</a> metaslot</p>
+</section>
+<section id="can-i-reuse-regular-expression-patterns">
+<h2>Can I reuse regular expression patterns?<a class="headerlink" href="#can-i-reuse-regular-expression-patterns" title="Permalink to this heading"></a></h2>
+<p>Yes, you can do this via the <a class="reference external" href="https://w3id.org/linkml/structured_pattern">structured_pattern</a> metaslot</p>
+<p>First you declare the patterns to be reused in the top level of your schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">float</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\d+[\\.\\d+]&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@\\S+{\\.\\w}+&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can then use this inside a structured pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">height</span><span class="p">:</span>
+    <span class="nb">range</span><span class="p">:</span> <span class="n">string</span>
+    <span class="n">structured_pattern</span><span class="p">:</span>
+      <span class="n">syntax</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{float}</span><span class="s2"> </span><span class="si">{unit.length}</span><span class="s2">&quot;</span>
+      <span class="n">interpolated</span><span class="p">:</span> <span class="n">true</span>
+      <span class="n">partial_match</span><span class="p">:</span> <span class="n">false</span>
 </pre></div>
 </div>
 </section>
@@ -328,7 +364,7 @@ into an enumeration:</p>
 <li><p><a class="reference external" href="https://w3id.org/linkml/none_of">none_of</a></p></li>
 </ul>
 <p>In some cases, the use of schema composition can be avoided by using simple inheritance patterns.</p>
-<p>Note that these constructs may not be supported by all generators. See <a class="reference external" href="https://linkml.io/linkml/schemas/experimental">experimental features</a> for current documentation.</p>
+<p>Note that these constructs may not be supported by all generators. See <a class="reference external" href="https://linkml.io/linkml/schemas/advanced">advanced features</a> for current documentation.</p>
 </section>
 <section id="why-are-my-class-names-translated-to-camelcase">
 <h2>Why are my class names translated to CamelCase?<a class="headerlink" href="#why-are-my-class-names-translated-to-camelcase" title="Permalink to this heading"></a></h2>
@@ -465,6 +501,29 @@ For more detail on the kinds of mappings (and their mappings to SKOS): https://l
 <p>Mappings are an entire optional feature, you can create a schema without any mappings. However, we encourage their use, and we
 encourage adding them <em>prospectively</em> as you build our your datamodel, rather than doing this <em>retrospectively</em>. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.</p>
+</section>
+<section id="how-do-i-represent-relationships-in-linkml">
+<h2>How do I represent relationships in LinkML?<a class="headerlink" href="#how-do-i-represent-relationships-in-linkml" title="Permalink to this heading"></a></h2>
+<p>For some use cases, objects described using LinkML can stand in
+isolation, and do not need to be related. For example, for a simple
+database of material samples (biosamples, geosamples, etc), each
+sample may be considered a standalone entity described with an
+identifier, and various properties.</p>
+<p>However, more often then not, your objects need to be
+inter-related. Here there are a number of modeling questions that you
+will need to answer:</p>
+<ul class="simple">
+<li><p>can my objects be related in different ways, or is there a uniform relationship type</p></li>
+<li><p>do I need to store information/metadata about the relationship itself?</p></li>
+<li><p>are the related objects somehow “external”, or are they within my dataset – and if so, should this be enforced</p></li>
+</ul>
+<p>Depending on the answer, LinkML has different modeling constructs to help you, including:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://w3id.org/linkml/range">range</a> constraints, which can refer to classes</p></li>
+<li><p>the ability to assign a slot as an <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>, allowing other objects to link to it</p></li>
+<li><p><a class="reference external" href="https://w3id.org/linkml/inlining">inlining</a> which determins how relationships are serialized in formats like JSON</p></li>
+</ul>
+<p>Other more advanced constructs are also possible to allow you to treat relationships as first-class entities</p>
 </section>
 </section>
 

@@ -288,7 +288,7 @@ from your schema. This is included as a default when you use the docgen framewor
 <p>However, you can also include generated markdown in your sphinx site. This may be desirable
 if you are incorporating LinkML into a software project that uses <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a>.</p>
 <p>You should make sure your sphinx configuration includes:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>The <a class="reference external" href="https://myst-parser.readthedocs.io/">MyST</a> extension, for parsing markdown</p></li>
 <li><p>The <a class="reference external" href="https://sphinxcontrib-mermaid-demo.readthedocs.io/en/latest/">Mermaid</a> extension, for Mermaid class diagrams</p></li>
 </ol>
@@ -313,7 +313,7 @@ if you are incorporating LinkML into a software project that uses <a class="refe
 <p>For some purposes, the generic schema documentation provided by <code class="docutils literal notranslate"><span class="pre">gen-markdown</span></code> may look too… generic.</p>
 <p>You can customize markdown generation using your own templates. This requires a basic understanding of Jinja2 templates.</p>
 <p>The protocol is:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>copy the jinja templates from <a class="reference external" href="https://github.com/linkml/linkml/tree/main/linkml/generators/docgen">docgen</a> to your own repo in a folder <code class="docutils literal notranslate"><span class="pre">templates</span></code></p></li>
 <li><p>customize these templates</p></li>
 <li><p>run <code class="docutils literal notranslate"><span class="pre">gen-docs</span> <span class="pre">--template-directory</span> <span class="pre">templates</span> <span class="pre">-d</span> <span class="pre">docs</span> <span class="pre">my_schema.yaml</span></code></p></li>
