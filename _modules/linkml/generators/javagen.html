@@ -125,14 +125,16 @@
 <span class="s2">}&quot;&quot;&quot;</span>
 
 <span class="n">TYPEMAP</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Bool&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;XSDDate&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;URIorCURIE&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
-
+    <span class="s2">&quot;xsd:string&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:integer&quot;</span><span class="p">:</span> <span class="s2">&quot;Integer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:float&quot;</span><span class="p">:</span> <span class="s2">&quot;Float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:double&quot;</span><span class="p">:</span> <span class="s2">&quot;Double&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;Boolean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xds:dateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;ZonedDateTime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xds:date&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalDateTime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xds:time&quot;</span><span class="p">:</span> <span class="s2">&quot;Instant&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:anyURI&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;BigDecimal&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -157,7 +159,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_records</span> <span class="o">=</span> <span class="n">generate_records</span>
 
 <div class="viewcode-block" id="JavaGenerator.map_type"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.javagen.JavaGenerator.map_type">[docs]</a>    <span class="k">def</span> <span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">TYPEMAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TYPEMAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_type</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">typeof</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> cannot be mapped to a type&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="JavaGenerator.serialize"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.javagen.JavaGenerator.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
