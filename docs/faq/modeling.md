@@ -79,67 +79,109 @@ Some applications may choose to interpret this in particular ways. E.g. you may 
 
 Enums provide a more controlled vocabulary than strings. You can validate categorical fields using enums, whereas with basic strings you don't have a built in way of validating if a string is valid.
 
-Enums also give you hooks into ontologies and vocabulaies.
+Enums also give you hooks into ontologies and vocabularies.
 
 More on enums:
 
 <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQyQsRIBjSxhaDie5ASDAOTfJO9JqFjYmdoBHgCVVKMHzKo0AyL04lGNqWdgbCnyV8a-syk1U81tRXg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
-## How do I constrain a range to a certain ontology 
-LinkML team is working actively on solutions to this commonly asked question:
-https://github.com/linkml/linkml/issues/274
+## How do I constrain the value of a slot using an ontology or vocabulary?
 
+There are a variety of ways of tackling this in LinkML.
 
-At the moment, LinkML has several ways to restrict the value of a field:
-- use a regular expression
-- constrain using values from an enumeration
-- define a vocabulary or term class and constrain the range to that class
-- declare id_prefixes for a class that represent a particular ontology
+The fundamental question is whether you want to either:
 
-use a regular expression:
+1. define a fixed set of terms in the schema in advance
+2. specify the set of terms via a query (e.g. a particular ontology brannch)
+
+See the two questions below for answers to each
+
+### How do I constrain a slot to a fixed set of ontology terms?
+
+You can do this using an [enum](https://w3id.org/linkml/enum).
+
+For example, if we wanted to model a DNA sequence variant type as being a fixed set of terms from SO:
 
 ```yaml
-default_prefix: my_schema
+prefixes:
+  SO: http://purl.obolibrary.org/obo/SO_
 
 classes:
   variant:
     slots:
+       - ...
        - variant type
-
-slots:
-  variant type:
-  pattern: '^SO:\d+$'
-```
-
-constrain using values from an enumeration:
-
-```yaml
-default_prefix: my_schema
-
-classes:
-  variant:
-    slots:
-       - variant type
-    slot_usage:
-       variant type:
-          pattern: '^SO:\d+$'
         
 slots:
   variant type:
-  range: variant_type_enum
+    range: variant_type_enum
+  ...:
 
 enums:
   variant_type_enum:
     permissible_values: 
       point_mutation:
           meaning: SO:12345
-      SO:deletion:
+      deletion:
           meaning: SO:24681
-      SO:insertion: 
+      insertion: 
           meaning: SO:36912
 ```
 
-define a vocabulary or term class
+Note that we are mapping each permissible value to an ontology term
+
+### How do I constrain a slot to a branch of an ontology or a whole ontology?
+
+LinkML basic enums allow you to restrict a value to a fixed set of terms. This works well, if
+
+1. the vocabulary is known in advance
+2. it is a relatively small number of terms
+
+However, this does not work so well if you want to constrain something
+to a very large vocabulary - for example, any job code from an
+occupation ontology, any body part from an anatomical ontology.
+
+
+In this case, you can use *dynamic enums*:
+
+```yaml
+slots:
+  cell_type:
+    range: CellTypeEnum
+
+enums:
+  CellTypeEnum:
+    reachable_from:
+      source_ontology: obo:cl
+      source_nodes:
+        - CL:0000000
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+```
+
+This restricts to any subclass (transitive, non-self) of the term [cell](http://purl.obolibrary.org/obo/CL_0000000) in the cell ontology.
+
+
+An alternative pattern is to use a regular expression:
+
+```yaml
+types:
+  CellTypeId:
+    typeof: uriorcurie
+    pattern: '^CL:\d+$'
+
+slots:
+  cell_type:
+    range: CellTypeId
+
+```
+
+
+
+However, this has a number of limitations
+
+You can also model ontology terms directly, e.g
 
 ```yaml
 default_prefix: my_schema
@@ -202,37 +244,42 @@ slots:
 
 ```
 
-## How do I constrain a range of a slot to a certain branch of an ontology
-A solution to this question is in active development, in the short term, the best way to constrain
-a slot by a certain branch of an ontology is by extracting the terms in the ontology that form the constraint
-into an enumeration:
+### Can I combine dynamic enums using boolean expressions
+
+Yes, this is possible.
+
+See [enum](../schemas/enums) documentation
+
+
+## Can I use regular expressions to constrain values?
+
+Yes, regular expressions can be used either on slots, or on types.
+
+This is done using the [pattern](https://w3id.org/linkml/) metaslot
+
+## Can I reuse regular expression patterns?
+
+Yes, you can do this via the [structured_pattern](https://w3id.org/linkml/structured_pattern) metaslot
+
+First you declare the patterns to be reused in the top level of your schema:
 
 ```yaml
-default_prefix: my_schema
-
-classes:
-  variant:
-    slots:
-       - variant type
-    slot_usage:
-       variant type:
-          pattern: '^SO:\d+$'
-        
-slots:
-  variant type:
-  range: variant_type_enum
-
-enums:
-  variant_type_enum:
-    permissible_values: 
-      point_mutation:
-          meaning: SO:12345
-      SO:deletion:
-          meaning: SO:24681
-      SO:insertion: 
-          meaning: SO:36912
+settings:
+  float: "\\d+[\\.\\d+]"
+  unit: "\\S+"
+  email: "\\S+@\\S+{\\.\\w}+"
 ```
 
+You can then use this inside a structured pattern:
+
+```
+  height:
+    range: string
+    structured_pattern:
+      syntax: "{float} {unit.length}"
+      interpolated: true
+      partial_match: false
+```
 
 ## How do I do the equivalent of JSON-Schema composition?
 
@@ -247,7 +294,7 @@ LinkML provides the following analogous concepts:
 
 In some cases, the use of schema composition can be avoided by using simple inheritance patterns.
 
-Note that these constructs may not be supported by all generators. See [experimental features](https://linkml.io/linkml/schemas/experimental) for current documentation.
+Note that these constructs may not be supported by all generators. See [advanced features](https://linkml.io/linkml/schemas/advanced) for current documentation.
 
 ## Why are my class names translated to CamelCase?
 
@@ -398,3 +445,26 @@ Mappings are an entire optional feature, you can create a schema without any map
 encourage adding them *prospectively* as you build our your datamodel, rather than doing this *retrospectively*. Thinking about mappings
 will help you think about how your modeling relates to the modeling done by others as part of other databases or standards.
 
+## How do I represent relationships in LinkML?
+
+For some use cases, objects described using LinkML can stand in
+isolation, and do not need to be related. For example, for a simple
+database of material samples (biosamples, geosamples, etc), each
+sample may be considered a standalone entity described with an
+identifier, and various properties.
+
+However, more often then not, your objects need to be
+inter-related. Here there are a number of modeling questions that you
+will need to answer:
+
+- can my objects be related in different ways, or is there a uniform relationship type
+- do I need to store information/metadata about the relationship itself?
+- are the related objects somehow "external", or are they within my dataset -- and if so, should this be enforced
+
+Depending on the answer, LinkML has different modeling constructs to help you, including:
+
+- [range](https://w3id.org/linkml/range) constraints, which can refer to classes
+- the ability to assign a slot as an [identifier](https://w3id.org/linkml/identifier), allowing other objects to link to it
+- [inlining](https://w3id.org/linkml/inlining) which determins how relationships are serialized in formats like JSON
+
+Other more advanced constructs are also possible to allow you to treat relationships as first-class entities

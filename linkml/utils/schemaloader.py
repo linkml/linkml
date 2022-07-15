@@ -131,8 +131,11 @@ class SchemaLoader:
             for attribute in cls.attributes.values():
                 mangled_slot_name = mangled_attribute_name(cls.name, attribute.name)
                 if mangled_slot_name in self.schema.slots:
-                    self.raise_value_error(f'Class: "{cls.name}" attribute "{attribute.name}" - '
-                                           f'mangled name: {mangled_slot_name} already exists', attribute.name)
+                    # mangled names are overwritten if a schema with attributes is passed in
+                    # TODO: handle this in a more graceful way
+                    #  see https://github.com/linkml/linkml/issues/872
+                    logging.warning(f'Class: "{cls.name}" attribute "{attribute.name}" - '
+                                    f'mangled name: {mangled_slot_name} already exists', attribute.name)
                 new_slot = SlotDefinition(**attribute.__dict__)
                 new_slot.domain_of.append(cls.name)
                 new_slot.imported_from = cls.imported_from

@@ -1,6 +1,7 @@
 """ Generate JSONld
 
 """
+import logging
 import os
 from copy import deepcopy
 from typing import Any, Optional
@@ -10,7 +11,8 @@ from jsonasobj2 import as_json, items, loads
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName, TypeDefinitionName, \
-    ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition
+    ElementName, SlotDefinition, ClassDefinition, TypeDefinition, SubsetDefinitionName, SubsetDefinition, \
+    SchemaDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
@@ -103,6 +105,7 @@ class JSONLDGenerator(Generator):
         self._add_type(self.schema)
         base_prefix = self.default_prefix()
 
+        # TODO: fix this, see https://github.com/linkml/linkml/issues/871
         # JSON LD adjusts context reference using '@base'.  If context is supplied and not a URI, generate an
         # absolute URI for it
         if context is None and self.format == 'jsonld':
