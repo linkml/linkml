@@ -87,7 +87,7 @@ The following example defines an enumeration that selects any subtype of "neuron
 
 ```yaml
 enums:
-  BodyPartEnum:
+  NeuronTypeEnum:
     reachable_from:
       source_ontology: obo:cl
       source_nodes:
