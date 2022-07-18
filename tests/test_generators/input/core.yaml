@@ -57,9 +57,11 @@ slots:
 
   id:
     identifier: true
+    rank: 1
 
   name:
     required: false
+    rank: 2
 
   description:
   
