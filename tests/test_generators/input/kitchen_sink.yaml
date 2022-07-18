@@ -44,13 +44,18 @@ see_also:
 subsets:
 
   subset A:
-    description: >-
+    rank: 2
+    description: |-
       test subset A
+
+      This is a subset for testing
     comments:
       - this subset is meaningless, it is just here for testing
+      - another comment
     aliases:
       - A
   subset B:
+    rank: 1
     description: >-
       test subset B
     aliases:
@@ -71,6 +76,7 @@ classes:
       - name
 
   Person:
+    rank: 2
     description: A person, living or dead
     in_subset:
       - subset A
@@ -94,6 +100,20 @@ classes:
       - schema:Person
 
   Organization:
+    rank: 3
+    description: |-
+      An organization.
+
+      This description
+      includes newlines
+
+      ## Markdown headers
+
+       * and
+       * a
+       * list
+
+
     mixins:
       - HasAliases
     slots:
@@ -145,6 +165,7 @@ classes:
       - type
 
   FamilialRelationship:
+    rank: 5
     is_a: Relationship
     slot_usage:
       type:
@@ -160,6 +181,7 @@ classes:
       - in location
 
   EmploymentEvent:
+    rank: 6
     is_a: Event
     slots:
       - employed at
@@ -203,6 +225,7 @@ classes:
 
   Dataset:
     tree_root: true
+    rank: 1
     attributes:
       persons:
         range: Person
@@ -259,6 +282,7 @@ slots:
   is current:
     range: boolean
   has employment history:
+    rank: 7
     range: EmploymentEvent
     multivalued: true
     inlined_as_list: true
@@ -271,6 +295,7 @@ slots:
     in_subset:
       - subset B
   has medical history:
+    rank: 5
     range: MedicalEvent
     multivalued: true
     inlined_as_list: true

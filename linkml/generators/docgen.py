@@ -2,7 +2,7 @@ import os
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set
+from typing import Optional, Tuple, List, Union, TextIO, Callable, Dict, Iterator, Set, TypeVar, Iterable
 from copy import deepcopy
 
 import click
@@ -26,6 +26,35 @@ class MarkdownDialect(Enum):
 # In future this may become a Union statement, but for now we only have dialects for markdown
 DIALECT = MarkdownDialect
 
+MAX_CHARS_IN_TABLE = 80
+MAX_RANK = 1000
+
+
+def enshorten(input):
+    """
+    Custom filter to truncate any long text intended to go in a table,
+    and to remove anything after a newline"""
+    if input is None:
+        return ""
+    if "\n" in input:
+        toks = input.split("\n")
+        input = toks[0]
+    if "." in input:
+        toks = input.split(".")
+        input = toks[0]
+    if len(input) > MAX_CHARS_IN_TABLE-3:
+        input = input[0:MAX_CHARS_IN_TABLE-3] + "..."
+    return input
+
+
+def customize_environment(env: Environment):
+    env.filters['enshorten'] = enshorten
+
+
+def _ensure_ranked(elements: Iterable[Element]):
+    for x in elements:
+        if x.rank is None:
+            x.rank = MAX_RANK
 
 class DocGenerator(Generator):
     """
@@ -63,6 +92,7 @@ class DocGenerator(Generator):
     generatorversion = '0.0.1'
     valid_formats = ['markdown', 'rst', 'html', 'latex']
     dialect: DIALECT = None
+    sort_by: sort_by = None
     visit_all_class_slots = False
     template_mappings: Dict[str, str] = None
     directory = None
@@ -75,7 +105,9 @@ class DocGenerator(Generator):
                  use_slot_uris: bool = False,
                  format: str = valid_formats[0],
                  dialect: Optional[Union[DIALECT, str]] = None,
-                 genmeta: bool=False, gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
+                 sort_by: str = None,
+                 genmeta: bool=False,
+                 gen_classvars: bool=True, gen_slots: bool=True, **kwargs) -> None:
         """
         Creates a generator object that can write documents to a directory from a schema
 
@@ -97,6 +129,9 @@ class DocGenerator(Generator):
         self.template_directory = template_directory
         self.use_slot_uris = use_slot_uris
         self.genmeta = genmeta
+        if sort_by is None:
+            sort_by = 'name'
+        self.sort_by = sort_by
         if dialect is not None:
             if isinstance(dialect, str):
                 if dialect == MarkdownDialect.myst.value:
@@ -121,10 +156,14 @@ class DocGenerator(Generator):
             directory = self.directory
         if directory is None:
             raise ValueError(f'Directory must be provided')
+        template_vars = {
+            'sort_by': self.sort_by
+        }
         template = self._get_template('index')
         out_str = template.render(gen=self,
                                   schema=sv.schema,
-                                  schemaview=sv)
+                                  schemaview=sv,
+                                  **template_vars)
         self._write(out_str, directory, 'index')  ## TODO: make configurable
         if self._is_single_file_format(self.format):
             logging.info(f'{self.format} is a single-page format, skipping non-index elements')
@@ -134,7 +173,8 @@ class DocGenerator(Generator):
             imported_schema = sv.schema_map.get(schema_name)
             out_str = template.render(gen=self,
                                       schema=imported_schema,
-                                      schemaview=sv)
+                                      schemaview=sv,
+                                      **template_vars)
             self._write(out_str, directory, imported_schema.name)
         template = self._get_template('class')
         for cn, c in sv.all_classes().items():
@@ -143,7 +183,8 @@ class DocGenerator(Generator):
             n = self.name(c)
             out_str = template.render(gen=self,
                                       element=c,
-                                      schemaview=sv)
+                                      schemaview=sv,
+                                      **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template('slot')
         for sn, s in sv.all_slots().items():
@@ -153,7 +194,8 @@ class DocGenerator(Generator):
             s = sv.induced_slot(sn)
             out_str = template.render(gen=self,
                                       element=s,
-                                      schemaview=sv)
+                                      schemaview=sv,
+                                      **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template('enum')
         for en, e in sv.all_enums().items():
@@ -162,17 +204,19 @@ class DocGenerator(Generator):
             n = self.name(e)
             out_str = template.render(gen=self,
                                       element=e,
-                                      schemaview=sv)
+                                      schemaview=sv,
+                                      **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template('type')
         for tn, t in sv.all_types().items():
-            if self._is_external(t):
+            if self._exclude_type(t):
                 continue
             n = self.name(t)
             t = sv.induced_type(tn)
             out_str = template.render(gen=self,
                                       element=t,
-                                      schemaview=sv)
+                                      schemaview=sv,
+                                      **template_vars)
             self._write(out_str, directory, n)
         template = self._get_template('subset')
         for _, s in sv.all_subsets().items():
@@ -181,7 +225,8 @@ class DocGenerator(Generator):
             n = self.name(s)
             out_str = template.render(gen=self,
                                       element=s,
-                                      schemaview=sv)
+                                      schemaview=sv,
+                                      **template_vars)
             self._write(out_str, directory, n)
 
 
@@ -228,6 +273,7 @@ class DocGenerator(Generator):
             # TODO: relative paths
             #loader = FileSystemLoader()
             env = Environment()
+            customize_environment(env)
             return env.get_template(path)
         else:
             base_file_name = f'{element_type}.{self._file_suffix()}.jinja2'
@@ -237,11 +283,12 @@ class DocGenerator(Generator):
                 if p.is_file():
                     folder = self.template_directory
                 else:
-                    logging.warning(f'Could not find {base_file_name} in {self.template_directory} - falling back to default')
+                    logging.info(f'Could not find {base_file_name} in {self.template_directory} - falling back to default')
             if not folder:
                 folder = pkg_resources.resource_filename(__name__, 'docgen')
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
+            customize_environment(env)
             return env.get_template(base_file_name)
 
     def schema_title(self) -> str:
@@ -324,14 +371,16 @@ class DocGenerator(Generator):
             if self.use_slot_uris:
                 if e.slot_uri is not None:
                     return self._markdown_link(e.slot_uri.split(":")[1])
-
             return self._markdown_link(underscore(e.name))
         elif isinstance(e, TypeDefinition):
-            return self._markdown_link(underscore(e.name))
+            return self._markdown_link(camelcase(e.name))
         elif isinstance(e, SubsetDefinition):
             return self._markdown_link(camelcase(e.name))
         else:
             return e.name
+
+    def _exclude_type(self, t: TypeDefinition) -> bool:
+        return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
         # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
@@ -439,7 +488,7 @@ class DocGenerator(Generator):
         :param slot:
         :return:
         """
-        if slot.required:
+        if slot.required or slot.identifier:
             min = '1'
         else:
             min = '0'
@@ -502,6 +551,79 @@ class DocGenerator(Generator):
             c.slots = []
             return yaml_dumper.dumps(c)
 
+    def class_induced_slots(self, class_name: ClassDefinitionName) -> Iterator[SlotDefinition]:
+        """
+        Yields all induced slots for a class
+
+        Ensures rank is non-null
+
+        :param class_name:
+        :return: iterator
+        """
+        elts = self.schemaview.class_induced_slots(class_name)
+        _ensure_ranked(elts)
+        for e in elts:
+            yield e
+
+    def all_class_objects(self) -> Iterator[ClassDefinition]:
+        """
+        all class objects in schema
+
+        Ensures rank is non-null
+        :return: iterator
+        """
+        elts = self.schemaview.all_classes().values()
+        _ensure_ranked(elts)
+        for e in elts:
+            yield e
+
+    def all_slot_objects(self) -> Iterator[SlotDefinition]:
+        """
+        all slot objects in schema
+
+        Ensures rank is non-null
+        :return: iterator
+        """
+        elts = self.schemaview.all_slots().values()
+        _ensure_ranked(elts)
+        for e in elts:
+            yield e
+
+    def all_type_objects(self) -> Iterator[TypeDefinition]:
+        """
+        all type objects in schema
+
+        Ensures rank is non-null
+        :return: iterator
+        """
+        elts = self.schemaview.all_types().values()
+        _ensure_ranked(elts)
+        for e in elts:
+            yield e
+
+    def all_enum_objects(self) -> Iterator[EnumDefinition]:
+        """
+        all enum objects in schema
+
+        Ensures rank is non-null
+        :return: iterator
+        """
+        elts = self.schemaview.all_enums().values()
+        _ensure_ranked(elts)
+        for e in elts:
+            yield e
+
+    def all_subset_objects(self) -> Iterator[SubsetDefinition]:
+        """
+        all enum objects in schema
+
+        Ensures rank is non-null
+        :return: iterator
+        """
+        elts = self.schemaview.all_subsets().values()
+        _ensure_ranked(elts)
+        for e in elts:
+            yield e
 
     def class_hierarchy_as_tuples(self) -> Iterator[Tuple[int, ClassDefinitionName]]:
         """
@@ -550,6 +672,14 @@ class DocGenerator(Generator):
 @shared_arguments(DocGenerator)
 @click.option("--directory", "-d", required=True, help="Folder to which document files are written")
 @click.option("--dialect",  help="Dialect or 'flavor' of Markdown used.")
+@click.option("--sort-by",
+              default='name',
+              show_default=True,
+              help="Metaslot to use to sort elements by e.g. rank, name, title")
+@click.option("--genmeta/--no-genmeta",
+              default=False,
+              show_default=True,
+              help="Generating metamodel. Only use this for generating meta.py")
 @click.option("--template-directory", help="Folder in which custom templates are kept")
 @click.option("--use-slot-uris/--no-use-slot-uris", default=False, help="Use IDs from slot_uri instead of names")
 @click.command()
@@ -561,7 +691,13 @@ def cli(yamlfile, directory, dialect, template_directory, use_slot_uris, **args)
     If you specify another format (e.g. html) then you need to provide a template_directory argument, with a template for
     each type of entity inside
     """
-    gen = DocGenerator(yamlfile, directory=directory, dialect=dialect, template_directory=template_directory, use_slot_uris=use_slot_uris, **args)
+    gen = DocGenerator(
+        yamlfile,
+        directory=directory,
+        dialect=dialect,
+        template_directory=template_directory,
+        use_slot_uris=use_slot_uris,
+        **args)
     print(gen.serialize())
 
 

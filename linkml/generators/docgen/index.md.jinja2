@@ -9,24 +9,32 @@ Name: {{ schema.name }}
 
 | Class | Description |
 | --- | --- |
-{% for c in schemaview.all_classes().values()|sort(attribute='name') -%}
-| {{gen.link(c)}} | {{c.description}} |
+{% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
+| {{gen.link(c)}} | {{c.description|enshorten}} |
 {% endfor %}
 
 ## Slots
 
 | Slot | Description |
 | --- | --- |
-{% for s in schemaview.all_slots().values()|sort(attribute='name') -%}
-| {{gen.link(s)}} | {{s.description}} |
+{% for s in gen.all_slot_objects()|sort(attribute=sort_by) -%}
+| {{gen.link(s)}} | {{s.description|enshorten}} |
 {% endfor %}
 
 ## Enumerations
 
 | Enumeration | Description |
 | --- | --- |
-{% for e in schemaview.all_enums().values()|sort(attribute='name') -%}
-| {{gen.link(e)}} | {{e.description}} |
+{% for e in gen.all_enum_objects()|sort(attribute=sort_by) -%}
+| {{gen.link(e)}} | {{e.description|enshorten}} |
+{% endfor %}
+
+## Types
+
+| Type | Description |
+| --- | --- |
+{% for t in gen.all_type_objects()|sort(attribute=sort_by) -%}
+| {{gen.link(t)}} | {{t.description|enshorten}} |
 {% endfor %}
 
 ## Subsets
@@ -34,5 +42,5 @@ Name: {{ schema.name }}
 | Subset | Description |
 | --- | --- |
 {% for ss in schemaview.all_subsets().values()|sort(attribute='name') -%}
-| {{gen.link(ss)}} | {{ss.description}} |
+| {{gen.link(ss)}} | {{ss.description|enshorten}} |
 {% endfor %}

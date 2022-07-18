@@ -1,9 +1,59 @@
 # {{ gen.name(element) }}
 
+{%- if header -%}
+{{header}}
+{%- endif -%}
+
+{% if element.description %}
 {{ element.description }}
-
-URI: {{ gen.uri(element) }}
-
+{% endif %}
 
 {% include "common_metadata.md.jinja2" %}
+
+## Classes in subset
+
+| Class | Description |
+| --- | --- |
+{% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
+{%- if element.name in c.in_subset -%}
+| {{gen.link(c)}} | {{c.description|enshorten}} |
+{% endif -%}
+{% endfor %}
+
+{% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
+{%- if element.name in c.in_subset -%}
+### {{ gen.name(c) }}
+
+{{c.description}}
+
+| Name | Cardinality and Range  | Description  |
+| ---  | ---  | --- |
+{% for s in gen.class_induced_slots(c.name)|sort(attribute=sort_by) -%}
+{% if element.name in s.in_subset or element.name in schemaview.get_slot(s.name).in_subset -%}
+| {{gen.link(s)}} | {{ gen.cardinality(s) }} <br/> {{gen.link(s.range)}}  | {{s.description|enshorten}} {% if s.identifier %}**identifier**{% endif %}  |
+{% endif -%}
+{% endfor %}
+
+{% endif -%}
+{% endfor %}
+
+## Slots in subset
+
+| Slot | Description |
+| --- | --- |
+{% for s in gen.all_slot_objects()|sort(attribute=sort_by) -%}
+{%- if element.name in s.in_subset -%}
+| {{gen.link(s)}} | {{s.description|enshorten}} |
+{% endif -%}
+{% endfor %}
+
+## Enumerations in subset
+
+| Enumeration | Description |
+| --- | --- |
+{% for e in schemaview.all_enums().values()|sort(attribute='name') -%}
+{%- if element.name in e.in_subset -%}
+| {{gen.link(e)}} | {{e.description|enshorten}} |
+{% endif -%}
+{% endfor %}
 
