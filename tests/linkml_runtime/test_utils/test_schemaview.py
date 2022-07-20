@@ -173,6 +173,8 @@ class SchemaViewTestCase(unittest.TestCase):
         assert view.induced_slot('related to', 'FamilialRelationship').range == 'Person'
         assert view.get_slot('related to').range == 'Thing'
         assert view.induced_slot('related to', 'Relationship').range == 'Thing'
+        # https://github.com/linkml/linkml/issues/875
+        self.assertCountEqual(['Thing', 'Place'], view.induced_slot('name').domain_of)
 
         a = view.get_class('activity')
         self.assertCountEqual(a.exact_mappings, ['prov:Activity'])
