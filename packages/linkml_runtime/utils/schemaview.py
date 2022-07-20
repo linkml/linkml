@@ -1106,6 +1106,9 @@ class SchemaView(object):
             islot.name = mangled_name
         if not islot.alias:
             islot.alias = underscore(slot_name)
+        for c in self.all_classes().values():
+            if islot.name in c.slots or islot.name in c.attributes:
+                islot.domain_of.append(c.name)
         return deepcopy(islot)
 
     @lru_cache()
