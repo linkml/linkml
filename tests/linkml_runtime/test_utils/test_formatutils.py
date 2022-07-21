@@ -5,7 +5,7 @@ from typing import List, Tuple, Any
 from jsonasobj2 import JsonObj, as_json
 
 from linkml_runtime.utils.formatutils import camelcase, underscore, lcamelcase, be, split_line, wrapped_annotation, \
-    is_empty, remove_empty_items
+    is_empty, remove_empty_items, uncamelcase
 
 empty_things = [None, dict(), list(), JsonObj(), JsonObj({}), JsonObj([])]
 non_empty_things = [0, False, "", {'k': None}, {0:0}, [None], JsonObj(k=None), JsonObj(**{'k': None}), JsonObj([None])]
@@ -94,6 +94,10 @@ class FormatUtilsTestCase(unittest.TestCase):
     def test_formats(self):
         self.assertEqual("ThisIsIt", camelcase("this is it"))
         self.assertEqual("ThisIsIT", camelcase("  this   is iT   "))
+        self.assertEqual("un camelcased", uncamelcase("UnCamelcased"))
+        self.assertEqual("oneword", uncamelcase("Oneword"))
+        self.assertEqual("one_word", uncamelcase("one_word"))
+        self.assertEqual("another word", uncamelcase("anotherWord"))
         self.assertEqual("IBeY", camelcase("i be y "))
         self.assertEqual("ThisIsIt", camelcase("This__is_it"))
 

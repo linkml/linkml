@@ -9,6 +9,16 @@ ws_pattern = re.compile(r'\s+')
 us_pattern = re.compile(r'_+')
 
 
+def uncamelcase(txt: str) -> str:
+    split_txt = re.split('(?=[A-Z])', txt)
+    new_text = ""
+    for word in split_txt:
+        if new_text == "":
+            new_text = word.lower()
+        else:
+            new_text = new_text + " " + word.lower()
+    return new_text
+
 
 def camelcase(txt: str) -> str:
     def _up(s: str):
