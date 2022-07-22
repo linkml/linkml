@@ -157,4 +157,5 @@ The expression is specified using a simple subset of Python.
 Slot names may be enclosed in curly braces - if any of the slot
 values is None then the entire expression evaluates to None.
 
-See [../developers/inference](inference)
+See the developer documentation on [inference](../developers/inference) for
+details of how to use this in code.

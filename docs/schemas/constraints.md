@@ -21,6 +21,31 @@ Example:
 
 ```
 
+## Structured patterns
+
+The [structured_pattern](https://w3id.org/linkml/structured_pattern) construct
+allows you to provide patterns in a more structured way, and to *reuse* sub-patterns.
+
+First you declare the patterns to be reused in the top level of your schema:
+
+```yaml
+settings:
+  float: "\\d+[\\.\\d+]"
+  unit: "\\S+"
+  email: "\\S+@\\S+{\\.\\w}+"
+```
+
+You can then use this inside a structured pattern:
+
+```yaml
+  height:
+    range: string
+    structured_pattern:
+      syntax: "{float} {unit.length}"
+      interpolated: true
+      partial_match: false
+```
+
 ## String serialization
 
 A rule for generating the string value of a slot can be specified as a [string_serializationpattern](https://w3id.org/linkml/string_serializationpattern)
