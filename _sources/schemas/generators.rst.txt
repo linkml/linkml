@@ -1,6 +1,6 @@
 .. _topic_generators:
 
-Mapping schemas to other frameworks
+Generators
 ==========
 
 LinkML comes with a number of *generators* which will generate a

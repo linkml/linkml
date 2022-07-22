@@ -50,18 +50,15 @@
 <li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html">Adding constraints and rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -101,11 +98,7 @@
   <section id="linkml-schemas">
 <span id="topics"></span><h1>LinkML Schemas<a class="headerlink" href="#linkml-schemas" title="Permalink to this heading"></a></h1>
 <p>Introduction to the key parts of LinkML that you need to know to
-create a schema to model your data.</p>
-<p>Note that the formal specification for LinkML can be found at
-<a class="reference external" href="https://w3id.org/linkml/specification">https://w3id.org/linkml/specification</a>. This formal specifcation
-is aimed at implementors and not users. General users of LinkML should
-use the guide here.</p>
+create a schema to model your data</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -120,13 +113,10 @@ use the guide here.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">Schema Element Metadata</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#providing-descriptions">Providing descriptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#providing-aliases">Providing aliases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#structured-aliases">Structured aliases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#deprecating-elements">Deprecating elements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#specifying-units">Specifying units</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#arbitrary-annotations">Arbitrary annotations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="metadata.html#other-metadata-slots">Other metadata slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#description">description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#aliases">aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#deprecation">deprecation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html#others-slots">others slots</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="inheritance.html">Inheritance</a><ul>
@@ -156,14 +146,7 @@ use the guide here.</p>
 <li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html#see-also">See Also</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="enums.html">Semantic Enumerations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="enums.html#basic-enums">Basic Enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html#mapping-permissible-values-to-ontologies">Mapping Permissible Values to Ontologies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html#working-with-enums-in-python">Working with Enums in Python</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html#dynamic-enums">Dynamic Enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html#tooling-to-support-dynamic-enums">Tooling to support dynamic enums</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="generators.html">Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inlining.html">Inlining objects</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html#example">Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html#no-inlining-reference-by-key">No inlining, reference by key</a></li>
@@ -177,12 +160,10 @@ use the guide here.</p>
 <li class="toctree-l1"><a class="reference internal" href="constraints.html">Adding constraints and rules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html#unique-key">Unique Key</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html#patterns">Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="constraints.html#structured-patterns">Structured patterns</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html#string-serialization">String serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="constraints.html#minimum-and-maximum-values">Minimum and Maximum values</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">Imports</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="imports.html#importing-external-schemas">Importing external schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html#local-imports">Local imports</a></li>
@@ -197,7 +178,6 @@ use the guide here.</p>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html#equals-expression">equals_expression</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 </ul>
 </div>
 <div class="admonition seealso">

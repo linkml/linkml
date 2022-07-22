@@ -18,9 +18,7 @@
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Using JSON-LD" href="using-jsonld.html" />
-    <link rel="prev" title="How-to Guides" href="index.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,30 +38,13 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">How-to Guides</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Using yq for querying and manipulating schemas</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#top-level-lookups">top level lookups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#all-class-names">all class names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#classes-with-their-is-a-parents">classes with their is-a parents</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#setting-top-level-slots">setting top level slots</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lookup-a-class-by-name">lookup a class by name</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#setting-the-is-a-value-of-a-class">Setting the is_a value of a class:</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#prefixes">prefixes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="using-jsonld.html">Using JSON-LD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
-<li class="toctree-l2"><a class="reference internal" href="port-linkml.html#overview-of-python-framework">Overview of Python Framework</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -90,7 +71,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">How-to Guides</a> &raquo;</li>
       <li>Using yq for querying and manipulating schemas</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/howtos/yq-for-schemas.md.txt" rel="nofollow"> View page source</a>
@@ -103,15 +83,16 @@
              
   <section id="using-yq-for-querying-and-manipulating-schemas">
 <h1>Using yq for querying and manipulating schemas<a class="headerlink" href="#using-yq-for-querying-and-manipulating-schemas" title="Permalink to this heading"></a></h1>
-<p><a class="reference external" href="https://mikefarah.gitbook.io/yq/">yq</a> is a command-line YAML processor, based on <a class="reference external" href="https://stedolan.github.io/jq/">jq</a>.</p>
-<p>As LinkML schemas are typically stored as YAML, it’s possible to use yq as a way of querying and manipulating them.</p>
+<p><strong>STATUS: DRAFT</strong></p>
+<p><a class="reference external" href="https://mikefarah.gitbook.io/yq/">yq</a> is a command-line YAML processor, similar to jq.</p>
+<p>As all LinkML schemas have a canonical form as YAML, you can use yq to process these.</p>
 <p><strong>Note:</strong> yq operates at the level of schema yaml document structure, not the <em>meaning</em> of a schema. It has no knowledge of:</p>
 <ul class="simple">
 <li><p>imports</p></li>
 <li><p>inheritance and inference of slots over class hierarchies</p></li>
 <li><p>inlining as dicts</p></li>
 </ul>
-<p>If you want to do semantics-aware schema processing then we recommend you use <span class="xref myst">SchemaView</span></p>
+<p>If you want to do semantics-aware schema processing then we recommend you use SchemaView.</p>
 <p>However, for certain kinds of quick and dirty low-level operations, yq
 provides a fast, flexible, and easy way to query schema yaml files.</p>
 <p>You could also choose to use jq, but this requires a (trivial)
@@ -122,8 +103,6 @@ works on YAML as a native form</p>
 perform operations that don’t fit a template here, then you will need
 to consult the (excellent) yq docs, and also have some awareness of
 how LinkML schemas are rendered as YAML.</p>
-<p>If you have your own cookbook examples, please contribute them as pull requests!</p>
-<p>The examples here make use of the <a class="reference external" href="https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo.yaml">PersonInfo</a> schema</p>
 <section id="top-level-lookups">
 <h2>top level lookups<a class="headerlink" href="#top-level-lookups" title="Permalink to this heading"></a></h2>
 <p>Fetch the schema identifier:</p>
@@ -157,36 +136,7 @@ https://w3id.org/linkml/examples/personinfo
 </section>
 <section id="classes-with-their-is-a-parents">
 <h2>classes with their is-a parents<a class="headerlink" href="#classes-with-their-is-a-parents" title="Permalink to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.classes | to_entries | .[] | {&quot;child&quot;: .key, &quot;parent&quot;: .value.is_a}&#39;</span> personinfo.yaml
-child: NamedThing
-parent: null
-child: Person
-parent: NamedThing
-child: HasAliases
-parent: null
-child: Organization
-parent: NamedThing
-child: Place
-parent: null
-child: Address
-parent: null
-child: Event
-parent: null
-child: Concept
-parent: NamedThing
-child: DiagnosisConcept
-parent: Concept
-child: ProcedureConcept
-parent: Concept
-child: Relationship
-parent: null
-child: FamilialRelationship
-parent: Relationship
-child: EmploymentEvent
-parent: Event
-child: MedicalEvent
-parent: Event
-child: WithLocation
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yq e <span class="s1">&#39;.classes | to_entries | {.[].key: .[].value.is_a}&#39;</span> personinfo.yaml
 </pre></div>
 </div>
 <p>TODO</p>
@@ -302,10 +252,7 @@ http://example.org/geoloc/
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="How-to Guides" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="using-jsonld.html" class="btn btn-neutral float-right" title="Using JSON-LD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
