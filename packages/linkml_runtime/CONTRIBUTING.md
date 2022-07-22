@@ -44,14 +44,6 @@ poetry run pytest # ex of how to invoke CLI tools
 
 4. Refer to the poetry docs for details on how to use the [add](https://python-poetry.org/docs/cli/#add), [update](https://python-poetry.org/docs/cli/#update) and [remove](https://python-poetry.org/docs/cli/#remove) commands.
 
-### Creating `requirements.txt`
-
-To export the list of dependents from the `poetry.lock` file into a `requirements.txt` file, use the following command:
-
-```
-poetry export -f requirements.txt --output requirements.txt
-```
-
 ## Release process
 
 Once the code has been merged into the `main` branch on this repo, there are a few steps that need to be completed to ensure a release is complete.
