@@ -10,7 +10,7 @@ that conforms to a LinkML schema.
    :maxdepth: 2
    :caption: Contents:
 
-   working-with-data
+   conversion
    validating-data
    rdf
    json

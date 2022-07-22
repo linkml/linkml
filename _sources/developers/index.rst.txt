@@ -13,6 +13,7 @@ Developers guide
    notebooks
    manipulating-schemas
    loaders-and-dumpers
+   inference
    using-sql-dbs
    tool-developer-guide
    contributing-code

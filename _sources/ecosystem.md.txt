@@ -18,7 +18,7 @@ LinkML is part of a growing ecosystem of tools; these may be at varying levels o
 
 ### Bootstrapping Models
 
- - [linkml-model-enrichment](https://github.com/linkml/linkml-model-enrichment) bootstraps schemas from existing structured and semi-structured sources
+ - [schema-automator](https://github.com/linkml/schema-automator) bootstraps schemas from existing structured and semi-structured sources
 
 ### Templated OWL generation
 
@@ -31,6 +31,10 @@ LinkML is part of a growing ecosystem of tools; these may be at varying levels o
 ### SPARQL templates
 
  - [sparqlfun](https://github.com/linkml/sparqlfun) is a framework for generating and executing queries against sparql endpoints
+
+### Ontology Access Kit
+
+ - [OAK](https://incatools.github.io/ontology-access-kit/) is a Python library for accessing ontologies and vocabularies
 
 ### SSSOM-py
 

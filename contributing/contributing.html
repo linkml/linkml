@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -139,6 +140,13 @@
 </section>
 <section id="running-tests-locally">
 <h2>Running Tests Locally<a class="headerlink" href="#running-tests-locally" title="Permalink to this heading"></a></h2>
+<p>You can run the full test suite in the following way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">unittest</span> <span class="n">discover</span>
+</pre></div>
+</div>
+<p>Running the test suite changes many files in <code class="docutils literal notranslate"><span class="pre">..\output\..</span></code> folders which messes up <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code>.
+To ignore the changed files run the shell script <code class="docutils literal notranslate"><span class="pre">hide_test_changes.sh</span></code>.
+To reset all test output files back to original state use the shell script <code class="docutils literal notranslate"><span class="pre">checkout_outputs.sh</span></code>.</p>
 <p>PyCharm, IntelliJ:</p>
 <p>To run a single test:</p>
 <ul class="simple">

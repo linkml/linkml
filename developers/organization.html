@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -56,7 +57,18 @@
 <p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Developers guide</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">GitHub Organization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">GitHub Organization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-packages">Core Packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-metamodel">The metamodel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#productivity-utilities">Productivity utilities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-different-backends">Working with different backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-packages">Additional packages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linkml-for-other-languages">LinkML for other languages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#javascript-typescript">Javascript/Typescript</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Convetsion: Loaders and Dumpers</a></li>
@@ -95,19 +107,20 @@
              
   <section id="github-organization">
 <h1>GitHub Organization<a class="headerlink" href="#github-organization" title="Permalink to this heading"></a></h1>
-<p>See <a class="reference external" href="https://github.com/linkml">github.com/linkml</a></p>
+<p>The LinkML project is organized in a modular fashion, and consists of different
+components. Each component lives in its own GitHub repository. It may also be distributed
+as a separate software package on sites like PyPI.</p>
+<p>See the <a class="reference external" href="https://github.com/linkml">github.com/linkml</a> organization on GitHub to browse all repos.</p>
+<p>Note that for many LinkML users, there is no need to understand the overall organization.</p>
+<section id="core-packages">
+<h2>Core Packages<a class="headerlink" href="#core-packages" title="Permalink to this heading"></a></h2>
+<p>The two most important packages are <code class="docutils literal notranslate"><span class="pre">linkml</span></code> and <code class="docutils literal notranslate"><span class="pre">linkml-runtime</span></code></p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml</a></p>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml">linkml</a></p>
 <ul>
 <li><p><a class="reference internal" href="../generators/index.html#generators"><span class="std std-ref">generators</span></a></p></li>
-<li><p>datautils</p></li>
+<li><p>utilities for working with data</p></li>
 <li><p>this documentation</p></li>
-</ul>
-</li>
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a></p>
-<ul>
-<li><p>self-describing linkml datamodel</p></li>
-<li><p>note that you should not use this module programmatically - use linkml_runtime.linkml_model</p></li>
 </ul>
 </li>
 <li><p><a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a></p>
@@ -117,17 +130,39 @@
 <li><p>includes metamodel (linkml_runtime.linkml_model)</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-dataops">linkml-runtime-api</a> <strong>NEW</strong></p>
+</ul>
+<p>If you are using LinkML in a Python environment, then as a general rule
+you should only need <code class="docutils literal notranslate"><span class="pre">linkml</span></code> as a <em>developer dependency</em>. This is used for
+things like compiling your schema to data classes. This is something the
+package developer does prior to release, rather than at <em>runtime</em>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml-runtime</span></code> package is designed to provide runtime support. If you develop
+a Python project, then your generated data classes will have a runtime dependency
+on this package</p>
+</section>
+<section id="the-metamodel">
+<h2>The metamodel<a class="headerlink" href="#the-metamodel" title="Permalink to this heading"></a></h2>
+<p>The metamodel and specification have their own dedicated repo:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a></p>
 <ul>
-<li><p>extension to runtime to provide:</p>
-<ul>
-<li><p>a change/patch API over data</p></li>
-<li><p>a query API over data</p></li>
+<li><p>self-describing linkml datamodel</p></li>
+<li><p>note that you should not use this module programmatically - use linkml_runtime.linkml_model</p></li>
 </ul>
 </li>
 </ul>
+<p>There are no programmatic dependencies on this repo. But note that the
+python dataclasses generated from this are incorporated into linkml-runtime.</p>
+</section>
+<section id="productivity-utilities">
+<h2>Productivity utilities<a class="headerlink" href="#productivity-utilities" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-project-template">linkml-project-template</a></p>
+<ul>
+<li><p>Project template for new LinkML datamodels</p></li>
+<li><p><strong>NOTE</strong> this may be replaced by a cookiecutter system soon</p></li>
+</ul>
 </li>
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-enrichment">linkml-model-enrichment</a></p>
+<li><p><a class="reference external" href="https://github.com/linkml/schema-automator">schema-automator</a></p>
 <ul>
 <li><p>tools for bootstrapping schemas</p>
 <ul>
@@ -139,13 +174,45 @@
 <li><p>tools for inferring enum ontology mappings using OLS and BioPortal</p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-model-template">linkml-model-template</a></p>
+</ul>
+<p>Note that schema-automator depends on LinkML, but there are no dependencies from
+the core package on schema-automator</p>
+</section>
+<section id="working-with-different-backends">
+<h2>Working with different backends<a class="headerlink" href="#working-with-different-backends" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-solr">linkml-solr</a></p>
 <ul>
-<li><p>Project template for new LinkML datamodels</p></li>
-<li><p><strong>NOTE</strong> this may be replaced by a cookiecutter system soon</p></li>
+<li><p>provides a way of compiling LinkML schemas to Solr schemas</p></li>
+<li><p>runtime query bindings to Solr updates and queries</p></li>
 </ul>
 </li>
 </ul>
+</section>
+<section id="additional-packages">
+<h2>Additional packages<a class="headerlink" href="#additional-packages" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-dataops">linkml-data-ops</a> <strong>NEW</strong></p>
+<ul>
+<li><p>extension to runtime to provide:</p>
+<ul>
+<li><p>a change/patch API over data</p></li>
+<li><p>a query API over data</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="linkml-for-other-languages">
+<h2>LinkML for other languages<a class="headerlink" href="#linkml-for-other-languages" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-runtime.js">linkml-runtime.js</a></p></li>
+</ul>
+<section id="javascript-typescript">
+<h3>Javascript/Typescript<a class="headerlink" href="#javascript-typescript" title="Permalink to this heading"></a></h3>
+</section>
+</section>
 </section>
 
 

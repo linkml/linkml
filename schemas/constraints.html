@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Imports" href="imports.html" />
+    <link rel="next" title="Subsets" href="subsets.html" />
     <link rel="prev" title="Inlining objects" href="inlining.html" /> 
 </head>
 
@@ -50,21 +50,25 @@
 <li class="toctree-l2"><a class="reference internal" href="inheritance.html">Inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="slots.html">Slots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="uris-and-mappings.html">URIs and Mappings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generators.html">Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enums.html">Semantic Enumerations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inlining.html">Inlining objects</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Adding constraints and rules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#unique-key">Unique Key</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#patterns">Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#structured-patterns">Structured patterns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#string-serialization">String serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#minimum-and-maximum-values">Minimum and Maximum values</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="subsets.html">Subsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="imports.html">Imports</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators.html">Mapping schemas to other frameworks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -120,6 +124,27 @@
 </pre></div>
 </div>
 </section>
+<section id="structured-patterns">
+<h2>Structured patterns<a class="headerlink" href="#structured-patterns" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference external" href="https://w3id.org/linkml/structured_pattern">structured_pattern</a> construct
+allows you to provide patterns in a more structured way, and to <em>reuse</em> sub-patterns.</p>
+<p>First you declare the patterns to be reused in the top level of your schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">settings</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">float</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\d+[\\.\\d+]&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">unit</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;\\S+@\\S+{\\.\\w}+&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can then use this inside a structured pattern:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">    </span><span class="nt">structured_pattern</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">syntax</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{float}</span><span class="nv"> </span><span class="s">{unit.length}&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">interpolated</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">partial_match</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
 <section id="string-serialization">
 <h2>String serialization<a class="headerlink" href="#string-serialization" title="Permalink to this heading"></a></h2>
 <p>A rule for generating the string value of a slot can be specified as a <a class="reference external" href="https://w3id.org/linkml/string_serializationpattern">string_serializationpattern</a></p>
@@ -140,7 +165,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="inlining.html" class="btn btn-neutral float-left" title="Inlining objects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="imports.html" class="btn btn-neutral float-right" title="Imports" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="subsets.html" class="btn btn-neutral float-right" title="Subsets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
