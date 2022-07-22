@@ -51,7 +51,7 @@ from linkml.utils.datautils import dumpers_loaders, _get_format, get_loader, _ge
               help="Infer missing slot values")
 @click.option("--context", "-c",
               multiple=True,
-              help="path to JSON-LD context file. Required for RDF input/output")
+              help="path to JSON-LD context file")
 @click.argument("input")
 def cli(input, module, target_class, context=None, output=None, input_format=None, output_format=None,
         prefix: List = [],
@@ -60,10 +60,16 @@ def cli(input, module, target_class, context=None, output=None, input_format=Non
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
 
-    The instance data must conform to a LinkML model, and there must be python dataclasses
-    generated from that model. The converter works by first using a linkml-runtime loader to
-    instantiate in-memory model objects, then dumpers are used to serialize.
-    When converting to or from RDF, a JSON-LD context must also be passed
+    The instance data must conform to a LinkML model, and either a path to a python
+    module must be passed, or a path to a schema.
+
+    The converter works by first using a linkml-runtime *loader* to
+    instantiate in-memory model objects, then a *dumper* is used to serialize.
+    A validation step is optionally performed in between
+
+    When converting to or from RDF, a path to a schema must be provided.
+
+    For more information, see https://linkml.io/linkml/data/index.html
     """
     if module is None:
         if schema is None:

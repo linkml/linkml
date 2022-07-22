@@ -28,6 +28,7 @@ Documentation
    schemas/index
    data/index
    generators/index
+   howtos/index
    examples
    ecosystem
    specifications/linkml-spec.md
