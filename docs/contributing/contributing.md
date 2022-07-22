@@ -48,6 +48,16 @@ DEFAULT_LOG_LEVEL_TEXT: ERROR
 
 ### Running Tests Locally
 
+You can run the full test suite in the following way:
+
+```
+poetry run python -m unittest discover
+```
+
+Running the test suite changes many files in `..\output\..` folders which messes up `git status`. 
+To ignore the changed files run the shell script `hide_test_changes.sh`. 
+To reset all test output files back to original state use the shell script `checkout_outputs.sh`.
+
 PyCharm, IntelliJ:
 
 To run a single test:
