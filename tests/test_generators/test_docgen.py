@@ -9,6 +9,8 @@ from linkml.generators.docgen import DocGenerator
 from linkml.generators.markdowngen import MarkdownGenerator
 from tests.test_generators.environment import env
 
+from linkml_runtime.utils.schemaview import SchemaView
+
 SCHEMA = env.input_path('kitchen_sink.yaml')
 LATEX_DIR = env.expected_path('kitchen_sink_tex')
 MD_DIR = env.expected_path('kitchen_sink_md')
@@ -214,7 +216,28 @@ class DocGeneratorTestCase(unittest.TestCase):
                            (1, 'FamilialRelationship'), (0, 'WithLocation')]
                            
         self.assertCountEqual(actual_result, expected_result)
+
+    def test_fetch_attributes_of_class(self):
+        tdir = env.input_path('docgen_html_templates')
+        gen = DocGenerator(SCHEMA, mergeimports=True, no_types_dir=True, template_directory=tdir, format='html')
+
+        sv = SchemaView(SCHEMA)
+        cls = sv.get_class("Address")
+
+        # test assertion for own attributes of a class
+        own_attributes = gen.fetch_own_attributes_of_class(cls)
+        expected_result = ["street", "city"]
+        actual_result = [attr.name for attr in own_attributes]
+
+        self.assertListEqual(expected_result, actual_result)
+
+        # test assertion for inherited attributes of a class
+        cls = sv.get_class("EmploymentEvent")
+        inherited_attributes = gen.fetch_inherited_attributes_of_class(cls)
+        expected_result = [attr.name for attr in inherited_attributes]
+        actual_result = ["is current"]
         
+        self.assertListEqual(expected_result, actual_result)
 
 
 
