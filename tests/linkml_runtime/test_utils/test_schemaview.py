@@ -525,6 +525,17 @@ class SchemaViewTestCase(unittest.TestCase):
                 #print(f'  {cn}: {s.name} {s.alias} {s.slot_uri} // {exp_slot_uri}')
                 self.assertIsNotNone(exp_slot_uri)
 
+    def test_get_classes_by_slot(self):
+        sv = SchemaView(SCHEMA_WITH_IMPORTS)
+
+        TEST_SLOT = "age in years"
+        slot = sv.get_slot(TEST_SLOT)
+
+        actual_result = sv.get_classes_by_slot(slot)
+        expected_result = {"direct": ["Person"], "induced": ["Person", "Adult"]}
+
+        self.assertDictEqual(expected_result, actual_result)
+
     def test_materialize_patterns(self):
         sv = SchemaView(os.path.join(INPUT_DIR, "pattern-example.yaml"))
 

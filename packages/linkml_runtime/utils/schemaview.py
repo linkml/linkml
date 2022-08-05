@@ -1,4 +1,5 @@
 import os
+from unicodedata import name
 import uuid
 import logging
 import collections
@@ -1292,14 +1293,26 @@ class SchemaView(object):
                 range_union_of.append(x.range)
         return range_union_of
 
-    def get_classes_by_slot(self, slot: SlotDefinition, pattern: str="all") -> List[ClassDefinition]:
+    def get_classes_by_slot(self, slot: SlotDefinition) -> Dict[str, ClassDefinitionName]:
         """Get all classes that use a given slot, either as direct or induced slots.
 
         :param slot: slot in consideration
-        :param pattern: can take one of three values - "all", "direct" or "induced"
-        :return: all classes associated with above slot
+        :return: dict{"direct": list, "induced": list}
         """
-        
+        cls_assoc_dict = {"direct": [], "induced": []}  # dict of various keyed classes associated with a slot
+
+        for c_name, c in self.all_classes().items():
+            
+            # check is slot is direct specification on class
+            if slot.name in c.slots:
+                cls_assoc_dict["direct"].append(c_name)
+
+            # check if slot is an induced derivation of a class
+            for ind_slot in self.class_induced_slots(c_name):                
+                if ind_slot.name == slot.name:
+                    cls_assoc_dict["induced"].append(c_name)
+
+        return cls_assoc_dict
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
