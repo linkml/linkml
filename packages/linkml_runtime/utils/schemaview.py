@@ -1292,6 +1292,15 @@ class SchemaView(object):
                 range_union_of.append(x.range)
         return range_union_of
 
+    def get_classes_by_slot(self, slot: SlotDefinition, pattern: str="all") -> List[ClassDefinition]:
+        """Get all classes that use a given slot, either as direct or induced slots.
+
+        :param slot: slot in consideration
+        :param pattern: can take one of three values - "all", "direct" or "induced"
+        :return: all classes associated with above slot
+        """
+        
+
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
         """
