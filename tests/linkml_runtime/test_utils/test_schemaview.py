@@ -531,10 +531,20 @@ class SchemaViewTestCase(unittest.TestCase):
         TEST_SLOT = "age in years"
         slot = sv.get_slot(TEST_SLOT)
 
-        actual_result = sv.get_classes_by_slot(slot)
-        expected_result = {"direct": ["Person"], "induced": ["Person", "Adult"]}
+        actual_result = sv.get_classes_by_slot(slot, direct=True, induced=False)
+        expected_result = ["Person"]
 
-        self.assertDictEqual(expected_result, actual_result)
+        self.assertListEqual(expected_result, actual_result)
+
+        actual_result = sv.get_classes_by_slot(slot, direct=False, induced=True)
+        expected_result = ["Person", "Adult"]
+
+        self.assertListEqual(actual_result, expected_result)
+
+        with self.assertRaises(ValueError):
+
+            # trying to get both direct and induced slots for a class
+            sv.get_classes_by_slot(slot, direct=True, induced=True)
 
     def test_materialize_patterns(self):
         sv = SchemaView(os.path.join(INPUT_DIR, "pattern-example.yaml"))
