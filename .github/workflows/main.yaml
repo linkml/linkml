@@ -73,7 +73,7 @@ jobs:
       #    Linting
       #----------------------------------------------
       - name: Lint with black and isort
-        run: tox -e lint
+        run: poetry run tox -e lint
 
       #----------------------------------------------
       #              coverage report
