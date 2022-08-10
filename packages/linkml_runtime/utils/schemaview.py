@@ -1,5 +1,4 @@
 import os
-from signal import raise_signal
 import uuid
 import logging
 import collections
