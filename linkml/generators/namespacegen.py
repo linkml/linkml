@@ -1,31 +1,40 @@
 import os
 
 import click
+from linkml_runtime.utils.formatutils import be, split_line
 
 from linkml.generators import PYTHON_GEN_VERSION
 from linkml.generators.pythongen import PythonGenerator
-from linkml_runtime.utils.formatutils import split_line, be
 from linkml.utils.generator import shared_arguments
 
 
 class NamespaceGenerator(PythonGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = PYTHON_GEN_VERSION
-    valid_formats = ['py']
+    valid_formats = ["py"]
     visit_all_class_slots = False
 
     def gen_namespaces(self) -> str:
-        return '\n\t\t'.join([
-            f"CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}'),"
-            for pfx in sorted(self.emit_prefixes) if pfx in self.namespaces
-        ])
+        return "\n\t\t".join(
+            [
+                f"CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}'),"
+                for pfx in sorted(self.emit_prefixes)
+                if pfx in self.namespaces
+            ]
+        )
 
     def gen_schema(self) -> str:
-        split_descripton = '\n#              '.join(split_line(be(self.schema.description), split_len=100))
-        head = f'''# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
+        split_descripton = "\n#              ".join(
+            split_line(be(self.schema.description), split_len=100)
+        )
+        head = (
+            f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
-#''' if self.schema.generation_date else ''
+#"""
+            if self.schema.generation_date
+            else ""
+        )
 
         return f'''{head}
 # id: {self.schema.id}
@@ -187,9 +196,9 @@ def curie(identifier) -> str:
 @shared_arguments(NamespaceGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate a namespace manager for all of the prefixes represented in a LinkML model """
-    print(NamespaceGenerator(yamlfile,**args).serialize(**args))
+    """Generate a namespace manager for all of the prefixes represented in a LinkML model"""
+    print(NamespaceGenerator(yamlfile, **args).serialize(**args))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

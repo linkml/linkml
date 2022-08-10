@@ -1,9 +1,9 @@
 import unittest
 
 import yaml
+from linkml_runtime.utils.yamlutils import as_yaml
 
 from linkml.generators.pythongen import PythonGenerator
-from linkml_runtime.utils.yamlutils import as_yaml
 from tests.test_issues.environment import env
 from tests.utils.test_environment import TestEnvironmentTestCase
 
@@ -12,7 +12,7 @@ class IssueYamlSerializerTestCase(TestEnvironmentTestCase):
     env = env
 
     def test_roundtrip(self):
-        """ Test as_yaml emitter """
+        """Test as_yaml emitter"""
         # env.generate_single_file('issue_154.py',
         #                          lambda: PythonGenerator(env.input_path('issue_134.yaml')).serialize(),
         #                          comparator=lambda exp, act: compare_python(exp, act, self.env.expected_path('issue_154.py')),
@@ -21,7 +21,7 @@ class IssueYamlSerializerTestCase(TestEnvironmentTestCase):
 
         # We use the PythonGenerator as a generic generator instance.  We don't actually serialize
 
-        yaml_fname = env.input_path('issue_134.yaml')
+        yaml_fname = env.input_path("issue_134.yaml")
         gen = PythonGenerator(yaml_fname)
         yaml_str = as_yaml(gen.schema)
         generated = yaml.safe_load(yaml_str)
@@ -37,5 +37,5 @@ class IssueYamlSerializerTestCase(TestEnvironmentTestCase):
                     self.assertTrue(subkey in generated[key])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

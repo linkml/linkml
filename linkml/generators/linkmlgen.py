@@ -3,13 +3,12 @@ import os
 from typing import TextIO, Union
 
 import click
-
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
+
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
-
 
 logger = logging.getLogger(__name__)
 

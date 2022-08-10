@@ -1,51 +1,57 @@
-import sys
-import unittest
-import logging
-import json
-from rdflib import Graph, URIRef
-import tempfile
 import csv
+import json
+import logging
 import re
+import sys
+import tempfile
+import unittest
 
-from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.generators.rdfgen import RDFGenerator
-from linkml.generators.prefixmapgen import PrefixGenerator
+from rdflib import Graph, URIRef
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.prefixmapgen import PrefixGenerator
+from linkml.generators.rdfgen import RDFGenerator
 from tests.test_generators import output
 from tests.test_prefixes.environment import env
 
-SCHEMA = env.input_path('prefixtest.yaml')
-OWL_OUTPUT = env.expected_path('prefixtest.owl.ttl')
-RDF_OUTPUT = env.expected_path('prefixtest.rdf.nt')
-PM_OUTPUT = env.expected_path('prefixtest.prefixmap.json')
-CONTEXT_OUTPUT = env.expected_path('prefixtest.context.jsonld')
-TSV_OUTPUT = env.expected_path('prefix_map_prefixtest.tsv')
+SCHEMA = env.input_path("prefixtest.yaml")
+OWL_OUTPUT = env.expected_path("prefixtest.owl.ttl")
+RDF_OUTPUT = env.expected_path("prefixtest.rdf.nt")
+PM_OUTPUT = env.expected_path("prefixtest.prefixmap.json")
+CONTEXT_OUTPUT = env.expected_path("prefixtest.context.jsonld")
+TSV_OUTPUT = env.expected_path("prefix_map_prefixtest.tsv")
 
 
 class PrefixTestCase(unittest.TestCase):
     def test_owlgen(self):
-        """ owl  """
-        owl = OwlSchemaGenerator(SCHEMA, mergeimports=False, ontology_uri_suffix='.owl.ttl', format='nt').serialize()
-        with open(OWL_OUTPUT, 'w') as stream:
+        """owl"""
+        owl = OwlSchemaGenerator(
+            SCHEMA, mergeimports=False, ontology_uri_suffix=".owl.ttl", format="nt"
+        ).serialize()
+        with open(OWL_OUTPUT, "w") as stream:
             stream.write(owl)
         g = Graph()
         # TODO: test with turtle when https://github.com/linkml/linkml/issues/163#issuecomment-906507968 is resolved
-        #g.parse(OWL_OUTPUT, format="turtle")
+        # g.parse(OWL_OUTPUT, format="turtle")
         g.parse(OWL_OUTPUT, format="nt")
         # TODO: fix owlgen such that we don't have to hardcode exceptions
-        self._check_triples(g,exceptions=[
-            'http://schema.org/additionalName',
-            'http://purl.obolibrary.org/obo/BFO_0000050',
-            'http://schema.org/isPartOf'
-        ])
+        self._check_triples(
+            g,
+            exceptions=[
+                "http://schema.org/additionalName",
+                "http://purl.obolibrary.org/obo/BFO_0000050",
+                "http://schema.org/isPartOf",
+            ],
+        )
 
     # TODO: restore. See: https://github.com/linkml/linkml/issues/537
-    @unittest.skip('https://github.com/linkml/linkml/issues/537')
+    @unittest.skip("https://github.com/linkml/linkml/issues/537")
     def test_rdfgen(self):
         # TODO: ttl output fails - check why
         # TODO: imports do not seem to work
-        rdf = RDFGenerator(SCHEMA, mergeimports=True, format='nt').serialize()
-        with open(RDF_OUTPUT, 'w') as stream:
+        rdf = RDFGenerator(SCHEMA, mergeimports=True, format="nt").serialize()
+        with open(RDF_OUTPUT, "w") as stream:
             stream.write(rdf)
         g = Graph()
         g.parse(RDF_OUTPUT, format="nt")
@@ -53,7 +59,7 @@ class PrefixTestCase(unittest.TestCase):
 
     def test_prefixmapgen(self):
         out = PrefixGenerator(SCHEMA, mergeimports=True).serialize()
-        with open(PM_OUTPUT, 'w') as stream:
+        with open(PM_OUTPUT, "w") as stream:
             stream.write(out)
         expected = {
             "BFO": "http://purl.obolibrary.org/obo/BFO_",
@@ -73,7 +79,7 @@ class PrefixTestCase(unittest.TestCase):
             "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
             "sdo": "http://schema.org/",
-            "wd": "https://www.wikidata.org/wiki/"
+            "wd": "https://www.wikidata.org/wiki/",
         }
         with open(PM_OUTPUT) as stream:
             obj = json.load(stream)
@@ -81,10 +87,10 @@ class PrefixTestCase(unittest.TestCase):
         for k, v in expected.items():
             if k in obj:
                 if v != obj[k]:
-                    logging.error(f'{k} = {v} expected {expected[k]}')
+                    logging.error(f"{k} = {v} expected {expected[k]}")
                     fails += 1
             else:
-                logging.error(f'Missing key: {k}')
+                logging.error(f"Missing key: {k}")
                 fails += 1
         assert fails == 0
 
@@ -92,10 +98,10 @@ class PrefixTestCase(unittest.TestCase):
         tsv_str = PrefixGenerator(SCHEMA, format="tsv", mergeimports=True).serialize()
 
         actual_tsv_dict = {}
-        split_tsv = re.split(r'\n+', tsv_str)
+        split_tsv = re.split(r"\n+", tsv_str)
         for elem in split_tsv:
-            pair = re.split(r'\t+', elem)
-            
+            pair = re.split(r"\t+", elem)
+
             if len(pair) == 2:
                 actual_tsv_dict[pair[0]] = pair[1]
 
@@ -109,36 +115,17 @@ class PrefixTestCase(unittest.TestCase):
 
         self.assertDictEqual(actual_tsv_dict, expected_tsv_dict)
 
-
     def test_jsonldcontext(self):
         out = ContextGenerator(SCHEMA, mergeimports=True).serialize()
-        with open(CONTEXT_OUTPUT, 'w') as stream:
+        with open(CONTEXT_OUTPUT, "w") as stream:
             stream.write(out)
         expected = {
-            "BFO": {
-                "@id": "http://purl.obolibrary.org/obo/BFO_",
-                "@prefix": True
-            },
-            "CL": {
-                "@id": "http://purl.obolibrary.org/obo/CL_",
-                "@prefix": True
-            },
-            "GO": {
-                "@id": "http://purl.obolibrary.org/obo/GO_",
-                "@prefix": True
-            },
-            "PR": {
-                "@id": "http://purl.obolibrary.org/obo/PR_",
-                "@prefix": True
-            },
-            "SIO": {
-                "@id": "http://semanticscience.org/resource/SIO_",
-                "@prefix": True
-            },
-            "SO": {
-                "@id": "http://purl.obolibrary.org/obo/SO_",
-                "@prefix": True
-            },
+            "BFO": {"@id": "http://purl.obolibrary.org/obo/BFO_", "@prefix": True},
+            "CL": {"@id": "http://purl.obolibrary.org/obo/CL_", "@prefix": True},
+            "GO": {"@id": "http://purl.obolibrary.org/obo/GO_", "@prefix": True},
+            "PR": {"@id": "http://purl.obolibrary.org/obo/PR_", "@prefix": True},
+            "SIO": {"@id": "http://semanticscience.org/resource/SIO_", "@prefix": True},
+            "SO": {"@id": "http://purl.obolibrary.org/obo/SO_", "@prefix": True},
             "biolink": "https://w3id.org/biolink/",
             "dbont": "http://dbpedia.org/ontology/",
             "dce": "http://purl.org/dc/elements/1.1/",
@@ -152,31 +139,25 @@ class PrefixTestCase(unittest.TestCase):
             "sdo": "http://schema.org/",
             "wd": "https://www.wikidata.org/wiki/",
             "@vocab": "https://w3id.org/linkml/tests/prefixtest/",
-            "additionalName": {
-                "@id": "sdo:additionalName"
-            },
+            "additionalName": {"@id": "sdo:additionalName"},
             "id": "@id",
-            "label": {
-                "@id": "rdfs:label"
-            },
-            "part_of": {
-                "@id": "BFO:0000050"
-            },
-            "type": {
-                "@id": "rdf:type"
-            }
+            "label": {"@id": "rdfs:label"},
+            "part_of": {"@id": "BFO:0000050"},
+            "type": {"@id": "rdf:type"},
         }
         with open(CONTEXT_OUTPUT) as stream:
-            obj = json.load(stream)['@context']
+            obj = json.load(stream)["@context"]
         fails = 0
         for k, v in expected.items():
             if k in obj:
                 if v != obj[k]:
-                    if not('@id' in v and '@id' in obj[k] and v['@id'] == obj[k]['@id']):
-                        logging.error(f'{k} = {v} expected {expected[k]}')
+                    if not (
+                        "@id" in v and "@id" in obj[k] and v["@id"] == obj[k]["@id"]
+                    ):
+                        logging.error(f"{k} = {v} expected {expected[k]}")
                         fails += 1
             else:
-                logging.error(f'Missing key: {k}')
+                logging.error(f"Missing key: {k}")
                 fails += 1
         assert fails == 0
 
@@ -185,7 +166,6 @@ class PrefixTestCase(unittest.TestCase):
         assert "OBI" not in obj
         assert "ENVO" not in obj
 
-
     def _check_triples(self, g, exceptions=[]):
         """
         currently testing is fairly weak: simply checks if the expected expanded URIs are
@@ -193,32 +173,30 @@ class PrefixTestCase(unittest.TestCase):
         """
 
         expected = [
-            'http://purl.obolibrary.org/obo/PR_000000001',
-            'http://purl.obolibrary.org/obo/SO_0000704',
-            'http://semanticscience.org/resource/SIO_010035',
-            'http://schema.org/additionalName',
-            'http://purl.obolibrary.org/obo/BFO_0000050'
+            "http://purl.obolibrary.org/obo/PR_000000001",
+            "http://purl.obolibrary.org/obo/SO_0000704",
+            "http://semanticscience.org/resource/SIO_010035",
+            "http://schema.org/additionalName",
+            "http://purl.obolibrary.org/obo/BFO_0000050",
         ]
-        for triple in g.triples((None,None,None)):
-            #print(f'T= {triple}')
-            (_,_,o) = triple
+        for triple in g.triples((None, None, None)):
+            # print(f'T= {triple}')
+            (_, _, o) = triple
             if isinstance(o, URIRef):
                 v = str(o)
                 if v in expected:
                     expected.remove(v)
         for v in exceptions:
             if v in expected:
-                logging.warning(f'TODO: figure why {v} not present')
+                logging.warning(f"TODO: figure why {v} not present")
                 expected.remove(v)
         if len(expected) > 0:
             for e in expected:
-                logging.error(f'Did not find {e}')
+                logging.error(f"Did not find {e}")
             assert False
         else:
             assert True
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

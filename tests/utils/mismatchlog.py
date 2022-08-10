@@ -1,9 +1,9 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import List, Optional
 
-base_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..', '..'))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 
 class MismatchLog:
@@ -14,6 +14,7 @@ class MismatchLog:
     line_no - the line number in the python file
     difference_text - the details on the difference.  Used for RDF and other non-ascii files
     """
+
     class MismatchLogEntry:
         @dataclass
         class StackFrame:
@@ -30,18 +31,23 @@ class MismatchLog:
             self.call_stack = list()
             frame = sys._getframe(2)
             while True:
-                self.call_stack.append(MismatchLog.MismatchLogEntry.StackFrame(frame.f_code.co_filename,
-                                                                               frame.f_code.co_name, frame.f_lineno))
+                self.call_stack.append(
+                    MismatchLog.MismatchLogEntry.StackFrame(
+                        frame.f_code.co_filename, frame.f_code.co_name, frame.f_lineno
+                    )
+                )
                 if frame.f_code.co_name.startswith("test_"):
                     break
                 frame = frame.f_back
 
         def __str__(self):
-            rval = [f'Output mismatch: File "{os.path.relpath(self.file_or_directory, base_dir)}", line 1']
-            rval.append("Stack:  " + '\n\t\t'.join([str(e) for e in self.call_stack]))
+            rval = [
+                f'Output mismatch: File "{os.path.relpath(self.file_or_directory, base_dir)}", line 1'
+            ]
+            rval.append("Stack:  " + "\n\t\t".join([str(e) for e in self.call_stack]))
             if self.msg:
                 rval.append(self.msg.rstrip().capitalize())
-            return '\n'.join(rval) + '\n'
+            return "\n".join(rval) + "\n"
 
     def __init__(self) -> None:
         self.entries: List[MismatchLog.MismatchLogEntry] = list()

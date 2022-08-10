@@ -1,6 +1,6 @@
 import os
 from types import ModuleType
-from typing import Optional, Tuple, Dict, Any, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import jsonpatch
 import yaml
@@ -32,6 +32,7 @@ def compare_yaml(expected: Union[str, Dict], actual: Union[str, Dict]) -> Option
     else:
         actual_obj = actual
     return compare_dicts(expected_obj, actual_obj)
+
 
 def compare_objs(expected: YAMLRoot, actual: YAMLRoot) -> Optional[str]:
     expected_obj = yaml.safe_load(yaml_dumper.dumps(expected))

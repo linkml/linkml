@@ -7,16 +7,17 @@ See the golr-views directory in this repo for examples
 
 """
 import os
-from typing import Union, TextIO, List, Optional
+from dataclasses import dataclass
+from typing import List, Optional, TextIO, Union
 
 import click
-from dataclasses import dataclass
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.metamodelcore import empty_list
+from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
-from linkml_runtime.utils.metamodelcore import empty_list
-from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
 
 
 @dataclass
@@ -46,7 +47,12 @@ class GolrSchemaGenerator(Generator):
     valid_formats = ["golr"]
     visit_all_class_slots = True
 
-    def __init__(self, schema: Union[str, TextIO, SchemaDefinition], directory: str = None, **kwargs) -> None:
+    def __init__(
+        self,
+        schema: Union[str, TextIO, SchemaDefinition],
+        directory: str = None,
+        **kwargs,
+    ) -> None:
         super().__init__(schema, **kwargs)
         self.dirname: str = directory
         self.class_obj: Optional[GOLRClass] = None
@@ -65,37 +71,51 @@ class GolrSchemaGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         if not (cls.mixin or cls.abstract):
-            self.class_obj = GOLRClass(id=underscore(cls.name),
-                                       schema_generating=True,
-                                       description=cls.description,
-                                       display_name=cls.name,
-                                       document_category=cls.name,
-                                       weight=20)
+            self.class_obj = GOLRClass(
+                id=underscore(cls.name),
+                schema_generating=True,
+                description=cls.description,
+                display_name=cls.name,
+                document_category=cls.name,
+                weight=20,
+            )
             return True
         else:
             return False
 
     def end_class(self, cls: ClassDefinition) -> None:
-        fn = os.path.join(self.dirname, underscore(cls.name + '-config.yaml'))
+        fn = os.path.join(self.dirname, underscore(cls.name + "-config.yaml"))
         if len(self.class_obj.fields) > 1:
-            with open(fn, 'w', encoding='UTF-8') as f:
-                f.write(''.join(self.generate_header()))
+            with open(fn, "w", encoding="UTF-8") as f:
+                f.write("".join(self.generate_header()))
                 f.write(as_yaml(self.class_obj))
 
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        field = GOLRField(id=underscore(aliased_slot_name), description=slot.description, display_name=slot.name)
+    def visit_class_slot(
+        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
+    ) -> None:
+        field = GOLRField(
+            id=underscore(aliased_slot_name),
+            description=slot.description,
+            display_name=slot.name,
+        )
         if slot.multivalued:
-            field.cardinality = 'multi'
+            field.cardinality = "multi"
         self.class_obj.fields.append(field)
 
 
 @shared_arguments(GolrSchemaGenerator)
 @click.command()
-@click.option("--dir", "-d", default='golr-views', show_default=True, help="Output directory")
+@click.option(
+    "--dir", "-d", default="golr-views", show_default=True, help="Output directory"
+)
 def cli(yamlfile, dir=None, **args):
-    """ Generate GOLR representation of a LinkML model """
-    print(GolrSchemaGenerator(yamlfile, directory=dir, **args).serialize(directory=dir, **args))
+    """Generate GOLR representation of a LinkML model"""
+    print(
+        GolrSchemaGenerator(yamlfile, directory=dir, **args).serialize(
+            directory=dir, **args
+        )
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

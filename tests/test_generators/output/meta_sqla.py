@@ -1,9 +1,8 @@
 
-from sqlalchemy import Column, Index, Table, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql.sqltypes import *
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Column, ForeignKey, Index, Table
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.sql.sqltypes import *
 
 Base = declarative_base()
 metadata = Base.metadata

@@ -11,14 +11,17 @@ class IssueJSONSchemaEnumsTestCase(TestEnvironmentTestCase):
     env = env
 
     def test_enums(self):
-        """ Make sure that enums are generated as part of the output """
+        """Make sure that enums are generated as part of the output"""
+
         def generator() -> str:
-            gen = JsonSchemaGenerator(env.input_path('issue_239.yaml'))
-            gen.topCls = 'c'
+            gen = JsonSchemaGenerator(env.input_path("issue_239.yaml"))
+            gen.topCls = "c"
             return gen.serialize()
 
-        env.generate_single_file('issue_239.json', lambda: generator(), value_is_returned=True)
+        env.generate_single_file(
+            "issue_239.json", lambda: generator(), value_is_returned=True
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

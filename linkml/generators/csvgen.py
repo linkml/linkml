@@ -4,24 +4,28 @@ Generate CSVs
 import os
 import sys
 from csv import DictWriter
-from typing import List, Union, TextIO, Set, Optional
+from typing import List, Optional, Set, TextIO, Union
 
 import click
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              ClassDefinitionName,
+                                              SchemaDefinition)
+from linkml_runtime.utils.formatutils import be, underscore
 
-from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SchemaDefinition
-from linkml_runtime.utils.formatutils import underscore, be
 from linkml.utils.generator import Generator, shared_arguments
 
 
 class CsvGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
-    valid_formats = ['csv', 'tsv']
+    valid_formats = ["csv", "tsv"]
 
     def __init__(self, schema: Union[str, TextIO, SchemaDefinition], **kwargs) -> None:
         super().__init__(schema, **kwargs)
         self.sep: Optional[str] = None
-        self.closure: Optional[Set[ClassDefinitionName]] = None       # List of classes to include in output
+        self.closure: Optional[
+            Set[ClassDefinitionName]
+        ] = None  # List of classes to include in output
         self.writer: Optional[DictWriter] = None
         self.generate_header()
 
@@ -44,17 +48,23 @@ class CsvGenerator(Generator):
             else:
                 self.closure.update(self.ancestors(self.schema.classes[clsname]))
 
-        dialect: str = "excel" if self.format == 'csv' else "excel-tab"
-        self.writer = DictWriter(sys.stdout, ['id', 'mappings', 'description'], dialect=dialect)
+        dialect: str = "excel" if self.format == "csv" else "excel-tab"
+        self.writer = DictWriter(
+            sys.stdout, ["id", "mappings", "description"], dialect=dialect
+        )
         self.writer.writeheader()
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         # TODO: find out what to do with mappings
         if not self.closure or cls.name in self.closure:
-            self.writer.writerow({'id': underscore(cls.name),
-                                  # 'mappings': "|".join(cls.mappings),
-                                  'mappings': '',
-                                  'description': be(cls.description)})
+            self.writer.writerow(
+                {
+                    "id": underscore(cls.name),
+                    # 'mappings': "|".join(cls.mappings),
+                    "mappings": "",
+                    "description": be(cls.description),
+                }
+            )
             return True
         return False
 
@@ -63,9 +73,9 @@ class CsvGenerator(Generator):
 @click.command()
 @click.option("--root", "-r", multiple=True, help="Class(es) to transform")
 def cli(yamlfile, root=None, **args):
-    """ Generate CSV/TSV file from LinkML model """
+    """Generate CSV/TSV file from LinkML model"""
     print(CsvGenerator(yamlfile, **args).serialize(classes=root, **args))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

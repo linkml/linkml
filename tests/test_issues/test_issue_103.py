@@ -4,10 +4,9 @@ from rdflib import Graph
 
 
 class Issue103TestCase(unittest.TestCase):
-
     @unittest.skipIf(True, "JSON-LD 1.1 Prefix Issue is still not resolved")
     def test_jsonld_prefix(self):
-        test_json = '''
+        test_json = """
         {
             "@context": {
                 "CHEBI": "http://purl.obolibrary.org/obo/CHEBI_",
@@ -18,16 +17,16 @@ class Issue103TestCase(unittest.TestCase):
                 "rdf:label": "Amino Acid"
             }
         }
-        '''
+        """
 
         g = Graph().parse(data=test_json, format="json-ld", prefix=True)
         rdfstr = g.serialize(format="turtle").decode()
-        assert '@prefix CHEBI: <http://purl.obolibrary.org/obo/CHEBI_>' in rdfstr
+        assert "@prefix CHEBI: <http://purl.obolibrary.org/obo/CHEBI_>" in rdfstr
 
         g = Graph().parse(data=test_json, format="json-ld", prefix=False)
         rdfstr = g.serialize(format="turtle").decode()
-        assert '@prefix CHEBI: <http://purl.obolibrary.org/obo/CHEBI_>' not in rdfstr
+        assert "@prefix CHEBI: <http://purl.obolibrary.org/obo/CHEBI_>" not in rdfstr
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

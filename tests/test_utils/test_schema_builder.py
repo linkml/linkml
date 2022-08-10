@@ -4,8 +4,8 @@ from linkml_runtime.dumpers import yaml_dumper
 
 from linkml.utils.schema_builder import SchemaBuilder
 
-MY_CLASS = 'MyClass'
-MY_ENUM = 'MyEnum'
+MY_CLASS = "MyClass"
+MY_ENUM = "MyEnum"
 FULL_NAME = "full name"
 DESC = "description"
 LIVING = "Living"
@@ -34,7 +34,5 @@ class SchemaBuilderTestCase(unittest.TestCase):
         self.assertCountEqual([LIVING, DEAD], e.permissible_values)
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -7,20 +7,23 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
 import re
-from parse import parse
-from typing import Optional, List, Union, Dict, ClassVar, Any
+import sys
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from rdflib import Namespace, URIRef
-from linkml_runtime.utils.curienamespace import CurieNamespace
+from typing import Any, ClassVar, Dict, List, Optional, Union
+
 from includes.types import String
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.dataclass_extensions_376 import \
+    dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
+from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
+                                            extended_int, extended_str)
+from parse import parse
+from rdflib import Namespace, URIRef
 
 metamodel_version = "1.7.0"
 
@@ -28,8 +31,8 @@ metamodel_version = "1.7.0"
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-BIOLINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-DEFAULT_ = CurieNamespace('', 'http://example.org/')
+BIOLINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+DEFAULT_ = CurieNamespace("", "http://example.org/")
 
 
 # Types
@@ -37,7 +40,6 @@ DEFAULT_ = CurieNamespace('', 'http://example.org/')
 # Enumerations
 
 # Class references
-
 
 
 @dataclass
@@ -62,7 +64,6 @@ class C(YAMLRoot):
 
         super().__post_init__(**kwargs)
 
-
     @property
     def as_str(self) -> str:
         return f"s:{self.s} t:{self.t}"
@@ -73,11 +74,11 @@ class C(YAMLRoot):
             v = parse("s:{s} t:{t}", val)
             if not v:
                 raise ValueError(f"Cannot unpack as_str({val})")
-            self.s = v.named['s']
-            self.t = v.named['t']
+            self.s = v.named["s"]
+            self.t = v.named["t"]
 
 
-x = C('Fred', 'Jones')
+x = C("Fred", "Jones")
 print(str(x))
 x.as_str = "s:James t:17"
 print(str(x))
@@ -89,14 +90,39 @@ x.as_str = "a b c "
 class slots:
     pass
 
-slots.s = Slot(uri=DEFAULT_.s, name="s", curie=DEFAULT_.curie('s'),
-                   model_uri=DEFAULT_.s, domain=None, range=Optional[str])
 
-slots.t = Slot(uri=DEFAULT_.t, name="t", curie=DEFAULT_.curie('t'),
-                   model_uri=DEFAULT_.t, domain=None, range=Optional[str])
+slots.s = Slot(
+    uri=DEFAULT_.s,
+    name="s",
+    curie=DEFAULT_.curie("s"),
+    model_uri=DEFAULT_.s,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.as_str = Slot(uri=DEFAULT_.as_str, name="as_str", curie=DEFAULT_.curie('as_str'),
-                   model_uri=DEFAULT_.as_str, domain=None, range=Optional[str])
+slots.t = Slot(
+    uri=DEFAULT_.t,
+    name="t",
+    curie=DEFAULT_.curie("t"),
+    model_uri=DEFAULT_.t,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.as_str2 = Slot(uri=DEFAULT_.as_str2, name="as_str2", curie=DEFAULT_.curie('as_str2'),
-                   model_uri=DEFAULT_.as_str2, domain=None, range=Optional[str])
+slots.as_str = Slot(
+    uri=DEFAULT_.as_str,
+    name="as_str",
+    curie=DEFAULT_.curie("as_str"),
+    model_uri=DEFAULT_.as_str,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.as_str2 = Slot(
+    uri=DEFAULT_.as_str2,
+    name="as_str2",
+    curie=DEFAULT_.curie("as_str2"),
+    model_uri=DEFAULT_.as_str2,
+    domain=None,
+    range=Optional[str],
+)
