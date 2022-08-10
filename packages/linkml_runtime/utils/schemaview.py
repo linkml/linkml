@@ -1293,34 +1293,28 @@ class SchemaView(object):
                 range_union_of.append(x.range)
         return range_union_of
 
-    def get_classes_by_slot(self, slot: SlotDefinition, direct: bool, induced: bool) -> List[ClassDefinitionName]:
+    def get_classes_by_slot(self, slot: SlotDefinition, include_induced: bool = False) -> List[ClassDefinitionName]:
         """Get all classes that use a given slot, either as a direct or induced slot.
 
         :param slot: slot in consideration
-        :param direct: list all slots directly in the domain of a class, defaults to True
-        :param induced: list all induced slots in the domain of a class, defaults to False
-        :return: list of slots based on above parameters
+        :param include_induced: supplement all direct slots with induced slots, defaults to False
+        :return: list of slots, either direct, or both direct and induced
         """
         slots_list = [] # list of all direct or induced slots
 
         for c_name, c in self.all_classes().items():
-            
-            # check is slot is direct specification on class
-            if direct == True:
-                if slot.name in c.slots:
-                    slots_list.append(c_name)
+            # check if slot is direct specification on class
+            if slot.name in c.slots:
+                slots_list.append(c_name)
 
-            # check if slot is an induced derivation of a class
-            if induced == True:
-                for ind_slot in self.class_induced_slots(c_name):                
+        # include induced classes also if requested
+        if include_induced:
+            for c_name, c in self.all_classes().items():
+                for ind_slot in self.class_induced_slots(c_name):
                     if ind_slot.name == slot.name:
                         slots_list.append(c_name)
 
-            # fetch either the direct or induced slots, not both
-            if direct == induced:
-                raise ValueError("You can get a list of either direct or induced slots, not both.")
-
-        return slots_list
+        return list(dict.fromkeys(slots_list))
 
     @lru_cache()
     def usage_index(self) -> Dict[ElementName, List[SchemaUsage]]:
