@@ -71,6 +71,7 @@ the core package on schema-automator
 
 ## LinkML for other languages
 
-* [linkml-runtime.js](https://github.com/linkml/linkml-runtime.js)
-
 ### Javascript/Typescript
+
+* [linkml-runtime.js](https://github.com/linkml/linkml-runtime.js)
+* linkml-runtime-java (in progress)
