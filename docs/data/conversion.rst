@@ -199,3 +199,10 @@ Programmatic usage
 
 See `developer docs <../code>`__ for documentation of the relevant
 python classes
+
+Command Line
+-------
+
+.. click:: linkml.utils.converter:cli
+    :prog: linkml-convert
+    :nested: full
