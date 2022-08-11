@@ -157,5 +157,8 @@ The expression is specified using a simple subset of Python.
 Slot names may be enclosed in curly braces - if any of the slot
 values is None then the entire expression evaluates to None.
 
+You can insert missing values by using the `--infer` option when
+running `linkml-convert`.
+
 See the developer documentation on [inference](../developers/inference) for
 details of how to use this in code.
