@@ -203,6 +203,8 @@ python classes
 Command Line
 -------
 
+.. currentmodule:: linkml.utils.converter
+
 .. click:: linkml.utils.converter:cli
     :prog: linkml-convert
     :nested: full
