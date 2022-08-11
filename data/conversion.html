@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Converting between different representations &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data Validation" href="validating-data.html" />
+    <link rel="prev" title="Working with Data" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Working with Data</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Converting between different representations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#linkml-convert">LinkML-Convert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-from-and-dumping-to-json">Loading from and dumping to JSON</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-from-and-dumping-to-yaml">Loading from and dumping to YAML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-from-and-dumping-to-rdf">Loading from and dumping to RDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-from-and-dumping-to-csvs">Loading from and dumping to CSVs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inferring-missing-values">Inferring missing values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#programmatic-usage">Programmatic usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-line">Command Line</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#linkml-convert">linkml-convert</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html">Python</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Working with Data</a> &raquo;</li>
+      <li>Converting between different representations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/data/conversion.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="converting-between-different-representations">
+<h1>Converting between different representations<a class="headerlink" href="#converting-between-different-representations" title="Permalink to this heading"></a></h1>
+<p>LinkML allows you to specify schemas for data in a variety of forms:</p>
+<ul class="simple">
+<li><p>JSON / YAML</p></li>
+<li><p>Python object models</p></li>
+<li><p>SQL databases</p></li>
+<li><p>Spreadsheets and tabular data</p></li>
+<li><p>RDF/Linked Data</p></li>
+<li><p>Property Graphs</p></li>
+</ul>
+<p>The process of loading from one of these formats into an internal
+representation is called <em>loading</em>. The opposite process, going from an
+internal representation into an external format is called <em>dumping</em></p>
+<p>The “native” form for LinkML can be considered JSON/YAML.</p>
+<p>See
+<a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/data">PersonSchema/data</a>
+for example toy data files</p>
+<section id="linkml-convert">
+<h2>LinkML-Convert<a class="headerlink" href="#linkml-convert" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> script can be used to convert data from one form
+to another, following a schema</p>
+<p>This makes use of loaders and dumpers in the linkml-runtime</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Usage: linkml-convert <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT
+
+  Converts instance data to and from different LinkML Runtime serialization
+  formats.
+
+  The instance data must conform to a LinkML model, and either a path to a
+  python module must be passed, or a path to a schema.
+
+  The converter works by first using a linkml-runtime *loader* to instantiate
+  <span class="k">in</span>-memory model objects, <span class="k">then</span> a *dumper* is used to serialize. A validation
+  step is optionally performed <span class="k">in</span> between
+
+  When converting to or from RDF, a path to a schema must be provided.
+
+  For more information, see https://linkml.io/linkml/data/index.html
+
+Options:
+  -m, --module TEXT               Path to python datamodel module
+  -o, --output TEXT               Path to output file
+  -f, --input-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>ttl<span class="p">|</span>json-ld<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+                                  Input format. Inferred from input suffix <span class="k">if</span>
+                                  not specified
+  -t, --output-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>ttl<span class="p">|</span>json-ld<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+                                  Output format. Inferred from output suffix
+                                  <span class="k">if</span> not specified
+  -C, --target-class TEXT         name of class <span class="k">in</span> datamodel that the root
+                                  node instantiates
+  --target-class-from-path / --no-target-class-from-path
+                                  Infer the target class from the filename,
+                                  should be ClassName-&lt;other-
+                                  chars&gt;.<span class="o">{</span>yaml,json,...<span class="o">}</span>  <span class="o">[</span>default: no-target-
+                                  class-from-path<span class="o">]</span>
+  -S, --index-slot TEXT           top level slot. Required <span class="k">for</span> CSV
+                                  dumping/loading
+  -s, --schema TEXT               Path to schema specified as LinkML yaml
+  -P, --prefix TEXT               Prefixmap <span class="nv">base</span><span class="o">=</span>URI pairs
+  --validate / --no-validate      Validate against the schema  <span class="o">[</span>default:
+                                  validate<span class="o">]</span>
+  --infer / --no-infer            Infer missing slot values  <span class="o">[</span>default: no-
+                                  infer<span class="o">]</span>
+  -c, --context TEXT              path to JSON-LD context file
+  --help                          Show this message and exit.
+Usage: linkml-convert <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT
+
+  Converts instance data to and from different LinkML Runtime serialization
+  formats.
+
+  The instance data must conform to a LinkML model, and either a path to a
+  python module must be passed, or a path to a schema.
+
+  The converter works by first using a linkml-runtime *loader* to instantiate
+  <span class="k">in</span>-memory model objects, <span class="k">then</span> a *dumper* is used to serialize. A validation
+  step is optionally performed <span class="k">in</span> between
+
+  When converting to or from RDF, a path to a schema must be provided.
+
+  For more information, see https://linkml.io/linkml/data/index.html
+
+Options:
+  -m, --module TEXT               Path to python datamodel module
+  -o, --output TEXT               Path to output file
+  -f, --input-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>ttl<span class="p">|</span>json-ld<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+                                  Input format. Inferred from input suffix <span class="k">if</span>
+                                  not specified
+  -t, --output-format <span class="o">[</span>yaml<span class="p">|</span>json<span class="p">|</span>rdf<span class="p">|</span>ttl<span class="p">|</span>json-ld<span class="p">|</span>csv<span class="p">|</span>tsv<span class="o">]</span>
+                                  Output format. Inferred from output suffix
+                                  <span class="k">if</span> not specified
+  -C, --target-class TEXT         name of class <span class="k">in</span> datamodel that the root
+                                  node instantiates
+  --target-class-from-path / --no-target-class-from-path
+                                  Infer the target class from the filename,
+                                  should be ClassName-&lt;other-
+                                  chars&gt;.<span class="o">{</span>yaml,json,...<span class="o">}</span>  <span class="o">[</span>default: no-target-
+                                  class-from-path<span class="o">]</span>
+  -S, --index-slot TEXT           top level slot. Required <span class="k">for</span> CSV
+                                  dumping/loading
+  -s, --schema TEXT               Path to schema specified as LinkML yaml
+  -P, --prefix TEXT               Prefixmap <span class="nv">base</span><span class="o">=</span>URI pairs
+  --validate / --no-validate      Validate against the schema  <span class="o">[</span>default:
+                                  validate<span class="o">]</span>
+  --infer / --no-infer            Infer missing slot values  <span class="o">[</span>default: no-
+                                  infer<span class="o">]</span>
+  -c, --context TEXT              path to JSON-LD context file
+  --help                          Show this message and exit.
+</pre></div>
+</div>
+</section>
+<section id="loading-from-and-dumping-to-json">
+<h2>Loading from and dumping to JSON<a class="headerlink" href="#loading-from-and-dumping-to-json" title="Permalink to this heading"></a></h2>
+<p>You can use the linkml-convert script to load or dump from JSON into
+another representation.</p>
+<p>Dumping to JSON can be lossy; if your objects contain typing information
+that cannot be inferred from range constraints.</p>
+<p>For example, if you have a schema:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">employed_at</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Organization</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Organization</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="nt">NonProfit</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Organization</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Corportation</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">is_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Organization</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+</pre></div>
+</div>
+<p>and a person object:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+  ...
+  &quot;employed_at&quot;: {
+    ...
+  }
+}
+</pre></div>
+</div>
+<p>Then there is insufficient information to determine whether the internal
+representation of the organization the person is employed at should be
+instantiated as a NonProfit or a Corporation.</p>
+<p>LinkML allows a slot to be set with
+<a class="reference external" href="https://w3id.org/linkml/designates_type">designates_type</a>, the value
+of which is a name of a class from the schema. However, the loaders
+currently do not yet make use of this when loading from JSON into the
+internal representation.</p>
+</section>
+<section id="loading-from-and-dumping-to-yaml">
+<h2>Loading from and dumping to YAML<a class="headerlink" href="#loading-from-and-dumping-to-yaml" title="Permalink to this heading"></a></h2>
+<p>The native YAML representation for LinkML is essentially identical to
+JSON.</p>
+<p>In future there may be support for a <em>direct</em> translation to YAML that
+utilizes YAML tags to encode typing information.</p>
+</section>
+<section id="loading-from-and-dumping-to-rdf">
+<h2>Loading from and dumping to RDF<a class="headerlink" href="#loading-from-and-dumping-to-rdf" title="Permalink to this heading"></a></h2>
+<p>Loading and dumping works in a similar fashion for RDF. One difference
+is that the schema must be present as this contains crucial information
+for being able to map classes and slots to URIs.</p>
+<p>See <a class="reference external" href="rdf.md">RDF</a> for more details</p>
+</section>
+<section id="loading-from-and-dumping-to-csvs">
+<h2>Loading from and dumping to CSVs<a class="headerlink" href="#loading-from-and-dumping-to-csvs" title="Permalink to this heading"></a></h2>
+<p>See <a class="reference external" href="csvs.md">CSVs</a> for more details</p>
+</section>
+<section id="inferring-missing-values">
+<h2>Inferring missing values<a class="headerlink" href="#inferring-missing-values" title="Permalink to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">--infer</span></code> flag can be provided to perform missing value inference</p>
+<p>See <a class="reference external" href="../schemas/advanced.md">advanced schemas</a> for more information
+on inference</p>
+</section>
+<section id="programmatic-usage">
+<h2>Programmatic usage<a class="headerlink" href="#programmatic-usage" title="Permalink to this heading"></a></h2>
+<p>See <a class="reference external" href="../code">developer docs</a> for documentation of the relevant
+python classes</p>
+</section>
+<section id="command-line">
+<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this heading"></a></h2>
+<section id="linkml-convert">
+<h3>linkml-convert<a class="headerlink" href="#linkml-convert" title="Permalink to this heading"></a></h3>
+<p>Converts instance data to and from different LinkML Runtime serialization formats.</p>
+<p>The instance data must conform to a LinkML model, and either a path to a python
+module must be passed, or a path to a schema.</p>
+<p>The converter works by first using a linkml-runtime <em>loader</em> to
+instantiate in-memory model objects, then a <em>dumper</em> is used to serialize.
+A validation step is optionally performed in between</p>
+<p>When converting to or from RDF, a path to a schema must be provided.</p>
+<p>For more information, see <a class="reference external" href="https://linkml.io/linkml/data/index.html">https://linkml.io/linkml/data/index.html</a></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml-convert <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-m">
+<span id="cmdoption-linkml-convert-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;module&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-m" title="Permalink to this definition"></a></dt>
+<dd><p>Path to python datamodel module</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-o">
+<span id="cmdoption-linkml-convert-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-o" title="Permalink to this definition"></a></dt>
+<dd><p>Path to output file</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-f">
+<span id="cmdoption-linkml-convert-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-f" title="Permalink to this definition"></a></dt>
+<dd><p>Input format. Inferred from input suffix if not specified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>yaml | json | rdf | ttl | json-ld | csv | tsv</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-t">
+<span id="cmdoption-linkml-convert-output-format"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-t" title="Permalink to this definition"></a></dt>
+<dd><p>Output format. Inferred from output suffix if not specified</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>yaml | json | rdf | ttl | json-ld | csv | tsv</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-C">
+<span id="cmdoption-linkml-convert-c"></span><span id="cmdoption-linkml-convert-target-class"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--target-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;target_class&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-C" title="Permalink to this definition"></a></dt>
+<dd><p>name of class in datamodel that the root node instantiates</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-target-class-from-path">
+<span id="cmdoption-linkml-convert-no-target-class-from-path"></span><span class="sig-name descname"><span class="pre">--target-class-from-path</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-target-class-from-path</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-target-class-from-path" title="Permalink to this definition"></a></dt>
+<dd><p>Infer the target class from the filename, should be ClassName-&lt;other-chars&gt;.{yaml,json,…}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-S">
+<span id="cmdoption-linkml-convert-s"></span><span id="cmdoption-linkml-convert-index-slot"></span><span class="sig-name descname"><span class="pre">-S</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-slot</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_slot&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-S" title="Permalink to this definition"></a></dt>
+<dd><p>top level slot. Required for CSV dumping/loading</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-0">
+<span id="cmdoption-linkml-convert-schema"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;schema&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-0" title="Permalink to this definition"></a></dt>
+<dd><p>Path to schema specified as LinkML yaml</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-P">
+<span id="cmdoption-linkml-convert-p"></span><span id="cmdoption-linkml-convert-prefix"></span><span class="sig-name descname"><span class="pre">-P</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--prefix</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;prefix&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-P" title="Permalink to this definition"></a></dt>
+<dd><p>Prefixmap base=URI pairs</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-validate">
+<span id="cmdoption-linkml-convert-no-validate"></span><span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate against the schema</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-infer">
+<span id="cmdoption-linkml-convert-no-infer"></span><span class="sig-name descname"><span class="pre">--infer</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-infer</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-infer" title="Permalink to this definition"></a></dt>
+<dd><p>Infer missing slot values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-1">
+<span id="cmdoption-linkml-convert-context"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--context</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;context&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-1" title="Permalink to this definition"></a></dt>
+<dd><p>path to JSON-LD context file</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-arg-INPUT">
+<span id="cmdoption-linkml-convert-arg-input"></span><span class="sig-name descname"><span class="pre">INPUT</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-arg-INPUT" title="Permalink to this definition"></a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Working with Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="validating-data.html" class="btn btn-neutral float-right" title="Data Validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

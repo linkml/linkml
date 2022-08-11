@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -60,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Convetsion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html">Inferring Missing Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="using-sql-dbs.html">Using SQL Databases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tool-developer-guide.html">Tool Implementor Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
@@ -94,10 +96,19 @@
              
   <section id="developers-guide">
 <span id="developers"></span><h1>Developers guide<a class="headerlink" href="#developers-guide" title="Permalink to this heading"></a></h1>
+<p>This section of the documentation is aimed primarily at Python developers who want to use the LinkML framework programmatically</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="organization.html">GitHub Organization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="organization.html#core-packages">Core Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html#the-metamodel">The metamodel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html#productivity-utilities">Productivity utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html#working-with-different-backends">Working with different backends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html#additional-packages">Additional packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html#linkml-for-other-languages">LinkML for other languages</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html#linkml-notebooks">LinkML Notebooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebooks.html#linkml-runtime-notebooks">linkml-runtime Notebooks</a></li>
@@ -109,6 +120,13 @@
 <li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html#yaml-conversion">YAML Conversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html#rdf-conversion">RDF Conversion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html#csv-conversion">CSV Conversion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inference.html">Inferring Missing Values</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#expressions">Expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#string-serialization">String serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inference.html#code">Code</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="using-sql-dbs.html">Using SQL Databases</a><ul>

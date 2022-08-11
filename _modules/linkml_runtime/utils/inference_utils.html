@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>linkml_runtime.utils.inference_utils &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../howtos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>linkml_runtime.utils.inference_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for linkml_runtime.utils.inference_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">jsonasobj2</span> <span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">items</span>
+
+<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">PermissibleValue</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.eval_utils</span> <span class="kn">import</span> <span class="n">eval_expr</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.walker_utils</span> <span class="kn">import</span> <span class="n">traverse_object_tree</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
+
+<span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">obj_as_dict_nonrecursive</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">resolve_function</span><span class="p">:</span> <span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates an object into a dict, for the purposes of input into formatted strings</span>
+
+<span class="sd">    :param obj:</span>
+<span class="sd">    :param resolve_function:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">resolve_function</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">resolve_function</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">items</span><span class="p">(</span><span class="n">obj</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">items</span><span class="p">(</span><span class="n">obj</span><span class="p">)}</span>
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.Config">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Controls which inferences are performed</span>
+
+<span class="sd">    - slot.string_serialization</span>
+<span class="sd">    - slot.equals_expression</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">use_string_serialization</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">parse_string_serialization</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">use_rules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">use_expressions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">resolve_function</span><span class="p">:</span> <span class="n">RESOLVE_FUNC</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Policy"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.Policy">[docs]</a><span class="k">class</span> <span class="nc">Policy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Policy for when inferred values differ from already set values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">STRICT</span> <span class="o">=</span> <span class="s2">&quot;strict&quot;</span>
+    <span class="n">OVERRIDE</span> <span class="o">=</span> <span class="s2">&quot;override&quot;</span>
+    <span class="n">KEEP</span> <span class="o">=</span> <span class="s2">&quot;keep&quot;</span></div>
+
+
+<span class="k">def</span> <span class="nf">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+                        <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Infer the value of a slot for a given object</span>
+
+<span class="sd">    Utilizes:</span>
+
+<span class="sd">    - string_serialization</span>
+<span class="sd">    - equals_expression</span>
+
+<span class="sd">    :param obj: object with slot whose value is be generated (not mutated)</span>
+<span class="sd">    :param slot_name: slot whose value is to be filled</span>
+<span class="sd">    :param schemaview:</span>
+<span class="sd">    :param config: determines which rules to apply</span>
+<span class="sd">    :return: inferred value, or None if not inference performed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cls_name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">class_name</span>
+    <span class="n">mapped_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_name_mappings</span><span class="p">()[</span><span class="n">slot_name</span><span class="p">]</span>
+    <span class="n">slot_name</span> <span class="o">=</span> <span class="n">mapped_slot</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;   CONF=</span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">use_string_serialization</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">string_serialization</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">JsonObj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">slot</span><span class="o">.</span><span class="n">string_serialization</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">obj_as_dict_nonrecursive</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">resolve_function</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">parse_string_serialization</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">use_expressions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_expression</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">JsonObj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">eval_expr</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">equals_expression</span><span class="p">,</span> <span class="o">**</span><span class="n">obj_as_dict_nonrecursive</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">resolve_function</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">use_rules</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Rules not implemented for </span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="infer_slot_value"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">[docs]</a><span class="k">def</span> <span class="nf">infer_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+                       <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Infer the value of a slot for an object</span>
+
+<span class="sd">    :param obj: mutable object to be transformed</span>
+<span class="sd">    :param slot_name:</span>
+<span class="sd">    :param schemaview:</span>
+<span class="sd">    :param policy:</span>
+<span class="sd">    :param config:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">policy</span> <span class="o">==</span> <span class="n">Policy</span><span class="o">.</span><span class="n">KEEP</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">v</span>
+    <span class="n">new_v</span> <span class="o">=</span> <span class="n">generate_slot_value</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;SETTING </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="n">new_v</span><span class="si">}</span><span class="s1"> // current=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">policy</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">new_v</span><span class="p">:</span>
+        <span class="c1"># check if new value is different; not str check is necessary as enums may not be converted</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">new_v</span> <span class="o">!=</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_v</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">policy</span> <span class="o">==</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Inconsistent value </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1"> != </span><span class="si">{</span><span class="n">new_v</span><span class="si">}</span><span class="s1"> for </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s1"> for </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">policy</span> <span class="o">==</span> <span class="n">Policy</span><span class="o">.</span><span class="n">OVERRIDE</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">new_v</span><span class="p">)</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">new_v</span><span class="p">)</span>
+            <span class="c1">#print(f&#39;CALLING POST INIT ON {obj} from {slot_name} = {new_v}&#39;)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="infer_all_slot_values"><a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_all_slot_values">[docs]</a><span class="k">def</span> <span class="nf">infer_all_slot_values</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+                          <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walks object tree inferring all slot values.</span>
+
+<span class="sd">    - if a slot has a string_serialization metaslot, apply this</span>
+<span class="sd">    - if a slot has a equals_expression metaslot, apply this. See :func:`eval_expr()`</span>
+
+<span class="sd">    :param obj:</span>
+<span class="sd">    :param schemaview:</span>
+<span class="sd">    :param policy: default is STRICT</span>
+<span class="sd">    :param config:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">infer</span><span class="p">(</span><span class="n">in_obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;INFER=</span><span class="si">{</span><span class="n">in_obj</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">EnumDefinitionImpl</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">in_obj</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1">#print(f&#39;  ISV={k} curr={v} policy={policy} in_obj={type(in_obj)}&#39;)</span>
+                <span class="n">infer_slot_value</span><span class="p">(</span><span class="n">in_obj</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">in_obj</span>
+    <span class="n">traverse_object_tree</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">infer</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

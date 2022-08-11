@@ -44,6 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="howtos/index.html">How-to Guides</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="specifications/linkml-spec.html">LinkML specification</a></li>
@@ -155,6 +156,13 @@
 
       <ul>
         <li><a href="generators/project-generator.html#cmdoption-gen-project-C">gen-project command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --context
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-1">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -345,10 +353,31 @@
 </li>
       </ul></li>
       <li>
+    --index-slot
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-S">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --infer
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-infer">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --inline
 
       <ul>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-i">gen-json-schema command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --input-format
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-f">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -538,6 +567,13 @@
 </li>
       </ul></li>
       <li>
+    --module
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-m">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --no-add-ols-annotations
 
       <ul>
@@ -601,6 +637,13 @@
 </li>
       </ul></li>
       <li>
+    --no-infer
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-infer">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --no-mergeimports
 
       <ul>
@@ -641,8 +684,6 @@
         <li><a href="generators/typescript.html#cmdoption-gen-typescript-mergeimports">gen-typescript command line option</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     --no-metaclasses
 
@@ -689,6 +730,8 @@
         <li><a href="generators/typescript.html#cmdoption-gen-typescript-metadata">gen-typescript command line option</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     --no-model
 
@@ -725,6 +768,13 @@
 </li>
       </ul></li>
       <li>
+    --no-target-class-from-path
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-target-class-from-path">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --no-type-objects
 
       <ul>
@@ -736,6 +786,13 @@
 
       <ul>
         <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqlddl-use-foreign-keys">gen-sqlddl command line option</a>, <a href="generators/sqlddl.html#cmdoption-gen-sqlddl-use-foreign-keys">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    --no-validate
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-validate">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -787,6 +844,8 @@
 </li>
         <li><a href="generators/sssom.html#cmdoption-gen-sssom-o">gen-sssom command line option</a>
 </li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-o">linkml-convert command line option</a>
+</li>
       </ul></li>
       <li>
     --output-directory
@@ -796,10 +855,24 @@
 </li>
       </ul></li>
       <li>
+    --output-format
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-t">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --package
 
       <ul>
         <li><a href="generators/java.html#cmdoption-gen-java-package">gen-java command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --prefix
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-P">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -824,6 +897,13 @@
 </li>
       </ul></li>
       <li>
+    --schema
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-0">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --slots
 
       <ul>
@@ -835,6 +915,20 @@
 
       <ul>
         <li><a href="generators/sqlddl.html#cmdoption-gen-sqlddl-sqla-file">gen-sqlddl command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --target-class
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-C">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --target-class-from-path
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-target-class-from-path">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -912,6 +1006,13 @@
 </li>
       </ul></li>
       <li>
+    --validate
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-validate">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     --verbose
 
       <ul>
@@ -970,12 +1071,16 @@
       <ul>
         <li><a href="generators/project-generator.html#cmdoption-gen-project-C">gen-project command line option</a>
 </li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-C">linkml-convert command line option</a>
+</li>
       </ul></li>
       <li>
     -c
 
       <ul>
         <li><a href="generators/markdown.html#cmdoption-gen-markdown-c">gen-markdown command line option</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-1">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -1026,6 +1131,8 @@
         <li><a href="generators/sssom.html#cmdoption-gen-sssom-f">gen-sssom command line option</a>
 </li>
         <li><a href="generators/typescript.html#cmdoption-gen-typescript-f">gen-typescript command line option</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-f">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -1093,6 +1200,13 @@
 </li>
       </ul></li>
       <li>
+    -m
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-m">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
     -o
 
       <ul>
@@ -1106,12 +1220,37 @@
 </li>
         <li><a href="generators/sssom.html#cmdoption-gen-sssom-o">gen-sssom command line option</a>
 </li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-o">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -P
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-P">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -S
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-S">linkml-convert command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -s
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-0">linkml-convert command line option</a>
+</li>
       </ul></li>
       <li>
     -t
 
       <ul>
         <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-t">gen-json-schema command line option</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-t">linkml-convert command line option</a>
 </li>
       </ul></li>
       <li>
@@ -1423,6 +1562,8 @@
       <li><a href="linkml.generators.html#linkml.generators.pythongen.PythonGenerator.compile_module">compile_module() (linkml.generators.pythongen.PythonGenerator method)</a>
 </li>
       <li><a href="developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.compile_native">compile_native() (linkml.utils.sqlutils.SQLStore method)</a>
+</li>
+      <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.Config">Config (class in linkml_runtime.utils.inference_utils)</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.Block.content">content (linkml.utils.execute_tutorial.Block attribute)</a>
 </li>
@@ -2724,6 +2865,8 @@
 </li>
       <li><a href="developers/manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView.induced_type">induced_type() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
+      <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.infer_all_slot_values">infer_all_slot_values() (in module linkml_runtime.utils.inference_utils)</a>
+</li>
       <li><a href="linkml.generators.html#linkml.generators.infer_model.infer_enum_meanings">infer_enum_meanings() (in module linkml.generators.infer_model)</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.datautils.infer_index_slot">infer_index_slot() (in module linkml.utils.datautils)</a>
@@ -2733,6 +2876,8 @@
       <li><a href="linkml.generators.html#linkml.generators.infer_model.infer_range">infer_range() (in module linkml.generators.infer_model)</a>
 </li>
       <li><a href="linkml.utils.html#linkml.utils.datautils.infer_root_class">infer_root_class() (in module linkml.utils.datautils)</a>
+</li>
+      <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">infer_slot_value() (in module linkml_runtime.utils.inference_utils)</a>
 </li>
       <li><a href="linkml.reporting.html#linkml.reporting.model.CheckResult.info">info (linkml.reporting.model.CheckResult attribute)</a>
 </li>
@@ -2744,6 +2889,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="linkml.generators.html#linkml.generators.sqlddlgen.SQLDDLGenerator.inject_primary_keys">inject_primary_keys (linkml.generators.sqlddlgen.SQLDDLGenerator attribute)</a>
 </li>
+      <li>
+    INPUT
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-arg-INPUT">linkml-convert command line option</a>
+</li>
+      </ul></li>
       <li><a href="linkml.utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.inschema">inschema (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
       <li><a href="linkml.reporting.html#linkml.reporting.model.CheckResult.instantiates">instantiates (linkml.reporting.model.CheckResult attribute)</a>
@@ -2837,6 +2989,61 @@
       </ul></li>
       <li><a href="linkml.generators.html#linkml.generators.owlgen.MetadataProfile.linkml">linkml (linkml.generators.owlgen.MetadataProfile attribute)</a>
 </li>
+      <li>
+    linkml-convert command line option
+
+      <ul>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-1">--context</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-S">--index-slot</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-infer">--infer</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-f">--input-format</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-m">--module</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-infer">--no-infer</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-target-class-from-path">--no-target-class-from-path</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-validate">--no-validate</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-o">--output</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-t">--output-format</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-P">--prefix</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-0">--schema</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-C">--target-class</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-target-class-from-path">--target-class-from-path</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-validate">--validate</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-C">-C</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-1">-c</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-f">-f</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-m">-m</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-o">-o</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-P">-P</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-S">-S</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-0">-s</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-t">-t</a>
+</li>
+        <li><a href="data/conversion.html#cmdoption-linkml-convert-arg-INPUT">INPUT</a>
+</li>
+      </ul></li>
       <li>
     linkml.generators
 
@@ -2977,6 +3184,8 @@
         <li><a href="linkml.generators.html#module-linkml.generators.pythongen">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     linkml.generators.rdfgen
 
@@ -3019,8 +3228,6 @@
         <li><a href="linkml.generators.html#module-linkml.generators.summarygen">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     linkml.generators.yamlgen
 
@@ -3464,6 +3671,8 @@
 </li>
       <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.parse_file_to_blocks">parse_file_to_blocks() (in module linkml.utils.execute_tutorial)</a>
 </li>
+      <li><a href="developers/inference.html#linkml_runtime.utils.inference_utils.Policy">Policy (class in linkml_runtime.utils.inference_utils)</a>
+</li>
       <li><a href="linkml.generators.html#linkml.generators.markdowngen.MarkdownGenerator.pred_hier">pred_hier() (linkml.generators.markdowngen.MarkdownGenerator method)</a>
 </li>
       <li><a href="linkml.reporting.html#linkml.reporting.model.CheckResult.predicate">predicate (linkml.reporting.model.CheckResult attribute)</a>
@@ -3480,10 +3689,10 @@
 </li>
       <li><a href="linkml.generators.html#linkml.generators.pythongen.PythonGenerator.primary_keys_for">primary_keys_for() (linkml.generators.pythongen.PythonGenerator method)</a>
 </li>
-      <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.Block.prior_lines">prior_lines (linkml.utils.execute_tutorial.Block attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="linkml.utils.html#linkml.utils.execute_tutorial.Block.prior_lines">prior_lines (linkml.utils.execute_tutorial.Block attribute)</a>
+</li>
       <li><a href="linkml.reporting.html#linkml.reporting.model.Problem">Problem (class in linkml.reporting.model)</a>
 </li>
       <li><a href="linkml.reporting.html#linkml.reporting.model.ProblemSlotInapplicable">ProblemSlotInapplicable (class in linkml.reporting.model)</a>

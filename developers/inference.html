@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inferring Missing Values &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using SQL Databases" href="using-sql-dbs.html" />
+    <link rel="prev" title="Data Convetsion: Loaders and Dumpers" href="loaders-and-dumpers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howtos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developers guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks.html">Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="loaders-and-dumpers.html">Data Convetsion: Loaders and Dumpers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Inferring Missing Values</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#expressions">Expressions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#string-serialization">String serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="using-sql-dbs.html">Using SQL Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tool-developer-guide.html">Tool Implementor Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing-code.html">Contributing Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Developers guide</a> &raquo;</li>
+      <li>Inferring Missing Values</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developers/inference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="inferring-missing-values">
+<span id="inference"></span><h1>Inferring Missing Values<a class="headerlink" href="#inferring-missing-values" title="Permalink to this heading"></a></h1>
+<section id="expressions">
+<h2>Expressions<a class="headerlink" href="#expressions" title="Permalink to this heading"></a></h2>
+<p>LinkML supports the use of expressions to define how slot values can
+be derived from other slot values. The slot
+<a class="reference external" href="https://w3id.org/linkml/equals_expression">equals_expression</a>
+specifies how to calculate the value of a slot, as demonstrated here:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">class</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age_in_years</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">        </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999</span><span class="w"></span>
+<span class="w">        </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_months}</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">12&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">age_in_months</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">12&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">is_juvenile</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span><span class="w"></span>
+<span class="w">        </span><span class="nt">equals_expression</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_in_years}</span><span class="nv"> </span><span class="s">&lt;</span><span class="nv"> </span><span class="s">18&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The following code will populate missing values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.inference_utils</span> <span class="kn">import</span> <span class="n">infer_all_slot_values</span>
+<span class="kn">from</span> <span class="nn">.personinfo</span> <span class="n">infer</span> <span class="n">Person</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">age_in_years</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">infer_all_slot_values</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">schemaview</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">p</span><span class="o">.</span><span class="n">age_in_months</span> <span class="o">==</span> <span class="mi">360</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">juvenile</span>
+</pre></div>
+</div>
+<p>You can also use the <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code> script with the <code class="docutils literal notranslate"><span class="pre">--infer</span></code> flag</p>
+</section>
+<section id="string-serialization">
+<h2>String serialization<a class="headerlink" href="#string-serialization" title="Permalink to this heading"></a></h2>
+<p>For simple string based expressions,
+<a class="reference external" href="https://w3id.org/linkml/string_serialization">string_serialization</a>
+can be used:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Address</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">street</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">city</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">full_address</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">string_serialization</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|-</span><span class="w"></span>
+<span class="w">        </span><span class="no">{street}</span><span class="w"></span>
+<span class="w">        </span><span class="no">{city}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The following code will populate the full address:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">linkml_runtime.utils.inference_utils</span> <span class="kn">import</span> <span class="n">infer_all_slot_values</span>
+<span class="kn">from</span> <span class="nn">.personinfo</span> <span class="n">infer</span> <span class="n">Address</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;1 Oak street&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Oaktown&quot;</span><span class="p">)</span>
+<span class="n">infer_all_slot_values</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">schemaview</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">full_address</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml_runtime.utils.inference_utils.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.inference_utils.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">use_string_serialization:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">parse_string_serialization:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">use_rules:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">use_expressions:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">resolve_function:</span> <span class="pre">~typing.Optional[~typing.Callable[[str,</span> <span class="pre">~typing.Any],</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/inference_utils.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.inference_utils.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Controls which inferences are performed</p>
+<ul class="simple">
+<li><p>slot.string_serialization</p></li>
+<li><p>slot.equals_expression</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="linkml_runtime.utils.inference_utils.Policy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.inference_utils.</span></span><span class="sig-name descname"><span class="pre">Policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/inference_utils.html#Policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.inference_utils.Policy" title="Permalink to this definition"></a></dt>
+<dd><p>Policy for when inferred values differ from already set values</p>
+</dd></dl>
+
+</section>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml_runtime.utils.inference_utils.infer_slot_value">
+<span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.inference_utils.</span></span><span class="sig-name descname"><span class="pre">infer_slot_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">YAMLRoot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SlotDefinitionName</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml_runtime.utils.inference_utils.Policy" title="linkml_runtime.utils.inference_utils.Policy"><span class="pre">Policy</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Policy.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml_runtime.utils.inference_utils.Config" title="linkml_runtime.utils.inference_utils.Config"><span class="pre">Config</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Config(use_string_serialization=True,</span> <span class="pre">parse_string_serialization=False,</span> <span class="pre">use_rules=False,</span> <span class="pre">use_expressions=False,</span> <span class="pre">resolve_function=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/inference_utils.html#infer_slot_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.inference_utils.infer_slot_value" title="Permalink to this definition"></a></dt>
+<dd><p>Infer the value of a slot for an object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – mutable object to be transformed</p></li>
+<li><p><strong>slot_name</strong> – </p></li>
+<li><p><strong>schemaview</strong> – </p></li>
+<li><p><strong>policy</strong> – </p></li>
+<li><p><strong>config</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml_runtime.utils.inference_utils.infer_all_slot_values">
+<span class="sig-prename descclassname"><span class="pre">linkml_runtime.utils.inference_utils.</span></span><span class="sig-name descname"><span class="pre">infer_all_slot_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">YAMLRoot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="manipulating-schemas.html#linkml_runtime.utils.schemaview.SchemaView" title="linkml_runtime.utils.schemaview.SchemaView"><span class="pre">SchemaView</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml_runtime.utils.inference_utils.Policy" title="linkml_runtime.utils.inference_utils.Policy"><span class="pre">Policy</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Policy.STRICT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#linkml_runtime.utils.inference_utils.Config" title="linkml_runtime.utils.inference_utils.Config"><span class="pre">Config</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Config(use_string_serialization=True,</span> <span class="pre">parse_string_serialization=False,</span> <span class="pre">use_rules=False,</span> <span class="pre">use_expressions=False,</span> <span class="pre">resolve_function=None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml_runtime/utils/inference_utils.html#infer_all_slot_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.inference_utils.infer_all_slot_values" title="Permalink to this definition"></a></dt>
+<dd><p>Walks object tree inferring all slot values.</p>
+<ul class="simple">
+<li><p>if a slot has a string_serialization metaslot, apply this</p></li>
+<li><p>if a slot has a equals_expression metaslot, apply this. See <code class="xref py py-func docutils literal notranslate"><span class="pre">eval_expr()</span></code></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – </p></li>
+<li><p><strong>schemaview</strong> – </p></li>
+<li><p><strong>policy</strong> – default is STRICT</p></li>
+<li><p><strong>config</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="loaders-and-dumpers.html" class="btn btn-neutral float-left" title="Data Convetsion: Loaders and Dumpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="using-sql-dbs.html" class="btn btn-neutral float-right" title="Using SQL Databases" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

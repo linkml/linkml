@@ -27,7 +27,7 @@ Command Line
 
 .. currentmodule:: linkml.utils.sqlutils
 
-.. click:: linkml.utils.sqlutils
+.. click:: linkml.utils.sqlutils:cli
     :prog: linkml-sqldb
     :nested: short
        

@@ -1,10 +1,8 @@
 # Using yq for querying and manipulating schemas
 
-**STATUS: DRAFT**
+[yq](https://mikefarah.gitbook.io/yq/) is a command-line YAML processor, based on [jq](https://stedolan.github.io/jq/).
 
-[yq](https://mikefarah.gitbook.io/yq/) is a command-line YAML processor, similar to jq.
-
-As all LinkML schemas have a canonical form as YAML, you can use yq to process these.
+As LinkML schemas are typically stored as YAML, it's possible to use yq as a way of querying and manipulating them.
 
 **Note:** yq operates at the level of schema yaml document structure, not the *meaning* of a schema. It has no knowledge of:
 
@@ -12,7 +10,7 @@ As all LinkML schemas have a canonical form as YAML, you can use yq to process t
  * inheritance and inference of slots over class hierarchies
  * inlining as dicts
 
-If you want to do semantics-aware schema processing then we recommend you use SchemaView.
+If you want to do semantics-aware schema processing then we recommend you use [SchemaView](developers/manipulating-schemas)
 
 However, for certain kinds of quick and dirty low-level operations, yq
 provides a fast, flexible, and easy way to query schema yaml files.
@@ -26,6 +24,10 @@ This guide is mostly in the form of cookbook examples. If you wish to
 perform operations that don't fit a template here, then you will need
 to consult the (excellent) yq docs, and also have some awareness of
 how LinkML schemas are rendered as YAML.
+
+If you have your own cookbook examples, please contribute them as pull requests!
+
+The examples here make use of the [PersonInfo](https://github.com/linkml/linkml/blob/main/examples/PersonSchema/personinfo.yaml) schema
 
 ## top level lookups
 
@@ -62,7 +64,36 @@ https://w3id.org/linkml/examples/personinfo
 ## classes with their is-a parents
 
 ```bash
-$ yq e '.classes | to_entries | {.[].key: .[].value.is_a}' personinfo.yaml
+$ yq e '.classes | to_entries | .[] | {"child": .key, "parent": .value.is_a}' personinfo.yaml
+child: NamedThing
+parent: null
+child: Person
+parent: NamedThing
+child: HasAliases
+parent: null
+child: Organization
+parent: NamedThing
+child: Place
+parent: null
+child: Address
+parent: null
+child: Event
+parent: null
+child: Concept
+parent: NamedThing
+child: DiagnosisConcept
+parent: Concept
+child: ProcedureConcept
+parent: Concept
+child: Relationship
+parent: null
+child: FamilialRelationship
+parent: Relationship
+child: EmploymentEvent
+parent: Event
+child: MedicalEvent
+parent: Event
+child: WithLocation
 ```
 
 TODO

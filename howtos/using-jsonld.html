@@ -18,7 +18,9 @@
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Porting LinkML tools to other programming languages" href="port-linkml.html" />
+    <link rel="prev" title="Using yq for querying and manipulating schemas" href="yq-for-schemas.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,13 +40,30 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">How-to Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using JSON-LD</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#about-json-ld">About JSON-LD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#json-ld-example">JSON-LD Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#context">Context</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#coordinating-json-schema-and-json-ld-contexts">Coordinating JSON-Schema and JSON-LD Contexts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linkml-and-json-ld">LinkML and JSON-LD</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html">Porting LinkML tools to other programming languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="port-linkml.html#overview-of-python-framework">Overview of Python Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linkml-ws.html">LinkML Workspace Generator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
@@ -71,6 +90,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">How-to Guides</a> &raquo;</li>
       <li>Using JSON-LD</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/howtos/using-jsonld.md.txt" rel="nofollow"> View page source</a>
@@ -83,11 +103,11 @@
              
   <section id="using-json-ld">
 <h1>Using JSON-LD<a class="headerlink" href="#using-json-ld" title="Permalink to this heading"></a></h1>
-<p>See also: https://linkml.io/linkml/intro/tutorial04.html</p>
-<p>This how-to guide walks through some of the basics of working with JSON-LD and LinkML</p>
+<p>See also: [Part 4 of the tutorial[https://linkml.io/linkml/intro/tutorial04.html]</p>
+<p>This how-to guide walks you through some of the basics of working with JSON-LD and LinkML</p>
 <section id="about-json-ld">
 <h2>About JSON-LD<a class="headerlink" href="#about-json-ld" title="Permalink to this heading"></a></h2>
-<p>JSON-LD is a way of working with JSON documents that are also RDF
+<p><a class="reference external" href="https://json-ld.org/">JSON-LD</a> is a way of working with JSON documents that are also RDF
 documents. JSON-LD can provide a powerful bridge between
 “developer-friendly” JSON serializations and Linked Data
 frameworks.</p>
@@ -101,7 +121,8 @@ to be aware of.</p>
 <li><p>Framing</p></li>
 </ul>
 <p>A full description of these is outside the scope of this guide, but we
-will provide some practical examples</p>
+will provide some practical examples.</p>
+<p>To get a sense of JSON-LD, we recommend exploring the <a class="reference external" href="https://json-ld.org/playground/">JSON-LD Playground</a></p>
 </section>
 <section id="json-ld-example">
 <h2>JSON-LD Example<a class="headerlink" href="#json-ld-example" title="Permalink to this heading"></a></h2>
@@ -125,7 +146,8 @@ will provide some practical examples</p>
 </pre></div>
 </div>
 <p>We can use a standard JSON-LD compliant tool (for example, Apache
-Jena) to convert this to JSON-LD, which may look something like this:</p>
+Jena) or the JSON-LD playground
+to convert this to JSON-LD, which may look something like this:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;@graph&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;@id&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;_:b0&quot;</span><span class="p">,</span><span class="w"></span>
@@ -173,6 +195,17 @@ Jena) to convert this to JSON-LD, which may look something like this:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&#64;type</span></code></p></li>
 </ul>
 <p>This violates common idioms with JSON documents, where fields are usually ‘key-friendly’. As well as being unusual-looking, this structure could actually hinder development and even break some tooling.</p>
+<p><strong>Pitfall Warning</strong></p>
+<p>A classic mistake is trying to declare slots with names like <code class="docutils literal notranslate"><span class="pre">&#64;id</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;type</span></code> in the corresponding LinkML schema.</p>
+<p>E.g.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>slots:
+  &quot;@id&quot;:
+    identifier: true
+  &quot;@type&quot;:
+    range: ...
+</pre></div>
+</div>
+<p>While this is possible, it’s almost certainly NOT what you want.</p>
 <p>Thankfully, we don’t have to give such ugly JSON to our fellow developers. In fact there are multiple ways to represent the same RDF as a JSON-LD document. We can make our JSON much more idiomatic through the use of JSON-LD <em>contexts</em>.</p>
 <section id="context">
 <h3>Context<a class="headerlink" href="#context" title="Permalink to this heading"></a></h3>
@@ -258,64 +291,75 @@ Jena) to convert this to JSON-LD, which may look something like this:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Ignore the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> blob at the top - that can easily be maksed or imported over the web. We now have a list of Person objects</p>
+<p>Ignore the <code class="docutils literal notranslate"><span class="pre">&#64;context</span></code> blob at the top for now - that can easily be masked or imported over the web. We now have a list of Person objects</p>
+<p>A general tip with JSON-LD is to expose the <em>compacted</em> structure, not the <em>expanded</em> one.</p>
 </section>
-<section id="considerations">
-<h3>Considerations<a class="headerlink" href="#considerations" title="Permalink to this heading"></a></h3>
-<p>Being able to customize the structure of JSON is flexible and powerful. However, this power should be wielded carefully.</p>
-<p>Let’s consider the organization <code class="docutils literal notranslate"><span class="pre">SemanticsRUs</span></code>. This organization has
-an internal information ecosystem constructed on Linked Data
-standards. Data is stored in triplestores, and software that
-manipulates data uses libraries such as rdflib or Jena. This
-organization can happily consume any RDF serialization format
-(RDF/XML, turtle, n-triples, …). It can also handle JSON-LD
-documents, <em>and they don’t care whether the JSON-LD is expanded or
-compacted</em>. These all get converted to the same internal RDF graph
-representation. This organization may use a shape language like SHACL
-or OWL to enforce conformance of RDF graphs to a particular structure,
-but they don’t care about the serialization (except perhaps for performance reasons).</p>
-<p>In fact SemanticsRUs don’t even need JSON-LD at all, but they may find
-it useful for exchanging data with the broader information ecosystem
-including mere mortal developers who will only consume JSON.</p>
-<p>Now consider another organization <code class="docutils literal notranslate"><span class="pre">JsonFTW</span></code>, who have a more
-traditional information system. They might rely heavily on exchange of
-YAML/JSON documents, perhaps storing these in a Mongo database. They
-may also have some kind of enterprise data model or data models, with
-mappings from JSON to those models. Or potentially SQL databases or
-other noSQL databases. It’s likely this organization makes heavy use
-of JSON-Schema to ensure documents are structured in expected ways,
-allowing reliable and predictable software to be built.</p>
-<p>Both organizations have valid ways of dealing with data, with
-respective strengths and limitations, and presumably they have
-optimized their approaches to the niche they occupy.</p>
-<p>Now let’s imagine a developer, MonicaTripleton leaves SemanticsRUs and
-joins JsonFTW. She manages to persuade her new developer colleagues to
-adopt some linked data practices, starting with use of JSON-LD. This
-all goes well, with the JSON-LD adopting appropriate contexts and
-framing such that existing JSON-Schemas continue to function, and the
-developers also start gaining some of the benefits of RDF.</p>
-<p>How imagine Monica leaves, and JohnnyEvangelist takes her
-place. Johnny is a born again Linked Data fanatic. He doesn’t adopt
-the practices put in place by Monica, and instead starts exchanging
-JSON-LD documents that are expanded or otherwise don’t conform to
-internal framing/contexts. Things start breaking, but Johnny</p>
 </section>
+<section id="coordinating-json-schema-and-json-ld-contexts">
+<h2>Coordinating JSON-Schema and JSON-LD Contexts<a class="headerlink" href="#coordinating-json-schema-and-json-ld-contexts" title="Permalink to this heading"></a></h2>
+<p>JSON-LD contexts and JSON-Schema provide distinct ways of describing your data,
+with JSON-Schema providing the <em>structural</em> description of how your information is organized,
+and contexts providing the <em>semantics</em> (or at least a loose semantics consisting of reuse of URIs).</p>
+<p>Despite these distinct purposes there is a lot of overlap and many organizations
+end up manually maintaining these and keeping them in sync.</p>
+<p>There are also additional challenges in that there are frequently multiple ways to <em>frame</em>
+the same RDF graphs, but this is hard to capture in JSON-Schema, so a schema will typically
+cover a single framing - other frameworks like SHACL may be used for a frame-independent
+representation of the RDF.</p>
+<p>All of this and the pitfalls mentioned above lead to confusion in how “traditional” JSON
+frameworks and JSON-LD/RDF should be coordinated.</p>
 </section>
 <section id="linkml-and-json-ld">
 <h2>LinkML and JSON-LD<a class="headerlink" href="#linkml-and-json-ld" title="Permalink to this heading"></a></h2>
-</section>
-<section id="tips">
-<h2>Tips<a class="headerlink" href="#tips" title="Permalink to this heading"></a></h2>
-<section id="target-the-compacted-structure-not-the-expanded-structure">
-<h3>Target the compacted structure, not the expanded structure<a class="headerlink" href="#target-the-compacted-structure-not-the-expanded-structure" title="Permalink to this heading"></a></h3>
-</section>
+<p>LinkML provides a single “polymorphic” language for describing multiple aspects of your data.</p>
+<p>One of the value propositions of LinkML is that it allows a single Source of Truth with compilation
+to multiple representations using generators.</p>
+<p>This means that your data modelers can maintain a single schema, and then derive:</p>
+<ul class="simple">
+<li><p>JSON-LD contexts</p></li>
+<li><p>JSON-Schema</p></li>
+<li><p>Anything else (e.g. SHACL shape schema)</p></li>
+</ul>
+<p>For example, a minimal schema might be:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
+<span class="nt">Person</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A person (alive, dead, undead, or fictional).</span><span class="w"></span>
+<span class="w">  </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span><span class="w"></span>
+<span class="w">  </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span><span class="w"></span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">telephone</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This describes <em>both</em> the structure of our data objects, <em>and</em> the meaning
+of elements of the schema, by mapping to vocabularies like schema.org</p>
+<p>You can use the linkml toolchain to <em>directly</em> convert objects from JSON/YAML
+to and from RDF, e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert -s personinfo.yaml data.json -o data.ttl
+</pre></div>
+</div>
+<p>You can also use the generator framework to generate a JSON-LD context that
+can be used for <em>deferred</em> conversion using standard RDF toolchains:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-json-ld-context personinfo.yaml -o personinfo.context.jsonld
+</pre></div>
+</div>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="yq-for-schemas.html" class="btn btn-neutral float-left" title="Using yq for querying and manipulating schemas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="port-linkml.html" class="btn btn-neutral float-right" title="Porting LinkML tools to other programming languages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
