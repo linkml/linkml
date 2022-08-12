@@ -2,13 +2,13 @@ import os
 import unittest
 from contextlib import redirect_stdout
 
-
 from linkml.generators.javagen import JavaGenerator
 from tests.test_generators.environment import env
 
-SCHEMA = env.input_path('kitchen_sink.yaml')
-JAVA_DIR = env.expected_path('kitchen_sink_java')
-PACKAGE = 'org.sink.kitchen'
+SCHEMA = env.input_path("kitchen_sink.yaml")
+JAVA_DIR = env.expected_path("kitchen_sink_java")
+PACKAGE = "org.sink.kitchen"
+
 
 def assert_file_contains(filename, text, after=None, description=None) -> None:
     found = False
@@ -25,15 +25,13 @@ def assert_file_contains(filename, text, after=None, description=None) -> None:
                 is_after = True
     assert found
 
-class JavaGeneratorTestCase(unittest.TestCase):
 
+class JavaGeneratorTestCase(unittest.TestCase):
     def test_javagen(self):
-        """ Generate java classes  """
+        """Generate java classes"""
         gen = JavaGenerator(SCHEMA, package=PACKAGE)
         md = gen.serialize(directory=JAVA_DIR)
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

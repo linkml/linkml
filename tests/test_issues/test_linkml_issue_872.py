@@ -8,14 +8,15 @@ from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml.utils.schema_builder import SchemaBuilder
-
-from tests.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
+from tests.utils.test_environment import TestEnvironmentTestCase
+
 
 class Issue872Case(TestEnvironmentTestCase):
     """
     Tests https://github.com/linkml/linkml/issues/872
     """
+
     env = env
 
     def test_monotonic(self):
@@ -26,16 +27,17 @@ class Issue872Case(TestEnvironmentTestCase):
         names are already introduced
         """
         sb = SchemaBuilder()
-        sb.add_class('C',
-                     [SlotDefinition('s1', description='d1')],
-                     use_attributes=True,
-                     from_schema='http://x.org')
+        sb.add_class(
+            "C",
+            [SlotDefinition("s1", description="d1")],
+            use_attributes=True,
+            from_schema="http://x.org",
+        )
         sb.add_defaults()
         schema = sb.schema
         s = JSONLDGenerator(schema).serialize()
         self.assertIsNotNone(s)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

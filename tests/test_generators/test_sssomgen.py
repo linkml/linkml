@@ -1,27 +1,23 @@
 import os
 import unittest
-from linkml.generators.sssomgen import SSSOMGenerator
-from tests.test_generators.environment import env
+
 import yaml
 
+from linkml.generators.sssomgen import SSSOMGenerator
+from tests.test_generators.environment import env
+
 SCHEMA = env.input_path("kitchen_sink_sssom.yaml")
-OUTPUT_DIR = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), "output/ks/sssom"
-)
+OUTPUT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "output/ks/sssom")
 OUTPUT_FILENAME = "test_sssom.tsv"
 
 # generate SSSOM file
-SSSOMGenerator(
-    SCHEMA, output=os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
-).serialize()
+SSSOMGenerator(SCHEMA, output=os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)).serialize()
 
 
 class SSSOMGenTestCase(unittest.TestCase):
     def test_sssomgen(self):
         # Test if the generator actually created the output file
-        self.assertTrue(
-            os.path.exists(os.path.join(OUTPUT_DIR, OUTPUT_FILENAME))
-        )
+        self.assertTrue(os.path.exists(os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)))
 
     def test_sssom_metadata(self):
         meta = {}

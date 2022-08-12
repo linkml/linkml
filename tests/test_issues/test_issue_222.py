@@ -13,7 +13,7 @@ class RDFGenDefaultTest(TestEnvironmentTestCase):
     env = env
 
     def test_issue_222(self):
-        """ Test that the RDF Generator default is correct """
+        """Test that the RDF Generator default is correct"""
         output = StringIO()
         try:
             with redirect_stdout(output):
@@ -22,5 +22,5 @@ class RDFGenDefaultTest(TestEnvironmentTestCase):
             self.assertEqual(0, e.code)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -9,12 +9,14 @@ class UriOrCurieTestCase(TestEnvironmentTestCase):
     env = env
 
     def test_uriorcurie_error(self):
-        """  """
+        """ """
         with self.assertRaises(ValueError) as e:
-            SchemaLoader(env.input_path('issue_uriorcurie.yaml')).resolve()
-        self.assertIn('Slot: "s1" - subproperty_of: "homologous to" does not reference a slot definition',
-                      str(e.exception))
+            SchemaLoader(env.input_path("issue_uriorcurie.yaml")).resolve()
+        self.assertIn(
+            'Slot: "s1" - subproperty_of: "homologous to" does not reference a slot definition',
+            str(e.exception),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

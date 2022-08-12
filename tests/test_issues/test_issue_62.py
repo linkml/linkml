@@ -9,10 +9,14 @@ class Issue62TestCase(TestEnvironmentTestCase):
     env = env
 
     def test_issue_62(self):
-        """ Make sure that types are generated as part of the output """
-        env.generate_directory('issue62',
-                               lambda d: MarkdownGenerator(env.input_path('issue_62.yaml')).serialize(directory=d))
+        """Make sure that types are generated as part of the output"""
+        env.generate_directory(
+            "issue62",
+            lambda d: MarkdownGenerator(env.input_path("issue_62.yaml")).serialize(
+                directory=d
+            ),
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

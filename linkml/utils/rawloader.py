@@ -1,17 +1,18 @@
 import copy
 from datetime import datetime
-from typing import Union, TextIO, Optional
+from typing import Optional, TextIO, Union
 from urllib.parse import urlparse
 
 import yaml
-from dateutil.parser import parse, ParserError
-from hbreader import FileInfo, detect_type, HBType
-from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version, SlotDefinition, ClassDefinition
+from dateutil.parser import ParserError, parse
+from hbreader import FileInfo, HBType, detect_type
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              SchemaDefinition, SlotDefinition,
+                                              metamodel_version)
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
 
 from linkml.utils.mergeutils import set_from_schema
-
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 yaml.error.Mark = YAMLMark
@@ -20,7 +21,7 @@ yaml.error.Mark = YAMLMark
 # Override the default linkml missing value tests
 def mrf(self, field_name: str) -> None:
     if isinstance(self, SchemaDefinition) and field_name == "name" and self.id:
-        id_parts = self.id.replace('#', '/').rsplit('/')
+        id_parts = self.id.replace("#", "/").rsplit("/")
         self.name = id_parts[-1]
     else:
         YAMLRoot.MissingRequiredField(self, f"{type(self).__name__}.{field_name}")
@@ -36,9 +37,9 @@ def load_raw_schema(
     source_file_size: Optional[int] = None,
     base_dir: Optional[str] = None,
     merge_modules: Optional[bool] = True,
-    emit_metadata: Optional[bool] = True
+    emit_metadata: Optional[bool] = True,
 ) -> SchemaDefinition:
-    """ Load and flatten SchemaDefinition from a file name, a URL or a block of text
+    """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
     @param data: URL, file name or block of text YAML Object or open file handle
     @param source_file: Source file name for the schema if data is type TextIO
@@ -49,14 +50,21 @@ def load_raw_schema(
     @param emit_metadata: True means add source file info to the output
     @return: Un-processed Schema Definition object
     """
+
     def _name_from_url(url) -> str:
-        return urlparse(url).path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
+        return urlparse(url).path.rsplit("/", 1)[-1].rsplit(".", 1)[0]
 
     # Passing a URL or file name
     if detect_type(data, base_dir) not in (HBType.STRING, HBType.STRINGABLE):
-        assert source_file is None, "source_file parameter not allowed if data is a file or URL"
-        assert source_file_date is None, "source_file_date parameter not allowed if data is a file or URL"
-        assert source_file_size is None, "source_file_size parameter not allowed if data is a file or URL"
+        assert (
+            source_file is None
+        ), "source_file parameter not allowed if data is a file or URL"
+        assert (
+            source_file_date is None
+        ), "source_file_date parameter not allowed if data is a file or URL"
+        assert (
+            source_file_size is None
+        ), "source_file_size parameter not allowed if data is a file or URL"
 
     # Convert the input into a valid SchemaDefinition
     if isinstance(data, (str, dict, TextIO)):
@@ -66,10 +74,12 @@ def load_raw_schema(
         schema_metadata.source_file_date = source_file_date
         schema_metadata.source_file_size = source_file_size
         schema_metadata.base_path = base_dir
-        schema = yaml_loader.load(copy.deepcopy(data) if isinstance(data, dict) else data,
-                                  SchemaDefinition,
-                                  base_dir=base_dir,
-                                  metadata=schema_metadata)
+        schema = yaml_loader.load(
+            copy.deepcopy(data) if isinstance(data, dict) else data,
+            SchemaDefinition,
+            base_dir=base_dir,
+            metadata=schema_metadata,
+        )
     elif isinstance(data, SchemaDefinition):
         schema = copy.deepcopy(data)
     else:
@@ -91,7 +101,9 @@ def load_raw_schema(
         schema.source_file = schema_metadata.source_file
         src_date = schema_metadata.source_file_date
         try:
-            schema.source_file_date = parse(src_date).strftime(DATETIME_FORMAT) if src_date else None
+            schema.source_file_date = (
+                parse(src_date).strftime(DATETIME_FORMAT) if src_date else None
+            )
         except ParserError:
             schema.source_file_date = src_date
         schema.source_file_size = schema_metadata.source_file_size

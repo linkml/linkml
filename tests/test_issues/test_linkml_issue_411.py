@@ -55,19 +55,20 @@ json_str = """
 
 """
 
+
 class IssueJSONSchemaInlinedAsDictCase(TestEnvironmentTestCase):
     env = env
 
     def test_inslined_as_dict(self):
-        """ Make sure that enums are generated as part of the output """
+        """Make sure that enums are generated as part of the output"""
         gen = JsonSchemaGenerator(schema_str)
         jsonschema_str = gen.serialize(not_closed=False)
         print(jsonschema_str)
         obj = json.loads(json_str)
         jsonschema_obj = json.loads(jsonschema_str)
         v = jsonschema.validate(obj, jsonschema_obj)
-        print(f'V={v}')
+        print(f"V={v}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

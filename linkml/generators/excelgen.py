@@ -1,22 +1,17 @@
 import os
-from typing import Union, TextIO, Optional, List
+from typing import List, Optional, TextIO, Union
 
 import click
-
+from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
+                                              PermissibleValue,
+                                              PermissibleValueText,
+                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.utils.formatutils import camelcase
 from openpyxl import Workbook, load_workbook
-from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.datavalidation import DataValidation
 
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import (
-    SchemaDefinition,
-    ClassDefinition,
-    EnumDefinition,
-    PermissibleValue,
-    PermissibleValueText,
-    SlotDefinition,
-)
-from linkml_runtime.utils.formatutils import camelcase
 
 
 class ExcelGenerator(Generator):
@@ -113,21 +108,23 @@ class ExcelGenerator(Generator):
     def visit_class_slot(
         self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
     ) -> None:
-        """Overridden method to intercept classes and associated slots from generator 
+        """Overridden method to intercept classes and associated slots from generator
         framework."""
         self.workbook = load_workbook(self.wb_name)
 
         if cls.name in self.workbook.sheetnames:
             if slot.range in self.enum_dict:
 
-                valid = ','.join(self.enum_dict[slot.range])
+                valid = ",".join(self.enum_dict[slot.range])
                 valid = '"' + valid + '"'
 
                 ws = self.workbook[cls.name]
 
-                rows = ws.iter_rows(min_row=1, max_row=1) # returns a generator of rows
-                first_row = next(rows) # get the first row
-                headings = [c.value for c in first_row] # extract the values from the cells
+                rows = ws.iter_rows(min_row=1, max_row=1)  # returns a generator of rows
+                first_row = next(rows)  # get the first row
+                headings = [
+                    c.value for c in first_row
+                ]  # extract the values from the cells
 
                 idx = headings.index(slot.name)
                 col_letter = get_column_letter(idx + 1)

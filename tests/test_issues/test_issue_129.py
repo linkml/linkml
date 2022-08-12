@@ -11,42 +11,47 @@ class IssueJSONSchemaTypesTestCase(TestEnvironmentTestCase):
     env = env
 
     def test_issue_types(self):
-        """ Make sure that types are generated as part of the output """
+        """Make sure that types are generated as part of the output"""
+
         def generator() -> str:
-            gen = JsonSchemaGenerator(env.input_path('issue_129.yaml'))
-            gen.topCls = 'c'
+            gen = JsonSchemaGenerator(env.input_path("issue_129.yaml"))
+            gen.topCls = "c"
             return gen.serialize()
 
-        sobj_str = env.generate_single_file('issue_129.json', lambda: generator(), value_is_returned=True)
+        sobj_str = env.generate_single_file(
+            "issue_129.json", lambda: generator(), value_is_returned=True
+        )
 
         sobj = jsonasobj.loads(sobj_str)
-        defs = sobj['$defs']
-        C = defs['C']
-        props = C['properties']
-        assert props['age_in_years']['type'] == 'integer'
-        assert props['has_prop']['type'] == 'boolean'
+        defs = sobj["$defs"]
+        C = defs["C"]
+        props = C["properties"]
+        assert props["age_in_years"]["type"] == "integer"
+        assert props["has_prop"]["type"] == "boolean"
         # multivalued primitive type, inlined
-        assert props['scores']['type'] == 'array'
-        assert props['scores']['items']['type'] == 'number'
+        assert props["scores"]["type"] == "array"
+        assert props["scores"]["items"]["type"] == "number"
         # single-valued complex type, inlined
-        assert props['has_d']['$ref'] == "#/$defs/D"
+        assert props["has_d"]["$ref"] == "#/$defs/D"
 
         # multi-valued, inlined_as_list
-        assert props['has_ds']['type'] == 'array'
-        assert props['has_ds']['items']['$ref'] == "#/$defs/D"
+        assert props["has_ds"]["type"] == "array"
+        assert props["has_ds"]["items"]["$ref"] == "#/$defs/D"
 
         # multi-valued, inlined (as dict) #411
-        D_id_opt = props['has_ds2']['additionalProperties']['$ref'].replace('#/$defs/', '')
+        D_id_opt = props["has_ds2"]["additionalProperties"]["$ref"].replace(
+            "#/$defs/", ""
+        )
         assert D_id_opt in defs
-        assert defs[D_id_opt]['required'] == []
+        assert defs[D_id_opt]["required"] == []
 
         # single-valued, non-inlined (foreign key)
-        assert props['parent']['type'] == "string"
+        assert props["parent"]["type"] == "string"
 
         # multi-valued, non-inlined (foreign key)
-        assert props['children']['type'] == 'array'
-        assert props['children']['items']['type'] == "string"
+        assert props["children"]["type"] == "array"
+        assert props["children"]["items"]["type"] == "string"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

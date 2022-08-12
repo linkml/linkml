@@ -10,19 +10,23 @@ class IssueSQLGenTestCase(TestEnvironmentTestCase):
     env = env
 
     def test_sqlddlgen(self):
-        PATH = env.input_path('issue_273.yaml')
-        dialects = ['mssql+pyodbc', 'sqlite+pysqlite', 'mysql+pymysql', 'postgresql+pygresql']
+        PATH = env.input_path("issue_273.yaml")
+        dialects = [
+            "mssql+pyodbc",
+            "sqlite+pysqlite",
+            "mysql+pymysql",
+            "postgresql+pygresql",
+        ]
         for dialect in dialects:
             gen = SQLDDLGenerator(PATH, dialect=dialect)
             ddl = gen.serialize()
-            with open(env.expected_path(f'issue_273_{dialect.replace("+","_")}.sql'), "w") as io:
+            with open(
+                env.expected_path(f'issue_273_{dialect.replace("+","_")}.sql'), "w"
+            ) as io:
                 io.write(ddl)
-            gen.write_sqla_python_imperative('test_schema')
+            gen.write_sqla_python_imperative("test_schema")
         print(ddl)
 
 
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
 import unittest
+
 import click
 
 from linkml.generators import csvgen
@@ -13,16 +14,18 @@ class GenCSVTestCase(ClickTestCase):
     env = env
 
     def test_help(self):
-        self.do_test("--help", 'help')
+        self.do_test("--help", "help")
 
     def test_meta(self):
-        self.do_test([], 'meta.csv')
-        self.do_test('-f tsv', 'meta.tsv')
-        self.do_test('-f xsv', 'meta_error', expected_error=click.exceptions.BadParameter)
-        self.do_test(["-r", "schema_definition"], 'meta_sd')
-        self.do_test(["-r", "schema_definition", "-r", "slot_definition"], 'meta_sd_sd')
-        self.do_test(["-r", "nada"], 'meta_sd', expected_error=ValueError)
+        self.do_test([], "meta.csv")
+        self.do_test("-f tsv", "meta.tsv")
+        self.do_test(
+            "-f xsv", "meta_error", expected_error=click.exceptions.BadParameter
+        )
+        self.do_test(["-r", "schema_definition"], "meta_sd")
+        self.do_test(["-r", "schema_definition", "-r", "slot_definition"], "meta_sd_sd")
+        self.do_test(["-r", "nada"], "meta_sd", expected_error=ValueError)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

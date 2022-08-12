@@ -12,8 +12,8 @@ class PyyamlLoadSignatureUpdate(unittest.TestCase):
     def test_yaml_load(self):
         """Test case to ensure that we are using the right
         signature for the yaml.load() method."""
-        
-        # negative test case to check TypeError is raised 
+
+        # negative test case to check TypeError is raised
         # when we don't pass value to Loader argument
         with open(SCHEMA) as f:
             with self.assertRaises(TypeError):

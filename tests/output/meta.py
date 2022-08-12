@@ -16,24 +16,28 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
 import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+import sys
 from dataclasses import dataclass
+from typing import Any, ClassVar, Dict, List, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.dataclass_extensions_376 import \
+    dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
+from linkml_runtime.utils.metamodelcore import (URI, Bool, NCName, URIorCURIE,
+                                                XSDDateTime, bnode, empty_dict,
+                                                empty_list)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
+                                            extended_int, extended_str)
+from rdflib import Namespace, URIRef
+
 from .annotations import Annotation, AnnotationTag
 from .extensions import Extension, ExtensionTag
 from .types import Boolean, Datetime, Integer, Ncname, String, Uri, Uriorcurie
-from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
 version = "2.0.0"

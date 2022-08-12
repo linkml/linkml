@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
-from typing import Union, List, Dict
+from typing import Dict, List, Union
 
-from linkml_runtime.linkml_model import SchemaDefinition, ClassDefinition, SlotDefinition, Prefix, PermissibleValue, \
-    EnumDefinition
+from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
+                                         PermissibleValue, Prefix,
+                                         SchemaDefinition, SlotDefinition)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 
@@ -11,18 +12,24 @@ class SchemaBuilder:
     """
     Builder class for SchemaDefinitions
     """
+
     name: str = None
     schema: SchemaDefinition = None
 
     def __post_init__(self):
         name = self.name
         if name is None:
-            name = 'test-schema'
-        self.schema = SchemaDefinition(id=f'http://example.org/{name}',
-                                       name=name)
+            name = "test-schema"
+        self.schema = SchemaDefinition(id=f"http://example.org/{name}", name=name)
 
-    def add_class(self, cls: Union[ClassDefinition, str], slots: List[Union[str, SlotDefinition]] = None,
-                  slot_usage: Dict[str, SlotDefinition] = None, use_attributes=False, **kwargs) -> "SchemaBuilder":
+    def add_class(
+        self,
+        cls: Union[ClassDefinition, str],
+        slots: List[Union[str, SlotDefinition]] = None,
+        slot_usage: Dict[str, SlotDefinition] = None,
+        use_attributes=False,
+        **kwargs,
+    ) -> "SchemaBuilder":
         """
         Adds a class to the schema
 
@@ -40,7 +47,9 @@ class SchemaBuilder:
                 if isinstance(s, SlotDefinition):
                     cls.attributes[s.name] = s
                 else:
-                    raise ValueError(f'If use_attributes=True then slots must be SlotDefinitions')
+                    raise ValueError(
+                        f"If use_attributes=True then slots must be SlotDefinitions"
+                    )
         else:
             if slots is not None:
                 for s in slots:
@@ -52,7 +61,9 @@ class SchemaBuilder:
             setattr(cls, k, v)
         return self
 
-    def add_slot(self, slot: Union[SlotDefinition, Dict, str], class_name: str = None) -> "SchemaBuilder":
+    def add_slot(
+        self, slot: Union[SlotDefinition, Dict, str], class_name: str = None
+    ) -> "SchemaBuilder":
         """
         Adds the slot to the schema
 
@@ -82,8 +93,11 @@ class SchemaBuilder:
             setattr(slot, k, v)
         return self
 
-    def add_enum(self, enum_def: Union[EnumDefinition, str], permissible_values: List[Union[str, PermissibleValue]] = None
-                  ) -> "SchemaBuilder":
+    def add_enum(
+        self,
+        enum_def: Union[EnumDefinition, str],
+        permissible_values: List[Union[str, PermissibleValue]] = None,
+    ) -> "SchemaBuilder":
         """
         Adds an enum to the schema
 

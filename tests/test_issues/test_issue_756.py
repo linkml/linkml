@@ -1,9 +1,10 @@
 import unittest
+
+import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 
 from tests.test_issues.environment import env
-import yaml
 
 # tests/test_issues/input/issue_756.yaml
 SCHEMA = env.input_path("issue_756.yaml")
@@ -18,5 +19,5 @@ class MyTestCase(unittest.TestCase):
         print(test_ae)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

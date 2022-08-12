@@ -11,15 +11,12 @@ class IssueSQLGenTestCase(TestEnvironmentTestCase):
 
     @unittest.skip("Issue 288 needs to be fixed")
     def test_sqlddlgen(self):
-        PATH = env.input_path('issue_288.yaml')
-        ddl = SQLDDLGenerator(PATH, dialect='mssql+pyodbc').serialize()
-        with open(env.input_path('issue_288.sql'), "w") as io:
+        PATH = env.input_path("issue_288.yaml")
+        ddl = SQLDDLGenerator(PATH, dialect="mssql+pyodbc").serialize()
+        with open(env.input_path("issue_288.sql"), "w") as io:
             io.write(ddl)
         print(ddl)
 
 
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

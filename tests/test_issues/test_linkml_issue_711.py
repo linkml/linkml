@@ -1,12 +1,11 @@
 import unittest
 
-from rdflib import URIRef, Graph, Namespace
-from rdflib.namespace import RDFS, DCTERMS
+from rdflib import Graph, Namespace, URIRef
+from rdflib.namespace import DCTERMS, RDFS
 
-from linkml.generators.owlgen import OwlSchemaGenerator, MetadataProfile
-
-from tests.utils.test_environment import TestEnvironmentTestCase
+from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from tests.test_issues.environment import env
+from tests.utils.test_environment import TestEnvironmentTestCase
 
 # reported in https://github.com/linkml/linkml/issues/711
 # export custom annotations
@@ -71,21 +70,24 @@ slots:
     description: Family name. In the U.S., the last name of a Person.
 """
 
-AE = Namespace('http://example.org/annotation-export#')
-OA = Namespace('http://www.w3.org/ns/oa#')
+AE = Namespace("http://example.org/annotation-export#")
+OA = Namespace("http://www.w3.org/ns/oa#")
+
 
 class IssueAnnotationExportCase(TestEnvironmentTestCase):
     env = env
 
     def test_owlgen_annotation_export(self):
         # export the source schema containing both title and description
-        gen = OwlSchemaGenerator(schema_str,
-                                 ontology_uri_suffix=None,
-                                 type_objects=False,
-                                 metaclasses=False,
-                                 add_ols_annotations=True,
-                                 metadata_profile=MetadataProfile.rdfs,
-                                 format="ttl")
+        gen = OwlSchemaGenerator(
+            schema_str,
+            ontology_uri_suffix=None,
+            type_objects=False,
+            metaclasses=False,
+            add_ols_annotations=True,
+            metadata_profile=MetadataProfile.rdfs,
+            format="ttl",
+        )
         output = gen.serialize()
 
         # load back via rdflib
@@ -93,14 +95,10 @@ class IssueAnnotationExportCase(TestEnvironmentTestCase):
         graph.parse(data=output, format="ttl")
 
         # check annotations have been exported for class 'Person'
-        self._test_subject_annotations(subject=AE.Person, 
-                                       graph=graph)
+        self._test_subject_annotations(subject=AE.Person, graph=graph)
 
         # check annotations have been exported for slot 'name'
-        self._test_subject_annotations(subject=AE.name,
-                                       graph=graph)
-        
-
+        self._test_subject_annotations(subject=AE.name, graph=graph)
 
     def _test_subject_annotations(self, subject, graph):
         # annotation without a prefix in source YAML
@@ -109,14 +107,15 @@ class IssueAnnotationExportCase(TestEnvironmentTestCase):
         assert (subject, AE.metadata, None) in graph
         # oa:describing is prefixed with prefix not in local scheme, but present in metamodel
         assert (subject, OA.describing, None) in graph
-        # annotation with unknown prefix is skipped silently 
+        # annotation with unknown prefix is skipped silently
         # err:non_existing must not be present in the result
         predicates = list(graph.predicates(subject=subject, object=None))
         for pred in predicates:
-            self.assertFalse("non_existing" in pred,
-                             f"Annotation err:non_existing for {subject} should be skipped, but is present in the result.")
+            self.assertFalse(
+                "non_existing" in pred,
+                f"Annotation err:non_existing for {subject} should be skipped, but is present in the result.",
+            )
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

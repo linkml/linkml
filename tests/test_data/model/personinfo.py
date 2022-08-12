@@ -7,23 +7,27 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
 import re
-from jsonasobj2 import JsonObj, as_dict
-from typing import Optional, List, Union, Dict, ClassVar, Any
+import sys
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
+from typing import Any, ClassVar, Dict, List, Optional, Union
 
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from jsonasobj2 import JsonObj, as_dict
+from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
+                                              PvFormulaOptions)
+from linkml_runtime.linkml_model.types import (Boolean, Date, Float, Integer,
+                                               String)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import Boolean, Date, Float, Integer, String
-from linkml_runtime.utils.metamodelcore import Bool, XSDDate
+from linkml_runtime.utils.dataclass_extensions_376 import \
+    dataclasses_init_fn_with_kwargs
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
+from linkml_runtime.utils.metamodelcore import (Bool, XSDDate, bnode,
+                                                empty_dict, empty_list)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
+                                            extended_int, extended_str)
+from rdflib import Namespace, URIRef
 
 metamodel_version = "1.7.0"
 version = None
@@ -32,18 +36,20 @@ version = None
 dataclasses._init_fn = dataclasses_init_fn_with_kwargs
 
 # Namespaces
-GSSO = CurieNamespace('GSSO', 'http://purl.obolibrary.org/obo/GSSO_')
-ONT = CurieNamespace('ONT', 'http://example.org/ont/')
-X = CurieNamespace('X', 'http://example.org/data/')
-FAMREL = CurieNamespace('famrel', 'https://example.org/FamilialRelations#')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-PERSONINFO = CurieNamespace('personinfo', 'https://w3id.org/linkml/examples/personinfo/')
-PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
-RDF = CurieNamespace('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-RDFS = CurieNamespace('rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
-SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+GSSO = CurieNamespace("GSSO", "http://purl.obolibrary.org/obo/GSSO_")
+ONT = CurieNamespace("ONT", "http://example.org/ont/")
+X = CurieNamespace("X", "http://example.org/data/")
+FAMREL = CurieNamespace("famrel", "https://example.org/FamilialRelations#")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+PERSONINFO = CurieNamespace(
+    "personinfo", "https://w3id.org/linkml/examples/personinfo/"
+)
+PROV = CurieNamespace("prov", "http://www.w3.org/ns/prov#")
+RDF = CurieNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+RDFS = CurieNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
+SCHEMA = CurieNamespace("schema", "http://schema.org/")
+SKOS = CurieNamespace("skos", "http://www.w3.org/2004/02/skos/core#")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = PERSONINFO
 
 
@@ -87,6 +93,7 @@ class NamedThing(YAMLRoot):
     """
     A generic grouping for any identifiable entity
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = PERSONINFO.NamedThing
@@ -122,6 +129,7 @@ class Person(NamedThing):
     """
     A person (alive, dead, undead, or fictional).
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SCHEMA.Person
@@ -135,11 +143,22 @@ class Person(NamedThing):
     age_in_years: Optional[int] = None
     gender: Optional[Union[str, "GenderType"]] = None
     current_address: Optional[Union[dict, "Address"]] = None
-    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]] = empty_list()
-    has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], List[Union[dict, "FamilialRelationship"]]]] = empty_list()
-    has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]] = empty_list()
+    has_employment_history: Optional[
+        Union[Union[dict, "EmploymentEvent"], List[Union[dict, "EmploymentEvent"]]]
+    ] = empty_list()
+    has_familial_relationships: Optional[
+        Union[
+            Union[dict, "FamilialRelationship"],
+            List[Union[dict, "FamilialRelationship"]],
+        ]
+    ] = empty_list()
+    has_medical_history: Optional[
+        Union[Union[dict, "MedicalEvent"], List[Union[dict, "MedicalEvent"]]]
+    ] = empty_list()
     aliases: Optional[Union[str, List[str]]] = empty_list()
-    has_news_events: Optional[Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]] = empty_list()
+    has_news_events: Optional[
+        Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -159,28 +178,58 @@ class Person(NamedThing):
         if self.gender is not None and not isinstance(self.gender, GenderType):
             self.gender = GenderType(self.gender)
 
-        if self.current_address is not None and not isinstance(self.current_address, Address):
+        if self.current_address is not None and not isinstance(
+            self.current_address, Address
+        ):
             self.current_address = Address(**as_dict(self.current_address))
 
         if not isinstance(self.has_employment_history, list):
-            self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
-        self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
+            self.has_employment_history = (
+                [self.has_employment_history]
+                if self.has_employment_history is not None
+                else []
+            )
+        self.has_employment_history = [
+            v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v))
+            for v in self.has_employment_history
+        ]
 
         if not isinstance(self.has_familial_relationships, list):
-            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
-        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
+            self.has_familial_relationships = (
+                [self.has_familial_relationships]
+                if self.has_familial_relationships is not None
+                else []
+            )
+        self.has_familial_relationships = [
+            v
+            if isinstance(v, FamilialRelationship)
+            else FamilialRelationship(**as_dict(v))
+            for v in self.has_familial_relationships
+        ]
 
         if not isinstance(self.has_medical_history, list):
-            self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
-        self.has_medical_history = [v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v)) for v in self.has_medical_history]
+            self.has_medical_history = (
+                [self.has_medical_history]
+                if self.has_medical_history is not None
+                else []
+            )
+        self.has_medical_history = [
+            v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v))
+            for v in self.has_medical_history
+        ]
 
         if not isinstance(self.aliases, list):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
         if not isinstance(self.has_news_events, list):
-            self.has_news_events = [self.has_news_events] if self.has_news_events is not None else []
-        self.has_news_events = [v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v)) for v in self.has_news_events]
+            self.has_news_events = (
+                [self.has_news_events] if self.has_news_events is not None else []
+            )
+        self.has_news_events = [
+            v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v))
+            for v in self.has_news_events
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -190,6 +239,7 @@ class HasAliases(YAMLRoot):
     """
     A mixin applied to any class that can have aliases/alternateNames
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = PERSONINFO.HasAliases
@@ -216,12 +266,19 @@ class HasNewsEvents(YAMLRoot):
     class_name: ClassVar[str] = "HasNewsEvents"
     class_model_uri: ClassVar[URIRef] = PERSONINFO.HasNewsEvents
 
-    has_news_events: Optional[Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]] = empty_list()
+    has_news_events: Optional[
+        Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if not isinstance(self.has_news_events, list):
-            self.has_news_events = [self.has_news_events] if self.has_news_events is not None else []
-        self.has_news_events = [v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v)) for v in self.has_news_events]
+            self.has_news_events = (
+                [self.has_news_events] if self.has_news_events is not None else []
+            )
+        self.has_news_events = [
+            v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v))
+            for v in self.has_news_events
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -231,6 +288,7 @@ class Organization(NamedThing):
     """
     An organization such as a company or university
     """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = SCHEMA.Organization
@@ -244,7 +302,9 @@ class Organization(NamedThing):
     founding_location: Optional[Union[str, PlaceId]] = None
     current_address: Optional[Union[dict, "Address"]] = None
     aliases: Optional[Union[str, List[str]]] = empty_list()
-    has_news_events: Optional[Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]] = empty_list()
+    has_news_events: Optional[
+        Union[Union[dict, "NewsEvent"], List[Union[dict, "NewsEvent"]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self._is_empty(self.id):
@@ -252,16 +312,22 @@ class Organization(NamedThing):
         if not isinstance(self.id, OrganizationId):
             self.id = OrganizationId(self.id)
 
-        if self.mission_statement is not None and not isinstance(self.mission_statement, str):
+        if self.mission_statement is not None and not isinstance(
+            self.mission_statement, str
+        ):
             self.mission_statement = str(self.mission_statement)
 
         if self.founding_date is not None and not isinstance(self.founding_date, str):
             self.founding_date = str(self.founding_date)
 
-        if self.founding_location is not None and not isinstance(self.founding_location, PlaceId):
+        if self.founding_location is not None and not isinstance(
+            self.founding_location, PlaceId
+        ):
             self.founding_location = PlaceId(self.founding_location)
 
-        if self.current_address is not None and not isinstance(self.current_address, Address):
+        if self.current_address is not None and not isinstance(
+            self.current_address, Address
+        ):
             self.current_address = Address(**as_dict(self.current_address))
 
         if not isinstance(self.aliases, list):
@@ -269,8 +335,13 @@ class Organization(NamedThing):
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
         if not isinstance(self.has_news_events, list):
-            self.has_news_events = [self.has_news_events] if self.has_news_events is not None else []
-        self.has_news_events = [v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v)) for v in self.has_news_events]
+            self.has_news_events = (
+                [self.has_news_events] if self.has_news_events is not None else []
+            )
+        self.has_news_events = [
+            v if isinstance(v, NewsEvent) else NewsEvent(**as_dict(v))
+            for v in self.has_news_events
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -345,10 +416,14 @@ class Event(YAMLRoot):
     is_current: Optional[Union[bool, Bool]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
+        if self.started_at_time is not None and not isinstance(
+            self.started_at_time, XSDDate
+        ):
             self.started_at_time = XSDDate(self.started_at_time)
 
-        if self.ended_at_time is not None and not isinstance(self.ended_at_time, XSDDate):
+        if self.ended_at_time is not None and not isinstance(
+            self.ended_at_time, XSDDate
+        ):
             self.ended_at_time = XSDDate(self.ended_at_time)
 
         if self.duration is not None and not isinstance(self.duration, float):
@@ -435,16 +510,22 @@ class Relationship(YAMLRoot):
     type: Optional[Union[str, "FamilialRelationshipType"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.started_at_time is not None and not isinstance(self.started_at_time, XSDDate):
+        if self.started_at_time is not None and not isinstance(
+            self.started_at_time, XSDDate
+        ):
             self.started_at_time = XSDDate(self.started_at_time)
 
-        if self.ended_at_time is not None and not isinstance(self.ended_at_time, XSDDate):
+        if self.ended_at_time is not None and not isinstance(
+            self.ended_at_time, XSDDate
+        ):
             self.ended_at_time = XSDDate(self.ended_at_time)
 
         if self.related_to is not None and not isinstance(self.related_to, str):
             self.related_to = str(self.related_to)
 
-        if self.type is not None and not isinstance(self.type, FamilialRelationshipType):
+        if self.type is not None and not isinstance(
+            self.type, FamilialRelationshipType
+        ):
             self.type = FamilialRelationshipType(self.type)
 
         super().__post_init__(**kwargs)
@@ -488,7 +569,9 @@ class EmploymentEvent(Event):
     employed_at: Optional[Union[str, OrganizationId]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        if self.employed_at is not None and not isinstance(self.employed_at, OrganizationId):
+        if self.employed_at is not None and not isinstance(
+            self.employed_at, OrganizationId
+        ):
             self.employed_at = OrganizationId(self.employed_at)
 
         super().__post_init__(**kwargs)
@@ -511,10 +594,14 @@ class MedicalEvent(Event):
         if self.in_location is not None and not isinstance(self.in_location, PlaceId):
             self.in_location = PlaceId(self.in_location)
 
-        if self.diagnosis is not None and not isinstance(self.diagnosis, DiagnosisConcept):
+        if self.diagnosis is not None and not isinstance(
+            self.diagnosis, DiagnosisConcept
+        ):
             self.diagnosis = DiagnosisConcept(**as_dict(self.diagnosis))
 
-        if self.procedure is not None and not isinstance(self.procedure, ProcedureConcept):
+        if self.procedure is not None and not isinstance(
+            self.procedure, ProcedureConcept
+        ):
             self.procedure = ProcedureConcept(**as_dict(self.procedure))
 
         super().__post_init__(**kwargs)
@@ -586,19 +673,36 @@ class Container(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Container
 
     name: Optional[str] = None
-    persons: Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]] = empty_dict()
-    organizations: Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]] = empty_dict()
-    places: Optional[Union[Dict[Union[str, PlaceId], Union[dict, Place]], List[Union[dict, Place]]]] = empty_dict()
+    persons: Optional[
+        Union[
+            Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]
+        ]
+    ] = empty_dict()
+    organizations: Optional[
+        Union[
+            Dict[Union[str, OrganizationId], Union[dict, Organization]],
+            List[Union[dict, Organization]],
+        ]
+    ] = empty_dict()
+    places: Optional[
+        Union[Dict[Union[str, PlaceId], Union[dict, Place]], List[Union[dict, Place]]]
+    ] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="persons", slot_type=Person, key_name="id", keyed=True
+        )
 
-        self._normalize_inlined_as_list(slot_name="organizations", slot_type=Organization, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="organizations", slot_type=Organization, key_name="id", keyed=True
+        )
 
-        self._normalize_inlined_as_list(slot_name="places", slot_type=Place, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="places", slot_type=Place, key_name="id", keyed=True
+        )
 
         super().__post_init__(**kwargs)
 
@@ -606,35 +710,30 @@ class Container(YAMLRoot):
 # Enumerations
 class FamilialRelationshipType(EnumDefinitionImpl):
 
-    SIBLING_OF = PermissibleValue(text="SIBLING_OF",
-                                           meaning=FAMREL["01"])
-    PARENT_OF = PermissibleValue(text="PARENT_OF",
-                                         meaning=FAMREL["02"])
-    CHILD_OF = PermissibleValue(text="CHILD_OF",
-                                       meaning=FAMREL["01"])
+    SIBLING_OF = PermissibleValue(text="SIBLING_OF", meaning=FAMREL["01"])
+    PARENT_OF = PermissibleValue(text="PARENT_OF", meaning=FAMREL["02"])
+    CHILD_OF = PermissibleValue(text="CHILD_OF", meaning=FAMREL["01"])
 
     _defn = EnumDefinition(
         name="FamilialRelationshipType",
     )
 
+
 class GenderType(EnumDefinitionImpl):
 
-    nonbinary_man = PermissibleValue(text="nonbinary_man",
-                                                 meaning=GSSO["009254"])
-    nonbinary_woman = PermissibleValue(text="nonbinary_woman",
-                                                     meaning=GSSO["009253"])
-    transgender_woman = PermissibleValue(text="transgender_woman",
-                                                         meaning=GSSO["000384"])
-    transgender_man = PermissibleValue(text="transgender_man",
-                                                     meaning=GSSO["000372"])
-    cisgender_man = PermissibleValue(text="cisgender_man",
-                                                 meaning=GSSO["000371"])
-    cisgender_woman = PermissibleValue(text="cisgender_woman",
-                                                     meaning=GSSO["000385"])
+    nonbinary_man = PermissibleValue(text="nonbinary_man", meaning=GSSO["009254"])
+    nonbinary_woman = PermissibleValue(text="nonbinary_woman", meaning=GSSO["009253"])
+    transgender_woman = PermissibleValue(
+        text="transgender_woman", meaning=GSSO["000384"]
+    )
+    transgender_man = PermissibleValue(text="transgender_man", meaning=GSSO["000372"])
+    cisgender_man = PermissibleValue(text="cisgender_man", meaning=GSSO["000371"])
+    cisgender_woman = PermissibleValue(text="cisgender_woman", meaning=GSSO["000385"])
 
     _defn = EnumDefinition(
         name="GenderType",
     )
+
 
 class DiagnosisType(EnumDefinitionImpl):
 
@@ -642,121 +741,372 @@ class DiagnosisType(EnumDefinitionImpl):
         name="DiagnosisType",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.id = Slot(uri=SCHEMA.identifier, name="id", curie=SCHEMA.curie('identifier'),
-                   model_uri=PERSONINFO.id, domain=None, range=URIRef)
 
-slots.name = Slot(uri=SCHEMA.name, name="name", curie=SCHEMA.curie('name'),
-                   model_uri=PERSONINFO.name, domain=None, range=Optional[str])
+slots.id = Slot(
+    uri=SCHEMA.identifier,
+    name="id",
+    curie=SCHEMA.curie("identifier"),
+    model_uri=PERSONINFO.id,
+    domain=None,
+    range=URIRef,
+)
 
-slots.description = Slot(uri=SCHEMA.description, name="description", curie=SCHEMA.curie('description'),
-                   model_uri=PERSONINFO.description, domain=None, range=Optional[str])
+slots.name = Slot(
+    uri=SCHEMA.name,
+    name="name",
+    curie=SCHEMA.curie("name"),
+    model_uri=PERSONINFO.name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.image = Slot(uri=SCHEMA.image, name="image", curie=SCHEMA.curie('image'),
-                   model_uri=PERSONINFO.image, domain=None, range=Optional[str])
+slots.description = Slot(
+    uri=SCHEMA.description,
+    name="description",
+    curie=SCHEMA.curie("description"),
+    model_uri=PERSONINFO.description,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.gender = Slot(uri=SCHEMA.gender, name="gender", curie=SCHEMA.curie('gender'),
-                   model_uri=PERSONINFO.gender, domain=None, range=Optional[Union[str, "GenderType"]])
+slots.image = Slot(
+    uri=SCHEMA.image,
+    name="image",
+    curie=SCHEMA.curie("image"),
+    model_uri=PERSONINFO.image,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.primary_email = Slot(uri=SCHEMA.email, name="primary_email", curie=SCHEMA.curie('email'),
-                   model_uri=PERSONINFO.primary_email, domain=None, range=Optional[str])
+slots.gender = Slot(
+    uri=SCHEMA.gender,
+    name="gender",
+    curie=SCHEMA.curie("gender"),
+    model_uri=PERSONINFO.gender,
+    domain=None,
+    range=Optional[Union[str, "GenderType"]],
+)
 
-slots.birth_date = Slot(uri=SCHEMA.birthDate, name="birth_date", curie=SCHEMA.curie('birthDate'),
-                   model_uri=PERSONINFO.birth_date, domain=None, range=Optional[str])
+slots.primary_email = Slot(
+    uri=SCHEMA.email,
+    name="primary_email",
+    curie=SCHEMA.curie("email"),
+    model_uri=PERSONINFO.primary_email,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.employed_at = Slot(uri=PERSONINFO.employed_at, name="employed_at", curie=PERSONINFO.curie('employed_at'),
-                   model_uri=PERSONINFO.employed_at, domain=None, range=Optional[Union[str, OrganizationId]])
+slots.birth_date = Slot(
+    uri=SCHEMA.birthDate,
+    name="birth_date",
+    curie=SCHEMA.curie("birthDate"),
+    model_uri=PERSONINFO.birth_date,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.is_current = Slot(uri=PERSONINFO.is_current, name="is_current", curie=PERSONINFO.curie('is_current'),
-                   model_uri=PERSONINFO.is_current, domain=None, range=Optional[Union[bool, Bool]])
+slots.employed_at = Slot(
+    uri=PERSONINFO.employed_at,
+    name="employed_at",
+    curie=PERSONINFO.curie("employed_at"),
+    model_uri=PERSONINFO.employed_at,
+    domain=None,
+    range=Optional[Union[str, OrganizationId]],
+)
 
-slots.has_employment_history = Slot(uri=PERSONINFO.has_employment_history, name="has_employment_history", curie=PERSONINFO.curie('has_employment_history'),
-                   model_uri=PERSONINFO.has_employment_history, domain=None, range=Optional[Union[Union[dict, EmploymentEvent], List[Union[dict, EmploymentEvent]]]])
+slots.is_current = Slot(
+    uri=PERSONINFO.is_current,
+    name="is_current",
+    curie=PERSONINFO.curie("is_current"),
+    model_uri=PERSONINFO.is_current,
+    domain=None,
+    range=Optional[Union[bool, Bool]],
+)
 
-slots.has_medical_history = Slot(uri=PERSONINFO.has_medical_history, name="has_medical_history", curie=PERSONINFO.curie('has_medical_history'),
-                   model_uri=PERSONINFO.has_medical_history, domain=None, range=Optional[Union[Union[dict, MedicalEvent], List[Union[dict, MedicalEvent]]]])
+slots.has_employment_history = Slot(
+    uri=PERSONINFO.has_employment_history,
+    name="has_employment_history",
+    curie=PERSONINFO.curie("has_employment_history"),
+    model_uri=PERSONINFO.has_employment_history,
+    domain=None,
+    range=Optional[
+        Union[Union[dict, EmploymentEvent], List[Union[dict, EmploymentEvent]]]
+    ],
+)
 
-slots.has_familial_relationships = Slot(uri=PERSONINFO.has_familial_relationships, name="has_familial_relationships", curie=PERSONINFO.curie('has_familial_relationships'),
-                   model_uri=PERSONINFO.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]]])
+slots.has_medical_history = Slot(
+    uri=PERSONINFO.has_medical_history,
+    name="has_medical_history",
+    curie=PERSONINFO.curie("has_medical_history"),
+    model_uri=PERSONINFO.has_medical_history,
+    domain=None,
+    range=Optional[Union[Union[dict, MedicalEvent], List[Union[dict, MedicalEvent]]]],
+)
 
-slots.children = Slot(uri=PERSONINFO.children, name="children", curie=PERSONINFO.curie('children'),
-                   model_uri=PERSONINFO.children, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
+slots.has_familial_relationships = Slot(
+    uri=PERSONINFO.has_familial_relationships,
+    name="has_familial_relationships",
+    curie=PERSONINFO.curie("has_familial_relationships"),
+    model_uri=PERSONINFO.has_familial_relationships,
+    domain=None,
+    range=Optional[
+        Union[
+            Union[dict, FamilialRelationship], List[Union[dict, FamilialRelationship]]
+        ]
+    ],
+)
 
-slots.in_location = Slot(uri=PERSONINFO.in_location, name="in_location", curie=PERSONINFO.curie('in_location'),
-                   model_uri=PERSONINFO.in_location, domain=None, range=Optional[Union[str, PlaceId]])
+slots.children = Slot(
+    uri=PERSONINFO.children,
+    name="children",
+    curie=PERSONINFO.curie("children"),
+    model_uri=PERSONINFO.children,
+    domain=None,
+    range=Optional[
+        Union[
+            Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]
+        ]
+    ],
+)
 
-slots.current_address = Slot(uri=PERSONINFO.current_address, name="current_address", curie=PERSONINFO.curie('current_address'),
-                   model_uri=PERSONINFO.current_address, domain=None, range=Optional[Union[dict, Address]])
+slots.in_location = Slot(
+    uri=PERSONINFO.in_location,
+    name="in_location",
+    curie=PERSONINFO.curie("in_location"),
+    model_uri=PERSONINFO.in_location,
+    domain=None,
+    range=Optional[Union[str, PlaceId]],
+)
 
-slots.age_in_years = Slot(uri=PERSONINFO.age_in_years, name="age_in_years", curie=PERSONINFO.curie('age_in_years'),
-                   model_uri=PERSONINFO.age_in_years, domain=None, range=Optional[int])
+slots.current_address = Slot(
+    uri=PERSONINFO.current_address,
+    name="current_address",
+    curie=PERSONINFO.curie("current_address"),
+    model_uri=PERSONINFO.current_address,
+    domain=None,
+    range=Optional[Union[dict, Address]],
+)
 
-slots.related_to = Slot(uri=PERSONINFO.related_to, name="related_to", curie=PERSONINFO.curie('related_to'),
-                   model_uri=PERSONINFO.related_to, domain=None, range=Optional[str])
+slots.age_in_years = Slot(
+    uri=PERSONINFO.age_in_years,
+    name="age_in_years",
+    curie=PERSONINFO.curie("age_in_years"),
+    model_uri=PERSONINFO.age_in_years,
+    domain=None,
+    range=Optional[int],
+)
 
-slots.type = Slot(uri=PERSONINFO.type, name="type", curie=PERSONINFO.curie('type'),
-                   model_uri=PERSONINFO.type, domain=None, range=Optional[Union[str, "FamilialRelationshipType"]])
+slots.related_to = Slot(
+    uri=PERSONINFO.related_to,
+    name="related_to",
+    curie=PERSONINFO.curie("related_to"),
+    model_uri=PERSONINFO.related_to,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.street = Slot(uri=PERSONINFO.street, name="street", curie=PERSONINFO.curie('street'),
-                   model_uri=PERSONINFO.street, domain=None, range=Optional[str])
+slots.type = Slot(
+    uri=PERSONINFO.type,
+    name="type",
+    curie=PERSONINFO.curie("type"),
+    model_uri=PERSONINFO.type,
+    domain=None,
+    range=Optional[Union[str, "FamilialRelationshipType"]],
+)
 
-slots.city = Slot(uri=PERSONINFO.city, name="city", curie=PERSONINFO.curie('city'),
-                   model_uri=PERSONINFO.city, domain=None, range=Optional[str])
+slots.street = Slot(
+    uri=PERSONINFO.street,
+    name="street",
+    curie=PERSONINFO.curie("street"),
+    model_uri=PERSONINFO.street,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.mission_statement = Slot(uri=PERSONINFO.mission_statement, name="mission_statement", curie=PERSONINFO.curie('mission_statement'),
-                   model_uri=PERSONINFO.mission_statement, domain=None, range=Optional[str])
+slots.city = Slot(
+    uri=PERSONINFO.city,
+    name="city",
+    curie=PERSONINFO.curie("city"),
+    model_uri=PERSONINFO.city,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.founding_date = Slot(uri=PERSONINFO.founding_date, name="founding_date", curie=PERSONINFO.curie('founding_date'),
-                   model_uri=PERSONINFO.founding_date, domain=None, range=Optional[str])
+slots.mission_statement = Slot(
+    uri=PERSONINFO.mission_statement,
+    name="mission_statement",
+    curie=PERSONINFO.curie("mission_statement"),
+    model_uri=PERSONINFO.mission_statement,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.founding_location = Slot(uri=PERSONINFO.founding_location, name="founding_location", curie=PERSONINFO.curie('founding_location'),
-                   model_uri=PERSONINFO.founding_location, domain=None, range=Optional[Union[str, PlaceId]])
+slots.founding_date = Slot(
+    uri=PERSONINFO.founding_date,
+    name="founding_date",
+    curie=PERSONINFO.curie("founding_date"),
+    model_uri=PERSONINFO.founding_date,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.postal_code = Slot(uri=PERSONINFO.postal_code, name="postal_code", curie=PERSONINFO.curie('postal_code'),
-                   model_uri=PERSONINFO.postal_code, domain=None, range=Optional[str])
+slots.founding_location = Slot(
+    uri=PERSONINFO.founding_location,
+    name="founding_location",
+    curie=PERSONINFO.curie("founding_location"),
+    model_uri=PERSONINFO.founding_location,
+    domain=None,
+    range=Optional[Union[str, PlaceId]],
+)
 
-slots.started_at_time = Slot(uri=PROV.startedAtTime, name="started_at_time", curie=PROV.curie('startedAtTime'),
-                   model_uri=PERSONINFO.started_at_time, domain=None, range=Optional[Union[str, XSDDate]])
+slots.postal_code = Slot(
+    uri=PERSONINFO.postal_code,
+    name="postal_code",
+    curie=PERSONINFO.curie("postal_code"),
+    model_uri=PERSONINFO.postal_code,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.duration = Slot(uri=PERSONINFO.duration, name="duration", curie=PERSONINFO.curie('duration'),
-                   model_uri=PERSONINFO.duration, domain=None, range=Optional[float])
+slots.started_at_time = Slot(
+    uri=PROV.startedAtTime,
+    name="started_at_time",
+    curie=PROV.curie("startedAtTime"),
+    model_uri=PERSONINFO.started_at_time,
+    domain=None,
+    range=Optional[Union[str, XSDDate]],
+)
 
-slots.diagnosis = Slot(uri=PERSONINFO.diagnosis, name="diagnosis", curie=PERSONINFO.curie('diagnosis'),
-                   model_uri=PERSONINFO.diagnosis, domain=None, range=Optional[Union[dict, DiagnosisConcept]])
+slots.duration = Slot(
+    uri=PERSONINFO.duration,
+    name="duration",
+    curie=PERSONINFO.curie("duration"),
+    model_uri=PERSONINFO.duration,
+    domain=None,
+    range=Optional[float],
+)
 
-slots.procedure = Slot(uri=PERSONINFO.procedure, name="procedure", curie=PERSONINFO.curie('procedure'),
-                   model_uri=PERSONINFO.procedure, domain=None, range=Optional[Union[dict, ProcedureConcept]])
+slots.diagnosis = Slot(
+    uri=PERSONINFO.diagnosis,
+    name="diagnosis",
+    curie=PERSONINFO.curie("diagnosis"),
+    model_uri=PERSONINFO.diagnosis,
+    domain=None,
+    range=Optional[Union[dict, DiagnosisConcept]],
+)
 
-slots.ended_at_time = Slot(uri=PROV.endedAtTime, name="ended_at_time", curie=PROV.curie('endedAtTime'),
-                   model_uri=PERSONINFO.ended_at_time, domain=None, range=Optional[Union[str, XSDDate]])
+slots.procedure = Slot(
+    uri=PERSONINFO.procedure,
+    name="procedure",
+    curie=PERSONINFO.curie("procedure"),
+    model_uri=PERSONINFO.procedure,
+    domain=None,
+    range=Optional[Union[dict, ProcedureConcept]],
+)
 
-slots.persons = Slot(uri=PERSONINFO.persons, name="persons", curie=PERSONINFO.curie('persons'),
-                   model_uri=PERSONINFO.persons, domain=None, range=Optional[Union[Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]]])
+slots.ended_at_time = Slot(
+    uri=PROV.endedAtTime,
+    name="ended_at_time",
+    curie=PROV.curie("endedAtTime"),
+    model_uri=PERSONINFO.ended_at_time,
+    domain=None,
+    range=Optional[Union[str, XSDDate]],
+)
 
-slots.organizations = Slot(uri=PERSONINFO.organizations, name="organizations", curie=PERSONINFO.curie('organizations'),
-                   model_uri=PERSONINFO.organizations, domain=None, range=Optional[Union[Dict[Union[str, OrganizationId], Union[dict, Organization]], List[Union[dict, Organization]]]])
+slots.persons = Slot(
+    uri=PERSONINFO.persons,
+    name="persons",
+    curie=PERSONINFO.curie("persons"),
+    model_uri=PERSONINFO.persons,
+    domain=None,
+    range=Optional[
+        Union[
+            Dict[Union[str, PersonId], Union[dict, Person]], List[Union[dict, Person]]
+        ]
+    ],
+)
 
-slots.places = Slot(uri=PERSONINFO.places, name="places", curie=PERSONINFO.curie('places'),
-                   model_uri=PERSONINFO.places, domain=None, range=Optional[Union[Dict[Union[str, PlaceId], Union[dict, Place]], List[Union[dict, Place]]]])
+slots.organizations = Slot(
+    uri=PERSONINFO.organizations,
+    name="organizations",
+    curie=PERSONINFO.curie("organizations"),
+    model_uri=PERSONINFO.organizations,
+    domain=None,
+    range=Optional[
+        Union[
+            Dict[Union[str, OrganizationId], Union[dict, Organization]],
+            List[Union[dict, Organization]],
+        ]
+    ],
+)
 
-slots.hasAliases__aliases = Slot(uri=PERSONINFO.aliases, name="hasAliases__aliases", curie=PERSONINFO.curie('aliases'),
-                   model_uri=PERSONINFO.hasAliases__aliases, domain=None, range=Optional[Union[str, List[str]]])
+slots.places = Slot(
+    uri=PERSONINFO.places,
+    name="places",
+    curie=PERSONINFO.curie("places"),
+    model_uri=PERSONINFO.places,
+    domain=None,
+    range=Optional[
+        Union[Dict[Union[str, PlaceId], Union[dict, Place]], List[Union[dict, Place]]]
+    ],
+)
 
-slots.hasNewsEvents__has_news_events = Slot(uri=PERSONINFO.has_news_events, name="hasNewsEvents__has_news_events", curie=PERSONINFO.curie('has_news_events'),
-                   model_uri=PERSONINFO.hasNewsEvents__has_news_events, domain=None, range=Optional[Union[Union[dict, NewsEvent], List[Union[dict, NewsEvent]]]])
+slots.hasAliases__aliases = Slot(
+    uri=PERSONINFO.aliases,
+    name="hasAliases__aliases",
+    curie=PERSONINFO.curie("aliases"),
+    model_uri=PERSONINFO.hasAliases__aliases,
+    domain=None,
+    range=Optional[Union[str, List[str]]],
+)
 
-slots.newsEvent__headline = Slot(uri=PERSONINFO.headline, name="newsEvent__headline", curie=PERSONINFO.curie('headline'),
-                   model_uri=PERSONINFO.newsEvent__headline, domain=None, range=Optional[str])
+slots.hasNewsEvents__has_news_events = Slot(
+    uri=PERSONINFO.has_news_events,
+    name="hasNewsEvents__has_news_events",
+    curie=PERSONINFO.curie("has_news_events"),
+    model_uri=PERSONINFO.hasNewsEvents__has_news_events,
+    domain=None,
+    range=Optional[Union[Union[dict, NewsEvent], List[Union[dict, NewsEvent]]]],
+)
 
-slots.Person_primary_email = Slot(uri=SCHEMA.email, name="Person_primary_email", curie=SCHEMA.curie('email'),
-                   model_uri=PERSONINFO.Person_primary_email, domain=Person, range=Optional[str],
-                   pattern=re.compile(r'^\S+@[\S+\.]+\S+'))
+slots.newsEvent__headline = Slot(
+    uri=PERSONINFO.headline,
+    name="newsEvent__headline",
+    curie=PERSONINFO.curie("headline"),
+    model_uri=PERSONINFO.newsEvent__headline,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.FamilialRelationship_type = Slot(uri=PERSONINFO.type, name="FamilialRelationship_type", curie=PERSONINFO.curie('type'),
-                   model_uri=PERSONINFO.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
+slots.Person_primary_email = Slot(
+    uri=SCHEMA.email,
+    name="Person_primary_email",
+    curie=SCHEMA.curie("email"),
+    model_uri=PERSONINFO.Person_primary_email,
+    domain=Person,
+    range=Optional[str],
+    pattern=re.compile(r"^\S+@[\S+\.]+\S+"),
+)
 
-slots.FamilialRelationship_related_to = Slot(uri=PERSONINFO.related_to, name="FamilialRelationship_related_to", curie=PERSONINFO.curie('related_to'),
-                   model_uri=PERSONINFO.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
+slots.FamilialRelationship_type = Slot(
+    uri=PERSONINFO.type,
+    name="FamilialRelationship_type",
+    curie=PERSONINFO.curie("type"),
+    model_uri=PERSONINFO.FamilialRelationship_type,
+    domain=FamilialRelationship,
+    range=Union[str, "FamilialRelationshipType"],
+)
+
+slots.FamilialRelationship_related_to = Slot(
+    uri=PERSONINFO.related_to,
+    name="FamilialRelationship_related_to",
+    curie=PERSONINFO.curie("related_to"),
+    model_uri=PERSONINFO.FamilialRelationship_related_to,
+    domain=FamilialRelationship,
+    range=Union[str, PersonId],
+)

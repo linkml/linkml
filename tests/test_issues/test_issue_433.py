@@ -1,5 +1,5 @@
-import unittest
 import json
+import unittest
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.test_issues.environment import env

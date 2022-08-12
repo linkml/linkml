@@ -1,8 +1,11 @@
 from __future__ import annotations
-from datetime import datetime, date
+
+from datetime import date, datetime
 from enum import Enum
-from typing import List, Dict, Optional, Any
-from pydantic import BaseModel as BaseModel, Field
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel as BaseModel
+from pydantic import Field
 
 metamodel_version = "None"
 version = "None"

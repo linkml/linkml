@@ -3,8 +3,9 @@ import unittest
 
 class ParserErrorTestCase(unittest.TestCase):
     """Test case to make sure ParserError exception
-        type is present in the python dateutil 
-        dependency specified in the Pipfile."""
+    type is present in the python dateutil
+    dependency specified in the Pipfile."""
+
     def test_missing_exception_type(self):
         try:
             from dateutil.parser import ParserError

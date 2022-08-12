@@ -1,14 +1,14 @@
 import json
 import os
-from typing import Union, TextIO
+from typing import TextIO, Union
 
 import click
-
-from linkml_runtime.linkml_model.meta import SchemaDefinition, ClassDefinition, SlotDefinition
-
-from linkml_runtime.utils.formatutils import camelcase, be, underscore
-from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import (ClassDefinition,
+                                              SchemaDefinition, SlotDefinition)
+from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from terminusdb_client.woqlquery import WOQLQuery as WQ
+
+from linkml.utils.generator import Generator, shared_arguments
 
 # https://terminusdb.com/docs/terminusdb/#/reference/XSD_WHITELIST
 XSD_Ok = {
@@ -141,7 +141,7 @@ class TerminusdbGenerator(Generator):
 @shared_arguments(TerminusdbGenerator)
 @click.command()
 def cli(yamlfile, **args):
-    """ Generate graphql representation of a LinkML model """
+    """Generate graphql representation of a LinkML model"""
     print(TerminusdbGenerator(yamlfile, **args).serialize(**args))
 
 

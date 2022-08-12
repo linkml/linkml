@@ -4,29 +4,30 @@ from dataclasses import dataclass
 from typing import Union
 
 import click
-from SPARQLWrapper import SPARQLWrapper, N3, SPARQLWrapper2, RDFXML, TURTLE, RDF, JSON
-
-
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import Graph
+from SPARQLWrapper import (JSON, N3, RDF, RDFXML, TURTLE, SPARQLWrapper,
+                           SPARQLWrapper2)
+
 from linkml.generators.sparqlgen import SparqlGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml.reporting import CheckResult, Report
-from linkml.utils.datautils import get_dumper, _get_format, get_loader, dumpers_loaders
+from linkml.utils.datautils import (_get_format, dumpers_loaders, get_dumper,
+                                    get_loader)
 from linkml.utils.datavalidator import DataValidator
 
 
 def sparqljson2dict(row: dict):
-    return {k: v['value'] for k, v in row.items()}
+    return {k: v["value"] for k, v in row.items()}
 
 
 def _make_result(row):
     return CheckResult(
-        type=row.get('check'),
-        source=row.get('graph'),
-        subject=row.get('subject'),
-        predicate=row.get('predicate')
+        type=row.get("check"),
+        source=row.get("graph"),
+        subject=row.get("subject"),
+        predicate=row.get("predicate"),
     )
 
 
@@ -36,7 +37,7 @@ class SparqlDataValidator(DataValidator):
     schema: SchemaDefinition = None
     queries: dict = None
 
-    def validate_file(self, input: str, format: str = 'turtle', **kwargs):
+    def validate_file(self, input: str, format: str = "turtle", **kwargs):
         g = Graph()
         g.parse(input, format=format)
         return self.validate_graph(g, **kwargs)
@@ -46,10 +47,10 @@ class SparqlDataValidator(DataValidator):
             self.queries = SparqlGenerator(self.schema, **kwargs).queries
         invalid = []
         for qn, q in self.queries.items():
-            print(f'QUERY: {qn}')
+            print(f"QUERY: {qn}")
             q: str
 
-            #q = "\n".join([line for line in q.split('\n') if not line.lower().startswith('prefix')])
+            # q = "\n".join([line for line in q.split('\n') if not line.lower().startswith('prefix')])
             print(q)
             qres = g.query(q)
             try:
@@ -57,7 +58,7 @@ class SparqlDataValidator(DataValidator):
                 for row in qres:
                     invalid += row
             except Exception:
-                logging.error(f'FAILED: {qn}')
+                logging.error(f"FAILED: {qn}")
         return invalid
 
     def validate_endpoint(self, url: str, **kwargs):
@@ -67,8 +68,8 @@ class SparqlDataValidator(DataValidator):
         report = Report()
         for qn, q in self.queries.items():
             q += " LIMIT 20"
-            logging.debug(f'QUERY: {qn}')
-            logging.debug(f'{q}')
+            logging.debug(f"QUERY: {qn}")
+            logging.debug(f"{q}")
             sw = SPARQLWrapper(url)
             sw.setQuery(q)
             sw.setReturnFormat(JSON)
@@ -83,32 +84,41 @@ class SparqlDataValidator(DataValidator):
     def load_schema(self, schema: Union[str, SchemaDefinition]):
         self.schemaview = SchemaView(schema)
         self.schema = self.schemaview.schema
-        #self.schema = YAMLGenerator(schema).schema
+        # self.schema = YAMLGenerator(schema).schema
         return self.schema
 
 
 @click.command()
-@click.option("--named-graph", "-G", multiple=True,
-              help="Constrain query to a named graph")
-@click.option("--input", "-i",
-              help="Input file to validate")
-@click.option("--endpoint-url", "-U",
-              help="URL of sparql endpoint")
-@click.option("--limit", "-L",
-              help="Max results per query")
-@click.option("--output", "-o",
-              help="Path to report file")
-@click.option("--input-format", "-f",
-              type=click.Choice(list(dumpers_loaders.keys())),
-              help="Input format. Inferred from input suffix if not specified")
-@click.option("--output-format", "-t",
-              type=click.Choice(list(dumpers_loaders.keys())),
-              help="Output format. Inferred from output suffix if not specified")
-@click.option("--schema", "-s",
-              help="Path to schema specified as LinkML yaml")
-def cli(input, output=None, input_format=None, output_format=None,
-        endpoint_url=None, limit=None, named_graph=None,
-        schema=None) -> None:
+@click.option(
+    "--named-graph", "-G", multiple=True, help="Constrain query to a named graph"
+)
+@click.option("--input", "-i", help="Input file to validate")
+@click.option("--endpoint-url", "-U", help="URL of sparql endpoint")
+@click.option("--limit", "-L", help="Max results per query")
+@click.option("--output", "-o", help="Path to report file")
+@click.option(
+    "--input-format",
+    "-f",
+    type=click.Choice(list(dumpers_loaders.keys())),
+    help="Input format. Inferred from input suffix if not specified",
+)
+@click.option(
+    "--output-format",
+    "-t",
+    type=click.Choice(list(dumpers_loaders.keys())),
+    help="Output format. Inferred from output suffix if not specified",
+)
+@click.option("--schema", "-s", help="Path to schema specified as LinkML yaml")
+def cli(
+    input,
+    output=None,
+    input_format=None,
+    output_format=None,
+    endpoint_url=None,
+    limit=None,
+    named_graph=None,
+    schema=None,
+) -> None:
     """
     Validates sparql
 
@@ -120,13 +130,15 @@ def cli(input, output=None, input_format=None, output_format=None,
         sv = SchemaView(schema)
     validator = SparqlDataValidator(schema)
     if endpoint_url is not None:
-        results = validator.validate_endpoint(endpoint_url, limit=limit, named_graphs=named_graph)
+        results = validator.validate_endpoint(
+            endpoint_url, limit=limit, named_graphs=named_graph
+        )
     else:
         if input is None:
-            raise Exception(f'Must pass one of --endpoint-url OR --input')
+            raise Exception(f"Must pass one of --endpoint-url OR --input")
         input_format = _get_format(input, input_format)
         results = validator.validate_file(input, format=input_format)
-    output_format = _get_format(output, output_format, default='json')
+    output_format = _get_format(output, output_format, default="json")
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(results, output)
@@ -134,7 +146,5 @@ def cli(input, output=None, input_format=None, output_format=None,
         print(dumper.dumps(results))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli(sys.argv[1:])
-
-

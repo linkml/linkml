@@ -1,41 +1,45 @@
 import os
 import re
-from typing import Optional, Callable
+from typing import Callable, Optional
 
-from rdflib import Graph, Namespace, OWL
+from rdflib import OWL, Graph, Namespace
 
 from linkml import METAMODEL_NAMESPACE
 from linkml.utils.generator import Generator
 from tests import DEFAULT_LOG_LEVEL
-from tests.utils.test_environment import TestEnvironment, TestEnvironmentTestCase
+from tests.utils.test_environment import (TestEnvironment,
+                                          TestEnvironmentTestCase)
 
 BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
 
 
 class GeneratorTestCase(TestEnvironmentTestCase):
-    model_name: str = None              # yaml name (sans '.yaml')
+    model_name: str = None  # yaml name (sans '.yaml')
 
     @staticmethod
     def _print_triples(g: Graph):
-        """ Pretty print the contents of g, removing the prefix declarations """
-        g.bind('BIOLINK', BIOLINK_NS)
-        g.bind('meta', METAMODEL_NAMESPACE)
-        g.bind('owl', OWL)
-        g_text = re.sub(r'@prefix.*\n', '', g.serialize(format="turtle").decode())
+        """Pretty print the contents of g, removing the prefix declarations"""
+        g.bind("BIOLINK", BIOLINK_NS)
+        g.bind("meta", METAMODEL_NAMESPACE)
+        g.bind("owl", OWL)
+        g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle").decode())
         print(g_text)
 
-    def single_file_generator(self,
-                              suffix: str,
-                              gen: type(Generator), *,
-                              subdir: Optional[str] = None,
-                              format: Optional[str] = None,
-                              generator_args: Optional[dict] = None,
-                              serialize_args: Optional[dict] = None,
-                              filtr: Optional[Callable[[str], str]] = None,
-                              comparator: Callable[[str, str], str] = None,
-                              output_name: Optional[str] = None,
-                              yaml_file: Optional[str] = None) -> None:
-        """ Invoke generator specified in gen
+    def single_file_generator(
+        self,
+        suffix: str,
+        gen: type(Generator),
+        *,
+        subdir: Optional[str] = None,
+        format: Optional[str] = None,
+        generator_args: Optional[dict] = None,
+        serialize_args: Optional[dict] = None,
+        filtr: Optional[Callable[[str], str]] = None,
+        comparator: Callable[[str, str], str] = None,
+        output_name: Optional[str] = None,
+        yaml_file: Optional[str] = None
+    ) -> None:
+        """Invoke generator specified in gen
 
         :param env: Input environment
         :param suffix: File suffix (without '.')
@@ -55,22 +59,31 @@ class GeneratorTestCase(TestEnvironmentTestCase):
             generator_args = {}
         if format:
             generator_args["format"] = format
-        if self.env.import_map is not None and 'importmap' not in generator_args:
-            generator_args['importmap'] = self.env.import_map
-        generator_args['log_level'] = DEFAULT_LOG_LEVEL
-        yaml_file = yaml_file or self.env.input_path(subdir or '', self.model_name + '.yaml')
+        if self.env.import_map is not None and "importmap" not in generator_args:
+            generator_args["importmap"] = self.env.import_map
+        generator_args["log_level"] = DEFAULT_LOG_LEVEL
+        yaml_file = yaml_file or self.env.input_path(
+            subdir or "", self.model_name + ".yaml"
+        )
 
-        self.env.generate_single_file([subdir or '', (output_name or self.model_name) + '.' + suffix],
-                                      lambda: gen(yaml_file, **generator_args).serialize(**serialize_args),
-                                      filtr=filtr, comparator=comparator, value_is_returned=True)
+        self.env.generate_single_file(
+            [subdir or "", (output_name or self.model_name) + "." + suffix],
+            lambda: gen(yaml_file, **generator_args).serialize(**serialize_args),
+            filtr=filtr,
+            comparator=comparator,
+            value_is_returned=True,
+        )
 
-    def directory_generator(self,
-                            dirname: str,
-                            gen: type(Generator), *,
-                            subdir: Optional[str] = None,
-                            generator_args: Optional[dict] = None,
-                            serialize_args: Optional[dict] = None,
-                            input_file: Optional[str] = None) -> None:
+    def directory_generator(
+        self,
+        dirname: str,
+        gen: type(Generator),
+        *,
+        subdir: Optional[str] = None,
+        generator_args: Optional[dict] = None,
+        serialize_args: Optional[dict] = None,
+        input_file: Optional[str] = None
+    ) -> None:
         """
         Generate an output directory using the appropriate command and then compare the target with the source
         :param dirname: name of output directory (e.g. gengraphviz)
@@ -87,15 +100,17 @@ class GeneratorTestCase(TestEnvironmentTestCase):
         if generator_args is None:
             generator_args = {}
         else:
-            generator_args = dict(generator_args)           # Make a copy so we don't damage the original
-        if self.env.import_map is not None and 'importmap' not in generator_args:
-            generator_args['importmap'] = self.env.import_map
-        generator_args['log_level'] = DEFAULT_LOG_LEVEL
-        yaml_file = input_file or self.env.input_path(subdir, self.model_name + '.yaml')
+            generator_args = dict(
+                generator_args
+            )  # Make a copy so we don't damage the original
+        if self.env.import_map is not None and "importmap" not in generator_args:
+            generator_args["importmap"] = self.env.import_map
+        generator_args["log_level"] = DEFAULT_LOG_LEVEL
+        yaml_file = input_file or self.env.input_path(subdir, self.model_name + ".yaml")
 
         def call_generator(outdir: str) -> None:
-            generator_args['directory'] = outdir
-            serialize_args['directory'] = outdir
+            generator_args["directory"] = outdir
+            serialize_args["directory"] = outdir
             gen(yaml_file, **generator_args).serialize(**serialize_args)
 
         self.env.generate_directory(dirname, lambda outdir: call_generator(outdir))

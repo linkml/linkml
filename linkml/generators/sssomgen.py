@@ -1,17 +1,13 @@
-from datetime import date
 import os
+from datetime import date
 from typing import Optional, TextIO, Union
 
 import click
+from linkml_runtime.linkml_model.meta import (LINKML, ClassDefinition,
+                                              Definition, EnumDefinition,
+                                              SchemaDefinition, SlotDefinition)
+
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import (
-    LINKML,
-    ClassDefinition,
-    SchemaDefinition,
-    SlotDefinition,
-    EnumDefinition,
-    Definition,
-)
 
 DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
 
@@ -177,7 +173,7 @@ class SSSOMGenerator(Generator):
             k: v.prefix_reference for k, v in schema.prefixes.items()
         }
 
-        with open(self.output_file, "w", encoding='UTF-8') as sssom_tsv:
+        with open(self.output_file, "w", encoding="UTF-8") as sssom_tsv:
             for k, v in metadata.items():
                 if k != "curie_map":
                     sssom_tsv.write("#" + k + ": " + v + "\n")
@@ -190,9 +186,7 @@ class SSSOMGenerator(Generator):
             # Write column names first
             sssom_tsv.writelines("\t".join(self.msdf_columns) + "\n")
             # Write the msdf next
-            sssom_tsv.writelines(
-                "\t".join(i) + "\n" for i in self.table_as_list
-            )
+            sssom_tsv.writelines("\t".join(i) + "\n" for i in self.table_as_list)
 
 
 @shared_arguments(SSSOMGenerator)
