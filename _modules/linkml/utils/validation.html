@@ -83,17 +83,15 @@
              
   <h1>Source code for linkml.utils.validation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span>
-
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">jsonschema</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.schemaview</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">as_dict</span><span class="p">,</span> <span class="n">YAMLRoot</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.dumpers</span> <span class="kn">import</span> <span class="n">json_dumper</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">as_dict</span>
 
 <span class="kn">from</span> <span class="nn">linkml.generators.jsonschemagen</span> <span class="kn">import</span> <span class="n">JsonSchemaGenerator</span>
 
@@ -101,12 +99,17 @@
 <span class="k">def</span> <span class="nf">_as_dict</span><span class="p">(</span><span class="n">inst</span><span class="p">):</span>
     <span class="c1"># TODO: replace this with linkml_runtime.dictutils when 1.0.14 is released</span>
     <span class="n">inst_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">inst</span><span class="p">))</span>
-    <span class="k">del</span> <span class="n">inst_dict</span><span class="p">[</span><span class="s1">&#39;@type&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">inst_dict</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">inst_dict</span>
 
+
 <span class="c1"># Deprecated: use validators module</span>
-<div class="viewcode-block" id="validate_object"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.validation.validate_object">[docs]</a><span class="k">def</span> <span class="nf">validate_object</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_object"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.validation.validate_object">[docs]</a><span class="k">def</span> <span class="nf">validate_object</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span>
+    <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span>
+    <span class="n">target_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    validates instance data against a schema</span>
 
@@ -120,11 +123,14 @@
         <span class="n">target_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">inst_dict</span> <span class="o">=</span> <span class="n">_as_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">not_closed</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">closed</span>
-    <span class="n">jsonschemastr</span> <span class="o">=</span> <span class="n">JsonSchemaGenerator</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">mergeimports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top_class</span><span class="o">=</span><span class="n">target_class</span><span class="o">.</span><span class="n">class_name</span><span class="p">,</span>
-                                        <span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">)</span>
+    <span class="n">jsonschemastr</span> <span class="o">=</span> <span class="n">JsonSchemaGenerator</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span>
+        <span class="n">mergeimports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">top_class</span><span class="o">=</span><span class="n">target_class</span><span class="o">.</span><span class="n">class_name</span><span class="p">,</span>
+        <span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">not_closed</span><span class="o">=</span><span class="n">not_closed</span><span class="p">)</span>
     <span class="n">jsonschema_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">jsonschemastr</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">inst_dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">jsonschema_obj</span><span class="p">)</span></div>
-
 </pre></div>
 
            </div>

@@ -83,24 +83,19 @@
              
   <h1>Source code for linkml.generators.excelgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span>
+                                              <span class="n">PermissibleValue</span><span class="p">,</span>
+                                              <span class="n">PermissibleValueText</span><span class="p">,</span>
+                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span>
 <span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span><span class="p">,</span> <span class="n">load_workbook</span>
-<span class="kn">from</span> <span class="nn">openpyxl.worksheet.datavalidation</span> <span class="kn">import</span> <span class="n">DataValidation</span>
 <span class="kn">from</span> <span class="nn">openpyxl.utils</span> <span class="kn">import</span> <span class="n">get_column_letter</span>
+<span class="kn">from</span> <span class="nn">openpyxl.worksheet.datavalidation</span> <span class="kn">import</span> <span class="n">DataValidation</span>
 
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">SchemaDefinition</span><span class="p">,</span>
-    <span class="n">ClassDefinition</span><span class="p">,</span>
-    <span class="n">EnumDefinition</span><span class="p">,</span>
-    <span class="n">PermissibleValue</span><span class="p">,</span>
-    <span class="n">PermissibleValueText</span><span class="p">,</span>
-    <span class="n">SlotDefinition</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span>
 
 
 <div class="viewcode-block" id="ExcelGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator">[docs]</a><span class="k">class</span> <span class="nc">ExcelGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
@@ -197,21 +192,23 @@
 <div class="viewcode-block" id="ExcelGenerator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.excelgen.ExcelGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Overridden method to intercept classes and associated slots from generator </span>
+        <span class="sd">&quot;&quot;&quot;Overridden method to intercept classes and associated slots from generator</span>
 <span class="sd">        framework.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wb_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="o">.</span><span class="n">sheetnames</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span><span class="p">:</span>
 
-                <span class="n">valid</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">])</span>
+                <span class="n">valid</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enum_dict</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">])</span>
                 <span class="n">valid</span> <span class="o">=</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">valid</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
 
                 <span class="n">ws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workbook</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
-                <span class="n">rows</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">iter_rows</span><span class="p">(</span><span class="n">min_row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_row</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># returns a generator of rows</span>
-                <span class="n">first_row</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="c1"># get the first row</span>
-                <span class="n">headings</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">first_row</span><span class="p">]</span> <span class="c1"># extract the values from the cells</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">iter_rows</span><span class="p">(</span><span class="n">min_row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_row</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># returns a generator of rows</span>
+                <span class="n">first_row</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>  <span class="c1"># get the first row</span>
+                <span class="n">headings</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">first_row</span>
+                <span class="p">]</span>  <span class="c1"># extract the values from the cells</span>
 
                 <span class="n">idx</span> <span class="o">=</span> <span class="n">headings</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">col_letter</span> <span class="o">=</span> <span class="n">get_column_letter</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>

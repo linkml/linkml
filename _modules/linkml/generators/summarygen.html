@@ -88,66 +88,90 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">csv</span> <span class="kn">import</span> <span class="n">DictWriter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
+                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span>
+
 <span class="kn">from</span> <span class="nn">linkml.utils.generator</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 
 
 <div class="viewcode-block" id="SummaryGenerator"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.summarygen.SummaryGenerator">[docs]</a><span class="k">class</span> <span class="nc">SummaryGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
-    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tsv&#39;</span><span class="p">]</span>
+    <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tsv&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirname</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DictWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">slottab</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DictWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">=</span> <span class="s1">&#39;excel-tab&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialect</span> <span class="o">=</span> <span class="s2">&quot;excel-tab&quot;</span>
 
 <div class="viewcode-block" id="SummaryGenerator.visit_schema"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span> <span class="o">=</span> <span class="n">DictWriter</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
-                                   <span class="p">[</span><span class="s1">&#39;Class Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Parent Class&#39;</span><span class="p">,</span> <span class="s1">&#39;YAML Class Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">,</span>
-                                    <span class="s1">&#39;Flags&#39;</span><span class="p">,</span> <span class="s1">&#39;Slot Name&#39;</span><span class="p">,</span> <span class="s1">&#39;YAML Slot Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Range&#39;</span><span class="p">,</span> <span class="s1">&#39;Card&#39;</span><span class="p">,</span> <span class="s1">&#39;Slot Description&#39;</span><span class="p">,</span> <span class="s1">&#39;URI&#39;</span><span class="p">],</span>
-                                   <span class="n">dialect</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dialect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span> <span class="o">=</span> <span class="n">DictWriter</span><span class="p">(</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;Class Name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Parent Class&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;YAML Class Name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Description&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Flags&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Slot Name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;YAML Slot Name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Range&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Card&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Slot Description&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;URI&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">dialect</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dialect</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SummaryGenerator.visit_class"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span><span class="o">.</span><span class="n">writerow</span><span class="p">({</span><span class="s1">&#39;Class Name&#39;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
-                                <span class="s1">&#39;Parent Class&#39;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                <span class="s1">&#39;YAML Class Name&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Class Name&quot;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="s2">&quot;Parent Class&quot;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;YAML Class Name&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SummaryGenerator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="SummaryGenerator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.generators.html#linkml.generators.summarygen.SummaryGenerator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">min_card</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">max_card</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="mi">1</span>
-        <span class="n">abstract</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">mixin</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;K&#39;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">identifier</span> <span class="o">=</span> <span class="s1">&#39;I&#39;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">readonly</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">readonly</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-        <span class="n">ref</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span><span class="o">.</span><span class="n">writerow</span><span class="p">({</span><span class="s1">&#39;Slot Name&#39;</span><span class="p">:</span> <span class="n">aliased_slot_name</span><span class="p">,</span>
-                                <span class="s1">&#39;Flags&#39;</span><span class="p">:</span> <span class="n">abstract</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="n">identifier</span> <span class="o">+</span> <span class="n">readonly</span><span class="p">,</span>
-                                <span class="s1">&#39;Card&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">min_card</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">max_card</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                                <span class="s1">&#39;YAML Slot Name&#39;</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">aliased_slot_name</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                <span class="s1">&#39;Range&#39;</span><span class="p">:</span> <span class="n">ref</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">),</span>
-                                <span class="s1">&#39;Slot Description&#39;</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-                                <span class="s1">&#39;URI&#39;</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">})</span></div></div>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">mixin</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">identifier</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">readonly</span> <span class="o">=</span> <span class="s2">&quot;R&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">readonly</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classtab</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;Slot Name&quot;</span><span class="p">:</span> <span class="n">aliased_slot_name</span><span class="p">,</span>
+                <span class="s2">&quot;Flags&quot;</span><span class="p">:</span> <span class="n">abstract</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="n">identifier</span> <span class="o">+</span> <span class="n">readonly</span><span class="p">,</span>
+                <span class="s2">&quot;Card&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">min_card</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">max_card</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;YAML Slot Name&quot;</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">aliased_slot_name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Range&quot;</span><span class="p">:</span> <span class="n">ref</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">),</span>
+                <span class="s2">&quot;Slot Description&quot;</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="s2">&quot;URI&quot;</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div></div>
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">SummaryGenerator</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Generate TSV summary files for viewing in Excel and the like &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Generate TSV summary files for viewing in Excel and the like&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">SummaryGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">cli</span><span class="p">()</span>
 </pre></div>
 

@@ -83,35 +83,35 @@
              
   <h1>Source code for linkml.utils.sqlutils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sqlite3</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">PermissibleValue</span>
 <span class="kn">import</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="k">as</span> <span class="nn">metamodel</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime</span> <span class="kn">import</span> <span class="n">SchemaView</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model</span> <span class="kn">import</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">SchemaDefinition</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.compile_python</span> <span class="kn">import</span> <span class="n">compile_python</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.enumerations</span> <span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">underscore</span>
-<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.introspection</span> <span class="kn">import</span> <span class="n">package_schemaview</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.ext.associationproxy</span> <span class="kn">import</span> <span class="n">_AssociationCollection</span>
-
-<span class="kn">from</span> <span class="nn">linkml.generators.pythongen</span> <span class="kn">import</span> <span class="n">PythonGenerator</span>
-<span class="kn">from</span> <span class="nn">linkml.utils</span> <span class="kn">import</span> <span class="n">datautils</span><span class="p">,</span> <span class="n">validation</span>
-<span class="kn">from</span> <span class="nn">linkml.utils.datautils</span> <span class="kn">import</span> <span class="n">infer_root_class</span><span class="p">,</span> <span class="n">_get_format</span><span class="p">,</span> <span class="n">get_loader</span><span class="p">,</span> <span class="n">_is_xsv</span><span class="p">,</span> <span class="n">dumpers_loaders</span><span class="p">,</span> <span class="n">get_dumper</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.utils.yamlutils</span> <span class="kn">import</span> <span class="n">YAMLRoot</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.engine</span> <span class="kn">import</span> <span class="n">Engine</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.associationproxy</span> <span class="kn">import</span> <span class="n">_AssociationCollection</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
 
-<span class="kn">from</span> <span class="nn">linkml.generators.sqlalchemygen</span> <span class="kn">import</span> <span class="n">TemplateEnum</span><span class="p">,</span> <span class="n">SQLAlchemyGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.pythongen</span> <span class="kn">import</span> <span class="n">PythonGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.generators.sqlalchemygen</span> <span class="kn">import</span> <span class="n">SQLAlchemyGenerator</span><span class="p">,</span> <span class="n">TemplateEnum</span>
 <span class="kn">from</span> <span class="nn">linkml.generators.sqltablegen</span> <span class="kn">import</span> <span class="n">SQLTableGenerator</span>
+<span class="kn">from</span> <span class="nn">linkml.utils</span> <span class="kn">import</span> <span class="n">datautils</span><span class="p">,</span> <span class="n">validation</span>
+<span class="kn">from</span> <span class="nn">linkml.utils.datautils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_format</span><span class="p">,</span> <span class="n">_is_xsv</span><span class="p">,</span> <span class="n">dumpers_loaders</span><span class="p">,</span>
+                                    <span class="n">get_dumper</span><span class="p">,</span> <span class="n">get_loader</span><span class="p">,</span> <span class="n">infer_root_class</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SQLStore"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore">[docs]</a><span class="nd">@dataclass</span>
@@ -130,6 +130,7 @@
 <span class="sd">    - creating a SQL Alchemy ORM layer</span>
 <span class="sd">    - mapping your data/objects in any LinkML compliant data format (json. yaml, rdf) into ORM objects</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">engine</span><span class="p">:</span> <span class="n">Engine</span> <span class="o">=</span> <span class="kc">None</span>
@@ -147,12 +148,12 @@
 <span class="sd">        :return: path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;database_path not set&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;database_path not set&quot;</span><span class="p">)</span>
         <span class="n">db_exists</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="p">(</span><span class="n">create</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db_exists</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
                 <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sqlite:///</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sqlite:///</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">con</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="p">)</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
             <span class="n">ddl</span> <span class="o">=</span> <span class="n">SQLTableGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">generate_ddl</span><span class="p">()</span>
@@ -162,7 +163,7 @@
                 <span class="n">meta_ddl</span> <span class="o">=</span> <span class="n">SQLTableGenerator</span><span class="p">(</span><span class="n">metamodel_sv</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">generate_ddl</span><span class="p">()</span>
                 <span class="n">cur</span><span class="o">.</span><span class="n">executescript</span><span class="p">(</span><span class="n">ddl</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No database: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No database: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_path</span></div>
 
 <div class="viewcode-block" id="SQLStore.compile"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
@@ -181,7 +182,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span></div>
 
-<div class="viewcode-block" id="SQLStore.compile_native"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.compile_native">[docs]</a>    <span class="k">def</span> <span class="nf">compile_native</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+<div class="viewcode-block" id="SQLStore.compile_native"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.compile_native">[docs]</a>    <span class="k">def</span> <span class="nf">compile_native</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compile native python object model</span>
 
@@ -200,19 +201,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all</span><span class="p">(</span><span class="n">target_class</span><span class="o">=</span><span class="n">target_class</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">load_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">load_all</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">target_class</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">target_class</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">target_class_name</span> <span class="o">=</span> <span class="n">infer_root_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
             <span class="n">target_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">target_class_name</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sqlite:///</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sqlite:///</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">session_class</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">session_class</span><span class="p">()</span>
         <span class="n">typ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_sqla_type</span><span class="p">(</span><span class="n">target_class</span><span class="p">)</span>
         <span class="n">q</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
         <span class="n">all_objs</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_sqla</span><span class="p">(</span><span class="n">all_objs</span><span class="p">)</span>
-    
+
 <div class="viewcode-block" id="SQLStore.dump"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store an element in the database</span>
@@ -222,7 +225,7 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Must set self.engine&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must set self.engine&quot;</span><span class="p">)</span>
         <span class="n">session_class</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
         <span class="n">session</span> <span class="o">=</span> <span class="n">session_class</span><span class="p">()</span>
         <span class="n">nu_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_sqla</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
@@ -235,13 +238,13 @@
         <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">target_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">nu_typ</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find: </span><span class="si">{</span><span class="n">target_class</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find: </span><span class="si">{</span><span class="n">target_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">from_sqla_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">nu_typ</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find: </span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SQLStore.to_sqla"><a class="viewcode-back" href="../../../developers/using-sql-dbs.html#linkml.utils.sqlutils.SQLStore.to_sqla">[docs]</a>    <span class="k">def</span> <span class="nf">to_sqla</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">YAMLRoot</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -268,7 +271,7 @@
                 <span class="k">return</span> <span class="n">nu_obj</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-        <span class="c1">#elif isinstance(obj, PermissibleValue):</span>
+        <span class="c1"># elif isinstance(obj, PermissibleValue):</span>
         <span class="c1">#    return str(obj.text)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">EnumDefinitionImpl</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -282,10 +285,10 @@
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">):</span>
                 <span class="c1"># TODO: make more efficient</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-                    <span class="c1">#print(f&#39;Creating {nu_typ} from: {inst_args}&#39;)</span>
+                    <span class="c1"># print(f&#39;Creating {nu_typ} from: {inst_args}&#39;)</span>
                     <span class="n">nu_obj</span> <span class="o">=</span> <span class="n">nu_typ</span><span class="p">(</span><span class="o">**</span><span class="n">inst_args</span><span class="p">)</span>
                     <span class="k">return</span> <span class="n">nu_obj</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span></div>
 
@@ -326,11 +329,11 @@
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">nu_typ</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="p">):</span>
                 <span class="c1"># TODO: make more efficient</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-                    <span class="c1">#print(f&#39;CREATING {nu_typ} FROM {inst_args}&#39;)</span>
+                    <span class="c1"># print(f&#39;CREATING {nu_typ} FROM {inst_args}&#39;)</span>
                     <span class="n">nu_obj</span> <span class="o">=</span> <span class="n">nu_typ</span><span class="p">(</span><span class="o">**</span><span class="n">inst_args</span><span class="p">)</span>
-                    <span class="c1">#print(f&#39;CREATED {nu_obj}&#39;)</span>
+                    <span class="c1"># print(f&#39;CREATED {nu_obj}&#39;)</span>
                     <span class="k">return</span> <span class="n">nu_obj</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot find </span><span class="si">{</span><span class="n">typ</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">native_module</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span></div></div>
 
@@ -338,11 +341,13 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-q&quot;</span><span class="p">,</span> <span class="s2">&quot;--quiet&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--csv-field-size-limit&quot;</span><span class="p">,</span>
-              <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--csv-field-size-limit&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">              Increase the default limit for maximum field size.</span>
-<span class="s2">              See https://docs.python.org/3/library/csv.html#csv.field_size_limit&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">              See https://docs.python.org/3/library/csv.html#csv.field_size_limit&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">csv_field_size_limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Run the LinkML SQL CLI.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
@@ -358,31 +363,47 @@
 
 
 <span class="nd">@main</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--module&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to python datamodel module&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--db&quot;</span><span class="p">,</span> <span class="s2">&quot;-D&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to SQLite database file&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--input-format&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-              <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dumpers_loaders</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input format. Inferred from input suffix if not specified&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--target-class&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;name of class in datamodel that the root node instantiates&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--schema&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to schema specified as LinkML yaml&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--validate/--no-validate&quot;</span><span class="p">,</span>
-              <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Validate against the schema&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--force/--no-force&quot;</span><span class="p">,</span>
-              <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force creation of a database if it does not exist&quot;</span><span class="p">)</span>
-
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--module&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to python datamodel module&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--db&quot;</span><span class="p">,</span> <span class="s2">&quot;-D&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to SQLite database file&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--input-format&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dumpers_loaders</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input format. Inferred from input suffix if not specified&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--target-class&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;name of class in datamodel that the root node instantiates&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--schema&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to schema specified as LinkML yaml&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--validate/--no-validate&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Validate against the schema&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--force/--no-force&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force creation of a database if it does not exist&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">target_class</span><span class="p">,</span> <span class="n">input_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">index_slot</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">dump</span><span class="p">(</span>
+    <span class="nb">input</span><span class="p">,</span>
+    <span class="n">module</span><span class="p">,</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">target_class</span><span class="p">,</span>
+    <span class="n">input_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">index_slot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dumps data to a SQL store</span>
 
@@ -392,7 +413,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;must pass one of module OR schema&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;must pass one of module OR schema&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">python_module</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -401,10 +422,10 @@
         <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Must specify schema if not target class is specified&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must specify schema if not target class is specified&quot;</span><span class="p">)</span>
         <span class="n">target_class</span> <span class="o">=</span> <span class="n">infer_root_class</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;target class not specified and could not be inferred&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target class not specified and could not be inferred&quot;</span><span class="p">)</span>
     <span class="n">py_target_class</span> <span class="o">=</span> <span class="n">python_module</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">target_class</span><span class="p">]</span>
     <span class="n">input_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">input_format</span><span class="p">)</span>
     <span class="n">loader</span> <span class="o">=</span> <span class="n">get_loader</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
@@ -412,20 +433,22 @@
     <span class="n">inargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">datautils</span><span class="o">.</span><span class="n">_is_rdf_format</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Must pass schema arg&#39;</span><span class="p">)</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s1">&#39;schemaview&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s1">&#39;fmt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_format</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
+        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schemaview&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
+        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_format</span>
     <span class="k">if</span> <span class="n">_is_xsv</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">index_slot</span> <span class="o">=</span> <span class="n">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;--index-slot is required for CSV input&#39;</span><span class="p">)</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s1">&#39;index_slot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_slot</span>
-        <span class="n">inargs</span><span class="p">[</span><span class="s1">&#39;schema&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span>
-    <span class="n">obj</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>  <span class="n">target_class</span><span class="o">=</span><span class="n">py_target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">inargs</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--index-slot is required for CSV input&quot;</span><span class="p">)</span>
+        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;index_slot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_slot</span>
+        <span class="n">inargs</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">py_target_class</span><span class="p">,</span> <span class="o">**</span><span class="n">inargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;--schema must be passed in order to validate. Suppress with --no-validate&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s2">&quot;--schema must be passed in order to validate. Suppress with --no-validate&quot;</span>
+            <span class="p">)</span>
         <span class="c1"># TODO: use validator framework</span>
         <span class="n">validation</span><span class="o">.</span><span class="n">validate_object</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
 
@@ -437,31 +460,48 @@
 
 
 <span class="nd">@main</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--module&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to python datamodel module&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--db&quot;</span><span class="p">,</span> <span class="s2">&quot;-D&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to SQLite database file&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to output file&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--output-format&quot;</span><span class="p">,</span> <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
-              <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dumpers_loaders</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output format. Inferred from output suffix if not specified&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--target-class&quot;</span><span class="p">,</span> <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;name of class in datamodel that the root node instantiates&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--schema&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to schema specified as LinkML yaml&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--validate/--no-validate&quot;</span><span class="p">,</span>
-              <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Validate against the schema&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--force/--no-force&quot;</span><span class="p">,</span>
-              <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force creation of a database if it does not exist&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_format</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">target_class</span><span class="p">,</span> <span class="n">input_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-         <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">index_slot</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--module&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to python datamodel module&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--db&quot;</span><span class="p">,</span> <span class="s2">&quot;-D&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to SQLite database file&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to output file&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--output-format&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">dumpers_loaders</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output format. Inferred from output suffix if not specified&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--target-class&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-C&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;name of class in datamodel that the root node instantiates&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--index-slot&quot;</span><span class="p">,</span> <span class="s2">&quot;-S&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;top level slot. Required for CSV dumping/loading&quot;</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--schema&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Path to schema specified as LinkML yaml&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--validate/--no-validate&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Validate against the schema&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--force/--no-force&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Force creation of a database if it does not exist&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+    <span class="n">output</span><span class="p">,</span>
+    <span class="n">output_format</span><span class="p">,</span>
+    <span class="n">module</span><span class="p">,</span>
+    <span class="n">db</span><span class="p">,</span>
+    <span class="n">target_class</span><span class="p">,</span>
+    <span class="n">input_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">validate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">index_slot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads data from a SQL store</span>
 
@@ -471,7 +511,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;must pass one of module OR schema&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;must pass one of module OR schema&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">python_module</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span><span class="o">.</span><span class="n">compile_module</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
@@ -487,34 +527,35 @@
     <span class="n">endpoint</span><span class="o">.</span><span class="n">native_module</span> <span class="o">=</span> <span class="n">python_module</span>
     <span class="n">endpoint</span><span class="o">.</span><span class="n">compile</span><span class="p">()</span>
     <span class="n">obj</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">py_target_class</span><span class="p">)</span>
-    <span class="n">output_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_format</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">)</span>
+    <span class="n">output_format</span> <span class="o">=</span> <span class="n">_get_format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output_format</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span>
     <span class="n">outargs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s1">&#39;json-ld&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;json-ld&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">_get_context</span><span class="p">(</span><span class="n">schema</span><span class="p">)]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Must pass in context OR schema for RDF output&#39;</span><span class="p">)</span>
-        <span class="n">outargs</span><span class="p">[</span><span class="s1">&#39;contexts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
-        <span class="n">outargs</span><span class="p">[</span><span class="s1">&#39;fmt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;json-ld&#39;</span>
-    <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s1">&#39;rdf&#39;</span> <span class="ow">or</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s1">&#39;ttl&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Must pass in context OR schema for RDF output&quot;</span><span class="p">)</span>
+        <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;fmt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json-ld&quot;</span>
+    <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;rdf&quot;</span> <span class="ow">or</span> <span class="n">output_format</span> <span class="o">==</span> <span class="s2">&quot;ttl&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Must pass schema arg&#39;</span><span class="p">)</span>
-        <span class="n">outargs</span><span class="p">[</span><span class="s1">&#39;schemaview&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Must pass schema arg&quot;</span><span class="p">)</span>
+        <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;schemaview&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sv</span>
     <span class="k">if</span> <span class="n">_is_xsv</span><span class="p">(</span><span class="n">output_format</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">index_slot</span> <span class="o">=</span> <span class="n">infer_index_slot</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">index_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;--index-slot is required for CSV output&#39;</span><span class="p">)</span>
-        <span class="n">outargs</span><span class="p">[</span><span class="s1">&#39;index_slot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_slot</span>
-        <span class="n">outargs</span><span class="p">[</span><span class="s1">&#39;schema&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--index-slot is required for CSV output&quot;</span><span class="p">)</span>
+        <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;index_slot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_slot</span>
+        <span class="n">outargs</span><span class="p">[</span><span class="s2">&quot;schema&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">schema</span>
     <span class="n">dumper</span> <span class="o">=</span> <span class="n">get_dumper</span><span class="p">(</span><span class="n">output_format</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dumper</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="o">**</span><span class="n">outargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">dumper</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">outargs</span><span class="p">))</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

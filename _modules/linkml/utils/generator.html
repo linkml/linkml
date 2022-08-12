@@ -84,18 +84,28 @@
   <h1>Source code for linkml.utils.generator</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>
+                    <span class="n">cast</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Option</span>
-
-<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> \
-    <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">Element</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">PrefixPrefixPrefix</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> \
-    <span class="n">SubsetDefinition</span><span class="p">,</span> <span class="n">SubsetDefinitionName</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="n">Definition</span>
+<span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Argument</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Option</span>
+<span class="kn">from</span> <span class="nn">linkml_runtime.linkml_model.meta</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span>
+                                              <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">Definition</span><span class="p">,</span>
+                                              <span class="n">Element</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span>
+                                              <span class="n">EnumDefinition</span><span class="p">,</span>
+                                              <span class="n">EnumDefinitionName</span><span class="p">,</span>
+                                              <span class="n">PrefixPrefixPrefix</span><span class="p">,</span>
+                                              <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span>
+                                              <span class="n">SlotDefinitionName</span><span class="p">,</span>
+                                              <span class="n">SubsetDefinition</span><span class="p">,</span>
+                                              <span class="n">SubsetDefinitionName</span><span class="p">,</span>
+                                              <span class="n">TypeDefinition</span><span class="p">,</span>
+                                              <span class="n">TypeDefinitionName</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">linkml_runtime.utils.formatutils</span> <span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
+
 <span class="kn">from</span> <span class="nn">linkml.utils.mergeutils</span> <span class="kn">import</span> <span class="n">alias_root</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.schemaloader</span> <span class="kn">import</span> <span class="n">SchemaLoader</span>
 <span class="kn">from</span> <span class="nn">linkml.utils.typereferences</span> <span class="kn">import</span> <span class="n">References</span>
@@ -105,30 +115,40 @@
 
 
 <div class="viewcode-block" id="Generator"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator">[docs]</a><span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="n">generatorname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                   <span class="c1"># Set to os.path.basename(__file__)</span>
-    <span class="n">generatorversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                <span class="c1"># Generator version identifier</span>
-    <span class="n">valid_formats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>               <span class="c1"># Allowed formats - first format is default</span>
-    <span class="n">directory_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>              <span class="c1"># True means output is to a directory, False is to stdout</span>
-    <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>                        <span class="c1"># Base directory of schema</span>
+    <span class="n">generatorname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set to os.path.basename(__file__)</span>
+    <span class="n">generatorversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Generator version identifier</span>
+    <span class="n">valid_formats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Allowed formats - first format is default</span>
+    <span class="n">directory_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">False</span>  <span class="c1"># True means output is to a directory, False is to stdout</span>
+    <span class="p">)</span>
+    <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Base directory of schema</span>
 
-    <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>         <span class="c1"># False means only visit own slots, True means visit all slots</span>
-    <span class="n">visits_are_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>              <span class="c1"># True means visit basic types in alphabetial order, false in entry</span>
-    <span class="n">sort_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>              <span class="c1"># True means visit class slots in alphabetical order</span>
+    <span class="n">visit_all_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">False</span>  <span class="c1"># False means only visit own slots, True means visit all slots</span>
+    <span class="p">)</span>
+    <span class="n">visits_are_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">True</span>  <span class="c1"># True means visit basic types in alphabetial order, false in entry</span>
+    <span class="p">)</span>
+    <span class="n">sort_class_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># True means visit class slots in alphabetical order</span>
 
-    <span class="n">metamodel_name_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># Allows mapping of names of metamodel elements such as slot, etc</span>
+    <span class="n">metamodel_name_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Allows mapping of names of metamodel elements such as slot, etc</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">],</span>
-                 <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">useuris</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span>
-                 <span class="n">mergeimports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">schema</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="s2">&quot;Generator&quot;</span><span class="p">],</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">useuris</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">importmap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span>
+        <span class="n">mergeimports</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">source_file_date</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor</span>
 
@@ -174,9 +194,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema_defaults</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">logger</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">loader</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">useuris</span><span class="o">=</span><span class="n">useuris</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="n">importmap</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                                  <span class="n">mergeimports</span><span class="o">=</span><span class="n">mergeimports</span><span class="p">,</span> <span class="n">emit_metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
-                                  <span class="n">source_file_date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span><span class="p">,</span> <span class="n">source_file_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span><span class="p">)</span>
+            <span class="n">loader</span> <span class="o">=</span> <span class="n">SchemaLoader</span><span class="p">(</span>
+                <span class="n">schema</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
+                <span class="n">useuris</span><span class="o">=</span><span class="n">useuris</span><span class="p">,</span>
+                <span class="n">importmap</span><span class="o">=</span><span class="n">importmap</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="n">mergeimports</span><span class="o">=</span><span class="n">mergeimports</span><span class="p">,</span>
+                <span class="n">emit_metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">source_file_date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span><span class="p">,</span>
+                <span class="n">source_file_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">loader</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">schema</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">synopsis</span>
@@ -199,43 +227,62 @@
         <span class="n">output</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">visit_schema</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">sn</span><span class="p">,</span> <span class="n">ss</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
-                           <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">sn</span><span class="p">,</span> <span class="n">ss</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">visit_subset</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">tn</span><span class="p">,</span> <span class="n">typ</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
-                            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">tn</span><span class="p">,</span> <span class="n">typ</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">visit_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
-                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">visit_enum</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">sn</span><span class="p">,</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
-                             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">visit_enum</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sn</span><span class="p">,</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="n">slot</span><span class="p">)</span>
-            <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
-                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visits_are_sorted</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visit_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visit_all_class_slots</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">own_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">visit_all_class_slots</span>
+                        <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">own_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+                    <span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">visit_class_slot</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="p">),</span> <span class="n">slot</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">end_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">end_schema</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Generator.visit_schema"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_schema">[docs]</a>    <span class="k">def</span> <span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once at the beginning of generation</span>
+        <span class="sd">&quot;&quot;&quot;Visited once at the beginning of generation</span>
 
 <span class="sd">        @param kwargs: Arguments passed through from CLI -- implementation dependent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.end_schema"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.end_schema">[docs]</a>    <span class="k">def</span> <span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once at the end of generation</span>
+        <span class="sd">&quot;&quot;&quot;Visited once at the end of generation</span>
 
 <span class="sd">        @param kwargs: Arguments passed through from CLI -- implementation dependent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_class"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_class">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once per schema class</span>
+        <span class="sd">&quot;&quot;&quot;Visited once per schema class</span>
 
 <span class="sd">        @param cls: class being visited</span>
 <span class="sd">        @return: Visit slots and end class.  False means skip and go on</span>
@@ -243,14 +290,16 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Generator.end_class"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.end_class">[docs]</a>    <span class="k">def</span> <span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited after visit_class_slots (if visit_class returned true)</span>
+        <span class="sd">&quot;&quot;&quot;Visited after visit_class_slots (if visit_class returned true)</span>
 
 <span class="sd">        @param cls: class being visited</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
-<div class="viewcode-block" id="Generator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once</span>
+<div class="viewcode-block" id="Generator.visit_class_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_class_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_class_slot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once</span>
 <span class="sd">        for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise just the own slots.</span>
 
 <span class="sd">        @param cls: containing class</span>
@@ -260,7 +309,7 @@
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_slot"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_slot">[docs]</a>    <span class="k">def</span> <span class="nf">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once for every slot definition in the schema.</span>
+        <span class="sd">&quot;&quot;&quot;Visited once for every slot definition in the schema.</span>
 
 <span class="sd">        @param aliased_slot_name: Aliased name of the slot.  May not be unique</span>
 <span class="sd">        @param slot: visited slot</span>
@@ -268,21 +317,21 @@
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_type"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_type">[docs]</a>    <span class="k">def</span> <span class="nf">visit_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once for every type definition in the schema</span>
+        <span class="sd">&quot;&quot;&quot;Visited once for every type definition in the schema</span>
 
 <span class="sd">        @param typ: Type definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_subset"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_subset">[docs]</a>    <span class="k">def</span> <span class="nf">visit_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">SubsetDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once for every subset definition in the schema</span>
+        <span class="sd">&quot;&quot;&quot;Visited once for every subset definition in the schema</span>
 
 <span class="sd">        #param subset: Subset definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="Generator.visit_enum"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.visit_enum">[docs]</a>    <span class="k">def</span> <span class="nf">visit_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Visited once for every enum definition in the schema</span>
+        <span class="sd">&quot;&quot;&quot;Visited once for every enum definition in the schema</span>
 
 <span class="sd">        @param enum: Enum definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -291,8 +340,10 @@
     <span class="c1"># =============================</span>
     <span class="c1"># Helper methods</span>
     <span class="c1"># =============================</span>
-<div class="viewcode-block" id="Generator.own_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.own_slots">[docs]</a>    <span class="k">def</span> <span class="nf">own_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Return the list of slots owned the class definition.  An &quot;own slot&quot; is any ``cls`` slot that does not appear</span>
+<div class="viewcode-block" id="Generator.own_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.own_slots">[docs]</a>    <span class="k">def</span> <span class="nf">own_slots</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of slots owned the class definition.  An &quot;own slot&quot; is any ``cls`` slot that does not appear</span>
 <span class="sd">        in the class is_a parent.  Own_slots include:</span>
 
 <span class="sd">            * any slot whose domain is cls</span>
@@ -317,13 +368,19 @@
                 <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sname_base</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rval</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_class_slots</span> <span class="k">else</span> <span class="n">rval</span></div>
 
-<div class="viewcode-block" id="Generator.own_slot_names"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.own_slot_names">[docs]</a>    <span class="k">def</span> <span class="nf">own_slot_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="Generator.own_slot_names"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.own_slot_names">[docs]</a>    <span class="k">def</span> <span class="nf">own_slot_names</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">own_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="Generator.all_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.all_slots">[docs]</a>    <span class="k">def</span> <span class="nf">all_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">cls_slots_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                  <span class="n">seen</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> \
-            <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Return all slots that are part of the class definition.  This includes all is_a, mixin and apply_to slots</span>
+<div class="viewcode-block" id="Generator.all_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.all_slots">[docs]</a>    <span class="k">def</span> <span class="nf">all_slots</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">cls_slots_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">seen</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return all slots that are part of the class definition.  This includes all is_a, mixin and apply_to slots</span>
 <span class="sd">        but does NOT include slot_usage targets.  If class B has a slot_usage entry for slot &quot;s&quot;, only the slot</span>
 <span class="sd">        definition for the redefined slot will be included, not its base.  Slots are added in the order they appear</span>
 <span class="sd">        in classes, with recursive is_a&#39;s being added first followed by mixins and finally apply_tos</span>
@@ -346,7 +403,11 @@
                 <span class="k">if</span> <span class="n">sname_base</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
                     <span class="n">rval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
                     <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sname_base</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">rval</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">cls_slots_first</span><span class="o">=</span><span class="n">cls_slots_first</span><span class="p">,</span> <span class="n">seen</span><span class="o">=</span><span class="n">seen</span><span class="p">)</span> <span class="k">if</span> <span class="n">parent</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="k">return</span> <span class="n">rval</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">cls_slots_first</span><span class="o">=</span><span class="n">cls_slots_first</span><span class="p">,</span> <span class="n">seen</span><span class="o">=</span><span class="n">seen</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">parent</span>
+                <span class="k">else</span> <span class="p">[]</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">sname</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                 <span class="n">sname_base</span> <span class="o">=</span> <span class="n">alias_root</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">sname</span><span class="p">)</span>
@@ -356,25 +417,34 @@
                     <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sname_base</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rval</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_class_slots</span> <span class="k">else</span> <span class="n">rval</span></div>
 
-<div class="viewcode-block" id="Generator.parent"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span> \
-            <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot; Return the parent of element, if any &quot;&quot;&quot;</span>
-        <span class="k">return</span> \
-            <span class="kc">None</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> \
-            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="k">else</span> \
-            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">]</span></div>
+<div class="viewcode-block" id="Generator.parent"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the parent of element, if any&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">)</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">is_a</span><span class="p">]</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Generator.ancestors"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">ancestors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementName</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Return an ordered list of ancestor names for the supplied slot or class</span>
+<div class="viewcode-block" id="Generator.ancestors"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.ancestors">[docs]</a>    <span class="k">def</span> <span class="nf">ancestors</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementName</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return an ordered list of ancestor names for the supplied slot or class</span>
 
 <span class="sd">        @param element: Slot or class name or definition</span>
 <span class="sd">        @return: Ordered list of of ancestor names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="p">([]</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">element</span><span class="p">)))</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="p">[]</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Generator.neighborhood"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.neighborhood">[docs]</a>    <span class="k">def</span> <span class="nf">neighborhood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementName</span><span class="p">]])</span> \
-            <span class="o">-&gt;</span> <span class="n">References</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Return a list of all slots, classes and types that touch any element in elements, including the element</span>
+<div class="viewcode-block" id="Generator.neighborhood"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.neighborhood">[docs]</a>    <span class="k">def</span> <span class="nf">neighborhood</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ElementName</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">References</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of all slots, classes and types that touch any element in elements, including the element</span>
 <span class="sd">        itself</span>
 
 <span class="sd">        @param elements: Element names to do proximity with</span>
@@ -414,7 +484,9 @@
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
                     <span class="n">touches</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">inverses</span><span class="p">:</span>
-                    <span class="n">touches</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">inverses</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">element</span><span class="p">)])</span>
+                    <span class="n">touches</span><span class="o">.</span><span class="n">slotrefs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">inverses</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">element</span><span class="p">)]</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain</span><span class="p">:</span>
                     <span class="n">touches</span><span class="o">.</span><span class="n">classrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">domain</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
@@ -441,7 +513,9 @@
             <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
                 <span class="n">touches</span><span class="o">.</span><span class="n">subsetrefs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">SubsetDefinitionName</span><span class="p">,</span> <span class="n">element</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">subsetrefs</span><span class="p">:</span>
-                    <span class="n">touches</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">subsetrefs</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">SubsetDefinitionName</span><span class="p">,</span> <span class="n">element</span><span class="p">)])</span>
+                    <span class="n">touches</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">synopsis</span><span class="o">.</span><span class="n">subsetrefs</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">SubsetDefinitionName</span><span class="p">,</span> <span class="n">element</span><span class="p">)]</span>
+                    <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">touches</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;neighborhood(</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2">) - </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2"> is undefined&quot;</span><span class="p">)</span>
 
@@ -456,13 +530,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">formatted_typ_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="n">typ</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">typ</span><span class="o">.</span><span class="n">typeof</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_type_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">typeof</span><span class="p">)])</span> <span class="o">+</span> <span class="p">[</span><span class="n">formatted_typ_name</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_type_path</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">typ</span><span class="o">.</span><span class="n">typeof</span><span class="p">)]</span>
+            <span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">formatted_typ_name</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">typ</span><span class="o">.</span><span class="n">repr</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">typ</span><span class="o">.</span><span class="n">repr</span><span class="p">,</span> <span class="n">formatted_typ_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">formatted_typ_name</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Generator.class_identifier"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">class_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">def_or_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
+<div class="viewcode-block" id="Generator.class_identifier"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_identifier">[docs]</a>    <span class="k">def</span> <span class="nf">class_identifier</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">def_or_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the class identifier if any</span>
 
@@ -481,12 +559,22 @@
                 <span class="k">return</span> <span class="n">slotname</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Generator.enum_identifier_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.enum_identifier_path">[docs]</a>    <span class="k">def</span> <span class="nf">enum_identifier_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_or_enumname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Return an enum_identifier path &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">,</span>
-                <span class="n">camelcase</span><span class="p">(</span><span class="n">enum_or_enumname</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_or_enumname</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="k">else</span> <span class="n">enum_or_enumname</span><span class="p">)]</span></div>
+<div class="viewcode-block" id="Generator.enum_identifier_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.enum_identifier_path">[docs]</a>    <span class="k">def</span> <span class="nf">enum_identifier_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">enum_or_enumname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return an enum_identifier path&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+            <span class="n">camelcase</span><span class="p">(</span>
+                <span class="n">enum_or_enumname</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_or_enumname</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">enum_or_enumname</span>
+            <span class="p">),</span>
+        <span class="p">]</span></div>
 
-<div class="viewcode-block" id="Generator.class_identifier_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_identifier_path">[docs]</a>    <span class="k">def</span> <span class="nf">class_identifier_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls_or_clsname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">force_non_key</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Generator.class_identifier_path"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.class_identifier_path">[docs]</a>    <span class="k">def</span> <span class="nf">class_identifier_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">cls_or_clsname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">],</span> <span class="n">force_non_key</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the path closure to a class identifier if the class has a key and force_non_key is false otherwise</span>
 <span class="sd">        return a dictionary closure.</span>
@@ -495,8 +583,11 @@
 <span class="sd">        :param force_non_key: True means inlined even if the class has a key</span>
 <span class="sd">        :return: path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">cls</span> <span class="o">=</span> <span class="n">cls_or_clsname</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_or_clsname</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">)</span> \
+        <span class="bp">cls</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">cls_or_clsname</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_or_clsname</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">)</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">(</span><span class="n">cls_or_clsname</span><span class="p">)]</span>
+        <span class="p">)</span>
 
         <span class="c1"># Determine whether the class has a key</span>
         <span class="n">identifier_slot</span> <span class="o">=</span> <span class="kc">None</span>
@@ -505,10 +596,10 @@
 
         <span class="c1"># No key or inlined, its closure is a dictionary</span>
         <span class="k">if</span> <span class="n">identifier_slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;dict&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
 
         <span class="c1"># We&#39;re dealing with a reference</span>
-        <span class="n">pathname</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">identifier_slot</span><span class="p">))</span>
+        <span class="n">pathname</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">identifier_slot</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
             <span class="n">parent_identifier_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">parent_identifier_slot</span><span class="p">:</span>
@@ -522,19 +613,26 @@
 <span class="sd">        :param slot_or_name: slot whose range is being typed</span>
 <span class="sd">        :return: ordered list of types from base type forward</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">slot</span> <span class="o">=</span> <span class="n">slot_or_name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_or_name</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span> \
+        <span class="n">slot</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">slot_or_name</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_or_name</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">slot_or_name</span><span class="p">)]</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
             <span class="c1"># Type</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_type_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)])</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">range_type_path</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">cast</span><span class="p">(</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)]</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_identifier_path</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Class</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier_path</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Generator.aliased_slot_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.aliased_slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">aliased_slot_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SlotDefinitionName</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Return the overloaded slot name -- the alias if one exists otherwise the actual name</span>
+<div class="viewcode-block" id="Generator.aliased_slot_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.aliased_slot_name">[docs]</a>    <span class="k">def</span> <span class="nf">aliased_slot_name</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SlotDefinitionName</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the overloaded slot name -- the alias if one exists otherwise the actual name</span>
 
 <span class="sd">        @param slot: either a slot name or a definition</span>
 <span class="sd">        @return: overloaded name</span>
@@ -587,10 +685,11 @@
 
 <div class="viewcode-block" id="Generator.subset_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.subset_name">[docs]</a>    <span class="k">def</span> <span class="nf">subset_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">subset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subset_for</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">subset</span> <span class="k">else</span> <span class="s2">&quot;Unknown_&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">subset</span> <span class="k">else</span> <span class="s2">&quot;Unknown_&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Generator.formatted_element_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.formatted_element_name">[docs]</a>    <span class="k">def</span> <span class="nf">formatted_element_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">],</span>
-                               <span class="n">is_range_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Generator.formatted_element_name"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.formatted_element_name">[docs]</a>    <span class="k">def</span> <span class="nf">formatted_element_name</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="n">Element</span><span class="p">],</span> <span class="n">is_range_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the default format for the name or the referenced element.  Slots are under_scored, all others are</span>
 <span class="sd">        CamelCased. Slot names are the alias, not the actual name</span>
@@ -602,10 +701,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">is_range_name</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">)</span> \
-                    <span class="k">if</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> \
-                       <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span> <span class="ow">or</span> \
-                       <span class="n">el_or_elname</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_name</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span>
+                    <span class="ow">or</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span>
+                    <span class="ow">or</span> <span class="n">el_or_elname</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_name</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
@@ -620,12 +722,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Generator.obj_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.obj_for">[docs]</a>    <span class="k">def</span> <span class="nf">obj_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_range_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Element</span><span class="p">]:</span>
+<div class="viewcode-block" id="Generator.obj_for"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.obj_for">[docs]</a>    <span class="k">def</span> <span class="nf">obj_for</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_range_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Element</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">is_range_name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_for</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">)</span> \
-                <span class="k">if</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> \
-                   <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span> <span class="ow">or</span> \
-                   <span class="n">el_or_elname</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_for</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span>
+                <span class="ow">or</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span>
+                <span class="ow">or</span> <span class="n">el_or_elname</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_for</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="n">el_or_elname</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">el_or_elname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
@@ -634,20 +741,26 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_or_type_for</span><span class="p">(</span><span class="n">el_or_elname</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Generator.default_prefix"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.default_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">default_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Return the default prefix for the schema</span>
+        <span class="sd">&quot;&quot;&quot;Return the default prefix for the schema</span>
 
-<span class="sd">         @return: URI or NCNAME of default prefix &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;://&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">:</span>
+<span class="sd">        @return: URI or NCNAME of default prefix&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Basic loader tests for valid default prefix</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">PrefixPrefixPrefix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">)]</span><span class="o">.</span><span class="n">prefix_reference</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span>
+                <span class="n">PrefixPrefixPrefix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">)</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span></div>
 
     <span class="c1"># TODO: add lru cache once we get identity into the classes</span>
 <div class="viewcode-block" id="Generator.domain_slots"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.domain_slots">[docs]</a>    <span class="k">def</span> <span class="nf">domain_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Return all slots in the class definition that are owned by the class &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">slot</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">]</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span> <span class="ow">or</span>
-                <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">))]</span></div>
+        <span class="sd">&quot;&quot;&quot;Return all slots in the class definition that are owned by the class&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">slot</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span><span class="p">))</span>
+        <span class="p">]</span></div>
 
 <div class="viewcode-block" id="Generator.add_mappings"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.add_mappings">[docs]</a>    <span class="k">def</span> <span class="nf">add_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defn</span><span class="p">:</span> <span class="n">Definition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -655,25 +768,33 @@
 <span class="sd">        :param defn: Class or Slot Definition</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_id_prefixes</span><span class="p">(</span><span class="n">defn</span><span class="p">)</span>
-        <span class="n">mappings</span> <span class="o">=</span> <span class="n">defn</span><span class="o">.</span><span class="n">mappings</span> <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">related_mappings</span> <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">close_mappings</span> <span class="o">+</span> \
-                   <span class="n">defn</span><span class="o">.</span><span class="n">narrow_mappings</span> <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">broad_mappings</span> <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">exact_mappings</span>
+        <span class="n">mappings</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">defn</span><span class="o">.</span><span class="n">mappings</span>
+            <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">related_mappings</span>
+            <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">close_mappings</span>
+            <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">narrow_mappings</span>
+            <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">broad_mappings</span>
+            <span class="o">+</span> <span class="n">defn</span><span class="o">.</span><span class="n">exact_mappings</span>
+        <span class="p">)</span>
         <span class="c1"># see https://github.com/linkml/linkml/pull/283</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">defn</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">):</span>
             <span class="n">mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">defn</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">defn</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">):</span>
             <span class="n">mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">defn</span><span class="o">.</span><span class="n">slot_uri</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;://&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;://&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">mapping</span><span class="p">):</span>
                 <span class="n">mcurie</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">curie_for</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">mcurie</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No namespace defined for URI: </span><span class="si">{</span><span class="n">mapping</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">return</span>        <span class="c1"># Absolute path - no prefix/name</span>
+                    <span class="k">return</span>  <span class="c1"># Absolute path - no prefix/name</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">mapping</span> <span class="o">=</span> <span class="n">mcurie</span>
-            <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Definition </span><span class="si">{</span><span class="n">defn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - unrecognized mapping: </span><span class="si">{</span><span class="n">mapping</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">ns</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Adding </span><span class="si">{</span><span class="n">ns</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">mapping</span><span class="si">}</span><span class="s1"> // </span><span class="si">{</span><span class="n">defn</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Definition </span><span class="si">{</span><span class="n">defn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - unrecognized mapping: </span><span class="si">{</span><span class="n">mapping</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding </span><span class="si">{</span><span class="n">ns</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">mapping</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="n">defn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">ns</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span></div>
 
@@ -682,7 +803,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_prefix</span><span class="p">(</span><span class="n">id_prefix</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Generator.add_prefix"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.Generator.add_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">add_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Add a prefix to the list of prefixes to emit</span>
+        <span class="sd">&quot;&quot;&quot;Add a prefix to the list of prefixes to emit</span>
 
 <span class="sd">        @param ncname: name to add</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -705,19 +826,29 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">is_capitalized</span> <span class="o">=</span> <span class="n">slot_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span>
+
         <span class="k">def</span> <span class="nf">capitalize</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">is_capitalized</span><span class="p">:</span>
-                <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}{</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}{</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">s</span>
+
         <span class="n">slot_name_normalized</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">slot_name_normalized_singular</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;s$&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slot_name_normalized</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot_name_normalized</span> <span class="o">==</span> <span class="s1">&#39;classes&#39;</span><span class="p">:</span>
-            <span class="n">slot_name_normalized_singular</span> <span class="o">=</span> <span class="s1">&#39;class&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slot_name_normalized</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">:</span>
+        <span class="n">slot_name_normalized_singular</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;s$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">slot_name_normalized</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot_name_normalized</span> <span class="o">==</span> <span class="s2">&quot;classes&quot;</span><span class="p">:</span>
+            <span class="n">slot_name_normalized_singular</span> <span class="o">=</span> <span class="s2">&quot;class&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">slot_name_normalized</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="n">capitalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">[</span><span class="n">slot_name_normalized</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slot_name_normalized_singular</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">capitalize</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">[</span><span class="n">slot_name_normalized_singular</span><span class="p">]</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">slot_name_normalized_singular</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">capitalize</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metamodel_name_map</span><span class="p">[</span><span class="n">slot_name_normalized_singular</span><span class="p">]</span><span class="si">}</span><span class="s2">s&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">slot_name</span></div>
 
@@ -728,11 +859,11 @@
 <span class="sd">        :param cls: class definition</span>
 <span class="sd">        :return: true if the class is unconstrained</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">==</span> <span class="s1">&#39;linkml:Any&#39;</span></div></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">==</span> <span class="s2">&quot;linkml:Any&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="shared_arguments"><a class="viewcode-back" href="../../../linkml.utils.html#linkml.utils.generator.shared_arguments">[docs]</a><span class="k">def</span> <span class="nf">shared_arguments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Generator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Command</span><span class="p">],</span> <span class="n">Command</span><span class="p">]:</span>
-    <span class="n">_LOG_LEVEL_STRINGS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;CRITICAL&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="s1">&#39;DEBUG&#39;</span><span class="p">]</span>
+    <span class="n">_LOG_LEVEL_STRINGS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CRITICAL&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_log_level_string_to_int</span><span class="p">(</span><span class="n">log_level_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">log_level_string</span> <span class="o">=</span> <span class="n">log_level_string</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
@@ -756,43 +887,66 @@
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Command</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Command</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Argument</span><span class="p">((</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">,</span> <span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--format&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">),</span>
-                   <span class="n">default</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Output format&quot;</span>
-                   <span class="p">))</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--metadata/--no-metadata&quot;</span><span class="p">,</span> <span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include metadata in output&quot;</span><span class="p">))</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--useuris/--metauris&quot;</span><span class="p">,</span> <span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include metadata in output&quot;</span><span class="p">))</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--importmap&quot;</span><span class="p">,</span> <span class="s2">&quot;-im&quot;</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">File</span><span class="p">(),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Import mapping file&quot;</span><span class="p">)</span>
+            <span class="n">Argument</span><span class="p">((</span><span class="s2">&quot;yamlfile&quot;</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--log_level&quot;</span><span class="p">,</span> <span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="n">_LOG_LEVEL_STRINGS</span><span class="p">),</span>
-                   <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Logging level&quot;</span><span class="p">,</span>
-                   <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_LEVEL</span><span class="p">,</span>
-                   <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">callback</span><span class="o">=</span><span class="n">log_level_callback</span><span class="p">)</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--format&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">),</span>
+                <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">),</span>
+                <span class="n">default</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Output format&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">),</span> <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;verbosity&quot;</span><span class="p">,</span>
-                   <span class="n">callback</span><span class="o">=</span><span class="n">verbosity_callback</span><span class="p">)</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--metadata/--no-metadata&quot;</span><span class="p">,),</span>
+                <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include metadata in output&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Option</span><span class="p">((</span><span class="s2">&quot;--mergeimports/--no-mergeimports&quot;</span><span class="p">,</span> <span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Merge imports into source file (default=mergeimports)&quot;</span><span class="p">))</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--useuris/--metauris&quot;</span><span class="p">,),</span>
+                <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Include metadata in output&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--importmap&quot;</span><span class="p">,</span> <span class="s2">&quot;-im&quot;</span><span class="p">),</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">File</span><span class="p">(),</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Import mapping file&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--log_level&quot;</span><span class="p">,),</span>
+                <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">(</span><span class="n">_LOG_LEVEL_STRINGS</span><span class="p">),</span>
+                <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Logging level&quot;</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="n">DEFAULT_LOG_LEVEL</span><span class="p">,</span>
+                <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">log_level_callback</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">),</span>
+                <span class="n">count</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;verbosity&quot;</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">verbosity_callback</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Option</span><span class="p">(</span>
+                <span class="p">(</span><span class="s2">&quot;--mergeimports/--no-mergeimports&quot;</span><span class="p">,),</span>
+                <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Merge imports into source file (default=mergeimports)&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span>
+
     <span class="k">return</span> <span class="n">decorator</span></div>
-
-
 </pre></div>
 
            </div>
