@@ -1,0 +1,171 @@
+id: https://w3id.org/linkml/examples/enums
+title: Dynamic Enums Example
+name: dynamicenums-example
+description: This demonstrates the use of dynamic enums
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/enums/
+  sh: https://w3id.org/shacl/
+  bioregistry: https://bioregistry.io/registry/
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  NCIT: http://purl.obolibrary.org/obo/NCIT_
+  loinc: http://loinc.org/
+
+default_prefix: ex
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+  
+#==================================
+# Classes                         #
+#==================================
+
+classes:
+  HumanSample:
+    slots:
+      - name
+      - disease
+
+
+#==================================
+# Slots                           #
+#==================================
+
+slots:
+  name:
+    range: string
+  disease:
+    range: HumanDisease
+  vital_status:
+    enum_range:
+      permissible_values:
+        LIVING:
+        DEAD:
+        UNDEAD:
+
+#==================================
+# Enums
+#==================================
+
+enums:
+  Disease:
+    reachable_from:
+      source_ontology: bioregistry:mondo
+      source_nodes:
+        - MONDO:0000001 ## disease or disorder
+      is_direct: false
+      relationship_types:
+        - rdfs:subClassOf
+    minus:
+      permissible_values:
+        root_node:
+          meaning: MONDO:0000001 ## disease or disorder
+
+  HumanDisease:
+    description: Extends the Disease value set, including NCIT neoplasms, excluding non-human diseases
+    inherits:
+      - Disease
+    include:
+      - reachable_from:
+          source_ontology: bioregistry:ncit
+          source_nodes:
+            - NCIT:C3262
+    minus:
+      - reachable_from:
+          source_ontology: bioregistry:mondo
+          source_nodes:
+            - MONDO:0005583 ## non-human animal disease
+          relationship_types:
+            - rdfs:subClassOf
+      - permissible_values:
+          NOT_THIS_ONE:
+            meaning: MONDO:9999
+            description: Example of excluding a single node
+
+  LoincExample:
+    enum_uri: http://hl7.org/fhir/ValueSet/example-intensional
+    see_also:
+      - https://build.fhir.org/valueset-example-intensional.json.html
+    include:
+      - reachable_from:
+          source_ontology: "loinc:"
+          source_nodes:
+            - loinc:LP43571-6
+          is_direct: true
+    minus:
+      concepts:
+        - LOINC:5932-9
+
+  HCAExample:
+    see_also:
+      - https://github.com/linkml/linkml/issues/274
+    include:
+      - reachable_from:
+          source_ontology: bioregistry:go
+          source_nodes:
+            - GO:0007049
+            - GO:0022403
+          include_self: false
+          relationship_types:
+            - rdfs:subClassOf
+    minus:
+      concepts:
+        - LOINC:5932-9
+        
+  BodyPartEnum:
+    reachable_from:
+      source_ontology: obo:cl
+      source_nodes:
+        - CL:0000540 ## neuron
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+        
+  Brand:
+    enum_uri: wikidata:Q431289
+    include:
+      - reachable_from:
+          source_ontology: bioregistry:wikidata
+          source_nodes:
+          - wikidata:Q431289
+          include_self: false
+          relationship_types:
+            - wdp:P31
+            - wdp:P279
+
+  SerumCholesterolExample:
+    description: >
+      This is an example value set that includes all the LOINC codes for serum/plasma cholesterol from v2.36.
+    code_set: http://hl7.org/fhir/ValueSet/serum-cholesterol
+    code_set_version: "1.0.0"
+    pv_formula: CODE
+    include:
+      - concepts:
+          - LP43571-6
+    minus:
+      - concepts:
+          - 5932-9
+    reachable_from:
+      source_ontology: http://loinc.org
+      source_nodes:
+        - LP43571-6
+      relationship_types: null
+      is_direct: true
+      include_self: true
+      traverse_up: false
+    concepts:
+      - http://loinc.org/LP43571-6

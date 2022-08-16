@@ -1,0 +1,69 @@
+spec:linkml.enum,spec:fhir.r4.valueset,temp.comment,,temp.enum.unmapped,<-IMPT,temp.valueset.unmapped,<-IMPT,<-<-comments
+.,.,"General mapping spec notes: 1. This is getting more complicated, but good. I think we need at least 2 types of notation: simple, and full. Simple can probably leave out indices [i], [i2], etc. Should basically just be the dot notation. Full is everything else in the mapping spec. If just simple is specified, then the spec recommends that implementer uses a lookup map of string to callable func, where the string is the 'simple spec' dot notation path of the source spec field path, and the func is what is necessary to transform and put in the target path. else, if full, should be able to interpret by spec and do mutation without any other mutations needed by implementer.;2. should extensions be like .extension[linkml:field: val] or just leave the linkml: part out? 3. indexing [i], [i2] and so on; 4. [*] means applies to every instance of the array. i guess the array has to be built first by any other fields that map to it. this makes the mapping language parser much more complex because has to look for all fields and resolve, and can be recursive.; 5. [] means new entry into array.; 6. =VAL means assign directly to val. i guess this needs a type system unless only supports ""STRING"".; 7. ",,.,.,.,.,.
+enum_uri,url,,,abstract,,identifier,,complex obj
+name,name,,,aliases,,version,,
+name,title,Do I want to mutate at all?,,alt_descriptions,,experimental,,
+last_updated_on,date,Is this best Enum date to use?,,annotations,,publisher,,
+status,$linkmlStatusToFhirStatus.status,Mutation: Needs to map to one of: draft | active | retired | unknown,,apply_to,,contact,,complex obj
+description,description,,,broad_mappings,,useContext,,complex obj
+inherits,extension.inherits,,,close_mappings,,jurisdiction,,complex obj
+minus,,,,code_set,,immutable,,
+minus.permissible_values,,,,code_set_tag,,purpose,,
+minus.permissible_values.root_node,,,,code_set_version,,copyright,,
+minus.permissible_values.root_node.meaning,,,,comments,,compose,TRUE,required if intensional
+reachable_from[i],compose.include[i],Spec: i=index; Field: Both specs aggregate codes from a single code system at these fields,,concepts,,compose.lockedDate,,
+reachable_from[i].source_ontology,compose.include[i].system,Spec: i=index; Field: Both specs aggregate codes from a single code system at these fields,,conforms_to,,compose.inactive,,
+reachable_from[i].source_nodes[i2],"compose.include[i].filter[i2].op=""descendent-of""",,,created_by,,compose.include,TRUE,required by parent
+reachable_from[i].source_nodes[i2],compose.include[i].filter[i2]$specLinkmlTypeUriorcurieToSpecFhirCode.value,"Spec: New notation. $ indicates a mutation func, followed by name of func. Naming convention issues: no version specified, capitalization not gauranteed to match. The . Afterwards ins't a property of the mutation method, but is simply the continuation of the field path from right before the $; Field: https://www.hl7.org/fhir/datatypes.html#code",,created_on,,compose.include.system,,
+reachable_from[i].is_direct,"compose.include[i].filter[i2].extension[].id=""is_direct""",Assign string; not value from linkml. https://www.hl7.org/fhir/extensibility.html,,definition_uri,,compose.include.version,,
+reachable_from[i].is_direct,"compose.include[i].filter[i2].extension[].uri=""https://linkml.io/linkml-model/docs/is_direct/""",Assign string; not value from linkml. https://www.hl7.org/fhir/extensibility.html,,deprecated,,compose.include.concept,TRUE,required by parent
+reachable_from[i].is_direct,compose.include[i].filter[i2].extension[].valueBoolean,Assign value from linkml. Assign string; not value from linkml. https://www.hl7.org/fhir/extensibility.html,,deprecated_element_has_exact_replacement,,compose.include.concept.code,TRUE,required by parent
+reachable_from[i].relationship_types[i2],compose.include[i].filter[*].extension[].relationship_types,,,deprecated_element_has_possible_replacement,,compose.include.concept.display,,
+,compose,,,exact_mappings,,compose.include.concept.designation,,
+,compose.lockedDate,,,examples,,compose.include.concept.designation.language,,
+,compose.inactive,,,extensions,,compose.include.concept.designation.use,,complex obj
+,compose.include,,,from_schema,,compose.include.concept.designation.value,,
+,compose.include.system,,,id_prefixes,,compose.include.filter,,
+,compose.include.version,,,imported_from,,compose.include.filter.property,,
+,compose.include.concept,,,in_language,,compose.include.filter.op,,
+,compose.include.concept.code,,,in_subset,,compose.include.filter.value,,
+,compose.include.concept.display,,,include,,compose.include.valueSet,,
+,compose.include.concept.designation,,,is_a,,compose.exclude,TRUE,
+,compose.include.concept.designation.language,,,local_names,,compose.exclude.system,,
+,compose.include.concept.designation.use,,,mappings,,compose.exclude.version,,
+,compose.include.concept.designation.value,,,matches,,compose.exclude.concept,TRUE,
+,compose.include.filter,,,mixin,,compose.exclude.concept.code,TRUE,
+,compose.include.filter.property,,,mixins,,compose.exclude.concept.display,,
+,compose.include.filter.op,,,modified_by,,compose.exclude.concept.designation,,
+,compose.include.filter.value,,,name,,compose.exclude.concept.designation.language,,
+,compose.include.valueSet,,,narrow_mappings,,compose.exclude.concept.designation.use,,
+,,,,notes,,compose.exclude.concept.designation.value,,required by parent
+,,,,permissible_values,,compose.exclude.filter,,
+,,,,pv_formula,,compose.exclude.filter.property,,required by parent
+,,,,rank,,compose.exclude.filter.op,,required by parent
+,,,,related_mappings,,compose.exclude.filter.value,,required by parent
+,,,,see_also,,compose.exclude.valueSet,,
+,,,,source,,compose.expansion,TRUE,required if extensional
+,,,,string_serialization,,compose.expansion.identifier,,
+,,,,structured_aliases,,compose.expansion.timestamp,TRUE,required by parent. Does this make sense in LinkML context?
+,,,,title,,compose.expansion.total,,
+,,,,todos,,compose.expansion.offset,,
+,,,,values_from,,compose.expansion.parameter,,
+,,,,,,compose.expansion.parameter.name,,required by parent
+,,,,,,// compose.expansion.parameter.value[x]: Value of the named parameter. One of these 7:,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueString,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueBoolean,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueInteger,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueDecimal,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueUri,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueCode,,pick one / map at runtime
+,,,,,,compose.expansion.parameter.valueDateTime,,pick one / map at runtime
+,,,,,,compose.expansion.contains,,
+,,,,,,compose.expansion.contains.system,,
+,,,,,,compose.expansion.contains.abstract,,
+,,,,,,compose.expansion.contains.inactive,,
+,,,,,,compose.expansion.contains.version,,
+,,,,,,compose.expansion.contains.code,,
+,,,,,,compose.expansion.contains.display,,
+,,,,,,compose.expansion.contains.designation,,see: https://www.hl7.org/fhir/valueset.html#ValueSet.compose.include.concept.designation
+,,,,,,compose.expansion.contains.contains,,see: https://www.hl7.org/fhir/valueset.html#ValueSet.expansion.contains
