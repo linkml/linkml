@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://w3id.org/linkml/meta.schema.json
+id: https://w3id.org/linkml/linter/config
+name: linter-config
+title: LinkML Linter Configuration Datamodel
+description: >-
+  A datamodel describing the configuration file accepted by the linkml-lint command
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  lintcfg: https://w3id.org/linkml/linter/config
+
+default_prefix: lintcfg
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  Config:
+    tree_root: true
+    attributes:
+      no_empty_title:
+        range: RuleConfig
+
+  RuleConfig:
+    attributes:
+      level:
+        range: RuleLevel
+        required: true
+
+enums:
+  RuleLevel:
+    permissible_values:
+      disabled:
+        description: The rule will not be checked
+      warning:
+        description: A violation of a rule at this level is a minor issue that should be fixed
+      error:
+        description: A violation of a rule at this level is a major issue that must be fixed

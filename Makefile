@@ -49,6 +49,9 @@ examples/%-data.nt: examples/%-data.jsonld
 linkml/workspaces/datamodel/workspaces.py: linkml/workspaces/datamodel/workspaces.yaml
 	$(RUN) gen-python $< > $@.tmp && mv $@.tmp $@
 
+linkml/linter/config/datamodel/config.py: linkml/linter/config/datamodel/config.yaml
+	$(RUN) gen-python $< > $@.tmp && mv $@.tmp $@
+
 TUTORIALS = 01 02 03 04 05 06 07 08 09 10
 test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
 test-tutorial-%: sphinx/intro/tutorial%.md
