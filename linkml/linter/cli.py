@@ -1,12 +1,14 @@
+import os
 from pathlib import Path
 
 import click
-from linkml_runtime.loaders.yaml_loader import YAMLLoader
+import yaml
 
-from .config.datamodel.config import Config, RuleLevel
+from .config.datamodel.config import RuleLevel
 from .linter import Linter
 
 YAML_SUFFIXES = [".yml", ".yaml"]
+DOT_FILE_CONFIG = Path(os.getcwd()) / ".linkmllint.yaml"
 
 
 @click.command()
@@ -16,11 +18,19 @@ YAML_SUFFIXES = [".yml", ".yaml"]
         exists=True, dir_okay=True, file_okay=True, resolve_path=True, path_type=Path
     ),
 )
+@click.option(
+    "-c", "--config", type=click.Path(exists=True, dir_okay=False, resolve_path=True)
+)
 @click.option("--fix/--no-fix", default=False)
-def main(schema: Path, fix: bool):
-    config_path = str(Path(__file__).parent / "config/default.yaml")
-    loader = YAMLLoader()
-    config = loader.load(config_path, target_class=Config)
+def main(schema: Path, fix: bool, config: str):
+    if config:
+        with open(config) as config_file:
+            config_dict = yaml.safe_load(config_file)
+    elif DOT_FILE_CONFIG.exists():
+        with open(DOT_FILE_CONFIG) as config_file:
+            config_dict = yaml.safe_load(config_file)
+    else:
+        config_dict = {}
 
     if schema.is_dir():
         raise NotImplementedError("Directory input not implemented yet")
@@ -28,7 +38,7 @@ def main(schema: Path, fix: bool):
         if schema.suffix not in YAML_SUFFIXES:
             raise click.UsageError("SCHEMA must be a YAML file")
 
-        linter = Linter(config)
+        linter = Linter(config_dict)
         report = linter.lint(str(schema), fix=fix)
         for problem in report:
             formatted = (

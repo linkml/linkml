@@ -22,12 +22,23 @@ classes:
     attributes:
       no_empty_title:
         range: RuleConfig
+      permissible_values_format:
+        range: PermissibleValuesFormatRuleConfig
 
   RuleConfig:
     attributes:
       level:
         range: RuleLevel
         required: true
+
+  PermissibleValuesFormatRuleConfig:
+    is_a: RuleConfig
+    attributes:
+      format:
+        range: string
+        description: >-
+          Special values "snake", "uppersnake", "camel", and "kebab" will be recognized,
+          otherwise the value will be interpreted as a regular expression.
 
 enums:
   RuleLevel:

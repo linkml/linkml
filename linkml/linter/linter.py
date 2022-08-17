@@ -1,12 +1,16 @@
 import inspect
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from dataclasses import dataclass
-from typing import Iterable, List, Union
+from functools import lru_cache
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Union
 
+import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
-from .config.datamodel.config import Config, RuleLevel
+from .config.datamodel.config import Config, RuleConfig, RuleLevel
 
 
 @dataclass
@@ -19,7 +23,7 @@ class LinterProblem:
 
 
 class LinterRule(ABC):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: RuleConfig) -> None:
         super().__init__()
         self.config = config
 
@@ -33,9 +37,28 @@ class LinterRule(ABC):
         pass
 
 
+@lru_cache
+def get_default_config() -> Dict[str, Any]:
+    config_path = str(Path(__file__).parent / "config/default.yaml")
+    with open(config_path) as config_file:
+        return yaml.safe_load(config_file)
+
+
+def merge_configs(original: dict, other: dict):
+    result = deepcopy(original)
+    for key, value in other.items():
+        if isinstance(value, dict):
+            result[key] = merge_configs(result.get(key, {}), value)
+        else:
+            result[key] = value
+    return result
+
+
 class Linter:
-    def __init__(self, config) -> None:
-        self.config = config
+    def __init__(self, config: Dict[str, Any] = {}) -> None:
+        default_config = deepcopy(get_default_config())
+        merged_config = merge_configs(default_config, config)
+        self.config = Config(**merged_config)
 
         from . import rules
 

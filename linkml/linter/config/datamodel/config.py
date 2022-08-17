@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-16T12:05:08
+# Generation date: 2022-08-16T14:44:41
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -15,6 +15,7 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
                                               PvFormulaOptions)
+from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.dataclass_extensions_376 import \
     dataclasses_init_fn_with_kwargs
@@ -53,12 +54,22 @@ class Config(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINTCFG.Config
 
     no_empty_title: Optional[Union[dict, "RuleConfig"]] = None
+    permissible_values_format: Optional[
+        Union[dict, "PermissibleValuesFormatRuleConfig"]
+    ] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
             self.no_empty_title, RuleConfig
         ):
             self.no_empty_title = RuleConfig(**as_dict(self.no_empty_title))
+
+        if self.permissible_values_format is not None and not isinstance(
+            self.permissible_values_format, PermissibleValuesFormatRuleConfig
+        ):
+            self.permissible_values_format = PermissibleValuesFormatRuleConfig(
+                **as_dict(self.permissible_values_format)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -79,6 +90,25 @@ class RuleConfig(YAMLRoot):
             self.MissingRequiredField("level")
         if not isinstance(self.level, RuleLevel):
             self.level = RuleLevel(self.level)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class PermissibleValuesFormatRuleConfig(RuleConfig):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINTCFG.PermissibleValuesFormatRuleConfig
+    class_class_curie: ClassVar[str] = "lintcfg:PermissibleValuesFormatRuleConfig"
+    class_name: ClassVar[str] = "PermissibleValuesFormatRuleConfig"
+    class_model_uri: ClassVar[URIRef] = LINTCFG.PermissibleValuesFormatRuleConfig
+
+    level: Union[str, "RuleLevel"] = None
+    format: Optional[str] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.format is not None and not isinstance(self.format, str):
+            self.format = str(self.format)
 
         super().__post_init__(**kwargs)
 
@@ -117,6 +147,15 @@ slots.config__no_empty_title = Slot(
     range=Optional[Union[dict, RuleConfig]],
 )
 
+slots.config__permissible_values_format = Slot(
+    uri=LINTCFG.permissible_values_format,
+    name="config__permissible_values_format",
+    curie=LINTCFG.curie("permissible_values_format"),
+    model_uri=LINTCFG.config__permissible_values_format,
+    domain=None,
+    range=Optional[Union[dict, PermissibleValuesFormatRuleConfig]],
+)
+
 slots.ruleConfig__level = Slot(
     uri=LINTCFG.level,
     name="ruleConfig__level",
@@ -124,4 +163,13 @@ slots.ruleConfig__level = Slot(
     model_uri=LINTCFG.ruleConfig__level,
     domain=None,
     range=Union[str, "RuleLevel"],
+)
+
+slots.permissibleValuesFormatRuleConfig__format = Slot(
+    uri=LINTCFG.format,
+    name="permissibleValuesFormatRuleConfig__format",
+    curie=LINTCFG.curie("format"),
+    model_uri=LINTCFG.permissibleValuesFormatRuleConfig__format,
+    domain=None,
+    range=Optional[str],
 )

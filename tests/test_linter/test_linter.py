@@ -1,21 +1,16 @@
 import unittest
 
-from linkml_runtime.loaders import YAMLLoader
+import yaml
 
-from linkml.linter.config.datamodel.config import Config, RuleLevel
+from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import Linter
 from linkml.utils.schema_builder import SchemaBuilder
-
-
-def get_config(config: str) -> Config:
-    loader = YAMLLoader()
-    return loader.loads(config, target_class=Config)
 
 
 class TestLinter(unittest.TestCase):
     def test_rule_level_error(self):
 
-        config = get_config(
+        config = yaml.safe_load(
             """
 no_empty_title:
   level: error
@@ -45,7 +40,7 @@ no_empty_title:
         self.assertEqual(rule_names.pop(), "no_empty_title")
 
     def test_rule_level_warning(self):
-        config = get_config(
+        config = yaml.safe_load(
             """
 no_empty_title:
   level: warning
@@ -75,7 +70,7 @@ no_empty_title:
         self.assertEqual(rule_names.pop(), "no_empty_title")
 
     def test_rule_level_disabled(self):
-        config = get_config(
+        config = yaml.safe_load(
             """
 no_empty_title:
   level: disabled
