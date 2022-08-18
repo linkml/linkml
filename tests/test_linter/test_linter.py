@@ -22,7 +22,7 @@ no_empty_title:
         builder.add_enum("my_enum")
 
         linter = Linter(config)
-        report = linter.lint(builder.schema)
+        report = list(linter.lint(builder.schema))
 
         messages = [p.message for p in report]
         levels = {str(p.level) for p in report}
@@ -52,7 +52,7 @@ no_empty_title:
         builder.add_enum("my_enum")
 
         linter = Linter(config)
-        report = linter.lint(builder.schema)
+        report = list(linter.lint(builder.schema))
 
         messages = [p.message for p in report]
         levels = {str(p.level) for p in report}
@@ -82,6 +82,6 @@ no_empty_title:
         builder.add_enum("my_enum")
 
         linter = Linter(config)
-        report = linter.lint(builder.schema)
+        report = list(linter.lint(builder.schema))
 
         self.assertEqual(len(report), 0)

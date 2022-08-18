@@ -20,7 +20,7 @@ class PermissibleValuesFormatRule(LinterRule):
         self, schema_view: SchemaView, fix: bool = False
     ) -> Iterable[LinterProblem]:
         pattern = PATTERNS.get(self.config.format, self.config.format)
-        for enum_name, enum_def in schema_view.all_enums().items():
+        for enum_name, enum_def in schema_view.all_enums(imports=False).items():
             for value in enum_def.permissible_values.keys():
                 if re.fullmatch(pattern, value) is None:
                     yield LinterProblem(

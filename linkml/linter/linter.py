@@ -72,9 +72,17 @@ class Linter:
 
     def lint(
         self, schema=Union[str, SchemaDefinition], fix: bool = False
-    ) -> List[LinterProblem]:
-        schema_view = SchemaView(schema)
-        report = []
+    ) -> Iterable[LinterProblem]:
+        try:
+            schema_view = SchemaView(schema)
+        except:
+            yield LinterProblem(
+                message="File is not a valid LinkML schema",
+                level=RuleLevel(RuleLevel.error),
+                schema_source=(schema if isinstance(schema, str) else None),
+            )
+            return
+
         for rule_id, rule_config in self.config.__dict__.items():
             rule_cls = self._rules_map.get(rule_id, None)
             if rule_cls is None:
@@ -91,6 +99,4 @@ class Linter:
                 problem.schema_name = schema_view.schema.name
                 if isinstance(schema, str):
                     problem.schema_source = schema
-                report.append(problem)
-
-        return report
+                yield problem
