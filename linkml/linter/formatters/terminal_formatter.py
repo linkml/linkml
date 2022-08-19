@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import defaultdict
 from typing import IO, Any, Optional
 
 import click
@@ -16,7 +16,7 @@ def plural(word: str, count: int):
 class TerminalFormatter(Formatter):
     def __init__(self, file: Optional[IO[Any]] = None) -> None:
         super().__init__(file)
-        self.problem_counts = Counter()
+        self.problem_counts = defaultdict(int)
         self.current_schema = None
 
     def start_schema(self, name: str):
@@ -26,7 +26,6 @@ class TerminalFormatter(Formatter):
         key = self.current_schema
         if key not in self.problem_counts:
             self.write(click.style(key, underline=True))
-            self.problem_counts[key] = 0
 
         self.problem_counts[key] += 1
 
@@ -44,7 +43,7 @@ class TerminalFormatter(Formatter):
             self.write("")
 
     def end_report(self):
-        total_problems = self.problem_counts.total()
+        total_problems = sum(self.problem_counts.values())
         if total_problems > 0:
             problem_schemas = len(self.problem_counts)
             self.write(
