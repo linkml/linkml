@@ -5,12 +5,6 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 from ..linter import LinterProblem, LinterRule
 
-pattern = re.compile(r"(?<!^)(?=[A-Z])")
-
-
-def uncamel(n: str) -> str:
-    return pattern.sub(" ", n)
-
 
 class NoEmptyTitleRule(LinterRule):
     id = "no_empty_title"
@@ -21,7 +15,7 @@ class NoEmptyTitleRule(LinterRule):
         for e in schema_view.all_elements(imports=False).values():
             if fix and e.title is None:
                 title = e.name.replace("_", " ")
-                title = uncamel(title).lower()
+                title = self.uncamel(title).lower()
                 e.title = title
             if e.title is None:
                 problem = LinterProblem(

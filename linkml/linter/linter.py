@@ -1,4 +1,5 @@
 import inspect
+import re
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
@@ -23,6 +24,9 @@ class LinterProblem:
 
 
 class LinterRule(ABC):
+
+    uncamel_pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
     def __init__(self, config: RuleConfig) -> None:
         super().__init__()
         self.config = config
@@ -35,6 +39,10 @@ class LinterRule(ABC):
     @abstractmethod
     def check(self, schema_view: SchemaView, fix: bool) -> Iterable[LinterProblem]:
         pass
+
+    @staticmethod
+    def uncamel(n: str) -> str:
+        return LinterRule.uncamel_pattern.sub(" ", n)
 
 
 @lru_cache

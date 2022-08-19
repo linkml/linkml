@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-16T14:44:41
+# Generation date: 2022-08-19T09:57:53
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -15,13 +15,14 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.linkml_model.meta import (EnumDefinition, PermissibleValue,
                                               PvFormulaOptions)
-from linkml_runtime.linkml_model.types import String
+from linkml_runtime.linkml_model.types import Boolean, String
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.dataclass_extensions_376 import \
     dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
-from linkml_runtime.utils.metamodelcore import bnode, empty_dict, empty_list
+from linkml_runtime.utils.metamodelcore import (Bool, bnode, empty_dict,
+                                                empty_list)
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import (YAMLRoot, extended_float,
                                             extended_int, extended_str)
@@ -57,6 +58,7 @@ class Config(YAMLRoot):
     permissible_values_format: Optional[
         Union[dict, "PermissibleValuesFormatRuleConfig"]
     ] = None
+    tree_root_class: Optional[Union[dict, "TreeRootClassRuleConfig"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
@@ -69,6 +71,13 @@ class Config(YAMLRoot):
         ):
             self.permissible_values_format = PermissibleValuesFormatRuleConfig(
                 **as_dict(self.permissible_values_format)
+            )
+
+        if self.tree_root_class is not None and not isinstance(
+            self.tree_root_class, TreeRootClassRuleConfig
+        ):
+            self.tree_root_class = TreeRootClassRuleConfig(
+                **as_dict(self.tree_root_class)
             )
 
         super().__post_init__(**kwargs)
@@ -109,6 +118,33 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.format is not None and not isinstance(self.format, str):
             self.format = str(self.format)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class TreeRootClassRuleConfig(RuleConfig):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINTCFG.TreeRootClassRuleConfig
+    class_class_curie: ClassVar[str] = "lintcfg:TreeRootClassRuleConfig"
+    class_name: ClassVar[str] = "TreeRootClassRuleConfig"
+    class_model_uri: ClassVar[URIRef] = LINTCFG.TreeRootClassRuleConfig
+
+    level: Union[str, "RuleLevel"] = None
+    root_class_name: Optional[str] = None
+    validate_existing_class_name: Optional[Union[bool, Bool]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.root_class_name is not None and not isinstance(
+            self.root_class_name, str
+        ):
+            self.root_class_name = str(self.root_class_name)
+
+        if self.validate_existing_class_name is not None and not isinstance(
+            self.validate_existing_class_name, Bool
+        ):
+            self.validate_existing_class_name = Bool(self.validate_existing_class_name)
 
         super().__post_init__(**kwargs)
 
@@ -156,6 +192,15 @@ slots.config__permissible_values_format = Slot(
     range=Optional[Union[dict, PermissibleValuesFormatRuleConfig]],
 )
 
+slots.config__tree_root_class = Slot(
+    uri=LINTCFG.tree_root_class,
+    name="config__tree_root_class",
+    curie=LINTCFG.curie("tree_root_class"),
+    model_uri=LINTCFG.config__tree_root_class,
+    domain=None,
+    range=Optional[Union[dict, TreeRootClassRuleConfig]],
+)
+
 slots.ruleConfig__level = Slot(
     uri=LINTCFG.level,
     name="ruleConfig__level",
@@ -172,4 +217,22 @@ slots.permissibleValuesFormatRuleConfig__format = Slot(
     model_uri=LINTCFG.permissibleValuesFormatRuleConfig__format,
     domain=None,
     range=Optional[str],
+)
+
+slots.treeRootClassRuleConfig__root_class_name = Slot(
+    uri=LINTCFG.root_class_name,
+    name="treeRootClassRuleConfig__root_class_name",
+    curie=LINTCFG.curie("root_class_name"),
+    model_uri=LINTCFG.treeRootClassRuleConfig__root_class_name,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.treeRootClassRuleConfig__validate_existing_class_name = Slot(
+    uri=LINTCFG.validate_existing_class_name,
+    name="treeRootClassRuleConfig__validate_existing_class_name",
+    curie=LINTCFG.curie("validate_existing_class_name"),
+    model_uri=LINTCFG.treeRootClassRuleConfig__validate_existing_class_name,
+    domain=None,
+    range=Optional[Union[bool, Bool]],
 )

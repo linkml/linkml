@@ -24,6 +24,8 @@ classes:
         range: RuleConfig
       permissible_values_format:
         range: PermissibleValuesFormatRuleConfig
+      tree_root_class:
+        range: TreeRootClassRuleConfig
 
   RuleConfig:
     attributes:
@@ -37,8 +39,26 @@ classes:
       format:
         range: string
         description: >-
+          Default: "uppersnake"
           Special values "snake", "uppersnake", "camel", and "kebab" will be recognized,
           otherwise the value will be interpreted as a regular expression.
+
+  TreeRootClassRuleConfig:
+    is_a: RuleConfig
+    attributes:
+      root_class_name:
+        range: string
+        description: >-
+          Default: Container
+          If a class definition with `tree_root: true` is not found and autofix is enabled,
+          this string will be used as the name of the class added to the schema.
+      validate_existing_class_name:
+        range: boolean
+        description: >-
+          Default: false
+          If true, in addition to validating that a `tree_root: true` ClassDefinition exists,
+          the rule will also validate that is has the name provided by the `class_name` option.
+
 
 enums:
   RuleLevel:
