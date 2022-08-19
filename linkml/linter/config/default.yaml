@@ -7,3 +7,7 @@ tree_root_class:
   level: disabled
   root_class_name: Container
   validate_existing_class_name: false
+recommended:
+  level: disabled
+  include: []
+  exclude: []

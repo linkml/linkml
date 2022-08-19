@@ -26,6 +26,8 @@ classes:
         range: PermissibleValuesFormatRuleConfig
       tree_root_class:
         range: TreeRootClassRuleConfig
+      recommended:
+        range: RecommendedRuleConfig
 
   RuleConfig:
     attributes:
@@ -58,6 +60,23 @@ classes:
           Default: false
           If true, in addition to validating that a `tree_root: true` ClassDefinition exists,
           the rule will also validate that is has the name provided by the `class_name` option.
+
+  RecommendedRuleConfig:
+    is_a: RuleConfig
+    attributes:
+      include:
+        range: string
+        multivalued: true
+        description: >-
+          Default: []
+          If specified, only elements with the provided names will be checked
+      exclude:
+        range: string
+        multivalued: true
+        description: >-
+          Default: []
+          All elements except the ones with names specified in this list will be checked 
+        
 
 
 enums:

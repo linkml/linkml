@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-19T09:57:53
+# Generation date: 2022-08-19T11:10:33
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -59,6 +59,7 @@ class Config(YAMLRoot):
         Union[dict, "PermissibleValuesFormatRuleConfig"]
     ] = None
     tree_root_class: Optional[Union[dict, "TreeRootClassRuleConfig"]] = None
+    recommended: Optional[Union[dict, "RecommendedRuleConfig"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
@@ -79,6 +80,11 @@ class Config(YAMLRoot):
             self.tree_root_class = TreeRootClassRuleConfig(
                 **as_dict(self.tree_root_class)
             )
+
+        if self.recommended is not None and not isinstance(
+            self.recommended, RecommendedRuleConfig
+        ):
+            self.recommended = RecommendedRuleConfig(**as_dict(self.recommended))
 
         super().__post_init__(**kwargs)
 
@@ -149,6 +155,31 @@ class TreeRootClassRuleConfig(RuleConfig):
         super().__post_init__(**kwargs)
 
 
+@dataclass
+class RecommendedRuleConfig(RuleConfig):
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
+    class_class_curie: ClassVar[str] = "lintcfg:RecommendedRuleConfig"
+    class_name: ClassVar[str] = "RecommendedRuleConfig"
+    class_model_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
+
+    level: Union[str, "RuleLevel"] = None
+    include: Optional[Union[str, List[str]]] = empty_list()
+    exclude: Optional[Union[str, List[str]]] = empty_list()
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if not isinstance(self.include, list):
+            self.include = [self.include] if self.include is not None else []
+        self.include = [v if isinstance(v, str) else str(v) for v in self.include]
+
+        if not isinstance(self.exclude, list):
+            self.exclude = [self.exclude] if self.exclude is not None else []
+        self.exclude = [v if isinstance(v, str) else str(v) for v in self.exclude]
+
+        super().__post_init__(**kwargs)
+
+
 # Enumerations
 class RuleLevel(EnumDefinitionImpl):
 
@@ -201,6 +232,15 @@ slots.config__tree_root_class = Slot(
     range=Optional[Union[dict, TreeRootClassRuleConfig]],
 )
 
+slots.config__recommended = Slot(
+    uri=LINTCFG.recommended,
+    name="config__recommended",
+    curie=LINTCFG.curie("recommended"),
+    model_uri=LINTCFG.config__recommended,
+    domain=None,
+    range=Optional[Union[dict, RecommendedRuleConfig]],
+)
+
 slots.ruleConfig__level = Slot(
     uri=LINTCFG.level,
     name="ruleConfig__level",
@@ -235,4 +275,22 @@ slots.treeRootClassRuleConfig__validate_existing_class_name = Slot(
     model_uri=LINTCFG.treeRootClassRuleConfig__validate_existing_class_name,
     domain=None,
     range=Optional[Union[bool, Bool]],
+)
+
+slots.recommendedRuleConfig__include = Slot(
+    uri=LINTCFG.include,
+    name="recommendedRuleConfig__include",
+    curie=LINTCFG.curie("include"),
+    model_uri=LINTCFG.recommendedRuleConfig__include,
+    domain=None,
+    range=Optional[Union[str, List[str]]],
+)
+
+slots.recommendedRuleConfig__exclude = Slot(
+    uri=LINTCFG.exclude,
+    name="recommendedRuleConfig__exclude",
+    curie=LINTCFG.curie("exclude"),
+    model_uri=LINTCFG.recommendedRuleConfig__exclude,
+    domain=None,
+    range=Optional[Union[str, List[str]]],
 )
