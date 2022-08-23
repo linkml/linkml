@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to model quantities and measurements &mdash; linkml  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> linkml
+            <img src="https://linkml.io/uploads/linkml-logo_color.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/index.html">Working with Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../generators/index.html">Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing/contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developers/index.html">Developers guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">linkml</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>How to model quantities and measurements</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/howtos/model-measurements.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-to-model-quantities-and-measurements">
+<h1>How to model quantities and measurements<a class="headerlink" href="#how-to-model-quantities-and-measurements" title="Permalink to this heading"></a></h1>
+<p>Measurements lie at the heart of science, as well as engineering and
+everyday life. However, there is no consensus data model or exchange
+standard for measurements. Even representation of units is
+challenging, with different competing standards.</p>
+<p>There is unlikely to be a consensus data model, because different use
+cases and requirements drive different designs. Instead it may be
+fruitful to standardize on different composable portions of a data
+model, and to enumerate design patterns (and anti-patterns), with a
+clear understanding of pros and cons, and how to map between them.</p>
+<p>Here we will walk through how to model measurements for a human
+research subjects, making decisions based on use cases. Although our
+central example is a human or organismal subject, the patterns should
+carry forward to other subjects, ranging from environmental sites
+through to physical parts of engineered systems.</p>
+<p>Although this how-to guide is intended primarily for modeling using
+LinkML, the general patterns here are broadly applicable.</p>
+<section id="central-example">
+<h2>Central Example<a class="headerlink" href="#central-example" title="Permalink to this heading"></a></h2>
+<p>The central example used here is measurements of a few properties that
+can be recorded for people, in particular:</p>
+<ul class="simple">
+<li><p>body mass/weight</p></li>
+<li><p>height</p></li>
+<li><p>BMI (body-mass index)</p></li>
+</ul>
+<p>But these should be generalizable to other properties or other kinds of observations</p>
+</section>
+<section id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
+<p>There are multiple ways to make a data model or standard that uses
+measurements. The decision should be made based on requirements, use
+cases, and the overall context of how the data model should be used.</p>
+<p>For our purposes here, the following features/requirements can help us:</p>
+<ol class="arabic simple" start="0">
+<li><p>Does the data need to be computed over?</p></li>
+<li><p>Does the data need to be exchanged in a flat table or array form, or can it be <em>normalized</em>?</p></li>
+<li><p>Do the scalar values need to be immediately accessible?</p></li>
+<li><p>Is it necessary to represent error bars or ranges?</p></li>
+<li><p>Does each individual measurement instance need to have metadata associated with it?</p></li>
+<li><p>Are the units fixed for each measurement type within the scope of the standard, or can different units be used?</p></li>
+</ol>
+</section>
+<section id="core-schema">
+<h2>Core schema<a class="headerlink" href="#core-schema" title="Permalink to this heading"></a></h2>
+<p>We will work through a number of different alternatives, but all use the following core skeleton:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/howtos/measurements</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">research_subject_measurements</span><span class="w"></span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A demonstrator schema for measuing properties of research subjects</span><span class="w"></span>
+<span class="nt">license</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://creativecommons.org/publicdomain/zero/1.0/</span><span class="w"></span>
+
+<span class="nt">prefixes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/howtos/measurements</span><span class="w"></span>
+<span class="w">  </span><span class="nt">sh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/shacl/</span><span class="w"></span>
+<span class="w">  </span><span class="nt">UO</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/UO_</span><span class="w"></span>
+<span class="w">  </span><span class="nt">PATO</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://purl.obolibrary.org/obo/PATO_</span><span class="w"></span>
+<span class="w">  </span><span class="nt">qudt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://qudt.org/schema/qudt/</span><span class="w"></span>
+
+<span class="nt">default_prefix</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex</span><span class="w"></span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+
+<span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A research subject</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A unique identifier for the research subject</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="patterns-and-anti-patterns">
+<h2>Patterns and Anti-patterns<a class="headerlink" href="#patterns-and-anti-patterns" title="Permalink to this heading"></a></h2>
+<p>Next we’ll take a look at different ways to model a simple
+hypothetical standard, where we have research subjects (e.g. people,
+or potentially experimental organsisms) with a number of
+measurements. For the basic use case we don’t assume time-series data.</p>
+<p>For each approach, we show a schema snippet, and example data in both
+YAML/JSON and in tabular form.</p>
+<section id="simple-explicit-scalar-pattern">
+<h3>Simple Explicit Scalar Pattern<a class="headerlink" href="#simple-explicit-scalar-pattern" title="Permalink to this heading"></a></h3>
+<p>The simplest possible model has each measurement modeled as a single scalar value:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mass_in_kg</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the whole-body mass, measured at one point during the study</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OBA:VT0001259</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000125</span><span class="w"> </span><span class="c1">## mass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height_in_m</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the height of the subject</span><span class="w"></span>
+<span class="w">        </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OBA:VT0001253</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000119</span><span class="w"> </span><span class="c1">## height</span><span class="w"></span>
+<span class="w">      </span><span class="nt">bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCIT:C16358</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Some aspects of the above schema are optional but provide useful metadata, e.g</p>
+<ul class="simple">
+<li><p>we annotate each unit using <a class="reference external" href="https://w3id.org/linkml/unit">unit</a></p></li>
+<li><p>we annotate each slot with <a class="reference external" href="https://w3id.org/linkml/slot_uri">slot_uri</a></p></li>
+</ul>
+<p>These don’t modify the overall structure of the data model, so we will focus less on these from here on</p>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mass_in_kg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70.0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height_in_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bmi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Tabular:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>mass_in_kg</p></th>
+<th class="head"><p>height_in_m</p></th>
+<th class="head"><p>bmi</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>70.0</p></td>
+<td><p>1.53</p></td>
+<td><p>29.9</p></td>
+</tr>
+</tbody>
+</table>
+<p>Properties:</p>
+<ul class="simple">
+<li><p>nesting levels: 0</p></li>
+<li><p>fixed_units: y</p></li>
+<li><p>ranges: n</p></li>
+<li><p>computable scalars: y</p></li>
+<li><p>safe: y</p></li>
+</ul>
+<p>Here “nesting levels” of zero means that the data is flat and is
+directly serializable in a tabular form without additional mapping or
+transformation.</p>
+<p>Units are fixed in that the schema dictates mass must be in kg. If you
+have mass in lbs, then it must be converted <em>prior</em> to populating data
+objects conformat to the model</p>
+<p>Ranges are not supported in this data model (we will look at ways to extend this below)</p>
+</section>
+<section id="variant-simple-implicit-scalar-pattern">
+<h3>Variant: Simple Implicit Scalar Pattern<a class="headerlink" href="#variant-simple-implicit-scalar-pattern" title="Permalink to this heading"></a></h3>
+<p>This is a variant of the above pattern, except the unit name is not baked into the field name:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span><span class="w"></span>
+<span class="w">      </span><span class="nt">bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70.0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bmi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Tabular:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>mass</p></th>
+<th class="head"><p>height</p></th>
+<th class="head"><p>bmi</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>70.0</p></td>
+<td><p>1.53</p></td>
+<td><p>29.9</p></td>
+</tr>
+</tbody>
+</table>
+<p>This is structurally equivalent to the previous data model - all we have done is make the slot names more concise.
+However, this makes this an <em>anti-pattern</em></p>
+<p>Why this is an anti-pattern:</p>
+<p>Even though the unit is <em>explicit in the schema</em>, if the data becomes decoupled from the schema, then
+there is a risk of mis-interpretation. For this reason we mark this as unsafe in the model properties below.</p>
+<p>Properties:</p>
+<ul class="simple">
+<li><p>nesting levels: 0</p></li>
+<li><p>fixed_units: y</p></li>
+<li><p>ranges: n</p></li>
+<li><p>computable scalars: y</p></li>
+<li><p>safe: n</p></li>
+</ul>
+</section>
+<section id="simple-coupled-scalar-pattern">
+<h3>Simple Coupled Scalar Pattern<a class="headerlink" href="#simple-coupled-scalar-pattern" title="Permalink to this heading"></a></h3>
+<p>For this example, consider our requirements have changed, and we want to record a <em>range</em> of body weights,
+for example the body weight at the start of the study, and at the end.</p>
+<p>We can also imagine using an analogous structure to record ranges
+encompassing uncertainty. Or sometimes ranges might be a proxy for two
+things being measured. For example, a soil sample taken from the earth
+may have a range indicating the top and bottom of the column.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">min_mass_in_kg</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000125</span><span class="w"> </span><span class="c1">## mass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">max_mass_in_kg</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mass</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000125</span><span class="w"> </span><span class="c1">## mass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height_in_m</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000119</span><span class="w"> </span><span class="c1">## height</span><span class="w"></span>
+<span class="w">      </span><span class="nt">min_bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bmi</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCIT:C16358</span><span class="w"></span>
+<span class="w">      </span><span class="nt">max_bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bmi</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+<span class="w">          </span><span class="nt">has_quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCIT:C16358</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_mass_in_kg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70.0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_in_kg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">72.0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height_in_m</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+<span class="w">  </span><span class="nt">min_bmi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9</span><span class="w"></span>
+<span class="w">  </span><span class="nt">max_bmi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30.7</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Tabular:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>min_mass_in_kg</p></th>
+<th class="head"><p>max_mass_in_kg</p></th>
+<th class="head"><p>height_in_m</p></th>
+<th class="head"><p>min_bmi</p></th>
+<th class="head"><p>max_bmi</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>70.0</p></td>
+<td><p>72.0</p></td>
+<td><p>1.53</p></td>
+<td><p>29.9</p></td>
+<td><p>30.7</p></td>
+</tr>
+</tbody>
+</table>
+<p>Properties:</p>
+<ul class="simple">
+<li><p>nesting levels: 0</p></li>
+<li><p>fixed_units: y</p></li>
+<li><p>ranges: y</p></li>
+<li><p>computable scalars: y</p></li>
+<li><p>safe: y</p></li>
+<li><p>normal form: n</p></li>
+</ul>
+<p>Like the previous example, this has zero levels of nesting, and can be trivially serialized as a table.
+The units are also fixed, but ranges are supported.</p>
+</section>
+<section id="simple-flexible-unit-scalar-pattern">
+<h3>Simple Flexible Unit Scalar Pattern<a class="headerlink" href="#simple-flexible-unit-scalar-pattern" title="Permalink to this heading"></a></h3>
+<p>Next we will look at a requirement to make units flexible, such that for example body weight can be specified ib kilograms or pounds.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mass_unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MassUnitEnum</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height_unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HeightUnitEnum</span><span class="w"></span>
+<span class="w">      </span><span class="nt">bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">        </span><span class="nt">unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">ucum_code</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70.0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mass_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bmi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Tabular:</p>
+<p>|id|mass|mass_unit|height|height_unit|bmi|
+|—|—|—|—|
+|P001|70.0|kg|1.53|m|29.9|</p>
+<p>Properties:</p>
+<ul class="simple">
+<li><p>nesting levels: 0</p></li>
+<li><p>fixed_units: n</p></li>
+<li><p>ranges: n</p></li>
+<li><p>computable scalars: y</p></li>
+<li><p>safe: partially</p></li>
+<li><p>normal form: n</p></li>
+</ul>
+</section>
+<section id="flexible-unit-nested-measurement-pattern">
+<h3>Flexible Unit Nested Measurement Pattern<a class="headerlink" href="#flexible-unit-nested-measurement-pattern" title="Permalink to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Measurement</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Measurement</span><span class="w"></span>
+<span class="w">      </span><span class="nt">bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Measurement</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Measurement</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mass</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70.0</span><span class="w"></span>
+<span class="w">    </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+<span class="w">    </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9</span><span class="w"></span>
+<span class="w">    </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Properties:</p>
+<ul class="simple">
+<li><p>nesting levels: 1</p></li>
+<li><p>fixed_units: n</p></li>
+<li><p>ranges: n (but trivially modifiable to do this)</p></li>
+<li><p>computable scalars: y</p></li>
+<li><p>safe: y</p></li>
+<li><p>normal form: y</p></li>
+</ul>
+</section>
+<section id="flexible-unit-string-encoding-pattern">
+<h3>Flexible Unit String Encoding Pattern<a class="headerlink" href="#flexible-unit-string-encoding-pattern" title="Permalink to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">        </span><span class="nt">structured_pattern</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">syntax</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{float}</span><span class="nv"> </span><span class="s">{unit}&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">height</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">        </span><span class="nt">structured_pattern</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">syntax</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{float}</span><span class="nv"> </span><span class="s">{unit}&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">bmi</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span><span class="w"></span>
+<span class="w">        </span><span class="nt">structured_pattern</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">syntax</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{float}</span><span class="nv"> </span><span class="s">{unit}&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70 kg</span><span class="w"></span>
+<span class="w">  </span><span class="nt">height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53 m</span><span class="w"></span>
+<span class="w">  </span><span class="nt">bmi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9 kg/m2</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Tabular:</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>mass</p></th>
+<th class="head"><p>height</p></th>
+<th class="head"><p>bmi</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>70.0 kg</p></td>
+<td><p>1.53 m</p></td>
+<td><p>29.9 kg/m2</p></td>
+</tr>
+</tbody>
+</table>
+<p>Properties:</p>
+<ul class="simple">
+<li><p>nesting levels: 0</p></li>
+<li><p>fixed_units: n</p></li>
+<li><p>ranges: n (but somewhat modifiable to do this)</p></li>
+<li><p>computable scalars: N</p></li>
+<li><p>safe: y</p></li>
+<li><p>normal form: y</p></li>
+</ul>
+</section>
+<section id="generic-quantity-type-pattern">
+<h3>Generic Quantity Type Pattern<a class="headerlink" href="#generic-quantity-type-pattern" title="Permalink to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">classes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Subject</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">      </span><span class="nt">measurements</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Measurement</span><span class="w"></span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="w">  </span><span class="nt">Measurement</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_kind</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">uriorcurie</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">decimal</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span>
+</pre></div>
+</div>
+<p>Example data in YAML/JSON:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">measurements</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">body mass</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">quantity_kind</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">height</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">m</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">quantity_kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bmi</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">29.9</span><span class="w"></span>
+<span class="w">      </span><span class="nt">quantity_unit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kg/m2</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Tabular:</p>
+<p>narrow table</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>quantity_kind</p></th>
+<th class="head"><p>quantity_value</p></th>
+<th class="head"><p>quantity_unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>body mass</p></td>
+<td><p>70.0</p></td>
+<td><p>kg</p></td>
+</tr>
+<tr class="row-odd"><td><p>P001</p></td>
+<td><p>height</p></td>
+<td><p>1.53</p></td>
+<td><p>m</p></td>
+</tr>
+<tr class="row-even"><td><p>P001</p></td>
+<td><p>bmi</p></td>
+<td><p>29.9</p></td>
+<td><p>kg/m2</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>nesting levels: 1</p></li>
+<li><p>fixed_units: n</p></li>
+<li><p>ranges: n (but trivially modifiable to do this)</p></li>
+<li><p>computable scalars: y</p></li>
+<li><p>safe: y</p></li>
+<li><p>normal form: y</p></li>
+<li><p>tabular serialization: narrow table</p></li>
+<li><p>open: y</p></li>
+</ul>
+</section>
+</section>
+<section id="case-studies">
+<h2>Case Studies<a class="headerlink" href="#case-studies" title="Permalink to this heading"></a></h2>
+<section id="fhir">
+<h3>FHIR<a class="headerlink" href="#fhir" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>https://build.fhir.org/observation.html</p></li>
+<li><p>https://build.fhir.org/datatypes.html#Quantity</p></li>
+</ul>
+<p>Example data instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">resourceType</span><span class="p">:</span> <span class="n">Observation</span>
+<span class="nb">id</span><span class="p">:</span> <span class="n">example</span>
+<span class="n">text</span><span class="p">:</span>
+  <span class="n">status</span><span class="p">:</span> <span class="n">generated</span>
+<span class="n">status</span><span class="p">:</span> <span class="n">final</span>
+<span class="n">category</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">coding</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">system</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">terminology</span><span class="o">.</span><span class="n">hl7</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">CodeSystem</span><span class="o">/</span><span class="n">observation</span><span class="o">-</span><span class="n">category</span>
+    <span class="n">code</span><span class="p">:</span> <span class="n">vital</span><span class="o">-</span><span class="n">signs</span>
+    <span class="n">display</span><span class="p">:</span> <span class="n">Vital</span> <span class="n">Signs</span>
+<span class="n">code</span><span class="p">:</span>
+  <span class="n">coding</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">system</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">loinc</span><span class="o">.</span><span class="n">org</span>
+    <span class="n">code</span><span class="p">:</span> <span class="mi">29463</span><span class="o">-</span><span class="mi">7</span>
+    <span class="n">display</span><span class="p">:</span> <span class="n">Body</span> <span class="n">Weight</span>
+  <span class="o">-</span> <span class="n">system</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">loinc</span><span class="o">.</span><span class="n">org</span>
+    <span class="n">code</span><span class="p">:</span> <span class="mi">3141</span><span class="o">-</span><span class="mi">9</span>
+    <span class="n">display</span><span class="p">:</span> <span class="n">Body</span> <span class="n">weight</span> <span class="n">Measured</span>
+  <span class="o">-</span> <span class="n">system</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">snomed</span><span class="o">.</span><span class="n">info</span><span class="o">/</span><span class="n">sct</span>
+    <span class="n">code</span><span class="p">:</span> <span class="s1">&#39;27113001&#39;</span>
+    <span class="n">display</span><span class="p">:</span> <span class="n">Body</span> <span class="n">weight</span>
+  <span class="o">-</span> <span class="n">system</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">acme</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">devices</span><span class="o">/</span><span class="n">clinical</span><span class="o">-</span><span class="n">codes</span>
+    <span class="n">code</span><span class="p">:</span> <span class="n">body</span><span class="o">-</span><span class="n">weight</span>
+    <span class="n">display</span><span class="p">:</span> <span class="n">Body</span> <span class="n">Weight</span>
+<span class="n">subject</span><span class="p">:</span>
+  <span class="n">reference</span><span class="p">:</span> <span class="n">Patient</span><span class="o">/</span><span class="n">example</span>
+<span class="n">encounter</span><span class="p">:</span>
+  <span class="n">reference</span><span class="p">:</span> <span class="n">Encounter</span><span class="o">/</span><span class="n">example</span>
+<span class="n">effectiveDateTime</span><span class="p">:</span> <span class="s1">&#39;2016-03-28&#39;</span>
+<span class="n">valueQuantity</span><span class="p">:</span>
+  <span class="n">value</span><span class="p">:</span> <span class="mi">185</span>
+  <span class="n">unit</span><span class="p">:</span> <span class="n">lbs</span>
+  <span class="n">system</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">unitsofmeasure</span><span class="o">.</span><span class="n">org</span>
+  <span class="n">code</span><span class="p">:</span> <span class="s2">&quot;[lb_av]&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="mixs">
+<h3>MIxS<a class="headerlink" href="#mixs" title="Permalink to this heading"></a></h3>
+</section>
+<section id="qudt">
+<h3>QUDT<a class="headerlink" href="#qudt" title="Permalink to this heading"></a></h3>
+</section>
+<section id="obi">
+<h3>OBI<a class="headerlink" href="#obi" title="Permalink to this heading"></a></h3>
+<p><img alt="img" src="https://ddooley.github.io/assets/images/docs/data_john_bmi_vs.png" /></p>
+<p>data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P001</span><span class="w"></span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NCBITaxon:9606</span><span class="w"></span>
+<span class="w">  </span><span class="nt">has_quality</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000125</span><span class="w"></span>
+<span class="w">      </span><span class="nt">has_measurement</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">has measurement unit label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UO:0000009</span><span class="w"></span>
+<span class="w">        </span><span class="nt">has decimal value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70.0</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PATO:0000122</span><span class="w"></span>
+<span class="w">      </span><span class="nt">has_measurement</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">has measurement unit label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UO:0000008</span><span class="w"></span>
+<span class="w">        </span><span class="nt">has decimal value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.53</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+<section id="cf">
+<h3>CF<a class="headerlink" href="#cf" title="Permalink to this heading"></a></h3>
+</section>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Measurement in Science, Stanford Encyclopedia of Philosophy, https://plato.stanford.edu/entries/measurement-science/</p></li>
+<li><p>OBO Core Values, James Overton, https://docs.google.com/document/d/14qqp0M2dgefDFMvB4mmwpxrhoo4UGwd1KLZcoWCcqss/edit?usp=sharing</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, LinkML Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
