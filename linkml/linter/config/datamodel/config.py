@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-19T11:10:33
+# Generation date: 2022-08-24T12:14:29
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -60,6 +60,7 @@ class Config(YAMLRoot):
     ] = None
     tree_root_class: Optional[Union[dict, "TreeRootClassRuleConfig"]] = None
     recommended: Optional[Union[dict, "RecommendedRuleConfig"]] = None
+    no_xsd_int_type: Optional[Union[dict, "RuleConfig"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
@@ -85,6 +86,11 @@ class Config(YAMLRoot):
             self.recommended, RecommendedRuleConfig
         ):
             self.recommended = RecommendedRuleConfig(**as_dict(self.recommended))
+
+        if self.no_xsd_int_type is not None and not isinstance(
+            self.no_xsd_int_type, RuleConfig
+        ):
+            self.no_xsd_int_type = RuleConfig(**as_dict(self.no_xsd_int_type))
 
         super().__post_init__(**kwargs)
 
@@ -239,6 +245,15 @@ slots.config__recommended = Slot(
     model_uri=LINTCFG.config__recommended,
     domain=None,
     range=Optional[Union[dict, RecommendedRuleConfig]],
+)
+
+slots.config__no_xsd_int_type = Slot(
+    uri=LINTCFG.no_xsd_int_type,
+    name="config__no_xsd_int_type",
+    curie=LINTCFG.curie("no_xsd_int_type"),
+    model_uri=LINTCFG.config__no_xsd_int_type,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
 )
 
 slots.ruleConfig__level = Slot(

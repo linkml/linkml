@@ -10,7 +10,7 @@ from linkml.linter.rules import RecommendedRule
 from linkml.utils.schema_builder import SchemaBuilder
 
 
-class TestRecommendedRules(unittest.TestCase):
+class TestRecommendedRule(unittest.TestCase):
     def test_missing_descriptions(self):
         builder = SchemaBuilder()
         builder.add_class("MyClass")

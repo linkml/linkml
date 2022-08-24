@@ -11,3 +11,5 @@ recommended:
   level: disabled
   include: []
   exclude: []
+no_xsd_int_type:
+  level: disabled

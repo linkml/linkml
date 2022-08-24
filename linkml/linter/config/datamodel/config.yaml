@@ -28,6 +28,8 @@ classes:
         range: TreeRootClassRuleConfig
       recommended:
         range: RecommendedRuleConfig
+      no_xsd_int_type:
+        range: RuleConfig
 
   RuleConfig:
     attributes:
