@@ -19,6 +19,10 @@ imports:
 classes:
   Config:
     tree_root: true
+    description: >-
+      This is the top-level representation of a LinkML linter configuration file. Each
+      attribute represents a rule that can be enabled and possibly configured by a 
+      configuration file.
     attributes:
       no_empty_title:
         range: RuleConfig
@@ -47,13 +51,22 @@ classes:
           uri to xsd:integer.
 
   RuleConfig:
+    description: >-
+      This is the base class for linter rules. It contains configuration options that are 
+      common to all rules.
     attributes:
       level:
+        description: >-
+          Default: `disabled`
+          To enable a rule set the level to `error` or `warning`. If set to `disabled`, the
+          rule will not be checked.
         range: RuleLevel
         required: true
 
   PermissibleValuesFormatRuleConfig:
     is_a: RuleConfig
+    description: >-
+      Additional configuration options for the `permissible_values_format` rule
     attributes:
       format:
         range: string
@@ -64,6 +77,8 @@ classes:
 
   TreeRootClassRuleConfig:
     is_a: RuleConfig
+    description: >-
+      Additional configuration options for the `tree_root_class` rule
     attributes:
       root_class_name:
         range: string
@@ -79,6 +94,8 @@ classes:
           the rule will also validate that is has the name provided by the `class_name` option.
 
   RecommendedRuleConfig:
+    description: >-
+      Additional configuration options for the `recommended` rule
     is_a: RuleConfig
     attributes:
       include:
@@ -98,6 +115,8 @@ classes:
 
 enums:
   RuleLevel:
+    description: >-
+      The permissible values for the `level` option of all rules
     permissible_values:
       disabled:
         description: The rule will not be checked
