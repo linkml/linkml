@@ -1,17 +1,15 @@
 import inspect
-import re
-from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, Union
 
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
 
-from .config.datamodel.config import Config, RuleConfig, RuleLevel
+from .config.datamodel.config import Config, RuleLevel
 
 
 @dataclass
@@ -21,28 +19,6 @@ class LinterProblem:
     schema_name: Union[str, None] = None
     schema_source: Union[str, None] = None
     rule_name: Union[str, None] = None
-
-
-class LinterRule(ABC):
-
-    uncamel_pattern = re.compile(r"(?<!^)(?=[A-Z])")
-
-    def __init__(self, config: RuleConfig) -> None:
-        super().__init__()
-        self.config = config
-
-    @property
-    @abstractmethod
-    def id(self) -> str:
-        pass
-
-    @abstractmethod
-    def check(self, schema_view: SchemaView, fix: bool) -> Iterable[LinterProblem]:
-        pass
-
-    @staticmethod
-    def uncamel(n: str) -> str:
-        return LinterRule.uncamel_pattern.sub(" ", n)
 
 
 @lru_cache
@@ -74,7 +50,7 @@ class Linter:
             [
                 (cls.id, cls)
                 for _, cls in inspect.getmembers(rules, inspect.isclass)
-                if issubclass(cls, LinterRule)
+                if issubclass(cls, rules.LinterRule)
             ]
         )
 
@@ -96,10 +72,10 @@ class Linter:
             if rule_cls is None:
                 raise ValueError("Unknown rule id: " + rule_id)
 
-            rule = rule_cls(rule_config)
-
-            if str(rule.config.level) is RuleLevel.disabled.text:
+            if str(rule_config.level) is RuleLevel.disabled.text:
                 continue
+
+            rule = rule_cls(rule_config)
 
             for problem in rule.check(schema_view, fix=fix):
                 problem.level = rule.config.level

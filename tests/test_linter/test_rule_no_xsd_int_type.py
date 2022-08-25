@@ -1,12 +1,9 @@
 import unittest
 
 from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
-                                         SlotDefinition)
 
-from linkml.linter.config.datamodel.config import (RecommendedRuleConfig,
-                                                   RuleConfig, RuleLevel)
-from linkml.linter.rules import NoXsdIntTypeRule, RecommendedRule
+from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
+from linkml.linter.rules import NoXsdIntTypeRule
 from linkml.utils.schema_builder import SchemaBuilder
 
 

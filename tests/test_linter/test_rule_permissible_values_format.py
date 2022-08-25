@@ -4,8 +4,7 @@ from linkml_runtime import SchemaView
 
 from linkml.linter.config.datamodel.config import (
     PermissibleValuesFormatRuleConfig, RuleLevel)
-from linkml.linter.rules.permissible_values_format import \
-    PermissibleValuesFormatRule
+from linkml.linter.rules import PermissibleValuesFormatRule
 from linkml.utils.schema_builder import SchemaBuilder
 
 

@@ -4,7 +4,7 @@ from linkml_runtime import SchemaView
 
 from linkml.linter.config.datamodel.config import (RuleLevel,
                                                    TreeRootClassRuleConfig)
-from linkml.linter.rules.tree_root_class import TreeRootClassRule
+from linkml.linter.rules import TreeRootClassRule
 from linkml.utils.schema_builder import SchemaBuilder
 
 MY_CLASS = "MyClass"

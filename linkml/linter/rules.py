@@ -1,0 +1,207 @@
+import re
+from abc import ABC, abstractmethod
+from typing import Callable, Iterable, List
+
+from linkml_runtime.linkml_model import (ClassDefinition, ClassDefinitionName,
+                                         SlotDefinition)
+from linkml_runtime.utils.schemaview import SchemaView
+
+from linkml import LOCAL_METAMODEL_YAML_FILE
+
+from .config.datamodel.config import (RecommendedRuleConfig, RuleConfig,
+                                      TreeRootClassRuleConfig)
+from .linter import LinterProblem
+
+
+class LinterRule(ABC):
+
+    uncamel_pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
+    def __init__(self, config: RuleConfig) -> None:
+        super().__init__()
+        self.config = config
+
+    @property
+    @abstractmethod
+    def id(self) -> str:
+        pass
+
+    @abstractmethod
+    def check(self, schema_view: SchemaView, fix: bool) -> Iterable[LinterProblem]:
+        pass
+
+    @staticmethod
+    def uncamel(n: str) -> str:
+        return LinterRule.uncamel_pattern.sub(" ", n)
+
+
+class NoEmptyTitleRule(LinterRule):
+
+    id = "no_empty_title"
+
+    def check(
+        self, schema_view: SchemaView, fix: bool = False
+    ) -> Iterable[LinterProblem]:
+        for e in schema_view.all_elements(imports=False).values():
+            if fix and e.title is None:
+                title = e.name.replace("_", " ")
+                title = self.uncamel(title).lower()
+                e.title = title
+            if e.title is None:
+                problem = LinterProblem(
+                    message=f'{type(e).__name__} "{e.name}" has no title'
+                )
+                yield problem
+
+
+class NoXsdIntTypeRule(LinterRule):
+
+    id = "no_xsd_int_type"
+
+    def check(self, schema_view: SchemaView, fix: bool = False):
+        for type_name, type_definition in schema_view.all_types(imports=False).items():
+            if type_definition.uri == "xsd:int":
+                if fix:
+                    type_definition.uri = "xsd:integer"
+                else:
+                    yield LinterProblem(f"Type '{type_name}' has uri xsd:int")
+
+
+class PermissibleValuesFormatRule(LinterRule):
+
+    id = "permissible_values_format"
+
+    PATTERNS = {
+        "snake": "[a-z][_a-z0-9]+",
+        "uppersnake": "[A-Z][_A-Z0-9]+",
+        "camel": "[a-z][a-zA-Z0-9]+",
+        "kebab": "[a-z][\-a-z0-9]+",
+    }
+
+    def check(
+        self, schema_view: SchemaView, fix: bool = False
+    ) -> Iterable[LinterProblem]:
+        pattern = self.PATTERNS.get(self.config.format, self.config.format)
+        for enum_name, enum_def in schema_view.all_enums(imports=False).items():
+            for value in enum_def.permissible_values.keys():
+                if re.fullmatch(pattern, value) is None:
+                    yield LinterProblem(
+                        f"Enum '{enum_name}' has permissible value '{value}'"
+                    )
+
+
+class RecommendedRule(LinterRule):
+
+    id = "recommended"
+
+    def __init__(self, config: RecommendedRuleConfig) -> None:
+        super().__init__(config)
+        meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
+        self.recommended_meta_slots = []
+        for class_name in meta_schema_view.all_class(imports=False).keys():
+            class_slots = meta_schema_view.class_induced_slots(class_name)
+            for slot in class_slots:
+                if slot.recommended:
+                    self.recommended_meta_slots.append(f"{class_name}__{slot.name}")
+
+    def check(self, schema_view: SchemaView, fix: bool = False):
+        for element_name, element_definition in schema_view.all_elements(
+            imports=False
+        ).items():
+            if self.config.include and element_name not in self.config.include:
+                continue
+            if element_name in self.config.exclude:
+                continue
+            for meta_slot_name, meta_slot_value in vars(element_definition).items():
+                meta_class_name = type(element_definition).class_name
+                key = f"{meta_class_name}__{meta_slot_name}"
+                if key in self.recommended_meta_slots and not meta_slot_value:
+                    yield LinterProblem(
+                        f"{meta_class_name} '{element_name}' does not have recommended slot '{meta_slot_name}'"
+                    )
+
+
+class TreeRootClassRule(LinterRule):
+
+    id = "tree_root_class"
+
+    def __init__(self, config: TreeRootClassRuleConfig) -> None:
+        super().__init__(config)
+
+    def check(
+        self, schema_view: SchemaView, fix: bool = False
+    ) -> Iterable[LinterProblem]:
+        tree_roots = [
+            c for c in schema_view.all_classes(imports=False).values() if c.tree_root
+        ]
+        if len(tree_roots) > 0:
+            if self.config.validate_existing_class_name:
+                for tree_root in tree_roots:
+                    if str(tree_root.name) != self.config.root_class_name:
+                        yield LinterProblem(
+                            message=f"Tree root class has name '{tree_root.name}'"
+                        )
+        else:
+            if fix:
+                container = ClassDefinition(self.config.root_class_name, tree_root=True)
+                schema_view.add_class(container)
+                self.add_index_slots(schema_view, container.name)
+            else:
+                yield LinterProblem("Schema does not have class with `tree_root: true`")
+
+    def add_index_slots(
+        self,
+        schema_view: SchemaView,
+        container_name: ClassDefinitionName,
+        inlined_as_list=False,
+        must_have_identifier=False,
+        slot_name_func: Callable = None,
+        convert_camel_case=False,
+    ) -> List[SlotDefinition]:
+        """
+        Adds index slots to a container pointing at all top-level classes
+
+        :param schema: input schema, will be modified in place
+        :param container_name:
+        :param inlined_as_list:
+        :param must_have_identifier:
+        :param slot_name_func: function to determine the name of the slot from the class
+        :return: new slots
+        """
+        container = schema_view.get_class(container_name)
+        ranges = set()
+        for cn in schema_view.all_classes():
+            for s in schema_view.class_induced_slots(cn):
+                ranges.add(s.range)
+        top_level_classes = [
+            c
+            for c in schema_view.all_classes().values()
+            if not c.tree_root and c.name not in ranges
+        ]
+        if must_have_identifier:
+            top_level_classes = [
+                c
+                for c in top_level_classes
+                if schema_view.get_identifier_slot(c.name) is not None
+            ]
+        index_slots = []
+        for c in top_level_classes:
+            has_identifier = schema_view.get_identifier_slot(c.name)
+            if slot_name_func:
+                sn = slot_name_func(c)
+            else:
+                cn = c.name
+                if convert_camel_case:
+                    cn = self.uncamel(cn).lower()
+                cn = cn.replace(" ", "_")
+                sn = f"{cn}_index"
+            index_slot = SlotDefinition(
+                sn,
+                range=c.name,
+                multivalued=True,
+                inlined_as_list=not has_identifier or inlined_as_list,
+            )
+            index_slots.append(index_slot)
+            schema_view.add_slot(index_slot)
+            container.slots.append(index_slot.name)
+        return index_slots
