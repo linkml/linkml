@@ -3,7 +3,8 @@ from typing import Dict, List, Union
 
 from linkml_runtime.linkml_model import (ClassDefinition, EnumDefinition,
                                          PermissibleValue, Prefix,
-                                         SchemaDefinition, SlotDefinition)
+                                         SchemaDefinition, SlotDefinition,
+                                         TypeDefinition)
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 
@@ -144,4 +145,18 @@ class SchemaBuilder:
         self.schema.imports.append("linkml:types")
         self.add_prefix("linkml", "https://w3id.org/linkml/")
         self.add_prefix(name, f"{uri}/")
+        return self
+
+    def add_type(self, type: Union[TypeDefinition, Dict, str]) -> "SchemaBuilder":
+        """
+        Adds the type to the schema
+
+        :param type:
+        :return: builder
+        """
+        if isinstance(type, str):
+            type = TypeDefinition(type)
+        elif isinstance(type, dict):
+            type = TypeDefinition(**type)
+        self.schema.types[type.name] = type
         return self
