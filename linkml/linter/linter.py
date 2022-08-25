@@ -8,6 +8,7 @@ from typing import Any, Dict, Iterable, Union
 import yaml
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.dumpers import yaml_dumper
 
 from .config.datamodel.config import Config, RuleLevel
 
@@ -84,3 +85,6 @@ class Linter:
                 if isinstance(schema, str):
                     problem.schema_source = schema
                 yield problem
+
+        if fix and schema_view.schema.source_file:
+            yaml_dumper.dump(schema_view.schema, schema_view.schema.source_file)
