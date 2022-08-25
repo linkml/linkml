@@ -22,14 +22,29 @@ classes:
     attributes:
       no_empty_title:
         range: RuleConfig
+        description: >-
+          Disallow empty titles on schema elements. Autofix will transform the element's
+          name into a title.
       permissible_values_format:
         range: PermissibleValuesFormatRuleConfig
+        description: >-
+          Enforce consistent formatting of enum permissible values. Not auto-fixable.
       tree_root_class:
         range: TreeRootClassRuleConfig
+        description: >-
+          Require a single class with `tree_root: true` and optionally verify that class's 
+          name. Autofix will create a new class with `tree_root: true`, a name based on
+          the rule configuration, and slots for existing classes.
       recommended:
         range: RecommendedRuleConfig
+        description: >-
+          Require any slot in the metamodel with `recommended: true` (e.g. description)
+          to be provided. Not auto-fixable.
       no_xsd_int_type:
         range: RuleConfig
+        description: >-
+          Disallow use of `uri: xsd:int` in type definitions. Autofix will change the 
+          uri to xsd:integer.
 
   RuleConfig:
     attributes:

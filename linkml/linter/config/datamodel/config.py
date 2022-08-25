@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-24T12:14:29
+# Generation date: 2022-08-25T08:55:08
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
