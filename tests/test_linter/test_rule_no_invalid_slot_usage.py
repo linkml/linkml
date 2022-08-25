@@ -4,7 +4,7 @@ from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinition
 
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
-from linkml.linter.rules import NoInvalidSlotUsage
+from linkml.linter.rules import NoInvalidSlotUsageRule
 from linkml.utils.schema_builder import SchemaBuilder
 
 
@@ -29,7 +29,7 @@ class TestNoInvalidSlotUsageRule(unittest.TestCase):
         schema_view = SchemaView(builder.schema)
         config = RuleConfig(level=RuleLevel.error.text)
 
-        rule = NoInvalidSlotUsage(config)
+        rule = NoInvalidSlotUsageRule(config)
         problems = list(rule.check(schema_view, fix=False))
 
         self.assertEqual(len(problems), 1)
@@ -57,7 +57,7 @@ class TestNoInvalidSlotUsageRule(unittest.TestCase):
         schema_view = SchemaView(builder.schema)
         config = RuleConfig(level=RuleLevel.error.text)
 
-        rule = NoInvalidSlotUsage(config)
+        rule = NoInvalidSlotUsageRule(config)
         problems = list(rule.check(schema_view, fix=False))
 
         self.assertFalse(problems)

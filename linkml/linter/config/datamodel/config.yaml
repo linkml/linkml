@@ -32,7 +32,8 @@ classes:
       permissible_values_format:
         range: PermissibleValuesFormatRuleConfig
         description: >-
-          Enforce consistent formatting of enum permissible values. Not auto-fixable.
+          Enforce consistent formatting of enum permissible values. This rule may conflict
+          with the standard_naming rule. Not auto-fixable.
       tree_root_class:
         range: TreeRootClassRuleConfig
         description: >-
@@ -54,6 +55,13 @@ classes:
         description: >-
           Disallow slot_usage definitions where the name of the slot does not refer
           to an existing slot. Not auto-fixable.
+      standard_naming:
+        range: StandardNamingConfig
+        description: >-
+          Enforce standard naming conventions: CamelCase for classes, snake_case for slots,
+          CamelCase for enums, snake_case (default) or UPPER_SNAKE for permissible_values 
+          (see permissible_values_upper_case option). This rule may conflict with the
+          permissible_values_format rule. Not auto-fixable.
 
   RuleConfig:
     description: >-
@@ -116,6 +124,16 @@ classes:
           Default: []
           All elements except the ones with names specified in this list will be checked 
         
+  StandardNamingConfig:
+    description: >-
+      Additional configuration options for the `standard_naming` rule
+    is_a: RuleConfig
+    attributes:
+      permissible_values_upper_case:
+        range: boolean
+        description: >-
+          Default: false
+          If true, permissible values will be checked for snake_case, otherwise UPPER_SNAKE
 
 
 enums:

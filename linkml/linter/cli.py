@@ -10,10 +10,7 @@ from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
 from .linter import Linter
 
 YAML_SUFFIXES = [".yml", ".yaml"]
-DEFAULT_CONFIG_FILES = [
-    ".linkmllint.yaml",
-    ".linkmllint.yml"
-]
+DEFAULT_CONFIG_FILES = [".linkmllint.yaml", ".linkmllint.yml"]
 
 
 def get_yaml_files(root: Path) -> Iterable[str]:
@@ -58,7 +55,7 @@ def main(schema: Path, fix: bool, config: str, format: str, output):
             if path.exists():
                 config_file = path
                 break
-    
+
     if config_file:
         with open(config_file) as f:
             config_dict = yaml.safe_load(f)

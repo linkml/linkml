@@ -9,13 +9,21 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml import LOCAL_METAMODEL_YAML_FILE
 
 from .config.datamodel.config import (RecommendedRuleConfig, RuleConfig,
+                                      StandardNamingConfig,
                                       TreeRootClassRuleConfig)
 from .linter import LinterProblem
 
 
 class LinterRule(ABC):
 
-    uncamel_pattern = re.compile(r"(?<!^)(?=[A-Z])")
+    PATTERNS = {
+        "snake": re.compile(r"[a-z][_a-z0-9]+"),
+        "uppersnake": re.compile(r"[A-Z][_A-Z0-9]+"),
+        "camel": re.compile(r"[a-z][a-zA-Z0-9]+"),
+        "uppercamel": re.compile(r"[A-Z][a-zA-Z0-9]+"),
+        "kebab": re.compile(r"[a-z][\-a-z0-9]+"),
+        "_uncamel": re.compile(r"(?<!^)(?=[A-Z])"),
+    }
 
     def __init__(self, config: RuleConfig) -> None:
         super().__init__()
@@ -32,7 +40,7 @@ class LinterRule(ABC):
 
     @staticmethod
     def uncamel(n: str) -> str:
-        return LinterRule.uncamel_pattern.sub(" ", n)
+        return LinterRule.PATTERNS._uncamel.sub(" ", n)
 
 
 class NoEmptyTitleRule(LinterRule):
@@ -49,7 +57,7 @@ class NoEmptyTitleRule(LinterRule):
                 e.title = title
             if e.title is None:
                 problem = LinterProblem(
-                    message=f'{type(e).__name__} "{e.name}" has no title'
+                    message=f"{type(e).__name__} '{e.name}' has no title"
                 )
                 yield problem
 
@@ -71,20 +79,13 @@ class PermissibleValuesFormatRule(LinterRule):
 
     id = "permissible_values_format"
 
-    PATTERNS = {
-        "snake": "[a-z][_a-z0-9]+",
-        "uppersnake": "[A-Z][_A-Z0-9]+",
-        "camel": "[a-z][a-zA-Z0-9]+",
-        "kebab": "[a-z][\-a-z0-9]+",
-    }
-
     def check(
         self, schema_view: SchemaView, fix: bool = False
     ) -> Iterable[LinterProblem]:
-        pattern = self.PATTERNS.get(self.config.format, self.config.format)
+        pattern = self.PATTERNS.get(self.config.format, re.compile(self.config.format))
         for enum_name, enum_def in schema_view.all_enums(imports=False).items():
             for value in enum_def.permissible_values.keys():
-                if re.fullmatch(pattern, value) is None:
+                if pattern.fullmatch(value) is None:
                     yield LinterProblem(
                         f"Enum '{enum_name}' has permissible value '{value}'"
                     )
@@ -207,11 +208,13 @@ class TreeRootClassRule(LinterRule):
         return index_slots
 
 
-class NoInvalidSlotUsage(LinterRule):
+class NoInvalidSlotUsageRule(LinterRule):
 
     id = "no_invalid_slot_usage"
 
-    def check(self, schema_view: SchemaView, fix: bool) -> Iterable[LinterProblem]:
+    def check(
+        self, schema_view: SchemaView, fix: bool = False
+    ) -> Iterable[LinterProblem]:
         for class_name, class_definition in schema_view.all_classes(
             imports=False
         ).items():
@@ -223,4 +226,42 @@ class NoInvalidSlotUsage(LinterRule):
                 if slot_usage_name not in class_slots:
                     yield LinterProblem(
                         f"Slot '{slot_usage_name}' not found on class '{class_name}'"
+                    )
+
+
+class StandardNamingRule(LinterRule):
+
+    id = "standard_naming"
+
+    def __init__(self, config: StandardNamingConfig) -> None:
+        self.config = config
+
+    def check(
+        self, schema_view: SchemaView, fix: bool = False
+    ) -> Iterable[LinterProblem]:
+        class_pattern = self.PATTERNS["uppercamel"]
+        slot_pattern = self.PATTERNS["snake"]
+        enum_pattern = self.PATTERNS["uppercamel"]
+        permissible_value_pattern = (
+            self.PATTERNS["uppersnake"]
+            if self.config.permissible_values_upper_case
+            else self.PATTERNS["snake"]
+        )
+
+        for class_name in schema_view.all_classes(imports=False).keys():
+            if class_pattern.fullmatch(class_name) is None:
+                yield LinterProblem(f"Class has name '{class_name}'")
+
+        for slot_name in schema_view.all_slots(imports=False).keys():
+            if slot_pattern.fullmatch(slot_name) is None:
+                yield LinterProblem(f"Slot has name '{slot_name}'")
+
+        for enum_name, enum_definition in schema_view.all_enums(imports=False).items():
+            if enum_pattern.fullmatch(enum_name) is None:
+                yield LinterProblem(f"Enum has name '{enum_name}'")
+
+            for permissible_value_name in enum_definition.permissible_values.keys():
+                if permissible_value_pattern.fullmatch(permissible_value_name) is None:
+                    yield LinterProblem(
+                        f"Permissible value of enum '{enum_name}' has name '{permissible_value_name}'"
                     )

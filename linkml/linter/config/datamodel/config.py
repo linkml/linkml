@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-25T10:11:56
+# Generation date: 2022-08-25T11:43:24
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -67,6 +67,7 @@ class Config(YAMLRoot):
     recommended: Optional[Union[dict, "RecommendedRuleConfig"]] = None
     no_xsd_int_type: Optional[Union[dict, "RuleConfig"]] = None
     no_invalid_slot_usage: Optional[Union[dict, "RuleConfig"]] = None
+    standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
@@ -104,6 +105,11 @@ class Config(YAMLRoot):
             self.no_invalid_slot_usage = RuleConfig(
                 **as_dict(self.no_invalid_slot_usage)
             )
+
+        if self.standard_naming is not None and not isinstance(
+            self.standard_naming, StandardNamingConfig
+        ):
+            self.standard_naming = StandardNamingConfig(**as_dict(self.standard_naming))
 
         super().__post_init__(**kwargs)
 
@@ -215,6 +221,33 @@ class RecommendedRuleConfig(RuleConfig):
         super().__post_init__(**kwargs)
 
 
+@dataclass
+class StandardNamingConfig(RuleConfig):
+    """
+    Additional configuration options for the `standard_naming` rule
+    """
+
+    _inherited_slots: ClassVar[List[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINTCFG.StandardNamingConfig
+    class_class_curie: ClassVar[str] = "lintcfg:StandardNamingConfig"
+    class_name: ClassVar[str] = "StandardNamingConfig"
+    class_model_uri: ClassVar[URIRef] = LINTCFG.StandardNamingConfig
+
+    level: Union[str, "RuleLevel"] = None
+    permissible_values_upper_case: Optional[Union[bool, Bool]] = None
+
+    def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
+        if self.permissible_values_upper_case is not None and not isinstance(
+            self.permissible_values_upper_case, Bool
+        ):
+            self.permissible_values_upper_case = Bool(
+                self.permissible_values_upper_case
+            )
+
+        super().__post_init__(**kwargs)
+
+
 # Enumerations
 class RuleLevel(EnumDefinitionImpl):
     """
@@ -298,6 +331,15 @@ slots.config__no_invalid_slot_usage = Slot(
     range=Optional[Union[dict, RuleConfig]],
 )
 
+slots.config__standard_naming = Slot(
+    uri=LINTCFG.standard_naming,
+    name="config__standard_naming",
+    curie=LINTCFG.curie("standard_naming"),
+    model_uri=LINTCFG.config__standard_naming,
+    domain=None,
+    range=Optional[Union[dict, StandardNamingConfig]],
+)
+
 slots.ruleConfig__level = Slot(
     uri=LINTCFG.level,
     name="ruleConfig__level",
@@ -350,4 +392,13 @@ slots.recommendedRuleConfig__exclude = Slot(
     model_uri=LINTCFG.recommendedRuleConfig__exclude,
     domain=None,
     range=Optional[Union[str, List[str]]],
+)
+
+slots.standardNamingConfig__permissible_values_upper_case = Slot(
+    uri=LINTCFG.permissible_values_upper_case,
+    name="standardNamingConfig__permissible_values_upper_case",
+    curie=LINTCFG.curie("permissible_values_upper_case"),
+    model_uri=LINTCFG.standardNamingConfig__permissible_values_upper_case,
+    domain=None,
+    range=Optional[Union[bool, Bool]],
 )
