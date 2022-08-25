@@ -10,7 +10,10 @@ from .formatters import (JsonFormatter, MarkdownFormatter, TerminalFormatter,
 from .linter import Linter
 
 YAML_SUFFIXES = [".yml", ".yaml"]
-DOT_FILE_CONFIG = Path(os.getcwd()) / ".linkmllint.yaml"
+DEFAULT_CONFIG_FILES = [
+    ".linkmllint.yaml",
+    ".linkmllint.yml"
+]
 
 
 def get_yaml_files(root: Path) -> Iterable[str]:
@@ -21,6 +24,8 @@ def get_yaml_files(root: Path) -> Iterable[str]:
     else:
         for dir, _, files in os.walk(root):
             for file in files:
+                if file in DEFAULT_CONFIG_FILES:
+                    continue
                 path = Path(dir, file)
                 if path.suffix in YAML_SUFFIXES:
                     yield str(path)
@@ -46,11 +51,17 @@ def get_yaml_files(root: Path) -> Iterable[str]:
 @click.option("--fix/--no-fix", default=False)
 def main(schema: Path, fix: bool, config: str, format: str, output):
     if config:
-        with open(config) as config_file:
-            config_dict = yaml.safe_load(config_file)
-    elif DOT_FILE_CONFIG.exists():
-        with open(DOT_FILE_CONFIG) as config_file:
-            config_dict = yaml.safe_load(config_file)
+        config_file = config
+    else:
+        for default_config in DEFAULT_CONFIG_FILES:
+            path = Path(os.getcwd()) / default_config
+            if path.exists():
+                config_file = path
+                break
+    
+    if config_file:
+        with open(config_file) as f:
+            config_dict = yaml.safe_load(f)
     else:
         config_dict = {}
 
