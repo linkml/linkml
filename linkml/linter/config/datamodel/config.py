@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.9.0
-# Generation date: 2022-08-25T08:55:08
+# Generation date: 2022-08-25T10:11:56
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -47,6 +47,11 @@ DEFAULT_ = LINTCFG
 
 @dataclass
 class Config(YAMLRoot):
+    """
+    This is the top-level representation of a LinkML linter configuration file. Each attribute represents a rule that
+    can be enabled and possibly configured by a configuration file.
+    """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.Config
@@ -61,6 +66,7 @@ class Config(YAMLRoot):
     tree_root_class: Optional[Union[dict, "TreeRootClassRuleConfig"]] = None
     recommended: Optional[Union[dict, "RecommendedRuleConfig"]] = None
     no_xsd_int_type: Optional[Union[dict, "RuleConfig"]] = None
+    no_invalid_slot_usage: Optional[Union[dict, "RuleConfig"]] = None
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
         if self.no_empty_title is not None and not isinstance(
@@ -92,11 +98,22 @@ class Config(YAMLRoot):
         ):
             self.no_xsd_int_type = RuleConfig(**as_dict(self.no_xsd_int_type))
 
+        if self.no_invalid_slot_usage is not None and not isinstance(
+            self.no_invalid_slot_usage, RuleConfig
+        ):
+            self.no_invalid_slot_usage = RuleConfig(
+                **as_dict(self.no_invalid_slot_usage)
+            )
+
         super().__post_init__(**kwargs)
 
 
 @dataclass
 class RuleConfig(YAMLRoot):
+    """
+    This is the base class for linter rules. It contains configuration options that are  common to all rules.
+    """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.RuleConfig
@@ -117,6 +134,10 @@ class RuleConfig(YAMLRoot):
 
 @dataclass
 class PermissibleValuesFormatRuleConfig(RuleConfig):
+    """
+    Additional configuration options for the `permissible_values_format` rule
+    """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.PermissibleValuesFormatRuleConfig
@@ -136,6 +157,10 @@ class PermissibleValuesFormatRuleConfig(RuleConfig):
 
 @dataclass
 class TreeRootClassRuleConfig(RuleConfig):
+    """
+    Additional configuration options for the `tree_root_class` rule
+    """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.TreeRootClassRuleConfig
@@ -163,6 +188,10 @@ class TreeRootClassRuleConfig(RuleConfig):
 
 @dataclass
 class RecommendedRuleConfig(RuleConfig):
+    """
+    Additional configuration options for the `recommended` rule
+    """
+
     _inherited_slots: ClassVar[List[str]] = []
 
     class_class_uri: ClassVar[URIRef] = LINTCFG.RecommendedRuleConfig
@@ -188,6 +217,9 @@ class RecommendedRuleConfig(RuleConfig):
 
 # Enumerations
 class RuleLevel(EnumDefinitionImpl):
+    """
+    The permissible values for the `level` option of all rules
+    """
 
     disabled = PermissibleValue(
         text="disabled", description="The rule will not be checked"
@@ -203,6 +235,7 @@ class RuleLevel(EnumDefinitionImpl):
 
     _defn = EnumDefinition(
         name="RuleLevel",
+        description="The permissible values for the `level` option of all rules",
     )
 
 
@@ -252,6 +285,15 @@ slots.config__no_xsd_int_type = Slot(
     name="config__no_xsd_int_type",
     curie=LINTCFG.curie("no_xsd_int_type"),
     model_uri=LINTCFG.config__no_xsd_int_type,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
+)
+
+slots.config__no_invalid_slot_usage = Slot(
+    uri=LINTCFG.no_invalid_slot_usage,
+    name="config__no_invalid_slot_usage",
+    curie=LINTCFG.curie("no_invalid_slot_usage"),
+    model_uri=LINTCFG.config__no_invalid_slot_usage,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )

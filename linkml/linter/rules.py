@@ -205,3 +205,22 @@ class TreeRootClassRule(LinterRule):
             schema_view.add_slot(index_slot)
             container.slots.append(index_slot.name)
         return index_slots
+
+
+class NoInvalidSlotUsage(LinterRule):
+
+    id = "no_invalid_slot_usage"
+
+    def check(self, schema_view: SchemaView, fix: bool) -> Iterable[LinterProblem]:
+        for class_name, class_definition in schema_view.all_classes(
+            imports=False
+        ).items():
+            slot_usage = class_definition.slot_usage
+            if not slot_usage:
+                continue
+            class_slots = schema_view.class_slots(class_name)
+            for slot_usage_name in slot_usage.keys():
+                if slot_usage_name not in class_slots:
+                    yield LinterProblem(
+                        f"Slot '{slot_usage_name}' not found on class '{class_name}'"
+                    )
