@@ -99,7 +99,7 @@ class RecommendedRule(LinterRule):
         super().__init__(config)
         meta_schema_view = SchemaView(LOCAL_METAMODEL_YAML_FILE)
         self.recommended_meta_slots = []
-        for class_name in meta_schema_view.all_class(imports=False).keys():
+        for class_name in meta_schema_view.all_classes(imports=False).keys():
             class_slots = meta_schema_view.class_induced_slots(class_name)
             for slot in class_slots:
                 if slot.recommended:
