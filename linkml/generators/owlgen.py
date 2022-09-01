@@ -61,8 +61,8 @@ class OwlSchemaGenerator(Generator):
     """
     schema: Union[str, TextIO, SchemaDefinition] = None
 
-    generatorname: str = field(default_factory=lambda: os.path.basename(__file__))
-    generatorversion: str = field(default_factory=lambda:  "0.1.1")
+    generatorname = os.path.basename(__file__)
+    generatorversion = "0.1.1"
     valid_formats = ["owl", "ttl"] + [
         x.name for x in rdflib_plugins(None, rdflib_Parser) if "/" not in str(x.name)]
     #valid_formats: List[str] = field(default_factory=lambda: ["owl", "ttl"] + [
@@ -72,7 +72,7 @@ class OwlSchemaGenerator(Generator):
     visits_are_sorted = True
     ontology_uri_suffix: str = None
     metaclasses: bool = True
-    add_ols_annotations = True
+    add_ols_annotations: bool = field(default_factory=lambda: True)
     graph: Optional[Graph] = None
     top_value_uri: Optional[URIRef] = None
     type_objects: bool = False
@@ -625,7 +625,7 @@ class OwlSchemaGenerator(Generator):
     help="If true, auto-include annotations from https://www.ebi.ac.uk/ols/docs/installation-guide",
 )
 @click.option(
-    "--ontology-iri-suffix",
+    "--ontology-uri-suffix",
     default=".owl.ttl",
     show_default=True,
     help="Suffix to append to schema id to generate OWL Ontology IRI",

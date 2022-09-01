@@ -10,6 +10,7 @@ from typing import (Callable, Dict, List, Optional, Set, TextIO, Type, Union,
 
 import click
 from click import Argument, Command, Option
+from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (ClassDefinition,
                                               ClassDefinitionName, Definition,
                                               Element, ElementName,
@@ -43,6 +44,13 @@ class Generator(metaclass=abc.ABCMeta):
     schema: Union[str, TextIO, SchemaDefinition, "Generator"]
     """metamodel compliant schema.  Can be URI, file name, actual schema, another generator, an
         open file or a pre-parsed schema"""
+    schemaview: Optional[SchemaView] = None
+    """A wrapper onto the schema object"""
+
+    generatorname: ClassVar[str] = None  # Set to os.path.basename(__file__)
+    generatorversion: ClassVar[str] = None  # Generator version identifier
+    #valid_formats: List[str] = field(default_factory=lambda: [])  # Allowed formats - first format is default
+    valid_formats: ClassVar[List[str]] = []
 
     format: Optional[str] = None
     metadata: bool = True
@@ -52,22 +60,22 @@ class Generator(metaclass=abc.ABCMeta):
     source_file_date: Optional[str] = None
     source_file_size: Optional[int] = None
     logger: Optional[logging.Logger] = None
+    verbose: Optional[bool] = None
+    output: Optional[str] = None
 
-    generatorname: str = None  # Set to os.path.basename(__file__)
-    generatorversion: str = None  # Generator version identifier
-    #valid_formats: List[str] = field(default_factory=lambda: [])  # Allowed formats - first format is default
-    valid_formats: ClassVar[List[str]] = []
     directory_output: bool = False
     """True means output is to a directory, False is to stdout"""
-    base_dir: str = None  # Base directory of schema
 
-    visit_all_class_slots: bool = (
+    base_dir: str = None  # Base directory of schema
+    """Working directory or base URL of sources"""
+
+    visit_all_class_slots: ClassVar[bool] = (
         False  # False means only visit own slots, True means visit all slots
     )
-    visits_are_sorted: bool = (
+    visits_are_sorted: ClassVar[bool] = (
         True  # True means visit basic types in alphabetial order, false in entry
     )
-    sort_class_slots: bool = False  # True means visit class slots in alphabetical order
+    sort_class_slots: ClassVar[bool] = False  # True means visit class slots in alphabetical order
 
     metamodel_name_map: Dict[
         str, str
@@ -151,6 +159,7 @@ class Generator(metaclass=abc.ABCMeta):
             )
             loader.resolve()
             self.schema = loader.schema
+            # TODO: this re-loads schema, make this more efficient
             self.synopsis = loader.synopsis
             self.loaded = loader.loaded
             self.namespaces = loader.namespaces

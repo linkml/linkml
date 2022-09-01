@@ -2,6 +2,7 @@ import keyword
 import logging
 import os
 import re
+from dataclasses import dataclass, field
 from types import ModuleType
 from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
@@ -29,6 +30,7 @@ from linkml.utils.ifabsent_functions import (default_curie_or_uri,
                                              ifabsent_value_declaration)
 
 
+@dataclass
 class PythonGenerator(Generator):
     """
     Generates Python dataclasses from a LinkML model
@@ -41,23 +43,16 @@ class PythonGenerator(Generator):
     valid_formats = ["py"]
     visit_all_class_slots = False
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        format: str = valid_formats[0],
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        **kwargs,
-    ) -> None:
-        self.sourcefile = schema
-        self.emit_prefixes: Set[str] = set()
-        if format is None:
-            format = self.valid_formats[0]
-        self.genmeta = genmeta
-        self.gen_classvars = gen_classvars
-        self.gen_slots = gen_slots
-        super().__init__(schema, format, **kwargs)
+    gen_classvars: bool = True
+    gen_slots: bool = True
+    genmeta: bool = field(default_factory=lambda: False)
+    emit_metadata: bool = True
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.sourcefile = self.schema
+        if self.format is None:
+            self.format = self.valid_formats[0]
         if self.schema.default_prefix == "linkml" and not self.genmeta:
             logging.error(
                 f"Generating metamodel without --genmeta is highly inadvised!"

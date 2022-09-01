@@ -1,4 +1,5 @@
 import os
+from dataclasses import field, dataclass
 from typing import (Callable, Dict, Iterator, List, Optional, Set, TextIO,
                     Tuple, Union)
 
@@ -54,30 +55,20 @@ TYPEMAP = {
 }
 
 
+@dataclass
 class JavaGenerator(OOCodeGenerator):
     generatorname = os.path.basename(__file__)
     generatorversion = JAVA_GEN_VERSION
     valid_formats = ["java"]
     visit_all_class_slots = False
+    package: str = None
+    template_file: str = None
+    generate_records: bool = False
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        package: str = None,
-        template_file: str = None,
-        generate_records: bool = False,
-        format: str = valid_formats[0],
-        genmeta: bool = False,
-        gen_classvars: bool = True,
-        gen_slots: bool = True,
-        **kwargs,
-    ) -> None:
-        self.sourcefile = schema
-        self.schemaview = SchemaView(schema)
-        self.schema = self.schemaview.schema
-        self.package = package
-        self.template_file = template_file
-        self.generate_records = generate_records
+    def __post_init__(self):
+        # TODO: consider moving up a level
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
 
     def map_type(self, t: TypeDefinition) -> str:
         if t.uri:

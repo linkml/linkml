@@ -1,6 +1,7 @@
 import logging
 import os
 from copy import deepcopy
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, TextIO, Tuple, Union
 
 import click
@@ -8,7 +9,7 @@ from jsonasobj2 import JsonObj, as_json
 from linkml_runtime.linkml_model.meta import (ClassDefinition, EnumDefinition,
                                               PermissibleValue,
                                               PermissibleValueText,
-                                              SchemaDefinition, SlotDefinition)
+                                              SchemaDefinition, SlotDefinition, ClassDefinitionName)
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -34,6 +35,7 @@ json_schema_types: Dict[str, Tuple[str, Optional[str]]] = {
 WITH_OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
 
 
+@dataclass
 class JsonSchemaGenerator(Generator):
     """
     Generates JSONSchema documents from a LinkML SchemaDefinition
@@ -49,38 +51,27 @@ class JsonSchemaGenerator(Generator):
     generatorversion = "0.0.2"
     valid_formats = ["json"]
     visit_all_class_slots = True
+    top_class: Optional[str] = None
+    visit_all_slots = True
+    not_closed: Optional[bool] = None
 
-    def __init__(
-        self,
-        schema: Union[str, TextIO, SchemaDefinition],
-        top_class: Optional[str] = None,
-        **kwargs,
-    ) -> None:
-        """
-        Instantiation
+    schemaobj: JsonObj = None
+    clsobj: JsonObj = None
+    inline: bool = False
+    top_class: Optional[ClassDefinitionName] = top_class  ## JSON object is one instance of this
+    entryProperties: dict = field(default_factory= lambda : {})
+    include_range_class_descendants: bool = True
 
-        :param schema:
-        :param top_class: root class for JSONSchema generation
-        :param kwargs:
-        """
-        super().__init__(schema, **kwargs)
-        self.schemaview = SchemaView(schema)
-        self.schemaobj: JsonObj = None
-        self.clsobj: JsonObj = None
-        self.inline = False
-        self.topCls = top_class  ## JSON object is one instance of this
-        self.entryProperties = {}
-        self.include_range_class_descendants = (
-            kwargs["include_range_class_descendants"]
-            if "include_range_class_descendants" in kwargs
-            else False
-        )
-        # JSON-Schema does not have inheritance,
-        # so we duplicate slots from inherited parents and mixins
-        self.visit_all_slots = True
-        # Maps e.g. Person --> Person__identifier_optional
-        # for use when Person is a range of an inlined-as-dict slot
-        self.optional_identifier_class_map: Dict[str, Tuple[str, str]] = {}
+    # JSON-Schema does not have inheritance,
+    # so we duplicate slots from inherited parents and mixins
+    # Maps e.g. Person --> Person__identifier_optional
+    # for use when Person is a range of an inlined-as-dict slot
+    optional_identifier_class_map: Dict[str, Tuple[str, str]] = field(default_factory= lambda : {})
+
+    def __post_init__(self):
+        # TODO: consider moving up a level
+        self.schemaview = SchemaView(self.schema)
+        super().__post_init__()
 
     def visit_schema(self, inline: bool = False, not_closed=True, **kwargs) -> None:
         self.inline = inline
@@ -274,8 +265,8 @@ class JsonSchemaGenerator(Generator):
             prop.const = slot.equals_number
         self.clsobj.properties[underscore(aliased_slot_name)] = prop
         if (
-            self.topCls is not None and camelcase(self.topCls) == camelcase(cls.name)
-        ) or (self.topCls is None and cls.tree_root):
+            self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)
+        ) or (self.top_class is None and cls.tree_root):
             self.schemaobj.properties[underscore(aliased_slot_name)] = prop
 
             if slot.required:
