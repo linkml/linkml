@@ -135,6 +135,7 @@ class Generator(metaclass=abc.ABCMeta):
         #self.metamodel = package_schemaview(metamodel.__name__).schema
         if isinstance(schema, Generator):
             gen = schema
+            self.schema = gen.schema
             self.synopsis = gen.synopsis
             self.loaded = gen.loaded
             self.namespaces = gen.namespaces
